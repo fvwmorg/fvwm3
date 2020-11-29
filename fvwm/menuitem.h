@@ -4,6 +4,8 @@
 #define MENUITEM_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "libs/defaults.h"
+#include "fvwm.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

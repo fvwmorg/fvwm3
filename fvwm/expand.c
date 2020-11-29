@@ -24,6 +24,7 @@
 #include "libs/Strings.h"
 #include "libs/ColorUtils.h"
 #include "libs/safemalloc.h"
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

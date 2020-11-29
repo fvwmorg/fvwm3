@@ -4,10 +4,10 @@
 #define MENU_ROOT_H
 
 /* ---------------------------- included header files ---------------------- */
-
-/* Do not #include any files - the file including this file has to take care of
- * it. */
-
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+#include "menudim.h"
+#include "libs/PictureBase.h"
 /* ---------------------------- forward declarations ----------------------- */
 
 struct MenuItem;

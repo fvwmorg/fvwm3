@@ -15,7 +15,7 @@
 
 #include "config.h"
 #include "ClientMsg.h"
-
+#include "FEvent.h"
 
 Atom _XA_WM_PROTOCOLS = None;
 

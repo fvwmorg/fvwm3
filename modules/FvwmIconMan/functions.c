@@ -21,6 +21,7 @@
 #include "x.h"
 #include "libs/Module.h"
 #include "libs/wild.h"
+#include "libs/FEvent.h"
 
 static Button *get_select_button(void);
 

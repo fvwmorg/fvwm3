@@ -30,6 +30,7 @@
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "libs/wild.h"
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "functions.h"

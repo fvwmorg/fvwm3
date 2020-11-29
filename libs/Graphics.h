@@ -1,6 +1,9 @@
 #ifndef LIB_GRAPHICS_H
 #define LIB_GRAPHICS_H
 
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+
 void do_relieve_rectangle(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
 	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading);

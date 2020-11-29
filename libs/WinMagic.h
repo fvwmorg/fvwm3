@@ -1,6 +1,8 @@
 #ifndef LIB_WINMAGIC
 #define LIB_WINMAGIC
 
+#include <X11/Xlib.h>
+
 void SlideWindow(
 	Display *dpy, Window win,
 	int s_x, int s_y, int s_w, int s_h,

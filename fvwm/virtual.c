@@ -24,6 +24,7 @@
 #include "libs/FGettext.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

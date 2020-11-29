@@ -1418,12 +1418,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 
 #include "libs/defaults.h"
 
-#ifndef FEVENT_C
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include "libs/FEvent.h"
-#endif
-
 #ifndef O_NOFOLLOW
 #define O_NOFOLLOW 0
 #endif

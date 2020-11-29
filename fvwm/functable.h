@@ -4,6 +4,7 @@
 #define FUNCTABLE_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "functions.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

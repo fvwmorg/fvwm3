@@ -1,5 +1,8 @@
 /* -*-c-*- */
 
+#ifndef WILD_H
+#define WILD_H
+
 /*
  *      Does `string' match `pattern'? '*' in pattern matches any sub-string
  *      (including the null string) '?' matches any single char. For use
@@ -10,3 +13,5 @@
  *
  */
 int matchWildcards(const char *pattern, const char *string);
+
+#endif /* WILD_H */

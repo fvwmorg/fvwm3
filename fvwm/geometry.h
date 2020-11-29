@@ -2,6 +2,7 @@
 
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
+#include "fvwm.h"
 
 #define CS_ROUND_UP          0x01
 #define CS_UPDATE_MAX_DEFECT 0x02

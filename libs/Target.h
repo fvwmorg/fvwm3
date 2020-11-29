@@ -1,6 +1,8 @@
 #ifndef LIB_TARGET_H
 #define LIB_TARGET_H
 
+#include <X11/Xlib.h>
+
 void fvwmlib_keyboard_shortcuts(
 	Display *dpy, int screen, XEvent *Event, int x_move_size,
 	int y_move_size, int *x_defect, int *y_defect, int ReturnEvent);

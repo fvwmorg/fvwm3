@@ -3,6 +3,8 @@
 
 #ifndef F_PICTURE_GRAPHICS_H
 #define F_PICTURE_GRAPHICS_H
+#include <X11/Xlib.h>
+#include "libs/PictureBase.h"
 
 /*
  * <generalArgs>

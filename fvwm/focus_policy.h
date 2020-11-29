@@ -8,6 +8,7 @@
  * it in focus.[ch] instead. */
 
 /* ---------------------------- included header files ---------------------- */
+#include "libs/defaults.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

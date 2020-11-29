@@ -4,6 +4,7 @@
 #define WCONTEXT_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "charmap.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

@@ -7,7 +7,11 @@
  * by Robert Nation
  */
 
+#ifndef BUTTON_H
+#define BUTTON_H
+
 /* --------------------------- button information -------------------------- */
+#include "FvwmButtons.h"
 
 void buttonInfo(
 	const button_info *, int *x, int *y, int *padx, int *pady, int *frame);
@@ -62,3 +66,5 @@ void get_button_root_geometry(rectangle *r, const button_info *b);
 /* --------------------------- swallowing ---------------------------------- */
 
 int buttonSwallowCount(button_info *b);
+
+#endif /* BUTTON_H */

@@ -17,12 +17,14 @@
 
 #define FEVENT_PRIVILEGED_ACCESS
 #include "config.h"
-#undef FEVENT_PRIVILEGED_ACCESS
 #include <stdio.h>
 
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
+#include "libs/FEvent.h"
+
+#undef PEVENT_PRIVILEGED_ACCESS
 
 /* ---------------------------- local definitions -------------------------- */
 

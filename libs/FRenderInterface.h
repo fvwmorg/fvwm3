@@ -3,6 +3,8 @@
 
 #ifndef F_RENDER_INTERFACE_H
 #define F_RENDER_INTERFACE_H
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
 
 Bool FRenderTintRectangle(
 	Display *dpy, Window win, Pixmap mask, Pixel tint, int shade_percent,

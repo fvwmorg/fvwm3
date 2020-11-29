@@ -3,6 +3,9 @@
 #ifndef _STYLE_
 #define _STYLE_
 
+#include "fvwm.h"
+#include "update.h"
+
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
 #define SDO_DECORATE_TRANSIENT(sf) \

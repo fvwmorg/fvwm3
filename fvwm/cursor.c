@@ -24,6 +24,7 @@
 #include "libs/Cursor.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "libs/PictureImageLoader.h"
 #include "externs.h"

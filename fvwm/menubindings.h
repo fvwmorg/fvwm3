@@ -2,6 +2,8 @@
 
 #ifndef MENU_BINDINGS_H
 #define MENU_BINDINGS_H
+#include <X11/Xlib.h>
+#include "libs/Bindings.h"
 
 /* ---------------------------- included header files ---------------------- */
 

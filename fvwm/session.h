@@ -9,7 +9,7 @@
 
 #ifndef SESSION_H
 #define SESSION_H
-
+#include "fvwm.h"
 
 /*
 **  Load and save the 'global', ie not window-related, state of fvwm

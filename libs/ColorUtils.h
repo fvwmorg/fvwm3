@@ -1,6 +1,9 @@
 #ifndef LIB_COLORUTILS_H
 #define LIB_COLORUTILS_H
 
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+
 /*
  * Stuff for dealing w/ bitmaps & pixmaps:
  */

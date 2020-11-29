@@ -3,6 +3,8 @@
 #ifndef _ICONS_
 #define _ICONS_
 
+#include "fvwm.h"
+
 #ifdef NO_ICONS
 #define ICON_HEIGHT(t) 1
 #else

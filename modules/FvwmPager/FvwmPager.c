@@ -42,6 +42,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/FRenderInit.h"
+#include "libs/FEvent.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
 #include "libs/fvwmsignal.h"

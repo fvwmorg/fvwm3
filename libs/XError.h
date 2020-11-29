@@ -1,5 +1,6 @@
 #ifndef FERROR_H
 #define FERROR_H
+#include <X11/Xlib.h>
 
 void do_coredump(void);
 

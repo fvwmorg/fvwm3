@@ -1,6 +1,7 @@
 /* -*-c-*- */
 #ifndef _ANIMATE_H_
 #define _ANIMATE_H_
+#include <time.h>
 
 /* Animation granularity. How many iterations use for the animation.  */
 #define ANIM_ITERATIONS 12

@@ -21,6 +21,7 @@
 #endif
 #include <X11/Xatom.h>
 
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

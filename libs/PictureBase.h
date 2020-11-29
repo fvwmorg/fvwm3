@@ -5,6 +5,8 @@
 
 #include "config.h"
 
+#include <X11/Intrinsic.h>
+
 #ifdef HAVE_XRENDER
 #define XRenderSupport 1
 #else
@@ -180,7 +182,7 @@ typedef struct
 #define FRAM_DEST_IS_A_WINDOW       (1 << 3)
 #define FRAM_HAVE_ICON_CSET         (1 << 4)
 
-#include "Colorset.h"
+typedef struct Colorset colorset_t;
 
 typedef struct
 {

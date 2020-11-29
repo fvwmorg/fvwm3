@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

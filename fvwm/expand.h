@@ -2,6 +2,8 @@
 
 #ifndef EXPAND_H
 #define EXPAND_H
+#include "condrc.h"
+#include "execcontext.h"
 
 /* ---------------------------- included header files ---------------------- */
 

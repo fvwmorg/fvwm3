@@ -6,6 +6,8 @@
 #ifndef FVWMLIB_FSHAPE_H
 #define FVWMLIB_FSHAPE_H
 
+#include "config.h"
+
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #define FShapeQueryExtension(dpy, evbase, errbase) \

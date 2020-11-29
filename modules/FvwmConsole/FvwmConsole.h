@@ -1,4 +1,8 @@
 /* -*-c-*- */
+
+#ifndef FVWMCONSOLE_H
+#define FVWMCONSOLE_H
+
 #include <sys/types.h>
 
 #if HAVE_SYS_BSDTYPES_H
@@ -39,3 +43,6 @@
 
 #define MAX_COMMAND_SIZE 1000
 #define MAX_MESSAGE_SIZE 260
+
+
+#endif /* FVWMCONSOLE_H */

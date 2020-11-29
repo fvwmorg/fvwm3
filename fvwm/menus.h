@@ -3,6 +3,10 @@
 #ifndef _MENUS_
 #define _MENUS_
 
+#include "fvwm.h"
+#include "execcontext.h"
+#include "libs/Bindings.h"
+
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
 #define MENU_IS_UP    0x04

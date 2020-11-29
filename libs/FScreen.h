@@ -2,14 +2,18 @@
 #ifndef FVWMLIB_FSCRREN_H
 #define FVWMLIB_FSCRREN_H
 
+#include "config.h"
+
 #ifdef HAVE_XRANDR
 #include <X11/extensions/Xrandr.h>
 #endif
 
 /* For CARD32 */
 #include <X11/Xproto.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
 
-/* needs X11/Xlib.h and X11/Xutil.h */
+#include "fvwmrect.h"
 
 typedef struct
 {

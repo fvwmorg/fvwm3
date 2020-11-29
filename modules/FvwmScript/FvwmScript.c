@@ -25,6 +25,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FEvent.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"

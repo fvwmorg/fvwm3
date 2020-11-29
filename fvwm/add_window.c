@@ -50,6 +50,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/FEvent.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
 #include "libs/charmap.h"
@@ -69,6 +70,7 @@
 #include "events.h"
 #include "eventhandler.h"
 #include "eventmask.h"
+#include "execcontext.h"
 #include "module_interface.h"
 #include "stack.h"
 #include "update.h"

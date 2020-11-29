@@ -63,6 +63,7 @@
 #include "libs/wild.h"
 #include "libs/WinMagic.h"
 #include "libs/XError.h"
+#include "libs/FEvent.h"
 
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */

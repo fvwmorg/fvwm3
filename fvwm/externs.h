@@ -29,6 +29,9 @@
 #ifndef EXTERNS_H
 #define EXTERNS_H
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
 void Done(int, char *) __attribute__((__noreturn__));
 void set_init_function_name(int n, const char *name);
 const char *get_init_function_name(int n);

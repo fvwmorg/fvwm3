@@ -1,5 +1,7 @@
 #ifndef LIB_XRESOURCE_H
 #define LIB_XRESOURCE_H
+#include <X11/Xlib.h>
+#include <X11/Xresource.h>
 
 /*
  * Wrappers around Xrm routines (XResources.c)

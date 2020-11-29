@@ -26,6 +26,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/FTips.h"
+#include "libs/FEvent.h"
 #include "libs/Parse.h"
 
 
@@ -226,7 +227,7 @@ main(int argc, char **argv)
 		if (strcasecmp(argv[6], "-Transient") == 0)
 		{
 			globals.transient = 1;
-			
+
 			/* Optionally accept an alias to use as the transient
 			 * FvwmIconMan instance.
 			 */

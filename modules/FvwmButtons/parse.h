@@ -21,6 +21,13 @@
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
 
+#ifndef PARSE_H
+#define PARSE_H
+
+#include "FvwmButtons.h"
+
 void ParseConfiguration(button_info *ub);
 void parse_window_geometry(char *geom, int is_button_geometry);
 char *expand_action(char *in_action, button_info *b);
+
+#endif /* PARSE_H */

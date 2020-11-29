@@ -1,9 +1,9 @@
 /* -*-c-*- */
 
-#include <X11/Xutil.h>	/* XClassHint */
-
 #ifndef FVWMLIB_BINDINGS_H_H
 #define FVWMLIB_BINDINGS_H_H
+
+#include <X11/Xutil.h>	/* XClassHint */
 
 /* ---------------------------- global definitions ------------------------- */
 

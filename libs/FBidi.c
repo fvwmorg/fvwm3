@@ -49,7 +49,7 @@ char *FBidiConvert(
 	FriBidiCharSet fribidi_charset;
 	FriBidiChar *logical_unicode_str;
 	FriBidiChar *visual_unicode_str;
-	FriBidiParType pbase_dir = FRIBIDI_TYPE_ON;
+	FriBidiParType pbase_dir = FRIBIDI_PAR_ON;
 	FriBidiStrIndex *pos_l_to_v;
 	int i;
 
@@ -86,9 +86,9 @@ char *FBidiConvert(
 	/* also keep track of how characters are reordered here, to reorder
 	   combing characters accordingly */
 	pos_l_to_v = fxmalloc((str_len + 1) * sizeof(FriBidiStrIndex));
-	fribidi_log2vis(
-		logical_unicode_str, str_len, &pbase_dir,
-		visual_unicode_str, pos_l_to_v, NULL, NULL);
+	(void) !fribidi_log2vis(
+            logical_unicode_str, str_len, &pbase_dir,
+            visual_unicode_str, pos_l_to_v, NULL, NULL);
 
 	/* remap mapping from logical to visual to "compensate" for BIDI */
 	if (comb_chars != NULL)

@@ -4,6 +4,8 @@
 #define ADD_WINDOW_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "fvwm.h"
+#include "execcontext.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

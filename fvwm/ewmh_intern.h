@@ -3,6 +3,7 @@
 
 #ifndef _EWMH_INTERN_
 #define _EWMH_INTERN_
+#include "fvwm.h"
 
 /* Extended window manager hints support */
 

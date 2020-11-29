@@ -8,6 +8,7 @@
 #define FRECTANGLES_H
 
 /* ---------------------------- included header files ---------------------- */
+#include <X11/Xlib.h>
 
 /* ---------------------------- global definitions ------------------------- */
 

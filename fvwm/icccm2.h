@@ -2,6 +2,7 @@
 
 #ifndef ICCCM2_h
 #define ICCCM2_h
+#include <X11/Xlib.h>
 
 extern void SetupICCCM2(Bool replace_wm);
 extern void CloseICCCM2(void);

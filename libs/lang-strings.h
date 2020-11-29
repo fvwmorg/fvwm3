@@ -1,5 +1,8 @@
 /* -*-c-*- */
 
+#ifndef LANG_STRINGS_H
+#define LANG_STRINGS_H
+
 /*
  * Please translate the strings into the language which you use for
  * your pop-up menus.
@@ -18,3 +21,5 @@
 #define CLOSE_STRING2 "delete"
 #define CLOSE_STRING3 "destroy"
 #define CLOSE_STRING4 "quit"
+
+#endif /* LANG-STRINGS_H */

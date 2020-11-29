@@ -1,6 +1,8 @@
 #ifndef LIB_SYSTEM_H
 #define LIB_SYSTEM_H
 
+#include "config.h"
+
 fd_set_size_t GetFdWidth(void);
 extern fd_set_size_t fvwmlib_max_fd;
 void fvwmlib_init_max_fd(void);

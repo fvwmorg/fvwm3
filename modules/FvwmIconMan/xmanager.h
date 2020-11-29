@@ -2,6 +2,9 @@
 #ifndef IN_XMANAGER_H
 #define IN_XMANAGER_H
 
+#include <X11/Xlib.h>
+#include "FvwmIconMan.h"
+
 #define DEFAULT_BUTTON_WIDTH 200
 #define DEFAULT_BUTTON_HEIGHT 17
 #define DEFAULT_NUM_COLS  1

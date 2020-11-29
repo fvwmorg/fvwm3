@@ -5,6 +5,7 @@
 #define FVWMRECT_H
 
 /* ---------------------------- included header files ---------------------- */
+#include <X11/Xutil.h>
 
 /* ---------------------------- global definitions ------------------------- */
 

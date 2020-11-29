@@ -7,8 +7,11 @@
 
 #ifndef LIBS_COLORSETS_H
 #define LIBS_COLORSETS_H
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+#include "PictureBase.h"
 
-typedef struct
+typedef struct Colorset
 {
 	Pixel fg;
 	Pixel bg;

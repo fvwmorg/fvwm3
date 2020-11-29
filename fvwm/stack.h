@@ -3,6 +3,8 @@
 #ifndef _STACK_H
 #define _STACK_H
 
+#include "fvwm.h"
+
 #define DEBUG_STACK_RING 1
 #ifdef DEBUG_STACK_RING
 void verify_stack_ring_consistency(void);

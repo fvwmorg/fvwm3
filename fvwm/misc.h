@@ -3,6 +3,9 @@
 #ifndef MISC_H
 #define MISC_H
 
+#include <X11/Xlib.h>
+#include "fvwm.h"
+
 /* ---------------------------- included header files ---------------------- */
 
 /* ---------------------------- global definitions ------------------------- */

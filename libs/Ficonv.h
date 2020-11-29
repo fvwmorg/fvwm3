@@ -7,6 +7,7 @@
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
+#include "Flocale.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
