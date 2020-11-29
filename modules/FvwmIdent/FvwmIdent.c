@@ -1407,9 +1407,9 @@ void MakeList(void)
 	if (HAS_EWMH_INIT_WM_DESKTOP(targ) == EWMH_STATE_HAS_HINT &&
 	    target.ewmh_hint_desktop < 256)
 	{
-		strcat(ewmh_init_state, "StartOnDesk");
-		sprintf(ewmh_init_state, "%s %lu ",
-			ewmh_init_state, target.ewmh_hint_desktop);
+                char desk_buf[32];
+                snprintf(desk_buf, 32, "StartOnDesk %lu ", target.ewmh_hint_desktop);
+		strcat(ewmh_init_state, desk_buf);
 	}
 	if (ewmh_init_state[0] != '\0')
 	{
