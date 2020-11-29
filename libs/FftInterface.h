@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FFT_INTERFACE_H
-#define FFT_INTERFACE_H
+#ifndef FVWMLIB_FFT_INTERFACE_H
+#define FVWMLIB_FFT_INTERFACE_H
 #include "Fft.h"
 #include "Flocale.h"
 

@@ -1,5 +1,5 @@
-#ifndef LIB_WINMAGIC
-#define LIB_WINMAGIC
+#ifndef FVWMLIB_WINMAGIC
+#define FVWMLIB_WINMAGIC
 
 #include <X11/Xlib.h>
 
@@ -16,4 +16,4 @@ int GetEqualSizeChildren(
 	Display *dpy, Window parent, int depth, VisualID visualid,
 	Colormap colormap, Window **ret_children);
 
-#endif /* LIB_WINMAGIC */
+#endif /* FVWMLIB_WINMAGIC */

@@ -1,8 +1,8 @@
 /* -*-c-*- */
 
-#ifndef SETPGRP_H
-#define SETPGRP_H
+#ifndef FVWMLIB_SETPGRP_H
+#define FVWMLIB_SETPGRP_H
 
 int fvwm_setpgrp(void);
 
-#endif /* SETPGRP_H */
+#endif

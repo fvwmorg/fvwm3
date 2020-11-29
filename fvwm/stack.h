@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _STACK_H
-#define _STACK_H
+#ifndef FVWM_STACK_H
+#define FVWM_STACK_H
 
 #include "fvwm.h"
 
@@ -46,4 +46,4 @@ void mark_transient_subtree(
 	Bool use_window_group_hint);
 
 
-#endif /* _STACK_H */
+#endif /* FVWM_STACK_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _VPACKET_
-#define _VPACKET_
+#ifndef FVWMLIB_VPACKET_H
+#define FVWMLIB_VPACKET_H
 #include <X11/Xlib.h>
 #include "fvwm/fvwm.h"
 
@@ -89,4 +89,4 @@ typedef struct MiniIconPacket
 	char           name[1];
 } MiniIconPacket;
 
-#endif /* _VPACKET_ */
+#endif /* FVWMLIB_VPACKET_H */

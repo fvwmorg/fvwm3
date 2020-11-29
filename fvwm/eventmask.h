@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef EVENTMASK_H
-#define EVENTMASK_H
+#ifndef FVWM_EVENTMASK_H
+#define FVWM_EVENTMASK_H
 
 /* ---------------------------- global definitions ------------------------- */
 
@@ -64,4 +64,4 @@
 #define XEVMASK_RESIZE_OPAQUE \
 	(XEVMASK_RESIZE | PropertyChangeMask)
 
-#endif /* EVENTMASK_H */
+#endif /* FVWM_EVENTMASK_H */

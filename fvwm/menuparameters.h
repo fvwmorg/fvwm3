@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENU_PARAMETERS_H
-#define MENU_PARAMETERS_H
+#ifndef FVWM_MENU_PARAMETERS_H
+#define FVWM_MENU_PARAMETERS_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xlib.h>
@@ -130,4 +130,4 @@ typedef struct MenuRepaintTransparentParameters
 	struct FvwmWindow *fw;
 } MenuRepaintTransparentParameters;
 
-#endif /* MENU_PARAMETERS_H */
+#endif /* FVWM_MENU_PARAMETERS_H */

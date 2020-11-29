@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef EXPAND_H
-#define EXPAND_H
+#ifndef FVWM_EXPAND_H
+#define FVWM_EXPAND_H
 #include "condrc.h"
 #include "execcontext.h"
 
@@ -21,4 +21,4 @@ char *expand_vars(
 	char *input, char *arguments[], Bool addto, Bool ismod,
 	cond_rc_t *cond_rc, const exec_context_t *exc);
 
-#endif /* EXPAND_H */
+#endif /* FVWM_EXPAND_H */

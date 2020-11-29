@@ -1,5 +1,5 @@
-#ifndef FPLAY_H
-#define FPLAY_H
+#ifndef FVWMLIB_FPLAY_H
+#define FVWMLIB_FPLAY_H
 
 #ifdef HAVE_RPLAY
 #define USE_FPLAY 1

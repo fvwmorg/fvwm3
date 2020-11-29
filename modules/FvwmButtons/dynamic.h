@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef DYNAMIC_H
-#define DYNAMIC_H
+#ifndef FVWMBUTTONS_DYNAMIC_H
+#define FVWMBUTTONS_DYNAMIC_H
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -19,4 +19,4 @@
 
 void parse_message_line(char *line);
 
-#endif /* DYNAMIC_H */
+#endif /* FVWMBUTTONS_DYNAMIC_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef COMMANDS_H
-#define COMMANDS_H
+#ifndef FVWM_COMMANDS_H
+#define FVWM_COMMANDS_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -393,4 +393,4 @@ void CMD_XorValue(F_CMD_ARGS);
 void CMD_XSync(F_CMD_ARGS);
 void CMD_XSynchronize(F_CMD_ARGS);
 
-#endif /* COMMANDS_H */
+#endif /* FVWM_COMMANDS_H */

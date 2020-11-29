@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef EVENTS_H
-#define EVENTS_H
+#ifndef FVWM_EVENTS_H
+#define FVWM_EVENTS_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -49,4 +49,4 @@ void events_handle_configure_request(
 	XEvent *e, FvwmWindow *fw, Bool force_use_grav, int force_gravity);
 Bool test_typed_window_event(Display *display, XEvent *event, char *arg);
 
-#endif /* EVENTS_H */
+#endif /* FVWM_EVENTS_H */

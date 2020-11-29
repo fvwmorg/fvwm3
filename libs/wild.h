@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef WILD_H
-#define WILD_H
+#ifndef FVWMLIB_WILD_H
+#define FVWMLIB_WILD_H
 
 /*
  *      Does `string' match `pattern'? '*' in pattern matches any sub-string
@@ -14,4 +14,4 @@
  */
 int matchWildcards(const char *pattern, const char *string);
 
-#endif /* WILD_H */
+#endif /* FVWMLIB_WILD_H */

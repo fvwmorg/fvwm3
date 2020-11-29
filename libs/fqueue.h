@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef QUEUE_H
-#define QUEUE_H
+#ifndef FVWMLIB_QUEUE_H
+#define FVWMLIB_QUEUE_H
 
 /*
  * type definitions
@@ -74,4 +74,4 @@ void fqueue_remove_or_operate_all(
 	destroy_fqueue_object_t destroy_func,
 	void *operate_args);
 
-#endif /* QUEUE_H */
+#endif /* FVWMLIB_QUEUE_H */

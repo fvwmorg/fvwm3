@@ -7,8 +7,8 @@
  *      parameters.
  */
 
-#ifndef _DEFAULTS_
-#define _DEFAULTS_
+#ifndef FVWMLIB_DEFAULTS_H
+#define FVWMLIB_DEFAULTS_H
 
 /*** event handling ***/
 #define CLOCK_SKEW_MS                  30000 /* ms */
@@ -374,5 +374,4 @@
 
 #define FTIPS_DEFAULT_BORDER_WIDTH 1
 
-#endif /* _DEFAULTS_ */
-
+#endif /* FVWMLIB_DEFAULTS_H */

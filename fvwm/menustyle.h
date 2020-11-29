@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENUSTYLE_H
-#define MENUSTYLE_H
+#ifndef FVWM_MENUSTYLE_H
+#define FVWM_MENUSTYLE_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -346,4 +346,4 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS);
 MenuStyle *menustyle_get_default_style(void);
 void menustyle_copy(MenuStyle *origms, MenuStyle *destms);
 
-#endif /* MENUSTYLE_H */
+#endif /* FVWM_MENUSTYLE_H */

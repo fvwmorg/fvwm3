@@ -1,6 +1,6 @@
 /* -*-c-*- */
-#ifndef LIBS_MODULE_H
-#define LIBS_MODULE_H
+#ifndef FVWMLIB_MODULE_H
+#define FVWMLIB_MODULE_H
 
 /*
 ** Module.c: code for modules to communicate with fvwm

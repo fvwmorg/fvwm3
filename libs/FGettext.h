@@ -2,8 +2,8 @@
 /* Convenience header for conditional use of GNU <libintl.h>.
    Copyright (C) 1995-1998, 2000-2002 Free Software Foundation, Inc. */
 
-#ifndef _LIBGETTEXT_H
-#define _LIBGETTEXT_H 1
+#ifndef FVWMLIB_LIBGETTEXT_H
+#define FVWMLIB_LIBGETTEXT_H
 
 #include "config.h"
 
@@ -68,4 +68,4 @@ char *FGettextCopy(char *str);
 void FGettextSetLocalePath(const char *path);
 void FGettextPrintLocalePath(int verbose);
 
-#endif /* _LIBGETTEXT_H */
+#endif /* FVWMLIB_LIBGETTEXT_H */

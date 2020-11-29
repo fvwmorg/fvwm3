@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef LANG_STRINGS_H
-#define LANG_STRINGS_H
+#ifndef FVWMLIB_LANG_STRINGS_H
+#define FVWMLIB_LANG_STRINGS_H
 
 /*
  * Please translate the strings into the language which you use for
@@ -22,4 +22,4 @@
 #define CLOSE_STRING3 "destroy"
 #define CLOSE_STRING4 "quit"
 
-#endif /* LANG-STRINGS_H */
+#endif /* FVWMLIB_LANG_STRINGS_H */

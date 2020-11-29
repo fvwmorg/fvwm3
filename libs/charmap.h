@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef CHARMAP_H
-#define CHARMAP_H
+#ifndef FVWMLIB_CHARMAP_H
+#define FVWMLIB_CHARMAP_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -29,4 +29,4 @@ char charmap_mask_to_char(int mask, charmap_t *table);
 
 char *charmap_table_to_string(int mask, charmap_t *table);
 
-#endif /* CHARMAP_H */
+#endif /* FVWMLIB_CHARMAP_H */

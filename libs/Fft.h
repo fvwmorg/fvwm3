@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FFT_H
-#define FFT_H
+#ifndef FVWMLIB_FFT_H
+#define FVWMLIB_FFT_H
 
 /*
  * Note: This "warper" is far from being complete! if you need something
@@ -683,4 +683,4 @@ void FftPDumyFunc(void);
 
 #endif
 
-#endif /* FFT_H */
+#endif /* FVWMLIB_FFT_H */

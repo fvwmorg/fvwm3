@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2001  Olivier Chapuis */
 
-#ifndef _EWMH_INTERN_
-#define _EWMH_INTERN_
+#ifndef FVWM_EWMH_INTERN_H
+#define FVWM_EWMH_INTERN_H
 #include "fvwm.h"
 
 /* Extended window manager hints support */
@@ -196,4 +196,4 @@ void  EWMH_DLOG(char *msg, ...);
 
 #endif
 
-#endif /* _EWMH_INTERN_ */
+#endif /* FVWM_EWMH_INTERN_H */

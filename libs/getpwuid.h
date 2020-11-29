@@ -12,8 +12,8 @@
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
 
-#ifndef FVWM_GETPWUID_H
-#define FVWM_GETPWUID_H
+#ifndef FVWMLIB_GETPWUID_H
+#define FVWMLIB_GETPWUID_H
 
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>

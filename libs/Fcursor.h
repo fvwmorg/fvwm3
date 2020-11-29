@@ -1,5 +1,5 @@
-#ifndef FCURSOR_H
-#define FCURSOR_H
+#ifndef FVWMLIB_FCURSOR_H
+#define FVWMLIB_FCURSOR_H
 
 #ifdef HAVE_XCURSOR
 #	include <X11/Xcursor/Xcursor.h>
@@ -39,4 +39,4 @@
 #	define FcursorImagesLoadCursor(a,b) 0
 #endif
 
-#endif /* FCURSOR_H */
+#endif /* FVWMLIB_FCURSOR_H */

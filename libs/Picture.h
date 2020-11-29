@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef Picture_H
-#define Picture_H
+#ifndef FVWMLIB_PICTURE_H
+#define FVWMLIB_PICTURE_H
 
 #include "PictureBase.h"
 #include "PictureImageLoader.h"

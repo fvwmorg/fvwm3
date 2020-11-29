@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef CURSOR_H
-#define CURSOR_H
+#ifndef FVWM_CURSOR_H
+#define FVWM_CURSOR_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xlib.h>
@@ -62,4 +62,4 @@ typedef enum
 
 Cursor *CreateCursors(Display *dpy);
 
-#endif /* CURSOR_H */
+#endif /* FVWM_CURSOR_H */

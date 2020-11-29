@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef Picture_Base_H
-#define Picture_Base_H
+#ifndef FVWMLIB_PICTURE_BASE_H
+#define FVWMLIB_PICTURE_BASE_H
 
 #include "config.h"
 
@@ -210,4 +210,4 @@ typedef struct
 	int pixels_table_size;
 } PictureImageColorAllocator;
 
-#endif /* Picture_Base_H */
+#endif

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef PLACEMENT_H
-#define PLACEMENT_H
+#ifndef FVWM_PLACEMENT_H
+#define FVWM_PLACEMENT_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -31,4 +31,4 @@ Bool setup_window_placement(
 	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
 	initial_window_options_t *win_opts, placement_mode_t mode);
 
-#endif /* PLACEMENT_H */
+#endif /* FVWM_PLACEMENT_H */

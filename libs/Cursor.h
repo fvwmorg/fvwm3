@@ -1,6 +1,6 @@
-#ifndef LIB_CURSOR_H
-#define LIB_CURSOR_H
+#ifndef FVWMLIB_CURSOR_H
+#define FVWMLIB_CURSOR_H
 
 int fvwmCursorNameToIndex (char *cursor_name);
 
-#endif /* LIB_CURSOR_H */
+#endif /* FVWMLIB_CURSOR_H */

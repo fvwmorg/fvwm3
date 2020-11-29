@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef PICTURE_IMAGE_LOADER_H
-#define PICTURE_IMAGE_LOADER_H
+#ifndef FVWMLIB_PICTURE_IMAGE_LOADER_H
+#define FVWMLIB_PICTURE_IMAGE_LOADER_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -69,4 +69,4 @@ Bool PImageLoadPixmapFromXpmData(
 	Pixmap *pixmap, Pixmap *mask, int *width,
 	int *height, int *depth);
 
-#endif /* PICTURE_IMAGE_LOADER_H  */
+#endif /* FVWMLIB_PICTURE_IMAGE_LOADER_H  */

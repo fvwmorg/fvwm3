@@ -1,5 +1,5 @@
-#ifndef LIB_XRESOURCE_H
-#define LIB_XRESOURCE_H
+#ifndef FVWMLIB_XRESOURCE_H
+#define FVWMLIB_XRESOURCE_H
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 
@@ -16,4 +16,4 @@ Bool GetResourceString(
 	XrmDatabase db, const char *resource, const char *prefix,
 	XrmValue *xval);
 
-#endif /* LIB_XRESOURCE_H */
+#endif /* FVWMLIB_XRESOURCE_H */

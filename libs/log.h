@@ -1,5 +1,5 @@
-#ifndef _LOG_H
-#define _LOG_H
+#ifndef FVWMLIB_LOG_H
+#define FVWMLIB_LOG_H
 
 #define printflike(a, b) __attribute__ ((format (printf, a, b)))
 #define FVWM3_LOGFILE_DEFAULT "fvwm3-output.log"

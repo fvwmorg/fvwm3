@@ -4,8 +4,8 @@
  *  Convinence functions for manipulating rectangles, segments, regions ...etc.
  */
 
-#ifndef FRECTANGLES_H
-#define FRECTANGLES_H
+#ifndef FVWMLIB_RECTANGLES_H
+#define FVWMLIB_RECTANGLES_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xlib.h>

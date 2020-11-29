@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef WCONTEXT_H
-#define WCONTEXT_H
+#ifndef FVWMLIB_WCONTEXT_H
+#define FVWMLIB_WCONTEXT_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "charmap.h"
@@ -68,4 +68,4 @@ int wcontext_string_to_wcontext(char *in_context, int *out_context_mask);
 char wcontext_wcontext_to_char(win_context_t wcontext);
 win_context_t wcontext_merge_border_wcontext(win_context_t wcontext);
 
-#endif /* WCONTEXT_H */
+#endif /* FVWMLIB_WCONTEXT_H */

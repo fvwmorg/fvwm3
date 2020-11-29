@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef F_PICTURE_GRAPHICS_H
-#define F_PICTURE_GRAPHICS_H
+#ifndef FVWMLIB_PICTURE_GRAPHICS_H
+#define FVWMLIB_PICTURE_GRAPHICS_H
 #include <X11/Xlib.h>
 #include "libs/PictureBase.h"
 

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MODIFIERS_H
-#define MODIFIERS_H
+#ifndef FVWMLIB_MODIFIERS_H
+#define FVWMLIB_MODIFIERS_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "charmap.h"
@@ -26,4 +26,4 @@ extern unsigned int modifier_mapindex_to_mask[];
 
 int modifiers_string_to_modmask(char *in_modifiers, int *out_modifier_mask);
 
-#endif /* MODIFIERS_H */
+#endif /* FVWMLIB_MODIFIERS_H */

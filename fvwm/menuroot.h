@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef MENU_ROOT_H
-#define MENU_ROOT_H
+#ifndef FVWM_MENU_ROOT_H
+#define FVWM_MENU_ROOT_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xlib.h>
@@ -183,4 +183,4 @@ typedef struct MenuRoot
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 
-#endif /* MENU_ROOT_H */
+#endif /* FVWM_MENU_ROOT_H */

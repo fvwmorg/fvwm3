@@ -6,8 +6,8 @@
  * Interface to character combining
  */
 
-#ifndef FCOMBINECHARS_H
-#define FCOMBINECHARS_H
+#ifndef FVWMLIB_COMBINECHARS_H
+#define FVWMLIB_COMBINECHARS_H
 
 #include "config.h"
 #include <X11/Xutil.h>
@@ -22,4 +22,4 @@ int CombineChars(
 	unsigned char *str_visual, int len, superimpose_char_t **comb_chars,
 	int **l_to_v);
 
-#endif /* FCOMBINECHARS_H */
+#endif /* FVWMLIB_COMBINECHARS_H */

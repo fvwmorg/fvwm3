@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FIMAGE_H
-#define FIMAGE_H
+#ifndef FVWMLIB_FIMAGE_H
+#define FVWMLIB_FIMAGE_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -34,4 +34,4 @@ void FPutFImage(
 
 void FDestroyFImage(Display *dpy, FImage *fim);
 
-#endif /* FIMAGE_H */
+#endif /* FVWMLIB_FIMAGE_H */

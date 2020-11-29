@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef DRAW_H
-#define DRAW_H
+#ifndef FVWMBUTTONS_DRAW_H
+#define FVWMBUTTONS_DRAW_H
 
 #include <X11/Xlib.h>
 #include "FvwmButtons.h"
@@ -25,4 +25,4 @@ void MakeButton(button_info *);
 void RedrawButton(button_info *, int draw, XEvent *pev);
 void DrawTitle(button_info *b, Window win, GC gc, XEvent *pev);
 
-#endif /* DRAW_H */
+#endif /* FVWMBUTTONS_DRAW_H */

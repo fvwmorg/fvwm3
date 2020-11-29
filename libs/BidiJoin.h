@@ -7,8 +7,8 @@
  * (bidirectional) languages.
  */
 
-#ifndef BIDIJOIN_H
-#define BIDIJOIN_H
+#ifndef FVWMLIB_BIDIJOIN_H
+#define FVWMLIB_BIDIJOIN_H
 
 #include "config.h"
 
@@ -27,4 +27,4 @@ int shape_n_join(FriBidiChar *str_visual, int str_len);
 
 #endif /* HAVE_BIDI */
 
-#endif /* BIDIJOIN_H */
+#endif /* FVWMLIB_BIDIJOIN_H */

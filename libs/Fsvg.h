@@ -1,5 +1,5 @@
-#ifndef FSVG_H
-#define FSVG_H
+#ifndef FVWMLIB_FSVG_H
+#define FVWMLIB_FSVG_H
 
 #ifdef HAVE_RSVG
 #define USE_SVG 1
@@ -85,4 +85,4 @@
 #	define Fcairo_translate(a, b, c)
 #endif
 
-#endif /* FSVG_H */
+#endif /* FVWMLIB_FSVG_H */

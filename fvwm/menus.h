@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _MENUS_
-#define _MENUS_
+#ifndef FVWM_MENUS_H
+#define FVWM_MENUS_H
 
 #include "fvwm.h"
 #include "execcontext.h"
@@ -62,4 +62,4 @@ void repaint_transparent_menu(
 Bool menu_expose(XEvent *event, FvwmWindow *fw);
 int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
 	int context, int modifier, char *action, char *menuStyle);
-#endif /* _MENUS_ */
+#endif /* FVWM_MENUS_H */

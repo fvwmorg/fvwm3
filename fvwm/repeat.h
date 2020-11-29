@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef _REPEAT_
-#define _REPEAT_
+#ifndef FVWM_REPEAT_H
+#define FVWM_REPEAT_H
 #include "functions.h"
 
 typedef enum
@@ -34,4 +34,4 @@ extern char *repeat_last_module;
 
 Bool set_repeat_data(void *data, repeat_t type, const func_t *builtin);
 
-#endif /* _REPEAT_ */
+#endif /* FVWM_REPEAT_H */

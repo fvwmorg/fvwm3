@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef EVENTHANDLER_H
-#define EVENTHANDLER_H
+#ifndef FVWM_EVENTHANDLER_H
+#define FVWM_EVENTHANDLER_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -49,4 +49,4 @@ void HandleKeyPress(const evh_args_t *ea);
 void HandleKeyRelease(const evh_args_t *ea);
 void HandleVisibilityNotify(const evh_args_t *ea);
 
-#endif /* EVENTHANDLER_H */
+#endif /* FVWM_EVENTHANDLER_H */

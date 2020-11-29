@@ -1,5 +1,5 @@
-#ifndef LIB_COLORUTILS_H
-#define LIB_COLORUTILS_H
+#ifndef FVWMLIB_COLORUTILS_H
+#define FVWMLIB_COLORUTILS_H
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
@@ -39,4 +39,4 @@ void fvwmlib_copy_color(
 	Display *dpy, Pixel *dst_color, Pixel *src_color, Bool do_free_dest,
 	Bool do_copy_src);
 
-#endif /* LIB_COLORUTILS_H */
+#endif /* FVWMLIB_COLORUTILS_H */

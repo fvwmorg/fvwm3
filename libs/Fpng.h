@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef FPNG_H
-#define FPNG_H
+#ifndef FVWMLIB_FPNG_H
+#define FVWMLIB_FPNG_H
 
 /* ---------------------------- included header files ---------------------- */
 

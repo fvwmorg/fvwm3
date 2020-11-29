@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef FLOCALE_CHARSET_H
-#define FLOCALE_CHARSET_H
+#ifndef FVWMLIB_FLOCALE_CHARSET_H
+#define FVWMLIB_FLOCALE_CHARSET_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -64,4 +64,4 @@ FlocaleCharset *FlocaleCharsetGetEUCJPCharset(void);
 Bool FlocaleCharsetIsCharsetXLocale(Display *dpy, char *charset, char *module);
 void FlocaleCharsetPrintXOMInfo(void);
 
-#endif /* FLOCALE_CHARSET_H */
+#endif /* FVWMLIB_FLOCALE_CHARSET_H */

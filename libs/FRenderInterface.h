@@ -1,8 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 2002  Olivier Chapuis */
 
-#ifndef F_RENDER_INTERFACE_H
-#define F_RENDER_INTERFACE_H
+#ifndef FVWMLIB_FRENDER_INTERFACE_H
+#define FVWMLIB_FRENDER_INTERFACE_H
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 

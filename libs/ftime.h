@@ -1,4 +1,8 @@
 /* -*-c-*- */
+
+#ifndef FVWMLIB_FTIME_H
+#define FVWMLIB_FTIME_H
+
 #include "config.h"
 
 #if TIME_WITH_SYS_TIME
@@ -11,3 +15,5 @@
 #  include <time.h>
 # endif
 #endif
+
+#endif /* FVWMLIB_FTIME_H */

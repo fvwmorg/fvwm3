@@ -1,5 +1,5 @@
-#ifndef FVWM_SYS_STAT_H
-#define FVWM_SYS_STAT_H
+#ifndef FVWMLIB_FVWM_SYS_STAT_H
+#define FVWMLIB_FVWM_SYS_STAT_H
 
 #include "config.h"
 #ifdef HAVE_SYS_STAT_H
@@ -96,4 +96,4 @@
 #	define FVWM_S_IFLNK S_IFLNK
 #endif
 
-#endif /* FVWM_SYS_STAT_H */
+#endif /* FVWMLIB_FVWM_SYS_STAT_H */

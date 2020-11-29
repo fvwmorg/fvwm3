@@ -1,5 +1,5 @@
-#ifndef LIB_TARGET_H
-#define LIB_TARGET_H
+#ifndef FVWMLIB_TARGET_H
+#define FVWMLIB_TARGET_H
 
 #include <X11/Xlib.h>
 
@@ -13,4 +13,4 @@ void fvwmlib_get_target_window(
 
 Window fvwmlib_client_window(Display *dpy, Window input);
 
-#endif /* LIB_TARGET_H */
+#endif /* FVWMLIB_TARGET_H */

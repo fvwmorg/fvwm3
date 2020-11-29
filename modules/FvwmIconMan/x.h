@@ -1,6 +1,6 @@
 /* -*-c-*- */
-#ifndef IN_X_H
-#define IN_X_H
+#ifndef FVWMICONMAN_X_H
+#define FVWMICONMAN_X_H
 
 #include <X11/Xlib.h>
 #include "FvwmIconMan.h"
@@ -22,4 +22,4 @@ extern void change_colorset(int color);
 extern void recreate_background(WinManager *man, Contexts i);
 extern void recreate_transparent_bgs(WinManager *man);
 
-#endif /* IN_X_H */
+#endif /* FVWMICONMAN_X_H */

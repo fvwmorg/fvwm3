@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FRAME_H
-#define FRAME_H
+#ifndef FVWM_FRAME_H
+#define FVWM_FRAME_H
 
 /* ---------------------------- included header files ---------------------- */
 #include "fvwm.h"
@@ -74,4 +74,4 @@ void frame_force_setup_window(
 void frame_setup_shape(
 	FvwmWindow *fw, int w, int h, int shape_mode);
 
-#endif /* FRAME_H */
+#endif /* FVWM_FRAME_H */

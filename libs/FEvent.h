@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef FEVENT_H
-#define FEVENT_H
+#ifndef FVWMLIB_FEVENT_H
+#define FVWMLIB_FEVENT_H
 
 /* ---------------------------- included header files ---------------------- */
 #include <X11/Xlib.h>
@@ -227,4 +227,4 @@ Status FGetWMNormalHints(
 #define XGetWMNormalHints(a, b, c, d) use_FGetWMNormalHints
 #endif
 
-#endif /* FEVENT_H */
+#endif /* FVWMLIB_FEVENT_H */
