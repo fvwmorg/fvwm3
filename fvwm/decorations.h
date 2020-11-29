@@ -3,6 +3,8 @@
 #ifndef DECORATIONS_H
 #define DECORATIONS_H
 
+#include "fvwm.h"
+
 /* ---------------------------- included header files ---------------------- */
 
 /* ---------------------------- global definitions ------------------------- */

@@ -4,6 +4,9 @@
 #ifndef _EWMH_
 #define _EWMH_
 
+#include "fvwm.h"
+#include "execcontext.h"
+
 /* Extended window manager hints support */
 
 /* ewmh_conf.c */

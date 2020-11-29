@@ -2,6 +2,8 @@
 
 #ifndef FFT_INTERFACE_H
 #define FFT_INTERFACE_H
+#include "Fft.h"
+#include "Flocale.h"
 
 void FftGetFontHeights(
 	FftFontType *fftf, int *height, int *ascent, int *descent);

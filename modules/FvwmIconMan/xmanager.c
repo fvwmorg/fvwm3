@@ -18,6 +18,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
+#include "libs/FEvent.h"
 #include "FvwmIconMan.h"
 #include "x.h"
 #include "xmanager.h"

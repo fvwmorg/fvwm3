@@ -26,6 +26,7 @@
 #include "libs/gravity.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"
+#include "libs/FEvent.h"
 #include "libs/defaults.h"
 #include "fvwm.h"
 #include "externs.h"

@@ -3,6 +3,8 @@
 #ifndef _UPDATE_
 #define _UPDATE_
 
+#include "fvwm.h"
+
 /* Ipmortant not:  All the flags below must have a positive syntax.  If a flag
  * is set, this indicates that something has to happen with the window. */
 

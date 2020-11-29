@@ -25,6 +25,7 @@
 #include "libs/charmap.h"
 #include "libs/Flocale.h"
 #include "libs/wcontext.h"
+#include "libs/FEvent.h"
 #include "fvwm.h"
 #include "fvwm.h"
 #include "externs.h"

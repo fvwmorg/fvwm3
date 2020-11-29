@@ -43,6 +43,7 @@
 #include "libs/Graphics.h"
 #include "fvwm/fvwm.h"
 #include "libs/PictureGraphics.h"
+#include "libs/FEvent.h"
 #include "FvwmPager.h"
 
 

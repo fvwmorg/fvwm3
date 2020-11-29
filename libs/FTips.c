@@ -32,6 +32,7 @@
 #include "Flocale.h"
 #include "Graphics.h"
 #include "Colorset.h"
+#include "FEvent.h"
 #include "libs/FScreen.h"
 #include "FTips.h"
 

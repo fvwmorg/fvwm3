@@ -4,6 +4,7 @@
 #define MENUDIM_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "libs/defaults.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

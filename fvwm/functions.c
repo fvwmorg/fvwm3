@@ -31,6 +31,7 @@
 #include "libs/Grab.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
+#include "libs/FEvent.h"
 #include "libs/Event.h"
 #include "fvwm.h"
 #include "externs.h"

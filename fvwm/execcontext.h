@@ -4,6 +4,7 @@
 #define EXECCONTEXT_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "fvwm.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

@@ -3,6 +3,9 @@
 #ifndef Picture_Utils_H
 #define Picture_Utils_H
 
+#include <X11/Xlib.h>
+#include "PictureBase.h"
+
 #define PICTURE_CALLED_BY_FVWM   0
 #define PICTURE_CALLED_BY_MODULE 1
 

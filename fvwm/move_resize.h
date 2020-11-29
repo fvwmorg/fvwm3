@@ -1,7 +1,10 @@
 /* -*-c-*- */
 
-#ifndef _MOVE_RESIZE_
-#define _MOVE_RESIZE_
+#ifndef FVWM_MOVE_RESIZE_H
+#define FVWM_MOVE_RESIZE_H
+
+#include "fvwm.h"
+#include "execcontext.h"
 
 struct MenuRepaintTransparentParameters;
 
@@ -30,4 +33,4 @@ int GetMoveArguments(FvwmWindow *fw,
 	char **paction, int w, int h, int *pFinalX, int *pFinalY,
 	Bool *fWarp, Bool *fPointer, Bool fKeep);
 
-#endif /* _MOVE_RESIZE_ */
+#endif /* FVWM_MOVE_RESIZE_H */

@@ -24,6 +24,7 @@
 #include "FRenderInit.h"
 #include "Graphics.h"
 #include "PictureBase.h"
+#include "Colorset.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

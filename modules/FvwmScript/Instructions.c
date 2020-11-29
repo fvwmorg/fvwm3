@@ -19,6 +19,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/ftime.h"
 #include "libs/FGettext.h"
+#include "libs/FEvent.h"
 #include "libs/Bindings.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"

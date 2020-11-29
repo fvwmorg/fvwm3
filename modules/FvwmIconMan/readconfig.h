@@ -2,6 +2,8 @@
 #ifndef IN_READCONFIG_H
 #define IN_READCONFIG_H
 
+#include "FvwmIconMan.h"
+
 #define MODS_USED ((ALL_MODIFIERS) & ~(LockMask))
 
 typedef enum

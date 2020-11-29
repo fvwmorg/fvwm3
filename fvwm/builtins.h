@@ -9,6 +9,9 @@
 #include <bson/bson.h>
 #endif
 
+#include "fvwm.h"
+#include "screen.h"
+
 void refresh_window(Window w, Bool window_update);
 void ApplyDefaultFontAndColors(void);
 void InitFvwmDecor(FvwmDecor *decor);

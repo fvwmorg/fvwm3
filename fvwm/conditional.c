@@ -24,6 +24,7 @@
 #include "libs/Parse.h"
 #include "libs/wild.h"
 #include "libs/charmap.h"
+#include "libs/FEvent.h"
 #include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"

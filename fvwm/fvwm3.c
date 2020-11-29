@@ -40,6 +40,7 @@
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
 #include "libs/FShape.h"
+#include "libs/FEvent.h"
 #include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
 #include "libs/Fsvg.h"

@@ -34,6 +34,7 @@
 #include "libs/Graphics.h"
 #include "libs/PictureGraphics.h"
 #include "libs/charmap.h"
+#include "libs/FEvent.h"
 #include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"

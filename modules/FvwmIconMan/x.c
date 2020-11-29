@@ -24,6 +24,7 @@
 #include "libs/PictureUtils.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
+#include "libs/FEvent.h"
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
 #include "libs/XError.h"

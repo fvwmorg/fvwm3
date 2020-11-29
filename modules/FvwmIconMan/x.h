@@ -2,6 +2,9 @@
 #ifndef IN_X_H
 #define IN_X_H
 
+#include <X11/Xlib.h>
+#include "FvwmIconMan.h"
+
 extern Display *theDisplay;
 extern Window theRoot;
 extern int theScreen;

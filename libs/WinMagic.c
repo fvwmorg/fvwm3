@@ -23,8 +23,10 @@
 #include "config.h"
 
 #include <X11/Xlib.h>
-#include <fvwmlib.h>
 #include <stdio.h>
+
+#include "fvwmlib.h"
+#include "FEvent.h"
 #include "WinMagic.h"
 
 /* Continuously moves and resized window win from start geometry (s_?) to end

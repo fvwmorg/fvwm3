@@ -1,4 +1,8 @@
 /* -*-c-*- */
+
+#ifndef FVWMSCRIPT_WIDGETS_TOOLS_H
+#define FVWMSCRIPT_WIDGETS_TOOLS_H
+
 #include "../types.h"
 #if HAVE_SYS_SELECT_H
 #  include <sys/select.h>
@@ -33,7 +37,7 @@ extern FlocaleWinString *FwinString;
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
 /* helper functions */
-/* get byte offset corresponding to character offset, including 
+/* get byte offset corresponding to character offset, including
    bounds check to represent end of text */
 int getByteOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset);
 /* opposite of the above, return character offset */
@@ -83,3 +87,5 @@ int PtInRect(XPoint pt,XRectangle rect);
 void Wait(int t);
 
 int IsItDoubleClic(struct XObj *xobj);
+
+#endif /* FVWMSCRIPT_WIDGETS_TOOLS_H */

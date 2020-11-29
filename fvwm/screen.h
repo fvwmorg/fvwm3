@@ -33,11 +33,16 @@
 
 #include "config.h"
 
-#include "fvwm/update.h"
-#include "fvwm/style.h"
+#include <X11/Intrinsic.h>
+
+#include "update.h"
+#include "style.h"
+#include "fvwm.h"
+#include "misc.h"
 
 #include "libs/flist.h"
 #include "libs/Bindings.h"
+#include "libs/PictureBase.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3

@@ -33,6 +33,7 @@
 #include "libs/Graphics.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"
+#include "libs/FEvent.h"
 #include "libs/Rectangles.c"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"

@@ -42,6 +42,7 @@
 #include "config.h"
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
+#include "libs/FEvent.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -54,7 +55,7 @@
 #include <X11/keysymdef.h>
 #include <X11/Xatom.h>                  /* for XA_CUT_BUFFER0 */
 
-#include <FvwmForm.h>
+#include "FvwmForm.h"
 
 static void process_regular_char_input(unsigned char *buf);
 static int process_tabtypes(unsigned char * buf);

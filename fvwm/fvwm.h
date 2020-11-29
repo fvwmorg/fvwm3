@@ -81,9 +81,6 @@
 
 /* ---------------------------- forward declarations ----------------------- */
 
-struct size_borders;
-struct exec_context_t;
-
 /* definition in screen.h */
 struct FvwmDecor;
 

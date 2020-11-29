@@ -4,6 +4,7 @@
 #define GRAVITY_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "fvwmrect.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

@@ -1,7 +1,12 @@
 /* -*-c-*- */
+
+#ifndef FVWMPAGER_H
+#define FVWMPAGER_H
+
 #include "libs/Picture.h"
 #include "libs/vpacket.h"
 #include "libs/Flocale.h"
+#include "libs/Module.h"
 
 struct fpmonitor {
 	char		*name;
@@ -230,3 +235,5 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(int i);
 void HandleScrollDone(void);
+
+#endif /* FVWMPAGER_H */

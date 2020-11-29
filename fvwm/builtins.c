@@ -41,6 +41,7 @@
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "libs/Flocale.h"
+#include "libs/FEvent.h"
 #include "libs/Ficonv.h"
 #include "fvwm.h"
 #include "externs.h"

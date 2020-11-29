@@ -2,6 +2,7 @@
 
 #ifndef _REPEAT_
 #define _REPEAT_
+#include "functions.h"
 
 typedef enum
 {

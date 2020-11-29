@@ -18,6 +18,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
+#include "libs/FEvent.h"
 #include "Tools.h"
 
 /* left, center and right offsets for title 0 (not very useful here) */

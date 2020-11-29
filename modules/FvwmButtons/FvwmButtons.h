@@ -7,6 +7,9 @@
  * by Robert Nation
  */
 
+#ifndef FVWMBUTTONS_H
+#define FVWMBUTTONS_H
+
 /* -------------------------------- DEBUG ---------------------------------- */
 
 /* Uncomment some of these defines to get (lots of) debug output. If you can't
@@ -266,3 +269,5 @@ extern char windowname[128];
 
 /* ---------------------------------- misc --------------------------------- */
 
+
+#endif /* FVWMBUTTONS_H */

@@ -19,6 +19,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
+#include "libs/FEvent.h"
 #include "Tools.h"
 
 /*

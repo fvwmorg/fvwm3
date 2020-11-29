@@ -4,6 +4,8 @@
 #define FRAME_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "fvwm.h"
+#include "screen.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

@@ -16,13 +16,14 @@
 /* ---------------------------- included header files ---------------------- */
 
 #define FEVENT_C
-#define FEVENT_PRIVILEGED_ACCESS
+
 #include "config.h"
-#include "libs/fvwmlib.h"
+
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+
+#include "libs/fvwmlib.h"
 #include "FEvent.h"
-#undef FEVENT_C
-#undef FEVENT_PRIVILEGED_ACCESS
 
 #include <stdio.h>
 #include <assert.h>
@@ -34,6 +35,7 @@
 #endif
 #endif
 
+#include "libs/FEvent.h"
 #include "libs/ftime.h"
 
 /* ---------------------------- local definitions -------------------------- */

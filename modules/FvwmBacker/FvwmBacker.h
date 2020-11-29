@@ -13,6 +13,10 @@
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
 
+#ifndef FVWMBACKER_H
+#define FVWMBACKER_H
+
+#include "config.h"
 #include "libs/fvwmlib.h"
 
 /* Function Prototypes */
@@ -24,3 +28,5 @@ RETSIGTYPE DeadPipe(int nonsense);
 void ParseConfig(void);
 int ParseConfigLine(char *line);
 void AddCommand(char *line);
+
+#endif /* FVWMBACKER_H */

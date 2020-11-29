@@ -43,6 +43,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Rectangles.h"
 #include "libs/FShape.h"	/* FShapesSupported */
+#include "libs/FEvent.h"
 #include "libs/Graphics.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */

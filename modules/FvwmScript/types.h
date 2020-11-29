@@ -1,4 +1,8 @@
 /* -*-c-*- */
+
+#ifndef FVWMSCRIPT_TYPES_H
+#define FVWMSCRIPT_TYPES_H
+
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
@@ -232,3 +236,5 @@ void UnselectAllTextField(struct XObj **xobj);
 void Quit (int NbArg,long *TabArg) __attribute__((noreturn));
 
 void SendMsgToScript(XEvent event);
+
+#endif /* FVWMSCRIPT_TYPES_H */

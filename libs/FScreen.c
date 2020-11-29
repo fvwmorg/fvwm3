@@ -27,6 +27,7 @@
 #include "Parse.h"
 #include "PictureBase.h"
 #include "FScreen.h"
+#include "FEvent.h"
 
 #ifdef HAVE_XRANDR
 #	define IS_RANDR_ENABLED 1

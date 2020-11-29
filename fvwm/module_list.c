@@ -48,6 +48,7 @@
 #include "libs/Strings.h"
 #include "libs/wild.h"
 #include "libs/fvwmsignal.h"
+#include "libs/FEvent.h"
 #include "events.h"
 #include "bindings.h"
 

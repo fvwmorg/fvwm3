@@ -48,6 +48,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/FEvent.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
 #include "libs/fvwmsignal.h"

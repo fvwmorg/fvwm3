@@ -47,6 +47,7 @@
 #include "libs/Strings.h"
 #include "libs/System.h"
 #include "libs/XError.h"
+#include "libs/FEvent.h"
 
 #include "libs/Flocale.h"               /* for font definition stuff */
 #include "libs/PictureBase.h"		 /* for PictureInitCMap */

@@ -1,4 +1,9 @@
 /* -*-c-*- */
+
+#ifndef FVWMIDENT_H
+#define FVWMIDENT_H
+
+#include <X11/Xlib.h>
 #include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
@@ -66,3 +71,6 @@ void list_property_change(unsigned long *body);
 void list_end(void);
 
 static int ErrorHandler(Display *d, XErrorEvent *event);
+
+
+#endif /* FVWMIDENT_H */

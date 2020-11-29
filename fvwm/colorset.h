@@ -4,6 +4,7 @@
 #define COLORSET_H
 
 /* ---------------------------- included header files ---------------------- */
+#include <X11/X.h>
 
 /* ---------------------------- global definitions ------------------------- */
 

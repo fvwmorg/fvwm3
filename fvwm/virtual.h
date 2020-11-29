@@ -4,7 +4,7 @@
 #define _VIRTUAL_
 
 #include <stdbool.h>
-#include "libs/FScreen.h"
+#include "fvwm.h"
 
 void calculate_page_sizes(struct monitor *, int, int);
 int HandlePaging(

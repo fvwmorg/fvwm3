@@ -17,8 +17,10 @@
 
 #include "Tools.h"
 
+#include "libs/FEvent.h"
+
 /* helper functions */
-/* get byte offset corresponding to character offset, including 
+/* get byte offset corresponding to character offset, including
    bounds check to represent end of text */
 int getByteOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset)
 {
