@@ -36,9 +36,13 @@ jobs:
                 issues: true
                 issuesWoLabels: false
                 pullRequests: true
-                prWoLabels: false
+                prWoLabels: true
                 author: true
                 unreleased: true
+                stripGeneratorNotice: true
+                verbose: true
+                compareLink: true
+                httpCache: true
           - name: Commit CHANGELOG
             if: github.ref == 'refs/heads/master'
             uses: stefanzweifel/git-auto-commit-action@v4
