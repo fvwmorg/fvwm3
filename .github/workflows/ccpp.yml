@@ -43,6 +43,7 @@ jobs:
                 verbose: true
                 compareLink: true
                 httpCache: true
+                filterByMilestone: true
           - name: Commit CHANGELOG
             if: github.ref == 'refs/heads/master'
             uses: stefanzweifel/git-auto-commit-action@v4
