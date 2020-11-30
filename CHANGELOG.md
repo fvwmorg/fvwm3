@@ -48,15 +48,15 @@
 
 **Fixed bugs:**
 
+- compilation fails on openbsd-current due to safemalloc.h \(va\_list\) [\#231](https://github.com/fvwmorg/fvwm3/issues/231)
+- \_NET\_WM\_STATE was not updated for maximized windows [\#203](https://github.com/fvwmorg/fvwm3/issues/203)
 - EwmhBaseStruts calculations don't use monitor's [\#241](https://github.com/fvwmorg/fvwm3/issues/241)
 - DesktopConfiguration global inherits behaviour from per-monitor mode [\#236](https://github.com/fvwmorg/fvwm3/issues/236)
-- compilation fails on openbsd-current due to safemalloc.h \(va\_list\) [\#231](https://github.com/fvwmorg/fvwm3/issues/231)
 - FvwmEvent:  missing `monitor\_focus` event [\#228](https://github.com/fvwmorg/fvwm3/issues/228)
 - perllib: doesn't understand MX\_MONITOR\_\* events [\#226](https://github.com/fvwmorg/fvwm3/issues/226)
 - FvwmButtons subpanels not popped out on primary monitor when desk is \> 0 [\#224](https://github.com/fvwmorg/fvwm3/issues/224)
 - PositionPlacement Center: fix to use current screen [\#211](https://github.com/fvwmorg/fvwm3/issues/211)
 - EwmhBaseStruts missing screen info from manpage [\#208](https://github.com/fvwmorg/fvwm3/issues/208)
-- \_NET\_WM\_STATE was not updated for maximized windows [\#203](https://github.com/fvwmorg/fvwm3/issues/203)
 - "version of go" misinterpreted by configure script? [\#202](https://github.com/fvwmorg/fvwm3/issues/202)
 - Unable to build 1.0, bson.h not found \[FreeBSD 12.1\] [\#200](https://github.com/fvwmorg/fvwm3/issues/200)
 - EwmhBaseStrut: fix calculations for per-monitor [\#242](https://github.com/fvwmorg/fvwm3/pull/242) ([ThomasAdam](https://github.com/ThomasAdam))
