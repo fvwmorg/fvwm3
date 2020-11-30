@@ -289,9 +289,17 @@ if unset UNSET 2>/dev/null; then UNSET=unset; fi
 # ********* multibyte
 # FreeBSD has libxpg4, check this and use if found.
 AC_CANONICAL_HOST
-case $host_os in
+AC_MSG_CHECKING(platform)
+case "$host_os" in
 freebsd*)
-	AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"]);;
+	AC_MSG_RESULT(FreeBSD)
+	AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"])
+	;;
+*openbsd*)
+	AC_MSG_RESULT(OpenBSD)
+	CFLAGS="$CFLAGS -I/usr/local/include"
+	LDFLAGS="$LDFLAGS -L/usr/local/lib"
+	;;
 *)
 	;;
 esac
@@ -470,7 +478,7 @@ AH_TEMPLATE([HAVE_LIBEVENT],[Define if libevent is used.])
 PKG_CHECK_MODULES([libevent], [libevent >= 2.0],
 [
 	 AC_DEFINE(HAVE_LIBEVENT)
-	libevent_LIBS=-levent
+	libevent_LIBS=`pkg-config --libs libevent`
 ],
 [
 	 AC_MSG_ERROR([*** libevent >=2 not found.  Install its header files. ***])
