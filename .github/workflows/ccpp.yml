@@ -24,12 +24,12 @@ jobs:
       needs: build
       steps:
           - name: Checkout code
-            if: github.event.pull_request.merged == 'true'
+            if: github.ref == 'refs/heads/master'
             uses: actions/checkout@v2
             with:
                 ref: master
           - name: Update CHANGELOG
-            if: github.event.pull_request.merged == 'true'
+            if: github.ref == 'refs/heads/master'
             uses: heinrichreimer/github-changelog-generator-action@v2.1.1
             with:
                 token: ${{ secrets.GITHUB_TOKEN }}
@@ -40,7 +40,7 @@ jobs:
                 author: true
                 unreleased: true
           - name: Commit CHANGELOG
-            if: github.event.pull_request.merged == 'true'
+            if: github.ref == 'refs/heads/master'
             uses: stefanzweifel/git-auto-commit-action@v4
             with:
                 commit_user_name: Fvwm Automation
