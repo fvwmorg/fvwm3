@@ -738,6 +738,7 @@ int HandlePaging(
 			y = 0;
 		}
 
+#if 0
 		/* check actual pointer location since PanFrames can get buried
 		 * under window being moved or resized - mab */
 		if (x >= edge_thickness &&
@@ -751,6 +752,7 @@ int HandlePaging(
 			add_time = 0;
 			return 0;
 		}
+#endif
 		if (!fLoop && is_last_position_valid &&
 		    (x - last_x > MAX_PAGING_MOVE_DISTANCE ||
 		     x - last_x < -MAX_PAGING_MOVE_DISTANCE ||
