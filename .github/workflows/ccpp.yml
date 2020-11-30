@@ -1,10 +1,14 @@
 name: FVWM3 CI
 
-on: [ push, pull_request, create ]
-
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+        branches:
+            - master
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -13,6 +17,37 @@ jobs:
       run: docker pull fvwmorg/fvwm3-build:latest
     - name: Build Package
       run: 'docker build -t fvwm3 .'
+
+  changelog:
+      name: Update Changelog
+      runs-on: ubuntu-20.04
+      needs: build
+      steps:
+          - name: Checkout code
+            if: github.event.pull_request.merged == 'true'
+            uses: actions/checkout@v2
+            with:
+                ref: master
+          - name: Update CHANGELOG
+            if: github.event.pull_request.merged == 'true'
+            uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+            with:
+                token: ${{ secrets.GITHUB_TOKEN }}
+                issues: true
+                issuesWoLabels: false
+                pullRequests: true
+                prWoLabels: false
+                author: true
+                unreleased: true
+          - name: Commit CHANGELOG
+            if: github.event.pull_request.merged == 'true'
+            uses: stefanzweifel/git-auto-commit-action@v4
+            with:
+                commit_user_name: Fvwm Automation
+                commit_user_email: fvwm-automation@example.org
+                commit_author: Fvwm Automation <fvwm-automation@example.org>
+                commit_message: '[AUTO]: update CHANGELOG'
+                file_pattern: CHANGELOG.md
 
   notification:
     runs-on: ubuntu-20.04
