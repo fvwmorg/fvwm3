@@ -29,7 +29,7 @@
 #include <errno.h>
 #include <stdbool.h>
 
-#if defined(__FreeBSD__)
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__sun__)
 #include <libbson-1.0/bson.h>
 #else
 #include <bson/bson.h>
