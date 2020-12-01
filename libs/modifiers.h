@@ -5,6 +5,7 @@
 
 /* ---------------------------- included header files ---------------------- */
 #include "charmap.h"
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
