@@ -1,8 +1,6 @@
 #ifndef FVWMLIB_GRAPHICS_H
 #define FVWMLIB_GRAPHICS_H
-
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
+#include "fvwm_x11.h"
 
 void do_relieve_rectangle(
 	Display *dpy, Drawable d, int x, int y, int w, int h,

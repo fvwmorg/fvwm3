@@ -38,14 +38,8 @@
 
 #include <unistd.h>
 #include <ctype.h>
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
-#include <X11/cursorfont.h>
-#include <X11/keysym.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/FEvent.h"

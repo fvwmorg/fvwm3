@@ -24,8 +24,7 @@
 #ifndef FVWMBUTTONS_MISC_H
 #define FVWMBUTTONS_MISC_H
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include "libs/fvwm_x11.h"
 
 void ConstrainSize(XSizeHints *hints, int *widthp, int *heightp);
 

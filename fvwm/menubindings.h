@@ -2,7 +2,7 @@
 
 #ifndef FVWM_MENU_BINDINGS_H
 #define FVWM_MENU_BINDINGS_H
-#include <X11/Xlib.h>
+
 #include "libs/Bindings.h"
 
 /* ---------------------------- included header files ---------------------- */

@@ -18,8 +18,8 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <X11/keysym.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/Parse.h"
 #include "libs/Bindings.h"
 #include "libs/charmap.h"

@@ -1,7 +1,7 @@
 #ifndef FVWMLIB_TARGET_H
 #define FVWMLIB_TARGET_H
 
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 
 void fvwmlib_keyboard_shortcuts(
 	Display *dpy, int screen, XEvent *Event, int x_move_size,

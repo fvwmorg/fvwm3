@@ -4,26 +4,7 @@
 #define FVWMLIB_PICTURE_BASE_H
 
 #include "config.h"
-
-#include <X11/Intrinsic.h>
-
-#ifdef HAVE_XRENDER
-#define XRenderSupport 1
-#else
-#define XRenderSupport 0
-#endif
-
-#ifdef XPM
-#define XpmSupport 1
-#else
-#define XpmSupport 0
-#endif
-
-#ifdef HAVE_PNG
-#define PngSupport 1
-#else
-#define PngSupport 0
-#endif
+#include "fvwm_x11.h"
 
 extern Bool Pdefault;
 extern Visual *Pvisual;

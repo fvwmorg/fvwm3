@@ -5,10 +5,7 @@
 #define FVWMLIB_FXPM_H
 
 #include "PictureBase.h"
-
-#if XpmSupport
-#include <X11/xpm.h>
-#endif
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

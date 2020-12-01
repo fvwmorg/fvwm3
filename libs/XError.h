@@ -1,6 +1,6 @@
 #ifndef FVWMLIB_XERROR_H
 #define FVWMLIB_XERROR_H
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 
 void do_coredump(void);
 

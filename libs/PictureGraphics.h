@@ -3,8 +3,8 @@
 
 #ifndef FVWMLIB_PICTURE_GRAPHICS_H
 #define FVWMLIB_PICTURE_GRAPHICS_H
-#include <X11/Xlib.h>
-#include "libs/PictureBase.h"
+#include "fvwm_x11.h"
+#include "PictureBase.h"
 
 /*
  * <generalArgs>

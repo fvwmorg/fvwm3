@@ -33,10 +33,7 @@
 
 /* ---------------------------- included header files ---------------------- */
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/cursorfont.h>
-#include <X11/Intrinsic.h>
+#include "libs/fvwm_x11.h"
 #include "libs/PictureBase.h"
 #include "libs/Fft.h"
 #include "libs/FRender.h"

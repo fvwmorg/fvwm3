@@ -5,7 +5,7 @@
 #define FVWMLIB_FVWMRECT_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/Xutil.h>
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

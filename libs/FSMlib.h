@@ -5,17 +5,7 @@
 
 /* ---------------------------- included header files ---------------------- */
 #include "config.h"
-
-#ifdef SESSION
-#define SessionSupport 1
-#else
-#define SessionSupport 0
-#endif
-
-#if SessionSupport
-#include <X11/SM/SMlib.h>
-#include <X11/ICE/ICEutil.h>
-#endif
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

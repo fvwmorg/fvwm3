@@ -10,7 +10,7 @@
 #define FVWMLIB_COMBINECHARS_H
 
 #include "config.h"
-#include <X11/Xutil.h>
+#include "fvwm_x11.h"
 
 typedef struct
 {

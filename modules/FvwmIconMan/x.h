@@ -2,7 +2,6 @@
 #ifndef FVWMICONMAN_X_H
 #define FVWMICONMAN_X_H
 
-#include <X11/Xlib.h>
 #include "FvwmIconMan.h"
 
 extern Display *theDisplay;

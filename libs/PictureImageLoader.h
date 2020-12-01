@@ -6,9 +6,7 @@
 
 /* ---------------------------- included header files ---------------------- */
 
-#include <X11/Xlib.h>
-#include <X11/Xmd.h>
-#include <X11/Intrinsic.h>
+#include "fvwm_x11.h"
 #include "PictureBase.h"
 
 /* ---------------------------- global macros ------------------------------ */

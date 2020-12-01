@@ -29,9 +29,7 @@
 #include <sys/systeminfo.h>
 #endif
 
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-
+#include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/envvar.h"
 #include "libs/Strings.h"

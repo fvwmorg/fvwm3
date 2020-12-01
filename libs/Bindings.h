@@ -3,7 +3,7 @@
 #ifndef FVWMLIB_BINDINGS_H_H
 #define FVWMLIB_BINDINGS_H_H
 
-#include <X11/Xutil.h>	/* XClassHint */
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

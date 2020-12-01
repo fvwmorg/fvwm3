@@ -402,7 +402,7 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n",
 	{
 		int newWidth = fw->icon_g.picture_w_g.width;
 		int newHeight = fw->icon_g.picture_w_g.height;
-		Boolean resize = False;
+		Bool resize = False;
 
 		if (newWidth < fw->min_icon_width)
 		{

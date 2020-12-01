@@ -33,12 +33,6 @@
 #include <unistd.h>
 #include <signal.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
-
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif

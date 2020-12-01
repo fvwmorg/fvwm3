@@ -1,7 +1,6 @@
 #ifndef FVWMLIB_XRESOURCE_H
 #define FVWMLIB_XRESOURCE_H
-#include <X11/Xlib.h>
-#include <X11/Xresource.h>
+#include "fvwm_x11.h"
 
 /*
  * Wrappers around Xrm routines (XResources.c)

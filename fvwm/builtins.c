@@ -23,8 +23,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
-#include <X11/keysym.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 #include "libs/setpgrp.h"
@@ -271,7 +271,7 @@ static void obsolete_imagepaths( const char* pre_path )
  *
  */
 static char *ReadTitleButton(
-	char *s, TitleButton *tb, Boolean append, int button)
+	char *s, TitleButton *tb, Bool append, int button)
 {
 	char *end = NULL;
 	char *spec;

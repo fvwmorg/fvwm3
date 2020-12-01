@@ -4,7 +4,7 @@
 #define FVWM_MENU_PARAMETERS_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/Xlib.h>
+#include "libs/fvwm_x11.h"
 #include "execcontext.h"
 
 /* ---------------------------- forward declarations ----------------------- */

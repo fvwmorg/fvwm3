@@ -2,7 +2,8 @@
 
 #ifndef FVWM_ICCCM2_H
 #define FVWM_ICCCM2_H
-#include <X11/Xlib.h>
+
+#include "libs/fvwm_x11.h"
 
 extern void SetupICCCM2(Bool replace_wm);
 extern void CloseICCCM2(void);

@@ -19,7 +19,6 @@
 
 #include <stdio.h>
 
-#include <X11/keysym.h>
 #include "libs/fvwmlib.h"
 #include "libs/FGettext.h"
 #include "libs/Grab.h"

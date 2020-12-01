@@ -19,8 +19,8 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-#include <X11/Xatom.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"

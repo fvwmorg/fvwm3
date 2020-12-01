@@ -14,16 +14,7 @@
 
 #include "config.h"
 
-/* no compat to avoid problems in the future */
-#define _XFT_NO_COMPAT_ 1
-
-#ifdef HAVE_XFT
-#define Picture XRenderPicture
-#include <X11/Xft/Xft.h>
-#include <fontconfig/fontconfig.h>
-#undef Picture
-#endif
-
+#include "fvwm_x11.h"
 #include "FRender.h"
 
 /* ---------------------------- global definitions ------------------------- */

@@ -6,18 +6,7 @@
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
-
-#ifdef HAVE_XSHM
-#define XShmSupport 1
-#else
-#define XShmSupport 0
-#endif
-
-#if XShmSupport
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <X11/extensions/XShm.h>
-#endif
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

@@ -1,7 +1,7 @@
 #ifndef FVWMLIB_EVENT_H
 #define FVWMLIB_EVENT_H
 
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 
 /*
  * Return the subwindow member of an event if the event type has one.

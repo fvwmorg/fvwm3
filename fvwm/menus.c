@@ -22,7 +22,6 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <X11/keysym.h>
 
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"

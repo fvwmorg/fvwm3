@@ -3,7 +3,6 @@
 #ifndef FVWM_MISC_H
 #define FVWM_MISC_H
 
-#include <X11/Xlib.h>
 #include "fvwm.h"
 
 /* ---------------------------- included header files ---------------------- */

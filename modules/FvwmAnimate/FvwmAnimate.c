@@ -44,7 +44,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <X11/Xlib.h>
 #include <math.h>
 #include <unistd.h>
 #include <ctype.h>
