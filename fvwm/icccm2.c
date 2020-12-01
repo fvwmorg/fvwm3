@@ -51,7 +51,7 @@ SetupICCCM2(Bool replace_wm)
 	XSetWindowAttributes attr;
 	XEvent xev;
 	XClientMessageEvent ev;
-	char wm_sx[20];
+	char wm_sx[25];
 
 	sprintf(wm_sx, "WM_S%lu", Scr.screen);
 	_XA_WM_SX =     XInternAtom(dpy, wm_sx, False);

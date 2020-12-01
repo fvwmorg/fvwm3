@@ -248,7 +248,7 @@ int atopixel(char *s, unsigned long f)
 void move_resize_raise_window(
 	window_item *wi, int x, int y, int w, int h)
 {
-	static char msg[64];
+	static char msg[78];
 	const char *ewmhiwa = do_ewmhiwa ?
 		"ewmhiwa" : "";
 
