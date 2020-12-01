@@ -109,8 +109,8 @@ static int ListSize=0;
 
 static struct Item* itemlistRoot = NULL;
 static int max_col1, max_col2;
-static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
-static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
+static char id[15], desktop[21], swidth[12], sheight[12], borderw[21];
+static char geometry[30], mymin_aspect[24], max_aspect[24], layer[21];
 static char ewmh_init_state[512];
 
 /* FIXME: default layer should be received from fvwm */
@@ -1106,8 +1106,8 @@ void AddToList(char *s1, char* s2)
 void MakeList(void)
 {
 	int bw,width,height,x1,y1,x2,y2;
-	char loc[20];
-	static char xstr[6],ystr[6];
+	char loc[24];
+	static char xstr[21],ystr[21];
 	/* GSFR - quick hack because the new macros depend on a prt reference
 	 */
 	struct target_struct  *targ  =  &target;
