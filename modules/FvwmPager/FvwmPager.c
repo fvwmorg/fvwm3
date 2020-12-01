@@ -31,13 +31,6 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-#include <X11/Intrinsic.h>
-#include <X11/keysym.h>
-
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"

@@ -3,7 +3,7 @@
 #ifndef FVWMLIB_PICTURE_UTILS_H
 #define FVWMLIB_PICTURE_UTILS_H
 
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 #include "PictureBase.h"
 
 #define PICTURE_CALLED_BY_FVWM   0

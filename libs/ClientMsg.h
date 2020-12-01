@@ -15,9 +15,7 @@
 #ifndef FVWMLIB_CLIENTMSG_H
 #define FVWMLIB_CLIENTMSG_H
 
-#include <X11/Xlib.h>
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
+#include "fvwm_x11.h"
 
 void send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
 

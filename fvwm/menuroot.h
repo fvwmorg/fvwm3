@@ -4,8 +4,7 @@
 #define FVWM_MENU_ROOT_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
+#include "libs/fvwm_x11.h"
 #include "menudim.h"
 #include "libs/PictureBase.h"
 /* ---------------------------- forward declarations ----------------------- */

@@ -2,7 +2,6 @@
 #ifndef FVWMICONMAN_XMANAGER_H
 #define FVWMICONMAN_XMANAGER_H
 
-#include <X11/Xlib.h>
 #include "FvwmIconMan.h"
 
 #define DEFAULT_BUTTON_WIDTH 200

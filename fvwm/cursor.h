@@ -4,7 +4,7 @@
 #define FVWM_CURSOR_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/Xlib.h>
+#include "libs/fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

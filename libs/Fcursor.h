@@ -1,9 +1,9 @@
 #ifndef FVWMLIB_FCURSOR_H
 #define FVWMLIB_FCURSOR_H
 
-#ifdef HAVE_XCURSOR
-#	include <X11/Xcursor/Xcursor.h>
+#include "fvwm_x11.h"
 
+#ifdef HAVE_XCURSOR
 	typedef XcursorImage			FcursorImage;
 	typedef XcursorImages			FcursorImages;
 	typedef XcursorPixel			FcursorPixel;

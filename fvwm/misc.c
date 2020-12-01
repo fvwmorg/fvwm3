@@ -19,8 +19,8 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <X11/Xatom.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/ftime.h"
 #include "libs/Parse.h"
 #include "libs/Target.h"

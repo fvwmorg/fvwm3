@@ -47,13 +47,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include <X11/Xlib.h>
-#include <X11/X.h>
-#include <X11/Xutil.h>
-#include <X11/cursorfont.h>
-#define XK_MISCELLANY
-#include <X11/keysymdef.h>
-#include <X11/Xatom.h>                  /* for XA_CUT_BUFFER0 */
+// #define XK_MISCELLANY
 
 #include "FvwmForm.h"
 

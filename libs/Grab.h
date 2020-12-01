@@ -7,7 +7,7 @@
 #ifndef FVWMLIB_GRAB_H
 #define FVWMLIB_GRAB_H
 
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 
 void MyXGrabServer(Display *disp);
 void MyXUngrabServer(Display *disp);

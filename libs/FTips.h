@@ -5,8 +5,7 @@
 #define FVWMLIB_FTIPS_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
+#include "fvwm_x11.h"
 #include "Flocale.h"
 
 /* ---------------------------- global definitions ------------------------- */

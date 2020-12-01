@@ -66,7 +66,6 @@
 #define FVWMLIB_FBIDI_H
 
 #include "config.h"
-#include <X11/Xlib.h>
 #include "CombineChars.h"
 
 #if HAVE_BIDI

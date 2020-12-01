@@ -19,8 +19,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <X11/keysym.h>
-
+#include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
 #include "libs/ColorUtils.h"
@@ -151,7 +150,7 @@ static void menustyle_copy_face(MenuFace *destmf, MenuFace *origmf)
  * Reads a menu face line into a structure (veliaa@rpi.edu)
  *
  */
-static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
+static Bool menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 {
 	char *style;
 	char *token;

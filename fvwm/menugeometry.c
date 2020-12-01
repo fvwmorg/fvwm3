@@ -19,7 +19,7 @@
 
 #include <stdio.h>
 
-#include <X11/keysym.h>
+#include "libs/fvwm_x11.h"
 
 #include "fvwm.h"
 #include "externs.h"

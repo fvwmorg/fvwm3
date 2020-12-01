@@ -24,7 +24,6 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle, int on);
 /* Extended window manager hints support */
 
 #include "libs/FScreen.h"
-#include <X11/Xmd.h>
 
 void EWMH_SetCurrentDesktop(struct monitor *);
 void EWMH_SetNumberOfDesktops(struct monitor *);

@@ -1,7 +1,7 @@
 #ifndef FVWMLIB_WINMAGIC
 #define FVWMLIB_WINMAGIC
 
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 
 void SlideWindow(
 	Display *dpy, Window win,

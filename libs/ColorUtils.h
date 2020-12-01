@@ -1,9 +1,7 @@
 #ifndef FVWMLIB_COLORUTILS_H
 #define FVWMLIB_COLORUTILS_H
 
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
-
+#include "fvwm_x11.h"
 /*
  * Stuff for dealing w/ bitmaps & pixmaps:
  */

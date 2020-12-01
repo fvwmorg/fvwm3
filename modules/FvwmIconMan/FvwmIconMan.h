@@ -7,9 +7,6 @@
 
 #include "libs/ftime.h"
 
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
-
 #include "libs/fvwmlib.h"
 #include "libs/Flocale.h"
 #include "libs/Picture.h"
@@ -317,7 +314,7 @@ typedef struct win_manager {
 	char *tips_fontname;
 	char *tips_formatstring;
 	ftips_config *tips_conf;
-	
+
 	/* X11 state */
 	Window theWindow, theFrame;
 	long sizehints_flags;

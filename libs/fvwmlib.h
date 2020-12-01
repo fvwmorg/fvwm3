@@ -3,12 +3,9 @@
 #ifndef FVWMLIB_H
 #define FVWMLIB_H
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xresource.h>
-#include <X11/Intrinsic.h>              /* needed for xpm.h and Pixel defn */
 #include <ctype.h>
 
+#include "fvwm_x11.h"
 #include "fvwmrect.h"
 #include "safemalloc.h"
 

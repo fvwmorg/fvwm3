@@ -14,8 +14,7 @@
  */
 
 #include "config.h"
-
-#include <X11/Xlib.h>
+#include "libs/fvwm_x11.h"
 #include <stdio.h>
 
 extern Display *dpy;

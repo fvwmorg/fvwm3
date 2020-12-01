@@ -54,8 +54,8 @@
 #include <unistd.h>
 #include <assert.h>
 #include <stdbool.h>
-#include <X11/Xatom.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/System.h"

@@ -29,8 +29,7 @@
 #ifndef FVWM_EXTERNS_H
 #define FVWM_EXTERNS_H
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
+#include "libs/fvwm_x11.h"
 
 void Done(int, char *) __attribute__((__noreturn__));
 void set_init_function_name(int n, const char *name);

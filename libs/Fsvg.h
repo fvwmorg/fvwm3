@@ -1,21 +1,22 @@
 #ifndef FVWMLIB_FSVG_H
 #define FVWMLIB_FSVG_H
 
+#include "fvwm_x11.h"
+#include "PictureBase.h"
+
 #ifdef HAVE_RSVG
 #define USE_SVG 1
+#include <librsvg/rsvg.h>
+#include <cairo.h>
 #else
 #define USE_SVG 0
 #endif
-
-#include "PictureBase.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
 #endif
 
 #if USE_SVG
-#	include <librsvg/rsvg.h>
-#	include <cairo.h>
 	typedef RsvgDimensionData		FRsvgDimensionData;
 	typedef RsvgHandle			FRsvgHandle;
 	typedef cairo_surface_t			Fcairo_surface_t;

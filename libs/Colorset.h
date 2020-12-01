@@ -7,8 +7,7 @@
 
 #ifndef FVWMLIB_COLORSETS_H
 #define FVWMLIB_COLORSETS_H
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
+#include "fvwm_x11.h"
 #include "PictureBase.h"
 
 typedef struct Colorset

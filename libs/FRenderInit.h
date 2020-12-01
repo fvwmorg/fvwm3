@@ -6,7 +6,7 @@
 #ifndef FVWMLIB_FRENDER_INIT_H
 #define FVWMLIB_FRENDER_INIT_H
 
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 
 void FRenderInit(Display *dpy);
 int FRenderGetAlphaDepth(void);

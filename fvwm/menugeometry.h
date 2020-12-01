@@ -4,7 +4,7 @@
 #define FVWM_MENU_GEOMETRY_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/Xlib.h>
+#include "libs/fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

@@ -33,8 +33,6 @@
 
 #include "config.h"
 
-#include <X11/Intrinsic.h>
-
 #include "update.h"
 #include "style.h"
 #include "fvwm.h"

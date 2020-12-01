@@ -6,8 +6,8 @@
 ** Module.c: code for modules to communicate with fvwm
 */
 
-#include <X11/X.h>
-#include "libs/fvwmlib.h"
+#include "fvwm_x11.h"
+#include "fvwmlib.h"
 
 /**
  * fvwm sends packets of this type to modules.

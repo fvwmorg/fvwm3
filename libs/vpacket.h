@@ -2,7 +2,7 @@
 
 #ifndef FVWMLIB_VPACKET_H
 #define FVWMLIB_VPACKET_H
-#include <X11/Xlib.h>
+#include "fvwm_x11.h"
 #include "fvwm/fvwm.h"
 
 /*

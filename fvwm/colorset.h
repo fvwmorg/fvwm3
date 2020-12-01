@@ -4,7 +4,7 @@
 #define FVWM_COLORSET_H
 
 /* ---------------------------- included header files ---------------------- */
-#include <X11/X.h>
+#include "libs/fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 

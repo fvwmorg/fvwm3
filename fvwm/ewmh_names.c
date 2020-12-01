@@ -17,9 +17,7 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <X11/Xlib.h>
-#include <X11/Xmd.h>
-
+#include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/Flocale.h"
 #include "libs/FlocaleCharset.h"

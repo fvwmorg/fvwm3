@@ -3,7 +3,7 @@
 #ifndef FVWMBUTTONS_DRAW_H
 #define FVWMBUTTONS_DRAW_H
 
-#include <X11/Xlib.h>
+#include "libs/fvwm_x11.h"
 #include "FvwmButtons.h"
 
 /*

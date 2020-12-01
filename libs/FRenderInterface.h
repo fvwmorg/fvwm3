@@ -3,8 +3,7 @@
 
 #ifndef FVWMLIB_FRENDER_INTERFACE_H
 #define FVWMLIB_FRENDER_INTERFACE_H
-#include <X11/Xlib.h>
-#include <X11/Intrinsic.h>
+#include "fvwm_x11.h"
 
 Bool FRenderTintRectangle(
 	Display *dpy, Window win, Pixmap mask, Pixel tint, int shade_percent,

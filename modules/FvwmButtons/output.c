@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdio.h>
-#include <X11/Intrinsic.h>
 #include "FvwmButtons.h"
 
 /**

@@ -27,8 +27,8 @@
 #endif
 #include <signal.h>
 #include <fcntl.h>
-#include <X11/Xatom.h>
 
+#include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/FSMlib.h"
 #include "libs/Strings.h"

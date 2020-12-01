@@ -23,7 +23,6 @@
 
 #include <stdio.h>
 #include <math.h>
-#include <X11/keysym.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
