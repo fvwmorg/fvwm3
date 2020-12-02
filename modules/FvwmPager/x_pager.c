@@ -631,11 +631,11 @@ void initialize_pager(void)
   if (xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
-    window_x = mon->w - window_w + window_x;
+    window_x = monitor_get_all_widths() - window_w + window_x;
   }
   if (yneg)
   {
-    window_y = mon->h - window_h + window_y;
+    window_y = monitor_get_all_heights() - window_h + window_y;
     if(sizehints.win_gravity == NorthEastGravity)
       sizehints.win_gravity = SouthEastGravity;
     else
