@@ -1401,6 +1401,9 @@ void get_page_offset_check_visible(
 		get_page_offset(ret_page_x, ret_page_y, fw);
 	}
 
+	fprintf(stderr, "%s: MON: %s {page_x: %d, page_y: %d}\n",
+		__func__, fw->m->si->name, *ret_page_x, *ret_page_y);
+
 	return;
 }
 

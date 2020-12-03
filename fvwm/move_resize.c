@@ -4890,12 +4890,10 @@ void CMD_Maximize(F_CMD_ARGS)
 	/* Check if we should constrain rectangle to some Xinerama screen */
 	if (!is_screen_given)
 	{
-		fscreen_scr_arg fscr;
-
-		fscr.xypos.x = fw->g.frame.x + fw->g.frame.width  / 2 - page_x;
-		fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2 - page_y;
-		FScreenGetScrRect(&fscr, FSCREEN_XYPOS,
-				  &scr_x, &scr_y, &scr_w, &scr_h);
+		scr_x = fw->m->si->x;
+		scr_y = fw->m->si->y;
+		scr_w = fw->m->si->w;
+		scr_h = fw->m->si->h;
 	}
 
 	if (!ignore_working_area)
