@@ -582,6 +582,8 @@ FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 		m = monitor_by_name(GLOBAL_SCREEN_NAME);
 		break;
 	case FSCREEN_PRIMARY:
+		m = monitor_by_primary();
+		break;
 	case FSCREEN_CURRENT:
 		/* translate to xypos format */
 		if (!arg)

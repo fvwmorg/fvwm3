@@ -978,8 +978,8 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		bottom = max(bottom, fw->strut.bottom);
 	}
 
-	w = m->si->x > 0 ? m->si->x : 0 + m->si->w;
-	h = m->si->y > 0 ? m->si->y : 0 + m->si->y + m->si->h;
+	w = monitor_get_all_widths();
+	h = monitor_get_all_heights();
 
 	x = left;
 	y = top;
@@ -1037,8 +1037,8 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 		dyn_bottom = max(dyn_bottom, fw->dyn_strut.bottom);
 	}
 
-	w = m->si->x > 0 ? m->si->x : 0 + m->si->w;
-	h = m->si->y > 0 ? m->si->y : 0 + m->si->y + m->si->h;
+	w = monitor_get_all_widths();
+	h = monitor_get_all_heights();
 	x = dyn_left;
 	y = dyn_top;
 	width  = w - (dyn_left + dyn_right);
@@ -1071,7 +1071,7 @@ void EWMH_GetWorkAreaIntersection(
 {
 	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
-	EWMH_UpdateWorkArea(m);
+	//EWMH_UpdateWorkArea(m);
 
 	int nx,ny,nw,nh;
 	int area_x = m->Desktops->ewmh_working_area.x;
@@ -1108,8 +1108,8 @@ void EWMH_GetWorkAreaIntersection(
 	}
 	nx = max(*x, area_x);
 	ny = max(*y, area_y);
-	nw = min(*w, area_w);
-	nh = min(*h, area_h);
+	nw = min(*x + *w, area_x + area_w) - nx;
+	nh = min(*y + *h, area_y + area_h) - ny;
 
 	*x = nx;
 	*y = ny;
