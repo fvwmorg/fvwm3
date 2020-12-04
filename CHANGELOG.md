@@ -13,6 +13,7 @@
 
 **Fixed bugs:**
 
+- FvwmButtons: Title parameter doesn't allow "-" [\#313](https://github.com/fvwmorg/fvwm3/issues/313)
 - FvwmPager: pin new\_desk events to monitor instance for per-monitor mode [\#296](https://github.com/fvwmorg/fvwm3/issues/296)
 - FvwmPager: windows tracked incorrectly when moving between monitors [\#294](https://github.com/fvwmorg/fvwm3/issues/294)
 - bson\_as\_relaxed\_extended\_json\(\) is not available [\#286](https://github.com/fvwmorg/fvwm3/issues/286)
@@ -23,7 +24,6 @@
 - Configuration parsing does not read FvwmPager module config line if prefixed with Test condition. [\#267](https://github.com/fvwmorg/fvwm3/issues/267)
 - FvwmPager and FvwmIconMan do not update after GotoDesk [\#262](https://github.com/fvwmorg/fvwm3/issues/262)
 - status:  fix bson\_t detection [\#257](https://github.com/fvwmorg/fvwm3/issues/257)
-- Maximize on second monitor gives wrong window size [\#250](https://github.com/fvwmorg/fvwm3/issues/250)
 - Man page `fvwm3.1` not built by default [\#246](https://github.com/fvwmorg/fvwm3/issues/246)
 - FvwmPager sometimes ignores styles [\#142](https://github.com/fvwmorg/fvwm3/issues/142)
 - EdgeScroll needs thinking about for per-monitor setup [\#82](https://github.com/fvwmorg/fvwm3/issues/82)
