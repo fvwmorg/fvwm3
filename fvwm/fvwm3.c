@@ -1282,9 +1282,6 @@ static void setVersionInfo(void)
 #ifdef HAVE_READLINE
 	strcat(support_str, " ReadLine,");
 #endif
-#ifdef HAVE_RPLAY
-	strcat(support_str, " RPlay,");
-#endif
 #ifdef XPM
 	strcat(support_str, " XPM,");
 #endif

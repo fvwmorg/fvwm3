@@ -51,23 +51,11 @@ _FvwmEvent_ can be used to bind sound files to events like _FvwmAudio_
 (RiP) did. It can be used for logging event traces to a log file, while
 debugging _fvwm_.
 
-_FvwmEvent_ can also have builtin support for the rplay library.
-(heritage of FvwmAudio)
-
 == INVOCATION
 
 The invocation method was shown in the synopsis section. No command line
 invocation is possible. _FvwmEvent_ must be invoked by the _fvwm_ window
-manager. _FvwmEvent_ accepts a single argument:
-
-[horizontal]
--audio:: Enables FvwmAudio compatibility mode.
-alias:: Makes FvwmEvent use _alias_ as its name. This affects which lines from
-+
-the user's configuration file are used.
-+
-Invoking FvwmEvent as _FvwmAudio_ (either by using an alias or creating
-a symlink) enables FvwmAudio compatibility mode.
+manager.
 
 == CONFIGURATION OPTIONS
 
@@ -81,9 +69,6 @@ configuration options:
   below):
 +
 ....
-	# play sounds
-	*FvwmEvent: Cmd builtin-rplay
-
 	# execute distinct fvwm functions
 	*FvwmEvent: Cmd
 
@@ -91,27 +76,7 @@ configuration options:
 	*FvwmEvent: Cmd exec
 ....
 +
-This version of _FvwmEvent_ has builtin _rplay_ support which does not
-need to invoke an external audio player to play sounds. The rplay
-support is enabled when _FvwmEvent_ is compiled with _HAVE_RPLAY_
-defined and when _FvwmEvent: Cmd_ is set to _builtin-rplay_. See remarks
-below if _FvwmEvent_ is invoked in FvwmAudio compatibility mode.
-+
-For example:
-+
-....
-	*FvwmEvent: Cmd builtin-rplay
-	*FvwmEvent: add_window drip.au
-....
-+
-rplay can be obtained via anonymous ftp at
-+
-....
-	<URL:ftp://ftp.sdsu.edu/pub/rplay> or
-	<URL:ftp://ftp.x.org/contrib/Event/audio/rplay>
-....
-+
-_FvwmEvent_ also has support for any other external program. e.g: the
+_FvwmEvent_ has support for any other external program. e.g: the
 rsynth 'say' command:
 +
 ....
@@ -147,62 +112,56 @@ setting
 *FvwmEvent: window-manager-event action-or-filename::
   Binds particular actions to window manager events.
 +
-e.g. for audio-events:
+The following events are valid:
 +
-....
-	*FvwmEvent: startup TaDa.au
-	*FvwmEvent: shutdown Elvis_Left.au
-	*FvwmEvent: unknown doh.au
+[cols="<,<",]
+|===
+|_Event_ 		|_Description_
+|add_window 		| Occurs when a new window is mapped and visible
+|config_info 		| Occurs when a module asks for configuration
+|configure_window 	| Occurs when a ConfigureNotify event happens
+|default_icon 		| Occurs when a window's DefaultIcon changes
+|deiconify 		| Occurs when a window id deiconified
+|destroy_window 	| Occurs when a window is destroyed
+|dewindowshade 		| Occurs when a window is unshaded
+|echo 			| Occurs when an Echo command is run
+|end_config_info 	| Occurs when there's no more module config to send
+|end_windowlist 	| Occurs when the windowlist has finished sending
+|enter_window 		| Occurs when a window receives a EnterNotify event
+|error 			| DEPRECATED
+|focus_change 		| Occurs when a window gains or loses focus
+|icon_file 		| DEPRECATED
+|icon_location 		| DEPRECATED
+|icon_name 		| DEPRECATED
+|iconify 		| Occurs when a window is iconified
+|leave_window 		| Occurs when a window receives a LeaveNotify event
+|lower_window 		| Occurs when a window is lowered
+|map 			| Occurs when a window is Mapped
+|mini_icon 		| Occurs when a window's mini icon changes
+|monitor_changed 	| Occurs when a monitor's resolution changes
+|monitor_disabled 	| Occurs when a monitor is disabled (via RandR)
+|monitor_enabled 	| Occurs when a monitor is enabled (via RandR)
+|monitor_focus 		| Occurs when a monitor gains focus
+|new_desk 		| Occurs when a new desk is switched to
+|new_page 		| Occurs when a new page is switched to
+|old_add_window 	| DEPRECATED
+|old_configure_window 	| DEPRECATED
+|property_change 	| Occurs when a window recieves a PropertNotify event
+|raise_window 		| Occurs when a windowis raised
+|res_class 		| Occurs when a window's Class is set
+|res_name 		| Occurs when a window's Resource is set
+|restack 		| Occurs when windows are restacked
+|sendconfig 		| Occurs when FvwmEvent asks for its config
+|shutdown 		| DEPRECATED
+|startup 		| DEPRECATED
+|string 		| Occurs when the SendToModule command is used
+|unknown 		| DEPRECATED
+|visible_icon_name 	| Occurs when a window's visible icon name changes
+|visible_name 		| Occurs when a window's visible name changes
+|window_name 		| Occurs when a window's name (WM_NAME) is set
+|windowshade 		| Occurs when a window is shaded
+|===
 
-	*FvwmEvent: new_page beam_trek.au
-	*FvwmEvent: new_desk beam_trek.au
-	*FvwmEvent: old_add_window drip.au
-	*FvwmEvent: raise_window swoosh.au
-	*FvwmEvent: lower_window swoosh.au
-	*FvwmEvent: old_configure_window hammer.au
-	*FvwmEvent: focus_change boing.au
-	*FvwmEvent: enter_window boing.au
-	*FvwmEvent: leave_window boing.au
-	*FvwmEvent: destroy_window explosion.au
-	*FvwmEvent: iconify ploop.au
-	*FvwmEvent: deiconify ploop.au
-	*FvwmEvent: window_name huh.au
-	*FvwmEvent: icon_name beep.au
-	*FvwmEvent: visible_icon_name beep.au
-	*FvwmEvent: res_class beep.au
-	*FvwmEvent: res_name beep.au
-	*FvwmEvent: end_windowlist twang.au
-
-	*FvwmEvent: icon_location beep.au
-	*FvwmEvent: map beep.au
-	*FvwmEvent: error beep.au
-	*FvwmEvent: config_info beep.au
-	*FvwmEvent: end_config_info beep.au
-	*FvwmEvent: icon_file beep.au
-	*FvwmEvent: default_icon beep.au
-	*FvwmEvent: string plapper.au
-	*FvwmEvent: mini_icon beep.au
-	*FvwmEvent: windowshade beep.au
-	*FvwmEvent: dewindowshade beep.au
-
-	*FvwmEvent: visible_name beep.au
-	*FvwmEvent: sendconfig beep.au
-	*FvwmEvent: restack beep.au
-	*FvwmEvent: add_window beep.au
-	*FvwmEvent: configure_window beep.au
-
-	*FvwmEvent: visible_icon_name beep.au
-	*FvwmEvent: enter_window beep.au
-	*FvwmEvent: leave_window beep.au
-	*FvwmEvent: property_change beep.au
-
-	*FvwmEvent: monitor_enabled beep.au
-	*FvwmEvent: monitor_disabled beep.au
-	*FvwmEvent: monitor_changed beep.au
-	*FvwmEvent: monitor_focus beep.au
-
-	*FvwmEvent: echo beep.au
-....
 +
 The window related event handlers are executed within a window context.
 Previously PassId was used for this purpose, but now using PassId is not
@@ -232,65 +191,17 @@ moves into the root window. In this case, the id passed is 0.
 +
 Note: When the shutdown event arrives, FvwmEvent may be killed before it
 can trigger the associated action.
-+
-Provided _fvwm_ supports it (not yet), there's an additional event to
-replace all _fvwm_ beeps with a sound:
-+
-....
-	*FvwmEvent: beep beep.au
-....
 
 *FvwmEvent: Delay 5::
   Specifies that an event-action will only be executed if it occurs at
   least 5 seconds after the previous event. Events that occur during the
-  delay period are ignored. This option is useful if you don't want
-  several sounds playing at the same time. The default delay is 0 which
-  disables the Event delay.
+  delay period are ignored. The default delay is 0 which disables the Event.
 
 *FvwmEvent: StartDelay delay::
   Specifies that an event-action will only be executed if it occurs at
   least _delay_ seconds after the startup event. Events that occur
   during the delay period are ignored. This option is useful when _fvwm_
   starts and restarts using an audio player. The default delay is 0.
-
-== RPLAY OPTIONS
-
-The following options are only valid with builtin rplay support. i.e:
-when _FvwmEvent_ was compiled with _HAVE_RPLAY_ defined. They are used
-only if _FvwmEvent: Cmd_ is set to _builtin-rplay_.
-
-*FvwmEvent: RplayHost hostname::
-  Specifies what host the rplay sounds will play on. The _hostname_ can
-  also be an environment variable such as $HOSTDISPLAY.
-
-*FvwmEvent: RplayPriority 0::
-  Specifies what priority will be assigned to the rplay sounds when they
-  are played.
-
-*FvwmEvent: RplayVolume 127::
-  Specifies what volume will be assigned to the sounds when they are
-  played.
-
-== FvwmAudio Compatibility Mode
-
-When invoked in FvwmAudio compatibility mode (see above), FvwmEvent
-accepts the following options to provide backwards compatibility for
-FvwmAudio:
-
-*FvwmEvent: PlayCmd command::
-  This is equivalent to using *FvwmEvent: Cmd to Exec commands. This
-  determines the independent audio player program that will actually
-  play the sounds. If the play command is set to _builtin-rplay_ then
-  the builtin rplay support will be used.
-
-*FvwmAudio: Dir directory::
-  Specifies the directory to look for the audio files. This option is
-  ignored when rplay is used.
-
-== BUGS
-
-It's REALLY noisy when _fvwm_ starts and restarts using an audio player.
-You can use FvwmEvent: StartDelay to fix this problem.
 
 == COPYRIGHTS
 

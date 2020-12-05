@@ -125,7 +125,7 @@ a multi-screen display.
 *-V* | *--version*::
 
 Prints the version of fvwm to _stderr_. Also prints an information about
-the compiled in support for readline, rplay, xpm, png, svg, GNOME hints,
+the compiled in support for readline, xpm, png, svg, GNOME hints,
 EWMH hints, session management, bidirectional text, multibyte
 characters, RandR and Xft aa font rendering.
 
