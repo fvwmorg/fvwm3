@@ -30,20 +30,9 @@ jobs:
                 ref: master
           - name: Update CHANGELOG
             if: github.ref == 'refs/heads/master'
-            uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-            with:
-                token: ${{ secrets.GITHUB_TOKEN }}
-                issues: true
-                issuesWoLabels: false
-                pullRequests: true
-                prWoLabels: true
-                author: true
-                unreleased: true
-                stripGeneratorNotice: true
-                verbose: true
-                compareLink: true
-                httpCache: true
-                filterByMilestone: true
+            run: |
+                    docker run -v $(pwd):$(pwd) ferrarimarco/github-changelog-generator -t ${{ secrets.GITHUB_TOKEN }} --user fvwmorg --project fvwm3 -o "$(pwd)/CHANGELOG.md"
+                    sed -i '/This Changelog was automatically generated/d' CHANGELOG.md
           - name: Commit CHANGELOG
             if: github.ref == 'refs/heads/master'
             uses: stefanzweifel/git-auto-commit-action@v4
