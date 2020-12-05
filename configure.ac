@@ -866,18 +866,6 @@ fi
 AC_SUBST(rsvg_CFLAGS)
 AC_SUBST(rsvg_LIBS)
 
-# ********* rplay
-$UNSET ac_cv_header_rplay_h
-$UNSET ac_cv_lib_rplay_rplay_create
-# Add in X_EXTRA_LIBS here to get things like connect().
-smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
-	      $X_EXTRA_LIBS)
-AH_TEMPLATE([HAVE_RPLAY],[Define if rplay library is used.])
-test ! x"$rplay_LIBS" = x && AC_DEFINE(HAVE_RPLAY)
-AC_SUBST(rplay_LIBS)
-AC_SUBST(rplay_CFLAGS)
-
-
 # ********* readline
 with_readline=no
 problem_readline=": Both termcap and ncurses disabled"
@@ -1472,7 +1460,6 @@ AC_SUBST(with_perllib)
 AC_SUBST(with_png)
 AC_SUBST(with_rsvg)
 AC_SUBST(with_readline)
-AC_SUBST(with_rplay)
 AC_SUBST(with_shape)
 AC_SUBST(with_shm)
 AC_SUBST(with_sm)
@@ -1588,7 +1575,6 @@ Fvwm3 Configuration:
   With Gettext Native Lang support?   $with_gettext$problem_gettext
   With Iconv support?                 $with_iconv_type$problem_iconv
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
-  With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape
   With Shared memory for XImage?      $with_shm$problem_shm
   With Session Management support?    $with_sm$problem_sm

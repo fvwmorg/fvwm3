@@ -85,7 +85,6 @@ with_iconv=@with_iconv@
 with_perllib=@with_perllib@
 with_png=@with_png@
 with_readline=@with_readline@
-with_rplay=@with_rplay@
 with_rsvg=@with_rsvg@
 with_shape=@with_shape@
 with_shm=@with_shm@
@@ -158,7 +157,6 @@ while test $# -gt 0; do
 			test "$with_perllib"    = "yes" && echo "perllib"
 			test "$with_png"        = "yes" && echo "png"
 			test "$with_readline"   = "yes" && echo "readline"
-			test "$with_rplay"      = "yes" && echo "rplay"
 			test "$with_rsvg"       = "yes" && echo "rsvg"
 			test "$with_shape"      = "yes" && echo "shape"
 			test "$with_shm"        = "yes" && echo "shm"
@@ -207,7 +205,6 @@ while test $# -gt 0; do
 			echo "	iconv (i18n conversions): $with_iconv"
 			echo "	png: $with_png"
 			echo "	readline: $with_readline"
-			echo "	rplay: $with_rplay"
 			echo "	shape (shaped windows): $with_shape"
 			echo "	shm (shared memory): $with_shm"
 			echo "	sm (session management): $with_sm"
