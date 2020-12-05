@@ -4,6 +4,11 @@
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.1...HEAD)
 
+**Breaking changes:**
+
+- Deprecate librplay support in FvwmEvent [\#316](https://github.com/fvwmorg/fvwm3/issues/316)
+- FvwmEvent: remove support for Rplay [\#317](https://github.com/fvwmorg/fvwm3/pull/317) ([ThomasAdam](https://github.com/ThomasAdam))
+
 **Implemented enhancements:**
 
 - Add expansion variables for a window's X/Y page [\#255](https://github.com/fvwmorg/fvwm3/issues/255)
