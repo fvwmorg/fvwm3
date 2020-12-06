@@ -19,6 +19,7 @@
 **Fixed bugs:**
 
 - FvwmButtons: Title parameter doesn't allow "-" [\#313](https://github.com/fvwmorg/fvwm3/issues/313)
+- Menu placement wrong with multi monitor when position given [\#311](https://github.com/fvwmorg/fvwm3/issues/311)
 - FvwmPager: pin new\_desk events to monitor instance for per-monitor mode [\#296](https://github.com/fvwmorg/fvwm3/issues/296)
 - FvwmPager: windows tracked incorrectly when moving between monitors [\#294](https://github.com/fvwmorg/fvwm3/issues/294)
 - bson\_as\_relaxed\_extended\_json\(\) is not available [\#286](https://github.com/fvwmorg/fvwm3/issues/286)
@@ -51,6 +52,7 @@
 
 **Merged pull requests:**
 
+- CI: add issues script [\#327](https://github.com/fvwmorg/fvwm3/pull/327) ([ThomasAdam](https://github.com/ThomasAdam))
 - freetype: don't clober CFLAGS/LDFLAGS [\#324](https://github.com/fvwmorg/fvwm3/pull/324) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPrompt: add hint about starting FvwmMFL [\#323](https://github.com/fvwmorg/fvwm3/pull/323) ([ThomasAdam](https://github.com/ThomasAdam))
 - modules: remove templated man pages [\#322](https://github.com/fvwmorg/fvwm3/pull/322) ([ThomasAdam](https://github.com/ThomasAdam))
