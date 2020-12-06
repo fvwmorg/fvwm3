@@ -582,6 +582,8 @@ AC_ARG_ENABLE(xft,
   ]
 )
 
+freetype_CFLAGS=""
+freetype_LIBS=""
 AH_TEMPLATE([HAVE_XFT],[Define if Xft library is used.])
 AH_TEMPLATE([HAVE_XFT2],[Define if Xft 2 library is used.])
 AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
@@ -591,14 +593,17 @@ if test ! x"$with_xft" = xno; then
     AC_MSG_RESULT([yes])
     CFLAGS_FREETYPE=`"${PKG_CONFIG}" --cflags freetype2`
     FREETYPE_LIBS=`"${PKG_CONFIG}" --libs freetype2`
-    CFLAGS="$CFLAGS $CFLAGS_FREETYPE"
-    LIBS="$LIBS $FREETYPE_LIBS"
+    freetype_CFLAGS="$CFLAGS_FREETYPE"
+    freetype_LIBS="$FREETYPE_LIBS"
 
     have_freetype=yes
   else
   AC_MSG_RESULT([no])
   have_freetype=no
   fi
+
+  AC_SUBST(freetype_CFLAGS)
+  AC_SUBST(freetype_LIBS)
 
   # check for fontconfig for Xft 2
   have_fontconfig=no
