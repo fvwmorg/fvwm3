@@ -1,0 +1,17 @@
+name: FVWM3 CI ISSUES
+
+on:
+    issues:
+        types: [ opened, edited, milestoned, closed ]
+
+jobs:
+    notification:
+        runs-on: ubuntu-latest
+        name: notifications
+        steps:
+            - name: issue notifications
+              uses: rectalogic/notify-irc@v1
+              with:
+                  channel: "#fvwm"
+                  nickname: fvwm3-gh
+                  message: "Issue [${{ github.event.issues.state }}]: [${{ github.event.issues.number }}]: ${{ github.event.issues.title }} -- [${{ github.event.pull_request.user.login }}]"
