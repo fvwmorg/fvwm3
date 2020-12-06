@@ -94,6 +94,7 @@ func readFromSocket(c net.Conn, rchan chan string) {
 func connectToFMD(shell *ishell.Shell, rchan chan string, wchan chan string) {
 	c, err := net.Dial("unix", fmdSocket)
 	if err != nil {
+		log.Println("Unable to connect to FvwmMFL: has \"Module FvwmMFL\" been started?")
 		log.Fatal("Connection error ", err)
 	}
 
