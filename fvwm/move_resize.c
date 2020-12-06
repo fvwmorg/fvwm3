@@ -5198,6 +5198,8 @@ static void __handle_stick_exit(
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 		EWMH_SetWMState(fw, False);
 		EWMH_SetWMDesktop(fw);
+
+		desk_add_fw(fw);
 	}
 
 	return;
