@@ -203,7 +203,7 @@ can trigger the associated action.
   during the delay period are ignored. This option is useful when _fvwm_
   starts and restarts using an audio player. The default delay is 0.
 
-== COPYRIGHTS
+== HISTORY
 
 This module has evolved of _FvwmAudio_, which in term is heavily based
 on a similar Fvwm module called _FvwmSound_ by Mark Boyns. _FvwmAudio_
@@ -213,15 +213,6 @@ specific things on specific events, _FvwmEvent_ took this one step
 further and now calls any _fvwm_ function, or builtin-rplay. If _fvwm_'s
 Exec function is used, any external program can be called with any
 parameter.
-
-The concept for interfacing this module to the Window Manager, is
-original work by Robert Nation.
-
-Copyright 1998 Albrecht Kadlec. Copyright 1994, Mark Boyns and Mark
-Scott. No guarantees or warranties or anything are provided or implied
-in any way whatsoever. Use this program at your own risk. Permission to
-use and modify this program for any purpose is given, as long as the
-copyright is kept intact.
 
 == AUTHORS
 
