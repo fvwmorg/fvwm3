@@ -51,6 +51,7 @@
 
 **Merged pull requests:**
 
+- freetype: don't clober CFLAGS/LDFLAGS [\#324](https://github.com/fvwmorg/fvwm3/pull/324) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPrompt: add hint about starting FvwmMFL [\#323](https://github.com/fvwmorg/fvwm3/pull/323) ([ThomasAdam](https://github.com/ThomasAdam))
 - modules: remove templated man pages [\#322](https://github.com/fvwmorg/fvwm3/pull/322) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: comply better with the GPL [\#321](https://github.com/fvwmorg/fvwm3/pull/321) ([ThomasAdam](https://github.com/ThomasAdam))
