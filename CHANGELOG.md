@@ -7,7 +7,7 @@
 **Breaking changes:**
 
 - Deprecate librplay support in FvwmEvent [\#316](https://github.com/fvwmorg/fvwm3/issues/316)
-- FvwmEvent: remove support for Rplay [\#317](https://github.com/fvwmorg/fvwm3/pull/317) ([ThomasAdam](https://github.com/ThomasAdam))
+- documentation: remove docbook in favour of asciidoc [\#290](https://github.com/fvwmorg/fvwm3/pull/290) ([ThomasAdam](https://github.com/ThomasAdam))
 
 **Implemented enhancements:**
 
@@ -51,8 +51,10 @@
 
 **Merged pull requests:**
 
+- FvwmEvent: comply better with the GPL [\#320](https://github.com/fvwmorg/fvwm3/pull/320) ([ThomasAdam](https://github.com/ThomasAdam))
 - ewmh: compute workarea against all monitors [\#319](https://github.com/fvwmorg/fvwm3/pull/319) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: reduce IRC notification noise [\#318](https://github.com/fvwmorg/fvwm3/pull/318) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmEvent: remove support for Rplay [\#317](https://github.com/fvwmorg/fvwm3/pull/317) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: WIP CHANGELOG [\#315](https://github.com/fvwmorg/fvwm3/pull/315) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: Allow Title to contain just "-" [\#314](https://github.com/fvwmorg/fvwm3/pull/314) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: fix geometry string values when using @MONITORNAME [\#309](https://github.com/fvwmorg/fvwm3/pull/309) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -69,7 +71,6 @@
 - clean up the headers [\#293](https://github.com/fvwmorg/fvwm3/pull/293) ([mikeandmore](https://github.com/mikeandmore))
 - FvwmPrompt: add basic manpage [\#292](https://github.com/fvwmorg/fvwm3/pull/292) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: per-monitor support [\#291](https://github.com/fvwmorg/fvwm3/pull/291) ([ThomasAdam](https://github.com/ThomasAdam))
-- documentation: remove docbook in favour of asciidoc [\#290](https://github.com/fvwmorg/fvwm3/pull/290) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmForm: use libevent for timer instead of signal [\#289](https://github.com/fvwmorg/fvwm3/pull/289) ([phileimer](https://github.com/phileimer))
 - Add SVG library as an optional dependency [\#288](https://github.com/fvwmorg/fvwm3/pull/288) ([djwf](https://github.com/djwf))
 - FvwmForm: remove useless setitimer call [\#284](https://github.com/fvwmorg/fvwm3/pull/284) ([phileimer](https://github.com/phileimer))
