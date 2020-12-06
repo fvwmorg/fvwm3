@@ -47,6 +47,7 @@
 
 **Merged pull requests:**
 
+- CI: reduce IRC notification noise [\#318](https://github.com/fvwmorg/fvwm3/pull/318) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: WIP CHANGELOG [\#315](https://github.com/fvwmorg/fvwm3/pull/315) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: Allow Title to contain just "-" [\#314](https://github.com/fvwmorg/fvwm3/pull/314) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: fix geometry string values when using @MONITORNAME [\#309](https://github.com/fvwmorg/fvwm3/pull/309) ([ThomasAdam](https://github.com/ThomasAdam))
