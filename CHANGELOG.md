@@ -25,10 +25,14 @@
 - EdgeResistance command not working? [\#285](https://github.com/fvwmorg/fvwm3/issues/285)
 - Status: not updating on browser tab switching [\#274](https://github.com/fvwmorg/fvwm3/issues/274)
 - FvwmScript - Crashes on input to TextField widget [\#272](https://github.com/fvwmorg/fvwm3/issues/272)
+- EwmhStruts - Does not affect entirety of X screen, only specific monitor [\#271](https://github.com/fvwmorg/fvwm3/issues/271)
 - FvwmButtons Geometry - @g tag positions objects on active monitor instead of globally  [\#269](https://github.com/fvwmorg/fvwm3/issues/269)
 - Configuration parsing does not read FvwmPager module config line if prefixed with Test condition. [\#267](https://github.com/fvwmorg/fvwm3/issues/267)
+- Style PositionPlacement ignores y percentage [\#265](https://github.com/fvwmorg/fvwm3/issues/265)
+- Maximize window on primary screen gives small window [\#264](https://github.com/fvwmorg/fvwm3/issues/264)
 - FvwmPager and FvwmIconMan do not update after GotoDesk [\#262](https://github.com/fvwmorg/fvwm3/issues/262)
 - status:  fix bson\_t detection [\#257](https://github.com/fvwmorg/fvwm3/issues/257)
+- Maximize on second monitor gives wrong window size [\#250](https://github.com/fvwmorg/fvwm3/issues/250)
 - Man page `fvwm3.1` not built by default [\#246](https://github.com/fvwmorg/fvwm3/issues/246)
 - FvwmPager sometimes ignores styles [\#142](https://github.com/fvwmorg/fvwm3/issues/142)
 - EdgeScroll needs thinking about for per-monitor setup [\#82](https://github.com/fvwmorg/fvwm3/issues/82)
@@ -47,6 +51,7 @@
 
 **Merged pull requests:**
 
+- ewmh: compute workarea against all monitors [\#319](https://github.com/fvwmorg/fvwm3/pull/319) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: reduce IRC notification noise [\#318](https://github.com/fvwmorg/fvwm3/pull/318) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: WIP CHANGELOG [\#315](https://github.com/fvwmorg/fvwm3/pull/315) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: Allow Title to contain just "-" [\#314](https://github.com/fvwmorg/fvwm3/pull/314) ([ThomasAdam](https://github.com/ThomasAdam))
