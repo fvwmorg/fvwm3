@@ -51,6 +51,9 @@
 
 **Merged pull requests:**
 
+- FvwmPrompt: add hint about starting FvwmMFL [\#323](https://github.com/fvwmorg/fvwm3/pull/323) ([ThomasAdam](https://github.com/ThomasAdam))
+- modules: remove templated man pages [\#322](https://github.com/fvwmorg/fvwm3/pull/322) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmButtons: comply better with the GPL [\#321](https://github.com/fvwmorg/fvwm3/pull/321) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmEvent: comply better with the GPL [\#320](https://github.com/fvwmorg/fvwm3/pull/320) ([ThomasAdam](https://github.com/ThomasAdam))
 - ewmh: compute workarea against all monitors [\#319](https://github.com/fvwmorg/fvwm3/pull/319) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: reduce IRC notification noise [\#318](https://github.com/fvwmorg/fvwm3/pull/318) ([ThomasAdam](https://github.com/ThomasAdam))
