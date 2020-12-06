@@ -1123,20 +1123,14 @@ DestroyModuleConfig FvwmButtons: *
 The action part of the Swallow option must be quoted if it contains any
 whitespace character.
 
-== COPYRIGHTS
+== HISTORY
 
 The FvwmButtons program, and the concept for interfacing this module to
 the Window Manager, are all original work by Robert Nation.
 
-Copyright 1993, Robert Nation. No guarantees or warranties or anything
-are provided or implied in any way whatsoever. Use this program at your
-own risk. Permission to use this program for any purpose is given, as
-long as the copyright is kept intact.
-
-Further modifications and patching by Jarl Totland, copyright 1996. The
-statement above still applies.
+Originally, FvwmGoodStuff preceeded FvwmButtons.
 
 == AUTHOR
 
-Robert Nation. Somewhat enhanced by Jarl Totland, Jui-Hsuan Joshua Feng,
-Scott Smedley.
+Robert Nation (1993). Somewhat enhanced by Jarl Totland (1996),
+Jui-Hsuan Joshua Feng, Scott Smedley.
