@@ -11,6 +11,7 @@
 
 **Implemented enhancements:**
 
+- Test [\#328](https://github.com/fvwmorg/fvwm3/issues/328)
 - Add expansion variables for a window's X/Y page [\#255](https://github.com/fvwmorg/fvwm3/issues/255)
 - Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
 - \[feature-request\] Global desktop with predefined resolutions [\#248](https://github.com/fvwmorg/fvwm3/issues/248)
@@ -52,6 +53,7 @@
 
 **Merged pull requests:**
 
+- CI: issues - fix references again [\#330](https://github.com/fvwmorg/fvwm3/pull/330) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: issues - fix references [\#329](https://github.com/fvwmorg/fvwm3/pull/329) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: add issues script [\#327](https://github.com/fvwmorg/fvwm3/pull/327) ([ThomasAdam](https://github.com/ThomasAdam))
 - freetype: don't clober CFLAGS/LDFLAGS [\#324](https://github.com/fvwmorg/fvwm3/pull/324) ([ThomasAdam](https://github.com/ThomasAdam))
