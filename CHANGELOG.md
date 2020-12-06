@@ -11,7 +11,6 @@
 
 **Implemented enhancements:**
 
-- Test [\#328](https://github.com/fvwmorg/fvwm3/issues/328)
 - Add expansion variables for a window's X/Y page [\#255](https://github.com/fvwmorg/fvwm3/issues/255)
 - Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
 - \[feature-request\] Global desktop with predefined resolutions [\#248](https://github.com/fvwmorg/fvwm3/issues/248)
@@ -19,6 +18,7 @@
 
 **Fixed bugs:**
 
+- Status: desk tracking is broken with sticky windows [\#331](https://github.com/fvwmorg/fvwm3/issues/331)
 - FvwmButtons: Title parameter doesn't allow "-" [\#313](https://github.com/fvwmorg/fvwm3/issues/313)
 - Menu placement wrong with multi monitor when position given [\#311](https://github.com/fvwmorg/fvwm3/issues/311)
 - FvwmPager: pin new\_desk events to monitor instance for per-monitor mode [\#296](https://github.com/fvwmorg/fvwm3/issues/296)
@@ -53,8 +53,7 @@
 
 **Merged pull requests:**
 
-- CI: issues - fix references again [\#330](https://github.com/fvwmorg/fvwm3/pull/330) ([ThomasAdam](https://github.com/ThomasAdam))
-- CI: issues - fix references [\#329](https://github.com/fvwmorg/fvwm3/pull/329) ([ThomasAdam](https://github.com/ThomasAdam))
+- status: track sticky windows to current desk [\#332](https://github.com/fvwmorg/fvwm3/pull/332) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: add issues script [\#327](https://github.com/fvwmorg/fvwm3/pull/327) ([ThomasAdam](https://github.com/ThomasAdam))
 - freetype: don't clober CFLAGS/LDFLAGS [\#324](https://github.com/fvwmorg/fvwm3/pull/324) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPrompt: add hint about starting FvwmMFL [\#323](https://github.com/fvwmorg/fvwm3/pull/323) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -62,7 +61,6 @@
 - FvwmButtons: comply better with the GPL [\#321](https://github.com/fvwmorg/fvwm3/pull/321) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmEvent: comply better with the GPL [\#320](https://github.com/fvwmorg/fvwm3/pull/320) ([ThomasAdam](https://github.com/ThomasAdam))
 - ewmh: compute workarea against all monitors [\#319](https://github.com/fvwmorg/fvwm3/pull/319) ([ThomasAdam](https://github.com/ThomasAdam))
-- CI: reduce IRC notification noise [\#318](https://github.com/fvwmorg/fvwm3/pull/318) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmEvent: remove support for Rplay [\#317](https://github.com/fvwmorg/fvwm3/pull/317) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: WIP CHANGELOG [\#315](https://github.com/fvwmorg/fvwm3/pull/315) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: Allow Title to contain just "-" [\#314](https://github.com/fvwmorg/fvwm3/pull/314) ([ThomasAdam](https://github.com/ThomasAdam))
