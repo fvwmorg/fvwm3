@@ -20,14 +20,7 @@
  * along with this program; if not, see: <http://www.gnu.org/licenses/>
  */
 
-/*
- * This module is based on FvwmModuleDebugger which has the following
- * copyright:
- *
- * This module, and the entire ModuleDebugger program, and the concept for
- * interfacing this module to the Window Manager, are all original work
- * by Robert Nation
- */
+/* This module is based on FvwmModuleDebugger */
 
 /* ---------------------------- included header files ----------------------- */
 
