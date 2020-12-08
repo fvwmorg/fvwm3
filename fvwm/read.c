@@ -195,7 +195,7 @@ int run_command_file(
 	char *filename, const exec_context_t *exc)
 {
 	char *full_filename;
-	FILE* f = NULL;
+	FILE *f = NULL;
 
 	/* We attempt to open the filename by doing the following:
 	 *
@@ -216,7 +216,7 @@ int run_command_file(
 	 *
 	 *    ./.foo
 	 */
-	full_filename = filename;
+	full_filename = fxstrdup(filename);
 
 	if (full_filename[0] == '/')
 	{
@@ -226,29 +226,35 @@ int run_command_file(
 		/* It's a relative path.  Check in either FVWM_USERDIR or
 		 * FVWM_DATADIR.
 		 * */
-		full_filename = CatString3(fvwm_userdir, "/", filename);
+		free(full_filename);
+		xasprintf(&full_filename, "%s/%s", fvwm_userdir, filename);
 
 		if((f = fopen(full_filename, "r")) == NULL)
 		{
-			full_filename = CatString3(
-					FVWM_DATADIR, "/", filename);
+			free(full_filename);
+			xasprintf(&full_filename, "%s/%s", FVWM_DATADIR, filename);
 			f = fopen(full_filename, "r");
 		}
 	}
 
 	if ((f == NULL) &&
 		(f = fopen(filename, "r")) == NULL) {
+
 		/* We really couldn't open the file. */
+		free(full_filename);
 		return 0;
 	}
 
 	if (push_read_file(full_filename) == 0)
 	{
+		free(full_filename);
 		return 0;
 	}
 	run_command_stream(NULL, f, exc);
 	fclose(f);
 	pop_read_file();
+
+	free(full_filename);
 
 	return 1;
 }

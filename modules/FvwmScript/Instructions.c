@@ -85,7 +85,7 @@ void setFvwmUserDir(void)
   FvwmUserDir = getenv("FVWM_USERDIR");
   if (FvwmUserDir == NULL)
   {
-    FvwmUserDir = fxstrdup(CatString2(home_dir, "/.fvwm"));
+    xasprintf(&FvwmUserDir, "%s/.fvwm", home_dir);
   }
 }
 
@@ -1871,8 +1871,9 @@ static void Key (int NbArg,long *TabArg)
     free(tmp);
   }
 
-  tmp = fxstrdup(CatString3(widget, " ", sig));
-  action = fxstrdup(CatString3(tmp, " ", str));
+  xasprintf(&tmp, "%s %s", widget, sig);
+  xasprintf(&action, "%s %s", tmp, str);
+
   free(sig);
   free(widget);
   free(str);

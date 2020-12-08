@@ -1784,6 +1784,7 @@ static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
 void ParseOptions(void)
 {
   char *tline= NULL;
+  char *mname;
   int desk;
   int dx = 3;
   int dy = 3;
@@ -1797,7 +1798,11 @@ void ParseOptions(void)
   {
 	  fpa.mask |= FPAM_DITHER;
   }
-  InitGetConfigLine(fd,CatString3("*",MyName,0));
+
+  xasprintf(&mname, "*%s", MyName);
+  InitGetConfigLine(fd, mname);
+  free(mname);
+
   for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline))
   {
     int g_x, g_y, flags;

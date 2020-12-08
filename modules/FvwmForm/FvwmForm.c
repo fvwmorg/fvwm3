@@ -81,6 +81,7 @@ char bg_state = 'd';			/* in default state */
 char endDefaultsRead = 'n';
 char *font_names[4];
 char *screen_background_color;
+char *mname;
 static ModuleArgs *module;
 int Channel[2];
 Bool Swallowed = False;
@@ -337,7 +338,7 @@ static void ParseConfigLine(char *buf)
     LoadColorset(&buf[8]);
     return;
   }
-  if (strncasecmp(buf, CatString3("*",module->name,0), module->namelen+1) != 0) {/* If its not for me */
+  if (strncasecmp(buf, mname, module->namelen+1) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
   p = buf+module->namelen+1;		      /* jump to end of my name */
@@ -1305,7 +1306,7 @@ static void ReadConfig(void)
 {
   char *line_buf;			/* ptr to curr config line */
 
-  InitGetConfigLine(Channel,CatString3("*",module->name,0));
+  InitGetConfigLine(Channel, mname);
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseConfigLine(line_buf);		/* process config lines */
   }
@@ -2508,10 +2509,7 @@ static void ParseActiveMessage(char *buf)
 		return;
 	}
 #endif
-	if (
-		strncasecmp(
-			buf, CatString3("*",module->name,0),
-			module->namelen+1) != 0)
+	if (strncasecmp(buf, mname, module->namelen+1) != 0)
 	{
 		/* If its not for me */
 		return;
@@ -2681,6 +2679,8 @@ int main (int argc, char **argv)
 	    "FvwmForm Version "VERSION" should only be executed by fvwm!\n");
     exit(1);
   }
+
+  xasprintf(&mname, "*%s", module->name);
 
 #ifdef HAVE_SIGACTION
   {

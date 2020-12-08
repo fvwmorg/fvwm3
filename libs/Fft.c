@@ -309,22 +309,24 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 		if ((fc = FlocaleCharsetGetFLCXOMCharset()) != NULL &&
 		    StrEquals(fc->x,FLC_FFT_ENCODING_ISO8859_1))
 		{
-			fn = CatString2(fontname,":encoding=ISO8859-1");
+			xasprintf(&fn, "%s%s", fontname, ":encoding=ISO8859-1");
 		}
 		else
 		{
-			fn = CatString2(fontname,":encoding=ISO10646-1");
+			xasprintf(&fn, fontname, ":encoding=ISO10646-1");
 		}
 	}
 	else
 	{
-		fn = fontname;
+		fn = fxstrdup(fontname);
 	}
 	SUPPRESS_UNUSED_VAR_WARNING(fn);
 	if ((src_pat = FftNameParse(fn)) == NULL)
 	{
+		free(fn);
 		goto bail;
 	}
+	free(fn);
 	SUPPRESS_UNUSED_VAR_WARNING(result);
 	if ((load_pat = FftFontMatch(dpy, fftscreen, src_pat, &result)) == NULL)
 	{

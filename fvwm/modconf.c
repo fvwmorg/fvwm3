@@ -107,8 +107,12 @@ void ModuleConfig(char *action)
 			{
 				name = MOD_ALIAS(module);
 			}
+			char *modstring;
+
+			xasprintf(&modstring, "%s%s", "*", name);
 			SendConfigToModule(
-				module, new_entry, CatString2("*", name), 0);
+				module, new_entry, modstring, 0);
+			free(modstring);
 		}
 	}
 
@@ -141,7 +145,7 @@ static struct moduleInfoList *AddToModList(char *tline)
 		char *conf_start = alias_end + 1;
 		while (isspace(*conf_start)) conf_start++;
 		*alias_end = '\0';
-		rline = CatString2(tline, conf_start);
+		xasprintf(&rline, "%s%s", tline, conf_start);
 		*alias_end = MODULE_CONFIG_DELIM;
 		this->alias_len = alias_end - tline;
 	}
@@ -150,6 +154,7 @@ static struct moduleInfoList *AddToModList(char *tline)
 	this->data = expand_vars(rline, NULL, False, True, NULL, exc);
 	strcpy(this->data, rline);
 	exc_destroy_context(exc);
+	free(rline);
 
 	this->next = NULL;
 	if(prev == NULL)
@@ -192,11 +197,15 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
 		{
 			return;
 		}
-		info = stripcpy(CatString2(action, conf_start));
+		char *aconf;
+
+		xasprintf(&aconf, "%s%s", action, conf_start);
+		info = stripcpy(aconf);
 		*alias_end = MODULE_CONFIG_DELIM;
 		/* +1 for a leading '*' */
 		alias_len = alias_end - action + 1;
 		free(conf_start);
+		free(aconf);
 	}
 	else
 	{

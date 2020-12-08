@@ -166,7 +166,7 @@ char *display_name = NULL;
 char *fvwm_userdir;
 char const *Fvwm_VersionInfo;
 char const *Fvwm_LicenseInfo;
-char const *Fvwm_SupportInfo;
+char *Fvwm_SupportInfo;
 
 Atom _XA_MIT_PRIORITY_COLORS;
 Atom _XA_WM_CHANGE_STATE;
@@ -549,7 +549,10 @@ void Done(int restart, char *command)
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
 
-		char *action = fxstrdup(CatString2("Function ", exit_func_name));
+		char *action;
+
+		xasprintf(&action, "Function ", exit_func_name);
+
 		ecc.type = restart ? EXCT_TORESTART : EXCT_QUIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
@@ -1323,12 +1326,11 @@ static void setVersionInfo(void)
 	{
 		/* strip last comma */
 		support_str[support_len - 1] = '\0';
-		Fvwm_SupportInfo = fxstrdup(
-			CatString2("with support for:", support_str));
+		xasprintf(&Fvwm_SupportInfo, "with support for: %s", support_str);
 	}
 	else
 	{
-		Fvwm_SupportInfo = "with no optional feature support";
+		Fvwm_SupportInfo = fxstrdup("with no optional feature support");
 	}
 
 	return;
@@ -1412,9 +1414,9 @@ static void SetRCDefaults(void)
 		ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
-		cmd = CatString3(
-			defaults[i][0], defaults[i][1], defaults[i][2]);
+		xasprintf(&cmd, defaults[i][0], defaults[i][1], defaults[i][2]);
 		execute_function(NULL, exc, cmd, 0);
+		free(cmd);
 		exc_destroy_context(exc);
 	}
 #undef RC_DEFAULTS_COMPLETE
@@ -1542,9 +1544,9 @@ void StartupStuff(void)
 	init_func_name = get_init_function_name(Restarting == True);
 	if (functions_is_complex_function(init_func_name))
 	{
-		char *action = fxstrdup(
-			CatString2("Function ", init_func_name));
+		char *action;
 
+		xasprintf(&action, "Function ", init_func_name);
 		execute_function(NULL, exc, action, 0);
 		free(action);
 	}
@@ -1737,7 +1739,6 @@ int main(int argc, char **argv)
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 	int i;
-	int len;
 	char *display_string;
 	Bool do_force_single_screen = False;
 	int single_screen_num = -1;
@@ -1794,10 +1795,10 @@ int main(int argc, char **argv)
 	{
 		char *s;
 
-		fvwm_userdir = fxstrdup(CatString2(home_dir, "/.fvwm"));
+		xasprintf(&fvwm_userdir, "%s/.fvwm", home_dir);
 		/* Put the user directory into the environment so it can be used
 		 * later everywhere. */
-		s = fxstrdup(CatString2("FVWM_USERDIR=", fvwm_userdir));
+		xasprintf(&s, "FVWM_USERDIR=%s", fvwm_userdir);
 		flib_putenv("FVWM_USERDIR", s);
 		free(s);
 	}
@@ -2058,6 +2059,7 @@ int main(int argc, char **argv)
 		{
 			printf("%s\n%s\n\n%s\n", Fvwm_VersionInfo,
 			       Fvwm_SupportInfo, Fvwm_LicenseInfo);
+			free(Fvwm_SupportInfo);
 			exit(0);
 		}
 		else if (strcmp(argv[i], "-v") == 0)
@@ -2192,9 +2194,7 @@ int main(int argc, char **argv)
 
 	/* Add a DISPLAY entry to the environment, incase we were started
 	 * with fvwm -display term:0.0 */
-	len = strlen(XDisplayString(dpy));
-	display_string = fxmalloc(len+10);
-	sprintf(display_string, "DISPLAY=%s",XDisplayString(dpy));
+	xasprintf(&display_string, "DISPLAY=%s",XDisplayString(dpy));
 	flib_putenv("DISPLAY", display_string);
 	/* Add a HOSTDISPLAY environment variable, which is the same as
 	 * DISPLAY, unless display = :0.0 or unix:0.0, in which case the full
@@ -2204,9 +2204,7 @@ int main(int argc, char **argv)
 	{
 		char client[MAXHOSTNAME], *rdisplay_string;
 		gethostname(client,MAXHOSTNAME);
-		/* TA:  FIXME!  xasprintf() */
-		rdisplay_string = fxmalloc(len+14 + strlen(client));
-		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s", client,
+		xasprintf(&rdisplay_string, "HOSTDISPLAY=%s:%s", client,
 			&display_string[9]);
 		flib_putenv("HOSTDISPLAY", rdisplay_string);
 		free(rdisplay_string);
@@ -2215,9 +2213,7 @@ int main(int argc, char **argv)
 	{
 		char client[MAXHOSTNAME], *rdisplay_string;
 		gethostname(client,MAXHOSTNAME);
-		/* TA:  FIXME!  xasprintf() */
-		rdisplay_string = fxmalloc(len+14 + strlen(client));
-		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s", client,
+		xasprintf(&rdisplay_string, "HOSTDISPLAY=%s:%s", client,
 			&display_string[13]);
 		flib_putenv("HOSTDISPLAY", rdisplay_string);
 		free(rdisplay_string);
@@ -2225,9 +2221,8 @@ int main(int argc, char **argv)
 	else
 	{
 		char *rdisplay_string;
-		/* TA:  FIXME!  xasprintf() */
-		rdisplay_string = fxmalloc(len+14);
-		sprintf(rdisplay_string, "HOSTDISPLAY=%s",XDisplayString(dpy));
+		xasprintf(&rdisplay_string, "HOSTDISPLAY=%s",
+		    XDisplayString(dpy));
 		flib_putenv("HOSTDISPLAY", rdisplay_string);
 		free(rdisplay_string);
 	}
@@ -2437,9 +2432,8 @@ int main(int argc, char **argv)
 			}
 		}
 	}
-	restart_state_filename = fxstrdup(
-		CatString3(fvwm_userdir, "/.fs-restart-",
-			   getenv("HOSTDISPLAY")));
+	xasprintf(&restart_state_filename, "%s/.fs-restart-%s", fvwm_userdir,
+	    getenv("HOSTDISPLAY"));
 	if (!state_filename && Restarting)
 	{
 		state_filename = restart_state_filename;
@@ -2463,6 +2457,7 @@ int main(int argc, char **argv)
 
 	/* This should be done early enough to have the window states loaded
 	 * before the first call to AddWindow. */
+	fvwm_debug(__func__, "Loading window states via %s", state_filename);
 	LoadWindowStates(state_filename);
 
 	SetRCDefaults();
@@ -2496,24 +2491,25 @@ int main(int argc, char **argv)
 		 *   /usr/local/share/fvwm/.fvwm2rc
 		 *   /usr/local/etc/system.fvwm2rc
 		 */
-		if (
-			!run_command_file(CatString3(
-				fvwm_userdir, "/", FVWM_CONFIG), exc) &&
-			!run_command_file(CatString3(
-				FVWM_DATADIR, "/", FVWM_CONFIG), exc) &&
-			!run_command_file(CatString3(
-				fvwm_userdir, "/", FVWM2RC), exc) &&
-			!run_command_file(CatString3(
-				home_dir, "/", FVWM2RC), exc) &&
-			!run_command_file(CatString3(
-				FVWM_DATADIR, "/", FVWM2RC), exc) &&
-			!run_command_file(CatString3(
-				FVWM_DATADIR, "/system", FVWM2RC), exc) &&
-			!run_command_file(CatString3(
-				FVWM_CONFDIR, "/system", FVWM2RC), exc) &&
-			!run_command_file(CatString3(
-				FVWM_DATADIR, "/default-config/", "config"), exc))
-		{
+		int upper = 8;
+		int nl = 0, tries = 0;
+		char *cfg_loc[upper];
+
+		xasprintf(&cfg_loc[++nl], "%s/%s", fvwm_userdir, FVWM_CONFIG);
+		xasprintf(&cfg_loc[++nl], "%s/%s", FVWM_DATADIR, FVWM_CONFIG);
+		xasprintf(&cfg_loc[++nl], "%s/%s", fvwm_userdir, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/%s", home_dir, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/%s", FVWM_DATADIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/system/%s", FVWM_DATADIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/system/%s", FVWM_CONFDIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/default-config/config", FVWM_DATADIR);
+
+		for (nl = 0; nl < upper; nl++) {
+			if (!run_command_file(cfg_loc[nl], exc))
+				tries++;
+		}
+
+		if (tries == upper) {
 			fvwm_debug(__func__,
 				   "Cannot read startup config file,"
 				   " tried: \n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t"
@@ -2526,6 +2522,8 @@ int main(int argc, char **argv)
 				   FVWM_DATADIR, FVWM2RC,
 				   FVWM_CONFDIR, FVWM2RC);
 		}
+		for (nl = 0; nl < upper; nl++)
+			free(cfg_loc[nl]);
 	}
 	exc_destroy_context(exc);
 

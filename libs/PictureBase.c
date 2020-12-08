@@ -261,9 +261,10 @@ char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 			   who want to access the file on disk will have
 			   to remove these prepended options themselves.
 			   The format is ":svg_opts:/path/to/file.svg". */
-			tmpbuf = CatString3(render_opts, ":", full_filename);
+			xasprintf(&tmpbuf, "%s:%s", render_opts, full_filename);
 			free(full_filename);
 			full_filename = fxstrdup(tmpbuf);
+			free(tmpbuf);
 		}
 	}
 

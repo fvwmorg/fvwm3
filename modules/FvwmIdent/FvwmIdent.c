@@ -74,6 +74,7 @@ static int x_fd;
 
 static char *yes = "Yes";
 static char *no = "No";
+static char *mname;
 
 /* default colorset to use, set to -1 when explicitly setting colors */
 static int colorset = 0;
@@ -134,6 +135,8 @@ int main(int argc, char **argv)
 			   " by fvwm!\n", VERSION);
 		exit(1);
 	}
+
+	xasprintf(&mname, "*%s", module->name);
 
 #ifdef HAVE_SIGACTION
 	{
@@ -207,7 +210,7 @@ int main(int argc, char **argv)
 	/* scan config file for set-up parameters */
 	/* Colors and fonts */
 
-	InitGetConfigLine(fd,CatString3("*",module->name,0));
+	InitGetConfigLine(fd, mname);
 	GetConfigLine(fd,&tline);
 
 	while (tline != (char *)0)
@@ -216,9 +219,7 @@ int main(int argc, char **argv)
 		{
 			continue;
 		}
-		if (strncasecmp(tline,
-				CatString3("*",module->name,0),
-				module->namelen+1) == 0)
+		if (strncasecmp(tline, mname, module->namelen+1) == 0)
 		{
 			tline += (module->namelen +1);
 			if (strncasecmp(tline, "Font", 4) == 0)

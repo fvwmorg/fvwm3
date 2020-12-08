@@ -60,7 +60,10 @@ static void show_error(const char *msg, ...)
 		return;
 	}
 	va_start(args, msg);
-	vfprintf(stderr, CatString3(MyName, ": ", msg), args);
+	if (msg != NULL) {
+		vfprintf(stderr, msg, args);
+		fprintf(stderr, ": ");
+	}
 	va_end(args);
 }
 
