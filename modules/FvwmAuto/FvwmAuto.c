@@ -260,8 +260,10 @@ main(int argc, char **argv)
 			token = PeekToken(enter_fn, NULL);
 			if (!StrEquals(token, "Silent"))
 			{
-				enter_fn = fxstrdup(
-					CatString2("Silent ", enter_fn));
+				char *t;
+				xasprintf(&t, "Silent %s", enter_fn);
+				enter_fn = fxstrdup(t);
+				free(t);
 			}
 		}
 		/*** leave command ***/
@@ -283,8 +285,10 @@ main(int argc, char **argv)
 			token = PeekToken(leave_fn, NULL);
 			if (!StrEquals(token, "Silent"))
 			{
-				leave_fn = fxstrdup(
-					CatString2("Silent ", leave_fn));
+				char *t;
+				xasprintf(&t, "Silent %s", leave_fn);
+				leave_fn = fxstrdup(t);
+				free(t);
 			}
 		}
 	}
@@ -307,11 +311,14 @@ main(int argc, char **argv)
 	}
 	/* Disable special raise/lower support on general actions. *
 	 * This works as expected in most of cases. */
-	if (matchWildcards("*Raise*", CatString2(enter_fn, leave_fn)) ||
-	    matchWildcards("*Lower*", CatString2(enter_fn, leave_fn)))
+	char *rl;
+	xasprintf(&rl, "%s%s", enter_fn, leave_fn);
+	if (matchWildcards("*Raise*", rl) ||
+	    matchWildcards("*Lower*", rl))
 	{
 		m_mask |= M_RAISE_WINDOW | M_LOWER_WINDOW;
 	}
+	free(rl);
 
 	/* migo (04/May/2000): It is simply incorrect to listen to raise/lower
 	 * packets and change the state if the action itself has no raise/lower.

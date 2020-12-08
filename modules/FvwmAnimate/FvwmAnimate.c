@@ -83,6 +83,7 @@ static Bool custom_recvd = False;       /* got custom command */
 static Bool play_state = True;          /* current state: pause or play */
 static unsigned int num_saved_play_states = 0;
 static Bool saved_play_states[MAX_SAVED_STATES];
+static char *mname;
 
 static struct
 {
@@ -124,8 +125,13 @@ static struct
   sprintf(cmd,TEXT,module->name);\
   SendText(Channel,cmd,0);
 #define CMD10(TEXT) \
-  sprintf(cmd,TEXT,module->name,CatString3("*",module->name,0));\
-  SendText(Channel,cmd,0);
+  do { \
+	  char *x; \
+	  xasprintf(&x, "*%s", module->name); \
+	  sprintf(cmd,TEXT,module->name, x);\
+	  SendText(Channel,cmd,0); \
+	  free(x); \
+  } while (0);
 #define CMD11(TEXT) \
   sprintf(cmd,TEXT,module->name,module->name);\
   SendText(Channel,cmd,0);
@@ -764,6 +770,8 @@ int main(int argc, char **argv) {
     exit(1);
   }
 
+  xasprintf(&mname, "*%s", module->name);
+
 #ifdef HAVE_SIGACTION
   {
     struct sigaction  sigact;
@@ -1076,7 +1084,7 @@ static void ParseOptions(void) {
   Scr.CurrentDesk = 0;
 
   myfprintf((stderr,"Reading options\n"));
-  InitGetConfigLine(Channel,CatString3("*",module->name,0));
+  InitGetConfigLine(Channel, mname);
   while (GetConfigLine(Channel,&buf), buf != NULL) {
     ParseConfigLine(buf);
   } /* end config lines */
@@ -1097,7 +1105,7 @@ void ParseConfigLine(char *buf) {
     PictureSetImagePath(&buf[9]);
   }
   /* Search for MyName (normally *FvwmAnimate) */
-  else if (strncasecmp(buf, CatString3("*",module->name,0), module->namelen+1) == 0) {/* If its for me */
+  else if (strncasecmp(buf, mname, module->namelen+1) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
     p = buf+module->namelen+1;              /* starting point */
     q = NULL;

@@ -140,7 +140,8 @@ int main(int argc, char **argv)
 	}
 
 	Module = temp;
-	configPrefix = CatString2("*", Module);
+
+	xasprintf(&configPrefix, "*%s", Module);
 
 	if ((argc != 6) && (argc != 7))
 	{
@@ -695,8 +696,7 @@ void AddCommand(char *line)
 	}
 	else
 	{
-		fvwm_debug(__func__,
-			   CatString2("Unknown directive: ", line));
+		fvwm_debug(__func__, "Unknown directive: %s", line);
 		return;
 	}
 	this->flags.do_ignore_desk = do_ignore_desk;

@@ -832,23 +832,23 @@ static void KillModuleByName(char *name, char *alias)
 
 static char *get_pipe_name(fmodule *module)
 {
-	char *name="";
+	char *name;
 
 	if (MOD_NAME(module) != NULL)
 	{
 		if (MOD_ALIAS(module) != NULL)
 		{
-			name = CatString3(
-				MOD_NAME(module), " ", MOD_ALIAS(module));
+			xasprintf(&name, "%s %s", MOD_NAME(module),
+			    MOD_ALIAS(module));
 		}
 		else
 		{
-			name = MOD_NAME(module);
+			xasprintf(&name, "%s", MOD_NAME(module));
 		}
 	}
 	else
 	{
-		name = CatString3("(null)", "", "");
+		name = fxstrdup("(null)");
 	}
 
 	return name;
@@ -1005,6 +1005,7 @@ void FlushMessageQueue(fmodule *module)
 						   name, rc, isTerminated ?
 						   'Y' : 'N');
 					module_kill(module);
+					free(name);
 
 					return;
 				}

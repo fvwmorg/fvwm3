@@ -142,7 +142,7 @@ static char *get_version_string(void)
 static char *unspace_string(const char *str)
 {
 	static const char *spaces = " \t\n";
-	char *tr_str = CatString2(str, NULL);
+	char *tr_str = fxstrdup(str);
 	int i;
 
 	if (!tr_str)
@@ -254,7 +254,7 @@ static char *get_unique_state_filename(void)
 	{
 		return NULL;
 	}
-	filename = fxstrdup(CatString2(path, "/.fs-XXXXXX"));
+	xasprintf(&filename, "%s%s", path, "/.fs-XXXXXX");
 	fd = fvwm_mkstemp(filename);
 	if (fd == -1)
 	{
@@ -521,8 +521,11 @@ SaveWindowStates(FILE *f)
 					wm_command_count);
 				for (i = 0; i < wm_command_count; i++)
 				{
-					fprintf(f, " %s",
-						unspace_string(wm_command[i]));
+					char *us;
+
+					us = unspace_string(wm_command[i]);
+					fprintf(f, " %s", us);
+					free(us);
 				}
 				fprintf(f, "\n");
 			}
@@ -635,12 +638,15 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 				{
 					for (i = 0; i < wm_command_count; i++)
 					{
-						if (strcmp(unspace_string(
-								   wm_command[i]),
-							   m->wm_command[i])!=0)
+						char *us;
+
+						us = unspace_string(wm_command[i]);
+						if (strcmp(us, m->wm_command[i])!=0)
 						{
+							free(us);
 							break;
 						}
+						free(us);
 					}
 
 					if (i == wm_command_count)
@@ -747,9 +753,11 @@ static int save_state_file(char *filename)
 		return 0;
 
 #ifdef FVWM_SM_DEBUG_FILES
-	system(CatString3(
-		       "mkdir -p /tmp/fs-save; cp ", filename,
-		       " /tmp/fs-save"));
+	char *rs;
+
+	xasprintf(&rs, "mkdir -p /tmp/fs-save; cp %s /tmp/fs-save", filename);
+	system(rs);
+	free(rs);
 #endif
 #if defined(FVWM_SM_DEBUG_PROTO) || defined(FVWM_SM_DEBUG_FILES)
 	fvwm_debug(__func__, "[FVWM_SMDEBUG] Saving %s\n", filename);
@@ -1326,9 +1334,11 @@ LoadWindowStates(char *filename)
 	fvwm_debug(__func__, "[FVWM_SMDEBUG] Loading %s\n", filename);
 #endif
 #ifdef FVWM_SM_DEBUG_FILES
-	system(CatString3(
-		       "mkdir -p /tmp/fs-load; cp ", filename,
-		       " /tmp/fs-load"));
+	char *rs;
+
+	xasprintf(&rs, "mkdir -p /tmp/fs-load; cp %s /tmp/fs-load", filename);
+	system(rs);
+	free(rs);
 #endif
 
 	while (fgets(s, sizeof(s), f))

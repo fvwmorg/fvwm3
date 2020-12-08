@@ -22,6 +22,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <errno.h>
+#include <stdlib.h>
 
 #include <X11/Xlib.h>
 
@@ -87,29 +88,40 @@ Bool is_iconv_supported(char *c1, char *c2)
 static
 char *translit_csname(char *cs)
 {
-	return CatString2(cs, TRANSLIT_SUFFIX);
+	char	*cpy;
+
+	xasprintf(&cpy, "%s%s", cs, TRANSLIT_SUFFIX);
+	return (cpy);
 }
 
 static
 int is_translit_supported(char *c1, char *c2)
 {
 	Ficonv_t cd;
+	char	*fname;
 
 	if (!FiconvSupport || !c1 || !c2)
 		return 0;
 
-	cd = Ficonv_open(translit_csname(c1),c2);
+	fname = translit_csname(c1);
+	cd = Ficonv_open(fname,c2);
 	if (cd == (Ficonv_t) -1)
 	{
+		free(fname);
 		return 0;
 	}
 	(void)Ficonv_close(cd);
-	cd = Ficonv_open(translit_csname(c2),c1);
+	free(fname);
+
+	fname = translit_csname(c2);
+	cd = Ficonv_open(fname,c1);
 	if (cd == (Ficonv_t) -1)
 	{
+		free(fname);
 		return 0;
 	}
 	(void)Ficonv_close(cd);
+	free(fname);
 
 	return 1;
 }

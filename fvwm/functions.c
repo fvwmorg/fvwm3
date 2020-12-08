@@ -553,10 +553,6 @@ static void __execute_function(
 			must_free_string = set_repeat_data(
 				expaction, REPEAT_COMMAND, bif);
 		}
-		else
-		{
-			must_free_string = True;
-		}
 	}
 	else
 	{
@@ -674,10 +670,6 @@ static void __execute_function(
 	if (cond_rc != NULL)
 	{
 		cond_rc->break_levels = func_rc->break_levels;
-	}
-	if (must_free_string)
-	{
-		free(expaction);
 	}
 	if (must_free_function)
 	{
