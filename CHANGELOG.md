@@ -20,6 +20,7 @@
 
 - Status: desk tracking is broken with sticky windows [\#331](https://github.com/fvwmorg/fvwm3/issues/331)
 - FvwmButtons: Title parameter doesn't allow "-" [\#313](https://github.com/fvwmorg/fvwm3/issues/313)
+- Lack of FvwmCommand can break existing configuration [\#312](https://github.com/fvwmorg/fvwm3/issues/312)
 - Menu placement wrong with multi monitor when position given [\#311](https://github.com/fvwmorg/fvwm3/issues/311)
 - FvwmPager: pin new\_desk events to monitor instance for per-monitor mode [\#296](https://github.com/fvwmorg/fvwm3/issues/296)
 - FvwmPager: windows tracked incorrectly when moving between monitors [\#294](https://github.com/fvwmorg/fvwm3/issues/294)
@@ -53,6 +54,7 @@
 
 **Merged pull requests:**
 
+- Introduce Python 3 based FvwmCommand compatibility script [\#337](https://github.com/fvwmorg/fvwm3/pull/337) ([NsCDE](https://github.com/NsCDE))
 - status: track sticky windows to current desk [\#332](https://github.com/fvwmorg/fvwm3/pull/332) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: add issues script [\#327](https://github.com/fvwmorg/fvwm3/pull/327) ([ThomasAdam](https://github.com/ThomasAdam))
 - freetype: don't clober CFLAGS/LDFLAGS [\#324](https://github.com/fvwmorg/fvwm3/pull/324) ([ThomasAdam](https://github.com/ThomasAdam))
