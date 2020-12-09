@@ -40,6 +40,7 @@
 - FvwmPager sometimes ignores styles [\#142](https://github.com/fvwmorg/fvwm3/issues/142)
 - EdgeScroll needs thinking about for per-monitor setup [\#82](https://github.com/fvwmorg/fvwm3/issues/82)
 - Panframes: switching between desktops not reliable / broken [\#34](https://github.com/fvwmorg/fvwm3/issues/34)
+- Make bin/FvwmCommand.in use @PYTHON@ [\#339](https://github.com/fvwmorg/fvwm3/pull/339) ([NsCDE](https://github.com/NsCDE))
 - FvwmPager: track windows assigned to pager's screen [\#295](https://github.com/fvwmorg/fvwm3/pull/295) ([ThomasAdam](https://github.com/ThomasAdam))
 
 **Closed issues:**
