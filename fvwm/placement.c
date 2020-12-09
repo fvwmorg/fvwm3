@@ -1906,7 +1906,8 @@ static int __place_window(
 
 	/* Check the desk here. */
 	if (!SUSE_START_ON_DESK(&pstyle->flags) &&
-		((!Restarting && Scr.flags.are_windows_captured))) {
+		((!Restarting && Scr.flags.are_windows_captured)) &&
+		mode != PLACE_AGAIN) {
 		struct monitor *mnew = FindScreenOfXY(attr_g->x, attr_g->y);
 		fw->m = mnew;
 		do_move_window_to_desk(fw, mnew->virtual_scr.CurrentDesk);
