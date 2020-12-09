@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+
+import socket
+import getopt
+import sys
+import os
+import stat
+import json
+
+# Fvwm3 - socket API and MFL UNIX socket
+# Simple Python 3 FvwmMFL client which purpose is to act as FVWM2 FvwmCommand
+# replacement in FVWM3. It uses FvwmMFL unix domain socket to send FVWM commands
+# at this moment, that is all. It doesn't parse json structures yet, or anything
+# fancy and new from FVWM3 new command processing interface.
+
+def mflclnt(verbose, read_from_stdin, info, fvwm_socket):
+    # Create a unix domain socket
+    sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+
+    # Connect the socket to the "port" where the server is listening
+    # FvwmMFL is setting this in environment, so we can really treat
+    # absence of the environment FVWMMFL_SOCKET as error, except when
+    # explicit -f <sockname> has been specified by the user.
+    if not fvwm_socket:
+        fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET'))
+        def_socket = True
+    else:
+        def_socket = False
+    try:
+        if verbose:
+            print ("Trying to determine if", fvwm_socket, "exists as MFL socket ...")
+        mode = os.stat(fvwm_socket).st_mode
+        if stat.S_ISSOCK(mode):
+            server_address = fvwm_socket
+            if verbose:
+                print ("Using", fvwm_socket, "as MFL socket.")
+    except FileNotFoundError:
+        print ("Cannot find FvwmMFL socket " + fvwm_socket + ".")
+        if def_socket:
+            print ("Please start FvwmMFL module from your fvwm configuration.")
+        else:
+            print ("FvwmMFL socket " + fvwm_socket + " does not exist or it is not active.")
+        sys.exit(1)
+
+    if verbose:
+        print('Connecting to {}'.format(server_address))
+    try:
+        sock.connect(server_address)
+    except socket.error as msg:
+        print(msg)
+        sys.exit(1)
+
+    try:
+        if verbose:
+            print ("Sending data to MFL socket", server_address)
+        # Send data, either multiple commands from pipe, arguments
+        if read_from_stdin:
+            for stdline in sys.stdin:
+                message = stdline.encode()
+                sock.sendall(message)
+        else:
+            message = sys.argv[-1].encode()
+            if sys.argv[0] is not sys.argv[-1]:
+                sock.sendall(message)
+        if verbose:
+            print('Sent {!r}'.format(message) + " to FvwmMFL")
+    
+        amount_received = 0
+        data = sock.recv(32768)
+        # amount_received += len(data)
+        # print (amount_received)
+        if verbose:
+            print('Received {!r}'.format(data))
+        if info:
+            jparsed = json.loads(data.decode('utf-8'))
+            print (json.dumps(jparsed, sort_keys=True, indent=4))
+
+    # Close unix domain socket
+    finally:
+        if verbose:
+            print('Closing connection to socket', server_address)
+        sock.close()
+
+def usage():
+    sockname = str(os.environ.get('FVWMMFL_SOCKET'))
+    text = """Usage: FvwmCommand [OPTION] [COMMAND]...
+Send commands to fvwm3 via FvwmMFL
+
+  -c                  read and send commands from stdin
+                      The COMMAND if any is ignored.
+  -f <file name>      use unix socket <file name> to connect to FvwmMFL
+  -i <info level>     0 - default
+                      >0 - print FvwmMFL feedback
+  -d                  print detailed diagnostic messages
+  -v                  print version number
+
+Default unix socket name is:"""
+    print (text, sockname)
+
+def main():
+    # Defaults for mflclnt function
+    verbose = False
+    info = False
+    read_from_stdin = False
+    fvwm_socket = False
+    versioninfo = "@VERSION@-@VERSIONINFO@"
+
+    # Getopt loop
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "hvcdi:f:FmrSw:", ["help", "verbose", "cmds", "detailed", "info=", "socket="])
+    except getopt.GetoptError as err:
+        # print help and usage informations and exit
+        print(err)
+        usage()
+        sys.exit(2)
+    for opt, arg in opts:
+        # Print version
+        if opt in ("-v", "--version"):
+            print ("FvwmCommand " + versioninfo)
+            sys.exit()
+        # Read one or multiple commands from stdin
+        elif opt in ("-c", "--cmds"):
+            read_from_stdin = True
+        # Provide FvwmMFL feedback on stdout
+        elif opt in ("-i", "--info"):
+            if arg != "0":
+                info = True
+        # Specify FvwmMFL socket explicitly
+        elif opt in ("-f", "--socket"):
+            fvwm_socket = arg
+        # Print diagnostic messages
+        elif opt in ("-d", "--detailed"):
+            verbose = True
+        # Print help usage message
+        elif opt in ("-h", "--help"):
+            usage()
+            sys.exit()
+        # Silently ignore obsolete options from FVWM2 FvwmCommand
+        elif opt in ("-F", "-m", "-r", "-S", "-w"):
+            pass
+        else:
+            assert False, "unhandled option"
+
+    # Call out socket function finally.
+    mflclnt(verbose, read_from_stdin, info, fvwm_socket)
+
+if __name__ == "__main__":
+    main()
+

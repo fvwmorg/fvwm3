@@ -9,7 +9,8 @@ fvwm_root_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 bin_SCRIPTS = fvwm-config fvwm-perllib \
 	fvwm-convert-2.6 \
 	fvwm-menu-xlock fvwm-menu-directory \
-	fvwm-menu-desktop
+	fvwm-menu-desktop \
+	FvwmCommand
 
 man_MANS = fvwm-menu-xlock.1
 
@@ -60,6 +61,7 @@ regenerate: \
 
 xpmroot_name =`echo "xpmroot" | "$(SED)" -e "${transform}"`
 fvwm_root_name =`echo "fvwm-root" | "$(SED)" -e "${transform}"`
+FvwmCommand_name =`echo "FvwmCommand" | "$(SED)" -e "${transform}"`
 
 install-exec-local:
 	@rm -f $(DESTDIR)$(bindir)/$(xpmroot_name)$(EXEEXT)
@@ -75,6 +77,7 @@ install-data-local:
 
 uninstall-local:
 	@rm -f $(DESTDIR)$(bindir)/$(xpmroot_name)$(EXEEXT)
+	@rm -f $(DESTDIR)$(bindir)/$(FvwmCommand_name)$(EXEEXT)
 	@rm -f $(DESTDIR)$(mandir)/man1/$(xpmroot_name).1
 
 CLEANFILES = $(bin_SCRIPTS) $(bin_PROGRAMS)

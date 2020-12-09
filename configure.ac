@@ -1492,6 +1492,7 @@ dnl	bin/fvwm-menu-xlock.1
 dnl	bin/fvwm-perllib.1
 dnl
 	bin/Makefile
+	bin/FvwmCommand
 	bin/FvwmPrompt/Makefile
 	bin/fvwm-config
 	bin/fvwm-perllib
