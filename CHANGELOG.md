@@ -55,6 +55,7 @@
 
 **Merged pull requests:**
 
+- FvwmConsole: add missing freetype libs/cflags [\#340](https://github.com/fvwmorg/fvwm3/pull/340) ([ThomasAdam](https://github.com/ThomasAdam))
 - Introduce Python 3 based FvwmCommand compatibility script [\#337](https://github.com/fvwmorg/fvwm3/pull/337) ([NsCDE](https://github.com/NsCDE))
 - status: track sticky windows to current desk [\#332](https://github.com/fvwmorg/fvwm3/pull/332) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: add issues script [\#327](https://github.com/fvwmorg/fvwm3/pull/327) ([ThomasAdam](https://github.com/ThomasAdam))
