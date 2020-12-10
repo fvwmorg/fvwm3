@@ -213,9 +213,9 @@ fvwmSelect(fd_set_size_t nfds,
 			 * that IS the whole point, after all :-)
 			 */
 			iRet = select(nfds,
-				      SELECT_FD_SET_CAST readfds,
-				      SELECT_FD_SET_CAST writefds,
-				      SELECT_FD_SET_CAST exceptfds,
+				      readfds,
+				      writefds,
+				      exceptfds,
 				      timeout);
 		}
 

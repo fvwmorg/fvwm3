@@ -22,9 +22,7 @@
 #include "config.h"
 
 #include <stdio.h>
-#ifdef HAVE_GETPWUID
 #include <pwd.h>
-#endif
 #include <signal.h>
 #include <fcntl.h>
 

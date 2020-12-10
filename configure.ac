@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-AC_PREREQ(2.60)
+AC_PREREQ([2.69])
 
 dnl should be "yes" only within the released distribution
 ISRELEASED="no"
@@ -8,13 +8,12 @@ if test $ISRELEASED = "no"; then
 	RELDATELONG=""
 	RELDATESHORT=""
 	RELDATENUM=""
-
 fi
 
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
-AC_INIT([fvwm3], 1.0.1, [fvwm-workers@fvwm.org])
+AC_INIT([fvwm3],[1.0.1],[fvwm-workers@fvwm.org])
 AC_CONFIG_AUX_DIR(etc)
 AC_CONFIG_LIBOBJ_DIR(libs)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -30,14 +29,6 @@ RELDATELONG="04 October 2020"
 RELDATESHORT="04-Oct-2020"
 RELDATENUM="2020-10-04"
 
-# constant variable settings
-FVWMNAMELONG="F? Virtual Window Manager"
-FVWMHOMEPAGE="http://fvwm.org/"
-FVWMLIST="fvwm@fvwm.org"
-FVWMWORKERSLIST="fvwm-workers@fvwm.org"
-FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
-MANPAGE_PREAMBLE='.\" WARNING: This file was automatically generated.  Edit the .in file instead.'
-
 AC_SUBST(ISRELEASED)
 AH_TEMPLATE([VERSIONINFO],[Additional version information, like date])
 AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
@@ -45,16 +36,84 @@ AC_SUBST(VERSIONINFO)
 AC_SUBST(RELDATELONG)
 AC_SUBST(RELDATESHORT)
 AC_SUBST(RELDATENUM)
-AC_SUBST(FVWMNAMELONG)
-AC_SUBST(FVWMHOMEPAGE)
-AC_SUBST(FVWMLIST)
-AC_SUBST(FVWMWORKERSLIST)
-AC_SUBST(FVWMWORKERSLISTLONG)
-AC_SUBST(MANPAGE_PREAMBLE)
 
-# check for programs needed to build html docs
-AC_CHECK_PROG(SED, sed, sed, "")
-AC_SUBST(SED)
+AC_USE_SYSTEM_EXTENSIONS
+
+# Checks for programs.
+AC_PROG_YACC
+AC_PROG_CC
+AC_PROG_LEX
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_SED
+AC_PROG_MAKE_SET
+AC_PROG_RANLIB
+
+AC_FUNC_ALLOCA
+AC_CHECK_HEADERS([fcntl.h \
+		  inttypes.h \
+		  langinfo.h \
+		  libintl.h \
+		  limits.h \
+		  locale.h \
+		  stddef.h \
+		  stdint.h \
+		  stdlib.h \
+		  string.h \
+		  sys/param.h \
+		  sys/socket.h \
+		  sys/systeminfo.h \
+		  sys/time.h \
+		  unistd.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+AC_CHECK_HEADER_STDBOOL
+AC_C_INLINE
+AC_TYPE_INT16_T
+AC_TYPE_INT32_T
+AC_TYPE_INT8_T
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_TYPE_SSIZE_T
+AC_TYPE_UINT16_T
+AC_TYPE_UINT32_T
+AC_TYPE_UINT8_T
+
+# Checks for library functions.
+AC_FUNC_FORK
+#AC_FUNC_MALLOC
+#AC_FUNC_REALLOC
+AC_FUNC_SETPGRP
+AC_FUNC_STRFTIME
+AC_FUNC_WAIT3
+AC_CHECK_FUNCS([alarm \
+		atexit \
+		dup2 \
+		gethostname \
+		gettimeofday \
+		isascii \
+		memchr \
+		memmove \
+		memset \
+		mkdir \
+		mkfifo \
+		putenv \
+		select \
+		setlocale \
+		socket \
+		sqrt \
+		strcasecmp \
+		strchr \
+		strcspn \
+		strdup \
+		strerror \
+		strncasecmp \
+		strndup \
+		strrchr \
+		strtol \
+		strtoul \
+		uname])
+AC_REPLACE_FUNCS([asprintf])
 
 # optional python:
 PYTHON=
@@ -178,24 +237,6 @@ AC_ARG_ENABLE(efence,
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
-dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
-
-# Need to know where X is, for finding some libraries (e.g. xpm)
-no_x=""
-AC_PATH_XTRA
-if test x"$no_x" = x"yes"; then
-  echo
-  echo "X11 libraries or header files could not be found.  Please make"
-  echo "sure the X11 development package is installed on your system."
-  echo "If it is definitely installed, try setting the include and library"
-  echo "paths with the --x-include and --x-libraries options of configure."
-  echo "Fvwm can not be compiled without the X11 development environment."
-  echo
-  echo "Aborting."
-  echo
-  exit 1
-fi
-
 # FIXME: default value should be derived from computed path to X
 # includes.  Actually, this should probably not appear in configure
 # at all: it is settable at runtime, and only confuses the issue to
@@ -219,72 +260,21 @@ AC_ARG_WITH(imagepath,
 AH_TEMPLATE([FVWM_IMAGEPATH],[Where to search for images.])
 AC_DEFINE_UNQUOTED(FVWM_IMAGEPATH, "$val")
 
+AC_DEFINE([fd_set_size_t], [], ["Select"])
+AC_DEFINE_UNQUOTED(fd_set_size_t, int)
+
 FVWM_IMAGEPATH="$val"
 AC_SUBST(FVWM_IMAGEPATH)
 AC_MSG_RESULT($val)
-
-# Minimal checks for programs: enough to enable checking for
-# optional libraries.
-AC_PROG_CC
-AC_PROG_CPP
 
 # added -Wall for gcc, what about for others?
 if test "x$GCC" = "xyes"; then
   CFLAGS="-Wall -Wno-implicit-int -fno-common -Wno-error=format-security $CFLAGS"
 fi
 
-# Help finding POSIX functions on some systems
-AC_ISC_POSIX
-AC_MINIX
-
-# catch -Werror and similar options when running configure
-AC_TRY_COMPILE([#include <stdio.h>],
-[int i; static j; int *p; char *c;
-  switch (*p = p = *c) { case 0: printf("%Q", c, p); }
-  *c = &i; c = p;
-  while (1 || (unsigned int)3 >= 0 || ((int)-1) == ((unsigned int)1));
-], , AC_MSG_ERROR("
-configure is not able to compile programs with warnings.  Please
-remove all offending options like -Werror from the CFLAGS and
-CPPFLAGS variables and run configure again."))
-
 # check size of some types
 ac_save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS $X_CFLAGS"
-AC_CHECK_SIZEOF(int)
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(Window, , [#include <stdio.h>
-#include <X11/X.h>])
-AC_CHECK_SIZEOF(Pixel, , [#include <stdio.h>
-#include <X11/Intrinsic.h>])
-AC_CHECK_SIZEOF(void *)
-CFLAGS="$ac_save_CFLAGS"
-size_check_failed=""
-if test "$ac_cv_sizeof_void_p" -gt "$ac_cv_sizeof_long"; then
-  echo "The type void * is bigger than long."
-  size_check_failed=1
-fi
-if test "$ac_cv_sizeof_Window" -gt "$ac_cv_sizeof_long"; then
-  echo "The type Window is bigger than long."
-  size_check_failed=1
-fi
-if test "$ac_cv_sizeof_Pixel" -gt "$ac_cv_sizeof_long"; then
-  echo "The type Pixel is bigger than long."
-  size_check_failed=1
-fi
-if test x"$size_check_failed" = x1; then
-  echo "This is not supported by the module interface yet (make_new_vpacket)."
-  echo "Detected type sizes are: int($ac_cv_sizeof_int), long($ac_cv_sizeof_long), void*($ac_cv_sizeof_void_p), Window($ac_cv_sizeof_Window), Pixel($ac_cv_sizeof_Pixel)"
-  echo "Please report details of your system and this message to ${FVWMWORKERSLIST}."
-  echo
-  exit 1
-fi
-
-# 'unset' is not portable, but setting to null is not enough to avoid using
-# the cached value!  For ancient shells "rm config.cache" is a solution.
-UNSET=true
-if unset UNSET 2>/dev/null; then UNSET=unset; fi
-
 
 # ********* multibyte
 # FreeBSD has libxpg4, check this and use if found.
@@ -304,12 +294,7 @@ freebsd*)
 	;;
 esac
 
-# *** pkg-config
-# unfortunately, we need pkg-config for the detection of certain libs:
-# - version of fontconfig without fontconfig-config
-# - version of fribidi without fribidi-config
-AM_CHECK_PKG_CONFIG
-
+PKG_PROG_PKG_CONFIG
 PKG_CHECK_MODULES([xt],[xt],
 [],
 [
@@ -349,13 +334,7 @@ fi
 AM_CONDITIONAL([FVWM_BUILD_MANDOC], [test x"$with_mandoc" = xyes])
 
 # ********* session management
-# Check the availability of SM; we don't have to add any extra libraries,
-# since -lSM -lICE are in X_PRE_LIBS when they exist.
-dnl [old check] AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
-dnl [old check]            [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
-
 problem_sm=""
-
 AC_ARG_ENABLE(sm,
   AS_HELP_STRING([--disable-sm],[disable session management support]),
   [ if test x"$enableval" = xyes; then
@@ -368,29 +347,16 @@ AC_ARG_ENABLE(sm,
 )
 
 if test ! x"$with_sm" = xno; then
-  dnl Uncomment the following and comment out AC_CHECK_LIB to get --with-sm-*
-  dnl $UNSET ac_cv_lib_SM_SmcOpenConnection
-  dnl $UNSET ac_cv_header_X11_SM_SMlib_h
-  dnl smr_CHECK_LIB(sm, SM, adds session management support, SmcOpenConnection,
-  dnl   X11/SM/SMlib.h,
-  dnl   [$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS], $X_CFLAGS)
-  dnl test "$sm_LIBS" && AC_DEFINE(SESSION)
-
-  $UNSET ac_cv_lib_SM_SmcOpenConnection
   AH_TEMPLATE([SESSION],[Enables session management functionality.])
   AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
     with_sm=no; problem_sm=": Failed to detect libSM",
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 fi
-dnl AC_SUBST(sm_LIBS)
-dnl AC_SUBST(sm_CFLAGS)
-
 
 # Checking for optional libraries
 # Default is to use them if found; can be disable using --without
 # These are put up front so that if they are requested, but
 # configure fails to find them, we fail early.
-
 
 # ********* shape extension
 dnl smr_SWITCH(shape, shape extensions, on, SHAPE)
@@ -422,7 +388,6 @@ AH_TEMPLATE(SHAPE,
    Note: if it is compiled in, run time detection is used to make sure that
    the currently running X server supports it.])
 if test ! x"$with_shape" = xno; then
-  $UNSET ac_cv_lib_Xext_XShapeQueryExtension
   AC_CHECK_LIB(Xext, XShapeQueryExtension,
                with_shape=yes; AC_DEFINE(SHAPE),
                with_shape=no;
@@ -444,7 +409,6 @@ AC_ARG_ENABLE(shm,
 
 AH_TEMPLATE([HAVE_XSHM],[Define if  MIT Shared Memory extension is used.])
 if test ! x"$with_shm" = xno; then
-  $UNSET ac_cv_lib_Xext_XShmQueryExtension
   AC_CHECK_LIB(Xext, XShmQueryExtension,
                with_shm=yes; AC_DEFINE(HAVE_XSHM),
                with_shm=no;
@@ -515,7 +479,6 @@ AC_ARG_ENABLE(xrender,
 
 AH_TEMPLATE([HAVE_XRENDER],[Define if Xrender library is used.])
 if test ! x"$with_xrender" = xno; then
-  $UNSET ac_cv_lib_Xrender_XRenderComposite
   AC_CHECK_LIB(Xrender, XRenderComposite,
     with_xrender=yes; Xrender_LIBS=-lXrender;
     AC_DEFINE(HAVE_XRENDER),
@@ -541,7 +504,6 @@ AC_ARG_ENABLE(xcursor,
 if test ! x"$with_xcursor" = xno; then
    with_xcursor=no
    if test ! x"$with_xrender" = xno; then
-      $UNSET ac_cv_lib_Xrender_XRenderCreateCursor
       AC_CHECK_LIB(Xrender, XRenderCreateCursor, [
          with_xcursor=yes
       ],[
@@ -553,7 +515,6 @@ if test ! x"$with_xcursor" = xno; then
    fi
 fi
 if test x"$with_xcursor" = xyes ; then
-      $UNSET ac_cv_lib_Xcursor_XcursorImageLoadCursor
       AC_CHECK_LIB(Xcursor, XcursorImageLoadCursor, [
          AC_DEFINE(HAVE_XCURSOR)
          Xcursor_LIBS=-lXcursor
@@ -566,6 +527,7 @@ fi
 AC_SUBST(Xcursor_CFLAGS)
 AC_SUBST(Xcursor_LIBS)
 
+# FIXME: XXX
 # ********* xft
 problem_xft=""
 
@@ -584,7 +546,6 @@ AC_ARG_ENABLE(xft,
 
 freetype_CFLAGS=""
 freetype_LIBS=""
-AH_TEMPLATE([HAVE_XFT],[Define if Xft library is used.])
 AH_TEMPLATE([HAVE_XFT2],[Define if Xft 2 library is used.])
 AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
 if test ! x"$with_xft" = xno; then
@@ -605,27 +566,10 @@ if test ! x"$with_xft" = xno; then
   AC_SUBST(freetype_CFLAGS)
   AC_SUBST(freetype_LIBS)
 
-  # check for fontconfig for Xft 2
-  have_fontconfig=no
-  if test ! x"$have_freetype" = xno ; then
-    AM_CHECK_FC(1.0.1)
-    if test x"$no_fc" = x ; then
-      have_fontconfig=yes
-      fontconfig_CFLAGS=`$PKG_CONFIG --cflags fontconfig`
-      fontconfig_LIBS=`$PKG_CONFIG --libs fontconfig`
-      CFLAGS="$CFLAGS $fontconfig_CFLAGS"
-      LIBS="$LIBS $fontconfig_LIBS"
-    else
-      have_fontconfig=no
-      problem_xft=": Can't detect fontconfig >= 1.0.1"
-    fi
-  fi
-
   # now check for Xft 2
   with_xft=no
   if test ! x"$have_fontconfig" = xno ; then
     # Xft 2
-    AM_CHECK_XFT(2.0.0)
     if test x"$no_xft" = x; then
       with_xft=yes
       problem_xft=" (version 2)"
@@ -638,38 +582,6 @@ if test ! x"$with_xft" = xno; then
       problem_xft=": Can't detect Xft2, detected fontconfig"
     fi
   fi
-
-  # if Xft2 not detected check for Xft1
-  if test ! x"$have_freetype" = xno && test ! x"$with_xft" = xyes; then
-    #Xft 1
-    $UNSET ac_cv_lib_XftConfigSubstitute
-    $UNSET ac_cv_lib_Xft_XftFontOpen
-    $UNSET ac_cv_lib_Xft_XftDrawStringUtf8
-    AC_CHECK_LIB(Xft, XftFontOpen,
-      with_xft=yes, with_xft=no,
-      [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
-    if test x"$with_xft" = xyes ; then
-      AC_CHECK_LIB(Xft, XftConfigSubstitute, is_xft1=yes, is_xft1=no,
-        [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
-      if test x"$is_xft1" = xyes; then
-        Xft_LIBS="-lXft $FT2_LIBS"
-	Xft_CFLAGS="$Xft_CFLAGS $FT2_CFLAGS"
-        problem_xft=" (version 1)"
-        AC_DEFINE(HAVE_XFT)
-      else
-        with_xft=no
-        problem_xft=": Can't detect Xft 1 or fontconfig"
-      fi
-    else
-      problem_xft=": Can't detect Xft 1 or 2 and fontconfig"
-    fi
-    if test x"$with_xft" = xyes; then
-      AC_CHECK_LIB(Xft, XftDrawStringUtf8,
-        AC_DEFINE(HAVE_XFT_UTF8),,
-        [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS $Xrender_LIBS])
-    fi
-  fi
-
 fi
 AC_SUBST(Xft_LIBS)
 AC_SUBST(Xft_CFLAGS)
@@ -677,8 +589,6 @@ AC_SUBST(Xft_CFLAGS)
 # ********* xpm
 problem_xpm=": Xpm library or header not found"
 
-$UNSET ac_cv_header_X11_xpm_h
-$UNSET ac_cv_lib_Xpm_XpmReadFileToXpmImage
 smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
@@ -690,12 +600,11 @@ if test ! x"$xpm_LIBS" = x; then
   my_LIBS="$LIBS"
   CPPFLAGS="$CPPFLAGS $xpm_CFLAGS $X_CFLAGS"
   LIBS="$LIBS $xpm_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
-  AC_TRY_RUN([#include <X11/xpm.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <X11/xpm.h>
    int main(int c, char **v) {
    return c == 1 ? 0 :
      XpmIncludeVersion != XpmLibraryVersion() ? 1 :
-     XpmIncludeVersion < 30407 ? 2 : 0 ;}],
-    [./conftest dummy_arg; xpm_status=$?;
+     XpmIncludeVersion < 30407 ? 2 : 0 ;}]])],[./conftest dummy_arg; xpm_status=$?;
      if test x"$xpm_status" = x0; then
        with_xpm=yes
        problem_xpm=""
@@ -708,9 +617,8 @@ if test ! x"$xpm_LIBS" = x; then
        else
 	 problem_xpm=": Internal xpm detection logic error"
        fi
-     fi],
-   [with_xpm=no; problem_xpm=": Xpm test error, see config.log"],
-   [echo $ac_n "cross compiling; assumed OK... $ac_c"])
+     fi],[with_xpm=no; problem_xpm=": Xpm test error, see config.log"],
+     [echo $ac_n "cross compiling; assumed OK... $ac_c"])
   AC_MSG_RESULT($with_xpm)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
@@ -837,7 +745,7 @@ if test x"$with_rsvg" = xyes ; then
    original_LIBS="$LIBS"
    CFLAGS="$CFLAGS $rsvg_CFLAGS"
    LIBS="$LIBS $rsvg_LIBS"
-   AC_TRY_RUN([
+   AC_RUN_IFELSE([AC_LANG_SOURCE([[
       #include <librsvg/rsvg.h>
       #include <librsvg/rsvg-cairo.h>
       int main() {
@@ -847,9 +755,9 @@ if test x"$with_rsvg" = xyes ; then
          g_object_unref(G_OBJECT(rsvg));
          return 0;
       }
-   ], [
+   ]])],[
       AC_MSG_RESULT(yes)
-   ], [
+   ],[
       AC_MSG_RESULT(no)
       AC_MSG_WARN([*** The librsvg test program failed to run. If your system])
       AC_MSG_WARN([*** has shared libraries outside the normal system library])
@@ -857,7 +765,7 @@ if test x"$with_rsvg" = xyes ; then
       AC_MSG_WARN([*** (or the like) environment variable is correctly set.])
       with_rsvg=no
       problem_rsvg=": Failed to run test program"
-   ], [echo $ac_n "cross compiling; assumed OK... $ac_c"])
+   ],[echo $ac_n "cross compiling; assumed OK... $ac_c"])
    CFLAGS="$original_CFLAGS"
    LIBS="$original_LIBS"
 fi
@@ -879,8 +787,6 @@ smr_ARG_WITHLIB(termcap, , to accomplish readline)
 AH_TEMPLATE([HAVE_READLINE],[Define if readline is available.])
 if test ! x"$with_termcap" = xno; then
   # Forget cached values, so user can re-run configure
-  $UNSET ac_cv_header_readline_history_h
-  $UNSET ac_cv_lib_readline_readline
   AC_MSG_CHECKING([with termcap])
   smr_CHECK_LIB(readline, , line editing/history, readline, readline/history.h,
     $termcap_LIBS)
@@ -895,8 +801,6 @@ if test ! x"$with_ncurses" = xno && test x"$readline_LIBS" = x; then
   # We couldn't use readline with termcap; try with ncurses?
   # Doesn't this seem a hacky way to do this??
   # unset cached values from last check...
-  $UNSET ac_cv_header_readline_history_h
-  $UNSET ac_cv_lib_readline_readline
   AC_MSG_CHECKING([with ncurses])
   dnl We can not call smr_CHECK_LIB twice here without having the usage twice.
   dnl old_LIBS=$LIBS
@@ -955,8 +859,6 @@ AH_TEMPLATE([HAVE_ICONV],
   [Define if iconv (in the libc) or libiconv is available])
 if test ! x"$ac_cv_iconv" = xno; then
   # * first check for gnu libiconv
-  $UNSET ac_cv_header_libiconv_h
-  $UNSET ac_cv_lib_libiconv_libiconv_open
   smr_CHECK_LIB(
   	iconv, , if not found sys iconv is used, libiconv_open, iconv.h)
   if test ! x"$iconv_LIBS" = x; then
@@ -992,6 +894,31 @@ if test ! x"$ac_cv_iconv" = xno; then
     AC_MSG_WARN([*** ])
   fi
 
+  #
+  # check if iconv second argument use const char.
+  #
+  AC_DEFUN([ICONV_SECOND_ARG],[
+        AC_MSG_CHECKING(check if second arg of iconv is const)
+        AC_TRY_COMPILE([
+  #include <stdlib.h>
+  #include <iconv.h>
+  extern
+  #if defined(__STDC__)
+    size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, size_t *outbytesleft);
+  #else
+    size_t iconv();
+  #endif
+  ], [], use_const=no, use_const=yes)
+        AC_MSG_RESULT($use_const)
+        AH_TEMPLATE([ICONV_ARG_CONST],
+                    [define if second arg of iconv use const])
+        if test "x$use_const" = "xyes"; then
+                AC_DEFINE(ICONV_ARG_CONST, const)
+        else
+                AC_DEFINE(ICONV_ARG_CONST, )
+        fi
+])
+
   if test x"$with_iconv" = xyes; then
      AC_DEFINE(HAVE_ICONV)
      ICONV_SECOND_ARG
@@ -1008,12 +935,9 @@ AH_VERBATIM([_HAVE_LIBCHARSET],
 # ******** nl_langinfo and CODESET
 AH_TEMPLATE([HAVE_CODESET],[Have nl_langinfo (CODESET)])
 AC_MSG_CHECKING([for nl_langinfo (CODESET)])
-AC_TRY_COMPILE([#include <langinfo.h>
-#include <locale.h>],
-[char *codeset = nl_langinfo(CODESET); setlocale(LC_CTYPE, "");],
-   AC_DEFINE(HAVE_CODESET)
-   have_codeset=yes,
-   have_codeset=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <langinfo.h>
+#include <locale.h>]], [[char *codeset = nl_langinfo(CODESET); setlocale(LC_CTYPE, "");]])],[AC_DEFINE(HAVE_CODESET)
+   have_codeset=yes],[have_codeset=no])
 AC_MSG_RESULT($have_codeset)
 
 
@@ -1058,7 +982,7 @@ if test ! x"$with_bidi" = xno; then
   fribidi_in_path=yes
   ac_save_LIBS="$LIBS"
   LIBS="$LIBS $Bidi_LIBS"
-  AC_TRY_RUN([#include <stdlib.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
 {
@@ -1069,14 +993,14 @@ int main()
 		logical_unicode_str);
 	return 0;
 }
-], [:], [fribidi_in_path=no])
+]])],[:],[fribidi_in_path=no],[])
   LIBS="$ac_save_LIBS"
   if test ! x"$fribidi_in_path" = xyes; then
     ac_save_CFLAGS="$CFLAGS"
     ac_save_LIBS="$LIBS"
     CFLAGS="$CFLAGS $Bidi_CFLAGS"
     LIBS="$LIBS $Bidi_LIBS"
-  AC_TRY_RUN([#include <stdlib.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
 {
@@ -1087,7 +1011,7 @@ int main()
 		logical_unicode_str);
 	return 0;
 }
-], [:], [with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"])
+]])],[:],[with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"],[])
     CFLAGS="$ac_save_CFLAGS"
     LIBS="$ac_save_LIBS"
   fi
@@ -1105,11 +1029,11 @@ if test x"$with_bidi" = xno; then
   Bidi_LIBS=
 else
   AC_DEFINE(HAVE_BIDI)
-  AC_TRY_RUN([#include <fribidi/fribidi.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <fribidi/fribidi.h>
     int main(int c, char **v) {
       return FRIBIDI_CHARSET_NOT_FOUND * 0;
     }
-  ], [AC_DEFINE(FRIBIDI_CHARSET_SPELLING)])
+  ]])],[AC_DEFINE(FRIBIDI_CHARSET_SPELLING)],[],[])
 fi
 AH_VERBATIM([_FRIBIDI_CHARSET_SPELLING],
 [#ifdef FRIBIDI_CHARSET_SPELLING
@@ -1162,7 +1086,6 @@ AH_TEMPLATE([HAVE_NLS],
   [Define to 1 if translation of program messages to the user's native
   language is requested.])
 if test ! x"$with_gettext" = xno; then
-  AM_GNU_FGETTEXT
   if test x"$USE_NLS" = "xyes"; then
     AC_DEFINE(HAVE_NLS, 1)
   else
@@ -1194,107 +1117,6 @@ AC_SUBST(GMOFILES)
 AC_SUBST(UPDATEPOFILES)
 AC_SUBST(DUMMYPOFILES)
 AC_SUBST(CATOBJEXT)
-
-# Check for REQUIRED headers and functions before going any
-# further.
-
-# The module interface uses variadic functions for message passing.
-AC_CHECK_HEADERS(stdarg.h)
-AC_CHECK_FUNCS(vfprintf)
-if test x$ac_cv_header_stdarg_h = xno -o \
-        $ac_cv_func_vfprintf = no; then
-     AC_MSG_ERROR([stdarg.h and vfprintf required])
-fi
-
-# For reaping children, fvwm needs either waitpid() or wait3()
-# Some extra modules may need wait4() too
-AC_CHECK_FUNCS(waitpid)
-if test x$ac_cv_func_waitpid = xno; then
-    AC_CHECK_FUNCS(wait3 wait4)
-    if test x$ac_cv_func_wait3 = xno; then
-        AC_MSG_ERROR([Either waitpid or wait3 function is required])
-    fi
-fi
-
-# C89/C99 signal handling
-AC_CHECK_FUNCS(sigsetjmp siglongjmp)
-
-# Finish checking for programs.
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_MAKE_SET
-AC_PROG_RANLIB
-dnl lex+yacc now only needed for FvwmScript developers when syntax is changed
-dnl AM_PROG_LEX
-dnl AC_PROG_YACC
-
-# Checks for header files.
-AC_HEADER_STDC
-AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS(stdlib.h fcntl.h limits.h malloc.h string.h memory.h unistd.h)
-AC_CHECK_HEADERS(stdint.h inttypes.h)
-AC_CHECK_HEADERS(getopt.h sys/select.h sys/systeminfo.h sys/time.h)
-
-# Checks for typedefs, structures, and compiler characteristics.
-AC_C_CONST
-AC_C_INLINE
-AC_TYPE_OFF_T
-AC_TYPE_PID_T
-AC_TYPE_SIZE_T
-AC_HEADER_TIME
-dnl AC_STRUCT_TM
-AC_TYPE_SIGNAL
-AC_TYPE_INT16_T
-AC_TYPE_UINT16_T
-
-# Checks for library functions.
-AC_FUNC_STRFTIME
-AC_FUNC_SETPGRP
-AC_CHECK_FUNCS(gettimeofday mkfifo putenv setvbuf socket waitpid)
-AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
-AC_CHECK_FUNCS(sigaction siginterrupt getpwuid)
-AC_CHECK_FUNCS(setpgrp setpgid)
-AC_CHECK_FUNCS(lstat)
-
-
-
-pds_CHECK_TYPE(sig_atomic_t, int, [#include <signal.h>], [Specify a type for sig_atomic_t if it's not available.])
-
-if test x$ac_cv_func_setvbuf = xyes; then
-  AC_FUNC_SETVBUF_REVERSED
-fi
-
-AC_FUNC_SELECT
-if test ! x"$ac_cv_func_select" = xyes; then
-  AC_MSG_ERROR([select required])
-fi
-
-# check for mkstemp, see the discution on this subject on the fvwm workers
-# list (2001-02-16 and 2001-02-24)
-AM_SAFETY_CHECK_MKSTEMP
-
-# ********* IMLIB, GNOME
-# Check the availability of gdk-imlib
-AH_TEMPLATE([GDK_IMLIB],[Define if gdk-imlib is used])
-AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB))
-if test x"$no_imlib" = x; then
-  with_gdkimlib=yes
-  problem_gdkimlib=""
-else
-  with_gdkimlib=no
-  problem_gdkimlib=": Failed on gdk-imlib, see config.log"
-fi
-
-# Define some compatibility macros needed for config.h.
-mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
-  [defined XK_Page_Up && defined XK_Page_Down],
-  [COMPAT_OLD_KEYSYMDEF], [$X_CFLAGS],
-  [Old AIX systems (3.2.5) don't define some common keysyms.])
-AH_VERBATIM([_COMPAT_OLD_KEYSYMDEF],
-[#ifdef COMPAT_OLD_KEYSYMDEF
-#  define XK_Page_Up   XK_Prior
-#  define XK_Page_Down XK_Next
-#endif])
 
 # Allow building with dmalloc.  Do this last to avoid screwing up any
 # other checks above.
@@ -1344,25 +1166,11 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define FMiniIconsSupported 0
 #endif
 
-#if RETSIGTYPE != void
-#define SIGNAL_RETURN return 0
-#else
-#define SIGNAL_RETURN return
+#ifndef RETSIGTYPE
+#define RETSIGTYPE     void
 #endif
 
-/* Allow GCC extensions to work, if you have GCC. */
-#ifndef __attribute__
-/* This feature is available in gcc versions 2.5 and later. */
-#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__
-#    define __attribute__(x)
-#  endif
-/* The __-protected variants of `format' and `printf' attributes
- * are accepted by gcc versions 2.6.4 (effectively 2.7) and later. */
-#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
-#    define __format__ format
-#    define __printf__ printf
-#  endif
-#endif
+#define SIGNAL_RETURN return
 
 #ifdef HAVE_STRING_H
 #  include <string.h>
@@ -1478,81 +1286,50 @@ dnl with autoconf <2.60 this is needed
 AC_SUBST(datarootdir)
 AC_SUBST(docdir)
 
-LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
-AC_SUBST(LOCAL_BUGADDR)
-
-AC_OUTPUT(
-	Makefile
-	libs/Makefile
-	fvwm/Makefile
-	modules/Makefile
-dnl
-dnl	bin/fvwm-menu-directory.1
-dnl	bin/fvwm-menu-xlock.1
-dnl	bin/fvwm-perllib.1
-dnl
-	bin/Makefile
+AC_CONFIG_FILES([Makefile
 	bin/FvwmCommand
 	bin/FvwmPrompt/Makefile
+	bin/Makefile
 	bin/fvwm-config
-	bin/fvwm-perllib
-	bin/fvwm-menu-xlock
-	bin/fvwm-menu-directory
-	bin/fvwm-menu-desktop
 	bin/fvwm-convert-2.6
-dnl
-	utils/Makefile
-	perllib/Makefile
-	perllib/General/Makefile
-	perllib/FVWM/Makefile
-	perllib/FVWM/Module/Makefile
-	perllib/FVWM/Tracker/Makefile
-	perllib/FVWM/Module.pm
+	bin/fvwm-menu-desktop
+	bin/fvwm-menu-directory
+	bin/fvwm-menu-xlock
+	bin/fvwm-perllib
 	default-config/Makefile
-	doc/Makefile
 	dev-docs/Makefile
-	po/Makefile
-dnl
+	doc/Makefile
+	fvwm/Makefile
+	libs/Makefile
 	modules/FvwmAnimate/Makefile
 	modules/FvwmAuto/Makefile
 	modules/FvwmBacker/Makefile
 	modules/FvwmButtons/Makefile
-	modules/FvwmConsole/Makefile
 	modules/FvwmConsole/FvwmConsoleC.pl
+	modules/FvwmConsole/Makefile
 	modules/FvwmEvent/Makefile
 	modules/FvwmForm/Makefile
 	modules/FvwmIconMan/Makefile
 	modules/FvwmIdent/Makefile
 	modules/FvwmMFL/Makefile
 	modules/FvwmPager/Makefile
-	modules/FvwmPerl/Makefile
 	modules/FvwmPerl/FvwmPerl
+	modules/FvwmPerl/Makefile
 	modules/FvwmRearrange/Makefile
 	modules/FvwmScript/Makefile
 	modules/FvwmScript/Scripts/Makefile
 	modules/FvwmScript/Widgets/Makefile
-)
-
-# ---------------------------------------------------------------------------
-# Original config.status is patched to make generated scripts executable.
-sed 's/> $ac_file/> $ac_file; test x"`head -1 $ac_file | cut -c1-2`" = x"#!" \&\& chmod a+rx $ac_file/' <config.status >config.status-t && \
-mv config.status-t config.status
-chmod +x config.status
-# ---------------------------------------------------------------------------
-
-# ---------------------------------------------------------------------------
-cat >config.status-t <<EOF
-#! /bin/sh
-
-# Original config.status is patched to satisfy processing *.in with 'make -j'.
-# This bug seems to be partially fixed in autoconf-2.50 (not in all places).
-UNIQUE_POSTFIX=\$\$
-
-EOF
-sed 's/conftest/conftest\${UNIQUE_POSTFIX}/g' <config.status >>config.status-t && \
-mv config.status-t config.status
-chmod +x config.status
-# ---------------------------------------------------------------------------
+	modules/Makefile
+	perllib/FVWM/Makefile
+	perllib/FVWM/Module.pm
+	perllib/FVWM/Module/Makefile
+	perllib/FVWM/Tracker/Makefile
+	perllib/General/Makefile
+	perllib/Makefile
+	po/Makefile
+	utils/Makefile
+])
+AC_OUTPUT
 
 eval my_bindir="`eval echo ${bindir}`"
 eval my_mandir="`eval echo ${mandir}`"
