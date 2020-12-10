@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
-AC_PREREQ(2.60)
+AC_PREREQ([2.69])
 
 dnl should be "yes" only within the released distribution
 ISRELEASED="no"
@@ -234,19 +234,18 @@ if test "x$GCC" = "xyes"; then
 fi
 
 # Help finding POSIX functions on some systems
-AC_ISC_POSIX
-AC_MINIX
+AC_SEARCH_LIBS([strerror],[cposix])
+AC_USE_SYSTEM_EXTENSIONS
 
 # catch -Werror and similar options when running configure
-AC_TRY_COMPILE([#include <stdio.h>],
-[int i; static j; int *p; char *c;
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <stdio.h>]], [[int i; static j; int *p; char *c;
   switch (*p = p = *c) { case 0: printf("%Q", c, p); }
   *c = &i; c = p;
   while (1 || (unsigned int)3 >= 0 || ((int)-1) == ((unsigned int)1));
-], , AC_MSG_ERROR("
+]])],[],[AC_MSG_ERROR("
 configure is not able to compile programs with warnings.  Please
 remove all offending options like -Werror from the CFLAGS and
-CPPFLAGS variables and run configure again."))
+CPPFLAGS variables and run configure again.")])
 
 # check size of some types
 ac_save_CFLAGS="$CFLAGS"
@@ -673,12 +672,11 @@ if test ! x"$xpm_LIBS" = x; then
   my_LIBS="$LIBS"
   CPPFLAGS="$CPPFLAGS $xpm_CFLAGS $X_CFLAGS"
   LIBS="$LIBS $xpm_LIBS $X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS"
-  AC_TRY_RUN([#include <X11/xpm.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <X11/xpm.h>
    int main(int c, char **v) {
    return c == 1 ? 0 :
      XpmIncludeVersion != XpmLibraryVersion() ? 1 :
-     XpmIncludeVersion < 30407 ? 2 : 0 ;}],
-    [./conftest dummy_arg; xpm_status=$?;
+     XpmIncludeVersion < 30407 ? 2 : 0 ;}]])],[./conftest dummy_arg; xpm_status=$?;
      if test x"$xpm_status" = x0; then
        with_xpm=yes
        problem_xpm=""
@@ -691,9 +689,7 @@ if test ! x"$xpm_LIBS" = x; then
        else
 	 problem_xpm=": Internal xpm detection logic error"
        fi
-     fi],
-   [with_xpm=no; problem_xpm=": Xpm test error, see config.log"],
-   [echo $ac_n "cross compiling; assumed OK... $ac_c"])
+     fi],[with_xpm=no; problem_xpm=": Xpm test error, see config.log"],[echo $ac_n "cross compiling; assumed OK... $ac_c"])
   AC_MSG_RESULT($with_xpm)
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
@@ -819,7 +815,7 @@ if test x"$with_rsvg" = xyes ; then
    original_LIBS="$LIBS"
    CFLAGS="$CFLAGS $rsvg_CFLAGS"
    LIBS="$LIBS $rsvg_LIBS"
-   AC_TRY_RUN([
+   AC_RUN_IFELSE([AC_LANG_SOURCE([[
       #include <librsvg/rsvg.h>
       #include <librsvg/rsvg-cairo.h>
       int main() {
@@ -829,9 +825,9 @@ if test x"$with_rsvg" = xyes ; then
          g_object_unref(G_OBJECT(rsvg));
          return 0;
       }
-   ], [
+   ]])],[
       AC_MSG_RESULT(yes)
-   ], [
+   ],[
       AC_MSG_RESULT(no)
       AC_MSG_WARN([*** The librsvg test program failed to run. If your system])
       AC_MSG_WARN([*** has shared libraries outside the normal system library])
@@ -839,7 +835,7 @@ if test x"$with_rsvg" = xyes ; then
       AC_MSG_WARN([*** (or the like) environment variable is correctly set.])
       with_rsvg=no
       problem_rsvg=": Failed to run test program"
-   ], [echo $ac_n "cross compiling; assumed OK... $ac_c"])
+   ],[echo $ac_n "cross compiling; assumed OK... $ac_c"])
    CFLAGS="$original_CFLAGS"
    LIBS="$original_LIBS"
 fi
@@ -990,12 +986,9 @@ AH_VERBATIM([_HAVE_LIBCHARSET],
 # ******** nl_langinfo and CODESET
 AH_TEMPLATE([HAVE_CODESET],[Have nl_langinfo (CODESET)])
 AC_MSG_CHECKING([for nl_langinfo (CODESET)])
-AC_TRY_COMPILE([#include <langinfo.h>
-#include <locale.h>],
-[char *codeset = nl_langinfo(CODESET); setlocale(LC_CTYPE, "");],
-   AC_DEFINE(HAVE_CODESET)
-   have_codeset=yes,
-   have_codeset=no)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <langinfo.h>
+#include <locale.h>]], [[char *codeset = nl_langinfo(CODESET); setlocale(LC_CTYPE, "");]])],[AC_DEFINE(HAVE_CODESET)
+   have_codeset=yes],[have_codeset=no])
 AC_MSG_RESULT($have_codeset)
 
 
@@ -1040,7 +1033,7 @@ if test ! x"$with_bidi" = xno; then
   fribidi_in_path=yes
   ac_save_LIBS="$LIBS"
   LIBS="$LIBS $Bidi_LIBS"
-  AC_TRY_RUN([#include <stdlib.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
 {
@@ -1051,14 +1044,14 @@ int main()
 		logical_unicode_str);
 	return 0;
 }
-], [:], [fribidi_in_path=no])
+]])],[:],[fribidi_in_path=no],[])
   LIBS="$ac_save_LIBS"
   if test ! x"$fribidi_in_path" = xyes; then
     ac_save_CFLAGS="$CFLAGS"
     ac_save_LIBS="$LIBS"
     CFLAGS="$CFLAGS $Bidi_CFLAGS"
     LIBS="$LIBS $Bidi_LIBS"
-  AC_TRY_RUN([#include <stdlib.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdlib.h>
 #include <fribidi/fribidi.h>
 int main()
 {
@@ -1069,7 +1062,7 @@ int main()
 		logical_unicode_str);
 	return 0;
 }
-], [:], [with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"])
+]])],[:],[with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"],[])
     CFLAGS="$ac_save_CFLAGS"
     LIBS="$ac_save_LIBS"
   fi
@@ -1087,11 +1080,11 @@ if test x"$with_bidi" = xno; then
   Bidi_LIBS=
 else
   AC_DEFINE(HAVE_BIDI)
-  AC_TRY_RUN([#include <fribidi/fribidi.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <fribidi/fribidi.h>
     int main(int c, char **v) {
       return FRIBIDI_CHARSET_NOT_FOUND * 0;
     }
-  ], [AC_DEFINE(FRIBIDI_CHARSET_SPELLING)])
+  ]])],[AC_DEFINE(FRIBIDI_CHARSET_SPELLING)],[],[])
 fi
 AH_VERBATIM([_FRIBIDI_CHARSET_SPELLING],
 [#ifdef FRIBIDI_CHARSET_SPELLING
@@ -1225,7 +1218,18 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 dnl AC_STRUCT_TM
-AC_TYPE_SIGNAL
+AC_DIAGNOSE([obsolete],[your code may safely assume C89 semantics that RETSIGTYPE is void.
+Remove this warning and the `AC_CACHE_CHECK' when you adjust the code.])dnl
+AC_CACHE_CHECK([return type of signal handlers],[ac_cv_type_signal],[AC_COMPILE_IFELSE(
+[AC_LANG_PROGRAM([#include <sys/types.h>
+#include <signal.h>
+],
+		 [return *(signal (0, 0)) (0) == 1;])],
+		   [ac_cv_type_signal=int],
+		   [ac_cv_type_signal=void])])
+AC_DEFINE_UNQUOTED([RETSIGTYPE],[$ac_cv_type_signal],[Define as the return type of signal handlers
+		    (`int' or `void').])
+
 AC_TYPE_INT16_T
 AC_TYPE_UINT16_T
 
@@ -1452,41 +1456,26 @@ dnl with autoconf <2.60 this is needed
 AC_SUBST(datarootdir)
 AC_SUBST(docdir)
 
-AC_OUTPUT(
-	Makefile
-	libs/Makefile
-	fvwm/Makefile
-	modules/Makefile
-dnl
-dnl	bin/fvwm-menu-directory.1
-dnl	bin/fvwm-menu-xlock.1
-dnl	bin/fvwm-perllib.1
-dnl
-	bin/Makefile
+AC_CONFIG_FILES([Makefile
 	bin/FvwmCommand
 	bin/FvwmPrompt/Makefile
+	bin/Makefile
 	bin/fvwm-config
-	bin/fvwm-perllib
-	bin/fvwm-menu-xlock
-	bin/fvwm-menu-directory
-	bin/fvwm-menu-desktop
 	bin/fvwm-convert-2.6
-dnl
-	utils/Makefile
-	perllib/Makefile
-	perllib/General/Makefile
-	perllib/FVWM/Makefile
-	perllib/FVWM/Module/Makefile
-	perllib/FVWM/Tracker/Makefile
-	perllib/FVWM/Module.pm
+	bin/fvwm-menu-desktop
+	bin/fvwm-menu-directory
+	bin/fvwm-menu-xlock
+	bin/fvwm-perllib
 	default-config/Makefile
+	dev-docs/Makefile
 	doc/Makefile
-	po/Makefile
-dnl
+	fvwm/Makefile
+	libs/Makefile
 	modules/FvwmAnimate/Makefile
 	modules/FvwmAuto/Makefile
 	modules/FvwmBacker/Makefile
 	modules/FvwmButtons/Makefile
+	modules/FvwmConsole/FvwmConsoleC.pl
 	modules/FvwmConsole/Makefile
 	modules/FvwmEvent/Makefile
 	modules/FvwmForm/Makefile
@@ -1494,13 +1483,23 @@ dnl
 	modules/FvwmIdent/Makefile
 	modules/FvwmMFL/Makefile
 	modules/FvwmPager/Makefile
-	modules/FvwmPerl/Makefile
 	modules/FvwmPerl/FvwmPerl
+	modules/FvwmPerl/Makefile
 	modules/FvwmRearrange/Makefile
 	modules/FvwmScript/Makefile
 	modules/FvwmScript/Scripts/Makefile
 	modules/FvwmScript/Widgets/Makefile
-)
+	modules/Makefile
+	perllib/FVWM/Makefile
+	perllib/FVWM/Module.pm
+	perllib/FVWM/Module/Makefile
+	perllib/FVWM/Tracker/Makefile
+	perllib/General/Makefile
+	perllib/Makefile
+	po/Makefile
+	utils/Makefile
+])
+AC_OUTPUT
 
 # ---------------------------------------------------------------------------
 # Original config.status is patched to make generated scripts executable.
