@@ -69,11 +69,6 @@ fvwmReapChildren(int sig)
 	{
 		/* nothing to do here */
 	}
-#elif HAVE_WAIT3
-	while (wait3(NULL, WNOHANG, NULL) > 0)
-	{
-		/* nothing to do here */
-	}
 #else
 # error One of waitpid or wait3 is needed.
 #endif
@@ -213,9 +208,9 @@ fvwmSelect(fd_set_size_t nfds,
 			 * that IS the whole point, after all :-)
 			 */
 			iRet = select(nfds,
-				      SELECT_FD_SET_CAST readfds,
-				      SELECT_FD_SET_CAST writefds,
-				      SELECT_FD_SET_CAST exceptfds,
+				      readfds,
+				      writefds,
+				      exceptfds,
 				      timeout);
 		}
 
