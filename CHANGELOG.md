@@ -18,6 +18,7 @@
 
 **Fixed bugs:**
 
+- Windows are disappearing from screen when they resized and placed again [\#338](https://github.com/fvwmorg/fvwm3/issues/338)
 - Status: desk tracking is broken with sticky windows [\#331](https://github.com/fvwmorg/fvwm3/issues/331)
 - FvwmButtons: Title parameter doesn't allow "-" [\#313](https://github.com/fvwmorg/fvwm3/issues/313)
 - Lack of FvwmCommand can break existing configuration [\#312](https://github.com/fvwmorg/fvwm3/issues/312)
@@ -55,6 +56,7 @@
 
 **Merged pull requests:**
 
+- PlaceAgain: don't clobber desk [\#341](https://github.com/fvwmorg/fvwm3/pull/341) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmConsole: add missing freetype libs/cflags [\#340](https://github.com/fvwmorg/fvwm3/pull/340) ([ThomasAdam](https://github.com/ThomasAdam))
 - Introduce Python 3 based FvwmCommand compatibility script [\#337](https://github.com/fvwmorg/fvwm3/pull/337) ([NsCDE](https://github.com/NsCDE))
 - status: track sticky windows to current desk [\#332](https://github.com/fvwmorg/fvwm3/pull/332) ([ThomasAdam](https://github.com/ThomasAdam))
