@@ -2419,7 +2419,6 @@ void MoveWindow(XEvent *Event)
 	Window JunkRoot, JunkChild;
 	int JunkX, JunkY;
 	unsigned JunkMask;
-	int do_switch_desk_later = 0;
 	struct fpmonitor *mon = fpmonitor_this();
 
 	t = Start;
@@ -2546,17 +2545,6 @@ void MoveWindow(XEvent *Event)
 		XUngrabPointer(dpy,CurrentTime);
 		XSync(dpy,0);
 
-		if (NewDesk != t->desk)
-		{
-			/* griph: This used to move to NewDesk, but NewDesk
-			 * is current desk, and if fvwm is on another
-			 * desk (due to async operation) we have to move
-			 * the window to it anyway or "Move Pointer" will
-			 * move an invisible window. */
-
-			SendText(fd, "Silent MoveToDesk", t->w);
-			t->desk = NewDesk;
-		}
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent Move Pointer", t->w);
 		return;
@@ -2654,17 +2642,6 @@ void MoveWindow(XEvent *Event)
 					ChangeDeskForWindow(t,mon->virtual_scr.CurrentDesk);
 				}
 			}
-			else if (NewDesk + desk1 != mon->virtual_scr.CurrentDesk)
-			{
-				sprintf(command, "Silent MoveToDesk 0 %d",
-					NewDesk + desk1);
-				SendText(fd, command, t->w);
-				t->desk = NewDesk + desk1;
-			}
-			else
-			{
-				do_switch_desk_later = 1;
-			}
 		}
 
 		if (NewDesk >= 0 && NewDesk < ndesks)
@@ -2686,13 +2663,6 @@ void MoveWindow(XEvent *Event)
 				MoveResizePagerView(t, True);
 			}
 			SendText(fd, "Silent Raise", t->w);
-		}
-		if (do_switch_desk_later)
-		{
-			sprintf(command, "Silent MoveToDesk 0 %d", NewDesk +
-				desk1);
-			SendText(fd, command, t->w);
-			t->desk = NewDesk + desk1;
 		}
 		if (mon->virtual_scr.CurrentDesk == t->desk)
 		{
