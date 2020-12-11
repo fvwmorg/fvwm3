@@ -978,11 +978,11 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		bottom = max(bottom, fw->strut.bottom);
 	}
 
+	x = left;
+	y = top;
 	w = monitor_get_all_widths();
 	h = monitor_get_all_heights();
 
-	x = left;
-	y = top;
 	width =  w - (left + right);
 	height = h - (top + bottom);
 
@@ -1037,10 +1037,11 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 		dyn_bottom = max(dyn_bottom, fw->dyn_strut.bottom);
 	}
 
-	w = monitor_get_all_widths();
-	h = monitor_get_all_heights();
 	x = dyn_left;
 	y = dyn_top;
+	w = monitor_get_all_widths();
+	h = monitor_get_all_heights();
+
 	width  = w - (dyn_left + dyn_right);
 	height = h - (dyn_top + dyn_bottom);
 
@@ -1071,7 +1072,7 @@ void EWMH_GetWorkAreaIntersection(
 {
 	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
-	//EWMH_UpdateWorkArea(m);
+	EWMH_UpdateWorkArea(m);
 
 	int nx,ny,nw,nh;
 	int area_x = m->Desktops->ewmh_working_area.x;

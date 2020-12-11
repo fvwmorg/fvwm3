@@ -2458,12 +2458,12 @@ int main(int argc, char **argv)
 	Scr.gray_bitmap =
 		XCreateBitmapFromData(dpy,Scr.Root,g_bits, g_width,g_height);
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
-		EWMH_Init(m);
-
 	/* This should be done early enough to have the window states loaded
 	 * before the first call to AddWindow. */
 	LoadWindowStates(state_filename);
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		EWMH_Init(m);
 
 	SetRCDefaults();
 	flush_window_updates();
