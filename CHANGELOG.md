@@ -20,6 +20,7 @@
 
 - FvwmMFL can start many instances [\#348](https://github.com/fvwmorg/fvwm3/issues/348)
 - Windows are disappearing from screen when they resized and placed again [\#338](https://github.com/fvwmorg/fvwm3/issues/338)
+- FvwmBacker.c:699:7: error: format not a string literal and no format arguments \[-Werror=format-security\] [\#334](https://github.com/fvwmorg/fvwm3/issues/334)
 - Status: desk tracking is broken with sticky windows [\#331](https://github.com/fvwmorg/fvwm3/issues/331)
 - FvwmButtons: Title parameter doesn't allow "-" [\#313](https://github.com/fvwmorg/fvwm3/issues/313)
 - Lack of FvwmCommand can break existing configuration [\#312](https://github.com/fvwmorg/fvwm3/issues/312)
@@ -49,6 +50,8 @@
 
 **Closed issues:**
 
+- Go and no go [\#350](https://github.com/fvwmorg/fvwm3/issues/350)
+- FvwmRearrange does not work on FVWM3 [\#346](https://github.com/fvwmorg/fvwm3/issues/346)
 - FvwmPager: geometry string with @monitor not taken into account [\#310](https://github.com/fvwmorg/fvwm3/issues/310)
 - Desktop App Menu Flickers [\#308](https://github.com/fvwmorg/fvwm3/issues/308)
 - Optional dependency SVG development library missing in INSTALL.md [\#287](https://github.com/fvwmorg/fvwm3/issues/287)
@@ -60,9 +63,11 @@
 **Merged pull requests:**
 
 - FvwmMFL: only allow one instance to run [\#349](https://github.com/fvwmorg/fvwm3/pull/349) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmRearrange: continue on unknown packet [\#347](https://github.com/fvwmorg/fvwm3/pull/347) ([ThomasAdam](https://github.com/ThomasAdam))
 - PlaceAgain: don't clobber desk [\#341](https://github.com/fvwmorg/fvwm3/pull/341) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmConsole: add missing freetype libs/cflags [\#340](https://github.com/fvwmorg/fvwm3/pull/340) ([ThomasAdam](https://github.com/ThomasAdam))
 - Introduce Python 3 based FvwmCommand compatibility script [\#337](https://github.com/fvwmorg/fvwm3/pull/337) ([NsCDE](https://github.com/NsCDE))
+- libs: remove CatString2/CatString3 [\#336](https://github.com/fvwmorg/fvwm3/pull/336) ([ThomasAdam](https://github.com/ThomasAdam))
 - status: track sticky windows to current desk [\#332](https://github.com/fvwmorg/fvwm3/pull/332) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: add issues script [\#327](https://github.com/fvwmorg/fvwm3/pull/327) ([ThomasAdam](https://github.com/ThomasAdam))
 - freetype: don't clober CFLAGS/LDFLAGS [\#324](https://github.com/fvwmorg/fvwm3/pull/324) ([ThomasAdam](https://github.com/ThomasAdam))
