@@ -28,6 +28,7 @@
 #include <err.h>
 #include <errno.h>
 #include <stdbool.h>
+#include <unistd.h>
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__sun__)
 #include <libbson-1.0/bson.h>
@@ -53,6 +54,7 @@
 static int debug;
 struct fvwm_msg;
 static char *sock_pathname;
+static char *pid_file;
 
 struct client {
 	struct bufferevent	*comms;
@@ -122,6 +124,87 @@ static void fvwm_msg_free(struct fvwm_msg *);
 static void register_interest(void);
 static void send_version_info(struct client *);
 static void set_socket_pathname(void);
+static int check_pid(void);
+static void set_pid_file(void);
+static void create_pid_file(void);
+static void delete_pid_file(void);
+
+static void
+delete_pid_file(void)
+{
+	if (pid_file == NULL)
+		return;
+
+	unlink(pid_file);
+}
+
+static void
+set_pid_file(void)
+{
+	char	*fud = getenv("FVWM_USERDIR");
+
+	if (fud == NULL) {
+		fprintf(stderr, "FVWM_USERDIR is not set in the environment\n");
+		exit(1);
+	}
+
+	free(pid_file);
+	xasprintf(&pid_file, "%s/fvwm_mfl.pid", fud);
+}
+
+static void
+create_pid_file(void)
+{
+	FILE	*pf;
+
+	if ((pf = fopen(pid_file, "w")) == NULL) {
+		fprintf(stderr, "Couldn't open %s because: %s\n", pid_file,
+			strerror(errno));
+		exit(1);
+	}
+	fprintf(pf, "%d", getpid());
+
+	if (fclose(pf) != 0) {
+		fprintf(stderr, "Couldn't close %s because: %s\n", pid_file,
+			strerror(errno));
+		exit(1);
+	}
+
+	/* Alongside sigTerm, ensure we remove the pid when exiting as well. */
+	atexit(delete_pid_file);
+}
+
+static int
+check_pid(void)
+{
+	FILE	*pf;
+	int	 pid;
+
+	if (pid_file == NULL)
+		set_pid_file();
+
+	if (access(pid_file, F_OK) != 0) {
+		create_pid_file();
+		return (1);
+	}
+
+	if ((pf = fopen(pid_file, "r")) == NULL) {
+		fprintf(stderr, "Couldn't open %s for reading: %s\n", pid_file,
+			strerror(errno));
+		exit(1);
+	}
+	fscanf(pf, "%d", &pid);
+
+	/* Non-fatal if we can't close this file handle from reading. */
+	(void)fclose(pf);
+
+	if ((kill(pid, 0) == 0)) {
+		fprintf(stderr, "FvwmMFL is already running\n");
+		return (0);
+	}
+	return (1);
+}
+
 
 static struct fvwm_msg *
 fvwm_msg_new(void)
@@ -144,6 +227,7 @@ static void
 HandleTerminate(int fd, short what, void *arg)
 {
 	fprintf(stderr, "%s: dying...\n", __func__);
+	delete_pid_file();
 	unlink(sock_pathname);
 	fvwmSetTerminate(fd);
 }
@@ -700,6 +784,10 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s must be started by FVWM3\n", MYNAME);
 		return (1);
 	}
+
+	/* If we're already running... */
+	if (check_pid() == 0)
+		return (1);
 
 	set_socket_pathname();
 	unlink(sock_pathname);
