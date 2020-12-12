@@ -182,7 +182,7 @@ int get_window(void)
     DeadPipe(0);
   else {
     cfgpacket = (struct ConfigWinPacket*) packet->body;
-    switch (packet->type) {
+    switch (packet->type &= ~M_EXTENDED_MSG) {
     case M_CONFIGURE_WINDOW:
       if (is_suitable_window(packet->body)) {
 	window_item *wi =
@@ -206,6 +206,7 @@ int get_window(void)
       fprintf(console,
 	"%s: internal inconsistency: unknown message 0x%08x\n",
 	module->name, (int)packet->type);
+      last = 1;
       break;
     }
   }
