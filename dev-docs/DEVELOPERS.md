@@ -47,17 +47,11 @@ the branch is about fixing warnings from Clang.
 Sometimes, if more than one person is collaborating on a branch, the initials
 prefix might not be needed.
 
-### Updating NEWS
-
-When submitting patches, please also update the NEWS file with relevant
-highlights as to new functionality and/or bug-fixes.  For inspiration, GNU
-have a [list](https://www.gnu.org/prep/standards/standards.txt).
-
 ### Submitting Pull-requests
 
 External contributions are always welcomed and encouraged.  If you're thinking
 of writing a new feature, it is worthwhile opening an issue against the `fvwm3`
-repository to discuss whether it's a good idea, and to check no one else is 
+repository to discuss whether it's a good idea, and to check no one else is
 working on that feature.
 
 Those wishing to submit code/bug-fixes should:
@@ -114,13 +108,14 @@ passed), then:
 
 ```
 git checkout topic/branch
-git rebase origin/master
+git fetch --all
+git rebase -i origin/master
 git checkout master
 git merge topic/branch
 git push
 ```
 Conventions
-==========
+===========
 
 The following tries to list all the conventions that the fvwm developers
 adhere to, either by consensus through discussion, common practice or unspoken
@@ -174,15 +169,11 @@ Copyright Notices
 Maintaining Man Pages
 ---------------------
 
-- Every feature must be described with all options in the man page.
+- Every feature must be described with all options in the man page.  Man pages
+  are generated via Asciidoctor from files in `doc/`
 
 Creating a release
 ==================
-
-Before deciding to make a new release, please check with the `fvwm-workers`
-mailing list that this is the right time to do so.  This will give adequate
-warning for other developers to give status updates about any in-flight
-development that's happening which might impact a potential release.
 
 Make sure you have all optional libraries installed.
 
