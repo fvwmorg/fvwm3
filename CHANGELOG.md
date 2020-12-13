@@ -40,7 +40,6 @@
 - status:  fix bson\_t detection [\#257](https://github.com/fvwmorg/fvwm3/issues/257)
 - Maximize on second monitor gives wrong window size [\#250](https://github.com/fvwmorg/fvwm3/issues/250)
 - Man page `fvwm3.1` not built by default [\#246](https://github.com/fvwmorg/fvwm3/issues/246)
-- Properties of windows are lost after a restart [\#143](https://github.com/fvwmorg/fvwm3/issues/143)
 - FvwmPager sometimes ignores styles [\#142](https://github.com/fvwmorg/fvwm3/issues/142)
 - EdgeScroll needs thinking about for per-monitor setup [\#82](https://github.com/fvwmorg/fvwm3/issues/82)
 - Panframes: switching between desktops not reliable / broken [\#34](https://github.com/fvwmorg/fvwm3/issues/34)
@@ -50,7 +49,6 @@
 
 **Closed issues:**
 
-- Go and no go [\#350](https://github.com/fvwmorg/fvwm3/issues/350)
 - FvwmRearrange does not work on FVWM3 [\#346](https://github.com/fvwmorg/fvwm3/issues/346)
 - FvwmPager: geometry string with @monitor not taken into account [\#310](https://github.com/fvwmorg/fvwm3/issues/310)
 - Desktop App Menu Flickers [\#308](https://github.com/fvwmorg/fvwm3/issues/308)
@@ -62,6 +60,7 @@
 
 **Merged pull requests:**
 
+- dev-doc: slight improvements [\#351](https://github.com/fvwmorg/fvwm3/pull/351) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: only allow one instance to run [\#349](https://github.com/fvwmorg/fvwm3/pull/349) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmRearrange: continue on unknown packet [\#347](https://github.com/fvwmorg/fvwm3/pull/347) ([ThomasAdam](https://github.com/ThomasAdam))
 - PlaceAgain: don't clobber desk [\#341](https://github.com/fvwmorg/fvwm3/pull/341) ([ThomasAdam](https://github.com/ThomasAdam))
