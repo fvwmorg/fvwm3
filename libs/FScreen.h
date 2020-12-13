@@ -151,6 +151,7 @@ struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_output(int);
 struct monitor  *monitor_by_primary(void);
 struct monitor  *monitor_get_current(void);
+struct monitor	*monitor_by_state_flags(const char *);
 void		 monitor_init_contents(struct monitor *);
 void		 monitor_dump_state(struct monitor *);
 void		 monitor_output_change(Display *, XRRScreenChangeNotifyEvent *);
@@ -162,7 +163,7 @@ void		 monitor_assign_virtual(struct monitor *);
 #define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
 
 extern int randr_event;
-extern const char *prev_focused_monitor;
+extern struct monitor *prev_focused_monitor;
 
 /* Control */
 Bool FScreenIsEnabled(void);

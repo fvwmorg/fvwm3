@@ -139,10 +139,10 @@ static event_entry extended_message_event_table[] =
 	EVENT_ENTRY( "enter_window", 0 ),
 	EVENT_ENTRY( "leave_window", 0 ),
 	EVENT_ENTRY( "property_change", 0),
-	EVENT_ENTRY( "monitor_enabled", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "monitor_disabled", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "monitor_changed", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "monitor_focus", 0 | ARG_EXPECTS_CHAR),
+	EVENT_ENTRY( "monitor_enabled", 0),
+	EVENT_ENTRY( "monitor_disabled", 0),
+	EVENT_ENTRY( "monitor_changed", 0),
+	EVENT_ENTRY( "monitor_focus", 0),
 	EVENT_ENTRY( "echo", 0 | ARG_EXPECTS_CHAR),
 	EVENT_ENTRY( "reply", 0), /* FvwmEvent will never receive MX_REPLY */
 	EVENT_ENTRY(NULL,0)

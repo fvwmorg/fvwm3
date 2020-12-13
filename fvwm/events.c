@@ -173,6 +173,8 @@ typedef struct
 
 /* ---------------------------- forward declarations ----------------------- */
 
+struct monitor	*prev_focused_monitor;
+
 /* ---------------------------- local variables ---------------------------- */
 
 static int Button = 0;
@@ -1818,16 +1820,23 @@ monitor_emit_broadcast(void)
 	struct monitor	*m;
 
 	TAILQ_FOREACH (m, &monitor_q, entry) {
-		if (m->emit & MONITOR_CHANGED) {
-			BroadcastName(MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
+		if (m->emit == MONITOR_CHANGED) {
 			m->emit &= ~MONITOR_ALL;
 			m->flags &= ~MONITOR_CHANGED;
+			BroadcastName(MX_MONITOR_CHANGED, -1, -1, -1, "");
+
+			return;
 		}
-		if (m->emit & MONITOR_ENABLED) {
-			BroadcastName(MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
+
+		if (m->emit == MONITOR_ENABLED) {
+			BroadcastName(MX_MONITOR_ENABLED, -1, -1, -1, "");
+
+			return;
 		}
-		if (m->emit & MONITOR_DISABLED) {
-			BroadcastName(MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
+		if (m->emit == MONITOR_DISABLED) {
+			BroadcastName(MX_MONITOR_DISABLED, -1, -1, -1, "");
+
+			return;
 		}
 	}
 }
@@ -2528,6 +2537,8 @@ void HandleFocusIn(const evh_args_t *ea)
 		if (!Scr.bo.do_enable_flickering_qt_dialogs_workaround ||
 		    !is_unmanaged_focused)
 		{
+			FvwmWindow	*prior = ffw_old != NULL ? ffw_old->next : NULL;
+
 			BroadcastPacket(
 				M_FOCUS_CHANGE, 5, (long)focus_w,
 				(long)focus_fw,
@@ -2535,10 +2546,11 @@ void HandleFocusIn(const evh_args_t *ea)
 				(long)fc, (long)bc);
 			EWMH_SetActiveWindow(focus_w);
 
-			if (fw != NULL && strcmp(fw->m->si->name, prev_focused_monitor) != 0) {
-				BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
-				    fw->m->si->name /* Name of the monitor. */
-			        );
+			if (fw != NULL &&
+			   (prior != NULL && prior->m != NULL) &&
+			   (prior->m != fw->m)) {
+				prev_focused_monitor = prior->m;
+				BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1, "");
 			}
 			status_send();
 		}

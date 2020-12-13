@@ -522,6 +522,24 @@ static signed int expand_vars_extended(
 			goto GOT_STRING;
 		}
 
+		if (strcmp(rest, "prev") == 0) {
+			if (prev_focused_monitor != NULL)
+				string = prev_focused_monitor->si->name;
+			should_quote = False;
+			goto GOT_STRING;
+		}
+
+		if (strcmp(rest, "changed") == 0 ||
+		    strcmp(rest, "enabled") == 0 ||
+		    strcmp(rest, "disabled") == 0) {
+			struct monitor *m = monitor_by_state_flags(rest);
+
+			if (m != NULL)
+				string = m->si->name;
+			should_quote = False;
+			goto GOT_STRING;
+		}
+
 		/* We could be left with "<NAME>.?" */
 		char		*m_name = NULL;
 		struct monitor  *mon;

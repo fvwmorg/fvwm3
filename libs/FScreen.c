@@ -58,7 +58,6 @@ enum monitor_tracking monitor_mode;
 struct screen_infos	 screen_info_q;
 struct monitors		monitor_q;
 int randr_event;
-const char *prev_focused_monitor;
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -117,20 +116,12 @@ monitor_get_current(void)
 	int		 JunkX = 0, JunkY = 0, x, y;
 	Window		 JunkRoot, JunkChild;
 	unsigned int	 JunkMask;
-	struct monitor	  *mon;
-	static const char *cur_mon;
 
-	prev_focused_monitor = cur_mon;
 
 	FQueryPointer(disp, DefaultRootWindow(disp), &JunkRoot, &JunkChild,
 			&JunkX, &JunkY, &x, &y, &JunkMask);
 
-	mon = FindScreenOfXY(x, y);
-
-	if (mon != NULL)
-		cur_mon = mon->si->name;
-
-	return (mon);
+	return (FindScreenOfXY(x, y));
 }
 
 struct monitor *
@@ -176,6 +167,41 @@ monitor_by_name(const char *name)
 
 	return (mret);
 }
+
+struct monitor *
+monitor_by_state_flags(const char *type)
+{
+	struct monitor	*m, *m_loop;
+	struct tmap {
+		const char	*name;
+		int		 type;
+	} tmaps[] = {
+		{"changed", MONITOR_CHANGED},
+		{"enabled", MONITOR_ENABLED},
+		{"disabled",MONITOR_DISABLED}
+	};
+	char		*thing;
+	int		 flags_to_match;
+	size_t		 i;
+
+	for (i = 0; i < sizeof(tmaps)/sizeof(tmaps[0]); i++) {
+		if (strcmp(tmaps[i].name, type) == 0) {
+			thing = type;
+			flags_to_match = tmaps[i].type;
+			break;
+		}
+	}
+
+	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		if (m_loop->emit == flags_to_match) {
+			m = m_loop;
+			return (m);
+		}
+	}
+
+	return (NULL);
+}
+
 
 struct monitor *
 monitor_by_output(int output)
@@ -265,7 +291,7 @@ void
 monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 {
 	XRRScreenResources	*res;
-	struct monitor		*m = NULL;
+	struct monitor		*m = NULL, *m_loop;
 
 	fvwm_debug(__func__, "%s: outputs have changed\n", __func__);
 
@@ -293,39 +319,56 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 			if (si == NULL)
 				continue;
 
-			TAILQ_FOREACH(m, &monitor_q, entry) {
-				if (m->si == si) {
-					m->emit &= ~MONITOR_ALL;
+			TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+				if (m_loop->si == si) {
+					m = m_loop;
+					m->emit = 1;
 					break;
 				}
 			}
 
-			if (m == NULL)
+			if (m == NULL) {
+				fprintf(stderr, "M IS NULL, CONTINUE\n");
 				continue;
+			}
 
 			if (oinfo->connection == RR_Connected &&
-			    m->flags & MONITOR_ENABLED) {
-				if (m->flags & MONITOR_CHANGED)
-					m->emit |= MONITOR_CHANGED;
+			    m->flags == MONITOR_ENABLED) {
+				fprintf(stderr, "NO CHANGE WITH CONN: %s, skipping...\n",
+					m->si->name);
+				continue;
+			}
+			if (oinfo->connection == RR_Disconnected &&
+			    m->flags == MONITOR_DISABLED) {
+				fprintf(stderr, "NO CHANGE WITH DIS: %s, skipping...\n",
+					m->si->name);
+				continue;
+			}
+#if 0
+			if (oinfo->connection == RR_Connected &&
+			    m->flags & MONITOR_DISABLED) {
+				m->flags &= ~MONITOR_DISABLED;
+				m->emit = MONITOR_ENABLED;
+				fprintf(stderr, "P: CONN: %s\n", m->si->name);
 				continue;
 			}
 
 			if (oinfo->connection == RR_Disconnected &&
-			    m->flags & MONITOR_DISABLED) {
+			    m->flags & MONITOR_ENABLED) {
+				m->flags &= ~MONITOR_ENABLED;
+				m->emit = MONITOR_DISABLED;
+				fprintf(stderr, "P: DISCCONN: %s\n", m->si->name);
 				continue;
 			}
-
+#endif
 			switch (oinfo->connection) {
 			case RR_Connected:
-				m->flags &= ~MONITOR_DISABLED;
-				m->flags |= MONITOR_ENABLED;
-
-				m->emit |= MONITOR_ENABLED;
+				m->flags = MONITOR_ENABLED;
+				m->emit = MONITOR_ENABLED;
 				break;
 			case RR_Disconnected:
-				m->flags &= ~MONITOR_ENABLED;
-				m->flags |= MONITOR_DISABLED;
-				m->emit |= MONITOR_DISABLED;
+				m->flags = MONITOR_DISABLED;
+				m->emit = MONITOR_DISABLED;
 				break;
 			default:
 				break;
