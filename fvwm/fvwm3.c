@@ -1546,7 +1546,7 @@ void StartupStuff(void)
 	{
 		char *action;
 
-		xasprintf(&action, "Function ", init_func_name);
+		xasprintf(&action, "Function %s", init_func_name);
 		execute_function(NULL, exc, action, 0);
 		free(action);
 	}
