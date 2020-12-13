@@ -60,6 +60,7 @@
 
 **Merged pull requests:**
 
+- Startup: reinstate session functions [\#355](https://github.com/fvwmorg/fvwm3/pull/355) ([ThomasAdam](https://github.com/ThomasAdam))
 - config parsing: be more tolerant when finding configs [\#353](https://github.com/fvwmorg/fvwm3/pull/353) ([ThomasAdam](https://github.com/ThomasAdam))
 - dev-doc: slight improvements [\#351](https://github.com/fvwmorg/fvwm3/pull/351) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: only allow one instance to run [\#349](https://github.com/fvwmorg/fvwm3/pull/349) ([ThomasAdam](https://github.com/ThomasAdam))
