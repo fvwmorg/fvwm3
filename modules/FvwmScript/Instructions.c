@@ -1814,9 +1814,9 @@ static void SendToScript (int NbArg,long *TabArg)
   }
 
   /* Compute Receiver */
-  R=fxcalloc(strlen(x11base->TabScriptId[dest]) + 1, sizeof(char));
-  sprintf(R,"%s",x11base->TabScriptId[dest]);
+  xasprintf(&R, "%s", x11base->TabScriptId[dest]);
   myatom=XInternAtom(dpy,R,True);
+  free(R);
 
   if ((BuffSend.NbMsg<40)&&(XGetSelectionOwner(dpy,myatom)!=None))
   {
