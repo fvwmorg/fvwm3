@@ -49,6 +49,7 @@
 
 **Closed issues:**
 
+- FvwmScript core dump on signal 6 when called with \(LaunchScript $FOO\) from another FvwmScript [\#356](https://github.com/fvwmorg/fvwm3/issues/356)
 - FvwmRearrange does not work on FVWM3 [\#346](https://github.com/fvwmorg/fvwm3/issues/346)
 - FvwmPager: geometry string with @monitor not taken into account [\#310](https://github.com/fvwmorg/fvwm3/issues/310)
 - Desktop App Menu Flickers [\#308](https://github.com/fvwmorg/fvwm3/issues/308)
@@ -60,6 +61,7 @@
 
 **Merged pull requests:**
 
+- FvwmScript: fix bogus string length [\#357](https://github.com/fvwmorg/fvwm3/pull/357) ([ThomasAdam](https://github.com/ThomasAdam))
 - Startup: reinstate session functions [\#355](https://github.com/fvwmorg/fvwm3/pull/355) ([ThomasAdam](https://github.com/ThomasAdam))
 - config parsing: be more tolerant when finding configs [\#353](https://github.com/fvwmorg/fvwm3/pull/353) ([ThomasAdam](https://github.com/ThomasAdam))
 - dev-doc: slight improvements [\#351](https://github.com/fvwmorg/fvwm3/pull/351) ([ThomasAdam](https://github.com/ThomasAdam))
