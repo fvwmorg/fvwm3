@@ -978,159 +978,165 @@ void checkPanFrames(void)
 		do_unmap_b = True;
 	}
 
-	m = monitor_get_current();
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		/* Remove Pan frames if paging by edge-scroll is permanently or
+		 * temporarily disabled */
+		if (m->virtual_scr.EdgeScrollX == 0 || m->virtual_scr.VxMax == 0)
+		{
+			do_unmap_l = True;
+			do_unmap_r = True;
+		}
+		if (m->virtual_scr.EdgeScrollY == 0 || m->virtual_scr.VyMax == 0)
+		{
+			do_unmap_t = True;
+			do_unmap_b = True;
+		}
+		if (m->virtual_scr.Vx == 0 && !Scr.flags.do_edge_wrap_x)
+		{
+			do_unmap_l = True;
+		}
+		if (m->virtual_scr.Vx == m->virtual_scr.VxMax &&
+		    !Scr.flags.do_edge_wrap_x)
+		{
+			do_unmap_r = True;
+		}
+		if (m->virtual_scr.Vy == 0 && !Scr.flags.do_edge_wrap_y)
+		{
+			do_unmap_t = True;
+		}
+		if (m->virtual_scr.Vy == m->virtual_scr.VyMax &&
+		    !Scr.flags.do_edge_wrap_y)
+		{
+			do_unmap_b = True;
+		}
 
-	/* Remove Pan frames if paging by edge-scroll is permanently or
-	 * temporarily disabled */
-	if (m->virtual_scr.EdgeScrollX == 0 || m->virtual_scr.VxMax == 0)
-	{
-		do_unmap_l = True;
-		do_unmap_r = True;
-	}
-	if (m->virtual_scr.EdgeScrollY == 0 || m->virtual_scr.VyMax == 0)
-	{
-		do_unmap_t = True;
-		do_unmap_b = True;
-	}
-	if (m->virtual_scr.Vx == 0 && !Scr.flags.do_edge_wrap_x)
-	{
-		do_unmap_l = True;
-	}
-	if (m->virtual_scr.Vx == m->virtual_scr.VxMax && !Scr.flags.do_edge_wrap_x)
-	{
-		do_unmap_r = True;
-	}
-	if (m->virtual_scr.Vy == 0 && !Scr.flags.do_edge_wrap_y)
-	{
-		do_unmap_t = True;
-	}
-	if (m->virtual_scr.Vy == m->virtual_scr.VyMax && !Scr.flags.do_edge_wrap_y)
-	{
-		do_unmap_b = True;
-	}
+		/* correct the unmap variables if pan frame commands are set */
+		if (edge_thickness != 0)
+		{
+			if (m->PanFrameLeft.command != NULL ||
+			    m->PanFrameLeft.command_leave != NULL)
+			{
+				do_unmap_l = False;
+			}
+			if (m->PanFrameRight.command != NULL ||
+			    m->PanFrameRight.command_leave != NULL)
+			{
+				do_unmap_r = False;
+			}
+			if (m->PanFrameBottom.command != NULL ||
+			    m->PanFrameBottom.command_leave != NULL)
+			{
+				do_unmap_b = False;
+			}
+			if (m->PanFrameTop.command != NULL ||
+			    m->PanFrameTop.command_leave != NULL)
+			{
+				do_unmap_t = False;
+			}
+		}
 
-	/* correct the unmap variables if pan frame commands are set */
-	if (edge_thickness != 0)
-	{
-		if (m->PanFrameLeft.command != NULL || m->PanFrameLeft.command_leave != NULL)
-		{
-			do_unmap_l = False;
-		}
-		if (m->PanFrameRight.command != NULL || m->PanFrameRight.command_leave != NULL)
-		{
-			do_unmap_r = False;
-		}
-		if (m->PanFrameBottom.command != NULL || m->PanFrameBottom.command_leave != NULL)
-		{
-			do_unmap_b = False;
-		}
-		if (m->PanFrameTop.command != NULL || m->PanFrameTop.command_leave != NULL)
-		{
-			do_unmap_t = False;
-		}
-	}
+		/*
+		 * hide or show the windows
+		 */
 
-	/*
-	 * hide or show the windows
-	 */
-
-	/* left */
-	if (do_unmap_l)
-	{
-		if (m->PanFrameLeft.isMapped)
+		/* left */
+		if (do_unmap_l)
 		{
-			XUnmapWindow(dpy, m->PanFrameLeft.win);
-			m->PanFrameLeft.isMapped = False;
+			if (m->PanFrameLeft.isMapped)
+			{
+				XUnmapWindow(dpy, m->PanFrameLeft.win);
+				m->PanFrameLeft.isMapped = False;
+			}
 		}
+		else
+		{
+			if (edge_thickness != last_edge_thickness)
+			{
+				XResizeWindow(
+					dpy, m->PanFrameLeft.win, edge_thickness,
+					m->si->y + m->si->h);
+			}
+			if (!m->PanFrameLeft.isMapped)
+			{
+				XMapRaised(dpy, m->PanFrameLeft.win);
+				m->PanFrameLeft.isMapped = True;
+			}
+		}
+		/* right */
+		if (do_unmap_r)
+		{
+			if (m->PanFrameRight.isMapped)
+			{
+				XUnmapWindow(dpy, m->PanFrameRight.win);
+				m->PanFrameRight.isMapped = False;
+			}
+		}
+		else
+		{
+			if (edge_thickness != last_edge_thickness)
+			{
+				XMoveResizeWindow(
+					dpy, m->PanFrameRight.win,
+					(m->si->x + m->si->w) - edge_thickness,
+					m->si->y + m->si->h,
+					edge_thickness, (m->si->y + m->si->h));
+			}
+			if (!m->PanFrameRight.isMapped)
+			{
+				XMapRaised(dpy, m->PanFrameRight.win);
+				m->PanFrameRight.isMapped = True;
+			}
+		}
+		/* top */
+		if (do_unmap_t)
+		{
+			if (m->PanFrameTop.isMapped)
+			{
+				XUnmapWindow(dpy, m->PanFrameTop.win);
+				m->PanFrameTop.isMapped = False;
+			}
+		}
+		else
+		{
+			if (edge_thickness != last_edge_thickness)
+			{
+				XResizeWindow(
+					dpy, m->PanFrameTop.win,
+					(m->si->x + m->si->w),
+					edge_thickness);
+			}
+			if (!m->PanFrameTop.isMapped)
+			{
+				XMapRaised(dpy, m->PanFrameTop.win);
+				m->PanFrameTop.isMapped = True;
+			}
+		}
+		/* bottom */
+		if (do_unmap_b)
+		{
+			if (m->PanFrameBottom.isMapped)
+			{
+				XUnmapWindow(dpy, m->PanFrameBottom.win);
+				m->PanFrameBottom.isMapped = False;
+			}
+		}
+		else
+		{
+			if (edge_thickness != last_edge_thickness)
+			{
+				XMoveResizeWindow(
+					dpy, m->PanFrameBottom.win, m->si->x,
+					(m->si->y + m->si->h) - edge_thickness,
+					(m->si->x + m->si->w), edge_thickness);
+			}
+			if (!m->PanFrameBottom.isMapped)
+			{
+				XMapRaised(dpy, m->PanFrameBottom.win);
+				m->PanFrameBottom.isMapped = True;
+			}
+		}
+		last_edge_thickness = edge_thickness;
 	}
-	else
-	{
-		if (edge_thickness != last_edge_thickness)
-		{
-			XResizeWindow(
-				dpy, m->PanFrameLeft.win, edge_thickness,
-				m->si->y + m->si->h);
-		}
-		if (!m->PanFrameLeft.isMapped)
-		{
-			XMapRaised(dpy, m->PanFrameLeft.win);
-			m->PanFrameLeft.isMapped = True;
-		}
-	}
-	/* right */
-	if (do_unmap_r)
-	{
-		if (m->PanFrameRight.isMapped)
-		{
-			XUnmapWindow(dpy, m->PanFrameRight.win);
-			m->PanFrameRight.isMapped = False;
-		}
-	}
-	else
-	{
-		if (edge_thickness != last_edge_thickness)
-		{
-			XMoveResizeWindow(
-				dpy, m->PanFrameRight.win,
-				(m->si->x + m->si->w) - edge_thickness, m->si->y + m->si->h,
-				edge_thickness, (m->si->y + m->si->h));
-		}
-		if (!m->PanFrameRight.isMapped)
-		{
-			fprintf(stderr, "%s: MAPPING RIGHT\n", m->si->name);
-			XMapRaised(dpy, m->PanFrameRight.win);
-			m->PanFrameRight.isMapped = True;
-		}
-	}
-	/* top */
-	if (do_unmap_t)
-	{
-		if (m->PanFrameTop.isMapped)
-		{
-			XUnmapWindow(dpy, m->PanFrameTop.win);
-			m->PanFrameTop.isMapped = False;
-		}
-	}
-	else
-	{
-		if (edge_thickness != last_edge_thickness)
-		{
-			XResizeWindow(
-				dpy, m->PanFrameTop.win,
-				(m->si->x + m->si->w),
-				edge_thickness);
-		}
-		if (!m->PanFrameTop.isMapped)
-		{
-			XMapRaised(dpy, m->PanFrameTop.win);
-			m->PanFrameTop.isMapped = True;
-		}
-	}
-	/* bottom */
-	if (do_unmap_b)
-	{
-		if (m->PanFrameBottom.isMapped)
-		{
-			XUnmapWindow(dpy, m->PanFrameBottom.win);
-			m->PanFrameBottom.isMapped = False;
-		}
-	}
-	else
-	{
-		if (edge_thickness != last_edge_thickness)
-		{
-			XMoveResizeWindow(
-				dpy, m->PanFrameBottom.win, m->si->x,
-				(m->si->y + m->si->h) - edge_thickness,
-				(m->si->x + m->si->w), edge_thickness);
-		}
-		if (!m->PanFrameBottom.isMapped)
-		{
-			XMapRaised(dpy, m->PanFrameBottom.win);
-			m->PanFrameBottom.isMapped = True;
-		}
-	}
-	last_edge_thickness = edge_thickness;
 }
 
 /*
@@ -2268,10 +2274,9 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
 			(long)m->si->rr_output);
 
-		/* FIXME: likely needs per-monitor considerations!!! */
-		checkPanFrames();
 		EWMH_SetDesktopGeometry(m);
 	}
+	checkPanFrames();
 }
 
 /*
