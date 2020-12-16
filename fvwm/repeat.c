@@ -115,22 +115,13 @@ Bool set_repeat_data(void *data, repeat_t type, const func_t *builtin)
 			 * FUNC_DONT_REPEAT flag set. */
 			return True;
 		}
-		if (last.command_line)
-		{
-			free(last.command_line);
-		}
 		/* Store a backup. */
 		last.command_line = (char *)data;
 		/* Since we stored the pointer the caller must not free it. */
 		return False;
 	case REPEAT_MENU:
 	case REPEAT_POPUP:
-		if (last.menu_name)
-		{
-			free(last.menu_name);
-		}
 		last.menu_name = (char *)data;
-		/* Since we stored the pointer the caller must not free it. */
 		return False;
 	case REPEAT_PAGE:
 	case REPEAT_DESK:
