@@ -63,6 +63,7 @@
 **Merged pull requests:**
 
 - repeat: don't free string [\#359](https://github.com/fvwmorg/fvwm3/pull/359) ([ThomasAdam](https://github.com/ThomasAdam))
+- panframes: recheck for all monitors [\#358](https://github.com/fvwmorg/fvwm3/pull/358) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmScript: fix bogus string length [\#357](https://github.com/fvwmorg/fvwm3/pull/357) ([ThomasAdam](https://github.com/ThomasAdam))
 - Startup: reinstate session functions [\#355](https://github.com/fvwmorg/fvwm3/pull/355) ([ThomasAdam](https://github.com/ThomasAdam))
 - config parsing: be more tolerant when finding configs [\#353](https://github.com/fvwmorg/fvwm3/pull/353) ([ThomasAdam](https://github.com/ThomasAdam))
