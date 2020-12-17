@@ -62,6 +62,7 @@
 
 **Merged pull requests:**
 
+- EdgeCommand: fix parsing when unsetting commands [\#360](https://github.com/fvwmorg/fvwm3/pull/360) ([ThomasAdam](https://github.com/ThomasAdam))
 - repeat: don't free string [\#359](https://github.com/fvwmorg/fvwm3/pull/359) ([ThomasAdam](https://github.com/ThomasAdam))
 - panframes: recheck for all monitors [\#358](https://github.com/fvwmorg/fvwm3/pull/358) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmScript: fix bogus string length [\#357](https://github.com/fvwmorg/fvwm3/pull/357) ([ThomasAdam](https://github.com/ThomasAdam))
