@@ -1841,42 +1841,30 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 			/* the command does not contain a token so
 			   the command of this edge is removed */
 			free(command);
-			command = NULL;
+			command = fxstrdup("");
 		}
 
 		TAILQ_FOREACH(m, &monitor_q, entry) {
 			/* assign command to the edge(s) */
 			if (direction == DIR_N)
 			{
-				if (m->PanFrameTop.command != NULL)
-				{
-					free(m->PanFrameTop.command);
-				}
-				m->PanFrameTop.command = command;
+				free(m->PanFrameTop.command);
+				m->PanFrameTop.command = fxstrdup(command);
 			}
 			else if (direction == DIR_S)
 			{
-				if (m->PanFrameBottom.command != NULL)
-				{
-					free(m->PanFrameBottom.command);
-				}
-				m->PanFrameBottom.command = command;
+				free(m->PanFrameBottom.command);
+				m->PanFrameBottom.command = fxstrdup(command);
 			}
 			else if (direction == DIR_W)
 			{
-				if (m->PanFrameLeft.command != NULL)
-				{
-					free(m->PanFrameLeft.command);
-				}
-				m->PanFrameLeft.command = command;
+				free(m->PanFrameLeft.command);
+				m->PanFrameLeft.command = fxstrdup(command);
 			}
 			else if (direction == DIR_E)
 			{
-				if (m->PanFrameRight.command != NULL)
-				{
-					free(m->PanFrameRight.command);
-				}
-				m->PanFrameRight.command = command;
+				free(m->PanFrameRight.command);
+				m->PanFrameRight.command = fxstrdup(command);
 			}
 			else
 			{
@@ -1896,26 +1884,10 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 			 * removed */
 
 			TAILQ_FOREACH(m, &monitor_q, entry) {
-				if (m->PanFrameTop.command != NULL)
-				{
-					free(m->PanFrameTop.command);
-					m->PanFrameTop.command = NULL;
-				}
-				if (m->PanFrameBottom.command != NULL)
-				{
-					free(m->PanFrameBottom.command);
-					m->PanFrameBottom.command = NULL;
-				}
-				if (m->PanFrameLeft.command != NULL)
-				{
-					free(m->PanFrameLeft.command);
-					m->PanFrameLeft.command = NULL;
-				}
-				if (m->PanFrameRight.command != NULL)
-				{
-					free(m->PanFrameRight.command);
-					m->PanFrameRight.command = NULL;
-				}
+				free(m->PanFrameTop.command);
+				free(m->PanFrameBottom.command);
+				free(m->PanFrameLeft.command);
+				free(m->PanFrameRight.command);
 			}
 		} else {
 			/* not a proper direction */
@@ -1948,48 +1920,35 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 			/* the command does not contain a token so
 			   the command of this edge is removed */
 			free(command);
-			command = NULL;
+			command = fxstrdup("");
 		}
 
 		TAILQ_FOREACH(m, &monitor_q, entry) {
 			/* assign command to the edge(s) */
 			if (direction == DIR_N)
 			{
-				if (m->PanFrameTop.command_leave != NULL)
-				{
-					free(m->PanFrameTop.command_leave);
-				}
-				m->PanFrameTop.command_leave = command;
+				free(m->PanFrameTop.command_leave);
+				m->PanFrameTop.command_leave = fxstrdup(command);
 			}
 			else if (direction == DIR_S)
 			{
-				if (m->PanFrameBottom.command_leave != NULL)
-				{
-					free(m->PanFrameBottom.command_leave);
-				}
-				m->PanFrameBottom.command_leave = command;
+				free(m->PanFrameBottom.command_leave);
+				m->PanFrameBottom.command_leave = fxstrdup(command);
 			}
 			else if (direction == DIR_W)
 			{
-				if (m->PanFrameLeft.command_leave != NULL)
-				{
-					free(m->PanFrameLeft.command_leave);
-				}
-				m->PanFrameLeft.command_leave = command;
+				free(m->PanFrameLeft.command_leave);
+				m->PanFrameLeft.command_leave = fxstrdup(command);
 			}
 			else if (direction == DIR_E)
 			{
-				if (m->PanFrameRight.command_leave != NULL)
-				{
-					free(m->PanFrameRight.command_leave);
-				}
-				m->PanFrameRight.command_leave = command;
+				free(m->PanFrameRight.command_leave);
+				m->PanFrameRight.command_leave = fxstrdup(command);
 			}
 			else
 			{
 				/* this should never happen */
-				fvwm_debug(__func__,
-					   "Internal error in CMD_EdgeLeaveCommand");
+				fvwm_debug(__func__, "Internal error");
 			}
 		}
 	}
@@ -2001,26 +1960,10 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 			/* Just plain EdgeLeaveCommand, so all edge commands are
 			 * removed */
 			TAILQ_FOREACH(m, &monitor_q, entry) {
-				if (m->PanFrameTop.command_leave != NULL)
-				{
 					free(m->PanFrameTop.command_leave);
-					m->PanFrameTop.command_leave = NULL;
-				}
-				if (m->PanFrameBottom.command_leave != NULL)
-				{
 					free(m->PanFrameBottom.command_leave);
-					m->PanFrameBottom.command_leave = NULL;
-				}
-				if (m->PanFrameLeft.command_leave != NULL)
-				{
 					free(m->PanFrameLeft.command_leave);
-					m->PanFrameLeft.command_leave = NULL;
-				}
-				if (m->PanFrameRight.command_leave != NULL)
-				{
 					free(m->PanFrameRight.command_leave);
-					m->PanFrameRight.command_leave = NULL;
-				}
 			}
 		} else {
 			/* not a proper direction */
