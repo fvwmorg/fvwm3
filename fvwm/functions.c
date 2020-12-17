@@ -360,7 +360,6 @@ static void __execute_function(
 	char *arguments[11];
 	const func_t *bif;
 	Bool set_silent;
-	Bool must_free_string = False;
 	Bool must_free_function = False;
 	Bool do_keep_rc = False;
 	/* needed to be able to avoid resize to use moved windows for base */
@@ -550,8 +549,7 @@ static void __execute_function(
 			False, (taction[0] == '*'), func_rc, exc);
 		if (func_depth <= 1)
 		{
-			must_free_string = set_repeat_data(
-				expaction, REPEAT_COMMAND, bif);
+			set_repeat_data(expaction, REPEAT_COMMAND, bif);
 		}
 	}
 	else
