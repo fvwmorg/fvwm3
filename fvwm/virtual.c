@@ -2165,7 +2165,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
-	if (strcmp(action, "global") == 0) {
+	if (strcmp(action, "global") == 0 && monitor_mode != MONITOR_TRACKING_G) {
 		/* If we're switching to global mode after coming out of per-monitor
 		 * mode, the desks won't be the same.  Fix this by switching
 		 * other monitor desks to be the same as the current monitor.
