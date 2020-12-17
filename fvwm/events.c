@@ -2223,6 +2223,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		}
 		else if (edge_command)
 		{
+			fvwm_debug(__func__, "EC is: %s", edge_command);
 			execute_function(NULL, ea->exc, edge_command, 0);
 		}
 		else
