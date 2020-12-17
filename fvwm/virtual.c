@@ -85,6 +85,7 @@ static int last_edge_thickness = 2;
 
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
+static bool should_free_panframe(PanFrame *);
 
 struct desktop_cmds	 desktop_cmd_q;
 struct desktop_fws	 desktop_fvwm_q;
@@ -953,6 +954,15 @@ int HandlePaging(
  * Hermann Dunkel, HEDU, dunkel@cul-ipn.uni-kiel.de 1/94
  */
 
+static bool
+should_free_panframe(PanFrame *pf)
+{
+	if (pf->command != NULL || pf->command_leave != NULL)
+		return (false);
+
+	return (true);
+}
+
 /*
  * checkPanFrames hides PanFrames if they are on the very border of the
  * VIRTUAL screen and EdgeWrap for that direction is off.
@@ -960,10 +970,10 @@ int HandlePaging(
  */
 void checkPanFrames(void)
 {
-	Bool do_unmap_l = False;
-	Bool do_unmap_r = False;
-	Bool do_unmap_t = False;
-	Bool do_unmap_b = False;
+	Bool do_unmap_l = True;
+	Bool do_unmap_r = True;
+	Bool do_unmap_t = True;
+	Bool do_unmap_b = True;
 	struct monitor	*m;
 
 	if (!Scr.flags.are_windows_captured)
@@ -1011,33 +1021,23 @@ void checkPanFrames(void)
 		}
 
 		/* correct the unmap variables if pan frame commands are set */
-		if (edge_thickness != 0)
-		{
-			if (m->PanFrameLeft.command != NULL ||
-			    m->PanFrameLeft.command_leave != NULL)
-			{
-				do_unmap_l = False;
-			}
-			if (m->PanFrameRight.command != NULL ||
-			    m->PanFrameRight.command_leave != NULL)
-			{
-				do_unmap_r = False;
-			}
-			if (m->PanFrameBottom.command != NULL ||
-			    m->PanFrameBottom.command_leave != NULL)
-			{
-				do_unmap_b = False;
-			}
-			if (m->PanFrameTop.command != NULL ||
-			    m->PanFrameTop.command_leave != NULL)
-			{
-				do_unmap_t = False;
-			}
-		}
-
+		if (!should_free_panframe(&m->PanFrameLeft))
+			do_unmap_l = False;
+		if (!should_free_panframe(&m->PanFrameRight))
+			do_unmap_r = False;
+		if (!should_free_panframe(&m->PanFrameBottom))
+			do_unmap_b = False;
+		if (!should_free_panframe(&m->PanFrameTop))
+			do_unmap_t = False;
 		/*
 		 * hide or show the windows
 		 */
+
+		fvwm_debug(__func__,
+			"1 %s: {left: %d, right; %d, top: %d, bottom: %d}\n",
+			m->si->name,
+			m->PanFrameLeft.isMapped, m->PanFrameRight.isMapped,
+			m->PanFrameTop.isMapped,  m->PanFrameBottom.isMapped);
 
 		/* left */
 		if (do_unmap_l)
@@ -1136,6 +1136,11 @@ void checkPanFrames(void)
 			}
 		}
 		last_edge_thickness = edge_thickness;
+		fvwm_debug(__func__,
+			"2 %s: {left: %d, right; %d, top: %d, bottom: %d}\n",
+			m->si->name,
+			m->PanFrameLeft.isMapped, m->PanFrameRight.isMapped,
+			m->PanFrameTop.isMapped,  m->PanFrameBottom.isMapped);
 	}
 }
 
@@ -1245,6 +1250,7 @@ void initPanFrames(void)
 			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=False;
 	}
 	edge_thickness = saved_thickness;
+	checkPanFrames();
 }
 
 Bool is_pan_frame(Window w)
@@ -1252,9 +1258,28 @@ Bool is_pan_frame(Window w)
 	struct monitor *m;
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		if (w == m->PanFrameTop.win || w == m->PanFrameBottom.win ||
-		    w == m->PanFrameLeft.win || w == m->PanFrameRight.win)
-		{
+		bool is_pf_top = (w == m->PanFrameTop.win);
+		bool is_pf_bottom = (w == m->PanFrameBottom.win);
+		bool is_pf_left = (w == m->PanFrameLeft.win);
+		bool is_pf_right = (w == m->PanFrameRight.win);
+
+		if (is_pf_top) {
+			fvwm_debug(__func__, "Window is PanFrame top\n");
+			return True;
+		}
+
+		if (is_pf_bottom) {
+			fvwm_debug(__func__, "Window is PanFrame bottom\n");
+			return True;
+		}
+
+		if (is_pf_left) {
+			fvwm_debug(__func__, "Window is PanFrame left\n");
+			return True;
+		}
+
+		if (is_pf_right) {
+			fvwm_debug(__func__, "Window is PanFrame right\n");
 			return True;
 		}
 	}
@@ -1825,46 +1850,60 @@ char *GetDesktopName(struct monitor *m, int desk)
 void CMD_EdgeCommand(F_CMD_ARGS)
 {
 	direction_t direction;
-	char *command;
+	char *command = NULL, *actdup, *rest;
 	struct monitor	*m;
+
+	if (action != NULL)
+		actdup = fxstrdup(action);
 
 	/* get the direction */
 	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
 
 	if (direction >= 0 && direction <= DIR_MAJOR_MASK)
 	{
-
 		/* check if the command does contain at least one token */
-		command = fxstrdup(action);
-		if (PeekToken(action , &action) == NULL)
+		rest = GetNextToken(actdup , &action);
+		if (rest == NULL || *rest == '\0')
 		{
 			/* the command does not contain a token so
 			   the command of this edge is removed */
 			free(command);
-			command = fxstrdup("");
-		}
+			command = NULL;
+		} else
+			command = fxstrdup(rest);
 
 		TAILQ_FOREACH(m, &monitor_q, entry) {
 			/* assign command to the edge(s) */
 			if (direction == DIR_N)
 			{
 				free(m->PanFrameTop.command);
-				m->PanFrameTop.command = fxstrdup(command);
+				m->PanFrameTop.command = NULL;
+				if (command != NULL)
+					m->PanFrameTop.command = fxstrdup(command);
 			}
 			else if (direction == DIR_S)
 			{
 				free(m->PanFrameBottom.command);
-				m->PanFrameBottom.command = fxstrdup(command);
+				m->PanFrameBottom.command = NULL;
+				if (command != NULL)
+					m->PanFrameBottom.command = fxstrdup(command);
 			}
 			else if (direction == DIR_W)
 			{
 				free(m->PanFrameLeft.command);
-				m->PanFrameLeft.command = fxstrdup(command);
+				m->PanFrameLeft.command = NULL;
+				if (command != NULL)
+					m->PanFrameLeft.command = fxstrdup(command);
 			}
 			else if (direction == DIR_E)
 			{
 				free(m->PanFrameRight.command);
-				m->PanFrameRight.command = fxstrdup(command);
+				m->PanFrameRight.command = NULL;
+				if (command != NULL)
+					m->PanFrameRight.command = fxstrdup(command);
+
+				fvwm_debug(__func__, "RIGHT IS: %s",
+					m->PanFrameRight.command);
 			}
 			else
 			{
@@ -1873,29 +1912,13 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 					   "Internal error in CMD_EdgeCommand");
 			}
 		}
+		free(command);
+		free(actdup);
+	} else {
+		fvwm_debug(__func__, "EdgeCommand needs a direction\n");
+		free(actdup);
+		return;
 	}
-	else
-	{
-
-		/* check if the argument does contain at least one token */
-		if (PeekToken(action , &action) == NULL)
-		{
-			/* Just plain EdgeCommand, so all edge commands are
-			 * removed */
-
-			TAILQ_FOREACH(m, &monitor_q, entry) {
-				free(m->PanFrameTop.command);
-				free(m->PanFrameBottom.command);
-				free(m->PanFrameLeft.command);
-				free(m->PanFrameRight.command);
-			}
-		} else {
-			/* not a proper direction */
-			fvwm_debug(__func__,
-				   "EdgeCommand [direction [function]]");
-		}
-	}
-
 	/* maybe something has changed so we adapt the pan frames */
 	checkPanFrames();
 }
@@ -1904,46 +1927,57 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 {
 	direction_t direction;
-	char *command;
+	char *command = NULL, *actdup, *rest;
 	struct monitor *m;
+
+	if (action != NULL)
+		actdup = fxstrdup(action);
 
 	/* get the direction */
 	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
 
 	if (direction >= 0 && direction <= DIR_MAJOR_MASK)
 	{
-
 		/* check if the command does contain at least one token */
-		command = fxstrdup(action);
-		if (PeekToken(action , &action) == NULL)
+		rest = GetNextToken(actdup , &action);
+		if (rest == NULL || *rest == '\0')
 		{
 			/* the command does not contain a token so
 			   the command of this edge is removed */
 			free(command);
-			command = fxstrdup("");
-		}
+			command = NULL;
+		} else
+			command = fxstrdup(rest);
 
 		TAILQ_FOREACH(m, &monitor_q, entry) {
 			/* assign command to the edge(s) */
 			if (direction == DIR_N)
 			{
 				free(m->PanFrameTop.command_leave);
-				m->PanFrameTop.command_leave = fxstrdup(command);
+				m->PanFrameTop.command_leave = NULL;
+				if (command != NULL)
+					m->PanFrameTop.command_leave = fxstrdup(command);
 			}
 			else if (direction == DIR_S)
 			{
 				free(m->PanFrameBottom.command_leave);
-				m->PanFrameBottom.command_leave = fxstrdup(command);
+				m->PanFrameBottom.command_leave = NULL;
+				if (command != NULL)
+					m->PanFrameBottom.command_leave = fxstrdup(command);
 			}
 			else if (direction == DIR_W)
 			{
 				free(m->PanFrameLeft.command_leave);
-				m->PanFrameLeft.command_leave = fxstrdup(command);
+				m->PanFrameLeft.command_leave = NULL;
+				if (command != NULL)
+					m->PanFrameLeft.command_leave = fxstrdup(command);
 			}
 			else if (direction == DIR_E)
 			{
 				free(m->PanFrameRight.command_leave);
-				m->PanFrameRight.command_leave = fxstrdup(command);
+				m->PanFrameRight.command_leave = NULL;
+				if (command != NULL)
+					m->PanFrameRight.command_leave = fxstrdup(command);
 			}
 			else
 			{
@@ -1951,25 +1985,12 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 				fvwm_debug(__func__, "Internal error");
 			}
 		}
-	}
-	else
-	{
-		/* check if the argument does contain at least one token */
-		if (PeekToken(action , &action) == NULL)
-		{
-			/* Just plain EdgeLeaveCommand, so all edge commands are
-			 * removed */
-			TAILQ_FOREACH(m, &monitor_q, entry) {
-					free(m->PanFrameTop.command_leave);
-					free(m->PanFrameBottom.command_leave);
-					free(m->PanFrameLeft.command_leave);
-					free(m->PanFrameRight.command_leave);
-			}
-		} else {
-			/* not a proper direction */
-			fvwm_debug(__func__,
-				   "EdgeLeaveCommand [direction [function]]");
-		}
+		free(command);
+		free(actdup);
+	} else {
+		fvwm_debug(__func__, "EdgeLeaveCommand needs a direction");
+		free(actdup);
+		return;
 	}
 
 	/* maybe something has changed so we adapt the pan frames */
