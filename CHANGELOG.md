@@ -12,7 +12,6 @@
 **Implemented enhancements:**
 
 - Add expansion variables for a window's X/Y page [\#255](https://github.com/fvwmorg/fvwm3/issues/255)
-- Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
 - \[feature-request\] Global desktop with predefined resolutions [\#248](https://github.com/fvwmorg/fvwm3/issues/248)
 - Move to Python 3 [\#233](https://github.com/fvwmorg/fvwm3/issues/233)
 
@@ -56,12 +55,14 @@
 - Desktop App Menu Flickers [\#308](https://github.com/fvwmorg/fvwm3/issues/308)
 - Optional dependency SVG development library missing in INSTALL.md [\#287](https://github.com/fvwmorg/fvwm3/issues/287)
 - Fvwm and UI Design. [\#279](https://github.com/fvwmorg/fvwm3/issues/279)
+- Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
 - Q: open-desktop icon tray [\#252](https://github.com/fvwmorg/fvwm3/issues/252)
 - Safe sprintf call [\#164](https://github.com/fvwmorg/fvwm3/issues/164)
 - Testing notes for FVWM3-rc.X release candidate [\#65](https://github.com/fvwmorg/fvwm3/issues/65)
 
 **Merged pull requests:**
 
+- \_\_execute\_function: fix compiler warning [\#361](https://github.com/fvwmorg/fvwm3/pull/361) ([ThomasAdam](https://github.com/ThomasAdam))
 - EdgeCommand: fix parsing when unsetting commands [\#360](https://github.com/fvwmorg/fvwm3/pull/360) ([ThomasAdam](https://github.com/ThomasAdam))
 - repeat: don't free string [\#359](https://github.com/fvwmorg/fvwm3/pull/359) ([ThomasAdam](https://github.com/ThomasAdam))
 - panframes: recheck for all monitors [\#358](https://github.com/fvwmorg/fvwm3/pull/358) ([ThomasAdam](https://github.com/ThomasAdam))
