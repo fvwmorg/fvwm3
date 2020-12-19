@@ -970,10 +970,10 @@ should_free_panframe(PanFrame *pf)
  */
 void checkPanFrames(void)
 {
-	Bool do_unmap_l = True;
-	Bool do_unmap_r = True;
-	Bool do_unmap_t = True;
-	Bool do_unmap_b = True;
+	Bool do_unmap_l = False;
+	Bool do_unmap_r = False;
+	Bool do_unmap_t = False;
+	Bool do_unmap_b = False;
 	struct monitor	*m;
 
 	if (!Scr.flags.are_windows_captured)
@@ -1038,6 +1038,9 @@ void checkPanFrames(void)
 			m->si->name,
 			m->PanFrameLeft.isMapped, m->PanFrameRight.isMapped,
 			m->PanFrameTop.isMapped,  m->PanFrameBottom.isMapped);
+		fvwm_debug(__func__,
+			"%s: unmap_t: %d, unmap_b: %d, unmap_l: %d, unmap_r: %d",
+			m->si->name, do_unmap_t, do_unmap_b, do_unmap_l, do_unmap_r);
 
 		/* left */
 		if (do_unmap_l)

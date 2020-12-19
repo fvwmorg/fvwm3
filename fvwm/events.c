@@ -2240,11 +2240,13 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			/* this was in the HandleMotionNotify before, HEDU */
 			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
-			HandlePaging(
+			int p = HandlePaging(
 				&e, m->virtual_scr.EdgeScrollX,
 				m->virtual_scr.EdgeScrollY, &JunkX,
 				&JunkY, &delta_x, &delta_y, True, True, False,
 				Scr.ScrollDelay);
+			fvwm_debug(__func__, "handled paging for %s (%d)",
+				m->si->name, p);
 			return;
 		}
 	}
