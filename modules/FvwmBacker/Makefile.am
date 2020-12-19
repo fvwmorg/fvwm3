@@ -7,8 +7,8 @@ configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmBacker
 
-config_DATA = \
-  ConfigFvwmBacker
+EXTRA_DIST = ConfigFvwmBacker
+config_DATA = ConfigFvwmBacker
 
 FvwmBacker_SOURCES = FvwmBacker.c FvwmBacker.h root_bits.c
 FvwmBacker_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
