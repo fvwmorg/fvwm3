@@ -1850,7 +1850,7 @@ char *GetDesktopName(struct monitor *m, int desk)
 void CMD_EdgeCommand(F_CMD_ARGS)
 {
 	direction_t direction;
-	char *command = NULL, *actdup, *rest;
+	char *command = NULL, *actdup = NULL, *rest;
 	struct monitor	*m;
 
 	if (action != NULL)
@@ -1927,7 +1927,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 {
 	direction_t direction;
-	char *command = NULL, *actdup, *rest;
+	char *command = NULL, *actdup = NULL, *rest;
 	struct monitor *m;
 
 	if (action != NULL)
