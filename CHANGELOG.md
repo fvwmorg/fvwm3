@@ -62,6 +62,7 @@
 
 **Merged pull requests:**
 
+- EdgeCommands: tweak map logic [\#364](https://github.com/fvwmorg/fvwm3/pull/364) ([ThomasAdam](https://github.com/ThomasAdam))
 - Edgecommands: silence warnings [\#363](https://github.com/fvwmorg/fvwm3/pull/363) ([ThomasAdam](https://github.com/ThomasAdam))
 - PaneFrames: disallow Edge/Leave without direction [\#362](https://github.com/fvwmorg/fvwm3/pull/362) ([ThomasAdam](https://github.com/ThomasAdam))
 - \_\_execute\_function: fix compiler warning [\#361](https://github.com/fvwmorg/fvwm3/pull/361) ([ThomasAdam](https://github.com/ThomasAdam))
