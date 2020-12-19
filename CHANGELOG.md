@@ -62,6 +62,7 @@
 
 **Merged pull requests:**
 
+- Edgecommands: silence warnings [\#363](https://github.com/fvwmorg/fvwm3/pull/363) ([ThomasAdam](https://github.com/ThomasAdam))
 - PaneFrames: disallow Edge/Leave without direction [\#362](https://github.com/fvwmorg/fvwm3/pull/362) ([ThomasAdam](https://github.com/ThomasAdam))
 - \_\_execute\_function: fix compiler warning [\#361](https://github.com/fvwmorg/fvwm3/pull/361) ([ThomasAdam](https://github.com/ThomasAdam))
 - EdgeCommand: fix parsing when unsetting commands [\#360](https://github.com/fvwmorg/fvwm3/pull/360) ([ThomasAdam](https://github.com/ThomasAdam))
