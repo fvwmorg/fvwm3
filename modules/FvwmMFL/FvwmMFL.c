@@ -142,14 +142,16 @@ static void
 set_pid_file(void)
 {
 	char	*fud = getenv("FVWM_USERDIR");
+	char	*dsp = getenv("DISPLAY");
 
-	if (fud == NULL) {
-		fprintf(stderr, "FVWM_USERDIR is not set in the environment\n");
+	if (fud == NULL || dsp == NULL) {
+		fprintf(stderr,
+		    "FVWM_USERDIR or DISPLAY is not set in the environment\n");
 		exit(1);
 	}
 
 	free(pid_file);
-	xasprintf(&pid_file, "%s/fvwm_mfl.pid", fud);
+	xasprintf(&pid_file, "%s/fvwm_mfl_%s.pid", fud, dsp);
 }
 
 static void
