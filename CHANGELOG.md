@@ -62,6 +62,7 @@
 
 **Merged pull requests:**
 
+- ta/distfix [\#366](https://github.com/fvwmorg/fvwm3/pull/366) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: make pid file slight more unique [\#365](https://github.com/fvwmorg/fvwm3/pull/365) ([ThomasAdam](https://github.com/ThomasAdam))
 - EdgeCommands: tweak map logic [\#364](https://github.com/fvwmorg/fvwm3/pull/364) ([ThomasAdam](https://github.com/ThomasAdam))
 - Edgecommands: silence warnings [\#363](https://github.com/fvwmorg/fvwm3/pull/363) ([ThomasAdam](https://github.com/ThomasAdam))
