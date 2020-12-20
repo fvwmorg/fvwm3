@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased](https://github.com/fvwmorg/fvwm3/tree/HEAD)
+
+[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.2...HEAD)
+
+**Merged pull requests:**
+
+- Working on 1.0.3 [\#368](https://github.com/fvwmorg/fvwm3/pull/368) ([ThomasAdam](https://github.com/ThomasAdam))
+
 ## [1.0.2](https://github.com/fvwmorg/fvwm3/tree/1.0.2) (2020-12-20)
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.1...1.0.2)
