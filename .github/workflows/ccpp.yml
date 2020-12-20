@@ -31,7 +31,7 @@ jobs:
           - name: Update CHANGELOG
             if: github.ref == 'refs/heads/master'
             run: |
-                    docker run -v $(pwd):$(pwd) ferrarimarco/github-changelog-generator -t ${{ secrets.GITHUB_TOKEN }} --user fvwmorg --project fvwm3 -o "$(pwd)/CHANGELOG.md"
+                    docker run -v $(pwd):$(pwd) ferrarimarco/github-changelog-generator --exclude-labels "skip:changelog" --breaking-labels "type:breaking" --enhancement-labels "type:enhancement","type:new-feature" --bug-labels "type:bug" -t ${{ secrets.GITHUB_TOKEN }} --user fvwmorg --project fvwm3 -o "$(pwd)/CHANGELOG.md"
                     sed -i '/This Changelog was automatically generated/d' CHANGELOG.md
           - name: Commit CHANGELOG
             if: github.ref == 'refs/heads/master'
