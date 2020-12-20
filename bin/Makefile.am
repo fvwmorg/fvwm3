@@ -12,7 +12,7 @@ bin_SCRIPTS = fvwm-config fvwm-perllib \
 	fvwm-menu-desktop \
 	FvwmCommand
 
-man_MANS = fvwm-menu-xlock.1
+man_MANS = fvwm-menu-xlock.1 fvwm-menu-directory.1 fvwm-perllib.1
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3 $(xpm_LIBS) $(Xcursor_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(Xrender_LIBS) \

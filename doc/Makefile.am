@@ -2,7 +2,7 @@ docdir = @FVWM_DOCDIR@
 MODULE_ADOCS = $(wildcard fvwm3/fvwm3.adoc bin/*.adoc modules/*.adoc)
 
 man_MANS = $(patsubst %.adoc,%.1, $(MODULE_ADOCS))
-EXTRA_DISTS = $(man_MANS)
+EXTRA_DIST = $(MODULE_ADOCS)
 
 if FVWM_BUILD_MANDOC
 BUILD_MANS = $(man_MANS)
