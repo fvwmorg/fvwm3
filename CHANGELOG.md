@@ -22,6 +22,7 @@
 - \[feature-request\] Global desktop with predefined resolutions [\#248](https://github.com/fvwmorg/fvwm3/issues/248)
 - Move to Python 3 [\#233](https://github.com/fvwmorg/fvwm3/issues/233)
 - Add expansion variables for a window's X/Y page [\#255](https://github.com/fvwmorg/fvwm3/issues/255)
+- Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
 
 **Fixed bugs:**
 
@@ -66,7 +67,6 @@
 - Testing notes for FVWM3-rc.X release candidate [\#65](https://github.com/fvwmorg/fvwm3/issues/65)
 - FvwmScript core dump on signal 6 when called with \(LaunchScript $FOO\) from another FvwmScript [\#356](https://github.com/fvwmorg/fvwm3/issues/356)
 - FvwmPager: geometry string with @monitor not taken into account [\#310](https://github.com/fvwmorg/fvwm3/issues/310)
-- Fvwm should provide a Status option [\#253](https://github.com/fvwmorg/fvwm3/issues/253)
 
 **Merged pull requests:**
 
@@ -224,6 +224,7 @@
 - No .desktop file generated from make install [\#12](https://github.com/fvwmorg/fvwm3/issues/12)
 - making menuitem text always vertically centered. [\#181](https://github.com/fvwmorg/fvwm3/pull/181) ([mikeandmore](https://github.com/mikeandmore))
 - Add icons to the WindowOpsLong menus for default-config. [\#141](https://github.com/fvwmorg/fvwm3/pull/141) ([somiaj](https://github.com/somiaj))
+- FvwmPager: per-monitor improvements [\#123](https://github.com/fvwmorg/fvwm3/pull/123) ([ThomasAdam](https://github.com/ThomasAdam))
 - key binding and menu option for dmenu\_run [\#113](https://github.com/fvwmorg/fvwm3/pull/113) ([lgsobalvarro](https://github.com/lgsobalvarro))
 - FvwmEvent: listen for RandR events [\#106](https://github.com/fvwmorg/fvwm3/pull/106) ([ThomasAdam](https://github.com/ThomasAdam))
 - expansion: add $\[monitor.X\] namespace [\#74](https://github.com/fvwmorg/fvwm3/pull/74) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -340,7 +341,6 @@
 - ta/randr by default [\#131](https://github.com/fvwmorg/fvwm3/pull/131) ([ThomasAdam](https://github.com/ThomasAdam))
 - FindScreenOfXY: remove debug if no monitor found [\#128](https://github.com/fvwmorg/fvwm3/pull/128) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add FVWM3\_LOGDIR envvar for logging to different file [\#127](https://github.com/fvwmorg/fvwm3/pull/127) ([ThomasAdam](https://github.com/ThomasAdam))
-- FvwmPager: per-monitor improvements [\#123](https://github.com/fvwmorg/fvwm3/pull/123) ([ThomasAdam](https://github.com/ThomasAdam))
 - GCC-10: default to -fno-common by default [\#122](https://github.com/fvwmorg/fvwm3/pull/122) ([ThomasAdam](https://github.com/ThomasAdam))
 - GCC-10: enable -fcommon for linking [\#121](https://github.com/fvwmorg/fvwm3/pull/121) ([ThomasAdam](https://github.com/ThomasAdam))
 - setup\_window\_placement: initialise screen correctly [\#120](https://github.com/fvwmorg/fvwm3/pull/120) ([ThomasAdam](https://github.com/ThomasAdam))
