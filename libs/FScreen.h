@@ -63,9 +63,11 @@ enum monitor_tracking
 {
 	MONITOR_TRACKING_G = 1,
 	MONITOR_TRACKING_M,
+	MONITOR_TRACKING_R
 };
 
 extern enum monitor_tracking monitor_mode;
+extern DesktopsInfo *rd;
 
 struct screen_info {
 	const char		*name;

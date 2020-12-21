@@ -512,6 +512,7 @@ monitor_dump_state(struct monitor *m)
 			   m2->Desktops ? "yes" : "no",
 			   monitor_mode == MONITOR_TRACKING_G ? "global" :
 			   monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
+			   monitor_mode == MONITOR_TRACKING_R ? "rolling" :
 			   "Unknown"
 		);
 	}
