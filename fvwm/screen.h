@@ -485,8 +485,7 @@ typedef struct ScreenInfo
 		get_unshaded_geometry((fw), &g);			   \
 		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);   \
 		/* Avoid unnecessary updates. */			   \
-		if (mnew == (fw)->m &&					   \
-		    (fw)->Desk == mnew->virtual_scr.CurrentDesk)	   \
+		if (mnew == (fw)->m)					   \
 			break;						   \
 		(fw)->m_prev = (fw)->m;					   \
 		(fw)->m = mnew;						   \
