@@ -27,6 +27,24 @@ What were you trying to do?  Please explain the problem.
 
 What should have happened, but didn't?
 
+## Enabling logging
+
+`fvwm3` has a means of logging what it's doing.  Enabling this when
+reproducing the issue might help.  To do this, either change the means fvwm3
+is started by adding `-v` as in:
+
+```
+fvwm3 -v
+```
+
+or, once `fvwm3` has loaded, send `SIGUSR2` as in:
+
+```
+pkill -USR2 fvwm3
+```
+
+The resulting logfile can be found in `$HOME/.fvwm/fvwm3-output.log`
+
 ## Steps to Reproduce
 
 How can the problem be reproduced?  For this, the following is helpful:
@@ -75,3 +93,5 @@ bt full
 
 * Feel free to take a screen capture or video and upload to this issue if you
   feel it would help.
+
+* Attach `$HOME/.fvwm/fvwm3-output.log` from the step above.
