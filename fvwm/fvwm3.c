@@ -2131,6 +2131,8 @@ int main(int argc, char **argv)
 					   "can't open display %s, single screen "
 					   "number %d maybe not correct",
 					   new_dn, single_screen_num);
+				free(new_dn);
+				exit (1);
 			}
 			Scr.screen = single_screen_num;
 			Scr.NumberOfScreens = ScreenCount(dpy);
