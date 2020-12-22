@@ -960,7 +960,7 @@ should_free_panframe(PanFrame *pf)
 	if (pf->command != NULL || pf->command_leave != NULL)
 		return (false);
 
-	return (true);
+	return (false);
 }
 
 /*
@@ -1021,14 +1021,16 @@ void checkPanFrames(void)
 		}
 
 		/* correct the unmap variables if pan frame commands are set */
-		if (!should_free_panframe(&m->PanFrameLeft))
-			do_unmap_l = False;
-		if (!should_free_panframe(&m->PanFrameRight))
-			do_unmap_r = False;
-		if (!should_free_panframe(&m->PanFrameBottom))
-			do_unmap_b = False;
-		if (!should_free_panframe(&m->PanFrameTop))
-			do_unmap_t = False;
+		if (edge_thickness != 0) {
+			if (!should_free_panframe(&m->PanFrameLeft))
+				do_unmap_l = False;
+			if (!should_free_panframe(&m->PanFrameRight))
+				do_unmap_r = False;
+			if (!should_free_panframe(&m->PanFrameBottom))
+				do_unmap_b = False;
+			if (!should_free_panframe(&m->PanFrameTop))
+				do_unmap_t = False;
+		}
 		/*
 		 * hide or show the windows
 		 */
@@ -1138,13 +1140,13 @@ void checkPanFrames(void)
 				m->PanFrameBottom.isMapped = True;
 			}
 		}
-		last_edge_thickness = edge_thickness;
 		fvwm_debug(__func__,
 			"2 %s: {left: %d, right; %d, top: %d, bottom: %d}\n",
 			m->si->name,
 			m->PanFrameLeft.isMapped, m->PanFrameRight.isMapped,
 			m->PanFrameTop.isMapped,  m->PanFrameBottom.isMapped);
 	}
+	last_edge_thickness = edge_thickness;
 }
 
 /*
@@ -1229,12 +1231,16 @@ void initPanFrames(void)
 			m->si->w, edge_thickness,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+		m->PanFrameTop.command = NULL;
+		m->PanFrameTop.command_leave = NULL;
 		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
 		m->PanFrameLeft.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x, m->si->y,
 			edge_thickness, m->si->h,
 			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+		m->PanFrameLeft.command = NULL;
+		m->PanFrameLeft.command_leave = NULL;
 		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(
 			dpy, Scr.Root,
@@ -1242,6 +1248,8 @@ void initPanFrames(void)
 			edge_thickness, m->si->h, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+		m->PanFrameRight.command = NULL;
+		m->PanFrameRight.command_leave = NULL;
 		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
 		m->PanFrameBottom.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x,
@@ -1249,6 +1257,8 @@ void initPanFrames(void)
 			m->si->w, edge_thickness, 0,
 			CopyFromParent, InputOnly, CopyFromParent, valuemask,
 			&attributes);
+		m->PanFrameBottom.command = NULL;
+		m->PanFrameBottom.command_leave = NULL;
 		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
 			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=False;
 	}
@@ -2192,7 +2202,6 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
-	initPanFrames();
 	checkPanFrames();
 	raisePanFrames();
 

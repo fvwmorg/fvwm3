@@ -2460,6 +2460,7 @@ int main(int argc, char **argv)
 	TAILQ_FOREACH(m, &monitor_q, entry)
 		EWMH_Init(m);
 
+	initPanFrames();
 	SetRCDefaults();
 	flush_window_updates();
 	simplify_style_list();
