@@ -1518,7 +1518,6 @@ dnl
 	modules/FvwmBacker/Makefile
 	modules/FvwmButtons/Makefile
 	modules/FvwmConsole/Makefile
-	modules/FvwmConsole/FvwmConsoleC.pl
 	modules/FvwmEvent/Makefile
 	modules/FvwmForm/Makefile
 	modules/FvwmIconMan/Makefile
