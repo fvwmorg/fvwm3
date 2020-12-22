@@ -151,7 +151,7 @@ sub read_config {
 	    $key = $keys[1].$keys[2].$keys[3];
 	    $val = $vals[2].$vals[3].$vals[4];
 
-	    if( defined %{$User::{$hash}} ) {
+	    if( %{$User::{$hash}} ) {
             User::bind( $hash, $key, $val );
 		  }
     }
@@ -429,7 +429,7 @@ sub main::input {
 	my($init_in,$op);
 
 	$off = 0 if( !defined $off );
-	*hist = *main::Hist if( ! defined @hist );
+	*hist = *main::Hist if( ! @hist );
 	$isp = ++$#hist ;
 	$wisp = $isp;
 	if( -f "/vmunix" ) {
@@ -713,7 +713,7 @@ sub bind {
     # if there is no arguments, then list them
 	my($hash,$key,$val) = @_;
 	my( $mod,$chr,$v2,$k,$cnt );
-	if( defined %{$hash} ) {
+	if( %{$hash} ) {
 		$k = $key;
 	    if( $hash eq "Key" ) {
 			($v2 = $val) =~ s/\s*[\(;].*//;
