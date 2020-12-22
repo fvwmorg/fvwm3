@@ -2500,8 +2500,8 @@ int main(int argc, char **argv)
 		xasprintf(&cfg_loc[++nl], "%s/%s", fvwm_userdir, FVWM2RC);
 		xasprintf(&cfg_loc[++nl], "%s/%s", home_dir, FVWM2RC);
 		xasprintf(&cfg_loc[++nl], "%s/%s", FVWM_DATADIR, FVWM2RC);
-		xasprintf(&cfg_loc[++nl], "%s/system/%s", FVWM_DATADIR, FVWM2RC);
-		xasprintf(&cfg_loc[++nl], "%s/system/%s", FVWM_CONFDIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/system%s", FVWM_DATADIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/system%s", FVWM_CONFDIR, FVWM2RC);
 		xasprintf(&cfg_loc[++nl], "%s/default-config/config", FVWM_DATADIR);
 
 		for (nl = 0; nl < upper; nl++) {
