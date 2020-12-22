@@ -4,8 +4,13 @@
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.2...HEAD)
 
+**Fixed bugs:**
+
+- SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
+
 **Merged pull requests:**
 
+- update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
 - Working on 1.0.3 [\#368](https://github.com/fvwmorg/fvwm3/pull/368) ([ThomasAdam](https://github.com/ThomasAdam))
 
 ## [1.0.2](https://github.com/fvwmorg/fvwm3/tree/1.0.2) (2020-12-20)
