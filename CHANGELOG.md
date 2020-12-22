@@ -11,6 +11,7 @@
 **Fixed bugs:**
 
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
+- Fix system.fvwm2rc not found [\#382](https://github.com/fvwmorg/fvwm3/pull/382) ([phileimer](https://github.com/phileimer))
 - fix error in manpage name: fvwm-config-2.6 -\> fvwm-convert-2.6 [\#377](https://github.com/fvwmorg/fvwm3/pull/377) ([slazav](https://github.com/slazav))
 
 **Merged pull requests:**
