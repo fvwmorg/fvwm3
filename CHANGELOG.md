@@ -4,6 +4,10 @@
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.2...HEAD)
 
+**Breaking changes:**
+
+- Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
+
 **Fixed bugs:**
 
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
