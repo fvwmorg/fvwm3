@@ -57,12 +57,6 @@ different front-end. Although this option is still provided for
 backwards compatibility its use is discouraged unless you know exactly
 what you are doing.
 
-____
-Module FvwmConsole -e FvwmConsoleC.pl
-____
-
-(see _FvwmConsoleC.pl_(1)).
-
 Also X resources can be set in your ~/.Xdefaults file:
 
 ____
@@ -72,25 +66,10 @@ ____
 
 == COMMAND EDITING
 
-There are a few options. If the GNU readline library is available, it
-can be used.
-
-If Perl5 is installed, FvwmConsoleC.pl can be used as a command editor.
-This can be accomplished by either copying FvwmConsoleC.pl to fvwmlib
-directory as FvwmConsoleC or invoking FvwmConsole with -e option. For
-example:
-
-____
-Module FvwmConsole -e FvwmConsoleC.pl
-____
-
-If neither one is installed, a simple input reading function which
+If the GNU readline library is available, it can be used.
+Overwise a simple input reading function which
 doesn't have editing capabilities is used.
-
-GNU readline and FvwmConsoleC.pl have some frequent used commands in
-common as default. These commands are similar to emacs. For more
-details, refer GNU readline man and info pages, and FvwmConsoleC.pl man
-page.
+For more details, refer GNU readline man and info pages.
 
 ____
 Ctrl-A::
@@ -135,7 +114,7 @@ typing "quit" at the FvwmConsole command line will cause fvwm to exit.
 
 == SEE ALSO
 
-_xterm_(1), _FvwmConsoleC.pl_(1), GNU Readline library
+_xterm_(1), GNU Readline library
 
 == AUTHOR
 

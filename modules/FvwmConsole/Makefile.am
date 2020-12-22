@@ -11,7 +11,6 @@ moduledir = @FVWM_MODULEDIR@
 if !FVWM_BUILD_GOLANG
 
 module_PROGRAMS = FvwmConsole FvwmConsoleC
-module_SCRIPTS = FvwmConsoleC.pl
 
 FvwmConsole_SOURCES = FvwmConsole.c FvwmConsole.h
 FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
