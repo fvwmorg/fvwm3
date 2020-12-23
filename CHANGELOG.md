@@ -10,6 +10,7 @@
 
 **Fixed bugs:**
 
+- EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Remove explicit path to bson.h \(closes \#375\) [\#386](https://github.com/fvwmorg/fvwm3/pull/386) ([slazav](https://github.com/slazav))
@@ -18,6 +19,7 @@
 
 **Merged pull requests:**
 
+- PanFrames: always keep mapped [\#384](https://github.com/fvwmorg/fvwm3/pull/384) ([ThomasAdam](https://github.com/ThomasAdam))
 - update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
 - Working on 1.0.3 [\#368](https://github.com/fvwmorg/fvwm3/pull/368) ([ThomasAdam](https://github.com/ThomasAdam))
 
