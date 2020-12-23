@@ -10,15 +10,18 @@
 
 **Fixed bugs:**
 
+- fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
 - EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
+- fvwm-root: fix Makefile [\#387](https://github.com/fvwmorg/fvwm3/pull/387) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove explicit path to bson.h \(closes \#375\) [\#386](https://github.com/fvwmorg/fvwm3/pull/386) ([slazav](https://github.com/slazav))
 - Fix system.fvwm2rc not found [\#382](https://github.com/fvwmorg/fvwm3/pull/382) ([phileimer](https://github.com/phileimer))
 - fix error in manpage name: fvwm-config-2.6 -\> fvwm-convert-2.6 [\#377](https://github.com/fvwmorg/fvwm3/pull/377) ([slazav](https://github.com/slazav))
 
 **Merged pull requests:**
 
+- Revert "Remove SAFEFREE macro" [\#388](https://github.com/fvwmorg/fvwm3/pull/388) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: always keep mapped [\#384](https://github.com/fvwmorg/fvwm3/pull/384) ([ThomasAdam](https://github.com/ThomasAdam))
 - update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
 - Working on 1.0.3 [\#368](https://github.com/fvwmorg/fvwm3/pull/368) ([ThomasAdam](https://github.com/ThomasAdam))
