@@ -2065,7 +2065,6 @@ int main(int argc, char **argv)
 		exit (1);
 	}
 	Scr.screen= DefaultScreen(dpy);
-	Scr.NumberOfScreens = ScreenCount(dpy);
 
 	atexit(catch_exit);
 	master_pid = getpid();
