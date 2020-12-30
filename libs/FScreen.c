@@ -661,6 +661,18 @@ Bool FScreenGetScrRect(fscreen_scr_arg *arg, fscreen_scr_t screen,
 		return (True);
 	}
 
+	if (screen == FSCREEN_GLOBAL) {
+		if (x)
+			*x = 0;
+		if (y)
+			*y = 0;
+		if (w)
+			*w = monitor_get_all_widths();
+		if (h)
+			*h = monitor_get_all_heights();
+		return (True);
+	}
+
 	if (x)
 		*x = m->si->x;
 	if (y)
