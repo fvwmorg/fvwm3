@@ -32,6 +32,7 @@ typedef struct ConfigWinPacket
 	unsigned long  frame_height;
 	unsigned long  desk;
 	unsigned long  monitor_id;
+	unsigned long  monitor_name;
 	/*
 	  Temp word for alignment - old flags used to be here.
 	  - remove before next release.
