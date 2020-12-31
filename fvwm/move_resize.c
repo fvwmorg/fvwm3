@@ -4887,13 +4887,14 @@ void CMD_Maximize(F_CMD_ARGS)
 	new_g.height = fw->g.frame.height;
 	get_page_offset_check_visible(&page_x, &page_y, fw);
 
-	/* Check if we should constrain rectangle to some Xinerama screen */
 	if (!is_screen_given)
 	{
-		scr_x = fw->m->si->x;
-		scr_y = fw->m->si->y;
-		scr_w = fw->m->si->w;
-		scr_h = fw->m->si->h;
+		fscreen_scr_arg fscr;
+
+		fscr.xypos.x = fw->g.frame.x + fw->g.frame.width  / 2 - page_x;
+		fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2 - page_y;
+		FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w,
+		    &scr_h);
 	}
 
 	if (!ignore_working_area)
