@@ -181,9 +181,11 @@ int check_resolution(WinManager *manager, WinData *win)
     reverse = 1;
     /* fall through to next case */
   case SHOW_SCREEN:
-    if (win->desknum == globals.desknum) {
-      /* win and screen intersect if they are not disjoint in x and y */
-      flag = fvwmrect_do_rectangles_intersect(&g, &manager->managed_g);
+    {
+	if (strcasecmp(manager->scr, win->monitor) == 0)
+		flag = 1;
+	else
+		flag = 0;
     }
     break;
   }

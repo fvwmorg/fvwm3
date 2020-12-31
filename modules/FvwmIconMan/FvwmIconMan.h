@@ -269,6 +269,7 @@ typedef struct {
 typedef struct win_manager {
 	unsigned int magic;
 	int index;
+	char *scr;
 
 	/* .fvwm2rc options or things set as a result of options */
 	Resolution res;
