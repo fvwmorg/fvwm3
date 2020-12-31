@@ -8,8 +8,13 @@
 
 - Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 
+**Implemented enhancements:**
+
+- FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
+
 **Fixed bugs:**
 
+- RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
 - fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
 - EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
@@ -21,6 +26,8 @@
 
 **Merged pull requests:**
 
+- FvwmIconMan: handle resolutions for per-monitor [\#397](https://github.com/fvwmorg/fvwm3/pull/397) ([ThomasAdam](https://github.com/ThomasAdam))
+- Maximizing: handle RandR screen selection better [\#395](https://github.com/fvwmorg/fvwm3/pull/395) ([ThomasAdam](https://github.com/ThomasAdam))
 - Revert "Remove SAFEFREE macro" [\#388](https://github.com/fvwmorg/fvwm3/pull/388) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: always keep mapped [\#384](https://github.com/fvwmorg/fvwm3/pull/384) ([ThomasAdam](https://github.com/ThomasAdam))
 - update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
