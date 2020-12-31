@@ -738,6 +738,8 @@ void X_init_manager (int man_id)
 		    &man->managed_g.width, &man->managed_g.height);
   man->geometry.x = man->managed_g.x;
   man->geometry.y = man->managed_g.y;
+  if (man->scr == NULL)
+	  man->scr = (char *)monitor_by_primary()->si->name;
   if (man->geometry_str) {
     char *scr;
     fscreen_scr_arg arg;
@@ -746,8 +748,6 @@ void X_init_manager (int man_id)
     geometry_mask = FScreenParseGeometryWithScreen(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
       &man->geometry.cols, &man->geometry.rows, &scr);
-
-    arg.name = scr;
 
     FScreenGetScrRect(
       &arg, FSCREEN_BY_NAME, &man->managed_g.x, &man->managed_g.y,
