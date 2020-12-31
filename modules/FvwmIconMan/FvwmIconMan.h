@@ -199,6 +199,7 @@ typedef struct win_data {
 	char *iconname;
 	char *visible_name;
 	char *visible_icon_name;
+	char *monitor;
 } WinData;
 
 #define WINDATA_ICONIFIED(win) ((win)->iconified)

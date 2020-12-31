@@ -322,6 +322,7 @@ int check_win_complete (WinData *p)
   ConsoleDebug (WINLIST, "\tmanager: 0x%lx\n", (unsigned long)p->manager);
 
   if (p->geometry_set &&
+      p->monitor &&
       p->resname &&
       p->classname &&
       p->iconname &&
