@@ -290,7 +290,7 @@ action_flags *__get_allowed_actions(const FvwmWindow *fw)
   as a dummy to preserve alignment of the other fields in the
   old packet: we should drop this before the next release.
 */
-#define CONFIGARGS(_fw) 34,				\
+#define CONFIGARGS(_fw) 35,				\
 		(unsigned long)(-sizeof(Window)),	\
 		&FW_W(*(_fw)),				\
 		(unsigned long)(-sizeof(Window)),	\
@@ -309,6 +309,8 @@ action_flags *__get_allowed_actions(const FvwmWindow *fw)
 		&(*(_fw))->Desk,			\
 		(unsigned long)(0),			\
 		&(*(_fw))->m->si->rr_output,		\
+		(unsigned long)(sizeof(unsigned long)),\
+		(*(_fw))->m->si->name,			\
 		(unsigned long)(0),			\
 		&(*(_fw))->layer,			\
 		(unsigned long)(0),			\
