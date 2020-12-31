@@ -11,10 +11,14 @@
 **Implemented enhancements:**
 
 - FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
+- fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
 
 **Fixed bugs:**
 
+- PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
 - RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
+- FvwmIconMan lists wrong windows in \(certain?\) multi-monitor configurations. [\#390](https://github.com/fvwmorg/fvwm3/issues/390)
+- Applications not respecting screen/page [\#389](https://github.com/fvwmorg/fvwm3/issues/389)
 - fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
 - EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
@@ -26,8 +30,10 @@
 
 **Merged pull requests:**
 
+- PanFrames: restore global panframe behaviour [\#399](https://github.com/fvwmorg/fvwm3/pull/399) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmIconMan: handle resolutions for per-monitor [\#397](https://github.com/fvwmorg/fvwm3/pull/397) ([ThomasAdam](https://github.com/ThomasAdam))
 - Maximizing: handle RandR screen selection better [\#395](https://github.com/fvwmorg/fvwm3/pull/395) ([ThomasAdam](https://github.com/ThomasAdam))
+- fvwm2: provide compat wrapper FvwmCommandS [\#392](https://github.com/fvwmorg/fvwm3/pull/392) ([ThomasAdam](https://github.com/ThomasAdam))
 - Revert "Remove SAFEFREE macro" [\#388](https://github.com/fvwmorg/fvwm3/pull/388) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: always keep mapped [\#384](https://github.com/fvwmorg/fvwm3/pull/384) ([ThomasAdam](https://github.com/ThomasAdam))
 - update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
