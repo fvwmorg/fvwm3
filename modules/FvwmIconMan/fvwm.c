@@ -181,6 +181,7 @@ WinData *id_to_win(Ulong id)
 
 static void set_win_configuration(WinData *win, FvwmPacketBody *body)
 {
+	copy_string(&win->monitor, (char *)&(body->add_config_data.monitor_name));
 	win->desknum = body->add_config_data.desk;
 	win->x = body->add_config_data.frame_x;
 	win->y = body->add_config_data.frame_y;
