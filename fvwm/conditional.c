@@ -713,7 +713,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 
 			if (sscanf(tmp, "%s", scr_name)) {
 				tmp = SkipNTokens(tmp, 1);
-				mask->screen = monitor_by_name(scr_name);
+				mask->screen = monitor_resolve_name(scr_name);
 			}
 			mask->my_flags.do_check_screen = 1;
 
@@ -1107,7 +1107,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 		get_unshaded_geometry(fw, &g);
 		mon_name = FScreenOfPointerXY(g.x, g.y);
-		scr = monitor_by_name(mon_name);
+		scr = monitor_resolve_name(mon_name);
 
 		if (mask->my_flags.do_not_check_screen) {
 			/* Negation of (!screen n) specified. */

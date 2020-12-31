@@ -535,7 +535,7 @@ static signed int expand_vars_extended(
 		 */
 		rest_s = fxstrdup(rest);
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
-			mon = monitor_by_name(m_name);
+			mon = monitor_resolve_name(m_name);
 			if (m_name == NULL)
 				return -1;
 			if (strcmp(mon->si->name, m_name) == 1)

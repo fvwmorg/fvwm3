@@ -1689,7 +1689,7 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 	if (token == NULL)
 		return (False);
 
-	m = monitor_by_name(token);
+	m = monitor_resolve_name(token);
 	if (strcmp(m->si->name, token) != 0)
 		m = m_use;
 	else
@@ -2268,7 +2268,7 @@ void CMD_GotoDesk(F_CMD_ARGS)
 	action_cpy = strdup(action);
 	token = PeekToken(action_cpy, &action_cpy);
 
-	m = monitor_by_name(token);
+	m = monitor_resolve_name(token);
 	if (strcmp(m->si->name, token) != 0)
 		m = m_use;
 	else
@@ -2308,7 +2308,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	action_cpy = strdup(action);
 	token = PeekToken(action_cpy, &action_cpy);
 
-	m = monitor_by_name(token);
+	m = monitor_resolve_name(token);
 	if (strcmp(m->si->name, token) != 0)
 		m = m_use;
 	else

@@ -1809,7 +1809,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		if (action == NULL)
 			m = monitor_get_current();
 		else
-			m = monitor_by_name(action);
+			m = monitor_resolve_name(action);
 
 		s.x = m->si->x;
 		s.y = m->si->y;

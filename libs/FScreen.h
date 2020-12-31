@@ -146,7 +146,7 @@ TAILQ_HEAD(monitors, monitor);
 
 extern struct monitors		monitor_q;
 
-struct monitor	*monitor_by_name(const char *);
+struct monitor	*monitor_resolve_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_output(int);
 struct monitor  *monitor_by_primary(void);
