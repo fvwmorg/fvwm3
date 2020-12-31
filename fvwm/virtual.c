@@ -1225,6 +1225,73 @@ void initPanFrames(void)
 	/* I know these overlap, it's useful when at (0,0) and the top one is
 	 * unmapped */
 
+	/* Free panframes here for all monitors. */
+	fvwm_debug(__func__, "freeing panframes");
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->PanFrameLeft.isMapped)
+		{
+			XUnmapWindow(dpy, m->PanFrameLeft.win);
+			m->PanFrameLeft.isMapped = False;
+		}
+		if (m->PanFrameRight.isMapped)
+		{
+			XUnmapWindow(dpy, m->PanFrameRight.win);
+			m->PanFrameRight.isMapped = False;
+		}
+		if (m->PanFrameTop.isMapped)
+		{
+			XUnmapWindow(dpy, m->PanFrameTop.win);
+			m->PanFrameTop.isMapped = False;
+		}
+		if (m->PanFrameBottom.isMapped)
+		{
+			XUnmapWindow(dpy, m->PanFrameBottom.win);
+			m->PanFrameBottom.isMapped = False;
+		}
+	}
+
+	if (monitor_mode == MONITOR_TRACKING_G) {
+		/* Treat the global panframes separately -- the logic for
+		 * handling these along with per-monitor ones was getting too
+		 * cumbersome.
+		 */
+		struct monitor	*m, *mloop;
+		int		 gw = monitor_get_all_widths();
+		int		 gh = monitor_get_all_heights();
+
+		m = TAILQ_FIRST(&monitor_q);
+
+		m->PanFrameTop.win = XCreateWindow(dpy, Scr.Root, 0, 0, gw,
+		    edge_thickness, 0, CopyFromParent, InputOnly,
+		    CopyFromParent, valuemask, &attributes);
+
+		m->PanFrameLeft.win = XCreateWindow(dpy, Scr.Root, 0, 0,
+		    edge_thickness, gh, 0, CopyFromParent, InputOnly,
+		    CopyFromParent, valuemask, &attributes);
+
+		m->PanFrameRight.win = XCreateWindow(dpy, Scr.Root,
+		    gw - edge_thickness, 0, edge_thickness, gh, 0,
+		    CopyFromParent, InputOnly, CopyFromParent, valuemask,
+		    &attributes);
+
+		m->PanFrameBottom.win = XCreateWindow(dpy, Scr.Root, 0,
+		    gh - edge_thickness, gw, edge_thickness, 0,
+		    CopyFromParent, InputOnly, CopyFromParent, valuemask,
+		    &attributes);
+
+		TAILQ_FOREACH(mloop, &monitor_q, entry) {
+			if (mloop == m)
+				continue;
+			memcpy(&mloop->PanFrameTop, &m->PanFrameTop, sizeof(m->PanFrameTop));
+			memcpy(&mloop->PanFrameLeft, &m->PanFrameLeft, sizeof(m->PanFrameLeft));
+			memcpy(&mloop->PanFrameRight, &m->PanFrameRight, sizeof(m->PanFrameRight));
+			memcpy(&mloop->PanFrameBottom, &m->PanFrameBottom, sizeof(m->PanFrameBottom));
+		}
+		checkPanFrames();
+		fvwm_debug(__func__, "finished setting up global panframes");
+		return;
+	}
+
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->PanFrameTop.win = XCreateWindow(
 			dpy, Scr.Root, m->si->x, m->si->y,
@@ -1264,6 +1331,7 @@ void initPanFrames(void)
 	}
 	edge_thickness = saved_thickness;
 	checkPanFrames();
+	fvwm_debug(__func__, "finished setting up per-monitor panframes");
 }
 
 Bool is_pan_frame(Window w)
@@ -2202,6 +2270,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
+	initPanFrames();
 	checkPanFrames();
 	raisePanFrames();
 
