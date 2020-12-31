@@ -1698,7 +1698,7 @@ static int __place_window(
 			 *
 			 * This is necessary for StartsOnScreen
 			 */
-			fw->m = monitor_by_name(arg.name);
+			fw->m = monitor_resolve_name(arg.name);
 			free(e);
 		}
 		else

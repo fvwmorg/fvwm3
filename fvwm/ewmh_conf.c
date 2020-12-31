@@ -109,7 +109,7 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 		/* Actually get the screen value. */
 		option = PeekToken(action, &action);
 
-		if ((m = monitor_by_name(option)) == NULL) {
+		if ((m = monitor_resolve_name(option)) == NULL) {
 			fvwm_debug(__func__,
 				   "Invalid screen: %s", option);
 		}
@@ -150,7 +150,7 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		/* Actually get the screen value. */
 		option = PeekToken(action, &action);
 
-		m = monitor_by_name(option);
+		m = monitor_resolve_name(option);
 		if (strcmp(m->si->name, option) != 0) {
 			fvwm_debug(__func__,
 				   "Invalid screen: %s", option);

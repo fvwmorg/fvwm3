@@ -3975,7 +3975,7 @@ static Bool style_parse_one_style_option(
 			}
 
 			if (s != NULL)
-				m = monitor_by_name(s);
+				m = monitor_resolve_name(s);
 
 			if (s != NULL && m != NULL)
 			{
