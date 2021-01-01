@@ -71,4 +71,12 @@ typedef Picture XRenderPicture;
 #define SessionSupport 0
 #endif
 
+#ifdef HAVE_X11_XKBLIB_H
+#include <X11/XKBlib.h>
+#define fvwm_KeycodeToKeysym(d, k, l, g) \
+	(XkbKeycodeToKeysym((d), (k), (g), (l)))
+#else
+#define fvwm_KeycodeToKeysym(d, k, x, i) (XKeycodeToKeysym((d), (k), (i)))
+#endif
+
 #endif /* FVWMLIB_X11_H */
