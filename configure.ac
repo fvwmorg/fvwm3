@@ -1431,14 +1431,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define fvwm_lstat(x,y) -1
 #endif
 
-#ifdef HAVE_X11_XKBLIB_H
-#include <X11/XKBlib.h>
-#define fvwm_KeycodeToKeysym(d, k, l, g) \
-	(XkbKeycodeToKeysym((d), (k), (g), (l)))
-#else
-#define fvwm_KeycodeToKeysym(d, k, x, i) (XKeycodeToKeysym((d), (k), (i)))
-#endif
-
 /* A macro that touches a variable in a compiler independent way to suppress
  * warnings. */
 #define SUPPRESS_UNUSED_VAR_WARNING(x) \
