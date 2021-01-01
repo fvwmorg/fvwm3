@@ -960,7 +960,7 @@ should_free_panframe(PanFrame *pf)
 	if (pf->command != NULL || pf->command_leave != NULL)
 		return (false);
 
-	return (false);
+	return (true);
 }
 
 /*
@@ -970,11 +970,12 @@ should_free_panframe(PanFrame *pf)
  */
 void checkPanFrames(void)
 {
-	Bool do_unmap_l = False;
-	Bool do_unmap_r = False;
-	Bool do_unmap_t = False;
-	Bool do_unmap_b = False;
+	Bool		 do_unmap_l = False;
+	Bool		 do_unmap_r = False;
+	Bool		 do_unmap_t = False;
+	Bool		 do_unmap_b = False;
 	struct monitor	*m;
+	bool		 is_g = (monitor_mode == MONITOR_TRACKING_G);
 
 	if (!Scr.flags.are_windows_captured)
 		return;
@@ -1057,9 +1058,13 @@ void checkPanFrames(void)
 		{
 			if (edge_thickness != last_edge_thickness)
 			{
+				int	h;
+
+				h = is_g ? monitor_get_all_heights() :
+					(m->si->y + m->si->h);
 				XResizeWindow(
-					dpy, m->PanFrameLeft.win, edge_thickness,
-					m->si->y + m->si->h);
+					dpy, m->PanFrameLeft.win,
+					edge_thickness, h);
 			}
 			if (!m->PanFrameLeft.isMapped)
 			{
@@ -1080,11 +1085,18 @@ void checkPanFrames(void)
 		{
 			if (edge_thickness != last_edge_thickness)
 			{
+				int	w, h;
+
+				w = is_g ? monitor_get_all_widths() :
+					(m->si->x + m->si->w);
+				h = is_g ? monitor_get_all_heights() :
+					(m->si->y + m->si->h);
+
 				XMoveResizeWindow(
 					dpy, m->PanFrameRight.win,
-					(m->si->x + m->si->w) - edge_thickness,
-					m->si->y + m->si->h,
-					edge_thickness, (m->si->y + m->si->h));
+					w - edge_thickness,
+					is_g ? 0 : m->si->y + m->si->h,
+					edge_thickness, h);
 			}
 			if (!m->PanFrameRight.isMapped)
 			{
@@ -1105,10 +1117,11 @@ void checkPanFrames(void)
 		{
 			if (edge_thickness != last_edge_thickness)
 			{
+				int gw = is_g ? monitor_get_all_widths() :
+					(m->si->x + m->si->w);
 				XResizeWindow(
 					dpy, m->PanFrameTop.win,
-					(m->si->x + m->si->w),
-					edge_thickness);
+					gw, edge_thickness);
 			}
 			if (!m->PanFrameTop.isMapped)
 			{
@@ -1129,10 +1142,18 @@ void checkPanFrames(void)
 		{
 			if (edge_thickness != last_edge_thickness)
 			{
+				int	w, h;
+
+				w = is_g ? monitor_get_all_widths() :
+					(m->si->x + m->si->w);
+				h = is_g ? monitor_get_all_heights() :
+					(m->si->y + m->si->h);
+
 				XMoveResizeWindow(
-					dpy, m->PanFrameBottom.win, m->si->x,
-					(m->si->y + m->si->h) - edge_thickness,
-					(m->si->x + m->si->w), edge_thickness);
+					dpy, m->PanFrameBottom.win,
+					is_g ? 0 : m->si->x,
+					h - edge_thickness,
+					w, edge_thickness);
 			}
 			if (!m->PanFrameBottom.isMapped)
 			{
