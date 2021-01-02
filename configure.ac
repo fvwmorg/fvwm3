@@ -1,34 +1,32 @@
 dnl Process this file with autoconf to produce a configure script.
 dnl
+## Set some variables to avoid hard coding
+## Release is when annotated tag offset to HEAD = 0
+m4_define([r_datel],		[m4_esyscmd_s([./utils/fvwm-version-str.sh reldatel -r])])
+m4_define([r_dates],		[m4_esyscmd_s([./utils/fvwm-version-str.sh reldates -r])])
+m4_define([r_daten],		[m4_esyscmd_s([./utils/fvwm-version-str.sh reldaten -r])])
+## Tag parsed
+m4_define([v_maj],		[m4_esyscmd_s([./utils/fvwm-version-str.sh major -r])])
+m4_define([v_min],		[m4_esyscmd_s([./utils/fvwm-version-str.sh minor -r])])
+m4_define([v_mic],		[m4_esyscmd_s([./utils/fvwm-version-str.sh micro -r])])
+## Concatenation of Version parts parsed from tag
+## micro version will be .MM if HEAD=release tag, or MM-OO-CCCCCCC
+## where MM = microversion, OO = offet to HEAD from last annotated tag, and C.. = HEAD commit
+m4_define([v_full], [v_maj.v_min.v_mic])
+## will contain word "released" or "not released"
+m4_define([v_info],		[m4_esyscmd_s([./utils/fvwm-version-str.sh version_info -r])])
+
 AC_PREREQ(2.60)
-
-dnl should be "yes" only within the released distribution
-ISRELEASED="no"
-if test $ISRELEASED = "no"; then
-	RELDATELONG=""
-	RELDATESHORT=""
-	RELDATENUM=""
-
-fi
 
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
-AC_INIT([fvwm3], 1.0.3, [fvwm-workers@fvwm.org])
+AC_INIT([fvwm3], [v_full], [fvwm-workers@fvwm.org])
 AC_CONFIG_AUX_DIR(etc)
 AC_CONFIG_LIBOBJ_DIR(libs)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_SILENT_RULES([yes])
 AM_CONFIG_HEADER(config.h)
-
-VERSIONINFO=m4_esyscmd([./utils/fvwm-version-str.sh])
-
-dnl date of the released version (please zero pad the day in the last 2 dates)
-dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
-dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="20 December 20"
-RELDATESHORT="20-Dec-20"
-RELDATENUM="20-12-20"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"
@@ -38,19 +36,16 @@ FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
 MANPAGE_PREAMBLE='.\" WARNING: This file was automatically generated.  Edit the .in file instead.'
 
-AC_SUBST(ISRELEASED)
+VERSIONINFO="v_info"
+RELDATELONG="r_datel"
+RELDATESHORT="r_dates"
+RELDATENUM="r_daten"
 AH_TEMPLATE([VERSIONINFO],[Additional version information, like date])
-AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
+AC_DEFINE_UNQUOTED(VERSIONINFO, $VERSIONINFO)
 AC_SUBST(VERSIONINFO)
 AC_SUBST(RELDATELONG)
 AC_SUBST(RELDATESHORT)
 AC_SUBST(RELDATENUM)
-AC_SUBST(FVWMNAMELONG)
-AC_SUBST(FVWMHOMEPAGE)
-AC_SUBST(FVWMLIST)
-AC_SUBST(FVWMWORKERSLIST)
-AC_SUBST(FVWMWORKERSLISTLONG)
-AC_SUBST(MANPAGE_PREAMBLE)
 
 # check for programs needed to build html docs
 AC_CHECK_PROG(SED, sed, sed, "")

@@ -30,8 +30,8 @@ distcheck2: distcheck
 	dashes=`echo "$$banner" | sed s/./=/g`; \
 	echo "$$banner"; \
 	echo "$$dashes"
-	@if test "x$(ISRELEASED)" != xyes; then \
-		echo 'Warning: ISRELEASED is not set to "yes".'; \
+	@if test "x$(VERSIONINFO)" != xreleased; then \
+		echo 'Warning: Not a release tag.'; \
 		echo '	So these can not be the official tarballs.'; \
 		exit 1; \
 	fi
