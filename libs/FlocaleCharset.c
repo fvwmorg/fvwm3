@@ -54,8 +54,10 @@ static FlocaleCharset *FLCXOMCharset = NULL;
 /* list of XOM locale charset */
 static FlocaleCharset **FLCXOMCharsetList = NULL;
 static int FLCXOMCharsetList_num = 0;
+
 /* UTF-8 charset */
 static FlocaleCharset *FLCUtf8Charset = NULL;
+
 /* locale charset from the locale not X */
 static FlocaleCharset *FLCLocaleCharset = NULL;
 
@@ -322,6 +324,13 @@ FlocaleCharset UnknownCharset =
 
 FlocaleCharset FlocaleCharsetTable[] =
 {
+	// Common unicode. Almost everybody use UTF8 now.
+	CT_ENTRY_WET("UTF-8",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
+	CT_ENTRY_WET("USC-2",  usc_2,  "USC-2",  FLC_ENCODING_TYPE_USC_2),
+	CT_ENTRY_WET("USC-4",  usc_4,  NULL,     FLC_ENCODING_TYPE_USC_4),
+	CT_ENTRY_WET("UTF-16", utf_16, NULL,     FLC_ENCODING_TYPE_UTF_16),
+
+	// Less common locale
 	CT_ENTRY("ARMSCII-8",           armscii_8,           NULL),
 	CT_ENTRY("BIG5-0",              big5_0,              NULL),
 	CT_ENTRY("BIG5HKSCS-0",         big5hkscs_0,         NULL),
@@ -387,10 +396,6 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("BIG5-1",              big5_0,              NULL),
 	CT_ENTRY("ISO646.1991-IRV",     iso8859_1,           NULL),
 	CT_ENTRY("TIS620.2533-1",       tis620_0,            NULL),
-	CT_ENTRY_WET("UTF-8",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
-	CT_ENTRY_WET("USC-2",  usc_2,  "USC-2",  FLC_ENCODING_TYPE_USC_2),
-	CT_ENTRY_WET("USC-4",  usc_4,  NULL,     FLC_ENCODING_TYPE_USC_4),
-	CT_ENTRY_WET("UTF-16", utf_16, NULL,     FLC_ENCODING_TYPE_UTF_16),
 	CT_ENTRY(NULL, nullsl, NULL)
 };
 
@@ -674,7 +679,7 @@ void FlocaleCharsetSetFlocaleCharset(
 	}
 	if (flf->fc == NULL)
 	{
-		if (FftSupport && flf->fftf.fftfont != NULL)
+		if (FftSupport && flf->fftf.fftfont[0] != NULL)
 		{
 			flf->fc = FlocaleCharsetOfXCharset(flf->fftf.encoding);
 		}
@@ -775,31 +780,9 @@ void FlocaleCharsetSetFlocaleCharset(
 			flf->str_fc = &UnknownCharset;
 		}
 	}
-	else if (FftSupport && flf->fftf.fftfont != NULL)
-	{
-		if (flf->fftf.str_encoding != NULL)
-		{
-			flf->str_fc = FlocaleCharsetOfXCharset(
-				flf->fftf.str_encoding);
-			if (flf->str_fc == NULL)
-			{
-				flf->str_fc = FlocaleCharsetOfLocaleCharset(
-					flf->fftf.str_encoding);
-			}
-			if (flf->str_fc == NULL)
-			{
-				flf->str_fc = &UnknownCharset;
-			}
-		}
-		else
-		{
-			flf->str_fc =
-				FlocaleCharsetGetDefaultCharset(dpy, module);
-		}
-	}
 	if (flf->str_fc == NULL)
 	{
-		if (flf->fc != &UnknownCharset)
+		if ((FftSupport && flf->fftf.fftfont[0]) || flf->fc != &UnknownCharset)
 		{
 			flf->str_fc = flf->fc;
 		}
