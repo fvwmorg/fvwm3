@@ -13,7 +13,8 @@
 
 #include "fvwmlib.h"
 #include "gravity.h"
-#include "Fft.h"
+// #include "Fft.h"
+#include "FftInterface.h"
 #include "Colorset.h"
 
 /* FlocaleCharset.h and Ficonv.h should not be included */
@@ -34,7 +35,7 @@
 #define FLC_FFT_ENCODING_ISO10646_1 "ISO10646-1"
 
 #define FLOCALE_FALLBACK_XCHARSET "ISO8859-1"
-#define FLOCALE_UTF8_XCHARSET     "ISO10646-1"
+#define FLOCALE_UTF8_XCHARSET     "UTF-8"
 #define FLOCALE_ICONV_CONVERSION_MAX_NUMBER_OF_WARNING 10
 
 #define FLC_INDEX_ICONV_CHARSET_NOT_FOUND         -1
@@ -150,7 +151,6 @@ typedef struct _FlocaleFont
 	int height;             /* height of the font: ascent + descent */
 	int ascent;
 	int descent;
-	int max_char_width;
 	int shadow_size;
 	int shadow_offset;
 	struct
@@ -164,7 +164,7 @@ typedef struct _FlocaleFont
 	} flags;
 } FlocaleFont;
 
-typedef struct
+typedef struct _FlocaleWinString
 {
 	char *str;
 	char *e_str;    /* tmp */

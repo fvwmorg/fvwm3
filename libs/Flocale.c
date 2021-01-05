@@ -763,7 +763,7 @@ void FlocaleRotateDrawString(
 			{
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
-					tmp_fws.str2b = 
+					tmp_fws.str2b =
 						fxmalloc(2 * sizeof(XChar2b));
 					tmp_fws.str2b[0] = comb_chars[i].c;
 					tmp_fws.str2b[1].byte1 = 0;
@@ -1105,7 +1105,7 @@ FlocaleFont *FlocaleGetFftFont(
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
 	FftGetFontHeights(
 		&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
-	FftGetFontWidths(flf, &flf->max_char_width);
+
 	free(fftf);
 	if (fn != NULL && fn != fft_fallback_font)
 	{
@@ -1191,7 +1191,7 @@ FlocaleFont *FlocaleGetFontSet(
 	flf->ascent = - fset_extents->max_ink_extent.y;
 	flf->descent = fset_extents->max_ink_extent.height +
 		fset_extents->max_ink_extent.y;
-	flf->max_char_width = fset_extents->max_ink_extent.width;
+
 	if (fn_fixed && fn_fixed != fn)
 	{
 		free(fn_fixed);
@@ -1249,13 +1249,12 @@ FlocaleFont *FlocaleGetFont(
 	flf = fxcalloc(1, sizeof(FlocaleFont));
 	flf->count = 1;
 	flf->fontset = None;
-	flf->fftf.fftfont = NULL;
+	memset(&flf->fftf, 0, sizeof(FftFontType));
 	flf->font = font;
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
 	flf->height = font->max_bounds.ascent + font->max_bounds.descent;
 	flf->ascent = font->max_bounds.ascent;
 	flf->descent = font->max_bounds.descent;
-	flf->max_char_width = font->max_bounds.width;
 	if (flf->font->max_byte1 > 0)
 		flf->flags.is_mb = True;
 	if (fn != NULL && fn != fallback_font)
@@ -1562,7 +1561,6 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			flf->descent += FLF_SHADOW_DESCENT(flf);
 			flf->ascent += FLF_SHADOW_ASCENT(flf);
 			flf->height += FLF_SHADOW_HEIGHT(flf);
-			flf->max_char_width += FLF_SHADOW_WIDTH(flf);
 		}
 		if (flf->fc == FlocaleCharsetGetUnknownCharset())
 		{
@@ -1573,8 +1571,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		}
 		else if (flf->str_fc == FlocaleCharsetGetUnknownCharset() &&
 			 (encoding != NULL ||
-			  (FftSupport && flf->fftf.fftfont != NULL &&
-			   flf->fftf.str_encoding != NULL)))
+			  (FftSupport && flf->fftf.fftfont[0] != NULL)))
 		{
 			fvwm_debug(__func__, "[%s][FlocaleLoadFont]: "
 				   "WARNING -- Unknown string encoding for font\n"
@@ -1618,15 +1615,9 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	{
 		free(flf->name);
 	}
-	if (FftSupport && flf->fftf.fftfont != NULL)
+	if (FftSupport && flf->fftf.fftfont[0] != NULL)
 	{
-		FftFontClose(dpy, flf->fftf.fftfont);
-		if (flf->fftf.fftfont_rotated_90 != NULL)
-			FftFontClose(dpy, flf->fftf.fftfont_rotated_90);
-		if (flf->fftf.fftfont_rotated_180 != NULL)
-			FftFontClose(dpy, flf->fftf.fftfont_rotated_180);
-		if (flf->fftf.fftfont_rotated_270 != NULL)
-			FftFontClose(dpy, flf->fftf.fftfont_rotated_270);
+		FftCloseFont(dpy, &flf->fftf);
 	}
 	if (flf->fontset != NULL)
 	{
@@ -1926,14 +1917,14 @@ void FlocaleDrawString(
 	}
 
 	if (fws->flags.text_rotation != ROTATION_0 &&
-	    flf->fftf.fftfont == NULL)
+	    flf->fftf.fftfont[0] == NULL)
 	{
 	        /* pass in information to perform superimposition */
 		FlocaleRotateDrawString(
 			dpy, flf, fws, fg, fgsh, has_fg_pixels, len,
 			comb_chars, pixel_pos);
 	}
-	else if (FftSupport && flf->fftf.fftfont != NULL)
+	else if (FftSupport && flf->fftf.fftfont[0] != NULL)
 	{
 		FftDrawString(
 			dpy, flf, fws, fg, fgsh, has_fg_pixels, len, flags);
@@ -1998,7 +1989,7 @@ void FlocaleDrawString(
 			}
 			tmp_fws.e_str = buf2;
 			tmp_fws.str2b = NULL;
-			if(FftSupport && flf->fftf.fftfont != NULL)
+			if(FftSupport && flf->fftf.fftfont[0] != NULL)
 			{
 			        tmp_fws.x = fws->x + offset;
 				FftDrawString(
@@ -2214,9 +2205,9 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 		}
 		return FlocaleTextWidth(flf, " ", 1);
 	}
-	else if (FftSupport && flf->fftf.fftfont != NULL)
-		     {
-		result = FftTextWidth(flf, tmp_str, new_l);
+	else if (FftSupport && flf->fftf.fftfont[0] != NULL)
+	{
+		result = FftTextWidth(Pdpy, flf, tmp_str, new_l);
 	}
 	else if (flf->fontset != None)
 	{
@@ -2482,45 +2473,9 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 				   flf->flags.shadow_dir);
 			if (verbose >= 2)
 			{
-				if (flf->fftf.fftfont != NULL)
+				if (flf->fftf.fftfont[0] != NULL)
 				{
-					FftFontType *fftf;
-
-					fftf = &flf->fftf;
-					fvwm_debug(__func__, "    Xft info:\n"
-						   "      - Vertical font:");
-					FftPrintPatternInfo(
-						fftf->fftfont, False);
-					fvwm_debug(__func__, "      "
-						   "- Rotated font 90:");
-					if (fftf->fftfont_rotated_90)
-						FftPrintPatternInfo(
-							fftf->
-							fftfont_rotated_90,
-							True);
-					else
-						fvwm_debug(__func__,
-							   " None\n");
-					fvwm_debug(__func__, "      "
-						   "- Rotated font 270:");
-					if (fftf->fftfont_rotated_270)
-						FftPrintPatternInfo(
-							fftf->
-							fftfont_rotated_270,
-							True);
-					else
-						fvwm_debug(__func__,
-							   " None\n");
-					fvwm_debug(__func__, "      "
-						   "- Rotated font 180:");
-					if (fftf->fftfont_rotated_180)
-						FftPrintPatternInfo(
-							fftf->
-							fftfont_rotated_180,
-							True);
-					else
-						fvwm_debug(__func__,
-							   " None\n");
+					FftPrintPatternInfo(&flf->fftf);
 				}
 				else if (flf->font != NULL)
 				{
