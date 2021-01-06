@@ -449,7 +449,14 @@ char *FlocaleEncodeString(
 	}
 
 	str1 = str;
-	if (FiconvSupport)
+
+        if (FftSupport && flf->fftf.fftfont[0])
+	{
+		if (comb_chars) *comb_chars = NULL;
+		comb_chars = NULL;
+	}
+
+	if (FiconvSupport && comb_chars)
 	{
 		char *tmp_str;
 
@@ -2098,7 +2105,6 @@ void FlocaleDrawUnderline(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int offset)
 {
 	int off1, off2, y, x_s, x_e;
-	superimpose_char_t *comb_chars = NULL;
 	int *l_to_v = NULL;
 	Bool do_free = True;
 	int len = strlen(fws->str);
@@ -2112,10 +2118,8 @@ void FlocaleDrawUnderline(
 	}
 
 	/* need to encode the string first to get BIDI and combining chars */
-	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars,
+	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, NULL,
 			       &l_to_v);
-	/* we don't need this, only interested in char mapping */
-	free(comb_chars);
 
 	/* now calculate char offset (in bytes) in visual string corresponding
 	   to coffset */
