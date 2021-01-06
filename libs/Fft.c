@@ -143,11 +143,11 @@ void FftGetFontHeights(
 
 void FftCloseFont(Display *dpy, FftFontType *fftf)
 {
-	for (int i = 0; i < 4; i++) {
+	int i = 0;
+	for (i = 0; i < 4; i++) {
 		if (fftf->fftfont[i])
 			XftFontClose(dpy, fftf->fftfont[i]);
 	}
-	// Free?
 }
 
 FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
@@ -205,14 +205,18 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 
 	fftf = fxcalloc(1, sizeof(FftFontType));
 	fftf->fftfont[0] = fftfont;
-	// We could either use UCS4 or UTF-8. We choose UTF-8 because:
-	//
-	// 1. Almost everyone uses UTF-8 locales now. Using UTF-8 avoid
-	// FlocaleEncodeString() to convert the encoding.
-	//
-	// 2. FcUtf8toUcs4() is fast because it avoids a memory allocation. It's
-	// also a common path for other softwares, so it's likely to be well
-	// optimized.
+
+	/*
+	 * We could either use UCS4 or UTF-8. We choose UTF-8 because:
+	 *
+	 * 1. Almost everyone use UTF-8 locales now. Using UTF-8 avoids
+	 * FlocaleEncodeString() converting the encoding.
+	 *
+	 * 2. FcUtf8toUcs4() is fast because it avoids a memory allocation. It's
+	 * also a common path for other softwares, so it's likely to be well
+	 * optimized.
+	 *
+	 */
 	fftf->encoding = FlocaleCharsetGetUtf8Charset()->x;
 
  cleanup:
@@ -223,6 +227,57 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	return fftf;
 }
 
+#define CACHE_ENTIRES 63
+
+static struct font_cache {
+	int fifo_start, fifo_end;
+
+	/*
+	 * Searching 64 shorts doesn't takes a full hash table. That's only two
+	 * cache lines.
+	 */
+	unsigned short hashes[CACHE_ENTIRES];
+
+	FcPattern *srcs[CACHE_ENTIRES];
+	FcPattern *patterns[CACHE_ENTIRES];
+} g_font_cache;
+
+static FcPattern *MatchCacheFont(FcChar32 code, FcPattern *src, FcResult *result)
+{
+	unsigned short hash = FcPatternHash(src);
+	int i = 0;
+	hash ^= code; /* Because FcPatternHash() does not hash charset due to its cost. */
+
+	for (i = g_font_cache.fifo_start; i < g_font_cache.fifo_end; i++) {
+		int idx = i % CACHE_ENTIRES;
+		if (g_font_cache.hashes[idx] != hash) continue;
+		if (FcPatternEqual(g_font_cache.srcs[idx], src)) {
+			*result = FcResultMatch;
+			return FcPatternDuplicate(g_font_cache.patterns[idx]);
+		}
+	}
+	*result = FcResultNoMatch;
+	return NULL;
+}
+
+static void AddCacheFont(FcChar32 code, FcPattern *src, FcPattern *match)
+{
+	while (g_font_cache.fifo_end - g_font_cache.fifo_start >= CACHE_ENTIRES) {
+		int idx = g_font_cache.fifo_start % CACHE_ENTIRES;
+		FcPatternDestroy(g_font_cache.srcs[idx]);
+		FcPatternDestroy(g_font_cache.patterns[idx]);
+		g_font_cache.fifo_start++;
+	}
+	unsigned short hash = FcPatternHash(src);
+	hash ^= code;
+
+	int idx = g_font_cache.fifo_end % CACHE_ENTIRES;
+	g_font_cache.hashes[idx] = hash;
+	g_font_cache.srcs[idx] = FcPatternDuplicate(src);
+	g_font_cache.patterns[idx] = FcPatternDuplicate(match);
+	g_font_cache.fifo_end++;
+}
+
 static void MatchFont(Display *dpy,
 		      XftFont *font,
 		      int *xoff, int *yoff,
@@ -231,8 +286,7 @@ static void MatchFont(Display *dpy,
 		      void *user_data)
 {
 	FcPattern *template = NULL;
-
-        int codelen = 0, off = 0;
+	int codelen = 0, off = 0;
 
 	for (off = 0; off < len; off += codelen) {
 		XftCharFontSpec sp;
@@ -263,8 +317,13 @@ static void MatchFont(Display *dpy,
 			FcCharSetAddChar(fallback_charset, sp.ucs4);
 			FcPatternAddCharSet(template, FC_CHARSET, fallback_charset);
 
-			FcResult result = FcResultNoMatch;
-			FcPattern *font_pattern = XftFontMatch(dpy, XDefaultScreen(dpy), template, &result);
+			// Lookup from the cache first!
+			FcResult result = FcResultMatch;
+			FcPattern *font_pattern = MatchCacheFont(sp.ucs4, template, &result);
+			if (!font_pattern) {
+				font_pattern = XftFontMatch(dpy, XDefaultScreen(dpy), template, &result);
+				if (font_pattern) AddCacheFont(sp.ucs4, template, font_pattern);
+			}
 			FcCharSetDestroy(fallback_charset);
 
 			if (result == FcResultMatch) {
@@ -278,7 +337,11 @@ static void MatchFont(Display *dpy,
 		*xoff += info.xOff;
 		*yoff += info.yOff;
 
-		if (render_char) render_char(user_data, &sp);
+		if (render_char) {
+			render_char(user_data, &sp);
+		} else if (sp.font != font) {
+			XftFontClose(dpy, sp.font);
+		}
 	}
 	if (template)
 		FcPatternDestroy(template);
@@ -288,6 +351,8 @@ static void MatchFont(Display *dpy,
 
 struct CharFontSpecBatch
 {
+	Display *dpy;
+	XftFont *default_font;
 	XftDraw *draw;
 	XftColor *color;
 	int size;
@@ -301,6 +366,10 @@ static void RenderCharFontSpec(void *p, XftCharFontSpec *sp)
 	if (batch->size == NR_CHARFONTSPEC || sp == NULL)
 	{
 		XftDrawCharFontSpec(batch->draw, batch->color, batch->specs, batch->size);
+		int i = 0;
+		for (i = 0; i < batch->size; i++)
+			if (batch->specs[i].font != batch->default_font)
+				XftFontClose(batch->dpy, batch->specs[i].font);
 		batch->size = 0;
 	}
 
@@ -402,6 +471,8 @@ void FftDrawString(
 
 	struct CharFontSpecBatch batch;
 	batch.size = 0;
+	batch.dpy = dpy;
+	batch.default_font = uf;
 	batch.draw = draw;
 	batch.color = &fft_fgsh;
 
@@ -436,10 +507,14 @@ void FftPrintPatternInfo(FftFontType *ft)
 {
 	fvwm_debug("xft", "    Xft info:\n");
 
-	for (int i = 0; i < 4; i++) {
-		XftFont *f = ft->fftfont[i];
+	int i = 0;
+	XftFont *f = NULL;
+	FcMatrix *pm = NULL;
+
+	for (i = 0; i < 4; i++) {
+		f = ft->fftfont[i];
 		fvwm_debug("xft", "    Rotation %d\n", i * 90);
-		fvwm_debug("xft", "        height: %i, ascent: %i, descent: %i, maw: %i\n",
+		fvwm_debug("xft", "	   height: %i, ascent: %i, descent: %i, maw: %i\n",
 		       f->height, f->ascent, f->descent, f->max_advance_width);
 		if (i == 0)
 		{
@@ -447,10 +522,9 @@ void FftPrintPatternInfo(FftFontType *ft)
 		}
 		else
 		{
-			FcMatrix *pm = NULL;
 			if (FcPatternGetMatrix(f->pattern, FC_MATRIX, 0, &pm) == FcResultMatch && pm)
 			{
-				fvwm_debug("xft", "        matrix: (%f %f %f %f)\n",
+				fvwm_debug("xft", "	   matrix: (%f %f %f %f)\n",
 					   pm->xx, pm->xy, pm->yx, pm->yy);
 			}
 		}
