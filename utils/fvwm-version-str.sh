@@ -12,10 +12,6 @@
 
 # Modified from gitdescribe project (https://github.com/pete4abw/gitdescribe)
 # Peter Hyman, pete@peterhyman.com
-# December 2020
-# Free to use
-# No warranties
-# Attribution appreciated as well as enhancements or fixes!
 
 usage() {
 cat >&2  <<EOF
@@ -38,7 +34,7 @@ exit 1
 
 # showw message and usage
 die() {
-	echo "$1"
+	echo "$1" >&2
 	usage
 }
 
@@ -94,9 +90,6 @@ init() {
 	# git describe raw format
 	describe_tag=$(git describe $tagopt --long --abbrev=$commit_length)
 
-	# git describe prefixes commit with the letter `g'
-	describe_tag=${describe_tag/g/}
-
 	# assign commit, tag revision, and version to variables using `-' separator
 	# reverse describe to count dashes from back
 	# in case tag has a dash in it ( e.g. 1.2.3-rc0 )
@@ -127,7 +120,7 @@ init() {
 	major=$(echo $version | cut -d. -f1)
 }
 
-[ ! $(which git) ] && die "Something very wrong: git not found."
+type -p git >/dev/null || die "Something very wrong: git not found."
 
 [ $# -eq 0 ] && die "Must provide a command and optional argument."
 
