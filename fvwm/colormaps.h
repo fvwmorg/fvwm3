@@ -17,8 +17,8 @@
 
 /* ---------------------------- included header files ---------------------- */
 
-#include "fvwm.h"
 #include "eventhandler.h"
+#include "fvwm.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
@@ -37,10 +37,12 @@
  * This procedure handles both a client changing its own colormap, and
  * a client explicitly installing its colormap itself (only the window
  * manager should do that, so we must set it correctly). */
-void colormap_handle_colormap_notify(const evh_args_t *ea);
+void
+colormap_handle_colormap_notify(const evh_args_t *ea);
 
 /* Re-Install the active colormap */
-void ReInstallActiveColormap(void);
+void
+ReInstallActiveColormap(void);
 
 /* install the colormaps for one fvwm window
  *
@@ -48,7 +50,8 @@ void ReInstallActiveColormap(void);
  *      type    - type of event that caused the installation
  *      tmp     - for a subset of event types, the address of the
  *                window structure, whose colormaps are to be installed. */
-void InstallWindowColormaps(const FvwmWindow *tmp);
+void
+InstallWindowColormaps(const FvwmWindow *tmp);
 
 /* Force (un)loads root colormap(s)
  *
@@ -63,34 +66,42 @@ void InstallWindowColormaps(const FvwmWindow *tmp);
  * which would otherwise have be loaded to be loaded, unless
  * Enter or Leave Notify events are queued, indicating some
  * other colormap list would potentially be loaded anyway. */
-void InstallRootColormap(void);
+void
+InstallRootColormap(void);
 
 /* Unstacks one layer of root colormap pushing
  * If we peel off the last layer, re-install the application colormap  */
-void UninstallRootColormap(void);
+void
+UninstallRootColormap(void);
 
 /* Force (un)loads fvwm colormap(s)
  *
  * This is used to ensure the fvwm colormap is installed during
  * menu operations */
-void InstallFvwmColormap(void);
-void UninstallFvwmColormap(void);
+void
+InstallFvwmColormap(void);
+void
+UninstallFvwmColormap(void);
 
 /* Gets the WM_COLORMAP_WINDOWS property from the window
  *
  * This property typically doesn't exist, but a few applications
  * use it. These seem to occur mostly on SGI machines. */
-void FetchWmColormapWindows (FvwmWindow *tmp);
+void
+FetchWmColormapWindows(FvwmWindow *tmp);
 
 /* clasen@mathematik.uni-freiburg.de - 03/01/1999 - new
  * boolean for handling of client-side InstallColormap
  * as described in the ICCCM 2.0 */
 
-void set_client_controls_colormaps(Bool flag);
+void
+set_client_controls_colormaps(Bool flag);
 
 /* Looks through the window list for any matching COLORMAP_WINDOWS
  * windows and installs the colormap if one exists. */
-void EnterSubWindowColormap(Window win);
-void LeaveSubWindowColormap(Window win);
+void
+EnterSubWindowColormap(Window win);
+void
+LeaveSubWindowColormap(Window win);
 
 #endif /* FVWM_COLORMAP_H */

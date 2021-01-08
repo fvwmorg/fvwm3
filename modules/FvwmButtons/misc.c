@@ -33,61 +33,48 @@
 *** The general algorithm, especially the aspect ratio stuff, is borrowed from
 *** uwm's CheckConsistency routine.
 **/
-void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
+void
+ConstrainSize(XSizeHints *hints, int *widthp, int *heightp)
 {
-#define makemult(a,b) ((b == 1) ? (a) : (((int)((a) / (b))) * (b)))
+#define makemult(a, b) ((b == 1) ? (a) : (((int)((a) / (b))) * (b)))
 
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
 	int baseWidth, baseHeight;
 	int dwidth = *widthp, dheight = *heightp;
 
-	if (hints->flags & PMinSize)
-	{
-		minWidth = hints->min_width;
+	if (hints->flags & PMinSize) {
+		minWidth  = hints->min_width;
 		minHeight = hints->min_height;
-		if (hints->flags & PBaseSize)
-		{
-			baseWidth = hints->base_width;
+		if (hints->flags & PBaseSize) {
+			baseWidth  = hints->base_width;
 			baseHeight = hints->base_height;
-		}
-		else
-		{
-			baseWidth = hints->min_width;
+		} else {
+			baseWidth  = hints->min_width;
 			baseHeight = hints->min_height;
 		}
-	}
-	else if (hints->flags & PBaseSize)
-	{
-		minWidth = hints->base_width;
-		minHeight = hints->base_height;
-		baseWidth = hints->base_width;
+	} else if (hints->flags & PBaseSize) {
+		minWidth   = hints->base_width;
+		minHeight  = hints->base_height;
+		baseWidth  = hints->base_width;
 		baseHeight = hints->base_height;
-	}
-	else
-	{
-		minWidth = 1;
-		minHeight = 1;
-		baseWidth = 1;
+	} else {
+		minWidth   = 1;
+		minHeight  = 1;
+		baseWidth  = 1;
 		baseHeight = 1;
 	}
 
-	if (hints->flags & PMaxSize)
-	{
-		maxWidth = hints->max_width;
+	if (hints->flags & PMaxSize) {
+		maxWidth  = hints->max_width;
 		maxHeight = hints->max_height;
-	}
-	else
-	{
-		maxWidth = 32767;
+	} else {
+		maxWidth  = 32767;
 		maxHeight = 32767;
 	}
-	if (hints->flags & PResizeInc)
-	{
+	if (hints->flags & PResizeInc) {
 		xinc = hints->width_inc;
 		yinc = hints->height_inc;
-	}
-	else
-	{
+	} else {
 		xinc = 1;
 		yinc = 1;
 	}
@@ -95,31 +82,25 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	/*
 	 * First, clamp to min and max values
 	 */
-	if (dwidth < minWidth)
-	{
+	if (dwidth < minWidth) {
 		dwidth = minWidth;
 	}
-	if (dheight < minHeight)
-	{
+	if (dheight < minHeight) {
 		dheight = minHeight;
 	}
 
-	if (dwidth > maxWidth)
-	{
+	if (dwidth > maxWidth) {
 		dwidth = maxWidth;
 	}
-	if (dheight > maxHeight)
-	{
+	if (dheight > maxHeight) {
 		dheight = maxHeight;
 	}
-
 
 	/*
 	 * Second, fit to base + N * inc
 	 */
-	dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
+	dwidth	= ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
 	dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
-
 
 	/*
 	 * Third, adjust for aspect ratio
@@ -143,52 +124,39 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	 *
 	 */
 
-	if (hints->flags & PAspect)
-	{
-		if (minAspectX * dheight > minAspectY * dwidth)
-		{
+	if (hints->flags & PAspect) {
+		if (minAspectX * dheight > minAspectY * dwidth) {
 			delta = makemult(
-				minAspectX * dheight / minAspectY - dwidth,
-				xinc);
-			if (dwidth + delta <= maxWidth)
-			{
+			    minAspectX * dheight / minAspectY - dwidth, xinc);
+			if (dwidth + delta <= maxWidth) {
 				dwidth += delta;
-			}
-			else
-			{
+			} else {
 				delta = makemult(
-					dheight - minAspectY*dwidth/minAspectX,
-					yinc);
-				if (dheight - delta >= minHeight)
-				{
+				    dheight - minAspectY * dwidth / minAspectX,
+				    yinc);
+				if (dheight - delta >= minHeight) {
 					dheight -= delta;
 				}
 			}
 		}
 
-		if (maxAspectX * dheight < maxAspectY * dwidth)
-		{
+		if (maxAspectX * dheight < maxAspectY * dwidth) {
 			delta = makemult(
-				dwidth * maxAspectY / maxAspectX - dheight,
-				yinc);
-			if (dheight + delta <= maxHeight)
-			{
+			    dwidth * maxAspectY / maxAspectX - dheight, yinc);
+			if (dheight + delta <= maxHeight) {
 				dheight += delta;
-			}
-			else
-			{
+			} else {
 				delta = makemult(
-					dwidth - maxAspectX*dheight/maxAspectY,
-					xinc);
-				if (dwidth - delta >= minWidth)
-				{
+				    dwidth - maxAspectX * dheight / maxAspectY,
+				    xinc);
+				if (dwidth - delta >= minWidth) {
 					dwidth -= delta;
 				}
 			}
 		}
 	}
 
-	*widthp = dwidth;
+	*widthp	 = dwidth;
 	*heightp = dheight;
 	return;
 #undef makemult

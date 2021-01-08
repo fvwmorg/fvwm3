@@ -33,14 +33,14 @@
 
 #include "config.h"
 
-#include "update.h"
-#include "style.h"
 #include "fvwm.h"
 #include "misc.h"
+#include "style.h"
+#include "update.h"
 
-#include "libs/flist.h"
 #include "libs/Bindings.h"
 #include "libs/PictureBase.h"
+#include "libs/flist.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
@@ -51,8 +51,9 @@
 
 /* title bar multi pixmap parts */
 /* those which can be used as UseTitleStyle should be enum first */
-typedef enum {
-	TBMP_NONE  = -1,
+typedef enum
+{
+	TBMP_NONE = -1,
 	TBMP_MAIN,
 	TBMP_LEFT_MAIN,
 	TBMP_RIGHT_MAIN,
@@ -68,8 +69,9 @@ typedef enum {
 } TbmpParts;
 
 /* title bar multi pixmap parts which can be use for UseTitleStyle */
-typedef enum {
-	UTS_TBMP_NONE  = -1,
+typedef enum
+{
+	UTS_TBMP_NONE = -1,
 	UTS_TBMP_MAIN,
 	UTS_TBMP_LEFT_MAIN,
 	UTS_TBMP_RIGHT_MAIN,
@@ -105,11 +107,11 @@ typedef enum
 typedef enum
 {
 	JUST_CENTER = 0,
-	JUST_LEFT = 1,
-	JUST_TOP = 1,
-	JUST_RIGHT = 2,
+	JUST_LEFT   = 1,
+	JUST_TOP    = 1,
+	JUST_RIGHT  = 2,
 	JUST_BOTTOM = 2,
-	JUST_MASK = 3
+	JUST_MASK   = 3
 } JustificationType;
 
 typedef struct
@@ -119,10 +121,10 @@ typedef struct
 	{
 		unsigned h_justification : 2;
 		unsigned v_justification : 2;
-#define DFS_BUTTON_IS_UP   0
+#define DFS_BUTTON_IS_UP 0
 #define DFS_BUTTON_IS_FLAT 1
 #define DFS_BUTTON_IS_SUNK 2
-#define DFS_BUTTON_MASK    3
+#define DFS_BUTTON_MASK 3
 		unsigned int button_relief : 2;
 		/* not used in border styles */
 		unsigned int use_title_style : 1;
@@ -133,15 +135,15 @@ typedef struct
 	} flags;
 } DecorFaceStyle;
 
-#define DFS_FACE_TYPE(dfs)          ((dfs).face_type)
-#define DFS_FLAGS(dfs)              ((dfs).flags)
-#define DFS_H_JUSTIFICATION(dfs)    ((dfs).flags.h_justification)
-#define DFS_V_JUSTIFICATION(dfs)    ((dfs).flags.v_justification)
-#define DFS_BUTTON_RELIEF(dfs)      ((dfs).flags.button_relief)
-#define DFS_USE_TITLE_STYLE(dfs)    ((dfs).flags.use_title_style)
-#define DFS_USE_BORDER_STYLE(dfs)   ((dfs).flags.use_border_style)
+#define DFS_FACE_TYPE(dfs) ((dfs).face_type)
+#define DFS_FLAGS(dfs) ((dfs).flags)
+#define DFS_H_JUSTIFICATION(dfs) ((dfs).flags.h_justification)
+#define DFS_V_JUSTIFICATION(dfs) ((dfs).flags.v_justification)
+#define DFS_BUTTON_RELIEF(dfs) ((dfs).flags.button_relief)
+#define DFS_USE_TITLE_STYLE(dfs) ((dfs).flags.use_title_style)
+#define DFS_USE_BORDER_STYLE(dfs) ((dfs).flags.use_border_style)
 #define DFS_HAS_HIDDEN_HANDLES(dfs) ((dfs).flags.has_hidden_handles)
-#define DFS_HAS_NO_INSET(dfs)       ((dfs).flags.has_no_inset)
+#define DFS_HAS_NO_INSET(dfs) ((dfs).flags.has_no_inset)
 
 typedef struct DecorFace
 {
@@ -149,11 +151,12 @@ typedef struct DecorFace
 	struct
 	{
 		FvwmPicture *p;
-		struct {
-			FvwmPicture **pixmaps;
+		struct
+		{
+			FvwmPicture ** pixmaps;
 			unsigned short stretch_flags;
-			FvwmAcs *acs;
-			Pixel *pixels;
+			FvwmAcs *      acs;
+			Pixel *	       pixels;
 			unsigned short solid_flags;
 		} mp;
 		struct
@@ -164,22 +167,22 @@ typedef struct DecorFace
 		Pixel back;
 		struct
 		{
-			int npixels;
+			int	npixels;
 			XColor *xcs;
-			int do_dither;
-			Pixel *d_pixels;
-			int d_npixels;
-			char gradient_type;
+			int	do_dither;
+			Pixel * d_pixels;
+			int	d_npixels;
+			char	gradient_type;
 		} grad;
 		struct vector_coords
 		{
-			int num;
+			int	     num;
 			signed char *x;
 			signed char *y;
-		        signed char *xoff;
-		        signed char *yoff;
+			signed char *xoff;
+			signed char *yoff;
 			signed char *c;
-			unsigned use_fgbg : 1;
+			unsigned     use_fgbg : 1;
 		} vector;
 	} u;
 
@@ -221,35 +224,35 @@ typedef enum
 	BS_MaxButtonStateName
 } ButtonState;
 
-#define BS_MASK_DOWN     (1 << 0)
+#define BS_MASK_DOWN (1 << 0)
 #define BS_MASK_INACTIVE (1 << 1)
-#define BS_MASK_TOGGLED  (1 << 2)
+#define BS_MASK_TOGGLED (1 << 2)
 
 typedef enum
 {
 	/* The first five are used in title buttons.  These can't be
 	 * renumbered without extending the mwm_decor_flags member below and
 	 * adapting the style structure. */
-	MWM_DECOR_MENU     = 0x1,
+	MWM_DECOR_MENU	   = 0x1,
 	MWM_DECOR_MINIMIZE = 0x2,
 	MWM_DECOR_MAXIMIZE = 0x4,
-	MWM_DECOR_SHADE    = 0x8,
-	MWM_DECOR_STICK    = 0x10,
+	MWM_DECOR_SHADE	   = 0x8,
+	MWM_DECOR_STICK	   = 0x10,
 	/* --- */
-	MWM_DECOR_BORDER   = 0x20,
-	MWM_DECOR_RESIZEH  = 0x40,
-	MWM_DECOR_TITLE    = 0x80,
-	MWM_DECOR_ALL      = 0x100,
+	MWM_DECOR_BORDER     = 0x20,
+	MWM_DECOR_RESIZEH    = 0x40,
+	MWM_DECOR_TITLE	     = 0x80,
+	MWM_DECOR_ALL	     = 0x100,
 	MWM_DECOR_EVERYTHING = 0xff
 } mwm_flags;
 
 typedef struct
 {
 	unsigned just : 2; /* was JustificationType : 2 */
-	int layer;
+	int	 layer;
 	struct
 	{
-		unsigned has_changed : 1;
+		unsigned  has_changed : 1;
 		mwm_flags mwm_decor_flags : 9;
 		/* Support {ButtonStyle <number> - Layer 4} construction, so
 		 * button can be rendered 'pressed in' when the window is
@@ -259,29 +262,28 @@ typedef struct
 	DecorFace state[BS_MaxButtonState];
 } TitleButton;
 
-#define TB_FLAGS(tb)              ((tb).flags)
-#define TB_STATE(tb)              ((tb).state)
-#define TB_JUSTIFICATION(tb)      ((tb).just)
-#define TB_LAYER(tb)              ((tb).layer)
-#define TB_MWM_DECOR_FLAGS(tb)    ((tb).flags.mwm_decor_flags)
-#define TB_HAS_CHANGED(tb)     \
-  (!!((tb).flags.has_changed))
-#define TB_HAS_MWM_DECOR_MENU(tb)     \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MENU))
+#define TB_FLAGS(tb) ((tb).flags)
+#define TB_STATE(tb) ((tb).state)
+#define TB_JUSTIFICATION(tb) ((tb).just)
+#define TB_LAYER(tb) ((tb).layer)
+#define TB_MWM_DECOR_FLAGS(tb) ((tb).flags.mwm_decor_flags)
+#define TB_HAS_CHANGED(tb) (!!((tb).flags.has_changed))
+#define TB_HAS_MWM_DECOR_MENU(tb) \
+	(!!((tb).flags.mwm_decor_flags & MWM_DECOR_MENU))
 #define TB_HAS_MWM_DECOR_MINIMIZE(tb) \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MINIMIZE))
+	(!!((tb).flags.mwm_decor_flags & MWM_DECOR_MINIMIZE))
 #define TB_HAS_MWM_DECOR_MAXIMIZE(tb) \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MAXIMIZE))
-#define TB_HAS_MWM_DECOR_SHADE(tb)    \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_SHADE))
-#define TB_HAS_MWM_DECOR_STICK(tb)    \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_STICK))
+	(!!((tb).flags.mwm_decor_flags & MWM_DECOR_MAXIMIZE))
+#define TB_HAS_MWM_DECOR_SHADE(tb) \
+	(!!((tb).flags.mwm_decor_flags & MWM_DECOR_SHADE))
+#define TB_HAS_MWM_DECOR_STICK(tb) \
+	(!!((tb).flags.mwm_decor_flags & MWM_DECOR_STICK))
 
 typedef struct FvwmDecor
 {
-	char *tag;                    /* general style tag */
-	int title_height;           /* explicitly specified title bar height */
-	int min_title_height;
+	char *tag;	    /* general style tag */
+	int   title_height; /* explicitly specified title bar height */
+	int   min_title_height;
 	/* titlebar buttons */
 	TitleButton buttons[NUMBER_OF_TITLE_BUTTONS];
 	TitleButton titlebar;
@@ -289,7 +291,7 @@ typedef struct FvwmDecor
 	{
 		DecorFace active, inactive;
 	} BorderStyle;
-	struct FvwmDecor *next;       /* additional user-defined styles */
+	struct FvwmDecor *next; /* additional user-defined styles */
 	struct
 	{
 		unsigned has_changed : 1;
@@ -300,7 +302,7 @@ typedef struct FvwmDecor
 typedef struct ScreenInfo
 {
 	unsigned long screen;
-	Screen *pscreen;
+	Screen *      pscreen;
 	/* number of screens on display */
 	int NumberOfScreens;
 	/* the head of the fvwm window list */
@@ -331,7 +333,7 @@ typedef struct ScreenInfo
 	int fvwm_pushes;
 	/* saved window to install when pushes drops to zero */
 	const FvwmWindow *pushed_window;
-	Cursor *FvwmCursors;
+	Cursor *	  FvwmCursors;
 	/* context where we display the busy cursor */
 	int BusyCursor;
 	/* Icon to use when no other icons are found */
@@ -350,9 +352,9 @@ typedef struct ScreenInfo
 	GC TransMaskGC;
 	/* don't change the order */
 	Pixel StdFore, StdBack, StdHilite, StdShadow;
-	GC StdGC;
-	GC StdReliefGC;
-	GC StdShadowGC;
+	GC    StdGC;
+	GC    StdReliefGC;
+	GC    StdShadowGC;
 
 	/* A scratch 1x1x1 pixmap */
 	Pixmap ScratchMonoPixmap;
@@ -362,7 +364,6 @@ typedef struct ScreenInfo
 	Pixmap ScratchAlphaPixmap;
 	/* GC for drawing into depth alpha_depth drawables */
 	GC AlphaGC;
-
 
 	/* GC to draw lines for move and resize */
 	GC XorGC;
@@ -376,7 +377,7 @@ typedef struct ScreenInfo
 	int SizeStringWidth;
 
 	/* decoration style(s) */
-	FvwmDecor DefaultDecor;
+	FvwmDecor  DefaultDecor;
 	FvwmDecor *cur_decor;
 
 	/* number of left-side title-bar buttons */
@@ -392,16 +393,16 @@ typedef struct ScreenInfo
 	Window UnknownWinFocused;
 	/* The window that the UnknownWinFocused window stole the focus from.
 	 */
-	Window StolenFocusWin;
+	Window	    StolenFocusWin;
 	FvwmWindow *StolenFocusFvwmWin;
 	FvwmWindow *focus_in_pending_window;
 	FvwmWindow *focus_in_requested_window;
 	/* buttons to grab in click to focus mode */
 	unsigned short buttons2grab;
-	int NumBoxes;
+	int	       NumBoxes;
 	/* values used for CascadePlacement */
-	int cascade_x;
-	int cascade_y;
+	int	    cascade_x;
+	int	    cascade_y;
 	FvwmWindow *cascade_window;
 	/*Max button-click delay for Function built-in*/
 	int ClickTime;
@@ -473,26 +474,26 @@ typedef struct ScreenInfo
 	struct
 	{
 		last_added_item_t type;
-		void *item;
+		void *		  item;
 	} last_added_item;
 } ScreenInfo;
 
-#define UPDATE_FVWM_SCREEN(fw)						   \
-	do {								   \
-		rectangle g;						   \
-		struct monitor *mnew;					   \
-									   \
-		get_unshaded_geometry((fw), &g);			   \
-		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);   \
-		/* Avoid unnecessary updates. */			   \
-		if (mnew == (fw)->m)					   \
-			break;						   \
-		(fw)->m_prev = (fw)->m;					   \
-		(fw)->m = mnew;						   \
-		(fw)->Desk = mnew->virtual_scr.CurrentDesk;		   \
-		desk_add_fw((fw));					   \
-		BroadcastConfig(M_CONFIGURE_WINDOW, (fw));		   \
-	} while(0)
+#define UPDATE_FVWM_SCREEN(fw)                                           \
+	do {                                                             \
+		rectangle	g;                                       \
+		struct monitor *mnew;                                    \
+                                                                         \
+		get_unshaded_geometry((fw), &g);                         \
+		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y); \
+		/* Avoid unnecessary updates. */                         \
+		if (mnew == (fw)->m)                                     \
+			break;                                           \
+		(fw)->m_prev = (fw)->m;                                  \
+		(fw)->m	     = mnew;                                     \
+		(fw)->Desk   = mnew->virtual_scr.CurrentDesk;            \
+		desk_add_fw((fw));                                       \
+		BroadcastConfig(M_CONFIGURE_WINDOW, (fw));               \
+	} while (0)
 
 /* A macro to to simplify he "ewmh desktop code" */
 #define IS_EWMH_DESKTOP(win) \
@@ -502,19 +503,24 @@ typedef struct ScreenInfo
 /* Macro which gets specific decor or default decor.
  * This saves an indirection in case you don't want
  * the UseDecor mechanism. */
-#define GetDecor(window,part) ((window)->decor->part)
+#define GetDecor(window, part) ((window)->decor->part)
 
 /* some protos for the decoration structures */
-void LoadDefaultButton(DecorFace *bf, int i);
-void ResetAllButtons(FvwmDecor *decor);
-void DestroyAllButtons(FvwmDecor *decor);
+void
+LoadDefaultButton(DecorFace *bf, int i);
+void
+ResetAllButtons(FvwmDecor *decor);
+void
+DestroyAllButtons(FvwmDecor *decor);
 
-void simplify_style_list(void);
+void
+simplify_style_list(void);
 
 /*
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  */
-void AddToDecor(F_CMD_ARGS, FvwmDecor *decor);
+void
+AddToDecor(F_CMD_ARGS, FvwmDecor *decor);
 
 extern ScreenInfo Scr;
 

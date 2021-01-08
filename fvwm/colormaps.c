@@ -19,18 +19,18 @@
 
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
-#include "libs/FEvent.h"
-#include "fvwm.h"
-#include "externs.h"
-#include "cursor.h"
-#include "execcontext.h"
-#include "eventhandler.h"
-#include "functions.h"
 #include "bindings.h"
+#include "colormaps.h"
+#include "cursor.h"
+#include "eventhandler.h"
+#include "execcontext.h"
+#include "externs.h"
+#include "functions.h"
+#include "fvwm.h"
+#include "libs/FEvent.h"
+#include "libs/fvwmlib.h"
 #include "misc.h"
 #include "screen.h"
-#include "colormaps.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -46,8 +46,8 @@
 
 /* ---------------------------- local variables ---------------------------- */
 
-static Bool client_controls_colormaps = False;
-static Colormap last_cmap = None;
+static Bool	client_controls_colormaps = False;
+static Colormap last_cmap		  = None;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -57,7 +57,8 @@ const FvwmWindow *colormap_win;
 
 /* ---------------------------- interface functions ------------------------ */
 
-void set_client_controls_colormaps(Bool flag)
+void
+set_client_controls_colormaps(Bool flag)
 {
 	client_controls_colormaps = flag;
 
@@ -70,70 +71,54 @@ void set_client_controls_colormaps(Bool flag)
  * a client explicitly installing its colormap itself (only the window
  * manager should do that, so we must set it correctly).
  */
-void colormap_handle_colormap_notify(const evh_args_t *ea)
+void
+colormap_handle_colormap_notify(const evh_args_t *ea)
 {
-	XEvent evdummy;
-	XColormapEvent *cevent = (XColormapEvent *)ea->exc->x.etrigger;
-	Bool ReInstall = False;
+	XEvent		  evdummy;
+	XColormapEvent *  cevent    = (XColormapEvent *)ea->exc->x.etrigger;
+	Bool		  ReInstall = False;
 	XWindowAttributes attr;
-	FvwmWindow *fw = ea->exc->w.fw;
+	FvwmWindow *	  fw = ea->exc->w.fw;
 
-	if (!fw)
-	{
+	if (!fw) {
 		return;
 	}
-	if (cevent->new)
-	{
-		if (XGetWindowAttributes(dpy, FW_W(fw), &attr) != 0)
-		{
+	if (cevent->new) {
+		if (XGetWindowAttributes(dpy, FW_W(fw), &attr) != 0) {
 			fw->attr_backup.colormap = attr.colormap;
-			if (fw == colormap_win &&
-			    fw->number_cmap_windows == 0)
-			{
+			if (fw == colormap_win
+			    && fw->number_cmap_windows == 0) {
 				last_cmap = attr.colormap;
 			}
 			ReInstall = True;
 		}
-	}
-	else if ((cevent->state == ColormapUninstalled)&&
-		(last_cmap == cevent->colormap))
-	{
+	} else if ((cevent->state == ColormapUninstalled)
+		   && (last_cmap == cevent->colormap)) {
 		/* Some window installed its colormap, change it back */
 		ReInstall = True;
 	}
 
-	while (FCheckTypedEvent(dpy, ColormapNotify, &evdummy))
-	{
+	while (FCheckTypedEvent(dpy, ColormapNotify, &evdummy)) {
 		if (XFindContext(
-			    dpy, cevent->window, FvwmContext,
-			    (caddr_t *) &fw) == XCNOENT)
-		{
+			dpy, cevent->window, FvwmContext, (caddr_t *)&fw)
+		    == XCNOENT) {
 			fw = NULL;
 		}
-		if ((fw)&&(cevent->new))
-		{
-			if (XGetWindowAttributes(dpy, FW_W(fw), &attr) != 0)
-			{
+		if ((fw) && (cevent->new)) {
+			if (XGetWindowAttributes(dpy, FW_W(fw), &attr) != 0) {
 				fw->attr_backup.colormap = attr.colormap;
-				if (fw == colormap_win &&
-				    fw->number_cmap_windows == 0)
-				{
+				if (fw == colormap_win
+				    && fw->number_cmap_windows == 0) {
 					last_cmap = attr.colormap;
 				}
 				ReInstall = True;
 			}
-		}
-		else if ((fw)&&
-			(cevent->state == ColormapUninstalled)&&
-			(last_cmap == cevent->colormap))
-		{
+		} else if ((fw) && (cevent->state == ColormapUninstalled)
+			   && (last_cmap == cevent->colormap)) {
 			/* Some window installed its colormap, change it back */
 			ReInstall = True;
-		}
-		else if ((fw)&&
-			(cevent->state == ColormapInstalled)&&
-			(last_cmap == cevent->colormap))
-		{
+		} else if ((fw) && (cevent->state == ColormapInstalled)
+			   && (last_cmap == cevent->colormap)) {
 			/* The last color map installed was the correct one.
 			 * Do not change anything */
 			ReInstall = False;
@@ -143,17 +128,17 @@ void colormap_handle_colormap_notify(const evh_args_t *ea)
 	/* Reinstall the colormap that we think should be installed,
 	 * UNLESS and unrecognized window has the focus - it might be
 	 * an override-redirect window that has its own colormap. */
-	if (ReInstall && Scr.UnknownWinFocused == None &&
-	    !client_controls_colormaps)
-	{
-		XInstallColormap(dpy,last_cmap);
+	if (ReInstall && Scr.UnknownWinFocused == None
+	    && !client_controls_colormaps) {
+		XInstallColormap(dpy, last_cmap);
 	}
 
 	return;
 }
 
 /* Re-Install the active colormap */
-void ReInstallActiveColormap(void)
+void
+ReInstallActiveColormap(void)
 {
 	InstallWindowColormaps(colormap_win);
 
@@ -168,16 +153,16 @@ void ReInstallActiveColormap(void)
  *      tmp     - for a subset of event types, the address of the
  *                window structure, whose colormaps are to be installed.
  */
-void InstallWindowColormaps(const FvwmWindow *fw)
+void
+InstallWindowColormaps(const FvwmWindow *fw)
 {
-	int i;
+	int		  i;
 	XWindowAttributes attributes;
-	Window w;
-	Bool ThisWinInstalled = False;
+	Window		  w;
+	Bool		  ThisWinInstalled = False;
 
 	/* If no window, then install fvwm colormap */
-	if (!fw)
-	{
+	if (!fw) {
 		fw = &Scr.FvwmRoot;
 	}
 
@@ -189,22 +174,17 @@ void InstallWindowColormaps(const FvwmWindow *fw)
 	/* Don't load any new colormap if root/fvwm colormap(s) has been
 	 * force loaded.
 	 */
-	if (Scr.root_pushes || Scr.fvwm_pushes || client_controls_colormaps)
-	{
+	if (Scr.root_pushes || Scr.fvwm_pushes || client_controls_colormaps) {
 		return;
 	}
 
-	if (fw->number_cmap_windows > 0)
-	{
-		for (i=fw->number_cmap_windows -1; i>=0;i--)
-		{
+	if (fw->number_cmap_windows > 0) {
+		for (i = fw->number_cmap_windows - 1; i >= 0; i--) {
 			w = fw->cmap_windows[i];
-			if (w == FW_W(fw))
-			{
+			if (w == FW_W(fw)) {
 				ThisWinInstalled = True;
 			}
-			if (!XGetWindowAttributes(dpy,w,&attributes))
-			{
+			if (!XGetWindowAttributes(dpy, w, &attributes)) {
 				attributes.colormap = last_cmap;
 			}
 
@@ -214,26 +194,23 @@ void InstallWindowColormaps(const FvwmWindow *fw)
 			 * colourmaps are always installed. */
 			if (last_cmap != attributes.colormap
 #if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
-			   && !(attributes.depth == 24 &&
-				attributes.visual->class == TrueColor)
+			    && !(attributes.depth == 24
+				 && attributes.visual->class == TrueColor)
 #endif
-				)
-			{
+			) {
 				last_cmap = attributes.colormap;
 				XInstallColormap(dpy, last_cmap);
 			}
 		}
 	}
 
-	if (!ThisWinInstalled)
-	{
+	if (!ThisWinInstalled) {
 		if (last_cmap != fw->attr_backup.colormap
 #if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
-		   && !(fw->attr_backup.depth == 24 &&
-			fw->attr_backup.visual->class == TrueColor)
+		    && !(fw->attr_backup.depth == 24
+			 && fw->attr_backup.visual->class == TrueColor)
 #endif
-			)
-		{
+		) {
 			last_cmap = fw->attr_backup.colormap;
 			XInstallColormap(dpy, last_cmap);
 		}
@@ -241,7 +218,6 @@ void InstallWindowColormaps(const FvwmWindow *fw)
 
 	return;
 }
-
 
 /* Force (un)loads root colormap(s)
  *
@@ -254,10 +230,10 @@ void InstallWindowColormaps(const FvwmWindow *fw)
  *
  * {Uni,I}nstall{Root,Fvwm}Colormap calls may be freely intermixed
  */
-void InstallRootColormap(void)
+void
+InstallRootColormap(void)
 {
-	if (last_cmap != DefaultColormap(dpy, Scr.screen))
-	{
+	if (last_cmap != DefaultColormap(dpy, Scr.screen)) {
 		last_cmap = DefaultColormap(dpy, Scr.screen);
 		XInstallColormap(dpy, last_cmap);
 	}
@@ -270,21 +246,17 @@ void InstallRootColormap(void)
  * If we peel off the last layer, re-install the application colormap
  * or the fvwm colormap if fvwm has a menu posted
  */
-void UninstallRootColormap(void)
+void
+UninstallRootColormap(void)
 {
-	if (Scr.root_pushes)
-	{
+	if (Scr.root_pushes) {
 		Scr.root_pushes--;
 	}
 
-	if (!Scr.root_pushes)
-	{
-		if (!Scr.fvwm_pushes)
-		{
+	if (!Scr.root_pushes) {
+		if (!Scr.fvwm_pushes) {
 			InstallWindowColormaps(Scr.pushed_window);
-		}
-		else if (last_cmap != Pcmap)
-		{
+		} else if (last_cmap != Pcmap) {
 			last_cmap = Pcmap;
 			XInstallColormap(dpy, last_cmap);
 		}
@@ -298,10 +270,10 @@ void UninstallRootColormap(void)
  *      This is used to ensure the fvwm colormap is installed during
  *      menu operations
  */
-void InstallFvwmColormap(void)
+void
+InstallFvwmColormap(void)
 {
-	if (last_cmap != Pcmap)
-	{
+	if (last_cmap != Pcmap) {
 		last_cmap = Pcmap;
 		XInstallColormap(dpy, last_cmap);
 	}
@@ -310,21 +282,17 @@ void InstallFvwmColormap(void)
 	return;
 }
 
-void UninstallFvwmColormap(void)
+void
+UninstallFvwmColormap(void)
 {
-	if (Scr.fvwm_pushes)
-	{
+	if (Scr.fvwm_pushes) {
 		Scr.fvwm_pushes--;
 	}
 
-	if (!Scr.fvwm_pushes)
-	{
-		if (!Scr.root_pushes)
-		{
+	if (!Scr.fvwm_pushes) {
+		if (!Scr.root_pushes) {
 			InstallWindowColormaps(Scr.pushed_window);
-		}
-		else if (last_cmap != DefaultColormap(dpy, Scr.screen))
-		{
+		} else if (last_cmap != DefaultColormap(dpy, Scr.screen)) {
 			last_cmap = DefaultColormap(dpy, Scr.screen);
 			XInstallColormap(dpy, last_cmap);
 		}
@@ -338,40 +306,36 @@ void UninstallFvwmColormap(void)
  * This property typically doesn't exist, but a few applications
  * use it. These seem to occur mostly on SGI machines.
  */
-void FetchWmColormapWindows (FvwmWindow *fw)
+void
+FetchWmColormapWindows(FvwmWindow *fw)
 {
-	XWindowAttributes getattribs;
+	XWindowAttributes    getattribs;
 	XSetWindowAttributes setattribs;
-	long i;
-	unsigned long valuemask;
+	long		     i;
+	unsigned long	     valuemask;
 
-	if (fw->cmap_windows != (Window *)NULL)
-	{
+	if (fw->cmap_windows != (Window *)NULL) {
 		XFree((void *)fw->cmap_windows);
 	}
 
-	if (!XGetWMColormapWindows (dpy, FW_W(fw), &(fw->cmap_windows),
-				   &(fw->number_cmap_windows)))
-	{
+	if (!XGetWMColormapWindows(dpy, FW_W(fw), &(fw->cmap_windows),
+		&(fw->number_cmap_windows))) {
 		fw->number_cmap_windows = 0;
-		fw->cmap_windows = NULL;
+		fw->cmap_windows	= NULL;
 	}
 	/* we need to be notified of Enter events into these subwindows
 	 * so we can set their colormaps */
-	if (fw->number_cmap_windows != 0)
-	{
-		for (i = 0; i < fw->number_cmap_windows; i++)
-		{
+	if (fw->number_cmap_windows != 0) {
+		for (i = 0; i < fw->number_cmap_windows; i++) {
 			if (XGetWindowAttributes(
-				    dpy, fw->cmap_windows[i], &getattribs))
-			{
+				dpy, fw->cmap_windows[i], &getattribs)) {
 				valuemask = CWEventMask;
 				setattribs.event_mask =
-					getattribs.your_event_mask |
-					EnterWindowMask | LeaveWindowMask;
-				XChangeWindowAttributes(
-					dpy, fw->cmap_windows[i], valuemask,
-					&setattribs);
+				    getattribs.your_event_mask | EnterWindowMask
+				    | LeaveWindowMask;
+				XChangeWindowAttributes(dpy,
+				    fw->cmap_windows[i], valuemask,
+				    &setattribs);
 			}
 		}
 	}
@@ -381,26 +345,22 @@ void FetchWmColormapWindows (FvwmWindow *fw)
 /* Looks through the window list for any matching COLORMAP_WINDOWS
  *   windows and installs the colormap if one exists.
  */
-void EnterSubWindowColormap(Window win)
+void
+EnterSubWindowColormap(Window win)
 {
-	FvwmWindow         *t;
-	long                i;
-	XWindowAttributes   attribs;
+	FvwmWindow *	  t;
+	long		  i;
+	XWindowAttributes attribs;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-	{
-		if (t->number_cmap_windows != 0)
-		{
-			for (i = 0; i < t->number_cmap_windows; i++)
-			{
-				if (t->cmap_windows[i] == win)
-				{
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
+		if (t->number_cmap_windows != 0) {
+			for (i = 0; i < t->number_cmap_windows; i++) {
+				if (t->cmap_windows[i] == win) {
 					if (XGetWindowAttributes(
-						    dpy,win,&attribs))
-					{
+						dpy, win, &attribs)) {
 						last_cmap = attribs.colormap;
 						XInstallColormap(
-							dpy, last_cmap);
+						    dpy, last_cmap);
 					}
 					return;
 				}
@@ -411,37 +371,29 @@ void EnterSubWindowColormap(Window win)
 	return;
 }
 
-void LeaveSubWindowColormap(Window win)
+void
+LeaveSubWindowColormap(Window win)
 {
 	FvwmWindow *t;
-	long i;
-	int bWinInList, bParentInList;
+	long	    i;
+	int	    bWinInList, bParentInList;
 
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-	{
-		if (t->number_cmap_windows != 0)
-		{
-			bWinInList = 0;
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
+		if (t->number_cmap_windows != 0) {
+			bWinInList    = 0;
 			bParentInList = 0;
-			for (i=0;i<t->number_cmap_windows;i++)
-			{
-				if (t->cmap_windows[i] == win)
-				{
+			for (i = 0; i < t->number_cmap_windows; i++) {
+				if (t->cmap_windows[i] == win) {
 					bWinInList = 1;
 				}
-				if (t->cmap_windows[i] == FW_W(t))
-				{
+				if (t->cmap_windows[i] == FW_W(t)) {
 					bParentInList = 1;
 				}
 			}
-			if (bWinInList)
-			{
-				if (bParentInList)
-				{
+			if (bWinInList) {
+				if (bParentInList) {
 					InstallWindowColormaps(t);
-				}
-				else
-				{
+				} else {
 					InstallWindowColormaps(NULL);
 				}
 				return;

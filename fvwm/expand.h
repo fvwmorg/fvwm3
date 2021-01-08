@@ -17,8 +17,8 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-char *expand_vars(
-	char *input, char *arguments[], Bool addto, Bool ismod,
-	cond_rc_t *cond_rc, const exec_context_t *exc);
+char *
+expand_vars(char *input, char *arguments[], Bool addto, Bool ismod,
+    cond_rc_t *cond_rc, const exec_context_t *exc);
 
 #endif /* FVWM_EXPAND_H */

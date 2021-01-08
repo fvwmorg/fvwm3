@@ -6,8 +6,8 @@
 
 /* ---------------------------- included header files ---------------------- */
 
-#include "config.h"
 #include "Flocale.h"
+#include "config.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
@@ -19,15 +19,15 @@
 
 #if FiconvSupport
 
-#define Ficonv_open(a,b)    iconv_open(a,b)
-#define Ficonv_close(a)     iconv_close(a)
-#define Ficonv(a,b,c,d,e)   iconv(a,b,c,d,e)
+#define Ficonv_open(a, b) iconv_open(a, b)
+#define Ficonv_close(a) iconv_close(a)
+#define Ficonv(a, b, c, d, e) iconv(a, b, c, d, e)
 
 #else
 
-#define Ficonv_open(a,b)    (Ficonv_t)-1
-#define Ficonv_close(a)     -1
-#define Ficonv(a,b,c,d,e)   -1
+#define Ficonv_open(a, b) (Ficonv_t) - 1
+#define Ficonv_close(a) -1
+#define Ficonv(a, b, c, d, e) -1
 
 #endif
 
@@ -37,17 +37,18 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef void* Ficonv_t;
+typedef void *Ficonv_t;
 
 /* ---------------------------- interface functions ------------------------ */
-void FiconvSetTransliterateUtf8(int toggle);
-char *FiconvUtf8ToCharset(
-	Display *dpy, FlocaleCharset *fc, const char *in,
-	unsigned int in_size);
-char *FiconvCharsetToUtf8(
-	Display *dpy, FlocaleCharset *fc, const char *in,
-	unsigned int in_size);
-char *FiconvCharsetToCharset(
-	Display *dpy, FlocaleCharset *in_fc, FlocaleCharset *out_fc,
-	const char *in, unsigned int in_size);
+void
+FiconvSetTransliterateUtf8(int toggle);
+char *
+FiconvUtf8ToCharset(
+    Display *dpy, FlocaleCharset *fc, const char *in, unsigned int in_size);
+char *
+FiconvCharsetToUtf8(
+    Display *dpy, FlocaleCharset *fc, const char *in, unsigned int in_size);
+char *
+FiconvCharsetToCharset(Display *dpy, FlocaleCharset *in_fc,
+    FlocaleCharset *out_fc, const char *in, unsigned int in_size);
 #endif /* FVWMLIB_FICONV_H */

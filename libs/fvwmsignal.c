@@ -20,16 +20,19 @@
 
 #include "config.h"
 
-#include <sys/wait.h>
-#include <setjmp.h>
-#include <errno.h>
 #include "fvwmsignal.h"
+#include <errno.h>
+#include <setjmp.h>
+#include <sys/wait.h>
 
-#define true   1
-#define false  0
+#define true 1
+#define false 0
 
-
-typedef enum { SIG_INIT=0, SIG_DONE } SIG_STATUS;
+typedef enum
+{
+	SIG_INIT = 0,
+	SIG_DONE
+} SIG_STATUS;
 
 volatile sig_atomic_t isTerminated = false;
 
@@ -65,17 +68,15 @@ fvwmReapChildren(int sig)
 	 * are very few functions which are truly safe.
 	 */
 #if HAVE_WAITPID
-	while (waitpid(-1, NULL, WNOHANG) > 0)
-	{
+	while (waitpid(-1, NULL, WNOHANG) > 0) {
 		/* nothing to do here */
 	}
 #elif HAVE_WAIT3
-	while (wait3(NULL, WNOHANG, NULL) > 0)
-	{
+	while (wait3(NULL, WNOHANG, NULL) > 0) {
 		/* nothing to do here */
 	}
 #else
-# error One of waitpid or wait3 is needed.
+#error One of waitpid or wait3 is needed.
 #endif
 	BSD_UNBLOCK_SIGNALS;
 
@@ -99,7 +100,6 @@ fvwmSetSignalMask(int sigmask)
 	term_sigs = sigmask;
 }
 
-
 /*
  * fvwmGetSignalMask - get the set of signals that will terminate fvwm
  *
@@ -113,7 +113,6 @@ fvwmGetSignalMask(void)
 }
 
 #endif
-
 
 /*
  * fvwmSetTerminate - set the "end-of-execution" flag.
@@ -131,8 +130,7 @@ fvwmSetTerminate(int sig)
 
 	isTerminated = true;
 
-	if (canJump)
-	{
+	if (canJump) {
 		canJump = false;
 
 		/*
@@ -149,7 +147,6 @@ fvwmSetTerminate(int sig)
 	BSD_UNBLOCK_SIGNALS;
 }
 
-
 #ifdef HAVE_SELECT
 /*
  * fvwmSelect - wrapper around the select() system call.
@@ -158,11 +155,10 @@ fvwmSetTerminate(int sig)
  * just want it to fail as quickly as possible.
  */
 int
-fvwmSelect(fd_set_size_t nfds,
-	   fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-	   struct timeval *timeout)
+fvwmSelect(fd_set_size_t nfds, fd_set *readfds, fd_set *writefds,
+    fd_set *exceptfds, struct timeval *timeout)
 {
-	volatile int iRet = -1;  /* This variable MUST NOT be in a register */
+	volatile int iRet = -1; /* This variable MUST NOT be in a register */
 
 #ifdef C_ALLOCA
 	/* If we're using the C version of alloca, see if anything needs to be
@@ -190,8 +186,7 @@ fvwmSelect(fd_set_size_t nfds,
 	 * functions! This is because we might need to abandon them half
 	 * way through execution and return here!
 	 */
-	if ( SIGSETJMP(deadJump, 1) == SIG_INIT )
-	{
+	if (SIGSETJMP(deadJump, 1) == SIG_INIT) {
 		/*
 		 * Activate the non-local jump. Between now and when we turn the
 		 * jump off again, we must NOT call any non-reentrant functions
@@ -206,17 +201,14 @@ fvwmSelect(fd_set_size_t nfds,
 		 * calling select() then we will jump back to the non-local
 		 * jump point ...
 		 */
-		if ( !isTerminated )
-		{
+		if (!isTerminated) {
 			/*
 			 * The "die" signal will interrupt this system call:
 			 * that IS the whole point, after all :-)
 			 */
-			iRet = select(nfds,
-				      SELECT_FD_SET_CAST readfds,
-				      SELECT_FD_SET_CAST writefds,
-				      SELECT_FD_SET_CAST exceptfds,
-				      timeout);
+			iRet = select(nfds, SELECT_FD_SET_CAST readfds,
+			    SELECT_FD_SET_CAST writefds,
+			    SELECT_FD_SET_CAST exceptfds, timeout);
 		}
 
 		/*
@@ -231,4 +223,4 @@ fvwmSelect(fd_set_size_t nfds,
 	return iRet;
 }
 
-#endif  /* HAVE_SELECT */
+#endif /* HAVE_SELECT */

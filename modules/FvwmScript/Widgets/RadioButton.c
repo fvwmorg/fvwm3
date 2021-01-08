@@ -15,18 +15,19 @@
 
 #include "config.h"
 
-#include "libs/fvwmlib.h"
-#include "libs/ColorUtils.h"
-#include "libs/Graphics.h"
-#include "libs/FEvent.h"
 #include "Tools.h"
+#include "libs/ColorUtils.h"
+#include "libs/FEvent.h"
+#include "libs/Graphics.h"
+#include "libs/fvwmlib.h"
 
 /*
  * Function for RadioButton
  */
-void InitRadioButton(struct XObj *xobj)
+void
+InitRadioButton(struct XObj *xobj)
 {
-	unsigned long mask;
+	unsigned long	     mask;
 	XSetWindowAttributes Attr;
 
 	/* Save colors and font */
@@ -42,210 +43,189 @@ void InitRadioButton(struct XObj *xobj)
 		xobj->TabColor[shad] = GetColor(xobj->shadcolor);
 	}
 
-	mask=0;
+	mask = 0;
 	if (!x11base->cursor) {
-		Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-		mask |= CWCursor;  /* Window cursor */
+		Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
+		mask |= CWCursor; /* Window cursor */
 	}
-	Attr.background_pixel=xobj->TabColor[back];
-	mask|=CWBackPixel;
+	Attr.background_pixel = xobj->TabColor[back];
+	mask |= CWBackPixel;
 
-	xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
-				xobj->x,xobj->y,xobj->width,xobj->height,0,
-				CopyFromParent,InputOutput,CopyFromParent,
-				mask,&Attr);
+	xobj->win = XCreateWindow(dpy, *xobj->ParentWin, xobj->x, xobj->y,
+	    xobj->width, xobj->height, 0, CopyFromParent, InputOutput,
+	    CopyFromParent, mask, &Attr);
 
-	xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+	xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-	if ((xobj->Ffont = FlocaleLoadFont(
-		     dpy, xobj->font, ScriptName)) == NULL)
-	{
-		fvwm_debug(__func__, "%s: Couldn't load font. Exiting!\n",
-			   ScriptName);
+	if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName))
+	    == NULL) {
+		fvwm_debug(
+		    __func__, "%s: Couldn't load font. Exiting!\n", ScriptName);
 		exit(1);
 	}
 	if (xobj->Ffont->font != NULL)
 		XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
-	XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+	XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
 	/* Resize widget */
-	xobj->height= xobj->Ffont->height +5;
-	xobj->width=FlocaleTextWidth(
-		xobj->Ffont,xobj->title,strlen(xobj->title))+20;
-	XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+	xobj->height = xobj->Ffont->height + 5;
+	xobj->width =
+	    FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title))
+	    + 20;
+	XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
 	if (xobj->colorset >= 0)
-		SetWindowBackground(
-			dpy, xobj->win, xobj->width, xobj->height,
-			&Colorset[xobj->colorset], Pdepth, xobj->gc, True);
+		SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
+		    &Colorset[xobj->colorset], Pdepth, xobj->gc, True);
 
 	XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
-void DestroyRadioButton(struct XObj *xobj)
+void
+DestroyRadioButton(struct XObj *xobj)
 {
-	FlocaleUnloadFont(dpy,xobj->Ffont);
-	XFreeGC(dpy,xobj->gc);
-	XDestroyWindow(dpy,xobj->win);
+	FlocaleUnloadFont(dpy, xobj->Ffont);
+	XFreeGC(dpy, xobj->gc);
+	XDestroyWindow(dpy, xobj->win);
 }
 
-void DrawRadioButton(struct XObj *xobj, XEvent *evp)
+void
+DrawRadioButton(struct XObj *xobj, XEvent *evp)
 {
-	int i,j;
+	int i, j;
 
-	j=xobj->height/2+3;
-	i=16;
+	j = xobj->height / 2 + 3;
+	i = 16;
 	/* Draw circle */
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
-	XDrawArc(dpy,xobj->win,xobj->gc,1,j-11,11,11,45*64,180*64);
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
-	XDrawArc(dpy,xobj->win,xobj->gc,1,j-11,11,11,225*64,180*64);
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
-	XDrawArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[shad]);
+	XDrawArc(
+	    dpy, xobj->win, xobj->gc, 1, j - 11, 11, 11, 45 * 64, 180 * 64);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
+	XDrawArc(
+	    dpy, xobj->win, xobj->gc, 1, j - 11, 11, 11, 225 * 64, 180 * 64);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[shad]);
+	XDrawArc(dpy, xobj->win, xobj->gc, 2, j - 10, 9, 9, 0 * 64, 360 * 64);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 	if (xobj->value)
-		XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
+		XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 9, 9, 0 * 64,
+		    360 * 64);
 
 	/* Compute character string position */
-	MyDrawString(dpy,xobj,xobj->win,i,j,xobj->title,fore,hili,
-		     back,!xobj->flags[1], NULL, evp);
+	MyDrawString(dpy, xobj, xobj->win, i, j, xobj->title, fore, hili, back,
+	    !xobj->flags[1], NULL, evp);
 }
 
-void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
+void
+EvtMouseRadioButton(struct XObj *xobj, XButtonEvent *EvtButton)
 {
 	static XEvent event;
-	int End=1;
-	unsigned int modif;
-	int x1,x2,y1,y2,j;
-	Window Win1,Win2;
-	Window WinBut=0;
-	int In = 0;
+	int	      End = 1;
+	unsigned int  modif;
+	int	      x1, x2, y1, y2, j;
+	Window	      Win1, Win2;
+	Window	      WinBut = 0;
+	int	      In     = 0;
 
-	j=xobj->height/2+3;
+	j = xobj->height / 2 + 3;
 
-	while (End)
-	{
+	while (End) {
 		FNextEvent(dpy, &event);
-		switch (event.type)
-		{
+		switch (event.type) {
 		case EnterNotify:
-			FQueryPointer(dpy,*xobj->ParentWin,
-				      &Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
-			if (WinBut==0)
-			{
-				WinBut=Win2;
+			FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1,
+			    &y1, &x2, &y2, &modif);
+			if (WinBut == 0) {
+				WinBut = Win2;
 				/* Mouse on button */
 				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[back]);
-				XFillArc(
-					dpy,xobj->win,xobj->gc,2,j-10,9,9,
-					0*64,360*64);
-				In=1;
-			}
-			else
-			{
-				if (Win2==WinBut)
-				{
+				    dpy, xobj->gc, xobj->TabColor[back]);
+				XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 9,
+				    9, 0 * 64, 360 * 64);
+				In = 1;
+			} else {
+				if (Win2 == WinBut) {
 					/* Mouse on button */
-					XSetForeground(
-						dpy,xobj->gc,
-						xobj->TabColor[back]);
-					XFillArc(
-						dpy,xobj->win,xobj->gc,2,j-10,
-						9,9,0*64,360*64);
-					In=1;
-				}
-				else if (In)
-				{
-					In=0;
+					XSetForeground(dpy, xobj->gc,
+					    xobj->TabColor[back]);
+					XFillArc(dpy, xobj->win, xobj->gc, 2,
+					    j - 10, 9, 9, 0 * 64, 360 * 64);
+					In = 1;
+				} else if (In) {
+					In = 0;
 					/* Mouse not on button */
-					XSetForeground(
-						dpy,xobj->gc,
-						xobj->TabColor[fore]);
-					XFillArc(
-						dpy,xobj->win,xobj->gc,2,j-10,
-						9,9,0*64,360*64);
+					XSetForeground(dpy, xobj->gc,
+					    xobj->TabColor[fore]);
+					XFillArc(dpy, xobj->win, xobj->gc, 2,
+					    j - 10, 9, 9, 0 * 64, 360 * 64);
 				}
 			}
 			break;
 		case LeaveNotify:
-			FQueryPointer(dpy,*xobj->ParentWin,
-				      &Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
-			if (Win2==WinBut)
-			{
-				In=1;
+			FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1,
+			    &y1, &x2, &y2, &modif);
+			if (Win2 == WinBut) {
+				In = 1;
 				/* Mouse on button */
 				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[back]);
-				XFillArc(
-					dpy,xobj->win,xobj->gc,2,j-10,8,8,
-					0*64,360*64);
-			}
-			else if (In)
-			{
+				    dpy, xobj->gc, xobj->TabColor[back]);
+				XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 8,
+				    8, 0 * 64, 360 * 64);
+			} else if (In) {
 				/* Mouse not on button */
 				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[back]);
-				XFillArc(
-					dpy,xobj->win,xobj->gc,2,j-10,8,8,
-					0*64,360*64);
-				In=0;
+				    dpy, xobj->gc, xobj->TabColor[back]);
+				XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 8,
+				    8, 0 * 64, 360 * 64);
+				In = 0;
 			}
 			break;
 		case ButtonRelease:
-			End=0;
+			End = 0;
 			/* Mouse not on button */
-			if (In)
-			{
+			if (In) {
 				/* Send an empty message of SingleClic type
 				 * for a mouse click */
-				xobj->value=1;
+				xobj->value = 1;
 				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[fore]);
-				XFillArc(
-					dpy,xobj->win,xobj->gc,2,j-10,8,8,
-					0*64,360*64);
-				SendMsg(xobj,SingleClic);
-			}
-			else if (xobj->value)
-			{
+				    dpy, xobj->gc, xobj->TabColor[fore]);
+				XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 8,
+				    8, 0 * 64, 360 * 64);
+				SendMsg(xobj, SingleClic);
+			} else if (xobj->value) {
 				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[fore]);
-				XFillArc(
-					dpy,xobj->win,xobj->gc,2,j-10,8,8,
-					0*64,360*64);
-			}
-			else
-			{
+				    dpy, xobj->gc, xobj->TabColor[fore]);
+				XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 8,
+				    8, 0 * 64, 360 * 64);
+			} else {
 				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[back]);
-				XFillArc(
-					dpy,xobj->win,xobj->gc,2,j-10,8,8,
-					0*64,360*64);
+				    dpy, xobj->gc, xobj->TabColor[back]);
+				XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 8,
+				    8, 0 * 64, 360 * 64);
 			}
 			break;
 		}
 	}
 }
 
-void EvtKeyRadioButton(struct XObj *xobj,XKeyEvent *EvtKey)
+void
+EvtKeyRadioButton(struct XObj *xobj, XKeyEvent *EvtKey)
 {
-	KeySym ks;
+	KeySym	      ks;
 	unsigned char buf[10];
-	int j=xobj->height/2+3;
+	int	      j = xobj->height / 2 + 3;
 
 	XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
 	if (ks == XK_Return) {
-		xobj->value=1;
-		XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
-		XFillArc(
-			dpy, xobj->win, xobj->gc, 2, j-10, 8, 8, 0*64, 360*64);
-		SendMsg(xobj,SingleClic);
+		xobj->value = 1;
+		XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
+		XFillArc(dpy, xobj->win, xobj->gc, 2, j - 10, 8, 8, 0 * 64,
+		    360 * 64);
+		SendMsg(xobj, SingleClic);
 	}
 }
 
-void ProcessMsgRadioButton(
-	struct XObj *xobj,unsigned long type,unsigned long *body)
-{
-}
+void
+ProcessMsgRadioButton(
+    struct XObj *xobj, unsigned long type, unsigned long *body)
+{}

@@ -20,16 +20,16 @@
 
 #include <ctype.h>
 
-#include "safemalloc.h"
 #include "Strings.h"
+#include "safemalloc.h"
 
-void CopyString(char **dest, const char *source)
+void
+CopyString(char **dest, const char *source)
 {
-	int len;
+	int	    len;
 	const char *start;
 
-	if (source == NULL)
-	{
+	if (source == NULL) {
 		*dest = NULL;
 		return;
 	}
@@ -38,8 +38,7 @@ void CopyString(char **dest, const char *source)
 	   skipping over spaces, but not newlines
 	   (newline terminates the string) */
 
-	while ( isspace((unsigned char)*source) && (*source != '\n') )
-	{
+	while (isspace((unsigned char)*source) && (*source != '\n')) {
 		source++;
 	}
 	start = source;
@@ -48,50 +47,42 @@ void CopyString(char **dest, const char *source)
 	   trailing spaces */
 
 	len = 0;
-	while ( (*source != '\n') && (*source != 0) )
-	{
+	while ((*source != '\n') && (*source != 0)) {
 		len++;
 		source++;
 	}
 	source--;
 
-	while( len > 0 && isspace((unsigned char)*source) )
-	{
+	while (len > 0 && isspace((unsigned char)*source)) {
 		len--;
 		source--;
 	}
 
 	/* TA:  FIXME!  xasprintf() */
-	*dest = fxmalloc(len+1);
-	strncpy(*dest,start,len);
-	(*dest)[len]=0;
+	*dest = fxmalloc(len + 1);
+	strncpy(*dest, start, len);
+	(*dest)[len] = 0;
 }
 
-
-void CopyStringWithQuotes(char **dest, const char *src)
+void
+CopyStringWithQuotes(char **dest, const char *src)
 {
-	while (src && src[0] == ' ')
-	{
+	while (src && src[0] == ' ') {
 		src++;
 	}
-	if (src && src[0] == '"')
-	{
+	if (src && src[0] == '"') {
 		int len;
 
 		src++;
 		CopyString(dest, src);
 		len = strlen(*dest);
-		if (len > 0 && (*dest)[len - 1] == '"')
-		{
+		if (len > 0 && (*dest)[len - 1] == '"') {
 			(*dest)[len - 1] = '\0';
 		}
-	}
-	else
-	{
+	} else {
 		CopyString(dest, src);
 	}
 }
-
 
 /*
  *
@@ -99,71 +90,63 @@ void CopyStringWithQuotes(char **dest, const char *src)
  * Strips leading spaces and trailing spaces and new lines
  *
  */
-char *stripcpy( const char *source )
+char *
+stripcpy(const char *source)
 {
-	const char* tmp;
-	char* ptr;
-	int len;
+	const char *tmp;
+	char *	    ptr;
+	int	    len;
 
-	if(source == NULL)
-	{
+	if (source == NULL) {
 		return NULL;
 	}
 
-	while(isspace((unsigned char)*source))
-	{
+	while (isspace((unsigned char)*source)) {
 		source++;
 	}
 	len = strlen(source);
-	tmp = source + len -1;
+	tmp = source + len - 1;
 
-	while( (tmp >= source) && ((isspace((unsigned char)*tmp)) ||
-				   (*tmp == '\n')) )
-	{
+	while ((tmp >= source)
+	       && ((isspace((unsigned char)*tmp)) || (*tmp == '\n'))) {
 		tmp--;
 		len--;
 	}
 	/* TA:  FIXME!  xasprintf() */
-	ptr = fxmalloc(len+1);
-	if (len)
-	{
-		strncpy(ptr,source,len);
+	ptr = fxmalloc(len + 1);
+	if (len) {
+		strncpy(ptr, source, len);
 	}
-	ptr[len]=0;
+	ptr[len] = 0;
 
 	return ptr;
 }
 
-
-int StrEquals( const char *s1, const char *s2 )
+int
+StrEquals(const char *s1, const char *s2)
 {
-	if (s1 == NULL && s2 == NULL)
-	{
+	if (s1 == NULL && s2 == NULL) {
 		return 1;
 	}
-	if (s1 == NULL || s2 == NULL)
-	{
+	if (s1 == NULL || s2 == NULL) {
 		return 0;
 	}
 
-	return strcasecmp(s1,s2) == 0;
+	return strcasecmp(s1, s2) == 0;
 }
 
-
-int StrHasPrefix( const char* string, const char* prefix )
+int
+StrHasPrefix(const char *string, const char *prefix)
 {
-	if ( prefix == NULL )
-	{
+	if (prefix == NULL) {
 		return 1;
 	}
-	if ( string == NULL )
-	{
+	if (string == NULL) {
 		return 0;
 	}
 
-	return strncasecmp( string, prefix, strlen(prefix) ) == 0;
+	return strncasecmp(string, prefix, strlen(prefix)) == 0;
 }
-
 
 /*
  *
@@ -173,20 +156,19 @@ int StrHasPrefix( const char* string, const char* prefix )
  * You should allocate dest yourself, at least strlen(source) * 2 + 3.
  *
  */
-char *QuoteString(char *dest, const char *source)
+char *
+QuoteString(char *dest, const char *source)
 {
-	int i = 0;
+	int i	= 0;
 	*dest++ = '\'';
-	for(i = 0; source[i]; i++)
-	{
-		if (source[i] == '\'')
-		{
+	for (i = 0; source[i]; i++) {
+		if (source[i] == '\'') {
 			*dest++ = '\\';
 		}
 		*dest++ = source[i];
 	}
 	*dest++ = '\'';
-	*dest = '\0';
+	*dest	= '\0';
 
 	return dest;
 }
@@ -198,22 +180,21 @@ char *QuoteString(char *dest, const char *source)
  * Returns a pointer to the end of dest.
  */
 
-char *QuoteEscapeString(char *dest, const char *source, char delim,
-			const char *escape, const char *escaper)
+char *
+QuoteEscapeString(char *dest, const char *source, char delim,
+    const char *escape, const char *escaper)
 {
 	*dest++ = delim;
-	while (*source)
-	{
+	while (*source) {
 		char *esc;
 		esc = strchr(escape, *source);
-		if (esc != NULL)
-		{
-			*dest++ = escaper[(int)(esc-escape)];
+		if (esc != NULL) {
+			*dest++ = escaper[(int)(esc - escape)];
 		}
 		*dest++ = *source++;
 	}
 	*dest++ = delim;
-	*dest = '\0';
+	*dest	= '\0';
 
 	return dest;
 }
@@ -223,14 +204,13 @@ char *QuoteEscapeString(char *dest, const char *source, char delim,
  * the corresponding escaper.
  */
 
-unsigned int QuoteEscapeStringLength(const char *source, const char *escape)
+unsigned int
+QuoteEscapeStringLength(const char *source, const char *escape)
 {
 	unsigned int len = 2;
 
-	while (*source)
-	{
-		if (strchr(escape, *source) != NULL)
-		{
+	while (*source) {
+		if (strchr(escape, *source) != NULL) {
 			len++;
 		}
 		len++;

@@ -18,14 +18,13 @@
 
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
-#include "fvwm.h"
-#include "externs.h"
 #include "cursor.h"
+#include "externs.h"
 #include "functions.h"
-#include "repeat.h"
+#include "fvwm.h"
 #include "libs/Parse.h"
-
+#include "libs/fvwmlib.h"
+#include "repeat.h"
 
 /* If non-zero we are already repeating a function, so don't record the
  * command again. */
@@ -60,10 +59,7 @@ static struct
 {
 	char *command_line;
 	char *menu_name;
-} last = {
-	NULL,
-	NULL
-};
+} last = {NULL, NULL};
 
 #if 0
 char *repeat_last_function = NULL;
@@ -87,30 +83,26 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  *
  * TODO: [finish and update description]
  */
-Bool set_repeat_data(void *data, repeat_t type, const func_t *builtin)
+Bool
+set_repeat_data(void *data, repeat_t type, const func_t *builtin)
 {
 	/* No history recording during startup. */
-	if (fFvwmInStartup)
-	{
+	if (fFvwmInStartup) {
 		return True;
 	}
 
-	switch(type)
-	{
+	switch (type) {
 	case REPEAT_COMMAND:
-		if (last.command_line == (char *)data)
-		{
+		if (last.command_line == (char *)data) {
 			/* Already stored, no need to free the data pointer. */
 			return False;
 		}
-		if (data == NULL || repeat_depth != 0)
-		{
+		if (data == NULL || repeat_depth != 0) {
 			/* Ignoring the data, must free it outside of this
 			 * call. */
 			return True;
 		}
-		if (builtin && (builtin->flags & FUNC_DONT_REPEAT))
-		{
+		if (builtin && (builtin->flags & FUNC_DONT_REPEAT)) {
 			/* Dont' record functions that have the
 			 * FUNC_DONT_REPEAT flag set. */
 			return True;
@@ -137,22 +129,18 @@ Bool set_repeat_data(void *data, repeat_t type, const func_t *builtin)
 
 void CMD_Repeat(F_CMD_ARGS)
 {
-	int index;
-	char *optlist[] = {
-		"command",
-		NULL
-	};
+	int   index;
+	char *optlist[] = {"command", NULL};
 
 	repeat_depth++;
 	/* Replay the backup, we don't want the repeat command recorded. */
 	GetNextTokenIndex(action, optlist, 0, &index);
-	switch (index)
-	{
+	switch (index) {
 	case 0: /* command */
 	default:
 		action = last.command_line;
 		execute_function(
-			cond_rc, exc, action, FUNC_DONT_EXPAND_COMMAND);
+		    cond_rc, exc, action, FUNC_DONT_EXPAND_COMMAND);
 		break;
 	}
 	repeat_depth--;

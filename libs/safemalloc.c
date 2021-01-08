@@ -12,20 +12,19 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <stdint.h>
-#include <stdarg.h>
 #include <err.h>
 #include <errno.h>
-#include <sys/param.h>
+#include <stdarg.h>
 #include <stdint.h>
+#include <stdio.h>
+#include <sys/param.h>
 
 #include "safemalloc.h"
 
 void *
 fxmalloc(size_t length)
 {
-	void	*ptr;
+	void *ptr;
 
 	if (length == 0)
 		errx(1, "malloc: zero size.");
@@ -39,7 +38,7 @@ fxmalloc(size_t length)
 void *
 fxcalloc(size_t num, size_t length)
 {
-	void	*ptr;
+	void *ptr;
 
 	if (num == 0 || length == 0)
 		errx(1, "calloc:  zero size");
@@ -56,8 +55,8 @@ fxcalloc(size_t num, size_t length)
 void *
 fxrealloc(void *oldptr, size_t nmemb, size_t size)
 {
-	size_t	 newsize = nmemb * size;
-	void	*newptr;
+	size_t newsize = nmemb * size;
+	void * newptr;
 
 	if (newsize == 0)
 		errx(1, "zero size");
@@ -72,8 +71,8 @@ fxrealloc(void *oldptr, size_t nmemb, size_t size)
 char *
 fxstrdup(const char *s)
 {
-	char	*ptr;
-	size_t	 len;
+	char * ptr;
+	size_t len;
 
 	len = strlen(s) + 1;
 	ptr = fxmalloc(len);
@@ -87,7 +86,7 @@ int
 xasprintf(char **ret, const char *fmt, ...)
 {
 	va_list ap;
-	int i;
+	int	i;
 
 	va_start(ap, fmt);
 	i = xvasprintf(ret, fmt, ap);
@@ -105,7 +104,7 @@ xvasprintf(char **ret, const char *fmt, va_list ap)
 
 	if (i < 0 || *ret == NULL) {
 		fvwm_debug(__func__, "xasprintf: %s", strerror(errno));
-		exit (1);
+		exit(1);
 	}
 
 	return (i);

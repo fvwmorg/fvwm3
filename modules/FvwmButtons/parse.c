@@ -26,31 +26,31 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
-#include "libs/Module.h"
-#include "libs/Colorset.h"
-#include "libs/Parse.h"
-#include "libs/Strings.h"
 #include "FvwmButtons.h"
 #include "button.h"
+#include "libs/Colorset.h"
+#include "libs/Module.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/fvwmlib.h"
 #include "parse.h"
 
-extern int w, h, x, y, xneg, yneg; /* used in ParseConfigLine */
+extern int   w, h, x, y, xneg, yneg; /* used in ParseConfigLine */
 extern char *config_file;
-extern int button_width;
-extern int button_height;
-extern int has_button_geometry;
-extern int screen;
+extern int   button_width;
+extern int   button_height;
+extern int   has_button_geometry;
+extern int   screen;
 
 /* contains the character that terminated the last string from seekright */
 static char terminator = '\0';
 
 /* ----------------------------------- macros ------------------------------ */
 
-static char *trimleft(char *s)
+static char *
+trimleft(char *s)
 {
-	while (s && isspace((unsigned char)*s))
-	{
+	while (s && isspace((unsigned char)*s)) {
 		s++;
 	}
 	return s;
@@ -63,14 +63,14 @@ static char *trimleft(char *s)
 *** string and move the old pointer forward. Accepts and strips quoting with
 *** ['"`], and the current quote q can be escaped inside the string with \q.
 **/
-static char *seekright(char **s)
+static char *
+seekright(char **s)
 {
 	char *token = NULL;
-	char *line = *s;
+	char *line  = *s;
 
 	line = DoGetNextToken(line, &token, NULL, "),", &terminator);
-	if (*s != NULL && line == NULL)
-	{
+	if (*s != NULL && line == NULL) {
 		line = strchr(*s, '\0');
 	}
 	*s = line;
@@ -78,28 +78,26 @@ static char *seekright(char **s)
 	return token;
 }
 
-static char *my_get_font(char **s)
+static char *
+my_get_font(char **s)
 {
 	char *option;
-	int len;
+	int   len;
 
 	*s = GetNextFullOption(*s, &option);
-	if (option)
-	{
-		for (len = strlen(option) - 1; len >= 0 && isspace(option[len]); len--)
-		{
+	if (option) {
+		for (len = strlen(option) - 1; len >= 0 && isspace(option[len]);
+		     len--) {
 			/* remove trailing whitespace */
 			option[len] = 0;
 		}
-		for ( ; *option && isspace(*option); option++)
-		{
+		for (; *option && isspace(*option); option++) {
 			/* remove leading whitespace */
 		}
 	}
 
-	len = strlen(option) -1;
-	if (option[len] == ')' )
-	{
+	len = strlen(option) - 1;
+	if (option[len] == ')') {
 		option[len] = 0;
 	}
 
@@ -111,46 +109,36 @@ static char *my_get_font(char **s)
 *** Parses the options possible to Back
 *** This function appears to be obsolete & should be removed -- SS.
 **/
-static int ParseBack(char **ss)
+static int
+ParseBack(char **ss)
 {
-	char *opts[] =
-	{
-		"icon",
-		NULL
-	};
+	char *opts[] = {"icon", NULL};
 	char *t, *s = *ss;
-	int r = 0;
+	int   r = 0;
 
-	while (*s && *s != ')')
-	{
+	while (*s && *s != ')') {
 		s = trimleft(s);
-		if (*s == ',')
-		{
+		if (*s == ',') {
 			s++;
 			continue;
 		}
 
-		switch (GetTokenIndex(s, opts, -1, &s))
-		{
+		switch (GetTokenIndex(s, opts, -1, &s)) {
 		case 0: /* Icon */
 			r = 1;
 			fvwm_debug(__func__,
-				   "%s: Back(Icon) not supported yet\n",
-				   MyName);
+			    "%s: Back(Icon) not supported yet\n", MyName);
 			break;
 		default:
 			t = seekright(&s);
-			fvwm_debug(__func__,
-				   "%s: Illegal back option \"%s\"\n",
-				   MyName, (t) ? t : "");
-			if (t)
-			{
+			fvwm_debug(__func__, "%s: Illegal back option \"%s\"\n",
+			    MyName, (t) ? t : "");
+			if (t) {
 				free(t);
 			}
 		}
 	}
-	if (*s)
-	{
+	if (*s) {
 		s++;
 	}
 	*ss = s;
@@ -162,25 +150,18 @@ static int ParseBack(char **ss)
 *** ParseBoxSize()
 *** Parses the options possible to BoxSize
 **/
-static void ParseBoxSize(char **ss, flags_type *flags)
+static void
+ParseBoxSize(char **ss, flags_type *flags)
 {
-	char *opts[] =
-	{
-		"dumb",
-		"fixed",
-		"smart",
-		NULL
-	};
-	char *s = *ss;
-	int m;
+	char *opts[] = {"dumb", "fixed", "smart", NULL};
+	char *s	     = *ss;
+	int   m;
 
-	if (!s)
-	{
+	if (!s) {
 		return;
 	}
 	*ss = GetNextTokenIndex(*ss, opts, 0, &m);
-	switch (m)
-	{
+	switch (m) {
 	case 0:
 		flags->b_SizeFixed = 0;
 		flags->b_SizeSmart = 0;
@@ -196,9 +177,8 @@ static void ParseBoxSize(char **ss, flags_type *flags)
 	default:
 		flags->b_SizeFixed = 0;
 		flags->b_SizeSmart = 0;
-		fvwm_debug(__func__,
-			   "%s: Illegal boxsize option \"%s\"\n",
-			   MyName, s);
+		fvwm_debug(
+		    __func__, "%s: Illegal boxsize option \"%s\"\n", MyName, s);
 		break;
 	}
 	return;
@@ -208,29 +188,20 @@ static void ParseBoxSize(char **ss, flags_type *flags)
 *** ParseTitle()
 *** Parses the options possible to Title
 **/
-static void ParseTitle(char **ss, byte *flags, byte *mask)
+static void
+ParseTitle(char **ss, byte *flags, byte *mask)
 {
-	char *titleopts[] =
-	{
-		"left",
-		"right",
-		"center",
-		"side",
-		NULL
-	};
+	char *titleopts[] = {"left", "right", "center", "side", NULL};
 	char *t, *s = *ss;
 
-	while (*s && *s != ')')
-	{
+	while (*s && *s != ')') {
 		s = trimleft(s);
-		if (*s == ',')
-		{
+		if (*s == ',') {
 			s++;
 			continue;
 		}
 
-		switch (GetTokenIndex(s, titleopts, -1, &s))
-		{
+		switch (GetTokenIndex(s, titleopts, -1, &s)) {
 		case 0: /* Left */
 			*flags &= ~b_TitleHoriz;
 			*flags &= ~3;
@@ -256,16 +227,14 @@ static void ParseTitle(char **ss, byte *flags, byte *mask)
 		default:
 			t = seekright(&s);
 			fvwm_debug(__func__,
-				   "%s: Illegal title option \"%s\"\n",
-				   MyName, (t) ? t : "");
-			if (t)
-			{
+			    "%s: Illegal title option \"%s\"\n", MyName,
+			    (t) ? t : "");
+			if (t) {
 				free(t);
 			}
 		}
 	}
-	if (*s)
-	{
+	if (*s) {
 		s++;
 	}
 	*ss = s;
@@ -275,34 +244,22 @@ static void ParseTitle(char **ss, byte *flags, byte *mask)
 *** ParseSwallow()
 *** Parses the options possible to Swallow
 **/
-static void ParseSwallow(
-	char **ss, unsigned int *flags, unsigned int *mask, button_info *b)
+static void
+ParseSwallow(char **ss, unsigned int *flags, unsigned int *mask, button_info *b)
 {
-	char *swallowopts[] =
-	{
-		"nohints", "hints",
-		"nokill", "kill",
-		"noclose", "close",
-		"respawn", "norespawn",
-		"useold", "noold",
-		"usetitle", "notitle",
-		"fvwmmodule", "nofvwmmodule",
-		"swallownew",
-		NULL
-	};
+	char *swallowopts[] = {"nohints", "hints", "nokill", "kill", "noclose",
+	    "close", "respawn", "norespawn", "useold", "noold", "usetitle",
+	    "notitle", "fvwmmodule", "nofvwmmodule", "swallownew", NULL};
 	char *t, *s = *ss;
 
-	while (*s && *s != ')')
-	{
+	while (*s && *s != ')') {
 		s = trimleft(s);
-		if (*s == ',')
-		{
+		if (*s == ',') {
 			s++;
 			continue;
 		}
 
-		switch (GetTokenIndex(s, swallowopts, -1, &s))
-		{
+		switch (GetTokenIndex(s, swallowopts, -1, &s)) {
 		case 0: /* NoHints */
 			*flags |= b_NoHints;
 			*mask |= b_NoHints;
@@ -369,17 +326,14 @@ static void ParseSwallow(
 		default:
 			t = seekright(&s);
 			fvwm_debug(__func__,
-				   "%s: Illegal Swallow option \"%s\"\n",
-				   MyName,
-				   (t) ? t : "");
-			if (t)
-			{
+			    "%s: Illegal Swallow option \"%s\"\n", MyName,
+			    (t) ? t : "");
+			if (t) {
 				free(t);
 			}
 		}
 	}
-	if (*s)
-	{
+	if (*s) {
 		s++;
 	}
 	*ss = s;
@@ -389,53 +343,34 @@ static void ParseSwallow(
 *** ParsePanel()
 *** Parses the options possible to Panel
 **/
-static void ParsePanel(
-	char **ss, unsigned int *flags, unsigned int *mask, char *direction,
-	int *steps, int *delay, panel_flags_type *panel_flags,
-	int *indicator_size, int *rela_x, int *rela_y, char *position,
-	char *context, int *indicator_sunkraise, char *indicator_in_out)
+static void
+ParsePanel(char **ss, unsigned int *flags, unsigned int *mask, char *direction,
+    int *steps, int *delay, panel_flags_type *panel_flags, int *indicator_size,
+    int *rela_x, int *rela_y, char *position, char *context,
+    int *indicator_sunkraise, char *indicator_in_out)
 
 {
-	char *swallowopts[] =
-	{
-		"nohints", "hints",
-		"nokill", "kill",
-		"noclose", "close",
-		"respawn", "norespawn",
-		"useold", "noold",
-		"usetitle", "notitle",
-		"up", "down", "left", "right",
-		"steps",
-		"delay",
-		"smooth",
-		"noborder",
-		"indicator",
-		"position",
-		NULL
-	};
+	char *swallowopts[] = {"nohints", "hints", "nokill", "kill", "noclose",
+	    "close", "respawn", "norespawn", "useold", "noold", "usetitle",
+	    "notitle", "up", "down", "left", "right", "steps", "delay",
+	    "smooth", "noborder", "indicator", "position", NULL};
 
-	char *positionopts[] =
-	{
-		"button", "module", "root", "center", "left", "top", "right",
-		"bottom", "noplr", "noptb", "mlr", "mtb", NULL
-	};
+	char *positionopts[] = {"button", "module", "root", "center", "left",
+	    "top", "right", "bottom", "noplr", "noptb", "mlr", "mtb", NULL};
 
 	char *t, *s = *ss;
-	int n;
-	char *instr = "in";
+	int   n;
+	char *instr  = "in";
 	char *outstr = "out";
 
-	while (*s && *s != ')')
-	{
+	while (*s && *s != ')') {
 		s = trimleft(s);
-		if (*s == ',')
-		{
+		if (*s == ',') {
 			s++;
 			continue;
 		}
 
-		switch (GetTokenIndex(s, swallowopts, -1, &s))
-		{
+		switch (GetTokenIndex(s, swallowopts, -1, &s)) {
 		case 0: /* NoHints */
 			*flags |= b_NoHints;
 			*mask |= b_NoHints;
@@ -512,72 +447,68 @@ static void ParsePanel(
 			(*panel_flags).ignore_tbborder = 1;
 			break;
 		case 20: /* indicator */
-			n = 0;
+			n			       = 0;
 			(*panel_flags).panel_indicator = 1;
-			*indicator_size = 0;
-			sscanf(s, "%d %s%n", indicator_size, indicator_in_out, &n);
+			*indicator_size		       = 0;
+			sscanf(
+			    s, "%d %s%n", indicator_size, indicator_in_out, &n);
 
 			/* Remove comma from %s of sscanf */
 			indicator_in_out[strcspn(indicator_in_out, ",")] = '\0';
 
-			if (*indicator_in_out == *instr)
-			{
-			        *indicator_sunkraise = 2;
+			if (*indicator_in_out == *instr) {
+				*indicator_sunkraise = 2;
 			}
-			if (*indicator_in_out == *outstr)
-			{
-			        *indicator_sunkraise = 1;
+			if (*indicator_in_out == *outstr) {
+				*indicator_sunkraise = 1;
 			}
 
-			/* Not defined - parse indicator size without in/out after it */
-			if (*indicator_sunkraise < 1 || *indicator_sunkraise > 2)
-			{
-			        *indicator_sunkraise = 1;
-			        s = trimleft(s);
-			        n = n - 1;
-			        sscanf(s, "%d%n", indicator_size, &n);
-			        if (*indicator_size < 0 || *indicator_size > 100)
-			        {
-			                *indicator_size = 0;
-			        }
+			/* Not defined - parse indicator size without in/out
+			 * after it */
+			if (*indicator_sunkraise < 1
+			    || *indicator_sunkraise > 2) {
+				*indicator_sunkraise = 1;
+				s		     = trimleft(s);
+				n		     = n - 1;
+				sscanf(s, "%d%n", indicator_size, &n);
+				if (*indicator_size < 0
+				    || *indicator_size > 100) {
+					*indicator_size = 0;
+				}
 			}
 
-
-			if (*indicator_size < 0 || *indicator_size > 100)
-			{
+			if (*indicator_size < 0 || *indicator_size > 100) {
 				*indicator_size = 0;
 			}
 			s += n;
 			break;
 		case 21: /* position */
-			n = 0;
+			n	= 0;
 			*rela_x = *rela_y = 0;
-			while (*s != ',' && *s != ')' && *s)
-			{
+			while (*s != ',' && *s != ')' && *s) {
 				s = trimleft(s);
 				/* get x and y offset */
-				if (isdigit(*s) || *s == '+' || *s == '-')
-				{
+				if (isdigit(*s) || *s == '+' || *s == '-') {
 					sscanf(s, "%i%n", rela_x, &n);
 					s += n;
-					if (*s == 'p' || *s == 'P')
-					{
-						(*panel_flags).relative_x_pixel = 1;
+					if (*s == 'p' || *s == 'P') {
+						(*panel_flags)
+						    .relative_x_pixel = 1;
 						s++;
 					}
 					n = 0;
 					s = trimleft(s);
 					sscanf(s, "%i%n", rela_y, &n);
 					s += n;
-					if (*s == 'p' || *s == 'P')
-					{
-						(*panel_flags).relative_y_pixel = 1;
+					if (*s == 'p' || *s == 'P') {
+						(*panel_flags)
+						    .relative_y_pixel = 1;
 						s++;
 					}
 					s = trimleft(s);
 				}
-				switch (GetTokenIndex(s, positionopts, -1, &s))
-				{
+				switch (
+				    GetTokenIndex(s, positionopts, -1, &s)) {
 				case 0: /* button */
 					*context = SLIDE_CONTEXT_PB;
 					break;
@@ -617,13 +548,11 @@ static void ParsePanel(
 				default:
 					t = seekright(&s);
 					s--;
-					if (t)
-					{
+					if (t) {
 						fvwm_debug(__func__,
-							   "%s: Illegal Panel "
-							   "position option %s\n",
-							   MyName,
-							   	(t) ? t : "");
+						    "%s: Illegal Panel "
+						    "position option %s\n",
+						    MyName, (t) ? t : "");
 						free(t);
 					}
 				}
@@ -632,17 +561,14 @@ static void ParsePanel(
 		default:
 			t = seekright(&s);
 			fvwm_debug(__func__,
-				   "%s: Illegal Panel option \"%s\"\n",
-				   MyName,
-				   (t) ? t : "");
-			if (t)
-			{
+			    "%s: Illegal Panel option \"%s\"\n", MyName,
+			    (t) ? t : "");
+			if (t) {
 				free(t);
 			}
 		}
 	}
-	if (*s)
-	{
+	if (*s) {
 		s++;
 	}
 	*ss = s;
@@ -652,217 +578,183 @@ static void ParsePanel(
 *** ParseContainer()
 *** Parses the options possible to Container
 **/
-static void ParseContainer(char **ss,button_info *b)
+static void
+ParseContainer(char **ss, button_info *b)
 {
-	char *conts[] =
-	{
-		"columns",
-		"rows",
-		"font",
-		"frame",
-		"back",
-		"fore",
-		"padding",
-		"title",
-		"swallow",
-		"nosize",
-		"size",
-		"boxsize",
-		"colorset",
-		NULL
-	};
+	char *conts[] = {"columns", "rows", "font", "frame", "back", "fore",
+	    "padding", "title", "swallow", "nosize", "size", "boxsize",
+	    "colorset", NULL};
 	char *t, *o, *s = *ss;
-	int i, j;
+	int   i, j;
 
-	while (*s && *s != ')')
-	{
+	while (*s && *s != ')') {
 		s = trimleft(s);
-		if (*s == ',')
-		{
+		if (*s == ',') {
 			s++;
 			continue;
 		}
 
-		switch (GetTokenIndex(s, conts, -1, &s))
-		{
+		switch (GetTokenIndex(s, conts, -1, &s)) {
 		case 0: /* Columns */
 			b->c->num_columns = max(1, strtol(s, &t, 10));
-			s = t;
+			s		  = t;
 			break;
 		case 1: /* Rows */
 			b->c->num_rows = max(1, strtol(s, &t, 10));
-			s = t;
+			s	       = t;
 			break;
 		case 2: /* Font */
-			if (b->c->font_string)
-			{
+			if (b->c->font_string) {
 				free(b->c->font_string);
 			}
-			b->c->font_string = my_get_font(&s);
+			b->c->font_string  = my_get_font(&s);
 			b->c->flags.b_Font = (b->c->font_string ? 1 : 0);
 			break;
 		case 3: /* Frame */
-			b->c->framew = strtol(s, &t, 10);
+			b->c->framew	    = strtol(s, &t, 10);
 			b->c->flags.b_Frame = 1;
-			s = t;
+			s		    = t;
 			break;
 		case 4: /* Back */
 			s = trimleft(s);
-			if (*s == '(' && s++ && ParseBack(&s))
-			{
+			if (*s == '(' && s++ && ParseBack(&s)) {
 				b->c->flags.b_IconBack = 1;
 			}
-			if (b->c->back)
-			{
+			if (b->c->back) {
 				free(b->c->back);
 			}
 			b->c->back = seekright(&s);
-			if (b->c->back)
-			{
+			if (b->c->back) {
 				b->c->flags.b_Back = 1;
-			}
-			else
-			{
+			} else {
 				b->c->flags.b_IconBack = 0;
-				b->c->flags.b_Back = 0;
+				b->c->flags.b_Back     = 0;
 			}
 			break;
-    case 5: /* Fore */
-      if (b->c->fore) free(b->c->fore);
-      b->c->fore = seekright(&s);
-      b->c->flags.b_Fore = (b->c->fore ? 1 : 0);
-      break;
-    case 6: /* Padding */
-      i = strtol(s, &t, 10);
-      if (t > s)
-      {
-	b->c->xpad = b->c->ypad = i;
-	s = t;
-	i = strtol(s, &t, 10);
-	if (t > s)
-	{
-	  b->c->ypad = i;
-	  s = t;
-	}
-	b->c->flags.b_Padding = 1;
-      }
-      else
-	fvwm_debug(__func__, "%s: Illegal padding argument\n",MyName);
-      break;
-    case 7: /* Title - flags */
-      s = trimleft(s);
-      if (*s == '(' && s++)
-      {
-	b->c->justify = 0;
-	b->c->justify_mask = 0;
-	ParseTitle(&s, &b->c->justify, &b->c->justify_mask);
-	if (b->c->justify_mask)
-	{
-	  b->c->flags.b_Justify = 1;
-	}
-      }
-      else
-      {
-	char *temp;
-	fvwm_debug(__func__,
-                   "%s: Illegal title in container options\n",
-                   MyName);
-	temp = seekright(&s);
-	if (temp)
-	{
-	  free(temp);
-	}
-      }
-      break;
-    case 8: /* Swallow - flags */
-      {
-	Bool failed = False;
+		case 5: /* Fore */
+			if (b->c->fore)
+				free(b->c->fore);
+			b->c->fore	   = seekright(&s);
+			b->c->flags.b_Fore = (b->c->fore ? 1 : 0);
+			break;
+		case 6: /* Padding */
+			i = strtol(s, &t, 10);
+			if (t > s) {
+				b->c->xpad = b->c->ypad = i;
+				s			= t;
+				i			= strtol(s, &t, 10);
+				if (t > s) {
+					b->c->ypad = i;
+					s	   = t;
+				}
+				b->c->flags.b_Padding = 1;
+			} else
+				fvwm_debug(__func__,
+				    "%s: Illegal padding argument\n", MyName);
+			break;
+		case 7: /* Title - flags */
+			s = trimleft(s);
+			if (*s == '(' && s++) {
+				b->c->justify	   = 0;
+				b->c->justify_mask = 0;
+				ParseTitle(
+				    &s, &b->c->justify, &b->c->justify_mask);
+				if (b->c->justify_mask) {
+					b->c->flags.b_Justify = 1;
+				}
+			} else {
+				char *temp;
+				fvwm_debug(__func__,
+				    "%s: Illegal title in container options\n",
+				    MyName);
+				temp = seekright(&s);
+				if (temp) {
+					free(temp);
+				}
+			}
+			break;
+		case 8: /* Swallow - flags */
+		{
+			Bool failed = False;
 
-	s = trimleft(s);
-	if (b->c->flags.b_Swallow || b->c->flags.b_Panel)
-	{
-	  fvwm_debug(__func__, "%s: Multiple Swallow or Panel options are not"
-                     " allowed in a single button", MyName);
-	  failed = True;
+			s = trimleft(s);
+			if (b->c->flags.b_Swallow || b->c->flags.b_Panel) {
+				fvwm_debug(__func__,
+				    "%s: Multiple Swallow or Panel options are "
+				    "not"
+				    " allowed in a single button",
+				    MyName);
+				failed = True;
+			} else if (*s == '(' && s++) {
+				b->c->swallow	   = 0;
+				b->c->swallow_mask = 0;
+				ParseSwallow(
+				    &s, &b->c->swallow, &b->c->swallow_mask, b);
+				if (b->c->swallow_mask) {
+					b->c->flags.b_Swallow = 1;
+				}
+			} else {
+				fvwm_debug(__func__,
+				    "%s: Illegal swallow or panel in container "
+				    "options\n",
+				    MyName);
+				failed = True;
+			}
+			if (failed) {
+				char *temp;
+
+				temp = seekright(&s);
+				if (temp)
+					free(temp);
+			}
+		} break;
+		case 9: /* NoSize */
+			b->c->flags.b_Size = 1;
+			b->c->minx = b->c->miny = 0;
+			break;
+
+		case 10: /* Size */
+			i = strtol(s, &t, 10);
+			j = strtol(t, &o, 10);
+			if (t > s && o > t) {
+				b->c->minx	   = i;
+				b->c->miny	   = j;
+				b->c->flags.b_Size = 1;
+				s		   = o;
+			} else
+				fvwm_debug(__func__,
+				    "%s: Illegal size arguments\n", MyName);
+			break;
+
+		case 11: /* BoxSize */
+			ParseBoxSize(&s, &b->c->flags);
+			break;
+
+		case 12: /* Colorset */
+			i = strtol(s, &t, 10);
+			if (t > s) {
+				b->c->colorset	       = i;
+				b->c->flags.b_Colorset = 1;
+				AllocColorset(i);
+				s = t;
+			} else {
+				b->c->flags.b_Colorset = 0;
+			}
+			break;
+
+		default:
+			t = seekright(&s);
+			fvwm_debug(__func__,
+			    "%s: Illegal container option \"%s\"\n", MyName,
+			    (t) ? t : "");
+			if (t)
+				free(t);
+		}
 	}
-	else if (*s == '(' && s++)
-	{
-	  b->c->swallow = 0;
-	  b->c->swallow_mask = 0;
-	  ParseSwallow(&s, &b->c->swallow, &b->c->swallow_mask, b);
-	  if (b->c->swallow_mask)
-	  {
-	    b->c->flags.b_Swallow = 1;
-	  }
+	if (*s) {
+		s++;
 	}
-	else
-	{
-	  fvwm_debug(__func__,
-                     "%s: Illegal swallow or panel in container options\n",
-                     MyName);
-	  failed = True;
-	}
-	if (failed)
-	{
-	  char *temp;
-
-	  temp = seekright(&s);
-	  if (temp)
-	    free(temp);
-	}
-      }
-      break;
-    case 9: /* NoSize */
-      b->c->flags.b_Size = 1;
-      b->c->minx = b->c->miny = 0;
-      break;
-
-    case 10: /* Size */
-      i = strtol(s, &t, 10);
-      j = strtol(t, &o, 10);
-      if (t > s && o > t)
-      {
-	b->c->minx = i;
-	b->c->miny = j;
-	b->c->flags.b_Size = 1;
-	s = o;
-      }
-      else
-	fvwm_debug(__func__, "%s: Illegal size arguments\n",MyName);
-      break;
-
-    case 11: /* BoxSize */
-      ParseBoxSize(&s, &b->c->flags);
-      break;
-
-    case 12: /* Colorset */
-      i = strtol(s, &t, 10);
-      if (t > s)
-      {
-	b->c->colorset = i;
-	b->c->flags.b_Colorset = 1;
-	AllocColorset(i);
-	s = t;
-      }
-      else
-      {
-	b->c->flags.b_Colorset = 0;
-      }
-      break;
-
-    default:
-      t = seekright(&s);
-      fvwm_debug(__func__, "%s: Illegal container option \"%s\"\n",MyName,
-                 (t)?t:"");
-      if (t)
-	free(t);
-    }
-  }
-  if (*s)
-  {
-    s++;
-  }
-  *ss = s;
+	*ss = s;
 }
 
 /**
@@ -872,93 +764,59 @@ static void ParseContainer(char **ss,button_info *b)
 *** *FvwmButtons: (option[ options]) title iconname command
 **/
 /*#define DEBUG_PARSER*/
-static void ParseButton(button_info **uberb, char *s)
+static void
+ParseButton(button_info **uberb, char *s)
 {
 	button_info *b, *ub = *uberb;
-	int i, j;
-	char *t, *o;
+	int	     i, j;
+	char *	     t, *o;
 
 	b = alloc_button(ub, (ub->c->num_buttons)++);
 	s = trimleft(s);
 
-	if (*s == '(' && s++)
-	{
-		char *opts[] =
-		{
-			"back",
-			"fore",
-			"font",
-			"title",
-			"icon",
-			"frame",
-			"padding",
-			"swallow",
-			"panel",
-			"actionignoresclientwindow",
-			"actiononpress",
-			"container",
-			"end",
-			"nosize",
-			"size",
-			"left",
-			"right",
-			"center",
-			"colorset",
-			"action",
-			"id",
-			"activeicon",
-			"activetitle",
-			"pressicon",
-			"presstitle",
-			"activecolorset",
-			"presscolorset",
-			"top",
-			NULL
-		};
-		s = trimleft(s);
-		while (*s && *s != ')')
-		{
+	if (*s == '(' && s++) {
+		char *opts[] = {"back", "fore", "font", "title", "icon",
+		    "frame", "padding", "swallow", "panel",
+		    "actionignoresclientwindow", "actiononpress", "container",
+		    "end", "nosize", "size", "left", "right", "center",
+		    "colorset", "action", "id", "activeicon", "activetitle",
+		    "pressicon", "presstitle", "activecolorset",
+		    "presscolorset", "top", NULL};
+		s	     = trimleft(s);
+		while (*s && *s != ')') {
 			Bool is_swallow = False;
 
-			if (*s == ',')
-			{
+			if (*s == ',') {
 				s++;
 				s = trimleft(s);
 				continue;
 			}
-			if (isdigit(*s) || *s == '+' || *s == '-')
-			{
-				char *geom;
-				int x, y, flags;
+			if (isdigit(*s) || *s == '+' || *s == '-') {
+				char *	     geom;
+				int	     x, y, flags;
 				unsigned int w, h;
 				geom = seekright(&s);
-				if (geom)
-				{
-					flags = XParseGeometry(geom, &x, &y, &w, &h);
-					if (flags&WidthValue)
-					{
+				if (geom) {
+					flags = XParseGeometry(
+					    geom, &x, &y, &w, &h);
+					if (flags & WidthValue) {
 						b->BWidth = w;
 					}
-					if (flags&HeightValue)
-					{
+					if (flags & HeightValue) {
 						b->BHeight = h;
 					}
-					if (flags & XValue)
-					{
-						b->BPosX = x;
+					if (flags & XValue) {
+						b->BPosX	    = x;
 						b->flags.b_PosFixed = 1;
 					}
-					if (flags & YValue)
-					{
-						b->BPosY = y;
+					if (flags & YValue) {
+						b->BPosY	    = y;
 						b->flags.b_PosFixed = 1;
 					}
-					if (flags & XNegative)
-					{
+					if (flags & XNegative) {
 						b->BPosX = -1 - x;
 					}
-					if (flags & YNegative)
-					{
+					if (flags & YNegative) {
 						b->BPosY = -1 - y;
 					}
 					free(geom);
@@ -966,172 +824,141 @@ static void ParseButton(button_info **uberb, char *s)
 				s = trimleft(s);
 				continue;
 			}
-			switch (GetTokenIndex(s, opts, -1, &s))
-			{
+			switch (GetTokenIndex(s, opts, -1, &s)) {
 			case 0: /* Back */
 				s = trimleft(s);
-				if (*s == '(' && s++ && ParseBack(&s))
-				{
+				if (*s == '(' && s++ && ParseBack(&s)) {
 					b->flags.b_IconBack = 1;
 				}
-				if (b->flags.b_Back && b->back)
-				{
+				if (b->flags.b_Back && b->back) {
 					free(b->back);
 				}
 				b->back = seekright(&s);
-				if (b->back)
-				{
+				if (b->back) {
 					b->flags.b_Back = 1;
-				}
-				else
-				{
+				} else {
 					b->flags.b_IconBack = 0;
-					b->flags.b_Back = 0;
+					b->flags.b_Back	    = 0;
 				}
 				break;
 
 			case 1: /* Fore */
-				if (b->flags.b_Fore && b->fore)
-				{
+				if (b->flags.b_Fore && b->fore) {
 					free(b->fore);
 				}
-				b->fore = seekright(&s);
+				b->fore		= seekright(&s);
 				b->flags.b_Fore = (b->fore ? 1 : 0);
 				break;
 
 			case 2: /* Font */
-				if (b->flags.b_Font && b->font_string)
-				{
+				if (b->flags.b_Font && b->font_string) {
 					free(b->font_string);
 				}
-				b->font_string = my_get_font(&s);
+				b->font_string	= my_get_font(&s);
 				b->flags.b_Font = (b->font_string ? 1 : 0);
 				break;
 
-			/* ----------------- title --------------- */
+				/* ----------------- title --------------- */
 
 			case 3: /* Title */
 				s = trimleft(s);
-				if (*s == '(' && s++)
-				{
-					b->justify = 0;
+				if (*s == '(' && s++) {
+					b->justify	= 0;
 					b->justify_mask = 0;
 					ParseTitle(
-						&s, &b->justify,
-						&b->justify_mask);
-					if (b->justify_mask)
-					{
+					    &s, &b->justify, &b->justify_mask);
+					if (b->justify_mask) {
 						b->flags.b_Justify = 1;
 					}
 				}
 				t = seekright(&s);
-				if (t && *t)
-				{
-					if (b->title)
-					{
+				if (t && *t) {
+					if (b->title) {
 						free(b->title);
 					}
 					b->title = t;
 #ifdef DEBUG_PARSER
 					fvwm_debug(__func__,
-						   "PARSE: Title \"%s\"\n",
-						   b->title);
+					    "PARSE: Title \"%s\"\n", b->title);
 #endif
 					b->flags.b_Title = 1;
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing title argument\n",
-						   MyName);
-					if (t)
-					{
+					    "%s: Missing title argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
 				}
 				break;
 
-			/* ------------------ icon --------------- */
+				/* ------------------ icon --------------- */
 
 			case 4: /* Icon */
 				t = seekright(&s);
-				if (t && *t && (t[0] != '-' || t[1] != 0))
-				{
-					if (b->flags.b_Swallow)
-					{
+				if (t && *t && (t[0] != '-' || t[1] != 0)) {
+					if (b->flags.b_Swallow) {
 						fvwm_debug(__func__,
-							   "%s: a button can not "
-							   "have an icon and a "
-							   "swallowed window at "
-							   "the same time. "
-							   "Ignoring icon\n",
-							   MyName);
-					}
-					else
-					{
-						if (b->icon_file)
-						{
+						    "%s: a button can not "
+						    "have an icon and a "
+						    "swallowed window at "
+						    "the same time. "
+						    "Ignoring icon\n",
+						    MyName);
+					} else {
+						if (b->icon_file) {
 							free(b->icon_file);
 						}
-						b->icon_file = t;
+						b->icon_file	= t;
 						b->flags.b_Icon = 1;
 					}
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing Icon argument\n",
-						   MyName);
-					if (t)
-					{
+					    "%s: Missing Icon argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
 				}
 				break;
 
-			/* ----------------- frame --------------- */
+				/* ----------------- frame --------------- */
 
 			case 5: /* Frame */
 				i = strtol(s, &t, 10);
-				if (t > s)
-				{
+				if (t > s) {
 					b->flags.b_Frame = 1;
-					b->framew = i;
-					s = t;
-				}
-				else
-				{
+					b->framew	 = i;
+					s		 = t;
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Illegal frame argument\n",
-						   MyName);
+					    "%s: Illegal frame argument\n",
+					    MyName);
 				}
 				break;
 
-			/* ---------------- padding -------------- */
+				/* ---------------- padding -------------- */
 
 			case 6: /* Padding */
-				i = strtol(s,&t,10);
-				if (t>s)
-				{
-					b->xpad = b->ypad = i;
+				i = strtol(s, &t, 10);
+				if (t > s) {
+					b->xpad = b->ypad  = i;
 					b->flags.b_Padding = 1;
-					s = t;
-					i = strtol(s, &t, 10);
-					if (t > s)
-					{
+					s		   = t;
+					i		   = strtol(s, &t, 10);
+					if (t > s) {
 						b->ypad = i;
-						s = t;
+						s	= t;
 					}
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Illegal padding "
-						   "argument\n", MyName);
+					    "%s: Illegal padding "
+					    "argument\n",
+					    MyName);
 				}
 				break;
 
-			/* ---------------- swallow -------------- */
+				/* ---------------- swallow -------------- */
 
 			case 7: /* Swallow */
 				is_swallow = True;
@@ -1139,105 +966,91 @@ static void ParseButton(button_info **uberb, char *s)
 
 			case 8: /* Panel */
 				s = trimleft(s);
-				if (is_swallow)
-				{
-					b->swallow = 0;
+				if (is_swallow) {
+					b->swallow	= 0;
 					b->swallow_mask = 0;
-				}
-				else
-				{
+				} else {
 					/* set defaults */
-					b->swallow = b_Respawn;
-					b->swallow_mask = b_Respawn;
+					b->swallow	   = b_Respawn;
+					b->swallow_mask	   = b_Respawn;
 					b->slide_direction = SLIDE_UP;
-					b->slide_position = SLIDE_POSITION_CENTER;
-					b->slide_context = SLIDE_CONTEXT_PB;
-					b->relative_x = 0;
-					b->relative_y = 0;
-					b->slide_steps = 12;
+					b->slide_position =
+					    SLIDE_POSITION_CENTER;
+					b->slide_context  = SLIDE_CONTEXT_PB;
+					b->relative_x	  = 0;
+					b->relative_y	  = 0;
+					b->slide_steps	  = 12;
 					b->slide_delay_ms = 5;
 				}
-				if (*s == '(' && s++)
-				{
-					if (is_swallow)
-					{
-						ParseSwallow(
-							&s, &b->swallow,
-							&b->swallow_mask, b);
-					}
-					else
-					{
-						ParsePanel(
-							&s, &b->swallow,
-							&b->swallow_mask,
-							&b->slide_direction,
-							&b->slide_steps,
-							&b->slide_delay_ms,
-							&b->panel_flags,
-							&b->indicator_size,
-							&b->relative_x,
-							&b->relative_y,
-							&b->slide_position,
-							&b->slide_context,
-							&b->indicator_sunkraise,
-							&b->indicator_in_out);
+				if (*s == '(' && s++) {
+					if (is_swallow) {
+						ParseSwallow(&s, &b->swallow,
+						    &b->swallow_mask, b);
+					} else {
+						ParsePanel(&s, &b->swallow,
+						    &b->swallow_mask,
+						    &b->slide_direction,
+						    &b->slide_steps,
+						    &b->slide_delay_ms,
+						    &b->panel_flags,
+						    &b->indicator_size,
+						    &b->relative_x,
+						    &b->relative_y,
+						    &b->slide_position,
+						    &b->slide_context,
+						    &b->indicator_sunkraise,
+						    &b->indicator_in_out);
 					}
 				}
 				t = seekright(&s);
 				o = seekright(&s);
-				if (t)
-				{
-					if (b->hangon)
-					{
+				if (t) {
+					if (b->hangon) {
 						free(b->hangon);
 					}
 					b->hangon = t;
-					if (is_swallow)
-					{
-						if (b->flags.b_Icon)
-						{
+					if (is_swallow) {
+						if (b->flags.b_Icon) {
 							fvwm_debug(__func__,
-								   "%s: a button can not "
-								   "have an icon and a "
-								   "swallowed window at "
-								   "the same time. "
-								   "Ignoring icon\n",
-								   MyName);
+							    "%s: a button can "
+							    "not "
+							    "have an icon and "
+							    "a "
+							    "swallowed window "
+							    "at "
+							    "the same time. "
+							    "Ignoring icon\n",
+							    MyName);
 							b->flags.b_Icon = 0;
 						}
 
 						b->flags.b_Swallow = 1;
-						b->flags.b_Hangon = 1;
-					}
-					else
-					{
-						b->flags.b_Panel = 1;
-						b->flags.b_Hangon = 1;
-						b->newflags.is_panel = 1;
+						b->flags.b_Hangon  = 1;
+					} else {
+						b->flags.b_Panel	 = 1;
+						b->flags.b_Hangon	 = 1;
+						b->newflags.is_panel	 = 1;
 						b->newflags.panel_mapped = 0;
 					}
 					b->swallow |= 1;
-					if (!(b->swallow & b_NoHints))
-					{
+					if (!(b->swallow & b_NoHints)) {
 						b->hints = fxmalloc(
-							sizeof(XSizeHints));
+						    sizeof(XSizeHints));
 					}
-					if (o)
-					{
+					if (o) {
 						char *p;
 
-						p = module_expand_action(
-							Dpy, screen, o, NULL,
-							UberButton->c->fore,
-							UberButton->c->back);
-						if (p)
-						{
-							if (!(buttonSwallow(b)&b_UseOld))
-							{
-								exec_swallow(p,b);
+						p = module_expand_action(Dpy,
+						    screen, o, NULL,
+						    UberButton->c->fore,
+						    UberButton->c->back);
+						if (p) {
+							if (!(buttonSwallow(b)
+								& b_UseOld)) {
+								exec_swallow(
+								    p, b);
 							}
-							if (b->spawn)
-							{
+							if (b->spawn) {
 								free(b->spawn);
 							}
 
@@ -1248,29 +1061,30 @@ static void ParseButton(button_info **uberb, char *s)
 							free(p);
 						}
 					}
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing swallow "
-						   "argument\n", MyName);
-					if (t)
-					{
+					    "%s: Missing swallow "
+					    "argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
-					if (o)
-					{
+					if (o) {
 						free(o);
 					}
 				}
-				/* check if it is a module by command line inspection if
-				 * this hints has not been given in the swallow option */
-				if (is_swallow && !(b->swallow_mask & b_FvwmModule))
-				{
-					if (b->spawn != NULL &&
-					    (strncasecmp(b->spawn, "module", 6) == 0 ||
-					     strncasecmp(b->spawn, "fvwm", 4) == 0))
-					{
+				/* check if it is a module by command line
+				 * inspection if this hints has not been given
+				 * in the swallow option */
+				if (is_swallow
+				    && !(b->swallow_mask & b_FvwmModule)) {
+					if (b->spawn != NULL
+					    && (strncasecmp(
+						    b->spawn, "module", 6)
+						    == 0
+						|| strncasecmp(
+						       b->spawn, "fvwm", 4)
+						       == 0)) {
 						b->swallow |= b_FvwmModule;
 					}
 				}
@@ -1284,7 +1098,7 @@ static void ParseButton(button_info **uberb, char *s)
 				b->flags.b_ActionOnPress = 1;
 				break;
 
-			/* ---------------- container ------------ */
+				/* ---------------- container ------------ */
 
 			case 11: /* Container */
 				/*
@@ -1298,10 +1112,9 @@ static void ParseButton(button_info **uberb, char *s)
 
 				MakeContainer(b);
 				*uberb = b;
-				s = trimleft(s);
-				if (*s == '(' && s++)
-				{
-					ParseContainer(&s,b);
+				s      = trimleft(s);
+				if (*s == '(' && s++) {
+					ParseContainer(&s, b);
 				}
 				break;
 
@@ -1309,20 +1122,19 @@ static void ParseButton(button_info **uberb, char *s)
 				*uberb = ub->parent;
 				ub->c->buttons[--(ub->c->num_buttons)] = NULL;
 				free(b);
-				if (!ub->parent)
-				{
+				if (!ub->parent) {
 					fvwm_debug(__func__,
-						   "%s: Unmatched END in config file\n",
-						   MyName);
+					    "%s: Unmatched END in config "
+					    "file\n",
+					    MyName);
 					exit(1);
 				}
-				if (ub->parent->c->flags.b_Colorset ||
-				    ub->parent->c->flags.b_ColorsetParent)
-				{
+				if (ub->parent->c->flags.b_Colorset
+				    || ub->parent->c->flags.b_ColorsetParent) {
 					ub->c->flags.b_ColorsetParent = 1;
 				}
-				if (ub->parent->c->flags.b_IconBack || ub->parent->c->flags.b_IconParent)
-				{
+				if (ub->parent->c->flags.b_IconBack
+				    || ub->parent->c->flags.b_IconParent) {
 					ub->c->flags.b_IconParent = 1;
 				}
 				return;
@@ -1335,74 +1147,65 @@ static void ParseButton(button_info **uberb, char *s)
 			case 14: /* Size */
 				i = strtol(s, &t, 10);
 				j = strtol(t, &o, 10);
-				if (t > s && o > t)
-				{
-					b->minx = i;
-					b->miny = j;
+				if (t > s && o > t) {
+					b->minx		= i;
+					b->miny		= j;
 					b->flags.b_Size = 1;
-					s = o;
-				}
-				else
-				{
+					s		= o;
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Illegal size arguments\n",
-						   MyName);
+					    "%s: Illegal size arguments\n",
+					    MyName);
 				}
 				break;
 
 			case 15: /* Left */
-				b->flags.b_Left = 1;
+				b->flags.b_Left	 = 1;
 				b->flags.b_Right = 0;
 				break;
 
 			case 16: /* Right */
 				b->flags.b_Right = 1;
-				b->flags.b_Left = 0;
+				b->flags.b_Left	 = 0;
 				break;
 
 			case 17: /* Center */
 				b->flags.b_Right = 0;
-				b->flags.b_Left = 0;
+				b->flags.b_Left	 = 0;
 				break;
 
 			case 18: /* Colorset */
 				i = strtol(s, &t, 10);
-				if (t > s)
-				{
-					b->colorset = i;
+				if (t > s) {
+					b->colorset	    = i;
 					b->flags.b_Colorset = 1;
-					s = t;
+					s		    = t;
 					AllocColorset(i);
-				}
-				else
-				{
+				} else {
 					b->flags.b_Colorset = 0;
 				}
 				break;
 
-			/* ----------------- action -------------- */
+				/* ----------------- action -------------- */
 
 			case 19: /* Action */
 				s = trimleft(s);
 				i = 0;
-				if (*s == '(')
-				{
+				if (*s == '(') {
 					s++;
-					if (strncasecmp(s, "mouse", 5) != 0)
-					{
+					if (strncasecmp(s, "mouse", 5) != 0) {
 						fvwm_debug(__func__,
-							   "%s: Couldn't parse "
-							   "action\n", MyName);
+						    "%s: Couldn't parse "
+						    "action\n",
+						    MyName);
 					}
 					s += 5;
 					i = strtol(s, &t, 10);
 					s = t;
-					while (*s && *s != ')')
-					{
+					while (*s && *s != ')') {
 						s++;
 					}
-					if (*s == ')')
-					{
+					if (*s == ')') {
 						s++;
 					}
 				}
@@ -1410,107 +1213,92 @@ static void ParseButton(button_info **uberb, char *s)
 					char *r;
 					char *u = s;
 
-					s = GetQuotedString(s, &t, ",)", NULL, "(", ")");
+					s = GetQuotedString(
+					    s, &t, ",)", NULL, "(", ")");
 					r = s;
-					if (t && r > u + 1)
-					{
-						/* remove unquoted trailing spaces */
+					if (t && r > u + 1) {
+						/* remove unquoted trailing
+						 * spaces */
 						r -= 2;
-						while (r >= u && isspace(*r))
-						{
+						while (r >= u && isspace(*r)) {
 							r--;
 						}
 						r++;
-						if (isspace(*r))
-						{
-							t[strlen(t) - (s - r - 1)] = 0;
+						if (isspace(*r)) {
+							t[strlen(t)
+							    - (s - r - 1)] = 0;
 						}
 					}
 				}
-				if (t)
-				{
-					AddButtonAction(b,i,t);
+				if (t) {
+					AddButtonAction(b, i, t);
 					free(t);
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing action argument\n",
-						   MyName);
+					    "%s: Missing action argument\n",
+					    MyName);
 				}
 				break;
 
 			case 20: /* Id */
 				s = trimleft(s);
-				s = DoGetNextToken(s, &t, NULL, ",)", &terminator);
+				s = DoGetNextToken(
+				    s, &t, NULL, ",)", &terminator);
 
 				/* it should include the delimiter */
-				if (s && terminator == ')')
-				{
+				if (s && terminator == ')') {
 					s--;
 				}
 
-				if (t)
-				{
-					if (isalpha(t[0]))
-					{
-						/* should check for duplicate ids first... */
+				if (t) {
+					if (isalpha(t[0])) {
+						/* should check for duplicate
+						 * ids first... */
 						b->flags.b_Id = 1;
-						if (b->id)
-						{
+						if (b->id) {
 							free(b->id);
 						}
 						CopyString(&b->id, t);
-					}
-			        	else
-					{
+					} else {
 						fvwm_debug(__func__,
-							   "%s: Incorrect id '%s' "
-							   "ignored\n",
-							   MyName, t);
+						    "%s: Incorrect id '%s' "
+						    "ignored\n",
+						    MyName, t);
 					}
 					free(t);
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing id argument\n",
-						   MyName);
+					    "%s: Missing id argument\n",
+					    MyName);
 				}
 				break;
 
 			/* ------------------ ActiveIcon --------------- */
 			case 21: /* ActiveIcon */
 				t = seekright(&s);
-				if (t && *t && (t[0] != '-' || t[1] != 0))
-				{
-					if (b->flags.b_Swallow)
-					{
+				if (t && *t && (t[0] != '-' || t[1] != 0)) {
+					if (b->flags.b_Swallow) {
 						fvwm_debug(__func__,
-							   "%s: a button can not "
-							   "have a ActiveIcon and "
-							   "a swallowed window at "
-							   "the same time. "
-							   "Ignoring ActiveIcon.\n",
-							   MyName);
-					}
-					else
-					{
-						if (b->active_icon_file)
-						{
-							free(b->active_icon_file);
+						    "%s: a button can not "
+						    "have a ActiveIcon and "
+						    "a swallowed window at "
+						    "the same time. "
+						    "Ignoring ActiveIcon.\n",
+						    MyName);
+					} else {
+						if (b->active_icon_file) {
+							free(
+							    b->active_icon_file);
 						}
-						b->active_icon_file = t;
+						b->active_icon_file   = t;
 						b->flags.b_ActiveIcon = 1;
 					}
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing ActiveIcon "
-						   "argument\n", MyName);
-					if (t)
-					{
+					    "%s: Missing ActiveIcon "
+					    "argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
 				}
@@ -1519,35 +1307,30 @@ static void ParseButton(button_info **uberb, char *s)
 			/* --------------- ActiveTitle --------------- */
 			case 22: /* ActiveTitle */
 				s = trimleft(s);
-				if (*s == '(')
-				{
+				if (*s == '(') {
 					fvwm_debug(__func__,
-						   "%s: justification not allowed "
-						   "for ActiveTitle.\n",
-						   MyName);
+					    "%s: justification not allowed "
+					    "for ActiveTitle.\n",
+					    MyName);
 				}
 				t = seekright(&s);
-				if (t && *t && (t[0] != '-' || t[1] != 0))
-				{
-					if (b->activeTitle)
-					{
+				if (t && *t && (t[0] != '-' || t[1] != 0)) {
+					if (b->activeTitle) {
 						free(b->activeTitle);
 					}
 					b->activeTitle = t;
 #ifdef DEBUG_PARSER
 					fvwm_debug(__func__,
-						   "PARSE: ActiveTitle \"%s\"\n",
-						   b->activeTitle);
+					    "PARSE: ActiveTitle \"%s\"\n",
+					    b->activeTitle);
 #endif
 					b->flags.b_ActiveTitle = 1;
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing ActiveTitle "
-						   "argument\n", MyName);
-					if (t)
-					{
+					    "%s: Missing ActiveTitle "
+					    "argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
 				}
@@ -1556,35 +1339,29 @@ static void ParseButton(button_info **uberb, char *s)
 			/* --------------- PressIcon --------------- */
 			case 23: /* PressIcon */
 				t = seekright(&s);
-				if (t && *t && (t[0] != '-' || t[1] != 0))
-				{
-					if (b->flags.b_Swallow)
-					{
+				if (t && *t && (t[0] != '-' || t[1] != 0)) {
+					if (b->flags.b_Swallow) {
 						fvwm_debug(__func__,
-							   "%s: a button can not "
-							   "have a PressIcon and "
-							   "a swallowed window at "
-							   "the same time. "
-							   "Ignoring PressIcon.\n",
-							   MyName);
-					}
-					else
-					{
-						if (b->press_icon_file)
-						{
-							free(b->press_icon_file);
+						    "%s: a button can not "
+						    "have a PressIcon and "
+						    "a swallowed window at "
+						    "the same time. "
+						    "Ignoring PressIcon.\n",
+						    MyName);
+					} else {
+						if (b->press_icon_file) {
+							free(
+							    b->press_icon_file);
 						}
-						b->press_icon_file = t;
+						b->press_icon_file   = t;
 						b->flags.b_PressIcon = 1;
 					}
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing PressIcon "
-						   "argument\n", MyName);
-					if (t)
-					{
+					    "%s: Missing PressIcon "
+					    "argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
 				}
@@ -1593,35 +1370,30 @@ static void ParseButton(button_info **uberb, char *s)
 			/* --------------- PressTitle --------------- */
 			case 24: /* PressTitle */
 				s = trimleft(s);
-				if (*s == '(')
-				{
+				if (*s == '(') {
 					fvwm_debug(__func__,
-						   "%s: justification not allowed "
-						   "for PressTitle.\n",
-						   MyName);
+					    "%s: justification not allowed "
+					    "for PressTitle.\n",
+					    MyName);
 				}
 				t = seekright(&s);
-				if (t && *t && (t[0] != '-' || t[1] != 0))
-				{
-					if (b->pressTitle)
-					{
+				if (t && *t && (t[0] != '-' || t[1] != 0)) {
+					if (b->pressTitle) {
 						free(b->pressTitle);
 					}
 					b->pressTitle = t;
 #ifdef DEBUG_PARSER
 					fvwm_debug(__func__,
-						   "PARSE: PressTitle \"%s\"\n",
-						   b->pressTitle);
+					    "PARSE: PressTitle \"%s\"\n",
+					    b->pressTitle);
 #endif
 					b->flags.b_PressTitle = 1;
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "%s: Missing PressTitle "
-						   "argument\n", MyName);
-					if (t)
-					{
+					    "%s: Missing PressTitle "
+					    "argument\n",
+					    MyName);
+					if (t) {
 						free(t);
 					}
 				}
@@ -1630,15 +1402,12 @@ static void ParseButton(button_info **uberb, char *s)
 			/* --------------- --------------- */
 			case 25: /* ActiveColorset */
 				i = strtol(s, &t, 10);
-				if (t > s)
-				{
-					b->activeColorset = i;
+				if (t > s) {
+					b->activeColorset	  = i;
 					b->flags.b_ActiveColorset = 1;
-					s = t;
+					s			  = t;
 					AllocColorset(i);
-				}
-				else
-				{
+				} else {
 					b->flags.b_ActiveColorset = 0;
 				}
 				break;
@@ -1646,15 +1415,12 @@ static void ParseButton(button_info **uberb, char *s)
 			/* --------------- --------------- */
 			case 26: /* PressColorset */
 				i = strtol(s, &t, 10);
-				if (t > s)
-				{
-					b->pressColorset = i;
+				if (t > s) {
+					b->pressColorset	 = i;
 					b->flags.b_PressColorset = 1;
-					s = t;
+					s			 = t;
 					AllocColorset(i);
-				}
-				else
-				{
+				} else {
 					b->flags.b_PressColorset = 0;
 				}
 				break;
@@ -1666,66 +1432,50 @@ static void ParseButton(button_info **uberb, char *s)
 			default:
 				t = seekright(&s);
 				fvwm_debug(__func__,
-					   "%s: Illegal button option \"%s\"\n",
-					   MyName, (t) ? t : "");
-				if (t)
-				{
+				    "%s: Illegal button option \"%s\"\n",
+				    MyName, (t) ? t : "");
+				if (t) {
 					free(t);
 				}
 				break;
 			} /* end switch */
 			s = trimleft(s);
 		}
-		if (s && *s)
-		{
+		if (s && *s) {
 			s++;
 			s = trimleft(s);
 		}
 	}
 
 	/* get title and iconname */
-	if (!b->flags.b_Title)
-	{
+	if (!b->flags.b_Title) {
 		b->title = seekright(&s);
-		if (b->title && *b->title &&
-			((b->title)[0] != '-' || (b->title)[1] != 0))
-		{
+		if (b->title && *b->title
+		    && ((b->title)[0] != '-' || (b->title)[1] != 0)) {
 			b->flags.b_Title = 1;
-		}
-		else if (b->title)
-		{
+		} else if (b->title) {
 			free(b->title);
 		}
-	}
-	else
-	{
+	} else {
 		char *temp;
 		temp = seekright(&s);
-		if (temp)
-		{
+		if (temp) {
 			free(temp);
 		}
 	}
 
-	if (!b->flags.b_Icon)
-	{
+	if (!b->flags.b_Icon) {
 		b->icon_file = seekright(&s);
-		if (b->icon_file && b->icon_file &&
-			 ((b->icon_file)[0] != '-'||(b->icon_file)[1] != 0))
-		{
+		if (b->icon_file && b->icon_file
+		    && ((b->icon_file)[0] != '-' || (b->icon_file)[1] != 0)) {
 			b->flags.b_Icon = 1;
-		}
-		else if (b->icon_file)
-		{
+		} else if (b->icon_file) {
 			free(b->icon_file);
 		}
-	}
-	else
-	{
+	} else {
 		char *temp;
 		temp = seekright(&s);
-		if (temp)
-		{
+		if (temp) {
 			free(temp);
 		}
 	}
@@ -1733,59 +1483,47 @@ static void ParseButton(button_info **uberb, char *s)
 	s = trimleft(s);
 
 	/* Swallow hangon command */
-	if (strncasecmp(s, "swallow", 7) == 0 || strncasecmp(s, "panel", 7) == 0)
-	{
-		if (b->flags.b_Swallow || b->flags.b_Panel)
-		{
+	if (strncasecmp(s, "swallow", 7) == 0
+	    || strncasecmp(s, "panel", 7) == 0) {
+		if (b->flags.b_Swallow || b->flags.b_Panel) {
 			fvwm_debug(__func__,
-				   "%s: Illegal with both old and new swallow!\n",
-				   MyName);
+			    "%s: Illegal with both old and new swallow!\n",
+			    MyName);
 			exit(1);
 		}
 		s += 7;
 		/*
 		 * Swallow old 'swallowmodule' command
 		 */
-		if (strncasecmp(s, "module", 6) == 0)
-		{
+		if (strncasecmp(s, "module", 6) == 0) {
 			s += 6;
 		}
-		if (b->hangon)
-		{
+		if (b->hangon) {
 			free(b->hangon);
 		}
 		b->hangon = seekright(&s);
-		if (!b->hangon)
-		{
+		if (!b->hangon) {
 			b->hangon = fxstrdup("");
 		}
-		if (tolower(*s) == 's')
-		{
+		if (tolower(*s) == 's') {
 			b->flags.b_Swallow = 1;
-			b->flags.b_Hangon = 1;
-		}
-		else
-		{
-			b->flags.b_Panel = 1;
+			b->flags.b_Hangon  = 1;
+		} else {
+			b->flags.b_Panel  = 1;
 			b->flags.b_Hangon = 1;
 		}
 		b->swallow |= 1;
 		s = trimleft(s);
-		if (!(b->swallow & b_NoHints))
-		{
+		if (!(b->swallow & b_NoHints)) {
 			b->hints = fxmalloc(sizeof(XSizeHints));
 		}
-		if (*s)
-		{
-			if (!(buttonSwallow(b) & b_UseOld))
-			{
+		if (*s) {
+			if (!(buttonSwallow(b) & b_UseOld)) {
 				SendText(fd, s, 0);
 			}
 			b->spawn = fxstrdup(s);
 		}
-	}
-	else if (*s)
-	{
+	} else if (*s) {
 		AddButtonAction(b, 0, s);
 	}
 	return;
@@ -1794,129 +1532,98 @@ static void ParseButton(button_info **uberb, char *s)
 /**
 *** ParseConfigLine
 **/
-static void ParseConfigLine(button_info **ubb, char *s)
+static void
+ParseConfigLine(button_info **ubb, char *s)
 {
-	button_info *ub = *ubb;
-	char *opts[] =
-	{
-		"geometry",
-		"buttongeometry",
-		"font",
-		"padding",
-		"columns",
-		"rows",
-		"back",
-		"fore",
-		"frame",
-		"file",
-		"pixmap",
-		"boxsize",
-		"colorset",
-		"activecolorset",
-		"presscolorset",
-		"windowname",
-		NULL
-	};
-	int i, j, k;
+	button_info *ub	    = *ubb;
+	char *	     opts[] = {"geometry", "buttongeometry", "font", "padding",
+		   "columns", "rows", "back", "fore", "frame", "file", "pixmap",
+		   "boxsize", "colorset", "activecolorset", "presscolorset",
+		   "windowname", NULL};
+	int	     i, j, k;
 
-	switch (GetTokenIndex(s, opts, -1, &s))
-	{
-	case 0:/* Geometry */
+	switch (GetTokenIndex(s, opts, -1, &s)) {
+	case 0: /* Geometry */
 	{
 		char geom[64];
 
 		i = sscanf(s, "%63s", geom);
-		if (i == 1)
-		{
+		if (i == 1) {
 			parse_window_geometry(geom, 0);
 		}
 		break;
 	}
-	case 1:/* ButtonGeometry */
+	case 1: /* ButtonGeometry */
 	{
 		char geom[64];
 
 		i = sscanf(s, "%63s", geom);
-		if (i == 1)
-		{
+		if (i == 1) {
 			parse_window_geometry(geom, 1);
 		}
 		break;
 	}
-	case 2:/* Font */
-		if (ub->c->font_string)
-		{
+	case 2: /* Font */
+		if (ub->c->font_string) {
 			free(ub->c->font_string);
 		}
 		CopyStringWithQuotes(&ub->c->font_string, s);
 		break;
-	case 3:/* Padding */
+	case 3: /* Padding */
 		i = sscanf(s, "%d %d", &j, &k);
-		if (i > 0)
-		{
+		if (i > 0) {
 			ub->c->xpad = ub->c->ypad = j;
 		}
-		if (i > 1)
-		{
+		if (i > 1) {
 			ub->c->ypad = k;
 		}
 		break;
-	case 4:/* Columns */
+	case 4: /* Columns */
 		i = sscanf(s, "%d", &j);
-		if (i > 0)
-		{
+		if (i > 0) {
 			ub->c->num_columns = j;
 		}
 		break;
-	case 5:/* Rows */
+	case 5: /* Rows */
 		i = sscanf(s, "%d", &j);
-		if (i > 0)
-		{
+		if (i > 0) {
 			ub->c->num_rows = j;
 		}
 		break;
-	case 6:/* Back */
-		if (ub->c->back)
-		{
+	case 6: /* Back */
+		if (ub->c->back) {
 			free(ub->c->back);
 		}
 		CopyString(&(ub->c->back), s);
 		break;
-	case 7:/* Fore */
-		if (ub->c->fore)
-		{
+	case 7: /* Fore */
+		if (ub->c->fore) {
 			free(ub->c->fore);
 		}
 		CopyString(&(ub->c->fore), s);
 		break;
-	case 8:/* Frame */
-		i = sscanf(s,"%d",&j);
-		if (i > 0)
-		{
+	case 8: /* Frame */
+		i = sscanf(s, "%d", &j);
+		if (i > 0) {
 			ub->c->framew = j;
 		}
 		break;
-	case 9:/* File */
+	case 9: /* File */
 		s = trimleft(s);
-		if (config_file)
-		{
+		if (config_file) {
 			free(config_file);
 		}
 		config_file = seekright(&s);
 		break;
-	case 10:/* Pixmap */
+	case 10: /* Pixmap */
 		s = trimleft(s);
-		if (strncasecmp(s, "none", 4) == 0)
-		{
+		if (strncasecmp(s, "none", 4) == 0) {
 			ub->c->flags.b_TransBack = 1;
-		}
-		else
-		{
-			if (ub->c->back_file)
-			{
+		} else {
+			if (ub->c->back_file) {
 				free(ub->c->back_file);
 			}
-			CopyString(&(ub->c->back_file),s);
+			CopyString(&(ub->c->back_file), s);
 		}
 		ub->c->flags.b_IconBack = 1;
 		break;
@@ -1925,40 +1632,31 @@ static void ParseConfigLine(button_info **ubb, char *s)
 		break;
 	case 12: /* Colorset */
 		i = sscanf(s, "%d", &j);
-		if (i > 0)
-		{
-			ub->c->colorset = j;
+		if (i > 0) {
+			ub->c->colorset		= j;
 			ub->c->flags.b_Colorset = 1;
 			AllocColorset(j);
-		}
-		else
-		{
+		} else {
 			ub->c->flags.b_Colorset = 0;
 		}
 		break;
 	case 13: /* ActiveColorset */
 		i = sscanf(s, "%d", &j);
-		if (i > 0)
-		{
-			ub->c->activeColorset = j;
+		if (i > 0) {
+			ub->c->activeColorset	      = j;
 			ub->c->flags.b_ActiveColorset = 1;
 			AllocColorset(j);
-		}
-		else
-		{
+		} else {
 			ub->c->flags.b_ActiveColorset = 0;
 		}
 		break;
 	case 14: /* PressColorset */
 		i = sscanf(s, "%d", &j);
-		if (i > 0)
-		{
-			ub->c->pressColorset = j;
+		if (i > 0) {
+			ub->c->pressColorset	     = j;
 			ub->c->flags.b_PressColorset = 1;
 			AllocColorset(j);
-		}
-		else
-		{
+		} else {
 			ub->c->flags.b_PressColorset = 0;
 		}
 		break;
@@ -1966,12 +1664,9 @@ static void ParseConfigLine(button_info **ubb, char *s)
 	case 15: /* WindowName */
 	{
 		i = sscanf(s, "%126[^\n]", windowname);
-		if (i > 0)
-		{
+		if (i > 0) {
 			ub->c->flags.b_WindowName = 1;
-		}
-		else
-		{
+		} else {
 			ub->c->flags.b_WindowName = 0;
 		}
 #ifdef DEBUG_PARSER
@@ -1991,25 +1686,22 @@ static void ParseConfigLine(button_info **ubb, char *s)
 *** ParseConfigFile()
 *** Parses optional separate configuration file for FvwmButtons
 **/
-static void ParseConfigFile(button_info *ub)
+static void
+ParseConfigFile(button_info *ub)
 {
-	char s[1024], *t;
+	char  s[1024], *t;
 	FILE *f = fopen(config_file, "r");
-	int l;
-	if (!f)
-	{
-		fvwm_debug(__func__,
-			   "%s: Couldn't open config file %s\n", MyName,
-			   config_file);
+	int   l;
+	if (!f) {
+		fvwm_debug(__func__, "%s: Couldn't open config file %s\n",
+		    MyName, config_file);
 		return;
 	}
 
-	while (fgets(s, 1023, f))
-	{
+	while (fgets(s, 1023, f)) {
 		/* Allow for line continuation: */
-		while ((l = strlen(s)) < sizeof(s)
-			&& l >= 2 && s[l - 1] == '\n' && s[l - 2] == '\\')
-		{
+		while ((l = strlen(s)) < sizeof(s) && l >= 2 && s[l - 1] == '\n'
+		       && s[l - 2] == '\\') {
 			char *p;
 
 			p = fgets(s + l - 2, sizeof(s) - l, f);
@@ -2018,10 +1710,8 @@ static void ParseConfigFile(button_info *ub)
 
 		/* And comments: */
 		t = s;
-		while (*t)
-		{
-			if (*t == '#' && (t == s || *(t - 1) != '\\'))
-			{
+		while (*t) {
+			if (*t == '#' && (t == s || *(t - 1) != '\\')) {
 				*t = 0;
 				break;
 			}
@@ -2029,8 +1719,7 @@ static void ParseConfigFile(button_info *ub)
 		}
 		t = s;
 		t = trimleft(t);
-		if (*t)
-		{
+		if (*t) {
 			ParseConfigLine(&ub, t);
 		}
 	}
@@ -2038,55 +1727,45 @@ static void ParseConfigFile(button_info *ub)
 	fclose(f);
 }
 
-void parse_window_geometry(char *geom, int is_button_geometry)
+void
+parse_window_geometry(char *geom, int is_button_geometry)
 {
-	int flags;
-	int g_x;
-	int g_y;
+	int	     flags;
+	int	     g_x;
+	int	     g_y;
 	unsigned int width;
 	unsigned int height;
 
-	flags = FScreenParseGeometry(geom, &g_x, &g_y, &width, &height);
+	flags	      = FScreenParseGeometry(geom, &g_x, &g_y, &width, &height);
 	UberButton->w = 0;
 	UberButton->h = 0;
 	UberButton->x = 0;
 	UberButton->y = 0;
-	if (is_button_geometry)
-	{
-		if (flags&WidthValue)
-		{
+	if (is_button_geometry) {
+		if (flags & WidthValue) {
 			button_width = width;
 		}
-		if (flags&HeightValue)
-		{
+		if (flags & HeightValue) {
 			button_height = height;
 		}
-	}
-	else
-	{
-		if (flags&WidthValue)
-		{
+	} else {
+		if (flags & WidthValue) {
 			w = width;
 		}
-		if (flags&HeightValue)
-		{
+		if (flags & HeightValue) {
 			h = height;
 		}
 	}
-	if (flags&XValue)
-	{
+	if (flags & XValue) {
 		UberButton->x = g_x;
 	}
-	if (flags&YValue)
-	{
+	if (flags & YValue) {
 		UberButton->y = g_y;
 	}
-	if (flags&XNegative)
-	{
+	if (flags & XNegative) {
 		UberButton->w = 1;
 	}
-	if (flags&YNegative)
-	{
+	if (flags & YNegative) {
 		UberButton->h = 1;
 	}
 	has_button_geometry = is_button_geometry;
@@ -2097,16 +1776,12 @@ void parse_window_geometry(char *geom, int is_button_geometry)
 /**
 *** ParseOptions()
 **/
-void ParseConfiguration(button_info *ub)
+void
+ParseConfiguration(button_info *ub)
 {
 	char *s;
-	char *items[] =
-	{
-		NULL, /* filled out below */
-		"imagepath",
-		"colorset",
-		NULL
-	};
+	char *items[] = {NULL, /* filled out below */
+	    "imagepath", "colorset", NULL};
 
 	items[0] = fxmalloc(strlen(MyName) + 2);
 	sprintf(items[0], "*%s", MyName);
@@ -2114,22 +1789,18 @@ void ParseConfiguration(button_info *ub)
 	/* send config lines with MyName */
 	InitGetConfigLine(fd, items[0]);
 	GetConfigLine(fd, &s);
-	while (s && s[0])
-	{
+	while (s && s[0]) {
 		char *rest;
-		switch (GetTokenIndex(s,items,-1,&rest))
-		{
+		switch (GetTokenIndex(s, items, -1, &rest)) {
 		case -1:
 			break;
 		case 0:
-			if (rest && rest[0] && !config_file)
-			{
+			if (rest && rest[0] && !config_file) {
 				ParseConfigLine(&ub, rest);
 			}
 			break;
 		case 1:
-			if (imagePath)
-			{
+			if (imagePath) {
 				free(imagePath);
 			}
 			CopyString(&imagePath, rest);
@@ -2139,11 +1810,10 @@ void ParseConfiguration(button_info *ub)
 			LoadColorset(rest);
 			break;
 		}
-		GetConfigLine(fd,&s);
+		GetConfigLine(fd, &s);
 	}
 
-	if (config_file)
-	{
+	if (config_file) {
 		ParseConfigFile(ub);
 	}
 

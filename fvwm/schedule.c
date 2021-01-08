@@ -17,59 +17,56 @@
 
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
-#include "libs/fqueue.h"
-#include "libs/charmap.h"
-#include "libs/wcontext.h"
-#include "libs/Parse.h"
-#include "libs/FEvent.h"
-#include "fvwm.h"
-#include "externs.h"
-#include "colorset.h"
 #include "bindings.h"
-#include "misc.h"
-#include "cursor.h"
-#include "functions.h"
+#include "colorset.h"
 #include "commands.h"
+#include "cursor.h"
+#include "externs.h"
+#include "functions.h"
+#include "fvwm.h"
+#include "libs/FEvent.h"
+#include "libs/Parse.h"
+#include "libs/charmap.h"
+#include "libs/fqueue.h"
+#include "libs/fvwmlib.h"
+#include "libs/wcontext.h"
+#include "misc.h"
 #include "screen.h"
 
 typedef struct
 {
-	int id;
-	Time time_to_execute;
+	int    id;
+	Time   time_to_execute;
 	Window window;
-	char *command;
-	int period; /* in milliseconds */
+	char * command;
+	int    period; /* in milliseconds */
 } sq_object_type;
 
-static int last_schedule_id = 0;
-static int next_schedule_id = -1;
-static fqueue sq = FQUEUE_INIT;
+static int    last_schedule_id = 0;
+static int    next_schedule_id = -1;
+static fqueue sq	       = FQUEUE_INIT;
 
-static int cmp_times(Time t1, Time t2)
+static int
+cmp_times(Time t1, Time t2)
 {
 	unsigned long ul1 = (unsigned long)t1;
 	unsigned long ul2 = (unsigned long)t2;
 	unsigned long diff;
-	signed long udiff;
+	signed long   udiff;
 
-	diff = ul1 - ul2;
+	diff  = ul1 - ul2;
 	udiff = *(signed long *)&diff;
-	if (udiff > 0)
-	{
+	if (udiff > 0) {
 		return 1;
-	}
-	else if (udiff < 0)
-	{
+	} else if (udiff < 0) {
 		return -1;
-	}
-	else
-	{
+	} else {
 		return 0;
 	}
 }
 
-static int cmp_object_time(void *object1, void *object2, void *args)
+static int
+cmp_object_time(void *object1, void *object2, void *args)
 {
 	sq_object_type *so1 = (sq_object_type *)object1;
 	sq_object_type *so2 = (sq_object_type *)object2;
@@ -77,19 +74,20 @@ static int cmp_object_time(void *object1, void *object2, void *args)
 	return cmp_times(so1->time_to_execute, so2->time_to_execute);
 }
 
-static int check_deschedule_obj_func(void *object, void *args)
+static int
+check_deschedule_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
 
 	return (obj->id == *(int *)args);
 }
 
-static void destroy_obj_func(void *object)
+static void
+destroy_obj_func(void *object)
 {
 	sq_object_type *obj = object;
 
-	if (obj->command != NULL)
-	{
+	if (obj->command != NULL) {
 		free(obj->command);
 	}
 	free(obj);
@@ -97,58 +95,49 @@ static void destroy_obj_func(void *object)
 	return;
 }
 
-static void deschedule(int *pid)
+static void
+deschedule(int *pid)
 {
 	int id;
 
-	if (FQUEUE_IS_EMPTY(&sq))
-	{
+	if (FQUEUE_IS_EMPTY(&sq)) {
 		return;
 	}
 	/* get the job group id to deschedule */
-	if (pid != NULL)
-	{
+	if (pid != NULL) {
 		id = *pid;
-	}
-	else
-	{
+	} else {
 		id = last_schedule_id;
 	}
 	/* deschedule matching jobs */
-	fqueue_remove_or_operate_all(
-		&sq, check_deschedule_obj_func, NULL, destroy_obj_func,
-		(void *)&id);
+	fqueue_remove_or_operate_all(&sq, check_deschedule_obj_func, NULL,
+	    destroy_obj_func, (void *)&id);
 
 	return;
 }
 
-static void schedule(
-	Window window, char *command, Time time_to_execute, int *pid,
-	int period)
+static void
+schedule(
+    Window window, char *command, Time time_to_execute, int *pid, int period)
 {
 	sq_object_type *new_obj;
 
-	if (command == NULL || *command == 0)
-	{
+	if (command == NULL || *command == 0) {
 		return;
 	}
 	/* create the new object */
-	new_obj = fxcalloc(1, sizeof(sq_object_type));
-	new_obj->window = window;
-	new_obj->command = fxstrdup(command);
+	new_obj			 = fxcalloc(1, sizeof(sq_object_type));
+	new_obj->window		 = window;
+	new_obj->command	 = fxstrdup(command);
 	new_obj->time_to_execute = time_to_execute;
 	new_obj->period = period; /* 0 if this is not a periodic command */
 	/* set the job group id */
-	if (pid != NULL)
-	{
+	if (pid != NULL) {
 		new_obj->id = *pid;
-	}
-	else
-	{
+	} else {
 		new_obj->id = next_schedule_id;
 		next_schedule_id--;
-		if (next_schedule_id >= 0)
-		{
+		if (next_schedule_id >= 0) {
 			/* wrapped around */
 			next_schedule_id = -1;
 		}
@@ -160,31 +149,31 @@ static void schedule(
 	return;
 }
 
-static int check_execute_obj_func(void *object, void *args)
+static int
+check_execute_obj_func(void *object, void *args)
 {
-	sq_object_type *obj = object;
-	Time *ptime = (Time *)args;
+	sq_object_type *obj   = object;
+	Time *		ptime = (Time *)args;
 
 	return (cmp_times(*ptime, obj->time_to_execute) >= 0);
 }
 
-static void execute_obj_func(void *object, void *args)
+static void
+execute_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
 
-	if (obj->command != NULL)
-	{
+	if (obj->command != NULL) {
 		/* execute the command */
-		const exec_context_t *exc;
-		exec_context_changes_t ecc;
+		const exec_context_t *	   exc;
+		exec_context_changes_t	   ecc;
 		exec_context_change_mask_t mask = ECC_TYPE | ECC_WCONTEXT;
 
-		ecc.type = EXCT_SCHEDULE;
+		ecc.type       = EXCT_SCHEDULE;
 		ecc.w.wcontext = C_ROOT;
 		if (XFindContext(
-			    dpy, obj->window, FvwmContext,
-			    (caddr_t *)&ecc.w.fw) != XCNOENT)
-		{
+			dpy, obj->window, FvwmContext, (caddr_t *)&ecc.w.fw)
+		    != XCNOENT) {
 			ecc.w.wcontext = C_WINDOW;
 			mask |= ECC_FW;
 		}
@@ -192,8 +181,7 @@ static void execute_obj_func(void *object, void *args)
 		execute_function(NULL, exc, obj->command, 0);
 		exc_destroy_context(exc);
 	}
-	if (obj->period > 0)
-	{
+	if (obj->period > 0) {
 		/* This is a periodic function, so reschedule it. */
 		sq_object_type *new_obj = fxmalloc(sizeof(sq_object_type));
 		memcpy(new_obj, obj, sizeof(sq_object_type));
@@ -208,88 +196,82 @@ static void execute_obj_func(void *object, void *args)
 }
 
 /* executes all scheduled commands that are due for execution */
-void squeue_execute(void)
+void
+squeue_execute(void)
 {
 	Time current_time;
 
-	if (FQUEUE_IS_EMPTY(&sq))
-	{
+	if (FQUEUE_IS_EMPTY(&sq)) {
 		return;
 	}
 	current_time = get_server_time();
-	fqueue_remove_or_operate_all(
-		&sq, check_execute_obj_func, execute_obj_func,
-		destroy_obj_func, &current_time);
+	fqueue_remove_or_operate_all(&sq, check_execute_obj_func,
+	    execute_obj_func, destroy_obj_func, &current_time);
 
 	return;
 }
 
 /* returns the time in milliseconds to wait before next queue command must be
  * executed or -1 if none is queued */
-int squeue_get_next_ms(void)
+int
+squeue_get_next_ms(void)
 {
-	int ms;
+	int		ms;
 	sq_object_type *obj;
 
-	if (fqueue_get_first(&sq, (void **)&obj) == 0)
-	{
+	if (fqueue_get_first(&sq, (void **)&obj) == 0) {
 		return -1;
 	}
-	if (cmp_times(fev_get_evtime(), obj->time_to_execute) >= 0)
-	{
+	if (cmp_times(fev_get_evtime(), obj->time_to_execute) >= 0) {
 		/* jobs pending to be executed immediately */
 		ms = 0;
-	}
-	else
-	{
+	} else {
 		/* execute jobs later */
-		ms =  obj->time_to_execute - fev_get_evtime();
+		ms = obj->time_to_execute - fev_get_evtime();
 	}
 
 	return ms;
 }
 
-int squeue_get_next_id(void)
+int
+squeue_get_next_id(void)
 {
 	return next_schedule_id;
 }
 
-int squeue_get_last_id(void)
+int
+squeue_get_last_id(void)
 {
 	return last_schedule_id;
 }
 
 void CMD_Schedule(F_CMD_ARGS)
 {
-	Window xw;
-	Time time;
-	Time current_time;
-	char *taction;
-	char *token;
-	char *next;
-	int ms;
-	int id;
-	int *pid;
-	int n;
-	FvwmWindow * const fw = exc->w.fw;
-	Bool is_periodic = False;
+	Window		  xw;
+	Time		  time;
+	Time		  current_time;
+	char *		  taction;
+	char *		  token;
+	char *		  next;
+	int		  ms;
+	int		  id;
+	int *		  pid;
+	int		  n;
+	FvwmWindow *const fw	      = exc->w.fw;
+	Bool		  is_periodic = False;
 
 	token = PeekToken(action, &next);
-	if (token && strcasecmp(token, "periodic") == 0)
-	{
+	if (token && strcasecmp(token, "periodic") == 0) {
 		is_periodic = True;
-		action = next;
+		action	    = next;
 	}
 	/* get the time to execute */
 	n = GetIntegerArguments(action, &action, &ms, 1);
-	if (n <= 0)
-	{
-		fvwm_debug(__func__,
-			   "Requires time to schedule as argument");
+	if (n <= 0) {
+		fvwm_debug(__func__, "Requires time to schedule as argument");
 		return;
 	}
-	if (ms < 0)
-	{
+	if (ms < 0) {
 		ms = 0;
 	}
 #if 0
@@ -303,22 +285,16 @@ void CMD_Schedule(F_CMD_ARGS)
 	time = current_time + (Time)ms;
 	/* get the job group id to schedule */
 	n = GetIntegerArgumentsAnyBase(action, &taction, &id, 1);
-	if (n >= 1)
-	{
-		pid = &id;
+	if (n >= 1) {
+		pid    = &id;
 		action = taction;
-	}
-	else
-	{
+	} else {
 		pid = NULL;
 	}
 	/* get the window to operate on */
-	if (fw != NULL)
-	{
+	if (fw != NULL) {
 		xw = FW_W(fw);
-	}
-	else
-	{
+	} else {
 		xw = None;
 	}
 	/* schedule the job */
@@ -329,19 +305,16 @@ void CMD_Schedule(F_CMD_ARGS)
 
 void CMD_Deschedule(F_CMD_ARGS)
 {
-	int id;
+	int  id;
 	int *pid;
-	int n;
+	int  n;
 
 	/* get the job group id to deschedule */
 	n = GetIntegerArgumentsAnyBase(action, &action, &id, 1);
-	if (n <= 0)
-	{
+	if (n <= 0) {
 		/* none, use default */
 		pid = NULL;
-	}
-	else
-	{
+	} else {
 		pid = &id;
 	}
 	/* deschedule matching jobs */

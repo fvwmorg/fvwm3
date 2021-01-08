@@ -19,7 +19,8 @@
 /*
  * Shape/Join a passed-in visual string
  */
-int shape_n_join(FriBidiChar *str_visual, int str_len);
+int
+shape_n_join(FriBidiChar *str_visual, int str_len);
 
 #else /* !HAVE_BIDI */
 

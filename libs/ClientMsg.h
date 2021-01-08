@@ -17,7 +17,8 @@
 
 #include "fvwm_x11.h"
 
-void send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
+void
+send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
 
 extern Atom _XA_WM_PROTOCOLS;
 

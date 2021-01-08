@@ -3,14 +3,14 @@
 
 #include "config.h"
 
+#include <X11/Intrinsic.h>
+#include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
-#include <X11/Xutil.h>
-#include <X11/Xresource.h>
-#include <X11/Xatom.h>
-#include <X11/cursorfont.h>
 #include <X11/Xproto.h>
-#include <X11/Intrinsic.h>
+#include <X11/Xresource.h>
+#include <X11/Xutil.h>
+#include <X11/cursorfont.h>
 
 #ifdef XPM
 #define XpmSupport 1
@@ -56,17 +56,17 @@ typedef Picture XRenderPicture;
 
 #ifdef HAVE_XSHM
 #define XShmSupport 1
+#include <X11/extensions/XShm.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <X11/extensions/XShm.h>
 #else
 #define XShmSupport 0
 #endif
 
 #ifdef SESSION
 #define SessionSupport 1
-#include <X11/SM/SMlib.h>
 #include <X11/ICE/ICEutil.h>
+#include <X11/SM/SMlib.h>
 #else
 #define SessionSupport 0
 #endif

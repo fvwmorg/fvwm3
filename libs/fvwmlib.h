@@ -10,7 +10,8 @@
 #include "safemalloc.h"
 
 /* Convenience function ti init all the graphics subsystems */
-void flib_init_graphics(Display *dpy);
+void
+flib_init_graphics(Display *dpy);
 
 /* Set up heap debugging library dmalloc.  */
 #ifdef HAVE_DMALLOC_H

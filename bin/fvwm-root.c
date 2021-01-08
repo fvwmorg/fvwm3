@@ -14,80 +14,77 @@
  */
 #include "config.h"
 
-#include <stdio.h>
-#include <signal.h>
-#include <X11/Xos.h>
-#include <X11/Xatom.h>
-#include "libs/fvwmlib.h"
-#include "libs/Picture.h"
-#include "libs/Graphics.h"
 #include "libs/Fsvg.h"
+#include "libs/Graphics.h"
+#include "libs/Picture.h"
+#include "libs/fvwmlib.h"
+#include <X11/Xatom.h>
+#include <X11/Xos.h>
+#include <signal.h>
+#include <stdio.h>
 
-int save_colors = 0;
+int	 save_colors = 0;
 Display *dpy;
-int screen;
-Window root;
-char *display_name = NULL;
-Pixmap rootImage = None;
-Bool NoDither = False;
-Bool Dither = False;
-Bool NoColorLimit = False;
-int opt_color_limit = -1;
-Bool use_our_color_limit = False;
+int	 screen;
+Window	 root;
+char *	 display_name	     = NULL;
+Pixmap	 rootImage	     = None;
+Bool	 NoDither	     = False;
+Bool	 Dither		     = False;
+Bool	 NoColorLimit	     = False;
+int	 opt_color_limit     = -1;
+Bool	 use_our_color_limit = False;
 
-void usage(int verbose)
+void
+usage(int verbose)
 {
 	FILE *output = verbose ? stdout : stderr;
-	fprintf(
-		output, "fvwm-root version %s with support for: XBM"
+	fprintf(output,
+	    "fvwm-root version %s with support for: XBM"
 #ifdef XPM
-		", XPM"
+	    ", XPM"
 #endif
 #ifdef HAVE_PNG
-		", PNG"
+	    ", PNG"
 #endif
 #ifdef HAVE_RSVG
-		", SVG"
+	    ", SVG"
 #endif
-		"\n", VERSION);
-	fprintf(output,
-		"\nUsage: fvwm-root [ options ] file\n");
-	if (verbose)
-	{
-		fprintf(output,
-			"Options:\n"
-			"\t--dither\n"
-			"\t--no-dither\n"
-			"\t--retain-pixmap\n"
-			"\t--no-retain-pixmap\n"
-			"\t--color-limit l\n"
-			"\t--no-color-limit\n"
-			"\t--dummy\n"
-			"\t--no-dummy\n"
-			"\t--help\n"
-			"\t--version\n");
+	    "\n",
+	    VERSION);
+	fprintf(output, "\nUsage: fvwm-root [ options ] file\n");
+	if (verbose) {
+		fprintf(output, "Options:\n"
+				"\t--dither\n"
+				"\t--no-dither\n"
+				"\t--retain-pixmap\n"
+				"\t--no-retain-pixmap\n"
+				"\t--color-limit l\n"
+				"\t--no-color-limit\n"
+				"\t--dummy\n"
+				"\t--no-dummy\n"
+				"\t--help\n"
+				"\t--version\n");
 	}
 }
 
-int SetRootWindow(char *tline)
+int
+SetRootWindow(char *tline)
 {
-	Pixmap shapeMask = None, temp_pix = None, alpha = None;
-	int w, h;
-	int depth;
-	int nalloc_pixels = 0;
-	Pixel *alloc_pixels = NULL;
-	char *file_path;
+	Pixmap		      shapeMask = None, temp_pix = None, alpha = None;
+	int		      w, h;
+	int		      depth;
+	int		      nalloc_pixels = 0;
+	Pixel *		      alloc_pixels  = NULL;
+	char *		      file_path;
 	FvwmPictureAttributes fpa;
 
-	if (use_our_color_limit)
-	{
+	if (use_our_color_limit) {
 		PictureColorLimitOption colorLimitop = {-1, -1, -1, -1, -1};
-		colorLimitop.color_limit = opt_color_limit;
+		colorLimitop.color_limit	     = opt_color_limit;
 		PictureInitCMapRoot(
-			dpy, !NoColorLimit, &colorLimitop, True, True);
-	}
-	else
-	{
+		    dpy, !NoColorLimit, &colorLimitop, True, True);
+	} else {
 		/* this use the default visual (not the fvwm one) as
 		 * getenv("FVWM_VISUALID") is NULL in any case. But this use
 		 * the same color limit than fvwm.
@@ -105,44 +102,34 @@ int SetRootWindow(char *tline)
 	PictureSetImagePath(".:+");
 	file_path = PictureFindImageFile(tline, NULL, R_OK);
 
-	if (file_path == NULL)
-	{
+	if (file_path == NULL) {
 		file_path = tline;
 	}
 	fpa.mask = FPAM_NO_ALLOC_PIXELS | FPAM_NO_ALPHA;
-	if (Pdepth <= 8 && !NoDither)
-	{
+	if (Pdepth <= 8 && !NoDither) {
+		fpa.mask |= FPAM_DITHER;
+	} else if (Pdepth <= 16 && Dither) {
 		fpa.mask |= FPAM_DITHER;
 	}
-	else if (Pdepth <= 16 && Dither)
-	{
-		fpa.mask |= FPAM_DITHER;
-	}
-	if (NoColorLimit)
-	{
+	if (NoColorLimit) {
 		fpa.mask |= FPAM_NO_COLOR_LIMIT;
 	}
-	if (!PImageLoadPixmapFromFile(
-		dpy, root, file_path, &temp_pix, &shapeMask, &alpha,
-		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, 0, fpa))
-	{
+	if (!PImageLoadPixmapFromFile(dpy, root, file_path, &temp_pix,
+		&shapeMask, &alpha, &w, &h, &depth, &nalloc_pixels,
+		&alloc_pixels, 0, fpa)) {
 		fvwm_debug(__func__,
-			   "[fvwm-root] failed to load image file '%s'\n",
-			   tline);
+		    "[fvwm-root] failed to load image file '%s'\n", tline);
 		return -1;
 	}
-	if (depth == Pdepth)
-	{
+	if (depth == Pdepth) {
 		rootImage = temp_pix;
-	}
-	else
-	{
+	} else {
 		XGCValues gcv;
-		GC gc;
+		GC	  gc;
 
-		gcv.background= WhitePixel(dpy, screen);
-		gcv.foreground= BlackPixel(dpy, screen);
-		gc = fvwmlib_XCreateGC(
+		gcv.background = WhitePixel(dpy, screen);
+		gcv.foreground = BlackPixel(dpy, screen);
+		gc	       = fvwmlib_XCreateGC(
 			dpy, root, GCForeground | GCBackground, &gcv);
 		rootImage = XCreatePixmap(dpy, root, w, h, Pdepth);
 		XCopyPlane(dpy, temp_pix, rootImage, gc, 0, 0, w, h, 0, 0, 1);
@@ -156,176 +143,121 @@ int SetRootWindow(char *tline)
 	return 0;
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
-	Atom prop = None;
-	Atom e_prop = None;
-	Atom m_prop = None;
-	Atom type;
-	int format;
-	unsigned long length, after;
+	Atom	       prop   = None;
+	Atom	       e_prop = None;
+	Atom	       m_prop = None;
+	Atom	       type;
+	int	       format;
+	unsigned long  length, after;
 	unsigned char *data;
-	int i = 1;
-	Bool e_killed = False;
-	Bool Dummy = False;
-	Bool RetainPixmap = False;
+	int	       i	    = 1;
+	Bool	       e_killed	    = False;
+	Bool	       Dummy	    = False;
+	Bool	       RetainPixmap = False;
 
-	if (argc < 2)
-	{
+	if (argc < 2) {
 		usage(0);
 		fvwm_debug(__func__, "Nothing to do, try again.\n");
 		exit(1);
 	}
 	dpy = XOpenDisplay(display_name);
-	if (!dpy)
-	{
-		fvwm_debug(__func__,
-			   "fvwm-root: unable to open display '%s'\n",
-			   XDisplayName (display_name));
+	if (!dpy) {
+		fvwm_debug(__func__, "fvwm-root: unable to open display '%s'\n",
+		    XDisplayName(display_name));
 		exit(2);
 	}
 	screen = DefaultScreen(dpy);
-	root = RootWindow(dpy, screen);
+	root   = RootWindow(dpy, screen);
 
-	for (i = 1; i < argc - 1; i++)
-	{
-		if (
-			strcasecmp(argv[i], "-r") == 0 ||
-			strcasecmp(argv[i], "--retain-pixmap") == 0)
-		{
+	for (i = 1; i < argc - 1; i++) {
+		if (strcasecmp(argv[i], "-r") == 0
+		    || strcasecmp(argv[i], "--retain-pixmap") == 0) {
 			RetainPixmap = True;
-		}
-		else if (
-			strcasecmp(argv[i], "--no-retain-pixmap") == 0)
-		{
+		} else if (strcasecmp(argv[i], "--no-retain-pixmap") == 0) {
 			RetainPixmap = False;
-		}
-		else if (
-			strcasecmp(argv[i], "-d") == 0 ||
-			strcasecmp(argv[i], "--dummy") == 0)
-		{
+		} else if (strcasecmp(argv[i], "-d") == 0
+			   || strcasecmp(argv[i], "--dummy") == 0) {
 			Dummy = True;
-		}
-		else if (
-			strcasecmp(argv[i], "--no-dummy") == 0)
-		{
+		} else if (strcasecmp(argv[i], "--no-dummy") == 0) {
 			Dummy = False;
-		}
-		else if (
-			strcasecmp(argv[i], "--dither") == 0)
-		{
+		} else if (strcasecmp(argv[i], "--dither") == 0) {
 			Dither = True;
-		}
-		else if (
-			strcasecmp(argv[i], "--no-dither") == 0)
-		{
+		} else if (strcasecmp(argv[i], "--no-dither") == 0) {
 			NoDither = True;
-		}
-		else if (
-			strcasecmp(argv[i], "--color-limit") == 0)
-		{
+		} else if (strcasecmp(argv[i], "--color-limit") == 0) {
 			use_our_color_limit = True;
-			if (i+1 < argc)
-			{
+			if (i + 1 < argc) {
 				i++;
 				opt_color_limit = atoi(argv[i]);
 			}
-		}
-		else if (
-			strcasecmp(argv[i], "--no-color-limit") == 0)
-		{
+		} else if (strcasecmp(argv[i], "--no-color-limit") == 0) {
 			NoColorLimit = True;
-		}
-		else if (
-			strcasecmp(argv[i], "-h") == 0 ||
-			strcasecmp(argv[i], "-?") == 0 ||
-			strcasecmp(argv[i], "--help") == 0)
-		{
+		} else if (strcasecmp(argv[i], "-h") == 0
+			   || strcasecmp(argv[i], "-?") == 0
+			   || strcasecmp(argv[i], "--help") == 0) {
 			usage(1);
 			exit(0);
-		}
-		else if (
-			strcasecmp(argv[i], "-V") == 0 ||
-			strcasecmp(argv[i], "--version") == 0)
-		{
+		} else if (strcasecmp(argv[i], "-V") == 0
+			   || strcasecmp(argv[i], "--version") == 0) {
 			fprintf(stdout, "%s\n", VERSION);
 			exit(0);
-		}
-		else
-		{
+		} else {
+			fvwm_debug(__func__, "fvwm-root: unknown option '%s'\n",
+			    argv[i]);
 			fvwm_debug(__func__,
-				   "fvwm-root: unknown option '%s'\n",
-				   argv[i]);
-			fvwm_debug(__func__,
-				   "Run '%s --help' to get the usage.\n",
-				   argv[0]);
+			    "Run '%s --help' to get the usage.\n", argv[0]);
 			exit(1);
 		}
 	}
 
-	if (
-		Dummy ||
-		strcasecmp(argv[argc-1], "-d") == 0 ||
-		strcasecmp(argv[argc-1], "--dummy") == 0)
-	{
+	if (Dummy || strcasecmp(argv[argc - 1], "-d") == 0
+	    || strcasecmp(argv[argc - 1], "--dummy") == 0) {
 		Dummy = True;
-	}
-	else if (
-		strcasecmp(argv[argc-1], "-h") == 0 ||
-		strcasecmp(argv[argc-1], "-?") == 0 ||
-		strcasecmp(argv[argc-1], "--help") == 0)
-	{
+	} else if (strcasecmp(argv[argc - 1], "-h") == 0
+		   || strcasecmp(argv[argc - 1], "-?") == 0
+		   || strcasecmp(argv[argc - 1], "--help") == 0) {
 		usage(1);
 		exit(0);
-	}
-	else if (
-		strcasecmp(argv[argc-1], "-V") == 0 ||
-		strcasecmp(argv[argc-1], "--version") == 0)
-	{
+	} else if (strcasecmp(argv[argc - 1], "-V") == 0
+		   || strcasecmp(argv[argc - 1], "--version") == 0) {
 		fprintf(stdout, "%s\n", VERSION);
 		exit(0);
-	}
-	else
-	{
+	} else {
 		int rc;
 
-		rc = SetRootWindow(argv[argc-1]);
-		if (rc == -1)
-		{
+		rc = SetRootWindow(argv[argc - 1]);
+		if (rc == -1) {
 			exit(1);
 		}
 	}
 
 	prop = XInternAtom(dpy, "_XSETROOT_ID", False);
-	(void)XGetWindowProperty(
-		dpy, root, prop, 0L, 1L, True, AnyPropertyType,
-		&type, &format, &length, &after, &data);
-	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
-	    data != NULL && (Pixmap)(*(long *)data) != None)
-	{
+	(void)XGetWindowProperty(dpy, root, prop, 0L, 1L, True, AnyPropertyType,
+	    &type, &format, &length, &after, &data);
+	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0
+	    && data != NULL && (Pixmap)(*(long *)data) != None) {
 		XKillClient(dpy, *((Pixmap *)data));
 	}
 
 	if (data != NULL)
 		XFree(data);
 	e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
-	(void)XGetWindowProperty(
-		dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
-		&type, &format, &length, &after, &data);
-	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
-	    data != NULL && (Pixmap)(*(long *)data) != None)
-	{
+	(void)XGetWindowProperty(dpy, root, e_prop, 0L, 1L, True,
+	    AnyPropertyType, &type, &format, &length, &after, &data);
+	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0
+	    && data != NULL && (Pixmap)(*(long *)data) != None) {
 		e_killed = True;
 		XKillClient(dpy, *((Pixmap *)data));
 	}
-	if (e_killed && !Dummy)
-	{
+	if (e_killed && !Dummy) {
 		m_prop = XInternAtom(dpy, "_XROOTPMAP_ID", False);
 		XDeleteProperty(dpy, root, m_prop);
 	}
 
-	if (RetainPixmap && !Dummy)
-	{
+	if (RetainPixmap && !Dummy) {
 		long prop;
 
 		prop = rootImage;
@@ -336,22 +268,17 @@ int main(int argc, char **argv)
 			e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
 		if (m_prop == None)
 			m_prop = XInternAtom(dpy, "_XROOTPMAP_ID", False);
-		XChangeProperty(
-			dpy, root, e_prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *) &prop, 1);
-		XChangeProperty(
-			dpy, root, m_prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *) &prop, 1);
-	}
-	else
-	{
+		XChangeProperty(dpy, root, e_prop, XA_PIXMAP, 32,
+		    PropModeReplace, (unsigned char *)&prop, 1);
+		XChangeProperty(dpy, root, m_prop, XA_PIXMAP, 32,
+		    PropModeReplace, (unsigned char *)&prop, 1);
+	} else {
 		long dp = (long)None;
 
 		if (prop == None)
 			prop = XInternAtom(dpy, "_XSETROOT_ID", False);
-		XChangeProperty(
-			dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
-			(unsigned char *)  &dp, 1);
+		XChangeProperty(dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
+		    (unsigned char *)&dp, 1);
 	}
 	XCloseDisplay(dpy);
 

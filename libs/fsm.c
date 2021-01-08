@@ -21,23 +21,23 @@
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
-#include <stdio.h>
 #include <fcntl.h>
+#include <stdio.h>
 #ifdef HAVE_GETPWUID
 #include <pwd.h>
 #endif
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/Xproto.h>
 #include <X11/Xatom.h>
+#include <X11/Xlib.h>
+#include <X11/Xproto.h>
+#include <X11/Xutil.h>
 
-#include "fvwmlib.h"
 #include "System.h"
 #include "flist.h"
 #include "fsm.h"
+#include "fvwmlib.h"
 
 /* #define FVWM_DEBUG_FSM */
 
@@ -53,8 +53,8 @@
 
 typedef struct
 {
-	FIceConn		ice_conn;
-	int		fd;
+	FIceConn ice_conn;
+	int	 fd;
 } fsm_ice_conn_t;
 
 /* ---------------------------- forward declarations ----------------------- */
@@ -63,23 +63,23 @@ typedef struct
 
 static FIceAuthDataEntry *authDataEntries = NULL;
 static FIceIOErrorHandler prev_handler;
-static FIceListenObj *listenObjs;
+static FIceListenObj *	  listenObjs;
 
 static char *addAuthFile = NULL;
 static char *remAuthFile = NULL;
 
-static flist *fsm_ice_conn_list = NULL;
+static flist *fsm_ice_conn_list	    = NULL;
 static flist *pending_ice_conn_list = NULL;
-static int numTransports = 0;
-static char *networkIds = NULL;
-static int *ice_fd = NULL;
+static int    numTransports	    = 0;
+static char * networkIds	    = NULL;
+static int *  ice_fd		    = NULL;
 
-static char *module_name = NULL;
-static flist *running_list = NULL;
-static Bool fsm_init_succeed = False;
+static char * module_name      = NULL;
+static flist *running_list     = NULL;
+static Bool   fsm_init_succeed = False;
 
 static Atom _XA_WM_CLIENT_LEADER = None;
-static Atom _XA_SM_CLIENT_ID = None;
+static Atom _XA_SM_CLIENT_ID	 = None;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -89,16 +89,14 @@ static Atom _XA_SM_CLIENT_ID = None;
  * client list stuff
  */
 
-static
-void free_fsm_client(fsm_client_t *client)
+static void
+free_fsm_client(fsm_client_t *client)
 {
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	if (client->clientId)
-	{
+	if (client->clientId) {
 		free(client->clientId);
 	}
 	free(client);
@@ -110,13 +108,13 @@ void free_fsm_client(fsm_client_t *client)
 static void
 fprintfhex(register FILE *fp, unsigned int len, char *cp)
 {
-    static const char hexchars[] = "0123456789abcdef";
+	static const char hexchars[] = "0123456789abcdef";
 
-    for (; len > 0; len--, cp++) {
-        unsigned char s = *cp;
-        putc(hexchars[s >> 4], fp);
-        putc(hexchars[s & 0x0f], fp);
-    }
+	for (; len > 0; len--, cp++) {
+		unsigned char s = *cp;
+		putc(hexchars[s >> 4], fp);
+		putc(hexchars[s & 0x0f], fp);
+	}
 }
 
 /*
@@ -125,10 +123,10 @@ fprintfhex(register FILE *fp, unsigned int len, char *cp)
  * we can accept.  We can accept/reject based on the hostname.
  */
 
-static
-Bool HostBasedAuthProc(char *hostname)
+static Bool
+HostBasedAuthProc(char *hostname)
 {
-    return (0);	      /* For now, we don't support host based authentication */
+	return (0); /* For now, we don't support host based authentication */
 }
 
 /*
@@ -139,23 +137,19 @@ Bool HostBasedAuthProc(char *hostname)
 static void
 write_iceauth(FILE *addfp, FILE *removefp, FIceAuthDataEntry *entry)
 {
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	fprintf(addfp,
-		"add %s \"\" %s %s ", entry->protocol_name, entry->network_id,
-		entry->auth_name);
+	fprintf(addfp, "add %s \"\" %s %s ", entry->protocol_name,
+	    entry->network_id, entry->auth_name);
 	fprintfhex(addfp, entry->auth_data_length, entry->auth_data);
 	fprintf(addfp, "\n");
 
-	fprintf(
-		removefp,
-		"remove protoname=%s protodata=\"\" netid=%s authname=%s\n",
-		entry->protocol_name, entry->network_id, entry->auth_name);
+	fprintf(removefp,
+	    "remove protoname=%s protodata=\"\" netid=%s authname=%s\n",
+	    entry->protocol_name, entry->network_id, entry->auth_name);
 }
-
 
 static char *
 unique_filename(char *path, char *prefix, int *pFd)
@@ -165,9 +159,8 @@ unique_filename(char *path, char *prefix, int *pFd)
 	/* TA:  FIXME!  xasprintf() */
 	tempFile = fxmalloc(strlen(path) + strlen(prefix) + 8);
 	sprintf(tempFile, "%s/%sXXXXXX", path, prefix);
-	*pFd =  fvwm_mkstemp(tempFile);
-	if (*pFd == -1)
-	{
+	*pFd = fvwm_mkstemp(tempFile);
+	if (*pFd == -1) {
 		free(tempFile);
 		tempFile = NULL;
 	}
@@ -180,99 +173,89 @@ unique_filename(char *path, char *prefix, int *pFd)
 
 #define MAGIC_COOKIE_LEN 16
 
-static
-Status SetAuthentication(
-	int count,FIceListenObj *listenObjs,FIceAuthDataEntry **authDataEntries)
+static Status
+SetAuthentication(
+    int count, FIceListenObj *listenObjs, FIceAuthDataEntry **authDataEntries)
 {
-	FILE *addfp = NULL;
+	FILE *addfp    = NULL;
 	FILE *removefp = NULL;
 	char *path;
-	int original_umask;
-	char command[256];
-	int i;
-	int fd;
+	int   original_umask;
+	char  command[256];
+	int   i;
+	int   fd;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return 0;
 	}
 
-	original_umask = umask (0077);	/* disallow non-owner access */
+	original_umask = umask(0077); /* disallow non-owner access */
 
 	path = (char *)getenv("SM_SAVE_DIR");
-	if (!path)
-	{
+	if (!path) {
 		path = getenv("HOME");
 	}
 
 #ifdef HAVE_GETPWUID
-	if (!path)
-	{
+	if (!path) {
 		struct passwd *pwd;
 
 		pwd = getpwuid(getuid());
-		if (pwd)
-		{
+		if (pwd) {
 			path = pwd->pw_dir;
 		}
 	}
 #endif
-	if (!path)
-	{
+	if (!path) {
 		path = ".";
 	}
-	if ((addAuthFile = unique_filename (path, ".fsm-", &fd)) == NULL)
-	{
+	if ((addAuthFile = unique_filename(path, ".fsm-", &fd)) == NULL) {
 		goto bad;
 	}
-	if (!(addfp = fdopen(fd, "wb")))
-	{
+	if (!(addfp = fdopen(fd, "wb"))) {
 		goto bad;
 	}
-	if ((remAuthFile = unique_filename (path, ".fsm-", &fd)) == NULL)
-	{
+	if ((remAuthFile = unique_filename(path, ".fsm-", &fd)) == NULL) {
 		goto bad;
 	}
-	if (!(removefp = fdopen(fd, "wb")))
-	{
+	if (!(removefp = fdopen(fd, "wb"))) {
 		goto bad;
 	}
 
-	*authDataEntries = fxmalloc(count * 2 * sizeof (FIceAuthDataEntry));
+	*authDataEntries = fxmalloc(count * 2 * sizeof(FIceAuthDataEntry));
 
-	for (i = 0; i < count * 2; i += 2)
-	{
+	for (i = 0; i < count * 2; i += 2) {
 		(*authDataEntries)[i].network_id =
-			FIceGetListenConnectionString(listenObjs[i/2]);
+		    FIceGetListenConnectionString(listenObjs[i / 2]);
 		(*authDataEntries)[i].protocol_name = "ICE";
-		(*authDataEntries)[i].auth_name = "MIT-MAGIC-COOKIE-1";
+		(*authDataEntries)[i].auth_name	    = "MIT-MAGIC-COOKIE-1";
 
 		(*authDataEntries)[i].auth_data =
-			FIceGenerateMagicCookie (MAGIC_COOKIE_LEN);
+		    FIceGenerateMagicCookie(MAGIC_COOKIE_LEN);
 		(*authDataEntries)[i].auth_data_length = MAGIC_COOKIE_LEN;
 
-		(*authDataEntries)[i+1].network_id =
-			FIceGetListenConnectionString(listenObjs[i/2]);
-		(*authDataEntries)[i+1].protocol_name = "XSMP";
-		(*authDataEntries)[i+1].auth_name = "MIT-MAGIC-COOKIE-1";
+		(*authDataEntries)[i + 1].network_id =
+		    FIceGetListenConnectionString(listenObjs[i / 2]);
+		(*authDataEntries)[i + 1].protocol_name = "XSMP";
+		(*authDataEntries)[i + 1].auth_name	= "MIT-MAGIC-COOKIE-1";
 
-		(*authDataEntries)[i+1].auth_data =
-			FIceGenerateMagicCookie (MAGIC_COOKIE_LEN);
-		(*authDataEntries)[i+1].auth_data_length = MAGIC_COOKIE_LEN;
+		(*authDataEntries)[i + 1].auth_data =
+		    FIceGenerateMagicCookie(MAGIC_COOKIE_LEN);
+		(*authDataEntries)[i + 1].auth_data_length = MAGIC_COOKIE_LEN;
 
 		write_iceauth(addfp, removefp, &(*authDataEntries)[i]);
-		write_iceauth(addfp, removefp, &(*authDataEntries)[i+1]);
+		write_iceauth(addfp, removefp, &(*authDataEntries)[i + 1]);
 
 		FIceSetPaAuthData(2, &(*authDataEntries)[i]);
-		FIceSetHostBasedAuthProc(listenObjs[i/2], HostBasedAuthProc);
+		FIceSetHostBasedAuthProc(listenObjs[i / 2], HostBasedAuthProc);
 	}
 
 	fclose(addfp);
 	fclose(removefp);
 
-	umask (original_umask);
+	umask(original_umask);
 
-	sprintf (command, "iceauth source %s", addAuthFile);
+	sprintf(command, "iceauth source %s", addAuthFile);
 	{
 		int n;
 
@@ -280,58 +263,52 @@ Status SetAuthentication(
 		(void)n;
 	}
 
-	unlink (addAuthFile);
+	unlink(addAuthFile);
 
 	return 1;
 
- bad:
+bad:
 
-	if (addfp)
-	{
-		fclose (addfp);
+	if (addfp) {
+		fclose(addfp);
 	}
 
-	if (removefp)
-	{
-		fclose (removefp);
+	if (removefp) {
+		fclose(removefp);
 	}
 
-	if (addAuthFile)
-	{
-		unlink (addAuthFile);
-		free (addAuthFile);
+	if (addAuthFile) {
+		unlink(addAuthFile);
+		free(addAuthFile);
 	}
-	if (remAuthFile)
-	{
-		unlink (remAuthFile);
-		free (remAuthFile);
+	if (remAuthFile) {
+		unlink(remAuthFile);
+		free(remAuthFile);
 	}
 
 	return 0;
 }
 
-static
-void FreeAuthenticationData(int count, FIceAuthDataEntry *authDataEntries)
+static void
+FreeAuthenticationData(int count, FIceAuthDataEntry *authDataEntries)
 {
 	/* Each transport has entries for ICE and XSMP */
 
 	char command[256];
-	int i;
+	int  i;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	for (i = 0; i < count * 2; i++)
-	{
+	for (i = 0; i < count * 2; i++) {
 		free(authDataEntries[i].network_id);
 		free(authDataEntries[i].auth_data);
 	}
 
-	free ((char *) authDataEntries);
+	free((char *)authDataEntries);
 
-	sprintf (command, "iceauth source %s", remAuthFile);
+	sprintf(command, "iceauth source %s", remAuthFile);
 	{
 		int n;
 
@@ -339,44 +316,40 @@ void FreeAuthenticationData(int count, FIceAuthDataEntry *authDataEntries)
 		(void)n;
 	}
 
-	unlink (remAuthFile);
+	unlink(remAuthFile);
 
-	free (addAuthFile);
-	free (remAuthFile);
+	free(addAuthFile);
+	free(remAuthFile);
 }
 
 /*
  *  ice stuff
  */
 
-static
-void MyIoErrorHandler(FIceConn ice_conn)
+static void
+MyIoErrorHandler(FIceConn ice_conn)
 {
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	if (prev_handler)
-	{
-		(*prev_handler) (ice_conn);
+	if (prev_handler) {
+		(*prev_handler)(ice_conn);
 	}
 }
 
-static
-void InstallIOErrorHandler(void)
+static void
+InstallIOErrorHandler(void)
 {
 	FIceIOErrorHandler default_handler;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	prev_handler = FIceSetIOErrorHandler(NULL);
+	prev_handler	= FIceSetIOErrorHandler(NULL);
 	default_handler = FIceSetIOErrorHandler(MyIoErrorHandler);
-	if (prev_handler == default_handler)
-	{
+	if (prev_handler == default_handler) {
 		prev_handler = NULL;
 	}
 }
@@ -384,41 +357,35 @@ void InstallIOErrorHandler(void)
 static void
 CloseListeners(void)
 {
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
 	FIceFreeListenObjs(numTransports, listenObjs);
 }
 
-static
-void ice_watch_fd(
-	FIceConn conn, FIcePointer client_data, Bool opening,
-	FIcePointer *watch_data)
+static void
+ice_watch_fd(FIceConn conn, FIcePointer client_data, Bool opening,
+    FIcePointer *watch_data)
 {
 	fsm_ice_conn_t *fice_conn;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	if (opening)
-	{
-		fice_conn = fxmalloc(sizeof(fsm_ice_conn_t));
+	if (opening) {
+		fice_conn	    = fxmalloc(sizeof(fsm_ice_conn_t));
 		fice_conn->ice_conn = conn;
-		fice_conn->fd = FIceConnectionNumber(conn);
-		*watch_data = (FIcePointer) fice_conn;
+		fice_conn->fd	    = FIceConnectionNumber(conn);
+		*watch_data	    = (FIcePointer)fice_conn;
 		fsm_ice_conn_list =
-			flist_append_obj(fsm_ice_conn_list, fice_conn);
+		    flist_append_obj(fsm_ice_conn_list, fice_conn);
 		fcntl(fice_conn->fd, F_SETFD, FD_CLOEXEC);
-	}
-	else
-	{
+	} else {
 		fice_conn = (fsm_ice_conn_t *)*watch_data;
 		fsm_ice_conn_list =
-			flist_remove_obj(fsm_ice_conn_list, fice_conn);
+		    flist_remove_obj(fsm_ice_conn_list, fice_conn);
 		free(fice_conn);
 	}
 }
@@ -427,57 +394,52 @@ void ice_watch_fd(
  * Session Manager callbacks
  */
 
-static
-Status RegisterClientProc(
-	FSmsConn smsConn, FSmPointer managerData, char *previousId)
+static Status
+RegisterClientProc(FSmsConn smsConn, FSmPointer managerData, char *previousId)
 {
-	fsm_client_t *client = (fsm_client_t *) managerData;
-	char *id;
-	int send_save = 0;
+	fsm_client_t *client = (fsm_client_t *)managerData;
+	char *	      id;
+	int	      send_save = 0;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return 0;
 	}
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__,
-		   "[%s][RegisterClientProc] On FIceConn fd = %d, received "
-		   "REGISTER CLIENT [Previous Id = %s]\n", module_name,
-		   FIceConnectionNumber (client->ice_conn),
-		   previousId ? previousId : "NULL");
+	    "[%s][RegisterClientProc] On FIceConn fd = %d, received "
+	    "REGISTER CLIENT [Previous Id = %s]\n",
+	    module_name, FIceConnectionNumber(client->ice_conn),
+	    previousId ? previousId : "NULL");
 #endif
 
 	/* ignore previousID!! (we are dummy) */
 	id = FSmsGenerateClientID(smsConn);
-	if (!FSmsRegisterClientReply(smsConn, id))
-	{
+	if (!FSmsRegisterClientReply(smsConn, id)) {
 		/* cannot happen ? */
-		if (id)
-		{
+		if (id) {
 			free(id);
 		}
 		fvwm_debug(__func__,
-			   "[%s][RegisterClientProc] ERR -- fail to register "
-			   "client", module_name);
+		    "[%s][RegisterClientProc] ERR -- fail to register "
+		    "client",
+		    module_name);
 		return 0;
 	}
 
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__,
-		   "[%s][RegisterClientProc] On FIceConn fd = %d, sent "
-		   "REGISTER CLIENT REPLY [Client Id = %s]\n",
-		   module_name, FIceConnectionNumber (client->ice_conn), id);
+	    "[%s][RegisterClientProc] On FIceConn fd = %d, sent "
+	    "REGISTER CLIENT REPLY [Client Id = %s]\n",
+	    module_name, FIceConnectionNumber(client->ice_conn), id);
 #endif
 
 	client->clientId = id;
 	/* client->clientHostname = FSmsClientHostName (smsConn); */
 
 	/* we are dummy ... do not do that */
-	if (send_save)
-	{
+	if (send_save) {
 		FSmsSaveYourself(
-			smsConn, FSmSaveLocal, False, FSmInteractStyleNone,
-			False);
+		    smsConn, FSmSaveLocal, False, FSmInteractStyleNone, False);
 	}
 
 	return 1;
@@ -486,8 +448,7 @@ Status RegisterClientProc(
 static void
 InteractRequestProc(FSmsConn smsConn, FSmPointer managerData, int dialogType)
 {
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 	/* no intercation! */
@@ -495,7 +456,6 @@ InteractRequestProc(FSmsConn smsConn, FSmPointer managerData, int dialogType)
 	FSmsInteract (client->smsConn);
 #endif
 }
-
 
 static void
 InteractDoneProc(FSmsConn smsConn, FSmPointer managerData, Bool cancelShutdown)
@@ -510,13 +470,12 @@ SaveYourselfReqProc(FSmsConn smsConn, FSmPointer managerData, int saveType,
 	/* no session to save */
 }
 
-static
-void SaveYourselfPhase2ReqProc(FSmsConn smsConn, FSmPointer managerData)
+static void
+SaveYourselfPhase2ReqProc(FSmsConn smsConn, FSmPointer managerData)
 {
 	fsm_client_t *client;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 	client = (fsm_client_t *)managerData;
@@ -527,13 +486,12 @@ void SaveYourselfPhase2ReqProc(FSmsConn smsConn, FSmPointer managerData)
 static void
 SaveYourselfDoneProc(FSmsConn smsConn, FSmPointer managerData, Bool success)
 {
-	fsm_client_t	*client;
+	fsm_client_t *client;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
-	client = (fsm_client_t *) managerData;
+	client = (fsm_client_t *)managerData;
 	SUPPRESS_UNUSED_VAR_WARNING(client);
 	FSmsSaveComplete(client->smsConn);
 }
@@ -542,242 +500,218 @@ static void
 CloseDownClient(fsm_client_t *client)
 {
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
 #ifdef FVWM_DEBUG_FSM
-	fvwm_debug(__func__, "[%s][CloseDownClient] ICE Connection closed, "
-		   "FIceConn fd = %d\n", module_name,
-		   FIceConnectionNumber (client->ice_conn));
+	fvwm_debug(__func__,
+	    "[%s][CloseDownClient] ICE Connection closed, "
+	    "FIceConn fd = %d\n",
+	    module_name, FIceConnectionNumber(client->ice_conn));
 #endif
 
 	FSmsCleanUp(client->smsConn);
 	FIceSetShutdownNegotiation(client->ice_conn, False);
-	if ((!FIceCloseConnection(client->ice_conn)) != FIceClosedNow)
-	{
+	if ((!FIceCloseConnection(client->ice_conn)) != FIceClosedNow) {
 		/* do not care */
 	}
 
 	client->ice_conn = NULL;
-	client->smsConn = NULL;
+	client->smsConn	 = NULL;
 
 	running_list = flist_remove_obj(running_list, client);
 	free_fsm_client(client);
 }
 
 static void
-CloseConnectionProc(FSmsConn smsConn, FSmPointer managerData,
-		    int count, char **reasonMsgs)
+CloseConnectionProc(
+    FSmsConn smsConn, FSmPointer managerData, int count, char **reasonMsgs)
 {
-    fsm_client_t	*client = (fsm_client_t *) managerData;
+	fsm_client_t *client = (fsm_client_t *)managerData;
 
-    if (!SessionSupport)
-    {
-	    return;
-    }
-    FSmFreeReasons(count, reasonMsgs);
-    CloseDownClient(client);
+	if (!SessionSupport) {
+		return;
+	}
+	FSmFreeReasons(count, reasonMsgs);
+	CloseDownClient(client);
 }
 
-static
-void SetPropertiesProc(
-	FSmsConn smsConn, FSmPointer managerData, int numProps, FSmProp **props)
+static void
+SetPropertiesProc(
+    FSmsConn smsConn, FSmPointer managerData, int numProps, FSmProp **props)
 {
 	int i;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
-	for (i = 0; i < numProps; i++)
-	{
+	for (i = 0; i < numProps; i++) {
 		FSmFreeProperty(props[i]);
 	}
-	free ((char *) props);
+	free((char *)props);
 }
 
-static
-void DeletePropertiesProc(
-	FSmsConn smsConn, FSmPointer managerData, int numProps, char **propNames)
+static void
+DeletePropertiesProc(
+    FSmsConn smsConn, FSmPointer managerData, int numProps, char **propNames)
 {
 	int i;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
-	for (i = 0; i < numProps; i++)
-	{
-		free (propNames[i]);
+	for (i = 0; i < numProps; i++) {
+		free(propNames[i]);
 	}
-	free ((char *) propNames);
+	free((char *)propNames);
 }
 
-static
-void GetPropertiesProc(FSmsConn smsConn, FSmPointer managerData)
-{
-}
+static void
+GetPropertiesProc(FSmsConn smsConn, FSmPointer managerData)
+{}
 
 static Status
-NewClientProc(
-	FSmsConn smsConn, FSmPointer managerData, unsigned long *maskRet,
-	FSmsCallbacks *callbacksRet, char **failureReasonRet)
+NewClientProc(FSmsConn smsConn, FSmPointer managerData, unsigned long *maskRet,
+    FSmsCallbacks *callbacksRet, char **failureReasonRet)
 {
-    fsm_client_t *nc;
+	fsm_client_t *nc;
 
-    if (!SessionSupport)
-    {
-	    return 0;
-    }
+	if (!SessionSupport) {
+		return 0;
+	}
 
-    nc = fxmalloc(sizeof (fsm_client_t));
-    *maskRet = 0;
+	nc	 = fxmalloc(sizeof(fsm_client_t));
+	*maskRet = 0;
 
-    nc->smsConn = smsConn;
-    nc->ice_conn = FSmsGetIceConnection(smsConn);
-    nc->clientId = NULL;
+	nc->smsConn  = smsConn;
+	nc->ice_conn = FSmsGetIceConnection(smsConn);
+	nc->clientId = NULL;
 
-    running_list = flist_append_obj(running_list, nc);
+	running_list = flist_append_obj(running_list, nc);
 
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__,
-                   "[%s][NewClientProc] On FIceConn fd = %d, client "
-                   "set up session mngmt protocol\n", module_name,
-                   FIceConnectionNumber (nc->ice_conn));
+	    "[%s][NewClientProc] On FIceConn fd = %d, client "
+	    "set up session mngmt protocol\n",
+	    module_name, FIceConnectionNumber(nc->ice_conn));
 #endif
 
-    /*
-     * Set up session manager callbacks.
-     */
+	/*
+	 * Set up session manager callbacks.
+	 */
 
-    *maskRet |= FSmsRegisterClientProcMask;
-    callbacksRet->register_client.callback 	= RegisterClientProc;
-    callbacksRet->register_client.manager_data  = (FSmPointer) nc;
+	*maskRet |= FSmsRegisterClientProcMask;
+	callbacksRet->register_client.callback	   = RegisterClientProc;
+	callbacksRet->register_client.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsInteractRequestProcMask;
-    callbacksRet->interact_request.callback 	= InteractRequestProc;
-    callbacksRet->interact_request.manager_data = (FSmPointer) nc;
+	*maskRet |= FSmsInteractRequestProcMask;
+	callbacksRet->interact_request.callback	    = InteractRequestProc;
+	callbacksRet->interact_request.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsInteractDoneProcMask;
-    callbacksRet->interact_done.callback	= InteractDoneProc;
-    callbacksRet->interact_done.manager_data    = (FSmPointer) nc;
+	*maskRet |= FSmsInteractDoneProcMask;
+	callbacksRet->interact_done.callback	 = InteractDoneProc;
+	callbacksRet->interact_done.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsSaveYourselfRequestProcMask;
-    callbacksRet->save_yourself_request.callback     = SaveYourselfReqProc;
-    callbacksRet->save_yourself_request.manager_data = (FSmPointer) nc;
+	*maskRet |= FSmsSaveYourselfRequestProcMask;
+	callbacksRet->save_yourself_request.callback	 = SaveYourselfReqProc;
+	callbacksRet->save_yourself_request.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsSaveYourselfP2RequestProcMask;
-    callbacksRet->save_yourself_phase2_request.callback =
-	SaveYourselfPhase2ReqProc;
-    callbacksRet->save_yourself_phase2_request.manager_data =
-	(FSmPointer) nc;
+	*maskRet |= FSmsSaveYourselfP2RequestProcMask;
+	callbacksRet->save_yourself_phase2_request.callback =
+	    SaveYourselfPhase2ReqProc;
+	callbacksRet->save_yourself_phase2_request.manager_data =
+	    (FSmPointer)nc;
 
-    *maskRet |= FSmsSaveYourselfDoneProcMask;
-    callbacksRet->save_yourself_done.callback 	   = SaveYourselfDoneProc;
-    callbacksRet->save_yourself_done.manager_data  = (FSmPointer) nc;
+	*maskRet |= FSmsSaveYourselfDoneProcMask;
+	callbacksRet->save_yourself_done.callback     = SaveYourselfDoneProc;
+	callbacksRet->save_yourself_done.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsCloseConnectionProcMask;
-    callbacksRet->close_connection.callback 	 = CloseConnectionProc;
-    callbacksRet->close_connection.manager_data  = (FSmPointer) nc;
+	*maskRet |= FSmsCloseConnectionProcMask;
+	callbacksRet->close_connection.callback	    = CloseConnectionProc;
+	callbacksRet->close_connection.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsSetPropertiesProcMask;
-    callbacksRet->set_properties.callback 	= SetPropertiesProc;
-    callbacksRet->set_properties.manager_data   = (FSmPointer) nc;
+	*maskRet |= FSmsSetPropertiesProcMask;
+	callbacksRet->set_properties.callback	  = SetPropertiesProc;
+	callbacksRet->set_properties.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsDeletePropertiesProcMask;
-    callbacksRet->delete_properties.callback	= DeletePropertiesProc;
-    callbacksRet->delete_properties.manager_data   = (FSmPointer) nc;
+	*maskRet |= FSmsDeletePropertiesProcMask;
+	callbacksRet->delete_properties.callback     = DeletePropertiesProc;
+	callbacksRet->delete_properties.manager_data = (FSmPointer)nc;
 
-    *maskRet |= FSmsGetPropertiesProcMask;
-    callbacksRet->get_properties.callback	= GetPropertiesProc;
-    callbacksRet->get_properties.manager_data   = (FSmPointer) nc;
+	*maskRet |= FSmsGetPropertiesProcMask;
+	callbacksRet->get_properties.callback	  = GetPropertiesProc;
+	callbacksRet->get_properties.manager_data = (FSmPointer)nc;
 
-    return 1;
+	return 1;
 }
 
 /*
  *
  */
 
-static
-void CompletNewConnectionMsg(void)
+static void
+CompletNewConnectionMsg(void)
 {
-	flist *l = pending_ice_conn_list;
-	FIceConn ice_conn;
+	flist *		 l = pending_ice_conn_list;
+	FIceConn	 ice_conn;
 	FIceAcceptStatus cstatus;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
-	while(l != NULL)
-	{
+	while (l != NULL) {
 		ice_conn = (FIceConn)l->object;
-		cstatus = (FIceAcceptStatus)FIceConnectionStatus(ice_conn);
-		if (cstatus == (int)FIceConnectPending)
-		{
+		cstatus	 = (FIceAcceptStatus)FIceConnectionStatus(ice_conn);
+		if (cstatus == (int)FIceConnectPending) {
 			l = l->next;
-		}
-		else if (cstatus == (int)FIceConnectAccepted)
-		{
+		} else if (cstatus == (int)FIceConnectAccepted) {
 			l = l->next;
 			pending_ice_conn_list =
-				flist_remove_obj(
-					pending_ice_conn_list,
-					ice_conn);
+			    flist_remove_obj(pending_ice_conn_list, ice_conn);
 #ifdef FVWM_DEBUG_FSM
 			char *connstr;
 
-			connstr = FIceConnectionString (ice_conn);
+			connstr = FIceConnectionString(ice_conn);
 			fvwm_debug(__func__,
-				   "[%s][NewConnection] ICE Connection "
-				   "opened by client, FIceConn fd = %d, Accept at "
-				   "networkId %s\n", module_name,
-				   FIceConnectionNumber (ice_conn), connstr);
-			free (connstr);
+			    "[%s][NewConnection] ICE Connection "
+			    "opened by client, FIceConn fd = %d, Accept at "
+			    "networkId %s\n",
+			    module_name, FIceConnectionNumber(ice_conn),
+			    connstr);
+			free(connstr);
 #endif
-		}
-		else
-		{
-			if (FIceCloseConnection (ice_conn) != FIceClosedNow)
-			{
+		} else {
+			if (FIceCloseConnection(ice_conn) != FIceClosedNow) {
 				/* don't care */
 			}
 			pending_ice_conn_list =
-				flist_remove_obj(
-					pending_ice_conn_list,
-					ice_conn);
+			    flist_remove_obj(pending_ice_conn_list, ice_conn);
 #ifdef FVWM_DEBUG_FSM
-			if (cstatus == FIceConnectIOError)
-			{
+			if (cstatus == FIceConnectIOError) {
 				fvwm_debug(__func__,
-					   "[%s][NewConnection] IO error "
-					   "opening ICE Connection!\n",
-					   module_name);
-			}
-			else
-			{
+				    "[%s][NewConnection] IO error "
+				    "opening ICE Connection!\n",
+				    module_name);
+			} else {
 				fvwm_debug(__func__,
-					   "[%s][NewConnection] ICE "
-					   "Connection rejected!\n",
-					   module_name);
+				    "[%s][NewConnection] ICE "
+				    "Connection rejected!\n",
+				    module_name);
 			}
 #endif
 		}
 	}
 }
 
-static
-void NewConnectionMsg(int i)
+static void
+NewConnectionMsg(int i)
 {
-	FIceConn ice_conn;
+	FIceConn	 ice_conn;
 	FIceAcceptStatus status;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
@@ -786,73 +720,67 @@ void NewConnectionMsg(int i)
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__, "[%s][NewConnection] %i\n", module_name, i);
 #endif
-	if (!ice_conn)
-	{
+	if (!ice_conn) {
 #ifdef FVWM_DEBUG_FSM
-		fvwm_debug(__func__, "[%s][NewConnection] "
-			   "FIceAcceptConnection failed\n", module_name);
+		fvwm_debug(__func__,
+		    "[%s][NewConnection] "
+		    "FIceAcceptConnection failed\n",
+		    module_name);
 #endif
-	}
-	else
-	{
+	} else {
 		pending_ice_conn_list =
-			flist_append_obj(pending_ice_conn_list, ice_conn);
+		    flist_append_obj(pending_ice_conn_list, ice_conn);
 
 		CompletNewConnectionMsg();
 	}
 }
 
-static
-void ProcessIceMsg(fsm_ice_conn_t *fic)
+static void
+ProcessIceMsg(fsm_ice_conn_t *fic)
 {
 	FIceProcessMessagesStatus status;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
 #ifdef FVWM_DEBUG_FSM
-	fvwm_debug(__func__, "[%s][ProcessIceMsg] %i\n", module_name,
-		   (int)fic->fd);
+	fvwm_debug(
+	    __func__, "[%s][ProcessIceMsg] %i\n", module_name, (int)fic->fd);
 #endif
 
 	status = FIceProcessMessages(fic->ice_conn, NULL, NULL);
 
-	if (status == FIceProcessMessagesIOError)
-	{
+	if (status == FIceProcessMessagesIOError) {
 		flist *cl;
-		int found = 0;
+		int    found = 0;
 
 #ifdef FVWM_DEBUG_FSM
 		fvwm_debug(__func__,
-			   "[%s][ProcessIceMsg] IO error on connection\n",
-			   module_name);
+		    "[%s][ProcessIceMsg] IO error on connection\n",
+		    module_name);
 #endif
 
-		for (cl = running_list; cl; cl = cl->next)
-		{
-			fsm_client_t *client = (fsm_client_t *) cl->object;
+		for (cl = running_list; cl; cl = cl->next) {
+			fsm_client_t *client = (fsm_client_t *)cl->object;
 
-			if (client->ice_conn == fic->ice_conn)
-			{
-				CloseDownClient (client);
+			if (client->ice_conn == fic->ice_conn) {
+				CloseDownClient(client);
 				found = 1;
 				break;
 			}
 		}
 
-		if (!found)
-		{
+		if (!found) {
 			/*
 			 * The client must have disconnected before it was added
-			 * to the session manager's running list (i.e. before the
-			 * NewClientProc callback was invoked).
+			 * to the session manager's running list (i.e. before
+			 * the NewClientProc callback was invoked).
 			 */
 
-			FIceSetShutdownNegotiation (fic->ice_conn, False);
-			if ((!FIceCloseConnection(fic->ice_conn)) != FIceClosedNow)
-			{
+			FIceSetShutdownNegotiation(fic->ice_conn, False);
+			if ((!FIceCloseConnection(fic->ice_conn))
+			    != FIceClosedNow) {
 				/* do not care */
 			}
 		}
@@ -862,140 +790,120 @@ void ProcessIceMsg(fsm_ice_conn_t *fic)
 /*
  * proxy stuff
  */
-static
-char *GetClientID(Display *dpy, Window window)
+static char *
+GetClientID(Display *dpy, Window window)
 {
-	char *client_id = NULL;
-	Window client_leader = None;
-	XTextProperty tp;
-	Atom actual_type;
-	int actual_format;
-	unsigned long nitems;
-	unsigned long bytes_after;
+	char *	       client_id     = NULL;
+	Window	       client_leader = None;
+	XTextProperty  tp;
+	Atom	       actual_type;
+	int	       actual_format;
+	unsigned long  nitems;
+	unsigned long  bytes_after;
 	unsigned char *prop = NULL;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return NULL;
 	}
 
-	if (!_XA_WM_CLIENT_LEADER)
-	{
-		_XA_WM_CLIENT_LEADER = XInternAtom(
-			dpy, "WM_CLIENT_LEADER", False);
+	if (!_XA_WM_CLIENT_LEADER) {
+		_XA_WM_CLIENT_LEADER =
+		    XInternAtom(dpy, "WM_CLIENT_LEADER", False);
 	}
-	if (!_XA_SM_CLIENT_ID)
-	{
+	if (!_XA_SM_CLIENT_ID) {
 		_XA_SM_CLIENT_ID = XInternAtom(dpy, "SM_CLIENT_ID", False);
 	}
 
-	if (XGetWindowProperty(
-		    dpy, window, _XA_WM_CLIENT_LEADER, 0L, 1L, False,
-		    AnyPropertyType, &actual_type, &actual_format, &nitems,
-		    &bytes_after, &prop) == Success)
-	{
-		if (actual_type == XA_WINDOW && actual_format == 32 &&
-		    nitems == 1 && bytes_after == 0)
-		{
+	if (XGetWindowProperty(dpy, window, _XA_WM_CLIENT_LEADER, 0L, 1L, False,
+		AnyPropertyType, &actual_type, &actual_format, &nitems,
+		&bytes_after, &prop)
+	    == Success) {
+		if (actual_type == XA_WINDOW && actual_format == 32
+		    && nitems == 1 && bytes_after == 0) {
 			client_leader = (Window)(*(long *)prop);
 		}
 	}
 
-	if (!client_leader)
-	{
+	if (!client_leader) {
 		client_leader = window;
 	}
 
-	if (client_leader)
-	{
-		if (XGetTextProperty(dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
-		{
-			if (tp.encoding == XA_STRING && tp.format == 8 &&
-			    tp.nitems != 0)
-			{
-				client_id = (char *) tp.value;
+	if (client_leader) {
+		if (XGetTextProperty(
+			dpy, client_leader, &tp, _XA_SM_CLIENT_ID)) {
+			if (tp.encoding == XA_STRING && tp.format == 8
+			    && tp.nitems != 0) {
+				client_id = (char *)tp.value;
 			}
 		}
 	}
 
-	if (prop)
-	{
-		XFree (prop);
+	if (prop) {
+		XFree(prop);
 	}
 
 	return client_id;
 }
 
-static
-void set_session_manager(Display *dpy, Window window, char *sm)
+static void
+set_session_manager(Display *dpy, Window window, char *sm)
 {
-	Window client_leader = None;
-	Atom actual_type;
-	int actual_format;
-	unsigned long nitems;
-	unsigned long bytes_after;
+	Window	       client_leader = None;
+	Atom	       actual_type;
+	int	       actual_format;
+	unsigned long  nitems;
+	unsigned long  bytes_after;
 	unsigned char *prop = NULL;
-	char *dummy_id;
-	static Atom _XA_SESSION_MANAGER = None;
+	char *	       dummy_id;
+	static Atom    _XA_SESSION_MANAGER = None;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		return;
 	}
 
 	dummy_id = "0";
 
-	if (!_XA_SESSION_MANAGER)
-	{
-		_XA_SESSION_MANAGER = XInternAtom (
-			dpy, "SESSION_MANAGER", False);
+	if (!_XA_SESSION_MANAGER) {
+		_XA_SESSION_MANAGER =
+		    XInternAtom(dpy, "SESSION_MANAGER", False);
 	}
-	if (!_XA_WM_CLIENT_LEADER)
-	{
-		_XA_WM_CLIENT_LEADER = XInternAtom(
-			dpy, "WM_CLIENT_LEADER", False);
+	if (!_XA_WM_CLIENT_LEADER) {
+		_XA_WM_CLIENT_LEADER =
+		    XInternAtom(dpy, "WM_CLIENT_LEADER", False);
 	}
-	if (!_XA_SM_CLIENT_ID)
-	{
+	if (!_XA_SM_CLIENT_ID) {
 		_XA_SM_CLIENT_ID = XInternAtom(dpy, "SM_CLIENT_ID", False);
 	}
 
-	if (XGetWindowProperty(
-		    dpy, window, _XA_WM_CLIENT_LEADER, 0L, 1L, False,
-		    AnyPropertyType, &actual_type, &actual_format, &nitems,
-		    &bytes_after, &prop) == Success)
-	{
-		if (actual_type == XA_WINDOW && actual_format == 32 &&
-		    nitems == 1 && bytes_after == 0)
-		{
+	if (XGetWindowProperty(dpy, window, _XA_WM_CLIENT_LEADER, 0L, 1L, False,
+		AnyPropertyType, &actual_type, &actual_format, &nitems,
+		&bytes_after, &prop)
+	    == Success) {
+		if (actual_type == XA_WINDOW && actual_format == 32
+		    && nitems == 1 && bytes_after == 0) {
 			client_leader = (Window)(*(long *)prop);
 		}
 	}
 
-	if (!client_leader)
-	{
+	if (!client_leader) {
 		client_leader = window;
 	}
 
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__, "[%s][fsm_init] Proxy %s window 0x%lx\n",
-		   module_name, (sm)? "On":"Off", client_leader);
+	    module_name, (sm) ? "On" : "Off", client_leader);
 
 #endif
 
 	/* set the client id for ksmserver */
-	if (sm)
-	{
-		XChangeProperty(
-			dpy, client_leader, _XA_SESSION_MANAGER, XA_STRING,
-			8, PropModeReplace, (unsigned char *)sm, strlen(sm));
-		XChangeProperty(
-			dpy, client_leader, _XA_SM_CLIENT_ID, XA_STRING,
-			8, PropModeReplace, (unsigned char *)dummy_id,
-			strlen(dummy_id));
-	}
-	else
-	{
+	if (sm) {
+		XChangeProperty(dpy, client_leader, _XA_SESSION_MANAGER,
+		    XA_STRING, 8, PropModeReplace, (unsigned char *)sm,
+		    strlen(sm));
+		XChangeProperty(dpy, client_leader, _XA_SM_CLIENT_ID, XA_STRING,
+		    8, PropModeReplace, (unsigned char *)dummy_id,
+		    strlen(dummy_id));
+	} else {
 		XDeleteProperty(dpy, client_leader, _XA_SESSION_MANAGER);
 		XDeleteProperty(dpy, client_leader, _XA_SM_CLIENT_ID);
 	}
@@ -1003,14 +911,14 @@ void set_session_manager(Display *dpy, Window window, char *sm)
 
 /* ---------------------------- interface functions ------------------------ */
 
-int fsm_init(char *module)
+int
+fsm_init(char *module)
 {
-	char errormsg[256];
-	int i;
+	char  errormsg[256];
+	int   i;
 	char *p;
 
-	if (!SessionSupport)
-	{
+	if (!SessionSupport) {
 		/* -Wall fix */
 		MyIoErrorHandler(NULL);
 		HostBasedAuthProc(NULL);
@@ -1018,62 +926,63 @@ int fsm_init(char *module)
 		NewClientProc(0, NULL, 0, NULL, NULL);
 #ifdef FVWM_DEBUG_FSM
 		fvwm_debug(__func__, "[%s][fsm_init] No Session Support\n",
-			   module_name);
+		    module_name);
 #endif
 		return 0;
 	}
 
-	if (fsm_init_succeed)
-	{
-		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
-			   "Session already Initialized!\n", module_name);
+	if (fsm_init_succeed) {
+		fvwm_debug(__func__,
+		    "[%s][fsm_init] <<ERROR>> -- "
+		    "Session already Initialized!\n",
+		    module_name);
 		return 1;
 	}
 	module_name = module;
-	InstallIOErrorHandler ();
+	InstallIOErrorHandler();
 
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__, "[%s][fsm_init] FSmsInitialize\n", module_name);
 #endif
-	if (!FSmsInitialize(
-		    module, "1.0", NewClientProc, NULL, HostBasedAuthProc, 256,
-		    errormsg))
-	{
-		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
-			   "FSmsInitialize failed: %s\n",
-			   module_name, errormsg);
+	if (!FSmsInitialize(module, "1.0", NewClientProc, NULL,
+		HostBasedAuthProc, 256, errormsg)) {
+		fvwm_debug(__func__,
+		    "[%s][fsm_init] <<ERROR>> -- "
+		    "FSmsInitialize failed: %s\n",
+		    module_name, errormsg);
 		return 0;
 	}
 
-	if (!FIceListenForConnections (
-		    &numTransports, &listenObjs, 256, errormsg))
-	{
-		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
-			   "FIceListenForConnections failed:\n"
-			   "%s\n", module_name, errormsg);
+	if (!FIceListenForConnections(
+		&numTransports, &listenObjs, 256, errormsg)) {
+		fvwm_debug(__func__,
+		    "[%s][fsm_init] <<ERROR>> -- "
+		    "FIceListenForConnections failed:\n"
+		    "%s\n",
+		    module_name, errormsg);
 		return 0;
 	}
 
 	atexit(CloseListeners);
 
-	if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
-	{
-	    fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
-		       "Could not set authorization\n", module_name);
-	    return 0;
+	if (!SetAuthentication(numTransports, listenObjs, &authDataEntries)) {
+		fvwm_debug(__func__,
+		    "[%s][fsm_init] <<ERROR>> -- "
+		    "Could not set authorization\n",
+		    module_name);
+		return 0;
 	}
 
-	if (FIceAddConnectionWatch(&ice_watch_fd, NULL) == 0)
-	{
+	if (FIceAddConnectionWatch(&ice_watch_fd, NULL) == 0) {
 		fvwm_debug(__func__,
-			   "[%s][fsm_init] <<ERROR>> -- "
-			   "FIceAddConnectionWatch failed\n", module_name);
+		    "[%s][fsm_init] <<ERROR>> -- "
+		    "FIceAddConnectionWatch failed\n",
+		    module_name);
 		return 0;
 	}
 
 	ice_fd = fxmalloc(sizeof(int) * numTransports + 1);
-	for (i = 0; i < numTransports; i++)
-	{
+	for (i = 0; i < numTransports; i++) {
 		ice_fd[i] = FIceGetListenConnectionNumber(listenObjs[i]);
 	}
 
@@ -1084,8 +993,8 @@ int fsm_init(char *module)
 	putenv(p);
 
 #ifdef FVWM_DEBUG_FSM
-	fvwm_debug(__func__, "[%s][fsm_init] OK: %i\n", module_name,
-		   numTransports);
+	fvwm_debug(
+	    __func__, "[%s][fsm_init] OK: %i\n", module_name, numTransports);
 	fvwm_debug(__func__, "\t%s\n", p);
 #endif
 
@@ -1093,63 +1002,54 @@ int fsm_init(char *module)
 	return 1;
 }
 
-void fsm_fdset(fd_set *in_fdset)
+void
+fsm_fdset(fd_set *in_fdset)
 {
-	int i;
-	flist *l = fsm_ice_conn_list;
+	int		i;
+	flist *		l = fsm_ice_conn_list;
 	fsm_ice_conn_t *fic;
 
-	if (!SessionSupport || !fsm_init_succeed)
-	{
+	if (!SessionSupport || !fsm_init_succeed) {
 		return;
 	}
 
-	for (i = 0; i < numTransports; i++)
-	{
+	for (i = 0; i < numTransports; i++) {
 		FD_SET(ice_fd[i], in_fdset);
 	}
-	while(l != NULL)
-	{
+	while (l != NULL) {
 		fic = (fsm_ice_conn_t *)l->object;
 		FD_SET(fic->fd, in_fdset);
 		l = l->next;
 	}
-
 }
 
-Bool fsm_process(fd_set *in_fdset)
+Bool
+fsm_process(fd_set *in_fdset)
 {
-	int i;
-	flist *l = fsm_ice_conn_list;
+	int		i;
+	flist *		l = fsm_ice_conn_list;
 	fsm_ice_conn_t *fic;
 
-	if (!SessionSupport || !fsm_init_succeed)
-	{
+	if (!SessionSupport || !fsm_init_succeed) {
 		return False;
 	}
 
-	if (pending_ice_conn_list != NULL)
-	{
+	if (pending_ice_conn_list != NULL) {
 		CompletNewConnectionMsg();
 	}
-	while(l != NULL)
-	{
+	while (l != NULL) {
 		fic = (fsm_ice_conn_t *)l->object;
-		if (FD_ISSET(fic->fd, in_fdset))
-		{
+		if (FD_ISSET(fic->fd, in_fdset)) {
 			ProcessIceMsg(fic);
 		}
 		l = l->next;
 	}
-	for (i = 0; i < numTransports; i++)
-	{
-		if (FD_ISSET(ice_fd[i], in_fdset))
-		{
+	for (i = 0; i < numTransports; i++) {
+		if (FD_ISSET(ice_fd[i], in_fdset)) {
 			NewConnectionMsg(i);
 		}
 	}
-	if (pending_ice_conn_list != NULL)
-	{
+	if (pending_ice_conn_list != NULL) {
 		return True;
 	}
 	return False;
@@ -1157,48 +1057,43 @@ Bool fsm_process(fd_set *in_fdset)
 
 /* this try to explain to ksmserver and various sm poxies that they should not
  * connect our non XSMP award leader window to the top level sm */
-void fsm_proxy(Display *dpy, Window win, char *sm)
+void
+fsm_proxy(Display *dpy, Window win, char *sm)
 {
-	char *client_id;
-	flist *l = running_list;
-	Bool found = False;
+	char * client_id;
+	flist *l     = running_list;
+	Bool   found = False;
 
-	if (!SessionSupport || !fsm_init_succeed)
-	{
+	if (!SessionSupport || !fsm_init_succeed) {
 		return;
 	}
 
 	client_id = GetClientID(dpy, win);
 
-	if (client_id != NULL && strcmp("0", client_id) != 0)
-	{
-		for (l = running_list; l; l = l->next)
-		{
-			fsm_client_t *client = (fsm_client_t *) l->object;
+	if (client_id != NULL && strcmp("0", client_id) != 0) {
+		for (l = running_list; l; l = l->next) {
+			fsm_client_t *client = (fsm_client_t *)l->object;
 
-			if (client->clientId &&
-			    strcmp(client->clientId, client_id) == 0)
-			{
+			if (client->clientId
+			    && strcmp(client->clientId, client_id) == 0) {
 				found = 1;
 				break;
 			}
 		}
 	}
 
-	if (found)
-	{
+	if (found) {
 		return;
 	}
 
 	set_session_manager(dpy, win, sm);
 }
 
-void fsm_close(void)
+void
+fsm_close(void)
 {
-	if (!SessionSupport || !fsm_init_succeed)
-	{
+	if (!SessionSupport || !fsm_init_succeed) {
 		return;
 	}
 	FreeAuthenticationData(numTransports, authDataEntries);
 }
-

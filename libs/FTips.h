@@ -5,8 +5,8 @@
 #define FVWMLIB_FTIPS_H
 
 /* ---------------------------- included header files ---------------------- */
-#include "fvwm_x11.h"
 #include "Flocale.h"
+#include "fvwm_x11.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
@@ -33,42 +33,50 @@ typedef enum
 
 typedef struct
 {
-	int colorset;
-	Pixel fg;
-	Pixel bg;
-	Pixel border_pixel;
-	int border_width;
-	FlocaleFont *Ffont;
+	int		  colorset;
+	Pixel		  fg;
+	Pixel		  bg;
+	Pixel		  border_pixel;
+	int		  border_width;
+	FlocaleFont *	  Ffont;
 	ftips_placement_t placement;
-	ftips_position_t justification;
-	unsigned int placement_offset; /* pixel */
-	unsigned int justification_offset; /* pixel */
-	unsigned long delay; /* ms */
-	unsigned long mapped_delay; /* ms */
+	ftips_position_t  justification;
+	unsigned int	  placement_offset;	/* pixel */
+	unsigned int	  justification_offset; /* pixel */
+	unsigned long	  delay;		/* ms */
+	unsigned long	  mapped_delay;		/* ms */
 } ftips_config;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- interface functions ------------------------ */
 
-Bool FTipsInit(Display *dpy);
+Bool
+FTipsInit(Display *dpy);
 
-ftips_config *FTipsNewConfig(void);
+ftips_config *
+FTipsNewConfig(void);
 
-void FTipsOn(
-	Display *dpy, Window win_f, ftips_config *fc, void *id, char *str,
-	int x, int y, int w, int h);
+void
+FTipsOn(Display *dpy, Window win_f, ftips_config *fc, void *id, char *str,
+    int x, int y, int w, int h);
 
-void FTipsCancel(Display *dpy);
+void
+FTipsCancel(Display *dpy);
 
-unsigned long FTipsCheck(Display *dpy);
+unsigned long
+FTipsCheck(Display *dpy);
 
-Bool FTipsExpose(Display *dpy, XEvent *ev);
+Bool
+FTipsExpose(Display *dpy, XEvent *ev);
 
-Bool FTipsHandleEvents(Display *dpy, XEvent *ev);
+Bool
+FTipsHandleEvents(Display *dpy, XEvent *ev);
 
-void FTipsUpdateLabel(Display *dpy, char *str);
+void
+FTipsUpdateLabel(Display *dpy, char *str);
 
-void FTipsColorsetChanged(Display *dpy, int cs);
+void
+FTipsColorsetChanged(Display *dpy, int cs);
 
 #endif

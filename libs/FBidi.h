@@ -65,22 +65,23 @@
 #ifndef FVWMLIB_FBIDI_H
 #define FVWMLIB_FBIDI_H
 
-#include "config.h"
 #include "CombineChars.h"
+#include "config.h"
 
 #if HAVE_BIDI
 /*
  * Checks whether the string in the given charset should be BidiConvert'd.
  */
-Bool FBidiIsApplicable(const char *charset);
+Bool
+FBidiIsApplicable(const char *charset);
 
 /*
  * Converts the given logical string to visual string for the given charset.
  */
-char *FBidiConvert(
-	const char *logical_str, const char *charset, int str_len,
-	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars,
-	int *pos_l_to_v);
+char *
+FBidiConvert(const char *logical_str, const char *charset, int str_len,
+    Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars,
+    int *pos_l_to_v);
 
 #else /* !HAVE_BIDI */
 

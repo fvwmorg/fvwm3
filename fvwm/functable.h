@@ -8,9 +8,9 @@
 
 /* ---------------------------- global definitions ------------------------- */
 
-#define PRE_KEEPRC       "keeprc"
-#define PRE_REPEAT       "repeat"
-#define PRE_SILENT       "silent"
+#define PRE_KEEPRC "keeprc"
+#define PRE_REPEAT "repeat"
+#define PRE_SILENT "silent"
 
 /* ---------------------------- global macros ------------------------------ */
 

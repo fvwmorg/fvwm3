@@ -27,7 +27,7 @@ typedef struct
 {
 	unsigned int keystate;
 	unsigned int keycode;
-	Time timestamp;
+	Time	     timestamp;
 } double_keypress;
 
 typedef enum
@@ -59,14 +59,15 @@ typedef enum
  * and can be deleted by the user as usual.
  *
  * To be called by SetRCDefaults *only*. */
-void menu_bindings_startup_complete(void);
+void
+menu_bindings_startup_complete(void);
 
 /* Parse a menu binding and store it.
  *
  * To be called from bindings.c *only*. */
-int menu_binding(
-	Display *dpy, binding_t type, int button, KeySym keysym,
-	int context, int modifier, char *action, char *menu_style);
+int
+menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
+    int context, int modifier, char *action, char *menu_style);
 
 /* Checks if the given mouse or keyboard event in the given context
  * corresponds to a menu binding.  If so, the binding is returned.  Otherwise
@@ -74,8 +75,10 @@ int menu_binding(
  *
  * To be called from menus.c *only*.
  */
-Binding *menu_binding_is_mouse(XEvent* event, int context);
-Binding *menu_binding_is_key(XEvent* event, int context);
+Binding *
+menu_binding_is_mouse(XEvent *event, int context);
+Binding *
+menu_binding_is_key(XEvent *event, int context);
 
 /* Menu keyboard processing
  *
@@ -87,9 +90,9 @@ Binding *menu_binding_is_key(XEvent* event, int context);
  * routine is called.
  * TKP - uses XLookupString so that keypad numbers work with windowlist
  */
-void menu_shortcuts(
-	struct MenuRoot *mr, struct MenuParameters *pmp,
-	struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmi_current,
-	double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y);
+void
+menu_shortcuts(struct MenuRoot *mr, struct MenuParameters *pmp,
+    struct MenuReturn *pmret, XEvent *event, struct MenuItem **pmi_current,
+    double_keypress *pdkp, int *ret_menu_x, int *ret_menu_y);
 
 #endif /* FVWM_MENU_BINDINGS_H */

@@ -18,14 +18,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "safemalloc.h"
 #include "getpwuid.h"
+#include "safemalloc.h"
 
-const char
-*find_home_dir(void)
+const char *
+find_home_dir(void)
 {
-	struct passwd		*pw;
-	const char		*home;
+	struct passwd *pw;
+	const char *   home;
 
 	home = getenv("HOME");
 	if (home == NULL || *home == '\0') {
@@ -42,8 +42,8 @@ const char
 const char *
 expand_path(const char *path)
 {
-	char			*expanded, *name;
-	const char		*end, *value, *home;
+	char *	    expanded, *name;
+	const char *end, *value, *home;
 
 	home = find_home_dir();
 

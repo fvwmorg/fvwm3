@@ -33,15 +33,15 @@
 
 /* ---------------------------- included header files ---------------------- */
 
-#include "libs/fvwm_x11.h"
-#include "libs/PictureBase.h"
-#include "libs/Fft.h"
-#include "libs/FRender.h"
-#include "libs/Flocale.h"
-#include "libs/fvwmrect.h"
-#include "libs/FScreen.h"
-#include "window_flags.h"
 #include "condrc.h"
+#include "libs/FRender.h"
+#include "libs/FScreen.h"
+#include "libs/Fft.h"
+#include "libs/Flocale.h"
+#include "libs/PictureBase.h"
+#include "libs/fvwm_x11.h"
+#include "libs/fvwmrect.h"
+#include "window_flags.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
@@ -58,22 +58,21 @@
  */
 
 /* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS \
-	cond_rc_t *cond_rc, const exec_context_t *exc, char *action
+#define F_CMD_ARGS cond_rc_t *cond_rc, const exec_context_t *exc, char *action
 #define F_PASS_ARGS cond_rc, exc, action
 #define FUNC_FLAGS_TYPE unsigned char
 
 /* access macros */
-#define FW_W_FRAME(fw)        ((fw)->wins.frame)
-#define FW_W_PARENT(fw)       ((fw)->wins.parent)
-#define FW_W_CLIENT(fw)       ((fw)->wins.client)
-#define FW_W(fw)              FW_W_CLIENT(fw)
-#define FW_W_TITLE(fw)        ((fw)->wins.title)
-#define FW_W_BUTTON(fw,i)     ((fw)->wins.button_w[(i)])
-#define FW_W_SIDE(fw,i)       ((fw)->wins.sides[(i)])
-#define FW_W_CORNER(fw,i)     ((fw)->wins.corners[(i)])
-#define FW_W_ICON_TITLE(fw)   ((fw)->wins.icon_title_w)
-#define FW_W_ICON_PIXMAP(fw)  ((fw)->wins.icon_pixmap_w)
+#define FW_W_FRAME(fw) ((fw)->wins.frame)
+#define FW_W_PARENT(fw) ((fw)->wins.parent)
+#define FW_W_CLIENT(fw) ((fw)->wins.client)
+#define FW_W(fw) FW_W_CLIENT(fw)
+#define FW_W_TITLE(fw) ((fw)->wins.title)
+#define FW_W_BUTTON(fw, i) ((fw)->wins.button_w[(i)])
+#define FW_W_SIDE(fw, i) ((fw)->wins.sides[(i)])
+#define FW_W_CORNER(fw, i) ((fw)->wins.corners[(i)])
+#define FW_W_ICON_TITLE(fw) ((fw)->wins.icon_title_w)
+#define FW_W_ICON_PIXMAP(fw) ((fw)->wins.icon_pixmap_w)
 #define FW_W_TRANSIENTFOR(fw) ((fw)->wins.transientfor)
 
 /* ---------------------------- forward declarations ----------------------- */
@@ -150,19 +149,19 @@ typedef struct
 */
 typedef struct icon_boxes_struct
 {
-	struct icon_boxes_struct *next;       /* next icon_boxes or zero */
-	unsigned int use_count;
-	int IconBox[4];                       /* x/y x/y for iconbox */
-	char	*IconScreen;                       /* Xinerama screen */
-	short IconGrid[2];                    /* x incr, y incr */
-	char IconSign[4];                     /* because of -0, need to save */
-	unsigned is_orphan : 1;
-	unsigned IconFlags : 3;               /* some bits */
+	struct icon_boxes_struct *next; /* next icon_boxes or zero */
+	unsigned int		  use_count;
+	int			  IconBox[4];  /* x/y x/y for iconbox */
+	char *			  IconScreen;  /* Xinerama screen */
+	short			  IconGrid[2]; /* x incr, y incr */
+	char			  IconSign[4]; /* because of -0, need to save */
+	unsigned		  is_orphan : 1;
+	unsigned		  IconFlags : 3; /* some bits */
 	/* IconFill only takes 3 bits.  Defaults are top, left, vert co-ord
 	 * first eg: t l = 0,0,0; l t = 0,0,1; b r = 1,1,0 */
-#define ICONFILLBOT (1<<0)
-#define ICONFILLRGT (1<<1)
-#define ICONFILLHRZ (1<<2)
+#define ICONFILLBOT (1 << 0)
+#define ICONFILLRGT (1 << 1)
+#define ICONFILLHRZ (1 << 2)
 } icon_boxes;
 
 typedef struct
@@ -236,9 +235,9 @@ typedef struct
 		unsigned has_no_sticky_stippled_icon_title : 1;
 		unsigned icon_override : 2;
 #define NO_ACTIVE_ICON_OVERRIDE 0
-#define ICON_OVERRIDE           1
-#define NO_ICON_OVERRIDE        2
-#define ICON_OVERRIDE_MASK    0x3
+#define ICON_OVERRIDE 1
+#define NO_ICON_OVERRIDE 2
+#define ICON_OVERRIDE_MASK 0x3
 		unsigned is_bottom_title_rotated : 1;
 		unsigned is_fixed : 1;
 		unsigned is_fixed_ppos : 1;
@@ -258,12 +257,12 @@ typedef struct
 		unsigned use_icon_position_hint : 1;
 		unsigned use_indexed_window_name : 1;
 		unsigned use_indexed_icon_name : 1;
-#define WINDOWSHADE_LAZY          0
-#define WINDOWSHADE_ALWAYS_LAZY   1
-#define WINDOWSHADE_BUSY          2
-#define WINDOWSHADE_LAZY_MASK   0x3
-		unsigned windowshade_laziness : 2;
-		unsigned use_title_decor_rotation : 1;
+#define WINDOWSHADE_LAZY 0
+#define WINDOWSHADE_ALWAYS_LAZY 1
+#define WINDOWSHADE_BUSY 2
+#define WINDOWSHADE_LAZY_MASK 0x3
+		unsigned       windowshade_laziness : 2;
+		unsigned       use_title_decor_rotation : 1;
 		focus_policy_t focus_policy;
 	} s;
 } common_flags_t;
@@ -271,10 +270,10 @@ typedef struct
 typedef struct
 {
 	common_flags_t common;
-#define CR_MOTION_METHOD_AUTO        0
-#define CR_MOTION_METHOD_USE_GRAV    1
+#define CR_MOTION_METHOD_AUTO 0
+#define CR_MOTION_METHOD_USE_GRAV 1
 #define CR_MOTION_METHOD_STATIC_GRAV 2
-#define CR_MOTION_METHOD_MASK      0x3
+#define CR_MOTION_METHOD_MASK 0x3
 	unsigned cr_motion_method : 2;
 	unsigned was_cr_motion_method_detected : 1;
 	unsigned does_wm_delete_window : 1;
@@ -360,17 +359,17 @@ typedef struct
 	unsigned shaded_dir : 3;
 	unsigned using_default_icon_font : 1;
 	unsigned using_default_window_font : 1;
-#define ICON_HINT_NEVER    0
-#define ICON_HINT_ONCE     1
+#define ICON_HINT_NEVER 0
+#define ICON_HINT_ONCE 1
 #define ICON_HINT_MULTIPLE 2
 	unsigned was_icon_hint_provided : 2;
 	unsigned was_icon_name_provided : 1;
 	unsigned was_never_drawn : 1;
 	unsigned has_ewmh_wm_name : 1;
 	unsigned has_ewmh_wm_icon_name : 1;
-#define EWMH_NO_ICON     0 /* the application does not provide an ewmh icon */
-#define EWMH_TRUE_ICON   1 /* the application does provide an ewmh icon */
-#define EWMH_FVWM_ICON   2 /* the ewmh icon has been set by fvwm */
+#define EWMH_NO_ICON 0	 /* the application does not provide an ewmh icon */
+#define EWMH_TRUE_ICON 1 /* the application does provide an ewmh icon */
+#define EWMH_FVWM_ICON 2 /* the ewmh icon has been set by fvwm */
 	unsigned has_ewmh_wm_icon_hint : 2;
 	/* says if the app have an ewmh icon of acceptable size for a mini
 	 * icon in its list of icons */
@@ -381,8 +380,8 @@ typedef struct
 	unsigned is_ewmh_modal : 1;
 	unsigned is_ewmh_fullscreen : 1;
 #define EWMH_STATE_UNDEFINED_HINT 0
-#define EWMH_STATE_NO_HINT        1
-#define EWMH_STATE_HAS_HINT       2
+#define EWMH_STATE_NO_HINT 1
+#define EWMH_STATE_HAS_HINT 2
 	unsigned has_ewmh_init_fullscreen_state : 2;
 	unsigned has_ewmh_init_hidden_state : 2;
 	unsigned has_ewmh_init_maxhoriz_state : 2;
@@ -394,7 +393,6 @@ typedef struct
 	unsigned has_ewmh_init_sticky_state : 2;
 	unsigned has_ewmh_init_wm_desktop : 2;
 } window_flags;
-
 
 /* Actions allowed by modules. */
 typedef struct action_flags
@@ -408,21 +406,20 @@ typedef struct action_flags
 	unsigned is_iconifiable : 1;
 } action_flags;
 
-
 /* Window name data structure for window conditions: a list of lists
    of names to match, the boolean operation on the matches being an
    AND of ORs. */
-struct namelist			/* matches to names in this list are ORed */
+struct namelist /* matches to names in this list are ORed */
 {
-	char *name;
+	char *		 name;
 	struct namelist *next;
 };
 
-struct name_condition		/* matches to namelists in this list are
-				   ANDed, after possibly inverting each */
+struct name_condition /* matches to namelists in this list are
+			 ANDed, after possibly inverting each */
 {
-	Bool invert;
-	struct namelist *namelist;
+	Bool		       invert;
+	struct namelist *      namelist;
 	struct name_condition *next;
 };
 
@@ -446,8 +443,8 @@ typedef struct WindowConditionMask
 		unsigned needs_current_desk_and_page : 1;
 		unsigned needs_current_global_page : 1;
 		unsigned needs_current_page : 1;
-#define NEEDS_ANY   0
-#define NEEDS_TRUE  1
+#define NEEDS_ANY 0
+#define NEEDS_TRUE 1
 #define NEEDS_FALSE 2
 		unsigned needs_focus : 2;
 		unsigned needs_overlapped : 2;
@@ -458,14 +455,14 @@ typedef struct WindowConditionMask
 		unsigned use_circulate_hit_shaded : 1;
 		unsigned use_do_accept_focus : 1;
 	} my_flags;
-	window_flags flags;
-	window_flags flag_mask;
+	window_flags	       flags;
+	window_flags	       flag_mask;
 	struct name_condition *name_condition;
-	int layer;
-	int desk;
-	struct monitor *screen;
-	int placed_by_button_mask;
-	int placed_by_button_set_mask;
+	int		       layer;
+	int		       desk;
+	struct monitor *       screen;
+	int		       placed_by_button_mask;
+	int		       placed_by_button_set_mask;
 } WindowConditionMask;
 
 typedef struct pl_penalty_struct
@@ -490,13 +487,13 @@ typedef struct pl_percent_penalty_struct
 typedef struct style_flags
 {
 	common_flags_t common;
-	unsigned do_decorate_transient : 1;
+	unsigned       do_decorate_transient : 1;
 	/* old placement flags */
-#define PLACE_DUMB            0x0
-#define PLACE_SMART           0x1
-#define PLACE_CLEVER          0x2
+#define PLACE_DUMB 0x0
+#define PLACE_SMART 0x1
+#define PLACE_CLEVER 0x2
 #define PLACE_CLEVERNESS_MASK 0x3
-#define PLACE_RANDOM          0x4
+#define PLACE_RANDOM 0x4
 	/* new placements value, try to get a minimal backward compatibility
 	 * with the old flags:
 	 * Dumb+Active = Manual,
@@ -511,16 +508,16 @@ typedef struct style_flags
 	 * Active/Random+Dumb+Clever = Active/Random+Dumb (with Dumb Clever is
 	 * ignored); These represent the not use value: 0x2=Active+Dumb+Clever,
 	 * 0x6=Random+Dumb+Clever */
-#define PLACE_MANUAL            0x0
-#define PLACE_TILEMANUAL        0x1
-#define PLACE_MANUAL_B          0x2
+#define PLACE_MANUAL 0x0
+#define PLACE_TILEMANUAL 0x1
+#define PLACE_MANUAL_B 0x2
 #define PLACE_MINOVERLAPPERCENT 0x3
-#define PLACE_CASCADE           0x4
-#define PLACE_TILECASCADE       0x5
-#define PLACE_CASCADE_B         0x6
-#define PLACE_MINOVERLAP        0x7
-#define PLACE_POSITION          0x8
-#define PLACE_MASK              0xF
+#define PLACE_CASCADE 0x4
+#define PLACE_TILECASCADE 0x5
+#define PLACE_CASCADE_B 0x6
+#define PLACE_MINOVERLAP 0x7
+#define PLACE_POSITION 0x8
+#define PLACE_MASK 0xF
 	unsigned placement_mode : 4;
 	unsigned ewmh_placement_mode : 2; /* see ewmh.h */
 #define WS_CR_MOTION_METHOD_AUTO CR_MOTION_METHOD_AUTO
@@ -531,8 +528,8 @@ typedef struct style_flags
 	unsigned do_save_under : 1;
 	unsigned do_start_iconic : 1;
 	unsigned do_start_lowered : 1;
- 	unsigned do_start_shaded : 1;
- 	unsigned start_shaded_dir : 3;
+	unsigned do_start_shaded : 1;
+	unsigned start_shaded_dir : 3;
 	unsigned has_border_width : 1;
 	unsigned has_color_back : 1;
 	unsigned has_color_fore : 1;
@@ -567,9 +564,9 @@ typedef struct style_flags
 	unsigned is_button_disabled : NUMBER_OF_TITLE_BUTTONS;
 	unsigned is_unmanaged : 1;
 #define BACKINGSTORE_DEFAULT 0
-#define BACKINGSTORE_ON      1
-#define BACKINGSTORE_OFF     2
-#define BACKINGSTORE_MASK  0x3
+#define BACKINGSTORE_ON 1
+#define BACKINGSTORE_OFF 2
+#define BACKINGSTORE_MASK 0x3
 	unsigned use_backing_store : 2;
 	unsigned use_parent_relative : 1;
 	unsigned use_colorset : 1;
@@ -603,11 +600,11 @@ typedef struct style_flags
 typedef struct style_id_t
 {
 	char *name;
-	XID window_id;
+	XID   window_id;
 	struct
 	{
-		unsigned has_name:1;
-		unsigned has_window_id:1;
+		unsigned has_name : 1;
+		unsigned has_window_id : 1;
 	} flags;
 } style_id_t;
 
@@ -620,14 +617,14 @@ typedef struct snap_attraction_t
 	/* mode flags to do bit manipulation */
 	enum
 	{
-		SNAP_NONE = 0x00,
-		SNAP_WINDOWS = 0x01,
-		SNAP_ICONS = 0x02,
-		SNAP_SAME = 0x04,
-		SNAP_SCREEN = 0x08,
+		SNAP_NONE	    = 0x00,
+		SNAP_WINDOWS	    = 0x01,
+		SNAP_ICONS	    = 0x02,
+		SNAP_SAME	    = 0x04,
+		SNAP_SCREEN	    = 0x08,
 		SNAP_SCREEN_WINDOWS = 0x10,
-		SNAP_SCREEN_ICONS = 0x20,
-		SNAP_SCREEN_ALL = 0x40,
+		SNAP_SCREEN_ICONS   = 0x20,
+		SNAP_SCREEN_ALL	    = 0x40,
 	} types;
 } snap_attraction_t;
 
@@ -636,52 +633,52 @@ typedef struct window_style
 {
 	struct window_style *next;
 	struct window_style *prev;
-	style_id_t id;
+	style_id_t	     id;
 #if 0
 	WindowConditionMask *condition_mask;
 #endif
-	char *icon_name;
-	char *mini_icon_name;
-	char *decor_name;
+	char *	      icon_name;
+	char *	      mini_icon_name;
+	char *	      decor_name;
 	unsigned char min_icon_width;
 	unsigned char max_icon_width;
 	unsigned char min_icon_height;
 	unsigned char max_icon_height;
-#define ICON_RESIZE_TYPE_NONE      0x0
+#define ICON_RESIZE_TYPE_NONE 0x0
 #define ICON_RESIZE_TYPE_STRETCHED 0x1
-#define ICON_RESIZE_TYPE_ADJUSTED  0x2
-#define ICON_RESIZE_TYPE_SHRUNK    0x3
-#define ICON_RESIZE_TYPE_MASK      0x3
-	unsigned icon_resize_type : 2;
+#define ICON_RESIZE_TYPE_ADJUSTED 0x2
+#define ICON_RESIZE_TYPE_SHRUNK 0x3
+#define ICON_RESIZE_TYPE_MASK 0x3
+	unsigned      icon_resize_type : 2;
 	unsigned char icon_background_padding;
-	signed char icon_background_relief;
-	signed char icon_title_relief;
-	char *icon_font;
-	char *window_font;
-	char *fore_color_name;
-	char *back_color_name;
-	char *fore_color_name_hi;
-	char *back_color_name_hi;
-	int colorset;
-	int colorset_hi;
-	int border_colorset;
-	int border_colorset_hi;
-	int icon_title_colorset;
-	int icon_title_colorset_hi;
-	int icon_background_colorset;
-	short border_width;
+	signed char   icon_background_relief;
+	signed char   icon_title_relief;
+	char *	      icon_font;
+	char *	      window_font;
+	char *	      fore_color_name;
+	char *	      back_color_name;
+	char *	      fore_color_name_hi;
+	char *	      back_color_name_hi;
+	int	      colorset;
+	int	      colorset_hi;
+	int	      border_colorset;
+	int	      border_colorset_hi;
+	int	      icon_title_colorset;
+	int	      icon_title_colorset_hi;
+	int	      icon_background_colorset;
+	short	      border_width;
 	/* resize handle width */
 	short handle_width;
-	int layer;
-	int start_desk;
-	int start_page_x;
-	int start_page_y;
+	int   layer;
+	int   start_desk;
+	int   start_page_x;
+	int   start_page_y;
 	char *start_screen;
-	int min_window_width;
-	int min_window_height;
-	int max_window_width;
-	int max_window_height;
-	int shade_anim_steps;
+	int   min_window_width;
+	int   min_window_height;
+	int   max_window_width;
+	int   max_window_height;
+	int   shade_anim_steps;
 #if 1 /*!!!*/
 	snap_attraction_t snap_attraction;
 	/* snap grid size */
@@ -692,21 +689,21 @@ typedef struct window_style
 	int edge_resistance_move;
 	int edge_resistance_xinerama_move;
 #endif
-	icon_boxes *icon_boxes;
-	float norm_placement_penalty;
-	pl_penalty_struct pl_penalty;
+	icon_boxes *		  icon_boxes;
+	float			  norm_placement_penalty;
+	pl_penalty_struct	  pl_penalty;
 	pl_percent_penalty_struct pl_percent_penalty;
-	char *pl_position_string;
-	char *initial_map_command_string;
-	char *title_format_string;
-	char *icon_title_format_string;
-	style_flags flags;
-	style_flags flag_default;
-	style_flags flag_mask;
-	style_flags change_mask;
-	unsigned has_style_changed : 1;
-	unsigned has_title_format_string : 1;
-	unsigned has_icon_title_format_string : 1;
+	char *			  pl_position_string;
+	char *			  initial_map_command_string;
+	char *			  title_format_string;
+	char *			  icon_title_format_string;
+	style_flags		  flags;
+	style_flags		  flag_default;
+	style_flags		  flag_mask;
+	style_flags		  change_mask;
+	unsigned		  has_style_changed : 1;
+	unsigned		  has_title_format_string : 1;
+	unsigned		  has_icon_title_format_string : 1;
 } window_style;
 
 typedef struct window_g
@@ -733,13 +730,13 @@ typedef struct FvwmWindow
 	FlocaleNameString name;
 	/* name of the icon */
 	FlocaleNameString icon_name;
-	char *visible_name;
-	char *visible_icon_name;
+	char *		  visible_name;
+	char *		  visible_icon_name;
 	/* if non-null: Use this instead of any other names for matching
 	   styles */
 	char *style_name;
-	int name_count;
-	int icon_name_count;
+	int   name_count;
+	int   icon_name_count;
 	/* next fvwm window */
 	struct FvwmWindow *next;
 	/* prev fvwm window */
@@ -785,11 +782,10 @@ typedef struct FvwmWindow
 	} decor_state;
 	int nr_left_buttons;
 	int nr_right_buttons;
-#define BUTTON_INDEX(b) \
-	(((b) == 0) ? (NUMBER_OF_TITLE_BUTTONS - 1) : ((b) - 1))
+#define BUTTON_INDEX(b) (((b) == 0) ? (NUMBER_OF_TITLE_BUTTONS - 1) : ((b)-1))
 	struct FvwmDecor *decor;
 	/* is this a shaped window */
-	int wShaped;
+	int    wShaped;
 	Pixmap title_background_pixmap;
 
 	/* Note: if the type of this variable is changed, do update the
@@ -807,7 +803,7 @@ typedef struct FvwmWindow
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
 	 */
-	short title_thickness;
+	short	   title_thickness;
 	rotation_t title_text_rotation;
 	struct
 	{
@@ -825,22 +821,22 @@ typedef struct FvwmWindow
 	/* pixmap for the icon */
 	Pixmap iconPixmap;
 	/* pixmap for the icon mask */
-	Pixmap icon_maskPixmap;
-	Pixmap icon_alphaPixmap;
-	int icon_nalloc_pixels;
-	Pixel *icon_alloc_pixels;
-	int icon_no_limit;
+	Pixmap	     icon_maskPixmap;
+	Pixmap	     icon_alphaPixmap;
+	int	     icon_nalloc_pixels;
+	Pixel *	     icon_alloc_pixels;
+	int	     icon_no_limit;
 	FlocaleFont *icon_font;
 
 	/* some parts of the window attributes */
 	struct
 	{
-		int backing_store;
-		int border_width;
-		int depth;
-		int bit_gravity;
+		int	 backing_store;
+		int	 border_width;
+		int	 depth;
+		int	 bit_gravity;
 		unsigned is_bit_gravity_stored : 1;
-		Visual *visual;
+		Visual * visual;
 		Colormap colormap;
 	} attr_backup;
 	/* normal hints */
@@ -863,18 +859,18 @@ typedef struct FvwmWindow
 	/* Desk to deiconify to, for StubbornIcons */
 	int DeIconifyDesk;
 
-	char *mini_pixmap_file;
+	char *	     mini_pixmap_file;
 	FvwmPicture *mini_icon;
-	char *icon_bitmap_file;
+	char *	     icon_bitmap_file;
 
 	struct window_g g;
-	long *mwm_hints;
-	int ol_hints;
-	int functions;
+	long *		mwm_hints;
+	int		ol_hints;
+	int		functions;
 	/* Colormap windows property */
 	Window *cmap_windows;
 	/* Should generally be 0 */
-	int number_cmap_windows;
+	int	   number_cmap_windows;
 	color_quad colors;
 	color_quad hicolors;
 	color_quad border_colors;
@@ -898,21 +894,21 @@ typedef struct FvwmWindow
 	 */
 	int layer;
 
-	unsigned char min_icon_width;
-	unsigned char max_icon_width;
-	unsigned char min_icon_height;
-	unsigned char max_icon_height;
+	unsigned char  min_icon_width;
+	unsigned char  max_icon_width;
+	unsigned char  min_icon_height;
+	unsigned char  max_icon_height;
 	unsigned short icon_resize_type;
 
 	unsigned char icon_background_padding;
-	char icon_background_relief;
-	char icon_title_relief;
+	char	      icon_background_relief;
+	char	      icon_title_relief;
 
-	int min_window_width;
-	int min_window_height;
-	int max_window_width;
-	int max_window_height;
-	int shade_anim_steps;
+	int	      min_window_width;
+	int	      min_window_height;
+	int	      max_window_width;
+	int	      max_window_height;
+	int	      shade_anim_steps;
 	unsigned char grabbed_buttons;
 #if 1 /*!!!*/
 	snap_attraction_t snap_attraction;
@@ -925,24 +921,24 @@ typedef struct FvwmWindow
 	int edge_resistance_xinerama_move;
 #endif
 
-#define FM_NO_INPUT        0
-#define FM_PASSIVE         1
-#define FM_LOCALLY_ACTIVE  2
+#define FM_NO_INPUT 0
+#define FM_PASSIVE 1
+#define FM_LOCALLY_ACTIVE 2
 #define FM_GLOBALLY_ACTIVE 3
 	unsigned char focus_model;
 
-	pl_penalty_struct pl_penalty;
+	pl_penalty_struct	  pl_penalty;
 	pl_percent_penalty_struct pl_percent_penalty;
 
 	unsigned char placed_by_button;
 
-#define EWMH_WINDOW_TYPE_NONE_ID      0
-#define EWMH_WINDOW_TYPE_DESKTOP_ID   1
-#define EWMH_WINDOW_TYPE_DIALOG_ID    2
-#define EWMH_WINDOW_TYPE_DOCK_ID      3
-#define EWMH_WINDOW_TYPE_MENU_ID      4
-#define EWMH_WINDOW_TYPE_NORMAL_ID    5
-#define EWMH_WINDOW_TYPE_TOOLBAR_ID   6
+#define EWMH_WINDOW_TYPE_NONE_ID 0
+#define EWMH_WINDOW_TYPE_DESKTOP_ID 1
+#define EWMH_WINDOW_TYPE_DIALOG_ID 2
+#define EWMH_WINDOW_TYPE_DOCK_ID 3
+#define EWMH_WINDOW_TYPE_MENU_ID 4
+#define EWMH_WINDOW_TYPE_NORMAL_ID 5
+#define EWMH_WINDOW_TYPE_TOOLBAR_ID 6
 #define EWMH_WINDOW_TYPE_NOTIFICATION_ID 7
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
@@ -975,16 +971,16 @@ typedef struct FvwmWindow
 	struct
 	{
 		struct window_g g;
-		int is_iconified;
-		int is_shaded;
-		int was_maximized;
+		int		is_iconified;
+		int		is_shaded;
+		int		was_maximized;
 	} fullscreen;
 
 	/* multi purpose scratch structure */
 	struct
 	{
 		void *p;
-		int i;
+		int   i;
 	} scratch;
 
 	struct monitor *m;
@@ -995,7 +991,9 @@ typedef struct FvwmWindow
 
 /* ---------------------------- interface functions ------------------------ */
 
-void SetMWM_INFO(Window window);
-void fvmm_deinstall_signals(void);
+void
+SetMWM_INFO(Window window);
+void
+fvmm_deinstall_signals(void);
 
 #endif /* FVWM_H */

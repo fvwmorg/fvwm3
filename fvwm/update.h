@@ -54,8 +54,11 @@ typedef struct
 	unsigned do_update_working_area : 1;
 } update_win;
 
-void destroy_scheduled_windows(void);
-void apply_decor_change(FvwmWindow *fw);
-void flush_window_updates(void);
+void
+destroy_scheduled_windows(void);
+void
+apply_decor_change(FvwmWindow *fw);
+void
+flush_window_updates(void);
 
 #endif /* FVWM_UPDATE_H */

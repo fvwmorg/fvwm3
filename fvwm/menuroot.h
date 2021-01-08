@@ -4,9 +4,9 @@
 #define FVWM_MENU_ROOT_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "libs/PictureBase.h"
 #include "libs/fvwm_x11.h"
 #include "menudim.h"
-#include "libs/PictureBase.h"
 /* ---------------------------- forward declarations ----------------------- */
 
 struct MenuItem;
@@ -32,12 +32,12 @@ typedef struct MenuRootStatic
 	/* # of mapped instances */
 	int usage_count;
 	/* name of root */
-	char *name;
+	char *		      name;
 	struct MenuDimensions dim;
-	int items;
-	FvwmPicture *sidePic;
-	Pixel sideColor;
-	int used_mini_icons;
+	int		      items;
+	FvwmPicture *	      sidePic;
+	Pixel		      sideColor;
+	int		      used_mini_icons;
 	/* Menu Face */
 	struct MenuStyle *ms;
 	/* permanent flags */
@@ -56,39 +56,39 @@ typedef struct MenuRootStatic
 } MenuRootStatic;
 
 /* access macros to static menu members */
-#define MR_FIRST_ITEM(m)         ((m)->s->first)
-#define MR_LAST_ITEM(m)          ((m)->s->last)
-#define MR_COPIES(m)             ((m)->s->copies)
-#define MR_MAPPED_COPIES(m)      ((m)->s->usage_count)
-#define MR_NAME(m)               ((m)->s->name)
-#define MR_DIM(m)                ((m)->s->dim)
-#define MR_WIDTH(m)              MDIM_WIDTH((m)->s->dim)
-#define MR_HEIGHT(m)             MDIM_HEIGHT((m)->s->dim)
-#define MR_ITEM_WIDTH(m)         MDIM_ITEM_WIDTH((m)->s->dim)
-#define MR_SIDEPIC_X_OFFSET(m)   MDIM_SIDEPIC_X_OFFSET((m)->s->dim)
-#define MR_ICON_X_OFFSET(m)      MDIM_ICON_X_OFFSET((m)->s->dim)
-#define MR_TRIANGLE_X_OFFSET(m)  MDIM_TRIANGLE_X_OFFSET((m)->s->dim)
-#define MR_ITEM_X_OFFSET(m)      MDIM_ITEM_X_OFFSET((m)->s->dim)
+#define MR_FIRST_ITEM(m) ((m)->s->first)
+#define MR_LAST_ITEM(m) ((m)->s->last)
+#define MR_COPIES(m) ((m)->s->copies)
+#define MR_MAPPED_COPIES(m) ((m)->s->usage_count)
+#define MR_NAME(m) ((m)->s->name)
+#define MR_DIM(m) ((m)->s->dim)
+#define MR_WIDTH(m) MDIM_WIDTH((m)->s->dim)
+#define MR_HEIGHT(m) MDIM_HEIGHT((m)->s->dim)
+#define MR_ITEM_WIDTH(m) MDIM_ITEM_WIDTH((m)->s->dim)
+#define MR_SIDEPIC_X_OFFSET(m) MDIM_SIDEPIC_X_OFFSET((m)->s->dim)
+#define MR_ICON_X_OFFSET(m) MDIM_ICON_X_OFFSET((m)->s->dim)
+#define MR_TRIANGLE_X_OFFSET(m) MDIM_TRIANGLE_X_OFFSET((m)->s->dim)
+#define MR_ITEM_X_OFFSET(m) MDIM_ITEM_X_OFFSET((m)->s->dim)
 #define MR_ITEM_TEXT_Y_OFFSET(m) MDIM_ITEM_TEXT_Y_OFFSET((m)->s->dim)
-#define MR_HILIGHT_X_OFFSET(m)   MDIM_HILIGHT_X_OFFSET((m)->s->dim)
-#define MR_HILIGHT_WIDTH(m)      MDIM_HILIGHT_WIDTH((m)->s->dim)
-#define MR_SCREEN_WIDTH(m)       MDIM_SCREEN_WIDTH((m)->s->dim)
-#define MR_SCREEN_HEIGHT(m)      MDIM_SCREEN_HEIGHT((m)->s->dim)
-#define MR_SCREEN_X(m)           MDIM_SCREEN_X((m)->s->dim)
-#define MR_SCREEN_Y(m)           MDIM_SCREEN_Y((m)->s->dim)
-#define MR_ITEMS(m)              ((m)->s->items)
-#define MR_SIDEPIC(m)            ((m)->s->sidePic)
-#define MR_SIDECOLOR(m)          ((m)->s->sideColor)
-#define MR_USED_MINI_ICONS(m)    ((m)->s->used_mini_icons)
-#define MR_STYLE(m)              ((m)->s->ms)
+#define MR_HILIGHT_X_OFFSET(m) MDIM_HILIGHT_X_OFFSET((m)->s->dim)
+#define MR_HILIGHT_WIDTH(m) MDIM_HILIGHT_WIDTH((m)->s->dim)
+#define MR_SCREEN_WIDTH(m) MDIM_SCREEN_WIDTH((m)->s->dim)
+#define MR_SCREEN_HEIGHT(m) MDIM_SCREEN_HEIGHT((m)->s->dim)
+#define MR_SCREEN_X(m) MDIM_SCREEN_X((m)->s->dim)
+#define MR_SCREEN_Y(m) MDIM_SCREEN_Y((m)->s->dim)
+#define MR_ITEMS(m) ((m)->s->items)
+#define MR_SIDEPIC(m) ((m)->s->sidePic)
+#define MR_SIDECOLOR(m) ((m)->s->sideColor)
+#define MR_USED_MINI_ICONS(m) ((m)->s->used_mini_icons)
+#define MR_STYLE(m) ((m)->s->ms)
 /* flags */
-#define MR_FLAGS(m)              ((m)->s->flags)
-#define MR_POPUP_ACTION(m)       ((m)->s->dynamic.popup_action)
-#define MR_POPDOWN_ACTION(m)     ((m)->s->dynamic.popdown_action)
+#define MR_FLAGS(m) ((m)->s->flags)
+#define MR_POPUP_ACTION(m) ((m)->s->dynamic.popup_action)
+#define MR_POPDOWN_ACTION(m) ((m)->s->dynamic.popdown_action)
 #define MR_MISSING_SUBMENU_FUNC(m) ((m)->s->dynamic.missing_submenu_func)
-#define MR_HAS_SIDECOLOR(m)      ((m)->s->flags.has_side_color)
-#define MR_IS_LEFT_TRIANGLE(m)   ((m)->s->flags.is_left_triangle)
-#define MR_IS_UPDATED(m)         ((m)->s->flags.is_updated)
+#define MR_HAS_SIDECOLOR(m) ((m)->s->flags.has_side_color)
+#define MR_IS_LEFT_TRIANGLE(m) ((m)->s->flags.is_left_triangle)
+#define MR_IS_UPDATED(m) ((m)->s->flags.is_updated)
 
 /* This struct contains the parts of a root menu that differ in all copies of
  * the menu */
@@ -137,47 +137,47 @@ typedef struct MenuRootDynamic
 	struct
 	{
 		Pixmap stored;
-		int width;
-		int height;
-		int y;
+		int    width;
+		int    height;
+		int    y;
 	} stored_item;
 	struct
 	{
 		Pixel *d_pixels;
-		int d_npixels;
+		int    d_npixels;
 	} stored_pixels;
 	/* alloc pixels when dithering is used for gradients */
 } MenuRootDynamic;
 
 /* access macros to dynamic menu members */
-#define MR_ORIGINAL_MENU(m)         ((m)->d->original_menu)
-#define MR_NEXT_MENU(m)             ((m)->d->next_menu)
-#define MR_CONTINUATION_MENU(m)     ((m)->d->continuation_menu)
-#define MR_PARENT_MENU(m)           ((m)->d->parent_menu)
-#define MR_PARENT_ITEM(m)           ((m)->d->parent_item)
-#define MR_CREATE_DPY(m)            ((m)->d->create_dpy)
-#define MR_WINDOW(m)                ((m)->d->window)
-#define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
-#define MR_SUBMENU_ITEM(m)          ((m)->d->submenu_item)
-#define MR_XANIMATION(m)            ((m)->d->xanimation)
-#define MR_STORED_ITEM(m)           ((m)->d->stored_item)
-#define MR_STORED_PIXELS(m)         ((m)->d->stored_pixels)
+#define MR_ORIGINAL_MENU(m) ((m)->d->original_menu)
+#define MR_NEXT_MENU(m) ((m)->d->next_menu)
+#define MR_CONTINUATION_MENU(m) ((m)->d->continuation_menu)
+#define MR_PARENT_MENU(m) ((m)->d->parent_menu)
+#define MR_PARENT_ITEM(m) ((m)->d->parent_item)
+#define MR_CREATE_DPY(m) ((m)->d->create_dpy)
+#define MR_WINDOW(m) ((m)->d->window)
+#define MR_SELECTED_ITEM(m) ((m)->d->selected_item)
+#define MR_SUBMENU_ITEM(m) ((m)->d->submenu_item)
+#define MR_XANIMATION(m) ((m)->d->xanimation)
+#define MR_STORED_ITEM(m) ((m)->d->stored_item)
+#define MR_STORED_PIXELS(m) ((m)->d->stored_pixels)
 /* flags */
-#define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
-#define MR_IS_BACKGROUND_SET(m)     ((m)->d->dflags.is_background_set)
-#define MR_IS_DESTROYED(m)          ((m)->d->dflags.is_destroyed)
-#define MR_IS_LEFT(m)               ((m)->d->dflags.is_left)
-#define MR_IS_RIGHT(m)              ((m)->d->dflags.is_right)
-#define MR_IS_UP(m)                 ((m)->d->dflags.is_up)
-#define MR_IS_DOWN(m)               ((m)->d->dflags.is_down)
-#define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)
-#define MR_IS_TEAR_OFF_MENU(m)      ((m)->d->dflags.is_tear_off_menu)
-#define MR_HAS_POPPED_UP_LEFT(m)    ((m)->d->dflags.has_popped_up_left)
-#define MR_HAS_POPPED_UP_RIGHT(m)   ((m)->d->dflags.has_popped_up_right)
+#define MR_DYNAMIC_FLAGS(m) ((m)->d->dflags)
+#define MR_IS_BACKGROUND_SET(m) ((m)->d->dflags.is_background_set)
+#define MR_IS_DESTROYED(m) ((m)->d->dflags.is_destroyed)
+#define MR_IS_LEFT(m) ((m)->d->dflags.is_left)
+#define MR_IS_RIGHT(m) ((m)->d->dflags.is_right)
+#define MR_IS_UP(m) ((m)->d->dflags.is_up)
+#define MR_IS_DOWN(m) ((m)->d->dflags.is_down)
+#define MR_IS_PAINTED(m) ((m)->d->dflags.is_painted)
+#define MR_IS_TEAR_OFF_MENU(m) ((m)->d->dflags.is_tear_off_menu)
+#define MR_HAS_POPPED_UP_LEFT(m) ((m)->d->dflags.has_popped_up_left)
+#define MR_HAS_POPPED_UP_RIGHT(m) ((m)->d->dflags.has_popped_up_right)
 
 typedef struct MenuRoot
 {
-	MenuRootStatic *s;
+	MenuRootStatic * s;
 	MenuRootDynamic *d;
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */

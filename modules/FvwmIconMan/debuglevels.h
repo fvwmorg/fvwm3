@@ -11,10 +11,10 @@
    to zero.  I fixed some of them, until I grew tired of the game.
    If you want to turn these back on, be prepared for lots of core
    dumps.  dje 11/15/98. */
-int CORE = 0;
+int CORE      = 0;
 int FUNCTIONS = 0;
-int X11 = 0;
-int FVWM = 0;
-int CONFIG = 0;
-int WINLIST = 0;
-int MEM = 0;
+int X11	      = 0;
+int FVWM      = 0;
+int CONFIG    = 0;
+int WINLIST   = 0;
+int MEM	      = 0;

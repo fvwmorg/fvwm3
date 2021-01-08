@@ -2,8 +2,8 @@
 
 #ifndef FVWMLIB_VPACKET_H
 #define FVWMLIB_VPACKET_H
-#include "fvwm_x11.h"
 #include "fvwm/fvwm.h"
+#include "fvwm_x11.h"
 
 /*
   All new-style module packets (i.e., those that are not simply arrays
@@ -23,7 +23,7 @@ typedef struct ConfigWinPacket
 	/*** Note that this packet format will break on future 128 bit
 	 *** platforms. ***/
 	/*** Put long, Window, and pointers  here ***/
-	unsigned long  w;      /* Window */
+	unsigned long  w;     /* Window */
 	unsigned long  frame; /* Window */
 	unsigned long *fvwmwin;
 	signed long    frame_x;
@@ -39,28 +39,28 @@ typedef struct ConfigWinPacket
 	  RBW - 05/01/2000 - layer has usurped this slot.
 	  unsigned long  dummy;
 	*/
-	unsigned long  layer;
+	unsigned long layer;
 
-	unsigned long  hints_base_width;
-	unsigned long  hints_base_height;
-	unsigned long  hints_width_inc;
-	unsigned long  hints_height_inc;
-	unsigned long  orig_hints_width_inc;
-	unsigned long  orig_hints_height_inc;
-	unsigned long  hints_min_width;
-	unsigned long  hints_min_height;
-	unsigned long  hints_max_width;
-	unsigned long  hints_max_height;
-	unsigned long  icon_w;        /* Window */
-	unsigned long  icon_pixmap_w; /* Window */
-	unsigned long  hints_win_gravity;
-	unsigned long  TextPixel;
-	unsigned long  BackPixel;
+	unsigned long hints_base_width;
+	unsigned long hints_base_height;
+	unsigned long hints_width_inc;
+	unsigned long hints_height_inc;
+	unsigned long orig_hints_width_inc;
+	unsigned long orig_hints_height_inc;
+	unsigned long hints_min_width;
+	unsigned long hints_min_height;
+	unsigned long hints_max_width;
+	unsigned long hints_max_height;
+	unsigned long icon_w;	     /* Window */
+	unsigned long icon_pixmap_w; /* Window */
+	unsigned long hints_win_gravity;
+	unsigned long TextPixel;
+	unsigned long BackPixel;
 
 	/*  Everything below this is post-GSFR  */
-	unsigned long  ewmh_hint_layer;
-	unsigned long  ewmh_hint_desktop;
-	unsigned long  ewmh_window_type;
+	unsigned long ewmh_hint_layer;
+	unsigned long ewmh_hint_desktop;
+	unsigned long ewmh_window_type;
 
 	/*** Put int here, fill with dummies to a multiple of 2 ***/
 
@@ -71,23 +71,23 @@ typedef struct ConfigWinPacket
 	unsigned short short_dummy_4;
 
 	/*** Put structures here ***/
-	window_flags   flags;
-	action_flags   allowed_actions;
+	window_flags flags;
+	action_flags allowed_actions;
 
 } ConfigWinPacket;
 
 typedef struct MiniIconPacket
 {
-	Window         w;
-	Window         frame;
-	FvwmWindow    *fvwmwin;
-	unsigned long  width;
-	unsigned long  height;
-	unsigned long  depth;
-	Pixmap         picture;
-	Pixmap         mask;
-	Pixmap         alpha;
-	char           name[1];
+	Window	      w;
+	Window	      frame;
+	FvwmWindow *  fvwmwin;
+	unsigned long width;
+	unsigned long height;
+	unsigned long depth;
+	Pixmap	      picture;
+	Pixmap	      mask;
+	Pixmap	      alpha;
+	char	      name[1];
 } MiniIconPacket;
 
 #endif /* FVWMLIB_VPACKET_H */

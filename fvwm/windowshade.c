@@ -19,22 +19,22 @@
 
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
+#include "borders.h"
+#include "commands.h"
+#include "ewmh.h"
+#include "execcontext.h"
+#include "externs.h"
+#include "focus.h"
+#include "frame.h"
+#include "fvwm.h"
+#include "geometry.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
-#include "fvwm.h"
-#include "externs.h"
-#include "execcontext.h"
+#include "libs/fvwmlib.h"
 #include "misc.h"
-#include "commands.h"
-#include "screen.h"
-#include "module_list.h"
 #include "module_interface.h"
-#include "geometry.h"
-#include "ewmh.h"
-#include "borders.h"
-#include "frame.h"
-#include "focus.h"
+#include "module_list.h"
+#include "screen.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -67,36 +67,31 @@
  */
 void CMD_WindowShade(F_CMD_ARGS)
 {
-	direction_t shade_dir;
-	int toggle;
+	direction_t	       shade_dir;
+	int		       toggle;
 	frame_move_resize_mode resize_mode;
-	rectangle start_g;
-	rectangle end_g;
+	rectangle	       start_g;
+	rectangle	       end_g;
 	frame_move_resize_args mr_args;
-	char *token;
-	char *naction;
-	Bool do_force_shading;
-	Bool has_dir;
-	FvwmWindow * const fw = exc->w.fw;
+	char *		       token;
+	char *		       naction;
+	Bool		       do_force_shading;
+	Bool		       has_dir;
+	FvwmWindow *const      fw = exc->w.fw;
 
-	if (IS_ICONIFIED(fw) || IS_EWMH_FULLSCREEN(fw))
-	{
+	if (IS_ICONIFIED(fw) || IS_EWMH_FULLSCREEN(fw)) {
 		return;
 	}
 	token = PeekToken(action, &naction);
-	if (StrEquals("shadeagain", token))
-	{
+	if (StrEquals("shadeagain", token)) {
 		do_force_shading = True;
-		action = naction;
-		token = PeekToken(action, &naction);
-	}
-	else
-	{
+		action		 = naction;
+		token		 = PeekToken(action, &naction);
+	} else {
 		do_force_shading = False;
 	}
 	/* parse arguments */
-	if (StrEquals("Last", token))
-	{
+	if (StrEquals("Last", token)) {
 		/* last given instead of a direction will make
 		 * fvwm to reuse the last used shading direction.
 		 * A new, nevershaded window will have
@@ -104,118 +99,86 @@ void CMD_WindowShade(F_CMD_ARGS)
 		 * setup_window_structure)
 		 */
 		action = naction;
-		if (!USED_TITLE_DIR_FOR_SHADING(fw))
-		{
+		if (!USED_TITLE_DIR_FOR_SHADING(fw)) {
 			shade_dir = SHADED_DIR(fw);
-		}
-		else
-		{
+		} else {
 			shade_dir = DIR_NONE;
 		}
-	}
-	else
-	{
+	} else {
 		/* parse normal direction if last was not given */
 		shade_dir = gravity_parse_dir_argument(action, NULL, -1);
 	}
 
-	if (shade_dir >= 0 && shade_dir <= DIR_MASK)
-	{
+	if (shade_dir >= 0 && shade_dir <= DIR_MASK) {
 		has_dir = True;
-		toggle = (!IS_SHADED(fw) || SHADED_DIR(fw) != shade_dir);
-	}
-	else
-	{
+		toggle	= (!IS_SHADED(fw) || SHADED_DIR(fw) != shade_dir);
+	} else {
 		has_dir = False;
-		toggle = ParseToggleArgument(action, NULL, -1, 0);
-		if (toggle == -1 &&
-		    GetIntegerArguments(action, NULL, &toggle, 1) > 0)
-		{
-			if (toggle == 1)
-			{
+		toggle	= ParseToggleArgument(action, NULL, -1, 0);
+		if (toggle == -1
+		    && GetIntegerArguments(action, NULL, &toggle, 1) > 0) {
+			if (toggle == 1) {
 				toggle = 1;
-			}
-			else if (toggle == 2)
-			{
+			} else if (toggle == 2) {
 				toggle = 0;
-			}
-			else
-			{
+			} else {
 				toggle = -1;
 			}
 		}
-		if (toggle == -1)
-		{
+		if (toggle == -1) {
 			toggle = !(IS_SHADED(fw));
 		}
-		if (!IS_SHADED(fw) && toggle == 1)
-		{
+		if (!IS_SHADED(fw) && toggle == 1) {
 			shade_dir = GET_TITLE_DIR(fw);
-		}
-		else if (IS_SHADED(fw) && toggle == 0)
-		{
+		} else if (IS_SHADED(fw) && toggle == 0) {
 			shade_dir = SHADED_DIR(fw);
-		}
-		else
-		{
+		} else {
 			shade_dir = -1;
 		}
 	}
-	if (!IS_SHADED(fw) && toggle == 0)
-	{
+	if (!IS_SHADED(fw) && toggle == 0) {
 		/* nothing to do */
 		return;
 	}
-	if (IS_SHADED(fw) && toggle == 1)
-	{
-		if (has_dir == False)
-		{
+	if (IS_SHADED(fw) && toggle == 1) {
+		if (has_dir == False) {
 			/* nothing to do */
 			return;
-		}
-		else if (do_force_shading == False)
-		{
+		} else if (do_force_shading == False) {
 			toggle = 0;
-		}
-		else if (shade_dir == SHADED_DIR(fw))
-		{
+		} else if (shade_dir == SHADED_DIR(fw)) {
 			return;
 		}
 	}
 
-	if (toggle == 1)
-	{
+	if (toggle == 1) {
 		SET_USED_TITLE_DIR_FOR_SHADING(fw, !has_dir);
 	}
 	/* draw the animation */
 	start_g = fw->g.frame;
 	get_unshaded_geometry(fw, &end_g);
-	if (toggle == 1)
-	{
+	if (toggle == 1) {
 		get_shaded_geometry_with_dir(fw, &end_g, &end_g, shade_dir);
 	}
-	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
-		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
+	resize_mode =
+	    (DO_SHRINK_WINDOWSHADE(fw)) ? FRAME_MR_SHRINK : FRAME_MR_SCROLL;
 	mr_args = frame_create_move_resize_args(
-		fw, resize_mode, &start_g, &end_g, fw->shade_anim_steps,
-		shade_dir);
+	    fw, resize_mode, &start_g, &end_g, fw->shade_anim_steps, shade_dir);
 	frame_move_resize(fw, mr_args);
 	/* Set the new shade value before destroying the args but after the
 	 * animation. */
 	SET_SHADED(fw, toggle);
-	if (toggle == 1)
-	{
+	if (toggle == 1) {
 		SET_SHADED_DIR(fw, shade_dir);
 	}
 	frame_free_move_resize_args(fw, mr_args);
-	border_draw_decorations(
-		fw, PART_TITLEBAR, (fw == get_focus_window()) ? True : False,
-		0, CLEAR_BUTTONS, NULL, NULL);
+	border_draw_decorations(fw, PART_TITLEBAR,
+	    (fw == get_focus_window()) ? True : False, 0, CLEAR_BUTTONS, NULL,
+	    NULL);
 	/* update hints and inform modules */
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
-	BroadcastPacket(
-		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3,
-		(long)FW_W(fw), (long)FW_W_FRAME(fw), (unsigned long)fw);
+	BroadcastPacket((toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3,
+	    (long)FW_W(fw), (long)FW_W_FRAME(fw), (unsigned long)fw);
 	FlushAllMessageQueues();
 	XFlush(dpy);
 	EWMH_SetWMState(fw, False);
@@ -228,14 +191,13 @@ void CMD_WindowShadeAnimate(F_CMD_ARGS)
 {
 	char *buf;
 
-	if (!action)
-	{
+	if (!action) {
 		action = "";
 	}
 	fvwm_debug(__func__,
-		   "The WindowShadeAnimate command is obsolete. "
-		   "Please use 'Style * WindowShadeSteps %s' instead.",
-		   action);
+	    "The WindowShadeAnimate command is obsolete. "
+	    "Please use 'Style * WindowShadeSteps %s' instead.",
+	    action);
 	/* TA:  FIXME!  xasprintf() */
 	buf = fxmalloc(strlen(action) + 32);
 	sprintf(buf, "* WindowShadeSteps %s", action);

@@ -26,6 +26,7 @@
 
 #include "libs/fvwm_x11.h"
 
-void ConstrainSize(XSizeHints *hints, int *widthp, int *heightp);
+void
+ConstrainSize(XSizeHints *hints, int *widthp, int *heightp);
 
 #endif /* FVWMBUTTONS_MISC_H */

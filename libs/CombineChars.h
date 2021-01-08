@@ -14,12 +14,12 @@
 
 typedef struct
 {
-	int position;  /* position in the string */
-	XChar2b c;     /* UCS-2 character */
+	int	position; /* position in the string */
+	XChar2b c;	  /* UCS-2 character */
 } superimpose_char_t;
 
-int CombineChars(
-	unsigned char *str_visual, int len, superimpose_char_t **comb_chars,
-	int **l_to_v);
+int
+CombineChars(unsigned char *str_visual, int len,
+    superimpose_char_t **comb_chars, int **l_to_v);
 
 #endif /* FVWMLIB_COMBINECHARS_H */

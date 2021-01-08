@@ -48,47 +48,46 @@
 
 #include <stdio.h>
 
-#include "libs/fvwmlib.h"
-#include "libs/FShape.h"
-#include "libs/FEvent.h"
-#include "libs/Picture.h"
-#include "libs/PictureUtils.h"
-#include "libs/charmap.h"
-#include "libs/wcontext.h"
-#include "libs/Grab.h"
-#include "libs/Strings.h"
-#include "libs/XResource.h"
-#include "fvwm.h"
-#include "externs.h"
-#include "cursor.h"
-#include "execcontext.h"
-#include "commands.h"
-#include "bindings.h"
-#include "misc.h"
-#include "screen.h"
 #include "add_window.h"
-#include "events.h"
+#include "bindings.h"
+#include "borders.h"
+#include "builtins.h"
+#include "colormaps.h"
+#include "commands.h"
+#include "cursor.h"
+#include "decorations.h"
 #include "eventhandler.h"
 #include "eventmask.h"
-#include "execcontext.h"
-#include "module_interface.h"
-#include "stack.h"
-#include "update.h"
-#include "style.h"
-#include "icons.h"
+#include "events.h"
 #include "ewmh.h"
+#include "execcontext.h"
+#include "externs.h"
 #include "focus.h"
-#include "placement.h"
-#include "geometry.h"
-#include "session.h"
-#include "move_resize.h"
-#include "borders.h"
 #include "frame.h"
-#include "colormaps.h"
-#include "decorations.h"
 #include "functions.h"
+#include "fvwm.h"
+#include "geometry.h"
+#include "icons.h"
+#include "libs/FEvent.h"
+#include "libs/FShape.h"
+#include "libs/Grab.h"
+#include "libs/Picture.h"
+#include "libs/PictureUtils.h"
+#include "libs/Strings.h"
+#include "libs/XResource.h"
+#include "libs/charmap.h"
+#include "libs/fvwmlib.h"
+#include "libs/wcontext.h"
+#include "misc.h"
+#include "module_interface.h"
+#include "move_resize.h"
+#include "placement.h"
+#include "screen.h"
+#include "session.h"
+#include "stack.h"
+#include "style.h"
+#include "update.h"
 #include "virtual.h"
-#include "builtins.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -106,23 +105,22 @@
 
 /* ---------------------------- exported variables (globals) --------------- */
 
-char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
-char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
+char NoName[]	  = "Untitled";	  /* name if no name in XA_WM_NAME */
+char NoClass[]	  = "NoClass";	  /* Class if no res_class in class hints */
 char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
 
 /* ---------------------------- local functions ---------------------------- */
 
-static void delete_client_context(FvwmWindow *fw)
+static void
+delete_client_context(FvwmWindow *fw)
 {
 	FvwmWindow *cw;
 
 	/* We can not simply delete the context.  X might have reused the
 	 * window structure so we would delete the context that was established
 	 * by another FvwmWindow structure in the mean time. */
-	if (XFindContext(
-		    dpy, FW_W(fw), FvwmContext, (caddr_t *)&cw) !=
-	    XCNOENT && cw == fw)
-	{
+	if (XFindContext(dpy, FW_W(fw), FvwmContext, (caddr_t *)&cw) != XCNOENT
+	    && cw == fw) {
 		XDeleteContext(dpy, FW_W(fw), FvwmContext);
 	}
 
@@ -139,23 +137,21 @@ static void delete_client_context(FvwmWindow *fw)
  *
  */
 
-static void CaptureOneWindow(
-	const exec_context_t *exc, FvwmWindow *fw, Window window,
-	Window keep_on_top_win, Window parent_win, Bool is_recapture)
+static void
+CaptureOneWindow(const exec_context_t *exc, FvwmWindow *fw, Window window,
+    Window keep_on_top_win, Window parent_win, Bool is_recapture)
 {
-	Window w;
-	unsigned long data[1];
+	Window			 w;
+	unsigned long		 data[1];
 	initial_window_options_t win_opts;
-	evh_args_t ea;
-	exec_context_changes_t ecc;
-	XEvent e;
+	evh_args_t		 ea;
+	exec_context_changes_t	 ecc;
+	XEvent			 e;
 
-	if (fw == NULL)
-	{
+	if (fw == NULL) {
 		return;
 	}
-	if (IS_SCHEDULED_FOR_DESTROY(fw))
-	{
+	if (IS_SCHEDULED_FOR_DESTROY(fw)) {
 		/* Fvwm might crash in complex functions if we really try to
 		 * the dying window here because AddWindow() may fail and leave
 		 * a destroyed window in some structures.  By the way, it is
@@ -166,40 +162,32 @@ static void CaptureOneWindow(
 	/* Grab the server to make sure the window does not die during the
 	 * recapture. */
 	MyXGrabServer(dpy);
-	if (
-		!XGetGeometry(
-			dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
-	{
+	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+		(unsigned int *)&JunkWidth, (unsigned int *)&JunkHeight,
+		(unsigned int *)&JunkBW, (unsigned int *)&JunkDepth)) {
 		/* The window has already died, do not recapture it! */
 		MyXUngrabServer(dpy);
 		return;
 	}
-	if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
-	{
+	if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT) {
 		Bool is_mapped = IS_MAPPED(fw);
 
 		memset(&win_opts, 0, sizeof(win_opts));
-		win_opts.initial_state = DontCareState;
+		win_opts.initial_state		= DontCareState;
 		win_opts.flags.do_override_ppos = 1;
-		win_opts.flags.is_recapture = 1;
-		if (IS_ICONIFIED(fw))
-		{
+		win_opts.flags.is_recapture	= 1;
+		if (IS_ICONIFIED(fw)) {
 			win_opts.initial_state = IconicState;
 			win_opts.flags.is_iconified_by_parent =
-				IS_ICONIFIED_BY_PARENT(fw);
-		}
-		else
-		{
-			win_opts.initial_state = NormalState;
+			    IS_ICONIFIED_BY_PARENT(fw);
+		} else {
+			win_opts.initial_state		      = NormalState;
 			win_opts.flags.is_iconified_by_parent = 0;
 			SetMapStateProp(fw, NormalState);
 		}
-		data[0] = (unsigned long) fw->Desk;
-		XChangeProperty(
-			dpy, FW_W(fw), _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-			PropModeReplace, (unsigned char *) data, 1);
+		data[0] = (unsigned long)fw->Desk;
+		XChangeProperty(dpy, FW_W(fw), _XA_WM_DESKTOP, _XA_WM_DESKTOP,
+		    32, PropModeReplace, (unsigned char *)data, 1);
 
 		XSelectInput(dpy, FW_W(fw), NoEventMask);
 		w = FW_W(fw);
@@ -209,29 +197,25 @@ static void CaptureOneWindow(
 		SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
 		destroy_window(fw);
 		win_opts.flags.is_menu =
-			(is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw));
-
+		    (is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw));
 
 		fev_make_null_event(&e, dpy);
 		e.xmaprequest.window = w;
 		e.xmaprequest.parent = Scr.Root;
-		ecc.x.etrigger = &e;
-		ecc.w.fw = NULL;
-		ecc.w.w = w;
-		ecc.w.wcontext = C_ROOT;
-		ea.exc = exc_clone_context(
-			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_W |
-			ECC_WCONTEXT);
+		ecc.x.etrigger	     = &e;
+		ecc.w.fw	     = NULL;
+		ecc.w.w		     = w;
+		ecc.w.wcontext	     = C_ROOT;
+		ea.exc		     = exc_clone_context(
+			  exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT);
 		HandleMapRequestKeepRaised(&ea, keep_on_top_win, fw, &win_opts);
 		exc_destroy_context(ea.exc);
 
 		/* HandleMapRequestKeepRaised may have destroyed the fw if the
 		 * window vanished while in AddWindow(), so don't access fw
 		 * anymore before checking if it is a valid window. */
-		if (check_if_fvwm_window_exists(fw))
-		{
-			if (!fFvwmInStartup)
-			{
+		if (check_if_fvwm_window_exists(fw)) {
+			if (!fFvwmInStartup) {
 				SET_MAP_PENDING(fw, 0);
 				SET_MAPPED(fw, is_mapped);
 			}
@@ -243,87 +227,73 @@ static void CaptureOneWindow(
 }
 
 /* Put a transparent window all over the screen to hide what happens below. */
-static void hide_screen(
-	Bool do_hide, Window *ret_hide_win, Window *ret_parent_win)
+static void
+hide_screen(Bool do_hide, Window *ret_hide_win, Window *ret_parent_win)
 {
-	static Bool is_hidden = False;
-	static Window hide_win = None;
-	static Window parent_win = None;
+	static Bool	     is_hidden	= False;
+	static Window	     hide_win	= None;
+	static Window	     parent_win = None;
 	XSetWindowAttributes xswa;
-	unsigned long valuemask;
-	struct monitor	*m = monitor_get_current();
+	unsigned long	     valuemask;
+	struct monitor *     m = monitor_get_current();
 
-	if (do_hide == is_hidden)
-	{
+	if (do_hide == is_hidden) {
 		/* nothing to do */
-		if (ret_hide_win)
-		{
+		if (ret_hide_win) {
 			*ret_hide_win = hide_win;
 		}
-		if (ret_parent_win)
-		{
+		if (ret_parent_win) {
 			*ret_parent_win = parent_win;
 		}
 
 		return;
 	}
 	is_hidden = do_hide;
-	if (do_hide)
-	{
+	if (do_hide) {
 		xswa.override_redirect = True;
-		xswa.cursor = Scr.FvwmCursors[CRS_WAIT];
-		xswa.backing_store = NotUseful;
-		xswa.save_under = False;
+		xswa.cursor	       = Scr.FvwmCursors[CRS_WAIT];
+		xswa.backing_store     = NotUseful;
+		xswa.save_under	       = False;
 		xswa.background_pixmap = None;
-		valuemask = CWOverrideRedirect | CWCursor | CWSaveUnder |
-			CWBackingStore | CWBackPixmap;
-		hide_win = XCreateWindow(
-			dpy, Scr.Root, 0, 0, m->virtual_scr.MyDisplayWidth,
-			m->virtual_scr.MyDisplayHeight, 0, Pdepth, InputOutput,
-			Pvisual, valuemask, &xswa);
-		if (hide_win)
-		{
+		valuemask = CWOverrideRedirect | CWCursor | CWSaveUnder
+			    | CWBackingStore | CWBackPixmap;
+		hide_win = XCreateWindow(dpy, Scr.Root, 0, 0,
+		    m->virtual_scr.MyDisplayWidth,
+		    m->virtual_scr.MyDisplayHeight, 0, Pdepth, InputOutput,
+		    Pvisual, valuemask, &xswa);
+		if (hide_win) {
 			/* When recapturing, all windows are reparented to this
 			 * window. If they are reparented to the root window,
 			 * they will flash over the hide_win with XFree.  So
 			 * reparent them to an unmapped window that looks like
 			 * the root window. */
-			parent_win = XCreateWindow(
-				dpy, Scr.Root, 0, 0, m->virtual_scr.MyDisplayWidth,
-				m->virtual_scr.MyDisplayHeight, 0, CopyFromParent,
-				InputOutput, CopyFromParent, valuemask, &xswa);
-			if (!parent_win)
-			{
+			parent_win = XCreateWindow(dpy, Scr.Root, 0, 0,
+			    m->virtual_scr.MyDisplayWidth,
+			    m->virtual_scr.MyDisplayHeight, 0, CopyFromParent,
+			    InputOutput, CopyFromParent, valuemask, &xswa);
+			if (!parent_win) {
 				XDestroyWindow(dpy, hide_win);
 				hide_win = None;
-			}
-			else
-			{
+			} else {
 				XMapWindow(dpy, hide_win);
 				XFlush(dpy);
 			}
 		}
-	}
-	else
-	{
-		if (hide_win != None)
-		{
+	} else {
+		if (hide_win != None) {
 			XDestroyWindow(dpy, hide_win);
 		}
-		if (parent_win != None)
-		{
+		if (parent_win != None) {
 			XDestroyWindow(dpy, parent_win);
 		}
 		XFlush(dpy);
-		hide_win = None;
+		hide_win   = None;
 		parent_win = None;
 	}
-	if (ret_hide_win)
-	{
+	if (ret_hide_win) {
 		*ret_hide_win = hide_win;
 	}
-	if (ret_parent_win)
-	{
+	if (ret_parent_win) {
 		*ret_parent_win = parent_win;
 	}
 
@@ -345,58 +315,51 @@ static void hide_screen(
  *
  */
 
-static int MappedNotOverride(
-	Window w, initial_window_options_t *win_opts)
+static int
+MappedNotOverride(Window w, initial_window_options_t *win_opts)
 {
 	XWindowAttributes wa;
-	Atom atype;
-	int aformat;
-	unsigned long nitems, bytes_remain;
-	unsigned char *prop;
+	Atom		  atype;
+	int		  aformat;
+	unsigned long	  nitems, bytes_remain;
+	unsigned char *	  prop;
 
 	win_opts->initial_state = DontCareState;
-	if ((w==Scr.NoFocusWin)||(!XGetWindowAttributes(dpy, w, &wa)))
-	{
+	if ((w == Scr.NoFocusWin) || (!XGetWindowAttributes(dpy, w, &wa))) {
 		return 0;
 	}
-	if (XGetWindowProperty(
-		    dpy,w,_XA_WM_STATE,0L,3L,False,_XA_WM_STATE,
-		    &atype,&aformat,&nitems,&bytes_remain,&prop)==Success)
-	{
-		if (prop != NULL)
-		{
+	if (XGetWindowProperty(dpy, w, _XA_WM_STATE, 0L, 3L, False,
+		_XA_WM_STATE, &atype, &aformat, &nitems, &bytes_remain, &prop)
+	    == Success) {
+		if (prop != NULL) {
 			win_opts->initial_state = *(long *)prop;
 			XFree(prop);
 		}
 	}
-	if (wa.override_redirect == True)
-	{
+	if (wa.override_redirect == True) {
 		XSelectInput(dpy, w, XEVMASK_ORW);
 		XFlush(dpy);
 	}
 
-	return (((win_opts->initial_state == IconicState) ||
-		 (wa.map_state != IsUnmapped)) &&
-		(wa.override_redirect != True));
+	return (((win_opts->initial_state == IconicState)
+		    || (wa.map_state != IsUnmapped))
+		&& (wa.override_redirect != True));
 }
 
-static void setup_window_structure(
-	FvwmWindow **pfw, Window w, FvwmWindow *ReuseWin)
+static void
+setup_window_structure(FvwmWindow **pfw, Window w, FvwmWindow *ReuseWin)
 {
-	FvwmWindow save_state;
+	FvwmWindow  save_state;
 	FvwmWindow *savewin = NULL;
 
 	/*
 	  Allocate space for the FvwmWindow struct, or reuse an
 	  old one (on Recapture).
 	*/
-	if (ReuseWin == NULL)
-	{
+	if (ReuseWin == NULL) {
 		*pfw = fxmalloc(sizeof(FvwmWindow));
-	}
-	else
-	{
-		*pfw = ReuseWin;
+	} else {
+		*pfw	= ReuseWin;
 		savewin = &save_state;
 		memcpy(savewin, ReuseWin, sizeof(FvwmWindow));
 	}
@@ -409,114 +372,103 @@ static void setup_window_structure(
 	*/
 	memset(*pfw, '\0', sizeof(FvwmWindow));
 	FW_W(*pfw) = w;
-	if (savewin != NULL)
-	{
+	if (savewin != NULL) {
 		(*pfw)->Desk = savewin->Desk;
-		(*pfw)->m = savewin->m;
+		(*pfw)->m    = savewin->m;
 		SET_SHADED(*pfw, IS_SHADED(savewin));
 		SET_USED_TITLE_DIR_FOR_SHADING(
-			*pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
+		    *pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
 		SET_SHADED_DIR(*pfw, SHADED_DIR(savewin));
-		SET_NAME_CHANGED(*pfw,IS_NAME_CHANGED(savewin));
+		SET_NAME_CHANGED(*pfw, IS_NAME_CHANGED(savewin));
 		(*pfw)->placed_by_button = savewin->placed_by_button;
 		SET_PLACED_BY_FVWM(*pfw, IS_PLACED_BY_FVWM(savewin));
 		SET_HAS_EWMH_WM_ICON_HINT(*pfw, HAS_EWMH_WM_ICON_HINT(savewin));
-		(*pfw)->ewmh_mini_icon_width = savewin->ewmh_mini_icon_width;
+		(*pfw)->ewmh_mini_icon_width  = savewin->ewmh_mini_icon_width;
 		(*pfw)->ewmh_mini_icon_height = savewin->ewmh_mini_icon_height;
-		(*pfw)->ewmh_icon_width = savewin->ewmh_icon_width;
-		(*pfw)->ewmh_icon_height = savewin->ewmh_icon_height;
-		(*pfw)->ewmh_hint_desktop = savewin->ewmh_hint_desktop;
+		(*pfw)->ewmh_icon_width	      = savewin->ewmh_icon_width;
+		(*pfw)->ewmh_icon_height      = savewin->ewmh_icon_height;
+		(*pfw)->ewmh_hint_desktop     = savewin->ewmh_hint_desktop;
 		/* restore ewmh state */
 		EWMH_SetWMState(savewin, True);
 		SET_HAS_EWMH_INIT_WM_DESKTOP(
-			*pfw, HAS_EWMH_INIT_WM_DESKTOP(savewin));
+		    *pfw, HAS_EWMH_INIT_WM_DESKTOP(savewin));
 		SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
-			*pfw, HAS_EWMH_INIT_FULLSCREEN_STATE(savewin));
+		    *pfw, HAS_EWMH_INIT_FULLSCREEN_STATE(savewin));
 		SET_HAS_EWMH_INIT_HIDDEN_STATE(
-			*pfw, HAS_EWMH_INIT_HIDDEN_STATE(savewin));
+		    *pfw, HAS_EWMH_INIT_HIDDEN_STATE(savewin));
 		SET_HAS_EWMH_INIT_MAXHORIZ_STATE(
-			*pfw, HAS_EWMH_INIT_MAXHORIZ_STATE(savewin));
+		    *pfw, HAS_EWMH_INIT_MAXHORIZ_STATE(savewin));
 		SET_HAS_EWMH_INIT_MAXVERT_STATE(
-			*pfw, HAS_EWMH_INIT_MAXVERT_STATE(savewin));
+		    *pfw, HAS_EWMH_INIT_MAXVERT_STATE(savewin));
 		SET_HAS_EWMH_INIT_SHADED_STATE(
-			*pfw, HAS_EWMH_INIT_SHADED_STATE(savewin));
+		    *pfw, HAS_EWMH_INIT_SHADED_STATE(savewin));
 		SET_HAS_EWMH_INIT_STICKY_STATE(
-			*pfw, HAS_EWMH_INIT_STICKY_STATE(savewin));
+		    *pfw, HAS_EWMH_INIT_STICKY_STATE(savewin));
 		CLEAR_USER_STATES(*pfw, ~0);
 		SET_USER_STATES(*pfw, GET_USER_STATES(savewin));
-	}
-	else
-	{
+	} else {
 		/* make sure that new windows *remember* being shaded with
 		 * title dir last */
-		SET_USED_TITLE_DIR_FOR_SHADING(*pfw,1);
+		SET_USED_TITLE_DIR_FOR_SHADING(*pfw, 1);
 	}
 
 	(*pfw)->cmap_windows = (Window *)NULL;
-	if (FMiniIconsSupported)
-	{
+	if (FMiniIconsSupported) {
 		(*pfw)->mini_pixmap_file = NULL;
-		(*pfw)->mini_icon = NULL;
+		(*pfw)->mini_icon	 = NULL;
 	}
 
 	return;
 }
 
-static void setup_name_count(FvwmWindow *fw, Bool is_icon)
+static void
+setup_name_count(FvwmWindow *fw, Bool is_icon)
 {
-	FvwmWindow *t;
-	int count = 0;
-	int win_count;
-	int win_count_counterpart;
-	Bool done = False;
+	FvwmWindow *	   t;
+	int		   count = 0;
+	int		   win_count;
+	int		   win_count_counterpart;
+	Bool		   done = False;
 	FlocaleNameString *titlename, *title_counterpart;
 	FlocaleNameString *t_titlename, *t_title_counterpart;
 
-	titlename = (is_icon) ?
-	&(fw->icon_name) : &(fw->name);
+	titlename = (is_icon) ? &(fw->icon_name) : &(fw->name);
 
-	title_counterpart = (is_icon) ?
-	&(fw->name) : &(fw->icon_name);
+	title_counterpart = (is_icon) ? &(fw->name) : &(fw->icon_name);
 
-	if (!titlename->name)
-	{
+	if (!titlename->name) {
 		done = True;
 	}
 
-	if (titlename->name && title_counterpart->name &&
-		strcmp(titlename->name, title_counterpart->name) == 0)
-	{
-		count = is_icon ? fw->icon_name_count :
-			fw->name_count;
+	if (titlename->name && title_counterpart->name
+	    && strcmp(titlename->name, title_counterpart->name) == 0) {
+		count = is_icon ? fw->icon_name_count : fw->name_count;
 	}
 
-	while (!done)
-	{
+	while (!done) {
 		done = True;
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-		{
-			if (t == fw)
-			{
+		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
+			if (t == fw) {
 				continue;
 			}
-			win_count = is_icon ? t->icon_name_count :
-				t->name_count;
-			win_count_counterpart = is_icon ?
-				t->name_count : t->icon_name_count;
+			win_count =
+			    is_icon ? t->icon_name_count : t->name_count;
+			win_count_counterpart =
+			    is_icon ? t->name_count : t->icon_name_count;
 
-			t_titlename = is_icon ? &(t->icon_name) :
-				&(t->name);
-			t_title_counterpart = is_icon ? &(t->name) :
-				&(t->icon_name);
+			t_titlename = is_icon ? &(t->icon_name) : &(t->name);
+			t_title_counterpart =
+			    is_icon ? &(t->name) : &(t->icon_name);
 
-			if ((t_titlename->name &&
-						strcmp(titlename->name,
-							t_titlename->name) == 0 &&
-						win_count == count) ||
-					(t_title_counterpart->name &&
-					 strcmp(t_title_counterpart->name,
-						 titlename->name) == 0 &&
-					 win_count_counterpart == count))
+			if ((t_titlename->name
+				&& strcmp(titlename->name, t_titlename->name)
+				       == 0
+				&& win_count == count)
+			    || (t_title_counterpart->name
+				&& strcmp(t_title_counterpart->name,
+				       titlename->name)
+				       == 0
+				&& win_count_counterpart == count))
 
 			{
 				count++;
@@ -525,8 +477,7 @@ static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 		}
 	}
 
-	if (is_icon)
-	{
+	if (is_icon) {
 		fw->icon_name_count = count;
 	} else {
 		fw->name_count = count;
@@ -535,43 +486,39 @@ static void setup_name_count(FvwmWindow *fw, Bool is_icon)
 	return;
 }
 
-static char *interpolate_titleformat_name(
-	int *ret_bits, FvwmWindow *fw, window_style *style, Bool is_icon)
+static char *
+interpolate_titleformat_name(
+    int *ret_bits, FvwmWindow *fw, window_style *style, Bool is_icon)
 {
 	char stringbuf[MAX_VISIBLE_NAME_LEN] = "";
 
 	/* Get the title format string.  This check should be redundant thanks
 	 * to the checking done in style.c
 	 */
-	const char *format;
+	const char *   format;
 	unsigned short count;
 
 	/* MAX_WINDOW_NAME_NUMBER is defined as "999" -- that's three
 	 * characters maximum.  win_name_len must be 1 larger for null.
 	 */
-	char win_name_len[MAX_WINDOW_NAME_NUMBER_DIGITS+1];
+	char win_name_len[MAX_WINDOW_NAME_NUMBER_DIGITS + 1];
 	char w_id[12];
 
 	*ret_bits = 0;
-	if (is_icon)
-	{
-		format = (style->flags.has_icon_title_format_string) ?
-			SGET_ICON_TITLE_FORMAT_STRING(*style) :
-			DEFAULT_ICON_TITLE_FORMAT;
-	}
-	else
-	{
-		format = (style->flags.has_title_format_string) ?
-			SGET_TITLE_FORMAT_STRING(*style) :
-			DEFAULT_TITLE_FORMAT;
+	if (is_icon) {
+		format = (style->flags.has_icon_title_format_string)
+			     ? SGET_ICON_TITLE_FORMAT_STRING(*style)
+			     : DEFAULT_ICON_TITLE_FORMAT;
+	} else {
+		format = (style->flags.has_title_format_string)
+			     ? SGET_TITLE_FORMAT_STRING(*style)
+			     : DEFAULT_TITLE_FORMAT;
 	}
 
-	while (*format)
-	{
+	while (*format) {
 		int pos;
 
-		for (pos = 0; format[pos] && format[pos] != '%'; pos++)
-		{
+		for (pos = 0; format[pos] && format[pos] != '%'; pos++) {
 			/* nothing */
 		}
 
@@ -582,93 +529,83 @@ static char *interpolate_titleformat_name(
 			continue;
 
 		format++;
-		switch (*format)
-		{
-			case 'n':
-				/* format contains the window name */
-				*ret_bits |= 1;
-				if (strlen(stringbuf) +
-					strlen(fw->name.name) >
-					MAX_VISIBLE_NAME_LEN)
-				{
-					fvwm_debug(__func__,
-						   "Visible name is too long based on "
-						   "TitleFormat.  Not expanding further.");
+		switch (*format) {
+		case 'n':
+			/* format contains the window name */
+			*ret_bits |= 1;
+			if (strlen(stringbuf) + strlen(fw->name.name)
+			    > MAX_VISIBLE_NAME_LEN) {
+				fvwm_debug(__func__,
+				    "Visible name is too long based on "
+				    "TitleFormat.  Not expanding further.");
 
-					break;
-				}
-
-				strcat(stringbuf, fw->name.name);
 				break;
-			case 'c':
-				if (strlen(stringbuf) +
-					strlen(fw->class.res_class) >
-					MAX_VISIBLE_NAME_LEN)
-				{
-					fvwm_debug(__func__,
-						   "Visible name is too long based on "
-						   "TitleFormat.  Not expanding further.");
+			}
 
-					break;
-				}
-				strcat(stringbuf, fw->class.res_class);
-				break;
-			case 'i':
-				/* format contains icon name */
-				*ret_bits |= 2;
-				/* Not every application will have an icon
-				 * name set; don't crash trying to dereference
-				 * this if the name doesn't exist.
-				 */
-				if (fw->icon_name.name == NULL)
-					break;
+			strcat(stringbuf, fw->name.name);
+			break;
+		case 'c':
+			if (strlen(stringbuf) + strlen(fw->class.res_class)
+			    > MAX_VISIBLE_NAME_LEN) {
+				fvwm_debug(__func__,
+				    "Visible name is too long based on "
+				    "TitleFormat.  Not expanding further.");
 
-				if (strlen(stringbuf) +
-					strlen(fw->icon_name.name) >
-					MAX_VISIBLE_NAME_LEN)
-				{
-					fvwm_debug(__func__,
-						   "Visible name is too long based on "
-						   "TitleFormat.  Not expanding further.");
+				break;
+			}
+			strcat(stringbuf, fw->class.res_class);
+			break;
+		case 'i':
+			/* format contains icon name */
+			*ret_bits |= 2;
+			/* Not every application will have an icon
+			 * name set; don't crash trying to dereference
+			 * this if the name doesn't exist.
+			 */
+			if (fw->icon_name.name == NULL)
+				break;
 
-					break;
-				}
+			if (strlen(stringbuf) + strlen(fw->icon_name.name)
+			    > MAX_VISIBLE_NAME_LEN) {
+				fvwm_debug(__func__,
+				    "Visible name is too long based on "
+				    "TitleFormat.  Not expanding further.");
 
-				strcat(stringbuf, fw->icon_name.name);
 				break;
-			case 'r':
-				if (strlen(stringbuf) +
-					strlen(fw->class.res_name) >
-					MAX_VISIBLE_NAME_LEN)
-				{
-					fvwm_debug(__func__,
-						   "Visible name is too long based on "
-						   "TitleFormat.  Not expanding further.");
+			}
 
-					break;
-				}
-				strcat(stringbuf, fw->class.res_name);
-				break;
-			case 't':
-				setup_name_count(fw, is_icon);
-				count = is_icon ? fw->icon_name_count :
-					fw->name_count;
+			strcat(stringbuf, fw->icon_name.name);
+			break;
+		case 'r':
+			if (strlen(stringbuf) + strlen(fw->class.res_name)
+			    > MAX_VISIBLE_NAME_LEN) {
+				fvwm_debug(__func__,
+				    "Visible name is too long based on "
+				    "TitleFormat.  Not expanding further.");
 
-				if (count > (MAX_WINDOW_NAME_NUMBER - 1))
-					count = MAX_WINDOW_NAME_NUMBER - 1;
+				break;
+			}
+			strcat(stringbuf, fw->class.res_name);
+			break;
+		case 't':
+			setup_name_count(fw, is_icon);
+			count = is_icon ? fw->icon_name_count : fw->name_count;
 
-				sprintf(win_name_len, "%hu", ++count);
-				strcat(stringbuf, win_name_len);
-				break;
-			case 'I':
-				sprintf(w_id, "0x%x", (int)FW_W(fw));
-				strcat(stringbuf, w_id);
-				break;
-			case '%':
-				strcat(stringbuf, "%");
-				break;
-			default:
-				break;
+			if (count > (MAX_WINDOW_NAME_NUMBER - 1))
+				count = MAX_WINDOW_NAME_NUMBER - 1;
+
+			sprintf(win_name_len, "%hu", ++count);
+			strcat(stringbuf, win_name_len);
+			break;
+		case 'I':
+			sprintf(w_id, "0x%x", (int)FW_W(fw));
+			strcat(stringbuf, w_id);
+			break;
+		case '%':
+			strcat(stringbuf, "%");
+			break;
+		default:
+			break;
 		}
 		if (*format)
 			format++;
@@ -677,50 +614,48 @@ static char *interpolate_titleformat_name(
 	return strdup(stringbuf);
 }
 
-static void setup_class_and_resource(FvwmWindow *fw)
+static void
+setup_class_and_resource(FvwmWindow *fw)
 {
 	/* removing NoClass change for now... */
-	fw->class.res_name = NoResource;
+	fw->class.res_name  = NoResource;
 	fw->class.res_class = NoClass;
 	XGetClassHint(dpy, FW_W(fw), &fw->class);
-	if (fw->class.res_name == NULL)
-	{
+	if (fw->class.res_name == NULL) {
 		fw->class.res_name = NoResource;
 	}
-	if (fw->class.res_class == NULL)
-	{
+	if (fw->class.res_class == NULL) {
 		fw->class.res_class = NoClass;
 	}
-	FetchWmProtocols (fw);
-	FetchWmColormapWindows (fw);
+	FetchWmProtocols(fw);
+	FetchWmColormapWindows(fw);
 
 	return;
 }
 
-static void setup_window_attr(
-	FvwmWindow *fw, XWindowAttributes *ret_attr)
+static void
+setup_window_attr(FvwmWindow *fw, XWindowAttributes *ret_attr)
 {
-	if (XGetWindowAttributes(dpy, FW_W(fw), ret_attr) == 0)
-	{
+	if (XGetWindowAttributes(dpy, FW_W(fw), ret_attr) == 0) {
 		/* can't happen because fvwm has grabbed the server and does
 		 * not destroy the window itself */
 	}
-	fw->attr_backup.backing_store = ret_attr->backing_store;
-	fw->attr_backup.border_width = ret_attr->border_width;
-	fw->attr_backup.depth = ret_attr->depth;
-	fw->attr_backup.bit_gravity = ret_attr->bit_gravity;
+	fw->attr_backup.backing_store	      = ret_attr->backing_store;
+	fw->attr_backup.border_width	      = ret_attr->border_width;
+	fw->attr_backup.depth		      = ret_attr->depth;
+	fw->attr_backup.bit_gravity	      = ret_attr->bit_gravity;
 	fw->attr_backup.is_bit_gravity_stored = 0;
-	fw->attr_backup.visual = ret_attr->visual;
-	fw->attr_backup.colormap = ret_attr->colormap;
+	fw->attr_backup.visual		      = ret_attr->visual;
+	fw->attr_backup.colormap	      = ret_attr->colormap;
 
 	return;
 }
 
-static void destroy_window_font(FvwmWindow *fw)
+static void
+destroy_window_font(FvwmWindow *fw)
 {
-	if (IS_WINDOW_FONT_LOADED(fw) && !USING_DEFAULT_WINDOW_FONT(fw) &&
-	    fw->title_font != Scr.DefaultFont)
-	{
+	if (IS_WINDOW_FONT_LOADED(fw) && !USING_DEFAULT_WINDOW_FONT(fw)
+	    && fw->title_font != Scr.DefaultFont) {
 		FlocaleUnloadFont(dpy, fw->title_font);
 	}
 	SET_WINDOW_FONT_LOADED(fw, 0);
@@ -733,11 +668,11 @@ static void destroy_window_font(FvwmWindow *fw)
 	return;
 }
 
-static void destroy_icon_font(FvwmWindow *fw)
+static void
+destroy_icon_font(FvwmWindow *fw)
 {
-	if (IS_ICON_FONT_LOADED(fw) && !USING_DEFAULT_ICON_FONT(fw) &&
-	    fw->icon_font != Scr.DefaultFont)
-	{
+	if (IS_ICON_FONT_LOADED(fw) && !USING_DEFAULT_ICON_FONT(fw)
+	    && fw->icon_font != Scr.DefaultFont) {
 		FlocaleUnloadFont(dpy, fw->icon_font);
 	}
 	SET_ICON_FONT_LOADED(fw, 0);
@@ -748,77 +683,64 @@ static void destroy_icon_font(FvwmWindow *fw)
 	return;
 }
 
-static void adjust_fvwm_internal_windows(FvwmWindow *fw)
+static void
+adjust_fvwm_internal_windows(FvwmWindow *fw)
 {
-	if (fw == Scr.Hilite)
-	{
+	if (fw == Scr.Hilite) {
 		Scr.Hilite = NULL;
 	}
 	update_last_screen_focus_window(fw);
 	restore_focus_after_unmap(fw, False);
 	frame_destroyed_frame(FW_W(fw));
-	if (fw == Scr.StolenFocusFvwmWin)
-	{
-		Scr.StolenFocusWin = None;
+	if (fw == Scr.StolenFocusFvwmWin) {
+		Scr.StolenFocusWin     = None;
 		Scr.StolenFocusFvwmWin = NULL;
 	}
-	if (Scr.focus_in_pending_window == fw)
-	{
+	if (Scr.focus_in_pending_window == fw) {
 		Scr.focus_in_pending_window = NULL;
 	}
-	if (Scr.focus_in_requested_window == fw)
-	{
+	if (Scr.focus_in_requested_window == fw) {
 		Scr.focus_in_requested_window = NULL;
 	}
-	if (Scr.cascade_window == fw)
-	{
+	if (Scr.cascade_window == fw) {
 		Scr.cascade_window = NULL;
 	}
 
 	return;
 }
 
-static void broadcast_mini_icon(FvwmWindow *fw)
+static void
+broadcast_mini_icon(FvwmWindow *fw)
 {
-	if (!FMiniIconsSupported)
-	{
+	if (!FMiniIconsSupported) {
 		return;
 	}
-	if (fw->mini_pixmap_file && fw->mini_icon)
-	{
-		BroadcastFvwmPicture(
-			M_MINI_ICON,
-			FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
-			fw->mini_icon, fw->mini_pixmap_file);
+	if (fw->mini_pixmap_file && fw->mini_icon) {
+		BroadcastFvwmPicture(M_MINI_ICON, FW_W(fw), FW_W_FRAME(fw),
+		    (unsigned long)fw, fw->mini_icon, fw->mini_pixmap_file);
 	}
 
 	return;
 }
 
-static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
+static void
+setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 {
 	FvwmPictureAttributes fpa;
 
-	if (!FMiniIconsSupported)
-	{
+	if (!FMiniIconsSupported) {
 		return;
 	}
-	if (SHAS_MINI_ICON(&pstyle->flags))
-	{
+	if (SHAS_MINI_ICON(&pstyle->flags)) {
 		fw->mini_pixmap_file = SGET_MINI_ICON_NAME(*pstyle);
-	}
-	else
-	{
+	} else {
 		fw->mini_pixmap_file = NULL;
 	}
-	if (fw->mini_pixmap_file)
-	{
-		fpa.mask = 0;
+	if (fw->mini_pixmap_file) {
+		fpa.mask      = 0;
 		fw->mini_icon = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, fw->mini_pixmap_file, fpa);
-	}
-	else
-	{
+		    dpy, Scr.NoFocusWin, NULL, fw->mini_pixmap_file, fpa);
+	} else {
 		fw->mini_icon = NULL;
 	}
 
@@ -829,163 +751,144 @@ static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
  * Copy icon size limits from window_style structure to FvwmWindow
  * structure.
  */
-void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
+void
+setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
 {
-	if (SHAS_ICON_SIZE_LIMITS(&pstyle->flags))
-	{
-		fw->min_icon_width = SGET_MIN_ICON_WIDTH(*pstyle);
-		fw->min_icon_height = SGET_MIN_ICON_HEIGHT(*pstyle);
-		fw->max_icon_width = SGET_MAX_ICON_WIDTH(*pstyle);
-		fw->max_icon_height = SGET_MAX_ICON_HEIGHT(*pstyle);
+	if (SHAS_ICON_SIZE_LIMITS(&pstyle->flags)) {
+		fw->min_icon_width   = SGET_MIN_ICON_WIDTH(*pstyle);
+		fw->min_icon_height  = SGET_MIN_ICON_HEIGHT(*pstyle);
+		fw->max_icon_width   = SGET_MAX_ICON_WIDTH(*pstyle);
+		fw->max_icon_height  = SGET_MAX_ICON_HEIGHT(*pstyle);
 		fw->icon_resize_type = SGET_ICON_RESIZE_TYPE(*pstyle);
-	}
-	else
-	{
-		fw->min_icon_width = MIN_ALLOWABLE_ICON_DIMENSION;
-		fw->min_icon_height = MIN_ALLOWABLE_ICON_DIMENSION;
-		fw->max_icon_width = MAX_ALLOWABLE_ICON_DIMENSION;
-		fw->max_icon_height = MAX_ALLOWABLE_ICON_DIMENSION;
+	} else {
+		fw->min_icon_width   = MIN_ALLOWABLE_ICON_DIMENSION;
+		fw->min_icon_height  = MIN_ALLOWABLE_ICON_DIMENSION;
+		fw->max_icon_width   = MAX_ALLOWABLE_ICON_DIMENSION;
+		fw->max_icon_height  = MAX_ALLOWABLE_ICON_DIMENSION;
 		fw->icon_resize_type = ICON_RESIZE_TYPE_NONE;
 	}
 
 	return;
 }
 
-void setup_icon_background_parameters(FvwmWindow *fw, window_style *pstyle)
+void
+setup_icon_background_parameters(FvwmWindow *fw, window_style *pstyle)
 {
-	if (SHAS_ICON_BACKGROUND_PADDING(&pstyle->flags))
-	{
+	if (SHAS_ICON_BACKGROUND_PADDING(&pstyle->flags)) {
 		fw->icon_background_padding =
-			SGET_ICON_BACKGROUND_PADDING(*pstyle);
-	}
-	else
-	{
+		    SGET_ICON_BACKGROUND_PADDING(*pstyle);
+	} else {
 		fw->icon_background_padding = ICON_BACKGROUND_PADDING;
 	}
-	if (SHAS_ICON_BACKGROUND_RELIEF(&pstyle->flags))
-	{
+	if (SHAS_ICON_BACKGROUND_RELIEF(&pstyle->flags)) {
 		fw->icon_background_relief =
-			SGET_ICON_BACKGROUND_RELIEF(*pstyle);
-	}
-	else
-	{
+		    SGET_ICON_BACKGROUND_RELIEF(*pstyle);
+	} else {
 		fw->icon_background_relief = ICON_RELIEF_WIDTH;
 	}
 	return;
 }
 
-void setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle)
+void
+setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle)
 {
-	if (SHAS_ICON_TITLE_RELIEF(&pstyle->flags))
-	{
-		fw->icon_title_relief =
-			SGET_ICON_TITLE_RELIEF(*pstyle);
-	}
-	else
-	{
+	if (SHAS_ICON_TITLE_RELIEF(&pstyle->flags)) {
+		fw->icon_title_relief = SGET_ICON_TITLE_RELIEF(*pstyle);
+	} else {
 		fw->icon_title_relief = ICON_RELIEF_WIDTH;
 	}
 	return;
 }
 
-void setup_numeric_vals(FvwmWindow *fw, window_style *pstyle)
+void
+setup_numeric_vals(FvwmWindow *fw, window_style *pstyle)
 {
 	/****** window shading ******/
 	fw->shade_anim_steps = pstyle->shade_anim_steps;
 
 	/****** snapattraction, snapgrid, paging ******/
 	fw->snap_attraction.proximity = pstyle->snap_attraction.proximity;
-	fw->snap_attraction.mode = pstyle->snap_attraction.mode;
-	fw->snap_grid_x = pstyle->snap_grid_x;
-	fw->snap_grid_y = pstyle->snap_grid_y;
-	if (pstyle->flags.has_edge_delay_ms_move)
-	{
+	fw->snap_attraction.mode      = pstyle->snap_attraction.mode;
+	fw->snap_grid_x		      = pstyle->snap_grid_x;
+	fw->snap_grid_y		      = pstyle->snap_grid_y;
+	if (pstyle->flags.has_edge_delay_ms_move) {
 		fw->edge_delay_ms_move = pstyle->edge_delay_ms_move;
-	}
-	else
-	{
+	} else {
 		fw->edge_delay_ms_move = DEFAULT_MOVE_DELAY;
 	}
-	if (pstyle->flags.has_edge_delay_ms_resize)
-	{
+	if (pstyle->flags.has_edge_delay_ms_resize) {
 		fw->edge_delay_ms_resize = pstyle->edge_delay_ms_resize;
-	}
-	else
-	{
+	} else {
 		fw->edge_delay_ms_resize = DEFAULT_RESIZE_DELAY;
 	}
 	fw->edge_resistance_move = pstyle->edge_resistance_move;
 	fw->edge_resistance_xinerama_move =
-		pstyle->edge_resistance_xinerama_move;
+	    pstyle->edge_resistance_xinerama_move;
 
 	return;
 }
 
-static void setup_frame_window(
-	FvwmWindow *fw)
+static void
+setup_frame_window(FvwmWindow *fw)
 {
 	XSetWindowAttributes attributes;
-	int valuemask;
-	int depth;
-	Visual *visual;
-	FRenderPictFormat *format;
+	int		     valuemask;
+	int		     depth;
+	Visual *	     visual;
+	FRenderPictFormat *  format;
 
 	valuemask = CWBackingStore | CWBackPixmap | CWEventMask | CWSaveUnder
-		| CWCursor;
+		    | CWCursor;
 
 	/* This adds preliminary support for ARGB windows in fvwm. It should
 	   evolve to proper ARGB support in frames, menus and modules */
-	format=FRenderFindVisualFormat(dpy, fw->attr_backup.visual);
-	if (format != NULL && format->type == FRenderPictTypeDirect &&
-		format->direct.alphaMask > 0)
-	{
-		depth = fw->attr_backup.depth;
-		visual = fw->attr_backup.visual;
-		attributes.colormap = fw->attr_backup.colormap;
+	format = FRenderFindVisualFormat(dpy, fw->attr_backup.visual);
+	if (format != NULL && format->type == FRenderPictTypeDirect
+	    && format->direct.alphaMask > 0) {
+		depth			    = fw->attr_backup.depth;
+		visual			    = fw->attr_backup.visual;
+		attributes.colormap	    = fw->attr_backup.colormap;
 		attributes.background_pixel = -1;
-		attributes.border_pixel = -1;
+		attributes.border_pixel	    = -1;
 		valuemask |= CWColormap | CWBackPixel | CWBorderPixel;
-	}
-	else
-	{
-		depth = CopyFromParent;
+	} else {
+		depth  = CopyFromParent;
 		visual = CopyFromParent;
 	}
-	attributes.backing_store = NotUseful;
+	attributes.backing_store     = NotUseful;
 	attributes.background_pixmap = None;
-	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-	attributes.event_mask = XEVMASK_FRAMEW_CAPTURE;
-	attributes.save_under = False;
+	attributes.cursor	     = Scr.FvwmCursors[CRS_DEFAULT];
+	attributes.event_mask	     = XEVMASK_FRAMEW_CAPTURE;
+	attributes.save_under	     = False;
 	/* create the frame window, child of root, grandparent of client */
-	FW_W_FRAME(fw) = XCreateWindow(
-		dpy, Scr.Root, fw->g.frame.x, fw->g.frame.y,
-		fw->g.frame.width, fw->g.frame.height, 0, depth,
-		InputOutput, visual, valuemask, &attributes);
-	XSaveContext(dpy, FW_W(fw), FvwmContext, (caddr_t) fw);
-	XSaveContext(dpy, FW_W_FRAME(fw), FvwmContext, (caddr_t) fw);
+	FW_W_FRAME(fw) = XCreateWindow(dpy, Scr.Root, fw->g.frame.x,
+	    fw->g.frame.y, fw->g.frame.width, fw->g.frame.height, 0, depth,
+	    InputOutput, visual, valuemask, &attributes);
+	XSaveContext(dpy, FW_W(fw), FvwmContext, (caddr_t)fw);
+	XSaveContext(dpy, FW_W_FRAME(fw), FvwmContext, (caddr_t)fw);
 
 	return;
 }
 
-static void setup_title_window(
-	FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes)
+static void
+setup_title_window(
+    FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes)
 {
 	valuemask |= CWCursor | CWEventMask;
-	pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
+	pattributes->cursor	= Scr.FvwmCursors[CRS_TITLE];
 	pattributes->event_mask = XEVMASK_TITLEW;
 
-	FW_W_TITLE(fw) = XCreateWindow(
-		dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0, Pdepth, InputOutput,
-		Pvisual, valuemask, pattributes);
-	XSaveContext(dpy, FW_W_TITLE(fw), FvwmContext, (caddr_t) fw);
+	FW_W_TITLE(fw) = XCreateWindow(dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0,
+	    Pdepth, InputOutput, Pvisual, valuemask, pattributes);
+	XSaveContext(dpy, FW_W_TITLE(fw), FvwmContext, (caddr_t)fw);
 
 	return;
 }
 
-static void destroy_title_window(FvwmWindow *fw, Bool do_only_delete_context)
+static void
+destroy_title_window(FvwmWindow *fw, Bool do_only_delete_context)
 {
-	if (!do_only_delete_context)
-	{
+	if (!do_only_delete_context) {
 		XDestroyWindow(dpy, FW_W_TITLE(fw));
 		FW_W_TITLE(fw) = None;
 	}
@@ -996,215 +899,183 @@ static void destroy_title_window(FvwmWindow *fw, Bool do_only_delete_context)
 	return;
 }
 
-static void change_title_window(
-	FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes)
+static void
+change_title_window(
+    FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes)
 {
-	if (HAS_TITLE(fw) && FW_W_TITLE(fw) == None)
-	{
+	if (HAS_TITLE(fw) && FW_W_TITLE(fw) == None) {
 		setup_title_window(fw, valuemask, pattributes);
-	}
-	else if (!HAS_TITLE(fw) && FW_W_TITLE(fw) != None)
-	{
+	} else if (!HAS_TITLE(fw) && FW_W_TITLE(fw) != None) {
 		destroy_title_window(fw, False);
 	}
 
 	return;
 }
 
-static void setup_button_windows(
-	FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes,
-	short buttons)
+static void
+setup_button_windows(FvwmWindow *fw, int valuemask,
+    XSetWindowAttributes *pattributes, short buttons)
 {
-	int i;
+	int  i;
 	Bool has_button;
 	Bool is_deleted = False;
 
 	valuemask |= CWCursor | CWEventMask;
-	pattributes->cursor = Scr.FvwmCursors[CRS_SYS];
+	pattributes->cursor	= Scr.FvwmCursors[CRS_SYS];
 	pattributes->event_mask = XEVMASK_BUTTONW;
 
-	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
-	{
-		has_button = (((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
-			       ( (i & 1) && i / 2 < Scr.nr_right_buttons)) &&
-			      (buttons & (1 << i)));
-		if (FW_W_BUTTON(fw, i) == None && has_button)
-		{
-			FW_W_BUTTON(fw, i) =
-				XCreateWindow(
-					dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0,
-					Pdepth, InputOutput, Pvisual,
-					valuemask, pattributes);
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++) {
+		has_button = (((!(i & 1) && i / 2 < Scr.nr_left_buttons)
+				  || ((i & 1) && i / 2 < Scr.nr_right_buttons))
+			      && (buttons & (1 << i)));
+		if (FW_W_BUTTON(fw, i) == None && has_button) {
+			FW_W_BUTTON(fw, i) = XCreateWindow(dpy, FW_W_FRAME(fw),
+			    0, 0, 1, 1, 0, Pdepth, InputOutput, Pvisual,
+			    valuemask, pattributes);
 			XSaveContext(
-				dpy, FW_W_BUTTON(fw, i), FvwmContext,
-				(caddr_t)fw);
-		}
-		else if (FW_W_BUTTON(fw, i) != None && !has_button)
-		{
+			    dpy, FW_W_BUTTON(fw, i), FvwmContext, (caddr_t)fw);
+		} else if (FW_W_BUTTON(fw, i) != None && !has_button) {
 			/* destroy the current button window */
 			XDestroyWindow(dpy, FW_W_BUTTON(fw, i));
 			XDeleteContext(dpy, FW_W_BUTTON(fw, i), FvwmContext);
-			is_deleted = True;
+			is_deleted	   = True;
 			FW_W_BUTTON(fw, i) = None;
 		}
 	}
-	if (is_deleted == True)
-	{
+	if (is_deleted == True) {
 		XFlush(dpy);
 	}
 
 	return;
 }
 
-static void destroy_button_windows(FvwmWindow *fw, Bool do_only_delete_context)
+static void
+destroy_button_windows(FvwmWindow *fw, Bool do_only_delete_context)
 {
-	int i;
+	int  i;
 	Bool is_deleted = False;
 
-	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
-	{
-		if (FW_W_BUTTON(fw, i) != None)
-		{
-			if (!do_only_delete_context)
-			{
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++) {
+		if (FW_W_BUTTON(fw, i) != None) {
+			if (!do_only_delete_context) {
 				XDestroyWindow(dpy, FW_W_BUTTON(fw, i));
 				FW_W_BUTTON(fw, i) = None;
 			}
 			XDeleteContext(dpy, FW_W_BUTTON(fw, i), FvwmContext);
-			is_deleted = True;
+			is_deleted	   = True;
 			FW_W_BUTTON(fw, i) = None;
 		}
 	}
-	if (is_deleted == True)
-	{
+	if (is_deleted == True) {
 		XFlush(dpy);
 	}
 
 	return;
 }
 
-static void change_button_windows(
-	FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes,
-	short buttons)
+static void
+change_button_windows(FvwmWindow *fw, int valuemask,
+    XSetWindowAttributes *pattributes, short buttons)
 {
-	if (HAS_TITLE(fw))
-	{
-		setup_button_windows(
-			fw, valuemask, pattributes, buttons);
-	}
-	else
-	{
+	if (HAS_TITLE(fw)) {
+		setup_button_windows(fw, valuemask, pattributes, buttons);
+	} else {
 		destroy_button_windows(fw, False);
 	}
 
 	return;
 }
 
-static void setup_parent_window(FvwmWindow *fw)
+static void
+setup_parent_window(FvwmWindow *fw)
 {
 	size_borders b;
 
 	XSetWindowAttributes attributes;
-	int valuemask;
+	int		     valuemask;
 
-	valuemask = CWBackingStore | CWBackPixmap | CWCursor | CWEventMask |
-		CWSaveUnder;
-	attributes.backing_store = NotUseful;
+	valuemask = CWBackingStore | CWBackPixmap | CWCursor | CWEventMask
+		    | CWSaveUnder;
+	attributes.backing_store     = NotUseful;
 	attributes.background_pixmap = None;
-	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-	attributes.event_mask = XEVMASK_PARENTW;
-	attributes.save_under = False;
+	attributes.cursor	     = Scr.FvwmCursors[CRS_DEFAULT];
+	attributes.event_mask	     = XEVMASK_PARENTW;
+	attributes.save_under	     = False;
 
 	/* This window is exactly the same size as the client for the benefit
 	 * of some clients */
 	get_window_borders(fw, &b);
-	FW_W_PARENT(fw) = XCreateWindow(
-		dpy, FW_W_FRAME(fw), b.top_left.width, b.top_left.height,
-		fw->g.frame.width - b.total_size.width,
-		fw->g.frame.height - b.total_size.height,
-		0, CopyFromParent, InputOutput, CopyFromParent, valuemask,
-		&attributes);
+	FW_W_PARENT(fw) = XCreateWindow(dpy, FW_W_FRAME(fw), b.top_left.width,
+	    b.top_left.height, fw->g.frame.width - b.total_size.width,
+	    fw->g.frame.height - b.total_size.height, 0, CopyFromParent,
+	    InputOutput, CopyFromParent, valuemask, &attributes);
 
-	XSaveContext(dpy, FW_W_PARENT(fw), FvwmContext, (caddr_t) fw);
+	XSaveContext(dpy, FW_W_PARENT(fw), FvwmContext, (caddr_t)fw);
 
 	return;
 }
 
-static void setup_resize_handle_cursors(FvwmWindow *fw)
+static void
+setup_resize_handle_cursors(FvwmWindow *fw)
 {
-	unsigned long valuemask;
+	unsigned long	     valuemask;
 	XSetWindowAttributes attributes;
-	int i;
+	int		     i;
 
-	if (HAS_NO_BORDER(fw))
-	{
+	if (HAS_NO_BORDER(fw)) {
 		return;
 	}
-	valuemask = CWCursor;
+	valuemask	  = CWCursor;
 	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
 
-	for (i = 0; i < 4; i++)
-	{
-		if (HAS_HANDLES(fw))
-		{
+	for (i = 0; i < 4; i++) {
+		if (HAS_HANDLES(fw)) {
 			attributes.cursor = Scr.FvwmCursors[CRS_TOP_LEFT + i];
 		}
 		XChangeWindowAttributes(
-			dpy, FW_W_CORNER(fw, i), valuemask, &attributes);
-		if (HAS_HANDLES(fw))
-		{
+		    dpy, FW_W_CORNER(fw, i), valuemask, &attributes);
+		if (HAS_HANDLES(fw)) {
 			attributes.cursor = Scr.FvwmCursors[CRS_TOP + i];
 		}
 		XChangeWindowAttributes(
-			dpy, FW_W_SIDE(fw, i), valuemask, &attributes);
+		    dpy, FW_W_SIDE(fw, i), valuemask, &attributes);
 	}
 
 	return;
 }
 
-static void setup_resize_handle_windows(FvwmWindow *fw)
+static void
+setup_resize_handle_windows(FvwmWindow *fw)
 {
-	unsigned long valuemask;
+	unsigned long	     valuemask;
 	XSetWindowAttributes attributes;
-	int i;
-	int c_grav[4] = {
-		NorthWestGravity,
-		NorthEastGravity,
-		SouthWestGravity,
-		SouthEastGravity
-	};
-	int s_grav[4] = {
-		NorthWestGravity,
-		NorthEastGravity,
-		SouthWestGravity,
-		NorthWestGravity
-	};
+	int		     i;
+	int c_grav[4] = {NorthWestGravity, NorthEastGravity, SouthWestGravity,
+	    SouthEastGravity};
+	int s_grav[4] = {NorthWestGravity, NorthEastGravity, SouthWestGravity,
+	    NorthWestGravity};
 
-	if (HAS_NO_BORDER(fw))
-	{
+	if (HAS_NO_BORDER(fw)) {
 		return;
 	}
-	valuemask = CWEventMask | CWBackingStore | CWSaveUnder | CWWinGravity |
-		CWBorderPixel | CWColormap;
-	attributes.event_mask = XEVMASK_BORDERW;
+	valuemask = CWEventMask | CWBackingStore | CWSaveUnder | CWWinGravity
+		    | CWBorderPixel | CWColormap;
+	attributes.event_mask	 = XEVMASK_BORDERW;
 	attributes.backing_store = NotUseful;
-	attributes.save_under = False;
-	attributes.border_pixel = 0;
-	attributes.colormap = Pcmap;
+	attributes.save_under	 = False;
+	attributes.border_pixel	 = 0;
+	attributes.colormap	 = Pcmap;
 	/* Just dump the windows any old place and let frame_setup_window take
 	 * care of the mess */
-	for (i = 0; i < 4; i++)
-	{
+	for (i = 0; i < 4; i++) {
 		attributes.win_gravity = c_grav[i];
-		FW_W_CORNER(fw, i) = XCreateWindow(
-			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
+		FW_W_CORNER(fw, i) =
+		    XCreateWindow(dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
 			InputOutput, Pvisual, valuemask, &attributes);
-		XSaveContext(
-			dpy, FW_W_CORNER(fw, i), FvwmContext, (caddr_t)fw);
+		XSaveContext(dpy, FW_W_CORNER(fw, i), FvwmContext, (caddr_t)fw);
 		attributes.win_gravity = s_grav[i];
-		FW_W_SIDE(fw, i) = XCreateWindow(
-			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
-			InputOutput, Pvisual, valuemask, &attributes);
+		FW_W_SIDE(fw, i) = XCreateWindow(dpy, FW_W_FRAME(fw), -1, -1, 1,
+		    1, 0, Pdepth, InputOutput, Pvisual, valuemask, &attributes);
 		XSaveContext(dpy, FW_W_SIDE(fw, i), FvwmContext, (caddr_t)fw);
 	}
 	setup_resize_handle_cursors(fw);
@@ -1212,20 +1083,18 @@ static void setup_resize_handle_windows(FvwmWindow *fw)
 	return;
 }
 
-static void destroy_resize_handle_windows(
-	FvwmWindow *fw, Bool do_only_delete_context)
+static void
+destroy_resize_handle_windows(FvwmWindow *fw, Bool do_only_delete_context)
 {
 	int i;
 
-	for (i = 0; i < 4 ; i++)
-	{
+	for (i = 0; i < 4; i++) {
 		XDeleteContext(dpy, FW_W_SIDE(fw, i), FvwmContext);
 		XDeleteContext(dpy, FW_W_CORNER(fw, i), FvwmContext);
-		if (!do_only_delete_context)
-		{
+		if (!do_only_delete_context) {
 			XDestroyWindow(dpy, FW_W_SIDE(fw, i));
 			XDestroyWindow(dpy, FW_W_CORNER(fw, i));
-			FW_W_SIDE(fw, i) = None;
+			FW_W_SIDE(fw, i)   = None;
 			FW_W_CORNER(fw, i) = None;
 		}
 	}
@@ -1234,28 +1103,25 @@ static void destroy_resize_handle_windows(
 	return;
 }
 
-static void change_resize_handle_windows(FvwmWindow *fw)
+static void
+change_resize_handle_windows(FvwmWindow *fw)
 {
-	if (!HAS_NO_BORDER(fw) && FW_W_SIDE(fw, 0) == None)
-	{
+	if (!HAS_NO_BORDER(fw) && FW_W_SIDE(fw, 0) == None) {
 		setup_resize_handle_windows(fw);
-	}
-	else if (HAS_NO_BORDER(fw) && FW_W_SIDE(fw, 0) != None)
-	{
+	} else if (HAS_NO_BORDER(fw) && FW_W_SIDE(fw, 0) != None) {
 		destroy_resize_handle_windows(fw, False);
-	}
-	else
-	{
+	} else {
 		setup_resize_handle_cursors(fw);
 	}
 
 	return;
 }
 
-static void setup_frame_stacking(FvwmWindow *fw)
+static void
+setup_frame_stacking(FvwmWindow *fw)
 {
-	int i;
-	int n;
+	int    i;
+	int    n;
 	Window w[10 + NUMBER_OF_TITLE_BUTTONS];
 
 	/* Stacking order (top to bottom):
@@ -1265,53 +1131,41 @@ static void setup_frame_stacking(FvwmWindow *fw)
 	 *  - Side handles
 	 */
 	n = 0;
-	if (!IS_SHADED(fw))
-	{
+	if (!IS_SHADED(fw)) {
 		w[n] = FW_W_PARENT(fw);
 		n++;
 	}
-	if (HAS_TITLE(fw))
-	{
-		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i += 2)
-		{
-			if (FW_W_BUTTON(fw, i) != None)
-			{
+	if (HAS_TITLE(fw)) {
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i += 2) {
+			if (FW_W_BUTTON(fw, i) != None) {
 				w[n] = FW_W_BUTTON(fw, i);
 				n++;
 			}
 		}
-		for (i = 2 * NR_RIGHT_BUTTONS - 1; i > 0; i -= 2)
-		{
-			if (FW_W_BUTTON(fw, i) != None)
-			{
+		for (i = 2 * NR_RIGHT_BUTTONS - 1; i > 0; i -= 2) {
+			if (FW_W_BUTTON(fw, i) != None) {
 				w[n] = FW_W_BUTTON(fw, i);
 				n++;
 			}
 		}
-		if (FW_W_TITLE(fw) != None)
-		{
+		if (FW_W_TITLE(fw) != None) {
 			w[n] = FW_W_TITLE(fw);
 			n++;
 		}
 	}
-	for (i = 0; i < 4; i++)
-	{
-		if (FW_W_CORNER(fw, i) != None)
-		{
+	for (i = 0; i < 4; i++) {
+		if (FW_W_CORNER(fw, i) != None) {
 			w[n] = FW_W_CORNER(fw, i);
 			n++;
 		}
 	}
-	for (i = 0; i < 4; i++)
-	{
-		if (FW_W_SIDE(fw, i) != None)
-		{
+	for (i = 0; i < 4; i++) {
+		if (FW_W_SIDE(fw, i) != None) {
 			w[n] = FW_W_SIDE(fw, i);
 			n++;
 		}
 	}
-	if (IS_SHADED(fw))
-	{
+	if (IS_SHADED(fw)) {
 		w[n] = FW_W_PARENT(fw);
 		n++;
 	}
@@ -1320,68 +1174,63 @@ static void setup_frame_stacking(FvwmWindow *fw)
 	return;
 }
 
-static void get_default_window_attributes(
-	FvwmWindow *fw, unsigned long *pvaluemask,
-	XSetWindowAttributes *pattributes)
+static void
+get_default_window_attributes(FvwmWindow *fw, unsigned long *pvaluemask,
+    XSetWindowAttributes *pattributes)
 {
-	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder | CWBorderPixel |
-		CWColormap | CWBackPixmap;
-	pattributes->background_pixel = 0;
+	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder | CWBorderPixel
+		       | CWColormap | CWBackPixmap;
+	pattributes->background_pixel  = 0;
 	pattributes->background_pixmap = None;
-	pattributes->backing_store = NotUseful;
-	pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
-	pattributes->save_under = False;
-	pattributes->border_pixel = 0;
-	pattributes->colormap = Pcmap;
+	pattributes->backing_store     = NotUseful;
+	pattributes->cursor	       = Scr.FvwmCursors[CRS_DEFAULT];
+	pattributes->save_under	       = False;
+	pattributes->border_pixel      = 0;
+	pattributes->colormap	       = Pcmap;
 
 	return;
 }
 
-static void setup_auxiliary_windows(
-	FvwmWindow *fw, Bool setup_frame_and_parent, short buttons)
+static void
+setup_auxiliary_windows(
+    FvwmWindow *fw, Bool setup_frame_and_parent, short buttons)
 {
-	unsigned long valuemask_save = 0;
+	unsigned long	     valuemask_save = 0;
 	XSetWindowAttributes attributes;
 
 	get_default_window_attributes(fw, &valuemask_save, &attributes);
 
-	if (setup_frame_and_parent)
-	{
+	if (setup_frame_and_parent) {
 		setup_frame_window(fw);
 		setup_parent_window(fw);
 	}
 	setup_resize_handle_windows(fw);
-	if (HAS_TITLE(fw))
-	{
+	if (HAS_TITLE(fw)) {
 		setup_title_window(fw, valuemask_save, &attributes);
 		setup_button_windows(fw, valuemask_save, &attributes, buttons);
 	}
 	setup_frame_stacking(fw);
-	XMapSubwindows (dpy, FW_W_FRAME(fw));
+	XMapSubwindows(dpy, FW_W_FRAME(fw));
 
 	return;
 }
 
-static void destroy_auxiliary_windows(
-	FvwmWindow *fw, Bool destroy_frame_and_parent)
+static void
+destroy_auxiliary_windows(FvwmWindow *fw, Bool destroy_frame_and_parent)
 {
-	if (destroy_frame_and_parent)
-	{
+	if (destroy_frame_and_parent) {
 		XDeleteContext(dpy, FW_W_FRAME(fw), FvwmContext);
 		XDeleteContext(dpy, FW_W_PARENT(fw), FvwmContext);
 		delete_client_context(fw);
 		XDestroyWindow(dpy, FW_W_FRAME(fw));
 	}
-	if (HAS_TITLE(fw))
-	{
+	if (HAS_TITLE(fw)) {
 		destroy_title_window(fw, True);
 	}
-	if (HAS_TITLE(fw))
-	{
+	if (HAS_TITLE(fw)) {
 		destroy_button_windows(fw, True);
 	}
-	if (!HAS_NO_BORDER(fw))
-	{
+	if (!HAS_NO_BORDER(fw)) {
 		destroy_resize_handle_windows(fw, True);
 	}
 	XFlush(dpy);
@@ -1389,82 +1238,67 @@ static void destroy_auxiliary_windows(
 	return;
 }
 
-static void broadcast_window_names(FvwmWindow *fw, int changed_names)
+static void
+broadcast_window_names(FvwmWindow *fw, int changed_names)
 {
-	if (changed_names & 1)
-	{
+	if (changed_names & 1) {
 		EWMH_SetVisibleName(fw, False);
 		BroadcastWindowIconNames(fw, True, False);
 	}
-	if (changed_names & 2)
-	{
+	if (changed_names & 2) {
 		EWMH_SetVisibleName(fw, True);
 		BroadcastWindowIconNames(fw, False, True);
 	}
 	status_send();
 }
 
-static void setup_icon(FvwmWindow *fw, window_style *pstyle)
+static void
+setup_icon(FvwmWindow *fw, window_style *pstyle)
 {
 	int affected_titles;
 
 	increase_icon_hint_count(fw);
 	/* find a suitable icon pixmap */
-	if ((fw->wmhints) && (fw->wmhints->flags & IconWindowHint))
-	{
-		if (SHAS_ICON(&pstyle->flags) &&
-		    S_ICON_OVERRIDE(SCF(*pstyle)) == ICON_OVERRIDE)
-		{
-			ICON_DBG((stderr,"si: iwh ignored '%s'\n",
-				  fw->name.name));
+	if ((fw->wmhints) && (fw->wmhints->flags & IconWindowHint)) {
+		if (SHAS_ICON(&pstyle->flags)
+		    && S_ICON_OVERRIDE(SCF(*pstyle)) == ICON_OVERRIDE) {
+			ICON_DBG(
+			    (stderr, "si: iwh ignored '%s'\n", fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
-		}
-		else
-		{
-			ICON_DBG((stderr,"si: using iwh '%s'\n",
-				  fw->name.name));
+		} else {
+			ICON_DBG(
+			    (stderr, "si: using iwh '%s'\n", fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
-	}
-	else if ((fw->wmhints) && (fw->wmhints->flags & IconPixmapHint))
-	{
-		if (SHAS_ICON(&pstyle->flags) &&
-		    S_ICON_OVERRIDE(SCF(*pstyle)) != NO_ICON_OVERRIDE)
-		{
-			ICON_DBG((stderr,"si: iph ignored '%s'\n",
-				  fw->name.name));
+	} else if ((fw->wmhints) && (fw->wmhints->flags & IconPixmapHint)) {
+		if (SHAS_ICON(&pstyle->flags)
+		    && S_ICON_OVERRIDE(SCF(*pstyle)) != NO_ICON_OVERRIDE) {
+			ICON_DBG(
+			    (stderr, "si: iph ignored '%s'\n", fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
-		}
-		else
-		{
-			ICON_DBG((stderr,"si: using iph '%s'\n",
-				  fw->name.name));
+		} else {
+			ICON_DBG(
+			    (stderr, "si: using iph '%s'\n", fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
-	}
-	else if (SHAS_ICON(&pstyle->flags))
-	{
+	} else if (SHAS_ICON(&pstyle->flags)) {
 		/* an icon was specified */
-		ICON_DBG((stderr,"si: using style '%s'\n", fw->name.name));
+		ICON_DBG((stderr, "si: using style '%s'\n", fw->name.name));
 		fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
-	}
-	else
-	{
+	} else {
 		/* use default icon */
-		ICON_DBG((stderr,"si: using default '%s'\n", fw->name.name));
+		ICON_DBG((stderr, "si: using default '%s'\n", fw->name.name));
 		fw->icon_bitmap_file = Scr.DefaultIcon;
 	}
 
 	/* icon name */
-	if (!EWMH_WMIconName(fw, NULL, NULL, 0))
-	{
-		fw->icon_name.name = NoName;
+	if (!EWMH_WMIconName(fw, NULL, NULL, 0)) {
+		fw->icon_name.name	= NoName;
 		fw->icon_name.name_list = NULL;
 		FlocaleGetNameProperty(
-			XGetWMIconName, dpy, FW_W(fw), &(fw->icon_name));
+		    XGetWMIconName, dpy, FW_W(fw), &(fw->icon_name));
 	}
-	if (fw->icon_name.name == NoName)
-	{
+	if (fw->icon_name.name == NoName) {
 		fw->icon_name.name = fw->name.name;
 		SET_WAS_ICON_NAME_PROVIDED(fw, 0);
 	}
@@ -1475,62 +1309,52 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 	 */
 	FW_W_ICON_TITLE(fw) = None;
 	broadcast_window_names(fw, affected_titles);
-	if (fw->icon_bitmap_file != NULL &&
-	    fw->icon_bitmap_file != Scr.DefaultIcon)
-	{
-		BroadcastName(M_ICON_FILE,FW_W(fw),FW_W_FRAME(fw),
-			      (unsigned long)fw,fw->icon_bitmap_file);
+	if (fw->icon_bitmap_file != NULL
+	    && fw->icon_bitmap_file != Scr.DefaultIcon) {
+		BroadcastName(M_ICON_FILE, FW_W(fw), FW_W_FRAME(fw),
+		    (unsigned long)fw, fw->icon_bitmap_file);
 	}
 
 	return;
 }
 
-static void destroy_icon(FvwmWindow *fw)
+static void
+destroy_icon(FvwmWindow *fw)
 {
 	free_window_names(fw, False, True);
-	if (IS_PIXMAP_OURS(fw))
-	{
+	if (IS_PIXMAP_OURS(fw)) {
 		XFreePixmap(dpy, fw->iconPixmap);
 		fw->iconPixmap = None;
-		if (fw->icon_maskPixmap != None)
-		{
+		if (fw->icon_maskPixmap != None) {
 			XFreePixmap(dpy, fw->icon_maskPixmap);
 			fw->icon_maskPixmap = None;
 		}
-		if (fw->icon_alphaPixmap != None)
-		{
+		if (fw->icon_alphaPixmap != None) {
 			XFreePixmap(dpy, fw->icon_alphaPixmap);
 			fw->icon_alphaPixmap = None;
 		}
-		if (fw->icon_alloc_pixels != NULL)
-		{
-			if (fw->icon_nalloc_pixels != 0)
-			{
-				PictureFreeColors(
-					dpy, Pcmap, fw->icon_alloc_pixels,
-					fw->icon_nalloc_pixels, 0,
-					fw->icon_no_limit);
+		if (fw->icon_alloc_pixels != NULL) {
+			if (fw->icon_nalloc_pixels != 0) {
+				PictureFreeColors(dpy, Pcmap,
+				    fw->icon_alloc_pixels,
+				    fw->icon_nalloc_pixels, 0,
+				    fw->icon_no_limit);
 			}
 			free(fw->icon_alloc_pixels);
-			fw->icon_alloc_pixels = NULL;
+			fw->icon_alloc_pixels  = NULL;
 			fw->icon_nalloc_pixels = 0;
-			fw->icon_no_limit = 0;
+			fw->icon_no_limit      = 0;
 		}
 	}
-	if (FW_W_ICON_TITLE(fw))
-	{
+	if (FW_W_ICON_TITLE(fw)) {
 		XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
 		XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
 		XFlush(dpy);
 	}
-	if (FW_W_ICON_PIXMAP(fw) != None)
-	{
-		if (IS_ICON_OURS(fw))
-		{
+	if (FW_W_ICON_PIXMAP(fw) != None) {
+		if (IS_ICON_OURS(fw)) {
 			XDestroyWindow(dpy, FW_W_ICON_PIXMAP(fw));
-		}
-		else
-		{
+		} else {
 			XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
 		}
 		XDeleteContext(dpy, FW_W_ICON_PIXMAP(fw), FvwmContext);
@@ -1541,34 +1365,30 @@ static void destroy_icon(FvwmWindow *fw)
 	return;
 }
 
-static void setup_icon_boxes(FvwmWindow *fw, window_style *pstyle)
+static void
+setup_icon_boxes(FvwmWindow *fw, window_style *pstyle)
 {
 	icon_boxes *ib;
 
 	/* copy iconboxes ptr (if any) */
-	if (SHAS_ICON_BOXES(&pstyle->flags))
-	{
+	if (SHAS_ICON_BOXES(&pstyle->flags)) {
 		fw->IconBoxes = SGET_ICON_BOXES(*pstyle);
-		for (ib = fw->IconBoxes; ib; ib = ib->next)
-		{
+		for (ib = fw->IconBoxes; ib; ib = ib->next) {
 			ib->use_count++;
 		}
-	}
-	else
-	{
+	} else {
 		fw->IconBoxes = NULL;
 	}
 
 	return;
 }
 
-static void destroy_icon_boxes(FvwmWindow *fw)
+static void
+destroy_icon_boxes(FvwmWindow *fw)
 {
-	if (fw->IconBoxes)
-	{
+	if (fw->IconBoxes) {
 		fw->IconBoxes->use_count--;
-		if (fw->IconBoxes->use_count == 0 && fw->IconBoxes->is_orphan)
-		{
+		if (fw->IconBoxes->use_count == 0 && fw->IconBoxes->is_orphan) {
 			/* finally destroy the icon box */
 			free_icon_boxes(fw->IconBoxes);
 			fw->IconBoxes = NULL;
@@ -1578,23 +1398,19 @@ static void destroy_icon_boxes(FvwmWindow *fw)
 	return;
 }
 
-static void setup_layer(FvwmWindow *fw, window_style *pstyle)
+static void
+setup_layer(FvwmWindow *fw, window_style *pstyle)
 {
 	FvwmWindow *tf;
-	int layer;
+	int	    layer;
 
-	if (SUSE_LAYER(&pstyle->flags))
-	{
+	if (SUSE_LAYER(&pstyle->flags)) {
 		/* use layer from style */
 		layer = SGET_LAYER(*pstyle);
-	}
-	else if ((tf = get_transientfor_fvwmwindow(fw)) != NULL)
-	{
+	} else if ((tf = get_transientfor_fvwmwindow(fw)) != NULL) {
 		/* inherit layer from transientfor window */
 		layer = get_layer(tf);
-	}
-	else
-	{
+	} else {
 		/* use default layer */
 		layer = Scr.DefaultLayer;
 	}
@@ -1604,10 +1420,10 @@ static void setup_layer(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
-static void destroy_mini_icon(FvwmWindow *fw)
+static void
+destroy_mini_icon(FvwmWindow *fw)
 {
-	if (fw->mini_icon)
-	{
+	if (fw->mini_icon) {
 		PDestroyFvwmPicture(dpy, fw->mini_icon);
 		fw->mini_icon = 0;
 	}
@@ -1615,76 +1431,70 @@ static void destroy_mini_icon(FvwmWindow *fw)
 	return;
 }
 
-static void setup_key_and_button_grabs(FvwmWindow *fw)
+static void
+setup_key_and_button_grabs(FvwmWindow *fw)
 {
 #ifdef BUGS_ARE_COOL
 	/* dv (29-May-2001): If keys are grabbed separately for C_WINDOW and
 	 * the other contexts, new windows have problems when bindings are
 	 * removed.  Therefore, grab all keys in a single pass through the
 	 * list. */
-	GrabAllWindowKeys(
-		dpy, FW_W_FRAME(fw), Scr.AllBindings,
-		C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR, GetUnusedModifiers(),
-		True);
+	GrabAllWindowKeys(dpy, FW_W_FRAME(fw), Scr.AllBindings,
+	    C_WINDOW | C_TITLE | C_RALL | C_LALL | C_SIDEBAR,
+	    GetUnusedModifiers(), True);
 #endif
-	GrabAllWindowKeys(
-		dpy, FW_W_FRAME(fw), Scr.AllBindings,
-		C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_WINDOW, GetUnusedModifiers(),
-		True);
+	GrabAllWindowKeys(dpy, FW_W_FRAME(fw), Scr.AllBindings,
+	    C_TITLE | C_RALL | C_LALL | C_SIDEBAR | C_WINDOW,
+	    GetUnusedModifiers(), True);
 	setup_focus_policy(fw);
 
 	return;
 }
 
-static void __add_window_handle_x_resources(FvwmWindow *fw)
+static void
+__add_window_handle_x_resources(FvwmWindow *fw)
 {
-	int client_argc = 0;
-	char **client_argv = NULL;
-	XrmValue rm_value;
-	XrmDatabase db = NULL;
-	static XrmOptionDescRec table [] = {
-		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
-		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
+	int			client_argc = 0;
+	char **			client_argv = NULL;
+	XrmValue		rm_value;
+	XrmDatabase		db	= NULL;
+	static XrmOptionDescRec table[] = {
+	    {"-xrn", NULL, XrmoptionResArg, (caddr_t)NULL},
+	    {"-xrm", NULL, XrmoptionResArg, (caddr_t)NULL},
 	};
 	/* Get global X resources */
 	MergeXResources(dpy, &db, False);
 	/* Find out if the client requested a specific style on the command
 	 * line.
 	 */
-	if (XGetCommand(dpy, FW_W(fw), &client_argv, &client_argc))
-	{
-		if (client_argc > 0 && client_argv != NULL)
-		{
+	if (XGetCommand(dpy, FW_W(fw), &client_argv, &client_argc)) {
+		if (client_argc > 0 && client_argv != NULL) {
 			/* command line takes precedence over all */
-			MergeCmdLineResources(
-				&db, table, 2, fw->class.res_name,
-				&client_argc, client_argv, True);
+			MergeCmdLineResources(&db, table, 2, fw->class.res_name,
+			    &client_argc, client_argv, True);
 		}
 	}
 
-
 	/* parse the database values */
 	if (GetResourceString(db, "fvwmstyle", fw->class.res_name, &rm_value)
-	    && rm_value.size != 0)
-	{
+	    && rm_value.size != 0) {
 		char *style_name;
-		int name_len;
+		int   name_len;
 		style_name = rm_value.addr;
-		name_len = rm_value.size-1;
+		name_len   = rm_value.size - 1;
 		/* Trim spaces at the start of the name */
-		while (name_len>0 && isspace(*style_name))
-		{
+		while (name_len > 0 && isspace(*style_name)) {
 			style_name++;
 			name_len--;
 		}
 		/* Trim spaces at the end of the name */
-		while (name_len>0 && isspace(*(style_name+name_len-1)))
-		{
+		while (name_len > 0 && isspace(*(style_name + name_len - 1))) {
 			name_len--;
 		}
-		if (name_len>0) {
-			fw->style_name = fxmalloc(sizeof(char) * (name_len+1));
-			memcpy(fw->style_name,style_name,name_len);
+		if (name_len > 0) {
+			fw->style_name =
+			    fxmalloc(sizeof(char) * (name_len + 1));
+			memcpy(fw->style_name, style_name, name_len);
 			fw->style_name[name_len] = 0;
 		}
 	}
@@ -1693,61 +1503,43 @@ static void __add_window_handle_x_resources(FvwmWindow *fw)
 	return;
 }
 
-
-static int is_geometry_invalid_with_hints(
-	const rectangle *g, const XSizeHints *hints)
+static int
+is_geometry_invalid_with_hints(const rectangle *g, const XSizeHints *hints)
 {
-	if (hints->min_width > g->width)
-	{
+	if (hints->min_width > g->width) {
 		return 1;
-	}
-	else if (hints->min_height > g->height)
-	{
+	} else if (hints->min_height > g->height) {
 		return 2;
-	}
-	else if (hints->max_width < g->width)
-	{
+	} else if (hints->max_width < g->width) {
 		return 3;
-	}
-	else if (hints->max_height < g->height)
-	{
+	} else if (hints->max_height < g->height) {
 		return 4;
 	}
-	if (hints->width_inc > 0)
-	{
+	if (hints->width_inc > 0) {
 		int remainder;
 
-		remainder = (g->width - hints->base_width) %
-			hints->width_inc;
-		if (remainder != 0)
-		{
+		remainder = (g->width - hints->base_width) % hints->width_inc;
+		if (remainder != 0) {
 			return 5;
 		}
 	}
-	if (hints->height_inc > 0)
-	{
+	if (hints->height_inc > 0) {
 		int remainder;
 
-		remainder = (g->height - hints->base_height) %
-			hints->height_inc;
-		if (remainder != 0)
-		{
+		remainder =
+		    (g->height - hints->base_height) % hints->height_inc;
+		if (remainder != 0) {
 			return 6;
 		}
 	}
-	if (hints->flags & PAspect)
-	{
-		if (
-			(long)g->width * (long)hints->min_aspect.y <
-			(long)hints->min_aspect.x * (long)g->height)
-		{
+	if (hints->flags & PAspect) {
+		if ((long)g->width * (long)hints->min_aspect.y
+		    < (long)hints->min_aspect.x * (long)g->height) {
 			/* aspect smaller than minimum aspect */
 			return 7;
 		}
-		if (
-			(long)g->width * (long)hints->max_aspect.y >
-			(long)hints->max_aspect.x * (long)g->height)
-		{
+		if ((long)g->width * (long)hints->max_aspect.y
+		    > (long)hints->max_aspect.x * (long)g->height) {
 			/* aspect larger than maximum aspect */
 			return 8;
 		}
@@ -1768,62 +1560,52 @@ static int is_geometry_invalid_with_hints(
  * Returns which titles need to be updated (like what_changed).  The return
  * value can be used as the 'which' argument of update_window_names.
  */
-int setup_visible_names(FvwmWindow *fw, int what_changed)
+int
+setup_visible_names(FvwmWindow *fw, int what_changed)
 {
-	char *ext_name;
+	char *	     ext_name;
 	window_style style;
-	int affected_titles;
-	int changed_names;
-	int changed_styles;
-	int force_update;
-	int bits;
+	int	     affected_titles;
+	int	     changed_names;
+	int	     changed_styles;
+	int	     force_update;
+	int	     bits;
 
-	if (fw == NULL)
-	{
+	if (fw == NULL) {
 		/* should never happen */
 		return 0;
 	}
 
-	changed_names = (what_changed & 3);
+	changed_names  = (what_changed & 3);
 	changed_styles = ((what_changed >> 2) & 3);
-	force_update = changed_styles;
-	if (fw->visible_name == NULL)
-	{
+	force_update   = changed_styles;
+	if (fw->visible_name == NULL) {
 		force_update |= 1;
 	}
-	if (fw->visible_icon_name == NULL)
-	{
+	if (fw->visible_icon_name == NULL) {
 		force_update |= 2;
 	}
 	affected_titles = 0;
 	affected_titles |= changed_styles;
 	/* TA:  Get the window style. */
 	lookup_style(fw, &style);
-	if (changed_names != 0 || (force_update & 1))
-	{
-		ext_name = interpolate_titleformat_name(
-			&bits, fw, &style, False);
-		if ((changed_names & bits) || (force_update & 1))
-		{
+	if (changed_names != 0 || (force_update & 1)) {
+		ext_name =
+		    interpolate_titleformat_name(&bits, fw, &style, False);
+		if ((changed_names & bits) || (force_update & 1)) {
 			fw->visible_name = ext_name;
 			affected_titles |= 1;
-		}
-		else
-		{
+		} else {
 			free(ext_name);
 		}
 	}
-	if (changed_names != 0 || (force_update & 2))
-	{
-		ext_name = interpolate_titleformat_name(
-			&bits, fw, &style, True);
-		if ((changed_names & bits) || (force_update & 2))
-		{
+	if (changed_names != 0 || (force_update & 2)) {
+		ext_name =
+		    interpolate_titleformat_name(&bits, fw, &style, True);
+		if ((changed_names & bits) || (force_update & 2)) {
 			fw->visible_icon_name = ext_name;
 			affected_titles |= 2;
-		}
-		else
-		{
+		} else {
 			free(ext_name);
 		}
 	}
@@ -1836,33 +1618,31 @@ int setup_visible_names(FvwmWindow *fw, int what_changed)
  *   2 = icon
  *   3 = both
  */
-void update_window_names(FvwmWindow *fw, int changed_names)
+void
+update_window_names(FvwmWindow *fw, int changed_names)
 {
 	int affected_titles;
 
 	affected_titles = setup_visible_names(fw, changed_names);
 	affected_titles |= changed_names;
 	/* fix the name in the title bar */
-	if (!IS_ICONIFIED(fw))
-	{
-		border_draw_decorations(
-			fw, PART_TITLE, (Scr.Hilite == fw), True, CLEAR_ALL,
-			NULL, NULL);
+	if (!IS_ICONIFIED(fw)) {
+		border_draw_decorations(fw, PART_TITLE, (Scr.Hilite == fw),
+		    True, CLEAR_ALL, NULL, NULL);
 	}
 	broadcast_window_names(fw, affected_titles);
-	if (affected_titles & 2)
-	{
+	if (affected_titles & 2) {
 		RedoIconName(fw);
 	}
 
 	return;
 }
 
-void setup_window_name(FvwmWindow *fw)
+void
+setup_window_name(FvwmWindow *fw)
 {
-	if (!EWMH_WMName(fw, NULL, NULL, 0))
-	{
-		fw->name.name = NoName;
+	if (!EWMH_WMName(fw, NULL, NULL, 0)) {
+		fw->name.name	   = NoName;
 		fw->name.name_list = NULL;
 		FlocaleGetNameProperty(XGetWMName, dpy, FW_W(fw), &(fw->name));
 	}
@@ -1870,7 +1650,8 @@ void setup_window_name(FvwmWindow *fw)
 	return;
 }
 
-void setup_wm_hints(FvwmWindow *fw)
+void
+setup_wm_hints(FvwmWindow *fw)
 {
 	fw->wmhints = XGetWMHints(dpy, FW_W(fw));
 	set_focus_model(fw);
@@ -1878,51 +1659,42 @@ void setup_wm_hints(FvwmWindow *fw)
 	return;
 }
 
-void setup_title_geometry(
-	FvwmWindow *fw, window_style *pstyle)
+void
+setup_title_geometry(FvwmWindow *fw, window_style *pstyle)
 {
 	int width;
 	int offset;
 
-	get_title_font_size_and_offset(
-		fw, S_TITLE_DIR(SCF(*pstyle)),
-		S_IS_LEFT_TITLE_ROTATED_CW(SCF(*pstyle)),
-		S_IS_RIGHT_TITLE_ROTATED_CW(SCF(*pstyle)),
-		S_IS_TOP_TITLE_ROTATED(SCF(*pstyle)),
-		S_IS_BOTTOM_TITLE_ROTATED(SCF(*pstyle)),
-		&width, &offset);
-	fw->title_thickness = width;
+	get_title_font_size_and_offset(fw, S_TITLE_DIR(SCF(*pstyle)),
+	    S_IS_LEFT_TITLE_ROTATED_CW(SCF(*pstyle)),
+	    S_IS_RIGHT_TITLE_ROTATED_CW(SCF(*pstyle)),
+	    S_IS_TOP_TITLE_ROTATED(SCF(*pstyle)),
+	    S_IS_BOTTOM_TITLE_ROTATED(SCF(*pstyle)), &width, &offset);
+	fw->title_thickness   = width;
 	fw->title_text_offset = offset;
-	fw->corner_width = fw->title_thickness + fw->boundary_width;
-	if (!HAS_TITLE(fw))
-	{
+	fw->corner_width      = fw->title_thickness + fw->boundary_width;
+	if (!HAS_TITLE(fw)) {
 		fw->title_thickness = 0;
 	}
 
 	return;
 }
 
-void setup_window_font(
-	FvwmWindow *fw, window_style *pstyle, Bool do_destroy)
+void
+setup_window_font(FvwmWindow *fw, window_style *pstyle, Bool do_destroy)
 {
 	/* get rid of old font */
-	if (do_destroy)
-	{
+	if (do_destroy) {
 		destroy_window_font(fw);
 		/* destroy_window_font resets the IS_WINDOW_FONT_LOADED flag */
 	}
 	/* load new font */
-	if (!IS_WINDOW_FONT_LOADED(fw))
-	{
-		if (S_HAS_WINDOW_FONT(SCF(*pstyle)) &&
-		    SGET_WINDOW_FONT(*pstyle) &&
-		    (fw->title_font =
-		     FlocaleLoadFont(dpy, SGET_WINDOW_FONT(*pstyle), "fvwm")))
-		{
+	if (!IS_WINDOW_FONT_LOADED(fw)) {
+		if (S_HAS_WINDOW_FONT(SCF(*pstyle)) && SGET_WINDOW_FONT(*pstyle)
+		    && (fw->title_font = FlocaleLoadFont(
+			    dpy, SGET_WINDOW_FONT(*pstyle), "fvwm"))) {
 			SET_USING_DEFAULT_WINDOW_FONT(fw, 0);
-		}
-		else
-		{
+		} else {
 			/* no explicit font or failed to load, use default font
 			 * instead */
 			fw->title_font = Scr.DefaultFont;
@@ -1935,15 +1707,13 @@ void setup_window_font(
 	return;
 }
 
-void setup_icon_font(
-	FvwmWindow *fw, window_style *pstyle, Bool do_destroy)
+void
+setup_icon_font(FvwmWindow *fw, window_style *pstyle, Bool do_destroy)
 {
 	int height = 0;
 
-	if (IS_ICON_SUPPRESSED(fw) || HAS_NO_ICON_TITLE(fw))
-	{
-		if (IS_ICON_FONT_LOADED(fw))
-		{
+	if (IS_ICON_SUPPRESSED(fw) || HAS_NO_ICON_TITLE(fw)) {
+		if (IS_ICON_FONT_LOADED(fw)) {
 			destroy_icon_font(fw);
 			/* destroy_icon_font resets the IS_ICON_FONT_LOADED
 			 * flag */
@@ -1951,22 +1721,17 @@ void setup_icon_font(
 		return;
 	}
 	/* get rid of old font */
-	if (do_destroy && IS_ICON_FONT_LOADED(fw))
-	{
+	if (do_destroy && IS_ICON_FONT_LOADED(fw)) {
 		destroy_icon_font(fw);
 		/* destroy_icon_font resets the IS_ICON_FONT_LOADED flag */
 	}
 	/* load new font */
-	if (!IS_ICON_FONT_LOADED(fw))
-	{
-		if (S_HAS_ICON_FONT(SCF(*pstyle)) && SGET_ICON_FONT(*pstyle) &&
-		    (fw->icon_font =
-		     FlocaleLoadFont(dpy, SGET_ICON_FONT(*pstyle), "fvwm")))
-		{
+	if (!IS_ICON_FONT_LOADED(fw)) {
+		if (S_HAS_ICON_FONT(SCF(*pstyle)) && SGET_ICON_FONT(*pstyle)
+		    && (fw->icon_font = FlocaleLoadFont(
+			    dpy, SGET_ICON_FONT(*pstyle), "fvwm"))) {
 			SET_USING_DEFAULT_ICON_FONT(fw, 0);
-		}
-		else
-		{
+		} else {
 			/* no explicit font or failed to load, use default font
 			 * instead */
 			fw->icon_font = Scr.DefaultFont;
@@ -1976,8 +1741,7 @@ void setup_icon_font(
 	}
 	/* adjust y position of existing icons */
 	height = (IS_ICON_FONT_LOADED(fw)) ? fw->icon_font->height : 0;
-	if (height)
-	{
+	if (height) {
 		resize_icon_title_height(fw, height - fw->icon_font->height);
 		/* this repositions the icon even if the window is not
 		 * iconified */
@@ -1987,48 +1751,40 @@ void setup_icon_font(
 	return;
 }
 
-void setup_style_and_decor(
-	FvwmWindow *fw, window_style *pstyle, short *buttons)
+void
+setup_style_and_decor(FvwmWindow *fw, window_style *pstyle, short *buttons)
 {
 	/* first copy the static styles into the window struct */
-	memcpy(&(FW_COMMON_FLAGS(fw)), &(SCF(*pstyle)),
-	       sizeof(common_flags_t));
+	memcpy(&(FW_COMMON_FLAGS(fw)), &(SCF(*pstyle)), sizeof(common_flags_t));
 	fw->wShaped = None;
-	if (FShapesSupported)
-	{
-		int i;
+	if (FShapesSupported) {
+		int	     i;
 		unsigned int u;
-		Bool b;
-		int boundingShaped;
+		Bool	     b;
+		int	     boundingShaped;
 
 		SUPPRESS_UNUSED_VAR_WARNING(i);
 		SUPPRESS_UNUSED_VAR_WARNING(u);
 		SUPPRESS_UNUSED_VAR_WARNING(b);
 		FShapeSelectInput(dpy, FW_W(fw), FShapeNotifyMask);
-		if (FShapeQueryExtents(
-			    dpy, FW_W(fw), &boundingShaped, &i, &i, &u, &u, &b,
-			    &i, &i, &u, &u))
-		{
+		if (FShapeQueryExtents(dpy, FW_W(fw), &boundingShaped, &i, &i,
+			&u, &u, &b, &i, &i, &u, &u)) {
 			fw->wShaped = boundingShaped;
 		}
 	}
 
 	/* search for a UseDecor tag in the style */
-	if (!IS_DECOR_CHANGED(fw))
-	{
+	if (!IS_DECOR_CHANGED(fw)) {
 		FvwmDecor *decor = &Scr.DefaultDecor;
 
-		for (; decor; decor = decor->next)
-		{
-			if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
-			{
+		for (; decor; decor = decor->next) {
+			if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag)) {
 				fw->decor = decor;
 				break;
 			}
 		}
 	}
-	if (fw->decor == NULL)
-	{
+	if (fw->decor == NULL) {
 		fw->decor = &Scr.DefaultDecor;
 	}
 
@@ -2038,16 +1794,13 @@ void setup_style_and_decor(
 	fw->buttons = SIS_BUTTON_DISABLED(&pstyle->flags);
 	SelectDecor(fw, pstyle, buttons);
 
-	if (IS_TRANSIENT(fw) && !pstyle->flags.do_decorate_transient)
-	{
+	if (IS_TRANSIENT(fw) && !pstyle->flags.do_decorate_transient) {
 		SET_HAS_HANDLES(fw, 0);
 		SET_HAS_TITLE(fw, 0);
 	}
 	/* set boundary width to zero for shaped windows */
-	if (FHaveShapeExtension)
-	{
-		if (fw->wShaped)
-		{
+	if (FHaveShapeExtension) {
+		if (fw->wShaped) {
 			set_window_border_size(fw, fw->unshaped_boundary_width);
 			SET_HAS_NO_BORDER(fw, 1);
 			SET_HAS_HANDLES(fw, 0);
@@ -2071,15 +1824,15 @@ void setup_style_and_decor(
 	setup_numeric_vals(fw, pstyle);
 
 	/* ConfigureNotify motion method */
-	if (SCR_MOTION_METHOD(&pstyle->flag_mask))
-	{
+	if (SCR_MOTION_METHOD(&pstyle->flag_mask)) {
 		CR_MOTION_METHOD(fw) = SCR_MOTION_METHOD(&pstyle->flags);
 	}
 
 	return;
 }
 
-void change_icon_boxes(FvwmWindow *fw, window_style *pstyle)
+void
+change_icon_boxes(FvwmWindow *fw, window_style *pstyle)
 {
 	destroy_icon_boxes(fw);
 	setup_icon_boxes(fw, pstyle);
@@ -2087,63 +1840,56 @@ void change_icon_boxes(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
-void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
+void
+setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 {
-	if (SHAS_MIN_WINDOW_SIZE(&pstyle->flags))
-	{
-		fw->min_window_width = SGET_MIN_WINDOW_WIDTH(*pstyle);
+	if (SHAS_MIN_WINDOW_SIZE(&pstyle->flags)) {
+		fw->min_window_width  = SGET_MIN_WINDOW_WIDTH(*pstyle);
 		fw->min_window_height = SGET_MIN_WINDOW_HEIGHT(*pstyle);
-	}
-	else
-	{
-		fw->min_window_width = 0;
+	} else {
+		fw->min_window_width  = 0;
 		fw->min_window_height = 0;
 	}
-	if (SHAS_MAX_WINDOW_SIZE(&pstyle->flags))
-	{
-		fw->max_window_width = SGET_MAX_WINDOW_WIDTH(*pstyle);
+	if (SHAS_MAX_WINDOW_SIZE(&pstyle->flags)) {
+		fw->max_window_width  = SGET_MAX_WINDOW_WIDTH(*pstyle);
 		fw->max_window_height = SGET_MAX_WINDOW_HEIGHT(*pstyle);
-	}
-	else
-	{
-		fw->max_window_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+	} else {
+		fw->max_window_width  = DEFAULT_MAX_MAX_WINDOW_WIDTH;
 		fw->max_window_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 	}
 
 	return;
 }
 
-void setup_placement_penalty(FvwmWindow *fw, window_style *pstyle)
+void
+setup_placement_penalty(FvwmWindow *fw, window_style *pstyle)
 {
-	if (!SHAS_PLACEMENT_PENALTY(&pstyle->flags))
-	{
+	if (!SHAS_PLACEMENT_PENALTY(&pstyle->flags)) {
 		pl_penalty_struct *p;
 
-		p = SGET_PLACEMENT_PENALTY_PTR(*pstyle);
+		p  = SGET_PLACEMENT_PENALTY_PTR(*pstyle);
 		*p = default_pl_penalty;
 	}
-	if (!SHAS_PLACEMENT_PERCENTAGE_PENALTY(&pstyle->flags))
-	{
+	if (!SHAS_PLACEMENT_PERCENTAGE_PENALTY(&pstyle->flags)) {
 		pl_percent_penalty_struct *p;
 
-		p = SGET_PLACEMENT_PERCENTAGE_PENALTY_PTR(*pstyle);
+		p  = SGET_PLACEMENT_PERCENTAGE_PENALTY_PTR(*pstyle);
 		*p = default_pl_percent_penalty;
 	}
-	fw->pl_penalty = (*pstyle).pl_penalty;
+	fw->pl_penalty	       = (*pstyle).pl_penalty;
 	fw->pl_percent_penalty = (*pstyle).pl_percent_penalty;
 
 	return;
 }
 
-void setup_frame_attributes(
-	FvwmWindow *fw, window_style *pstyle)
+void
+setup_frame_attributes(FvwmWindow *fw, window_style *pstyle)
 {
 	XSetWindowAttributes xswa;
 
 	/* Backing_store is controlled on the client, borders, title & buttons
 	 */
-	switch (pstyle->flags.use_backing_store)
-	{
+	switch (pstyle->flags.use_backing_store) {
 	case BACKINGSTORE_DEFAULT:
 		xswa.backing_store = fw->attr_backup.backing_store;
 		break;
@@ -2156,24 +1902,24 @@ void setup_frame_attributes(
 		break;
 	}
 	/* parent_relative is applied to the frame and the parent */
-	xswa.background_pixmap = pstyle->flags.use_parent_relative
-		? ParentRelative : None;
+	xswa.background_pixmap =
+	    pstyle->flags.use_parent_relative ? ParentRelative : None;
 	/* Save_under is only useful on the frame */
-	xswa.save_under = pstyle->flags.do_save_under
-		? Scr.flags.do_save_under : NotUseful;
+	xswa.save_under =
+	    pstyle->flags.do_save_under ? Scr.flags.do_save_under : NotUseful;
 	XChangeWindowAttributes(dpy, FW_W(fw), CWBackingStore, &xswa);
 	XChangeWindowAttributes(
-		dpy, FW_W_PARENT(fw), CWBackPixmap | CWBackingStore, &xswa);
-	XChangeWindowAttributes(
-		dpy, FW_W_FRAME(fw),
-		CWBackPixmap | CWBackingStore | CWSaveUnder, &xswa);
+	    dpy, FW_W_PARENT(fw), CWBackPixmap | CWBackingStore, &xswa);
+	XChangeWindowAttributes(dpy, FW_W_FRAME(fw),
+	    CWBackPixmap | CWBackingStore | CWSaveUnder, &xswa);
 
 	return;
 }
 
-void change_auxiliary_windows(FvwmWindow *fw, short buttons)
+void
+change_auxiliary_windows(FvwmWindow *fw, short buttons)
 {
-	unsigned long valuemask_save = 0;
+	unsigned long	     valuemask_save = 0;
 	XSetWindowAttributes attributes;
 
 	get_default_window_attributes(fw, &valuemask_save, &attributes);
@@ -2181,18 +1927,17 @@ void change_auxiliary_windows(FvwmWindow *fw, short buttons)
 	change_button_windows(fw, valuemask_save, &attributes, buttons);
 	change_resize_handle_windows(fw);
 	setup_frame_stacking(fw);
-	XMapSubwindows (dpy, FW_W_FRAME(fw));
+	XMapSubwindows(dpy, FW_W_FRAME(fw));
 
 	return;
 }
 
-void increase_icon_hint_count(FvwmWindow *fw)
+void
+increase_icon_hint_count(FvwmWindow *fw)
 {
-	if (fw->wmhints &&
-	    (fw->wmhints->flags & (IconWindowHint | IconPixmapHint)))
-	{
-		switch (WAS_ICON_HINT_PROVIDED(fw))
-		{
+	if (fw->wmhints
+	    && (fw->wmhints->flags & (IconWindowHint | IconPixmapHint))) {
+		switch (WAS_ICON_HINT_PROVIDED(fw)) {
 		case ICON_HINT_NEVER:
 			SET_WAS_ICON_HINT_PROVIDED(fw, ICON_HINT_ONCE);
 			break;
@@ -2203,14 +1948,15 @@ void increase_icon_hint_count(FvwmWindow *fw)
 		default:
 			break;
 		}
-		ICON_DBG((stderr,"icon hint count++ (%d) '%s'\n",
-			  (int)WAS_ICON_HINT_PROVIDED(fw), fw->name.name));
+		ICON_DBG((stderr, "icon hint count++ (%d) '%s'\n",
+		    (int)WAS_ICON_HINT_PROVIDED(fw), fw->name.name));
 	}
 
 	return;
 }
 
-void change_icon(FvwmWindow *fw, window_style *pstyle)
+void
+change_icon(FvwmWindow *fw, window_style *pstyle)
 {
 	destroy_icon(fw);
 	setup_icon(fw, pstyle);
@@ -2218,68 +1964,62 @@ void change_icon(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
-void change_mini_icon(FvwmWindow *fw, window_style *pstyle)
+void
+change_mini_icon(FvwmWindow *fw, window_style *pstyle)
 {
 	FvwmPicture *old_mi = fw->mini_icon;
 	destroy_mini_icon(fw);
 	setup_mini_icon(fw, pstyle);
 	broadcast_mini_icon(fw);
-	if (old_mi != NULL && fw->mini_icon == 0)
-	{
+	if (old_mi != NULL && fw->mini_icon == 0) {
 		/* this case is not handled in setup_mini_icon, so we must
 		 * broadcast here explicitly */
-		BroadcastFvwmPicture(
-			M_MINI_ICON, FW_W(fw), FW_W_FRAME(fw),
-			(unsigned long)fw, NULL, "");
+		BroadcastFvwmPicture(M_MINI_ICON, FW_W(fw), FW_W_FRAME(fw),
+		    (unsigned long)fw, NULL, "");
 	}
 
 	return;
 }
 
-void setup_focus_policy(FvwmWindow *fw)
+void
+setup_focus_policy(FvwmWindow *fw)
 {
 	focus_grab_buttons(fw);
 
 	return;
 }
 
-Bool validate_transientfor(FvwmWindow *fw)
+Bool
+validate_transientfor(FvwmWindow *fw)
 {
 	XWindowAttributes wa;
-	FvwmWindow *cw;
-	Window w;
+	FvwmWindow *	  cw;
+	Window		  w;
 
 	w = FW_W_TRANSIENTFOR(fw);
-	if (w == None || w == FW_W(fw) || w == IS_EWMH_DESKTOP(w))
-	{
+	if (w == None || w == FW_W(fw) || w == IS_EWMH_DESKTOP(w)) {
 		FW_W_TRANSIENTFOR(fw) = Scr.Root;
 		return False;
-	}
-	else if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&cw) != XCNOENT)
-	{
-		if (cw == fw)
-		{
+	} else if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&cw)
+		   != XCNOENT) {
+		if (cw == fw) {
 			/* It's a transient of itself, ignore the hint */
 			FW_W_TRANSIENTFOR(fw) = Scr.Root;
 			return False;
 		}
 		/* Check for transient loops */
-		while (XFindContext(
-			       dpy, FW_W_TRANSIENTFOR(cw), FvwmContext,
-			       (caddr_t *)&cw) != XCNOENT &&
-		       IS_TRANSIENT(cw))
-		{
-			if (FW_W_TRANSIENTFOR(cw) == FW_W(fw) || cw == fw)
-			{
+		while (XFindContext(dpy, FW_W_TRANSIENTFOR(cw), FvwmContext,
+			   (caddr_t *)&cw)
+			   != XCNOENT
+		       && IS_TRANSIENT(cw)) {
+			if (FW_W_TRANSIENTFOR(cw) == FW_W(fw) || cw == fw) {
 				/* loop detected, ignore the hint */
 				FW_W_TRANSIENTFOR(fw) = Scr.Root;
 				return False;
 			}
 		}
-	}
-	else if (!XGetWindowAttributes(dpy, w, &wa) ||
-		 wa.map_state != IsViewable)
-	{
+	} else if (!XGetWindowAttributes(dpy, w, &wa)
+		   || wa.map_state != IsViewable) {
 		/* transientfor does not exist or is not viewable or unmapped */
 		FW_W_TRANSIENTFOR(fw) = Scr.Root;
 		return False;
@@ -2288,14 +2028,14 @@ Bool validate_transientfor(FvwmWindow *fw)
 	return True;
 }
 
-Bool setup_transientfor(FvwmWindow *fw)
+Bool
+setup_transientfor(FvwmWindow *fw)
 {
 	Bool rc;
 
 	rc = XGetTransientForHint(dpy, FW_W(fw), &FW_W_TRANSIENTFOR(fw));
 	SET_TRANSIENT(fw, rc);
-	if (rc == False)
-	{
+	if (rc == False) {
 		FW_W_TRANSIENTFOR(fw) = Scr.Root;
 	}
 	validate_transientfor(fw);
@@ -2309,32 +2049,32 @@ Bool setup_transientfor(FvwmWindow *fw)
  *	AddWindow - add a new window to the fvwm list
  *
  */
-FvwmWindow *AddWindow(
-	const char **ret_initial_map_command, const exec_context_t *exc,
-	FvwmWindow *ReuseWin, initial_window_options_t * win_opts)
+FvwmWindow *
+AddWindow(const char **ret_initial_map_command, const exec_context_t *exc,
+    FvwmWindow *ReuseWin, initial_window_options_t *win_opts)
 {
 	/* new fvwm window structure */
 	register FvwmWindow *fw;
-	FvwmWindow *tmp;
+	FvwmWindow *	     tmp;
 	/* mask for create windows */
 	unsigned long valuemask;
 	/* attributes for create windows */
 	XSetWindowAttributes attributes;
-	XWindowAttributes wattr;
+	XWindowAttributes    wattr;
 	/* area for merged styles */
 	window_style style;
 	/* used for faster access */
-	style_flags *sflags;
-	short buttons;
-	Bool used_sm = False;
-	Bool do_resize_too = False;
-	size_borders b;
+	style_flags *	       sflags;
+	short		       buttons;
+	Bool		       used_sm	     = False;
+	Bool		       do_resize_too = False;
+	size_borders	       b;
 	frame_move_resize_args mr_args;
-	mwtsm_state_args state_args;
-	Window w = exc->w.w;
-	const exec_context_t *exc2;
+	mwtsm_state_args       state_args;
+	Window		       w = exc->w.w;
+	const exec_context_t * exc2;
 	exec_context_changes_t ecc;
-	struct monitor	*mon;
+	struct monitor *       mon;
 
 	/****** init window structure ******/
 	setup_window_structure(&tmp, w, ReuseWin);
@@ -2346,13 +2086,11 @@ FvwmWindow *AddWindow(
 	 * reparented, so we'll get a DestroyNotify for it.  We won't have
 	 * gotten one for anything up to here, however. ******/
 	MyXGrabServer(dpy);
-	if (XGetGeometry(
-		    dpy, w, &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth) == 0)
-	{
-		if (Scr.bo.do_display_new_window_names)
-		{
+	if (XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
+		(unsigned int *)&JunkWidth, (unsigned int *)&JunkHeight,
+		(unsigned int *)&JunkBW, (unsigned int *)&JunkDepth)
+	    == 0) {
+		if (Scr.bo.do_display_new_window_names) {
 			fvwm_debug(__func__, "new window disappeared");
 		}
 		free(fw);
@@ -2369,21 +2107,19 @@ FvwmWindow *AddWindow(
 	/* get merged styles */
 	lookup_style(fw, &style);
 	sflags = SGET_FLAGS_POINTER(style);
-	if (SIS_UNMANAGED(sflags))
-	{
-		if (Scr.bo.do_display_new_window_names)
-		{
-			fvwm_debug(__func__, "new window is unmanaged:\n"
-				   "  name:      %s\n"
-				   "  icon name: (unknown)\n"
-				   "  resource:  %s\n"
-				   "  class:     %s",
-				   fw->name.name, fw->class.res_name,
-				   fw->class.res_class);
+	if (SIS_UNMANAGED(sflags)) {
+		if (Scr.bo.do_display_new_window_names) {
+			fvwm_debug(__func__,
+			    "new window is unmanaged:\n"
+			    "  name:      %s\n"
+			    "  icon name: (unknown)\n"
+			    "  resource:  %s\n"
+			    "  class:     %s",
+			    fw->name.name, fw->class.res_name,
+			    fw->class.res_class);
 		}
 		free_window_names(fw, True, True);
-		if (fw->style_name)
-		{
+		if (fw->style_name) {
 			free(fw->style_name);
 		}
 		free(fw);
@@ -2400,8 +2136,7 @@ FvwmWindow *AddWindow(
 	 * decorate it.	 If its a transient, and DecorateTransients was
 	 * specified, decorate anyway. */
 	setup_transientfor(fw);
-	if (win_opts->flags.is_menu)
-	{
+	if (win_opts->flags.is_menu) {
 		SET_TEAR_OFF_MENU(fw, 1);
 	}
 	fw->decor = NULL;
@@ -2414,23 +2149,23 @@ FvwmWindow *AddWindow(
 	/***** visible window name ****/
 	setup_visible_names(fw, 1);
 	EWMH_SetVisibleName(fw, False);
-	if (Scr.bo.do_display_new_window_names)
-	{
-		fvwm_debug(__func__, "new window:\n"
-			   "  name:      %s\n"
-			   "  icon name: %s\n"
-			   "  resource:  %s\n"
-			   "  class:     %s",
-			   fw->name.name, (fw->icon_name.name == NULL) ?
-			   "(unknown)" : fw->icon_name.name,
-			   fw->class.res_name,
-			   fw->class.res_class);
+	if (Scr.bo.do_display_new_window_names) {
+		fvwm_debug(__func__,
+		    "new window:\n"
+		    "  name:      %s\n"
+		    "  icon name: %s\n"
+		    "  resource:  %s\n"
+		    "  class:     %s",
+		    fw->name.name,
+		    (fw->icon_name.name == NULL) ? "(unknown)"
+						 : fw->icon_name.name,
+		    fw->class.res_name, fw->class.res_class);
 	}
 
 	/****** InitialMapCommand ******/
-	*ret_initial_map_command =
-		(style.flags.has_initial_map_command_string) ?
-		SGET_INITIAL_MAP_COMMAND_STRING(style) : NULL;
+	*ret_initial_map_command = (style.flags.has_initial_map_command_string)
+				       ? SGET_INITIAL_MAP_COMMAND_STRING(style)
+				       : NULL;
 
 	/****** state setup ******/
 	setup_icon_boxes(fw, &style);
@@ -2449,8 +2184,7 @@ FvwmWindow *AddWindow(
 	/* add the window to the end of the fvwm list */
 	fw->next = Scr.FvwmRoot.next;
 	fw->prev = &Scr.FvwmRoot;
-	while (fw->next != NULL)
-	{
+	while (fw->next != NULL) {
 		fw->prev = fw->next;
 		fw->next = fw->next->next;
 	}
@@ -2484,19 +2218,16 @@ FvwmWindow *AddWindow(
 	get_window_borders(fw, &b);
 	memset(&state_args, 0, sizeof(state_args));
 	used_sm = MatchWinToSM(fw, &state_args, win_opts);
-	if (used_sm)
-	{
-		struct monitor	*tm = (fw && fw->m) ? fw->m :
-			monitor_get_current();
+	if (used_sm) {
+		struct monitor *tm =
+		    (fw && fw->m) ? fw->m : monitor_get_current();
 		goto_desk(fw->Desk, tm);
 
 		/* read the requested absolute geometry */
 		gravity_translate_to_northwest_geometry_no_bw(
-			fw->hints.win_gravity, fw, &fw->g.normal,
-			&fw->g.normal);
-		gravity_resize(
-			fw->hints.win_gravity, &fw->g.normal,
-			b.total_size.width, b.total_size.height);
+		    fw->hints.win_gravity, fw, &fw->g.normal, &fw->g.normal);
+		gravity_resize(fw->hints.win_gravity, &fw->g.normal,
+		    b.total_size.width, b.total_size.height);
 		fw->g.frame = fw->g.normal;
 		fw->g.frame.x -= tm->virtual_scr.Vx;
 		fw->g.frame.y -= tm->virtual_scr.Vy;
@@ -2504,40 +2235,32 @@ FvwmWindow *AddWindow(
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);
 		constrain_size(
-			fw, NULL, &fw->g.frame.width,
-			&fw->g.frame.height, 0, 0, 0);
+		    fw, NULL, &fw->g.frame.width, &fw->g.frame.height, 0, 0, 0);
 
 		/****** maximize ******/
-		if (state_args.do_max)
-		{
+		if (state_args.do_max) {
 			SET_MAXIMIZED(fw, 1);
-			constrain_size(
-				fw, NULL, &fw->g.max.width, &fw->g.max.height,
-				0, 0, CS_UPDATE_MAX_DEFECT);
+			constrain_size(fw, NULL, &fw->g.max.width,
+			    &fw->g.max.height, 0, 0, CS_UPDATE_MAX_DEFECT);
 			get_relative_geometry(fw, &fw->g.frame, &fw->g.max);
-		}
-		else
-		{
+		} else {
 			get_relative_geometry(fw, &fw->g.frame, &fw->g.normal);
 		}
 		desk_add_fw(fw);
-	}
-	else
-	{
+	} else {
 		rectangle attr_g;
 
 		UPDATE_FVWM_SCREEN(fw);
 
-		if (IS_SHADED(fw))
-		{
+		if (IS_SHADED(fw)) {
 			state_args.do_shade = 1;
 			state_args.used_title_dir_for_shading =
-				USED_TITLE_DIR_FOR_SHADING(fw);
+			    USED_TITLE_DIR_FOR_SHADING(fw);
 			state_args.shade_dir = SHADED_DIR(fw);
 			SET_SHADED(fw, 0);
 		}
 		/* Tentative size estimate */
-		fw->g.frame.width = wattr.width + b.total_size.width;
+		fw->g.frame.width  = wattr.width + b.total_size.width;
 		fw->g.frame.height = wattr.height + b.total_size.height;
 
 		/****** calculate frame size ******/
@@ -2547,22 +2270,22 @@ FvwmWindow *AddWindow(
 		setup_layer(fw, &style);
 
 		/****** window placement ******/
-		attr_g.x = wattr.x;
-		attr_g.y = wattr.y;
-		attr_g.width = wattr.width;
+		attr_g.x      = wattr.x;
+		attr_g.y      = wattr.y;
+		attr_g.width  = wattr.width;
 		attr_g.height = wattr.height;
 		do_resize_too = setup_window_placement(
-			fw, &style, &attr_g, win_opts, PLACE_INITIAL);
+		    fw, &style, &attr_g, win_opts, PLACE_INITIAL);
 		wattr.x = attr_g.x;
 		wattr.y = attr_g.y;
 
 		/* set up geometry */
-		fw->g.frame.x = wattr.x;
-		fw->g.frame.y = wattr.y;
-		fw->g.frame.width = wattr.width + b.total_size.width;
+		fw->g.frame.x	   = wattr.x;
+		fw->g.frame.y	   = wattr.y;
+		fw->g.frame.width  = wattr.width + b.total_size.width;
 		fw->g.frame.height = wattr.height + b.total_size.height;
 		gravity_constrain_size(
-			fw->hints.win_gravity, fw, &fw->g.frame, 0);
+		    fw->hints.win_gravity, fw, &fw->g.frame, 0);
 		update_absolute_geometry(fw);
 	}
 
@@ -2577,19 +2300,15 @@ FvwmWindow *AddWindow(
 
 	/****** select events ******/
 	valuemask = CWEventMask | CWDontPropagate;
-	if (IS_TEAR_OFF_MENU(fw))
-	{
+	if (IS_TEAR_OFF_MENU(fw)) {
 		attributes.event_mask = XEVMASK_TEAR_OFF_MENUW;
-	}
-	else
-	{
+	} else {
 		attributes.event_mask = XEVMASK_CLIENTW;
 	}
 	attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
 	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &attributes);
 	/****** make sure the window is not destroyed when fvwm dies ******/
-	if (!IS_TEAR_OFF_MENU(fw))
-	{
+	if (!IS_TEAR_OFF_MENU(fw)) {
 		/* menus were created by fvwm itself, don't add them to the
 		 * save set */
 		XAddToSaveSet(dpy, FW_W(fw));
@@ -2599,26 +2318,22 @@ FvwmWindow *AddWindow(
 	MyXUngrabServer(dpy);
 
 	/* need to set up the mini icon before drawing */
-	if (FMiniIconsSupported)
-	{
+	if (FMiniIconsSupported) {
 		setup_mini_icon(fw, &style);
 	}
 
 	/****** arrange the frame ******/
 
-	if (is_resizing_event_pending(fw) == True)
-	{
+	if (is_resizing_event_pending(fw) == True) {
 		SET_FORCE_NEXT_CR(fw, 1);
 		SET_FORCE_NEXT_PN(fw, 1);
-		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_FORCE_SETUP_NO_W | FRAME_MR_DONT_DRAW,
-			NULL, &fw->g.frame, 0, DIR_NONE);
-	}
-	else
-	{
-		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_FORCE_SETUP | FRAME_MR_DONT_DRAW, NULL,
-			&fw->g.frame, 0, DIR_NONE);
+		mr_args = frame_create_move_resize_args(fw,
+		    FRAME_MR_FORCE_SETUP_NO_W | FRAME_MR_DONT_DRAW, NULL,
+		    &fw->g.frame, 0, DIR_NONE);
+	} else {
+		mr_args = frame_create_move_resize_args(fw,
+		    FRAME_MR_FORCE_SETUP | FRAME_MR_DONT_DRAW, NULL,
+		    &fw->g.frame, 0, DIR_NONE);
 	}
 	frame_move_resize(fw, mr_args);
 	frame_free_move_resize_args(fw, mr_args);
@@ -2630,19 +2345,18 @@ FvwmWindow *AddWindow(
 
 	/****** inform modules of new window ******/
 	UPDATE_FVWM_SCREEN(fw);
-	BroadcastConfig(M_ADD_WINDOW,fw);
+	BroadcastConfig(M_ADD_WINDOW, fw);
 	BroadcastWindowIconNames(fw, True, False);
 
 	mon = fw->m;
 
 	/****** place the window in the stack ring ******/
-	if (!position_new_window_in_stack_ring(fw, SDO_START_LOWERED(sflags)))
-	{
+	if (!position_new_window_in_stack_ring(fw, SDO_START_LOWERED(sflags))) {
 		XWindowChanges xwc;
-		xwc.sibling = FW_W_FRAME(get_next_window_in_stack_ring(fw));
+		xwc.sibling    = FW_W_FRAME(get_next_window_in_stack_ring(fw));
 		xwc.stack_mode = Above;
 		XConfigureWindow(
-			dpy, FW_W_FRAME(fw), CWSibling|CWStackMode, &xwc);
+		    dpy, FW_W_FRAME(fw), CWSibling | CWStackMode, &xwc);
 	}
 
 	/* these are sent and broadcast before res_{class,name} for the benefit
@@ -2651,74 +2365,70 @@ FvwmWindow *AddWindow(
 	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
 	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 	setup_icon(fw, &style);
-	if (FMiniIconsSupported)
-	{
+	if (FMiniIconsSupported) {
 		broadcast_mini_icon(fw);
 	}
-	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
-		      (unsigned long)fw,fw->class.res_class);
-	BroadcastName(M_RES_NAME,FW_W(fw),FW_W_FRAME(fw),
-		      (unsigned long)fw,fw->class.res_name);
+	BroadcastName(M_RES_CLASS, FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
+	    fw->class.res_class);
+	BroadcastName(M_RES_NAME, FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
+	    fw->class.res_name);
 
 	/****** stick window ******/
-	if (!(fw->hints.flags & USPosition) || used_sm)
-	{
+	if (!(fw->hints.flags & USPosition) || used_sm) {
 		int stick_page;
 		int stick_desk;
 
 		stick_page = is_window_sticky_across_pages(fw);
 		stick_desk = is_window_sticky_across_desks(fw);
-		if ((stick_page &&
-		     !IsRectangleOnThisPage(mon, &fw->g.frame,
-		     mon->virtual_scr.CurrentDesk)) ||
-		    (stick_desk && fw->Desk != mon->virtual_scr.CurrentDesk))
-		{
+		if ((stick_page
+			&& !IsRectangleOnThisPage(
+			    mon, &fw->g.frame, mon->virtual_scr.CurrentDesk))
+		    || (stick_desk
+			&& fw->Desk != mon->virtual_scr.CurrentDesk)) {
 			/* If it's sticky and the user didn't ask for an
 			 * explicit position, force it on screen now.  Don't do
 			 * that with USPosition because we have to assume the
 			 * user knows what (s)he is doing.  This is necessary
 			 * e.g. if we want a sticky 'panel' in FvwmButtons but
 			 * don't want to see when it's mapped in the void. */
-			ecc.w.fw = fw;
-			ecc.w.w = FW_W_FRAME(fw);
+			ecc.w.fw       = fw;
+			ecc.w.w	       = FW_W_FRAME(fw);
 			ecc.w.wcontext = C_FRAME;
-			exc2 = exc_clone_context(
-				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+			exc2	       = exc_clone_context(
+			      exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 			SET_STICKY_ACROSS_PAGES(fw, 0);
 			SET_STICKY_ACROSS_DESKS(fw, 0);
 			handle_stick(
-				NULL, exc2, "", stick_page, stick_desk, 1, 0);
+			    NULL, exc2, "", stick_page, stick_desk, 1, 0);
 			exc_destroy_context(exc2);
 		}
 	}
 
 	/****** resize window ******/
-	if (do_resize_too)
-	{
+	if (do_resize_too) {
 		XEvent e;
 
 		memset(&e, 0, sizeof(e));
-		FWarpPointer(
-			dpy, Scr.Root, Scr.Root, 0, 0,
-			mon->virtual_scr.MyDisplayWidth,
-			mon->virtual_scr.MyDisplayHeight,
-			fw->g.frame.x + (fw->g.frame.width>>1),
-			fw->g.frame.y + (fw->g.frame.height>>1));
-		e.xany.type = ButtonPress;
-		e.xbutton.button = 1;
-		e.xbutton.state = Button1Mask;
-		e.xbutton.x_root = fw->g.frame.x + (fw->g.frame.width>>1);
-		e.xbutton.y_root = fw->g.frame.y + (fw->g.frame.height>>1);
-		e.xbutton.x = (fw->g.frame.width>>1);
-		e.xbutton.y = (fw->g.frame.height>>1);
+		FWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0,
+		    mon->virtual_scr.MyDisplayWidth,
+		    mon->virtual_scr.MyDisplayHeight,
+		    fw->g.frame.x + (fw->g.frame.width >> 1),
+		    fw->g.frame.y + (fw->g.frame.height >> 1));
+		e.xany.type	    = ButtonPress;
+		e.xbutton.button    = 1;
+		e.xbutton.state	    = Button1Mask;
+		e.xbutton.x_root    = fw->g.frame.x + (fw->g.frame.width >> 1);
+		e.xbutton.y_root    = fw->g.frame.y + (fw->g.frame.height >> 1);
+		e.xbutton.x	    = (fw->g.frame.width >> 1);
+		e.xbutton.y	    = (fw->g.frame.height >> 1);
 		e.xbutton.subwindow = None;
-		e.xany.window = FW_W(fw);
+		e.xany.window	    = FW_W(fw);
 		fev_fake_event(&e);
 		ecc.x.etrigger = &e;
-		ecc.w.fw = fw;
+		ecc.w.fw       = fw;
 		ecc.w.wcontext = C_WINDOW;
-		exc2 = exc_clone_context(
-			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_WCONTEXT);
+		exc2	       = exc_clone_context(
+		      exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_WCONTEXT);
 		CMD_Resize(NULL, exc2, "");
 		exc_destroy_context(exc2);
 	}
@@ -2730,76 +2440,67 @@ FvwmWindow *AddWindow(
 	EWMH_WindowInit(fw);
 
 	/****** windowshade ******/
-	if (state_args.do_shade || SDO_START_SHADED(sflags))
-	{
-		rectangle big_g;
-		rectangle new_g;
+	if (state_args.do_shade || SDO_START_SHADED(sflags)) {
+		rectangle	       big_g;
+		rectangle	       new_g;
 		frame_move_resize_args mr_args;
 
-		if (state_args.used_title_dir_for_shading)
-		{
+		if (state_args.used_title_dir_for_shading) {
 			state_args.shade_dir = GET_TITLE_DIR(fw);
 		}
 		/* If we've set a style for StartShaded, ensure we override
 		 * the state for it here. -- TA.
 		 */
-		if (SDO_START_SHADED(sflags) && !state_args.do_shade)
-		{
+		if (SDO_START_SHADED(sflags) && !state_args.do_shade) {
 			state_args.shade_dir = SGET_STARTS_SHADED_DIR(style);
 		}
 		big_g = (IS_MAXIMIZED(fw)) ? fw->g.max : fw->g.frame;
 		new_g = big_g;
 		get_shaded_geometry_with_dir(
-			fw, &new_g, &new_g, state_args.shade_dir);
-		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_SHRINK | FRAME_MR_DONT_DRAW, &big_g,
-			&new_g, 0, state_args.shade_dir);
+		    fw, &new_g, &new_g, state_args.shade_dir);
+		mr_args = frame_create_move_resize_args(fw,
+		    FRAME_MR_SHRINK | FRAME_MR_DONT_DRAW, &big_g, &new_g, 0,
+		    state_args.shade_dir);
 		frame_move_resize(fw, mr_args);
 		SET_SHADED(fw, 1);
 		SET_SHADED_DIR(fw, state_args.shade_dir);
 		frame_free_move_resize_args(fw, mr_args);
 	}
-	if (!IS_SHADED(fw) && !IS_ICONIFIED(fw))
-	{
+	if (!IS_SHADED(fw) && !IS_ICONIFIED(fw)) {
 		/* TK always wants some special treatment: If the window is
 		 * simply mapped, the tk menus come up at funny Y coordinates.
 		 * Tell it it's geometry *again* to work around this problem.
 		 */
-		SendConfigureNotify(
-			fw, fw->g.frame.x, fw->g.frame.y, fw->g.frame.width,
-			fw->g.frame.height, 0, False);
+		SendConfigureNotify(fw, fw->g.frame.x, fw->g.frame.y,
+		    fw->g.frame.width, fw->g.frame.height, 0, False);
 	}
-	if (
-		HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
-		HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
-	{
-		int h;
-		int v;
+	if (HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT
+	    || HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT) {
+		int  h;
+		int  v;
 		char cmd[256];
 
-		if (
-			is_function_allowed(
-				F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US,
-				False))
-		{
-			h = (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) ==
-			     EWMH_STATE_HAS_HINT) ? 100 : 0;
-			v = (HAS_EWMH_INIT_MAXVERT_STATE(fw) ==
-			     EWMH_STATE_HAS_HINT) ? 100 : 0;
-			sprintf(cmd,"Maximize on %i %i", h, v);
+		if (is_function_allowed(
+			F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US, False)) {
+			h = (HAS_EWMH_INIT_MAXHORIZ_STATE(fw)
+				== EWMH_STATE_HAS_HINT)
+				? 100
+				: 0;
+			v = (HAS_EWMH_INIT_MAXVERT_STATE(fw)
+				== EWMH_STATE_HAS_HINT)
+				? 100
+				: 0;
+			sprintf(cmd, "Maximize on %i %i", h, v);
 			execute_function_override_window(
-				NULL, NULL, cmd, 0, fw);
+			    NULL, NULL, cmd, 0, fw);
 		}
 	}
-	if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) == EWMH_STATE_HAS_HINT)
-	{
+	if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) == EWMH_STATE_HAS_HINT) {
 		EWMH_fullscreen(fw);
 	}
-	if (!XGetGeometry(
-		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
-	{
+	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+		(unsigned int *)&JunkWidth, (unsigned int *)&JunkHeight,
+		(unsigned int *)&JunkBW, (unsigned int *)&JunkDepth)) {
 		/* The window has disappeared somehow.	For some reason we do
 		 * not always get a DestroyNotify on the window, so make sure
 		 * it is destroyed. */
@@ -2810,7 +2511,6 @@ FvwmWindow *AddWindow(
 	return fw;
 }
 
-
 /*
  *
  *  Procedure:
@@ -2820,65 +2520,52 @@ FvwmWindow *AddWindow(
  *	tmp - the fvwm window structure to use
  *
  */
-void FetchWmProtocols(FvwmWindow *tmp)
+void
+FetchWmProtocols(FvwmWindow *tmp)
 {
-	Atom *protocols = NULL, *ap;
+	Atom *	       protocols = NULL, *ap;
 	unsigned long *l_protocols;
-	int i, n;
-	Atom atype;
-	int aformat;
-	unsigned long bytes_remain,nitems;
+	int	       i, n;
+	Atom	       atype;
+	int	       aformat;
+	unsigned long  bytes_remain, nitems;
 
-	if (tmp == NULL)
-	{
+	if (tmp == NULL) {
 		return;
 	}
 	/* First, try the Xlib function to read the protocols.
 	 * This is what Twm uses. */
-	if (XGetWMProtocols (dpy, FW_W(tmp), &protocols, &n))
-	{
-		for (i = 0, ap = protocols; i < n; i++, ap++)
-		{
-			if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
-			{
+	if (XGetWMProtocols(dpy, FW_W(tmp), &protocols, &n)) {
+		for (i = 0, ap = protocols; i < n; i++, ap++) {
+			if (*ap == (Atom)_XA_WM_TAKE_FOCUS) {
 				SET_WM_TAKES_FOCUS(tmp, 1);
 				set_focus_model(tmp);
 			}
-			if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
-			{
+			if (*ap == (Atom)_XA_WM_DELETE_WINDOW) {
 				SET_WM_DELETES_WINDOW(tmp, 1);
 			}
 		}
-		if (protocols)
-		{
+		if (protocols) {
 			XFree((char *)protocols);
 		}
-	}
-	else
-	{
+	} else {
 		/* Next, read it the hard way. mosaic from Coreldraw needs to
 		 * be read in this way. */
-		if ((XGetWindowProperty(
-			     dpy, FW_W(tmp), _XA_WM_PROTOCOLS, 0L, 10L, False,
-			     _XA_WM_PROTOCOLS, &atype, &aformat, &nitems,
-			     &bytes_remain,
-			     (unsigned char **)&l_protocols)) == Success)
-		{
-			for (i = 0; i < nitems; i++)
-			{
+		if ((XGetWindowProperty(dpy, FW_W(tmp), _XA_WM_PROTOCOLS, 0L,
+			10L, False, _XA_WM_PROTOCOLS, &atype, &aformat, &nitems,
+			&bytes_remain, (unsigned char **)&l_protocols))
+		    == Success) {
+			for (i = 0; i < nitems; i++) {
 				ap = &(l_protocols[i]);
-				if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
-				{
+				if (*ap == (Atom)_XA_WM_TAKE_FOCUS) {
 					SET_WM_TAKES_FOCUS(tmp, 1);
 					set_focus_model(tmp);
 				}
-				if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
-				{
+				if (*ap == (Atom)_XA_WM_DELETE_WINDOW) {
 					SET_WM_DELETES_WINDOW(tmp, 1);
 				}
 			}
-			if (protocols)
-			{
+			if (protocols) {
 				XFree((char *)protocols);
 			}
 		}
@@ -2887,136 +2574,109 @@ void FetchWmProtocols(FvwmWindow *tmp)
 	return;
 }
 
-void GetWindowSizeHintsWithCheck(
-	FvwmWindow *fw,
-	int do_reject_invalid_size_constraints_on_existing_window)
+void
+GetWindowSizeHintsWithCheck(
+    FvwmWindow *fw, int do_reject_invalid_size_constraints_on_existing_window)
 {
-	long supplied = 0;
-	char *broken_cause = 0;
+	long	   supplied	= 0;
+	char *	   broken_cause = 0;
 	XSizeHints orig_hints;
 	XSizeHints new_hints;
-	Status rc;
+	Status	   rc;
 
 	new_hints = fw->hints;
-	rc = FGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
-	if (rc == 0)
-	{
+	rc	  = FGetWMNormalHints(dpy, FW_W(fw), &orig_hints, &supplied);
+	if (rc == 0) {
 		new_hints.flags = 0;
 		memset(&orig_hints, 0, sizeof(orig_hints));
-	}
-	else
-	{
+	} else {
 		new_hints = orig_hints;
-		if (HAS_OVERRIDE_SIZE_HINTS(fw))
-		{
+		if (HAS_OVERRIDE_SIZE_HINTS(fw)) {
 			/* ignore the WMNormal hints */
 			new_hints.flags &= ~(PMinSize | PMaxSize | PResizeInc);
-			new_hints.min_width = 0;
+			new_hints.min_width  = 0;
 			new_hints.min_height = 0;
-			new_hints.max_width = 0;
+			new_hints.max_width  = 0;
 			new_hints.max_height = 0;
-			new_hints.width_inc = 1;
+			new_hints.width_inc  = 1;
 			new_hints.height_inc = 1;
 		}
 	}
 
 	/* Beat up our copy of the hints, so that all important field are
 	 * filled in! */
-	if (new_hints.flags & PResizeInc)
-	{
+	if (new_hints.flags & PResizeInc) {
 		SET_SIZE_INC_SET(fw, 1);
-		if (new_hints.width_inc <= 0)
-		{
-			if (new_hints.width_inc < 0 ||
-			    (new_hints.width_inc == 0 &&
-			     (new_hints.flags & PMinSize) &&
-			     (new_hints.flags & PMaxSize) &&
-			     new_hints.min_width != new_hints.max_width))
-			{
+		if (new_hints.width_inc <= 0) {
+			if (new_hints.width_inc < 0
+			    || (new_hints.width_inc == 0
+				&& (new_hints.flags & PMinSize)
+				&& (new_hints.flags & PMaxSize)
+				&& new_hints.min_width
+				       != new_hints.max_width)) {
 				broken_cause = "width_inc";
 			}
 			new_hints.width_inc = 1;
 			SET_SIZE_INC_SET(fw, 0);
 		}
-		if (new_hints.height_inc <= 0)
-		{
-			if (new_hints.height_inc < 0 ||
-			    (new_hints.height_inc == 0 &&
-			     (new_hints.flags & PMinSize) &&
-			     (new_hints.flags & PMaxSize) &&
-			     new_hints.min_height != new_hints.max_height))
-			{
-				if (!broken_cause)
-				{
+		if (new_hints.height_inc <= 0) {
+			if (new_hints.height_inc < 0
+			    || (new_hints.height_inc == 0
+				&& (new_hints.flags & PMinSize)
+				&& (new_hints.flags & PMaxSize)
+				&& new_hints.min_height
+				       != new_hints.max_height)) {
+				if (!broken_cause) {
 					broken_cause = "height_inc";
 				}
 			}
 			new_hints.height_inc = 1;
 			SET_SIZE_INC_SET(fw, 0);
 		}
-	}
-	else
-	{
+	} else {
 		SET_SIZE_INC_SET(fw, 0);
-		new_hints.width_inc = 1;
+		new_hints.width_inc  = 1;
 		new_hints.height_inc = 1;
 	}
 
-	if (new_hints.flags & PMinSize)
-	{
-		if (new_hints.min_width < 0 && !broken_cause)
-		{
+	if (new_hints.flags & PMinSize) {
+		if (new_hints.min_width < 0 && !broken_cause) {
 			broken_cause = "min_width";
 		}
-		if (new_hints.min_height < 0 && !broken_cause)
-		{
+		if (new_hints.min_height < 0 && !broken_cause) {
 			broken_cause = "min_height";
 		}
-	}
-	else
-	{
-		if (new_hints.flags & PBaseSize)
-		{
-			new_hints.min_width = new_hints.base_width;
+	} else {
+		if (new_hints.flags & PBaseSize) {
+			new_hints.min_width  = new_hints.base_width;
 			new_hints.min_height = new_hints.base_height;
-		}
-		else
-		{
-			new_hints.min_width = 1;
+		} else {
+			new_hints.min_width  = 1;
 			new_hints.min_height = 1;
 		}
 	}
-	if (new_hints.min_width <= 0)
-	{
+	if (new_hints.min_width <= 0) {
 		new_hints.min_width = 1;
 	}
-	if (new_hints.min_height <= 0)
-	{
+	if (new_hints.min_height <= 0) {
 		new_hints.min_height = 1;
 	}
 
-	if (new_hints.flags & PMaxSize)
-	{
-		if (new_hints.max_width < new_hints.min_width)
-		{
+	if (new_hints.flags & PMaxSize) {
+		if (new_hints.max_width < new_hints.min_width) {
 			new_hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-			if (!broken_cause)
-			{
+			if (!broken_cause) {
 				broken_cause = "max_width";
 			}
 		}
-		if (new_hints.max_height < new_hints.min_height)
-		{
+		if (new_hints.max_height < new_hints.min_height) {
 			new_hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-			if (!broken_cause)
-			{
+			if (!broken_cause) {
 				broken_cause = "max_height";
 			}
 		}
-	}
-	else
-	{
-		new_hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+	} else {
+		new_hints.max_width  = DEFAULT_MAX_MAX_WINDOW_WIDTH;
 		new_hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 	}
 
@@ -3025,27 +2685,21 @@ void GetWindowSizeHintsWithCheck(
 	 * and vice-versa.
 	 */
 
-	if (new_hints.flags & PBaseSize)
-	{
-		if (new_hints.base_width < 0)
-		{
+	if (new_hints.flags & PBaseSize) {
+		if (new_hints.base_width < 0) {
 			new_hints.base_width = 0;
-			if (!broken_cause)
-			{
+			if (!broken_cause) {
 				broken_cause = "base_width";
 			}
 		}
-		if (new_hints.base_height < 0)
-		{
+		if (new_hints.base_height < 0) {
 			new_hints.base_height = 0;
-			if (!broken_cause)
-			{
+			if (!broken_cause) {
 				broken_cause = "base_height";
 			}
 		}
-		if ((new_hints.base_width > new_hints.min_width) ||
-		    (new_hints.base_height > new_hints.min_height))
-		{
+		if ((new_hints.base_width > new_hints.min_width)
+		    || (new_hints.base_height > new_hints.min_height)) {
 			/* In this case, doing the aspect ratio calculation
 			   for window_size - base_size as prescribed by the
 			   ICCCM is going to fail.
@@ -3060,49 +2714,38 @@ void GetWindowSizeHintsWithCheck(
 			broken_cause = 0;
 #endif
 		}
-	}
-	else
-	{
-		if (new_hints.flags & PMinSize)
-		{
-			new_hints.base_width = new_hints.min_width;
+	} else {
+		if (new_hints.flags & PMinSize) {
+			new_hints.base_width  = new_hints.min_width;
 			new_hints.base_height = new_hints.min_height;
-		}
-		else
-		{
-			new_hints.base_width = 0;
+		} else {
+			new_hints.base_width  = 0;
 			new_hints.base_height = 0;
 		}
 	}
 
-	if (!(new_hints.flags & PWinGravity))
-	{
+	if (!(new_hints.flags & PWinGravity)) {
 		new_hints.win_gravity = NorthWestGravity;
 	}
 
-	if ((new_hints.flags & PMaxSize) &&
-	    ((new_hints.flags & PMinSize) || (new_hints.flags & PBaseSize)))
-	{
-		if (new_hints.max_width < new_hints.base_width)
-		{
+	if ((new_hints.flags & PMaxSize)
+	    && ((new_hints.flags & PMinSize)
+		|| (new_hints.flags & PBaseSize))) {
+		if (new_hints.max_width < new_hints.base_width) {
 			new_hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-			if (!broken_cause)
-			{
+			if (!broken_cause) {
 				broken_cause = "max_width";
 			}
 		}
-		if (new_hints.max_height < new_hints.base_height)
-		{
+		if (new_hints.max_height < new_hints.base_height) {
 			new_hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-			if (!broken_cause)
-			{
+			if (!broken_cause) {
 				broken_cause = "max_height";
 			}
 		}
 	}
 
-	if (new_hints.flags & PAspect)
-	{
+	if (new_hints.flags & PAspect) {
 		/*
 		** check to make sure min/max aspect ratios look valid
 		*/
@@ -3110,7 +2753,6 @@ void GetWindowSizeHintsWithCheck(
 #define maxAspectY new_hints.max_aspect.y
 #define minAspectX new_hints.min_aspect.x
 #define minAspectY new_hints.min_aspect.y
-
 
 		/*
 		** The math looks like this:
@@ -3133,56 +2775,42 @@ void GetWindowSizeHintsWithCheck(
 		 *
 		 * We cast to double here, since the values may be large.
 		 */
-		if ((maxAspectX < 0) || (maxAspectY < 0) ||
-		    (minAspectX < 0) || (minAspectY < 0) ||
-		    (((double)minAspectX * (double)maxAspectY) >
-		     ((double)maxAspectX * (double)minAspectY)))
-		{
-			if (!broken_cause)
-			{
+		if ((maxAspectX < 0) || (maxAspectY < 0) || (minAspectX < 0)
+		    || (minAspectY < 0)
+		    || (((double)minAspectX * (double)maxAspectY)
+			> ((double)maxAspectX * (double)minAspectY))) {
+			if (!broken_cause) {
 				broken_cause = "aspect ratio";
 			}
 			new_hints.flags &= ~PAspect;
 			fvwm_debug(__func__,
-				   "The applicaton window (window id %#lx)\n"
-				   "  \"%s\" has broken aspect ratio: "
-				   "%d/%d - %d/%d\n"
-				   "    fvwm is ignoring this aspect ratio.  ",
-				   FW_W(fw), fw->name.name, minAspectX,
-				   minAspectY, maxAspectX, maxAspectY);
+			    "The applicaton window (window id %#lx)\n"
+			    "  \"%s\" has broken aspect ratio: "
+			    "%d/%d - %d/%d\n"
+			    "    fvwm is ignoring this aspect ratio.  ",
+			    FW_W(fw), fw->name.name, minAspectX, minAspectY,
+			    maxAspectX, maxAspectY);
 			fvwm_msg_report_app();
-		}
-		else
-		{
+		} else {
 			/* protect against overflow */
-			if ((maxAspectX > 65536) || (maxAspectY > 65536))
-			{
+			if ((maxAspectX > 65536) || (maxAspectY > 65536)) {
 				double ratio =
-					(double) maxAspectX /
-					(double) maxAspectY;
-				if (ratio > 1.0)
-				{
+				    (double)maxAspectX / (double)maxAspectY;
+				if (ratio > 1.0) {
 					maxAspectX = 65536;
 					maxAspectY = 65536 / ratio;
-				}
-				else
-				{
+				} else {
 					maxAspectX = 65536 * ratio;
 					maxAspectY = 65536;
 				}
 			}
-			if ((minAspectX > 65536) || (minAspectY > 65536))
-			{
+			if ((minAspectX > 65536) || (minAspectY > 65536)) {
 				double ratio =
-					(double) minAspectX /
-					(double) minAspectY;
-				if (ratio > 1.0)
-				{
+				    (double)minAspectX / (double)minAspectY;
+				if (ratio > 1.0) {
 					minAspectX = 65536;
 					minAspectY = 65536 / ratio;
-				}
-				else
-				{
+				} else {
 					minAspectX = 65536 * ratio;
 					minAspectY = 65536;
 				}
@@ -3193,77 +2821,71 @@ void GetWindowSizeHintsWithCheck(
 #undef minAspectX
 #undef minAspectY
 	}
-	if (do_reject_invalid_size_constraints_on_existing_window)
-	{
-		int is_invalid;
+	if (do_reject_invalid_size_constraints_on_existing_window) {
+		int	  is_invalid;
 		rectangle g;
 
 		gravity_get_naked_geometry(
-			fw->hints.win_gravity, fw, &g, &fw->g.normal);
+		    fw->hints.win_gravity, fw, &g, &fw->g.normal);
 		is_invalid = is_geometry_invalid_with_hints(&g, &new_hints);
-		if (!is_invalid && IS_MAXIMIZED(fw))
-		{
+		if (!is_invalid && IS_MAXIMIZED(fw)) {
 			gravity_get_naked_geometry(
-				fw->hints.win_gravity, fw, &g, &fw->g.max);
-			is_invalid = is_geometry_invalid_with_hints(
-				&g, &new_hints);
+			    fw->hints.win_gravity, fw, &g, &fw->g.max);
+			is_invalid =
+			    is_geometry_invalid_with_hints(&g, &new_hints);
 		}
-		if (is_invalid)
-		{
-			fvwm_debug(__func__, "reason: %d:"
-				   " The hints have been ignored because the"
-				   " window's current size would have become"
-				   " invalid.  The new hints will become active"
-				   " when the window generates the next"
-				   " ConfigureRequest.\n", is_invalid);
+		if (is_invalid) {
+			fvwm_debug(__func__,
+			    "reason: %d:"
+			    " The hints have been ignored because the"
+			    " window's current size would have become"
+			    " invalid.  The new hints will become active"
+			    " when the window generates the next"
+			    " ConfigureRequest.\n",
+			    is_invalid);
 			broken_cause = "inconsistent with current size";
 		}
-	}
-	else
-	{
-		fw->hints = new_hints;
-		fw->orig_hints.width_inc = orig_hints.width_inc;
+	} else {
+		fw->hints		  = new_hints;
+		fw->orig_hints.width_inc  = orig_hints.width_inc;
 		fw->orig_hints.height_inc = orig_hints.height_inc;
 	}
-	if (broken_cause != 0)
-	{
+	if (broken_cause != 0) {
 		fvwm_debug(__func__,
-			   "The application window (id %#lx)\n"
-			   "  \"%s\" has broken size hints (%s).\n"
-			   "    fvwm is ignoring those hints.  "
-			   "  hint override = %d, flags = %lx\n"
-			   "  min_width = %d, min_height = %d, "
-			   "max_width = %d, max_height = %d\n"
-			   "  width_inc = %d, height_inc = %d\n"
-			   "  min_aspect = %d/%d, max_aspect = %d/%d\n"
-			   "  base_width = %d, base_height = %d\n"
-			   "  win_gravity = %d\n",
-			   FW_W(fw), fw->name.name, broken_cause,
-			   HAS_OVERRIDE_SIZE_HINTS(fw),
-			   orig_hints.flags,
-			   orig_hints.min_width, orig_hints.min_height,
-			   orig_hints.max_width, orig_hints.max_height,
-			   orig_hints.width_inc, orig_hints.height_inc,
-			   orig_hints.min_aspect.x, orig_hints.min_aspect.y,
-			   orig_hints.max_aspect.x, orig_hints.max_aspect.y,
-			   orig_hints.base_width, orig_hints.base_height,
-			   orig_hints.win_gravity);
+		    "The application window (id %#lx)\n"
+		    "  \"%s\" has broken size hints (%s).\n"
+		    "    fvwm is ignoring those hints.  "
+		    "  hint override = %d, flags = %lx\n"
+		    "  min_width = %d, min_height = %d, "
+		    "max_width = %d, max_height = %d\n"
+		    "  width_inc = %d, height_inc = %d\n"
+		    "  min_aspect = %d/%d, max_aspect = %d/%d\n"
+		    "  base_width = %d, base_height = %d\n"
+		    "  win_gravity = %d\n",
+		    FW_W(fw), fw->name.name, broken_cause,
+		    HAS_OVERRIDE_SIZE_HINTS(fw), orig_hints.flags,
+		    orig_hints.min_width, orig_hints.min_height,
+		    orig_hints.max_width, orig_hints.max_height,
+		    orig_hints.width_inc, orig_hints.height_inc,
+		    orig_hints.min_aspect.x, orig_hints.min_aspect.y,
+		    orig_hints.max_aspect.x, orig_hints.max_aspect.y,
+		    orig_hints.base_width, orig_hints.base_height,
+		    orig_hints.win_gravity);
 		fvwm_msg_report_app();
 	}
 	/* final safety net */
-	if (fw->orig_hints.width_inc <= 0)
-	{
+	if (fw->orig_hints.width_inc <= 0) {
 		fw->orig_hints.width_inc = 1;
 	}
-	if (fw->orig_hints.height_inc <= 0)
-	{
+	if (fw->orig_hints.height_inc <= 0) {
 		fw->orig_hints.height_inc = 1;
 	}
 
 	return;
 }
 
-void GetWindowSizeHints(FvwmWindow *fw)
+void
+GetWindowSizeHints(FvwmWindow *fw)
 {
 	GetWindowSizeHintsWithCheck(fw, 0);
 }
@@ -3273,53 +2895,43 @@ void GetWindowSizeHints(FvwmWindow *fw)
  * Releases dynamically allocated space used to store window/icon names
  *
  */
-void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
+void
+free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
 {
-	if (!fw)
-	{
+	if (!fw) {
 		return;
 	}
 
-	if (nukename)
-	{
-		if (fw->visible_name && fw->visible_name != fw->name.name &&
-		    fw->visible_name != NoName)
-		{
+	if (nukename) {
+		if (fw->visible_name && fw->visible_name != fw->name.name
+		    && fw->visible_name != NoName) {
 			free(fw->visible_name);
 		}
 		fw->visible_name = NoName;
-		if (fw->name.name)
-		{
-			if (fw->icon_name.name == fw->name.name)
-			{
+		if (fw->name.name) {
+			if (fw->icon_name.name == fw->name.name) {
 				fw->icon_name.name = NoName;
 			}
-			if (fw->visible_icon_name == fw->name.name)
-			{
+			if (fw->visible_icon_name == fw->name.name) {
 				fw->visible_icon_name = fw->icon_name.name;
 			}
-			if (fw->name.name != NoName)
-			{
+			if (fw->name.name != NoName) {
 				FlocaleFreeNameProperty(&(fw->name));
 				fw->visible_name = NULL;
 			}
 		}
 	}
-	if (nukeicon)
-	{
-		if (fw->visible_icon_name &&
-		    fw->visible_icon_name != fw->name.name &&
-		    fw->visible_icon_name != fw->icon_name.name &&
-		    fw->visible_icon_name != NoName)
-		{
+	if (nukeicon) {
+		if (fw->visible_icon_name
+		    && fw->visible_icon_name != fw->name.name
+		    && fw->visible_icon_name != fw->icon_name.name
+		    && fw->visible_icon_name != NoName) {
 			free(fw->visible_icon_name);
 		}
 		fw->visible_icon_name = NoName;
-		if (fw->icon_name.name)
-		{
-			if ((fw->icon_name.name != fw->name.name) &&
-			    fw->icon_name.name != NoName)
-			{
+		if (fw->icon_name.name) {
+			if ((fw->icon_name.name != fw->name.name)
+			    && fw->icon_name.name != NoName) {
 				FlocaleFreeNameProperty(&(fw->icon_name));
 				fw->visible_icon_name = NULL;
 			}
@@ -3329,26 +2941,23 @@ void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
 	return;
 }
 
-
-
 /*
  *
  * Handles destruction of a window
  *
  */
-void destroy_window(FvwmWindow *fw)
+void
+destroy_window(FvwmWindow *fw)
 {
 	/* Warning, this is also called by HandleUnmapNotify; if it ever needs
 	 * to look at the event, HandleUnmapNotify will have to mash the
 	 * UnmapNotify into a DestroyNotify. */
-	if (!fw)
-	{
+	if (!fw) {
 		return;
 	}
 
 	/* remove window style */
-	if (!IS_SCHEDULED_FOR_DESTROY(fw) && !DO_REUSE_DESTROYED(fw))
-	{
+	if (!IS_SCHEDULED_FOR_DESTROY(fw) && !DO_REUSE_DESTROYED(fw)) {
 		style_id_t s_id;
 
 		memset(&s_id, 0, sizeof(style_id_t));
@@ -3361,15 +2970,12 @@ void destroy_window(FvwmWindow *fw)
 	/****** remove from window list ******/
 	/* if the window is sheduled fro destroy the window has been already
 	 * removed from list */
-	if (!IS_SCHEDULED_FOR_DESTROY(fw))
-	{
+	if (!IS_SCHEDULED_FOR_DESTROY(fw)) {
 		/* first, remove the window from the list of all windows! */
-		if (fw->prev != NULL)
-		{
+		if (fw->prev != NULL) {
 			fw->prev->next = fw->next;
 		}
-		if (fw->next != NULL)
-		{
+		if (fw->next != NULL) {
 			fw->next->prev = fw->prev;
 		}
 		fw->next = NULL;
@@ -3389,12 +2995,10 @@ void destroy_window(FvwmWindow *fw)
 
 	/****** check if we have to delay window destruction ******/
 
-	if ((Scr.flags.is_executing_complex_function ||
-	     Scr.flags.is_executing_menu_function) &&
-	    !DO_REUSE_DESTROYED(fw))
-	{
-		if (IS_SCHEDULED_FOR_DESTROY(fw))
-		{
+	if ((Scr.flags.is_executing_complex_function
+		|| Scr.flags.is_executing_menu_function)
+	    && !DO_REUSE_DESTROYED(fw)) {
+		if (IS_SCHEDULED_FOR_DESTROY(fw)) {
 			return;
 		}
 		/* mark window for destruction */
@@ -3406,30 +3010,24 @@ void destroy_window(FvwmWindow *fw)
 		delete_client_context(fw);
 		XFlush(dpy);
 		/* unmap the the window to fake that it was already removed */
-		if (IS_ICONIFIED(fw))
-		{
-			if (FW_W_ICON_TITLE(fw))
-			{
+		if (IS_ICONIFIED(fw)) {
+			if (FW_W_ICON_TITLE(fw)) {
 				XUnmapWindow(dpy, FW_W_ICON_TITLE(fw));
 			}
-			if (FW_W_ICON_PIXMAP(fw) != None)
-			{
+			if (FW_W_ICON_PIXMAP(fw) != None) {
 				XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
 			}
-		}
-		else
-		{
+		} else {
 			XUnmapWindow(dpy, FW_W_FRAME(fw));
 		}
 		adjust_fvwm_internal_windows(fw);
-		BroadcastPacket(
-			M_DESTROY_WINDOW, 3, (long)FW_W(fw),
-			(long)FW_W_FRAME(fw), (unsigned long)fw);
+		BroadcastPacket(M_DESTROY_WINDOW, 3, (long)FW_W(fw),
+		    (long)FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 		desk_del_fw(fw);
 		focus_grab_buttons_on_layer(fw->layer);
-		Scr.FWScheduledForDestroy = flist_append_obj(
-			Scr.FWScheduledForDestroy, fw);
+		Scr.FWScheduledForDestroy =
+		    flist_append_obj(Scr.FWScheduledForDestroy, fw);
 		return;
 	}
 
@@ -3438,13 +3036,11 @@ void destroy_window(FvwmWindow *fw)
 	XUnmapWindow(dpy, FW_W_FRAME(fw));
 	XFlush(dpy);
 	/* already done above? */
-	if (!IS_SCHEDULED_FOR_DESTROY(fw))
-	{
+	if (!IS_SCHEDULED_FOR_DESTROY(fw)) {
 		SET_SCHEDULED_FOR_DESTROY(fw, 1);
 		adjust_fvwm_internal_windows(fw);
-		BroadcastPacket(
-			M_DESTROY_WINDOW, 3, (long)FW_W(fw),
-			(long)FW_W_FRAME(fw), (unsigned long)fw);
+		BroadcastPacket(M_DESTROY_WINDOW, 3, (long)FW_W(fw),
+		    (long)FW_W_FRAME(fw), (unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 	}
 	focus_grab_buttons_on_layer(fw->layer);
@@ -3468,23 +3064,19 @@ void destroy_window(FvwmWindow *fw)
 
 	free_window_names(fw, True, True);
 
-	if (fw->style_name)
-	{
+	if (fw->style_name) {
 		free(fw->style_name);
 		fw->style_name = NULL;
 	}
-	if (fw->class.res_name && fw->class.res_name != NoResource)
-	{
-		XFree ((char *)fw->class.res_name);
+	if (fw->class.res_name && fw->class.res_name != NoResource) {
+		XFree((char *)fw->class.res_name);
 		fw->class.res_name = NoResource;
 	}
-	if (fw->class.res_class && fw->class.res_class != NoClass)
-	{
-		XFree ((char *)fw->class.res_class);
+	if (fw->class.res_class && fw->class.res_class != NoClass) {
+		XFree((char *)fw->class.res_class);
 		fw->class.res_class = NoClass;
 	}
-	if (fw->mwm_hints)
-	{
+	if (fw->mwm_hints) {
 		XFree((char *)fw->mwm_hints);
 		fw->mwm_hints = NULL;
 	}
@@ -3496,16 +3088,14 @@ void destroy_window(FvwmWindow *fw)
 
 	/****** free wmhints ******/
 
-	if (fw->wmhints)
-	{
-		XFree ((char *)fw->wmhints);
+	if (fw->wmhints) {
+		XFree((char *)fw->wmhints);
 		fw->wmhints = NULL;
 	}
 
 	/****** free colormap windows ******/
 
-	if (fw->cmap_windows != (Window *)NULL)
-	{
+	if (fw->cmap_windows != (Window *)NULL) {
 		XFree((void *)fw->cmap_windows);
 		fw->cmap_windows = NULL;
 	}
@@ -3513,8 +3103,7 @@ void destroy_window(FvwmWindow *fw)
 	/****** throw away the structure ******/
 
 	/*  Recapture reuses this struct, so don't free it.  */
-	if (!DO_REUSE_DESTROYED(fw))
-	{
+	if (!DO_REUSE_DESTROYED(fw)) {
 		free((char *)fw);
 	}
 
@@ -3525,7 +3114,6 @@ void destroy_window(FvwmWindow *fw)
 	return;
 }
 
-
 /*
  *
  *  Procedure:
@@ -3534,19 +3122,19 @@ void destroy_window(FvwmWindow *fw)
  *  Puts windows back where they were before fvwm took over
  *
  */
-void RestoreWithdrawnLocation(
-	FvwmWindow *fw, Bool is_restart_or_recapture, Window parent)
+void
+RestoreWithdrawnLocation(
+    FvwmWindow *fw, Bool is_restart_or_recapture, Window parent)
 {
-	int w2,h2;
-	unsigned int mask;
-	XWindowChanges xwc;
-	rectangle naked_g;
-	rectangle unshaded_g;
+	int		     w2, h2;
+	unsigned int	     mask;
+	XWindowChanges	     xwc;
+	rectangle	     naked_g;
+	rectangle	     unshaded_g;
 	XSetWindowAttributes xswa;
-	struct monitor	*m = NULL;
+	struct monitor *     m = NULL;
 
-	if (!fw)
-	{
+	if (!fw) {
 		return;
 	}
 
@@ -3559,15 +3147,15 @@ void RestoreWithdrawnLocation(
 	SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
 	get_unshaded_geometry(fw, &unshaded_g);
 	gravity_get_naked_geometry(
-		fw->hints.win_gravity, fw, &naked_g, &unshaded_g);
+	    fw->hints.win_gravity, fw, &naked_g, &unshaded_g);
 	gravity_translate_to_northwest_geometry(
-		fw->hints.win_gravity, fw, &naked_g, &naked_g);
-	xwc.x = naked_g.x;
-	xwc.y = naked_g.y;
-	xwc.width = naked_g.width;
-	xwc.height = naked_g.height;
+	    fw->hints.win_gravity, fw, &naked_g, &naked_g);
+	xwc.x		 = naked_g.x;
+	xwc.y		 = naked_g.y;
+	xwc.width	 = naked_g.width;
+	xwc.height	 = naked_g.height;
 	xwc.border_width = fw->attr_backup.border_width;
-	mask = (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
+	mask		 = (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
 
 	/* We can not assume that the window is currently on the screen.
 	 * Although this is normally the case, it is not always true.  The
@@ -3590,28 +3178,24 @@ void RestoreWithdrawnLocation(
 	 * half off the screen. (RN)
 	 */
 
-	if (!is_restart_or_recapture)
-	{
+	if (!is_restart_or_recapture) {
 		/* Don't mess with it if its partially on the screen now */
-		if (unshaded_g.x < 0 || unshaded_g.y < 0 ||
-		    unshaded_g.x >= m->virtual_scr.MyDisplayWidth ||
-		    unshaded_g.y >= m->virtual_scr.MyDisplayHeight)
-		{
+		if (unshaded_g.x < 0 || unshaded_g.y < 0
+		    || unshaded_g.x >= m->virtual_scr.MyDisplayWidth
+		    || unshaded_g.y >= m->virtual_scr.MyDisplayHeight) {
 			w2 = (unshaded_g.width >> 1);
 			h2 = (unshaded_g.height >> 1);
-			if ( xwc.x < -w2 || xwc.x > m->virtual_scr.MyDisplayWidth - w2)
-			{
+			if (xwc.x < -w2
+			    || xwc.x > m->virtual_scr.MyDisplayWidth - w2) {
 				xwc.x = xwc.x % m->virtual_scr.MyDisplayWidth;
-				if (xwc.x < -w2)
-				{
+				if (xwc.x < -w2) {
 					xwc.x += m->virtual_scr.MyDisplayWidth;
 				}
 			}
-			if (xwc.y < -h2 || xwc.y > m->virtual_scr.MyDisplayHeight - h2)
-			{
+			if (xwc.y < -h2
+			    || xwc.y > m->virtual_scr.MyDisplayHeight - h2) {
 				xwc.y = xwc.y % m->virtual_scr.MyDisplayHeight;
-				if (xwc.y < -h2)
-				{
+				if (xwc.y < -h2) {
 					xwc.y += m->virtual_scr.MyDisplayHeight;
 				}
 			}
@@ -3623,24 +3207,19 @@ void RestoreWithdrawnLocation(
 	XChangeWindowAttributes(dpy, FW_W(fw), CWBackingStore, &xswa);
 	/* reparent to root window */
 	XReparentWindow(
-		dpy, FW_W(fw), (parent == None) ? Scr.Root : parent, xwc.x,
-		xwc.y);
+	    dpy, FW_W(fw), (parent == None) ? Scr.Root : parent, xwc.x, xwc.y);
 
-	if (IS_ICONIFIED(fw) && !IS_ICON_SUPPRESSED(fw))
-	{
-		if (FW_W_ICON_TITLE(fw))
-		{
+	if (IS_ICONIFIED(fw) && !IS_ICON_SUPPRESSED(fw)) {
+		if (FW_W_ICON_TITLE(fw)) {
 			XUnmapWindow(dpy, FW_W_ICON_TITLE(fw));
 		}
-		if (FW_W_ICON_PIXMAP(fw))
-		{
+		if (FW_W_ICON_PIXMAP(fw)) {
 			XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
 		}
 	}
 
 	XConfigureWindow(dpy, FW_W(fw), mask, &xwc);
-	if (!is_restart_or_recapture)
-	{
+	if (!is_restart_or_recapture) {
 		/* must be initial capture */
 		XFlush(dpy);
 	}
@@ -3648,165 +3227,148 @@ void RestoreWithdrawnLocation(
 	return;
 }
 
-
 /*
  *
  *  Procedure:
  *	Reborder - Removes fvwm border windows
  *
  */
-void Reborder(void)
+void
+Reborder(void)
 {
 	FvwmWindow *fw;
 
 	/* put a border back around all windows */
-	MyXGrabServer (dpy);
+	MyXGrabServer(dpy);
 
 	/* force reinstall */
-	InstallWindowColormaps (&Scr.FvwmRoot);
+	InstallWindowColormaps(&Scr.FvwmRoot);
 
 	/* RBW - 05/15/1998
 	 * Grab the last window and work backwards: preserve stacking order on
 	 * restart. */
 	for (fw = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
-	     fw != &Scr.FvwmRoot; fw = get_prev_window_in_stack_ring(fw))
-	{
-		if (!IS_ICONIFIED(fw) && fw->m->virtual_scr.CurrentDesk != fw->Desk)
-		{
+	     fw != &Scr.FvwmRoot; fw = get_prev_window_in_stack_ring(fw)) {
+		if (!IS_ICONIFIED(fw)
+		    && fw->m->virtual_scr.CurrentDesk != fw->Desk) {
 			XMapWindow(dpy, FW_W(fw));
 			SetMapStateProp(fw, NormalState);
 		}
-		RestoreWithdrawnLocation (fw, True, Scr.Root);
-		XUnmapWindow(dpy,FW_W_FRAME(fw));
-		XDestroyWindow(dpy,FW_W_FRAME(fw));
+		RestoreWithdrawnLocation(fw, True, Scr.Root);
+		XUnmapWindow(dpy, FW_W_FRAME(fw));
+		XDestroyWindow(dpy, FW_W_FRAME(fw));
 	}
 
-	MyXUngrabServer (dpy);
+	MyXUngrabServer(dpy);
 	FOCUS_RESET();
 	XFlush(dpy);
 
 	return;
 }
 
-void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
+void
+CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 {
-	int i,j;
-	unsigned int nchildren;
-	Window root, parent, *children;
+	int			 i, j;
+	unsigned int		 nchildren;
+	Window			 root, parent, *children;
 	initial_window_options_t win_opts;
-	FvwmWindow *fw;
+	FvwmWindow *		 fw;
 
 	MyXGrabServer(dpy);
-	if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
-	{
+	if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren)) {
 		MyXUngrabServer(dpy);
 		return;
 	}
 	memset(&win_opts, 0, sizeof(win_opts));
 	win_opts.flags.do_override_ppos = 1;
-	win_opts.flags.is_recapture = 1;
+	win_opts.flags.is_recapture	= 1;
 	if (!(Scr.flags.are_windows_captured)) /* initial capture? */
 	{
-		evh_args_t ea;
+		evh_args_t	       ea;
 		exec_context_changes_t ecc;
-		XEvent e;
+		XEvent		       e;
 
 		/* weed out icon windows */
-		for (i = 0; i < nchildren; i++)
-		{
-			if (children[i])
-			{
-				XWMHints *wmhintsp = XGetWMHints(
-					dpy, children[i]);
+		for (i = 0; i < nchildren; i++) {
+			if (children[i]) {
+				XWMHints *wmhintsp =
+				    XGetWMHints(dpy, children[i]);
 
-				if (wmhintsp &&
-				    wmhintsp->flags & IconWindowHint)
-				{
-					for (j = 0; j < nchildren; j++)
-					{
-						if (children[j] ==
-						    wmhintsp->icon_window)
-						{
+				if (wmhintsp
+				    && wmhintsp->flags & IconWindowHint) {
+					for (j = 0; j < nchildren; j++) {
+						if (children[j]
+						    == wmhintsp->icon_window) {
 							children[j] = None;
 							break;
 						}
 					}
 				}
-				if (wmhintsp)
-				{
-					XFree ((char *) wmhintsp);
+				if (wmhintsp) {
+					XFree((char *)wmhintsp);
 				}
 			}
 		}
 		/* map all of the non-override, non-icon windows */
-		e.type = MapRequest;
+		e.type	       = MapRequest;
 		ecc.x.etrigger = &e;
-		for (i = 0; i < nchildren; i++)
-		{
+		for (i = 0; i < nchildren; i++) {
 
-			if (children[i] &&
-			    MappedNotOverride(children[i], &win_opts))
-			{
+			if (children[i]
+			    && MappedNotOverride(children[i], &win_opts)) {
 				XUnmapWindow(dpy, children[i]);
 				e.xmaprequest.window = children[i];
 				e.xmaprequest.parent = Scr.Root;
-				ecc.w.fw = NULL;
-				ecc.w.w = children[i];
-				ecc.w.wcontext = C_ROOT;
-				ea.exc = exc_clone_context(
-					exc, &ecc, ECC_ETRIGGER | ECC_FW |
-					ECC_W | ECC_WCONTEXT);
+				ecc.w.fw	     = NULL;
+				ecc.w.w		     = children[i];
+				ecc.w.wcontext	     = C_ROOT;
+				ea.exc = exc_clone_context(exc, &ecc,
+				    ECC_ETRIGGER | ECC_FW | ECC_W
+					| ECC_WCONTEXT);
 				HandleMapRequestKeepRaised(
-					&ea, None, NULL, &win_opts);
+				    &ea, None, NULL, &win_opts);
 				exc_destroy_context(ea.exc);
 			}
 		}
 		Scr.flags.are_windows_captured = 1;
-	}
-	else /* must be recapture */
+	} else /* must be recapture */
 	{
-		Window keep_on_top_win;
-		Window parent_win;
-		Window focus_w;
-		FvwmWindow *t;
+		Window		keep_on_top_win;
+		Window		parent_win;
+		Window		focus_w;
+		FvwmWindow *	t;
 		struct monitor *mon = monitor_get_current();
 
-		t = get_focus_window();
+		t	= get_focus_window();
 		focus_w = (t) ? FW_W(t) : None;
 		hide_screen(True, &keep_on_top_win, &parent_win);
 		/* reborder all windows */
-		for (i=0;i<nchildren;i++)
-		{
+		for (i = 0; i < nchildren; i++) {
 			if (XFindContext(
-				    dpy, children[i], FvwmContext,
-				    (caddr_t *)&fw) != XCNOENT)
-			{
+				dpy, children[i], FvwmContext, (caddr_t *)&fw)
+			    != XCNOENT) {
 				if ((fw != NULL && fw->m != NULL)) {
 					if (fw->m != mon)
 						continue;
 				}
-				CaptureOneWindow(
-					exc, fw, children[i], keep_on_top_win,
-					parent_win, is_recapture);
+				CaptureOneWindow(exc, fw, children[i],
+				    keep_on_top_win, parent_win, is_recapture);
 			}
 		}
 		hide_screen(False, NULL, NULL);
 		/* find the window that had the focus and focus it again */
-		if (focus_w)
-		{
+		if (focus_w) {
 			for (t = Scr.FvwmRoot.next; t && FW_W(t) != focus_w;
-			     t = t->next)
-			{
+			     t = t->next) {
 				;
 			}
-			if (t)
-			{
+			if (t) {
 				SetFocusWindow(t, True, FOCUS_SET_FORCE);
 			}
 		}
 	}
-	if (nchildren > 0)
-	{
+	if (nchildren > 0) {
 		XFree((char *)children);
 	}
 	MyXUngrabServer(dpy);

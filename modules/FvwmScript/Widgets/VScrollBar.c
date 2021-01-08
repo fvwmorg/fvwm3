@@ -15,25 +15,26 @@
 
 #include "config.h"
 
-#include "libs/fvwmlib.h"
-#include "libs/ColorUtils.h"
-#include "libs/Graphics.h"
-#include "libs/FEvent.h"
 #include "Tools.h"
+#include "libs/ColorUtils.h"
+#include "libs/FEvent.h"
+#include "libs/Graphics.h"
+#include "libs/fvwmlib.h"
 
 /*
  * Function for VScrollBar
  */
-void DrawThumbV(struct XObj *xobj, XEvent *evp)
+void
+DrawThumbV(struct XObj *xobj, XEvent *evp)
 {
-	int x,y,w,h;
+	int	 x, y, w, h;
 	XSegment segm;
-	char str[20];
+	char	 str[20];
 
-	x = xobj->width/2 - 10;
-	y = 2 +
-		(xobj->height - 36)*(xobj->value - xobj->value3) /
-		(xobj->value2 - xobj->value3);
+	x = xobj->width / 2 - 10;
+	y = 2
+	    + (xobj->height - 36) * (xobj->value - xobj->value3)
+		  / (xobj->value2 - xobj->value3);
 	w = 20;
 	h = 32;
 	DrawReliefRect(x, y, w, h, xobj, hili, shad);
@@ -52,33 +53,35 @@ void DrawThumbV(struct XObj *xobj, XEvent *evp)
 	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
 	sprintf(str, "%d", xobj->value);
-	x = x-FlocaleTextWidth(xobj->Ffont, str, strlen(str))-6;
-	y = y + 13 + xobj->Ffont->ascent/2;
+	x = x - FlocaleTextWidth(xobj->Ffont, str, strlen(str)) - 6;
+	y = y + 13 + xobj->Ffont->ascent / 2;
 	MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-		     !xobj->flags[1], NULL, evp);
+	    !xobj->flags[1], NULL, evp);
 }
 
-void HideThumbV(struct XObj *xobj)
+void
+HideThumbV(struct XObj *xobj)
 {
-	int x,y;
+	int  x, y;
 	char str[20];
 
-	x = xobj->width/2 - 10;
-	y = 2 +
-		(xobj->height - 36) * (xobj->value - xobj->value3) /
-		(xobj->value2 - xobj->value3);
+	x = xobj->width / 2 - 10;
+	y = 2
+	    + (xobj->height - 36) * (xobj->value - xobj->value3)
+		  / (xobj->value2 - xobj->value3);
 	XClearArea(dpy, xobj->win, x, y, 20, 32, False);
 	sprintf(str, "%d", xobj->value);
 	XClearArea(
-		dpy, xobj->win, 0, 0,xobj->width/2 - 14,xobj->height, False);
+	    dpy, xobj->win, 0, 0, xobj->width / 2 - 14, xobj->height, False);
 }
 
-void InitVScrollBar(struct XObj *xobj)
+void
+InitVScrollBar(struct XObj *xobj)
 {
-	unsigned long mask;
+	unsigned long	     mask;
 	XSetWindowAttributes Attr;
-	int i,j;
-	char str[20];
+	int		     i, j;
+	char		     str[20];
 
 	/* Save colors and font */
 	if (xobj->colorset >= 0) {
@@ -93,27 +96,24 @@ void InitVScrollBar(struct XObj *xobj)
 		xobj->TabColor[shad] = GetColor(xobj->shadcolor);
 	}
 
-	mask = 0;
+	mask		      = 0;
 	Attr.background_pixel = xobj->TabColor[back];
 	mask |= CWBackPixel;
 	if (!x11base->cursor) {
-		Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-		mask |= CWCursor;  /* Window cursor */
+		Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
+		mask |= CWCursor; /* Window cursor */
 	}
 
-	xobj->win = XCreateWindow(
-		dpy, *xobj->ParentWin, xobj->x, xobj->y, xobj->width,
-		xobj->height, 0, CopyFromParent, InputOutput, CopyFromParent,
-		mask, &Attr);
-	xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
+	xobj->win = XCreateWindow(dpy, *xobj->ParentWin, xobj->x, xobj->y,
+	    xobj->width, xobj->height, 0, CopyFromParent, InputOutput,
+	    CopyFromParent, mask, &Attr);
+	xobj->gc  = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
 	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-
-	if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) ==
-	    NULL)
-	{
-		fvwm_debug(__func__, "%s: Couldn't load font. Exiting!\n",
-			   ScriptName);
+	if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName))
+	    == NULL) {
+		fvwm_debug(
+		    __func__, "%s: Couldn't load font. Exiting!\n", ScriptName);
 		exit(1);
 	}
 	if (xobj->Ffont->font != NULL)
@@ -126,40 +126,41 @@ void InitVScrollBar(struct XObj *xobj)
 	if (!((xobj->value >= xobj->value2) && (xobj->value <= xobj->value3)))
 		xobj->value = xobj->value2;
 
-	i = (xobj->Ffont->height)*2+30;
+	i = (xobj->Ffont->height) * 2 + 30;
 	if (xobj->height < i)
 		xobj->height = i;
 	sprintf(str, "%d", xobj->value2);
 	i = FlocaleTextWidth(xobj->Ffont, str, strlen(str));
 	sprintf(str, "%d", xobj->value3);
 	j = FlocaleTextWidth(xobj->Ffont, str, strlen(str));
-	if (i<j)
-		i = j*2+30;
+	if (i < j)
+		i = j * 2 + 30;
 	else
-		i = i*2+30;
+		i = i * 2 + 30;
 	xobj->width = i;
 	XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
 	if (xobj->colorset >= 0)
 		SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
-				    &Colorset[xobj->colorset], Pdepth,
-				    xobj->gc, True);
+		    &Colorset[xobj->colorset], Pdepth, xobj->gc, True);
 	XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
-void DestroyVScrollBar(struct XObj *xobj)
+void
+DestroyVScrollBar(struct XObj *xobj)
 {
-	FlocaleUnloadFont(dpy,xobj->Ffont);
-	XFreeGC(dpy,xobj->gc);
-	XDestroyWindow(dpy,xobj->win);
+	FlocaleUnloadFont(dpy, xobj->Ffont);
+	XFreeGC(dpy, xobj->gc);
+	XDestroyWindow(dpy, xobj->win);
 }
 
-void DrawVScrollBar(struct XObj *xobj, XEvent *evp)
+void
+DrawVScrollBar(struct XObj *xobj, XEvent *evp)
 {
-	int x,y,w,h;
+	int  x, y, w, h;
 	char str[20];
 
 	/* Compute scrollbar size */
-	x = xobj->width/2 - 12;
+	x = xobj->width / 2 - 12;
 	y = 0;
 	w = 24;
 	h = xobj->height;
@@ -170,63 +171,62 @@ void DrawVScrollBar(struct XObj *xobj, XEvent *evp)
 	y = xobj->Ffont->ascent + 2;
 	sprintf(str, "%d", xobj->value3);
 	MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-		     !xobj->flags[1], NULL, evp);
+	    !xobj->flags[1], NULL, evp);
 	sprintf(str, "%d", xobj->value2);
 	y = h - xobj->Ffont->descent - 2;
 	MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
-		     !xobj->flags[1], NULL, evp);
+	    !xobj->flags[1], NULL, evp);
 }
 
-void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
+void
+EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
 {
 	static XEvent event;
-	int oldy = 0;
-	int oldvalue = -1;
-	int newvalue;
-	int x1,y1,x2,y2;
-	Window Win1,Win2;
-	unsigned int modif;
-	fd_set in_fdset;
+	int	      oldy     = 0;
+	int	      oldvalue = -1;
+	int	      newvalue;
+	int	      x1, y1, x2, y2;
+	Window	      Win1, Win2;
+	unsigned int  modif;
+	fd_set	      in_fdset;
 
-	do
-	{
+	do {
 		/* We follow mouse movements */
-		FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
-			      &x1, &y1, &x2, &y2, &modif);
+		FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1,
+		    &x2, &y2, &modif);
 		y2 = y2 - xobj->y;
 		if (y2 < 15)
 			y2 = 15;
 		if (y2 > xobj->height - 21)
 			y2 = xobj->height - 21;
-		if (oldy != y2)
-		{
+		if (oldy != y2) {
 			oldy = y2;
 			/* compute xobj->value */
-			newvalue = (y2-15)*xobj->height/(xobj->height - 36) *
-				(xobj->value2 - xobj->value3) /
-				(xobj->height) + xobj->value3;
-			if (newvalue!=oldvalue)
-			{
+			newvalue =
+			    (y2 - 15) * xobj->height / (xobj->height - 36)
+				* (xobj->value2 - xobj->value3) / (xobj->height)
+			    + xobj->value3;
+			if (newvalue != oldvalue) {
 				HideThumbV(xobj);
 				xobj->value = newvalue;
 				DrawThumbV(xobj, NULL);
 				oldvalue = newvalue;
-				SendMsg(xobj,SingleClic);
-				XSync(dpy,0);
+				SendMsg(xobj, SingleClic);
+				XSync(dpy, 0);
 				usleep(10000);
 			}
 		}
 		FD_ZERO(&in_fdset);
 		FD_SET(x_fd, &in_fdset);
-		select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
-	}
-	while (!FCheckTypedEvent(dpy, ButtonRelease, &event) &&
-	       EvtButton != NULL);
+		select(32, SELECT_FD_SET_CAST & in_fdset, NULL, NULL, NULL);
+	} while (
+	    !FCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
 }
 
-void EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
+void
+EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
 {
-	KeySym ks;
+	KeySym	      ks;
 	unsigned char buf[10];
 
 	XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
@@ -234,23 +234,20 @@ void EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
 		HideThumbV(xobj);
 		xobj->value--;
 		DrawThumbV(xobj, NULL);
-		SendMsg(xobj,SingleClic);
-	}
-	else if (ks == XK_Up &&
-		 xobj->value <
-		 xobj->width*(xobj->value3-xobj->value2) /
-		 (xobj->width)+xobj->value2) {
+		SendMsg(xobj, SingleClic);
+	} else if (ks == XK_Up
+		   && xobj->value < xobj->width * (xobj->value3 - xobj->value2)
+					    / (xobj->width)
+					+ xobj->value2) {
 		HideThumbV(xobj);
 		xobj->value++;
 		DrawThumbV(xobj, NULL);
-		SendMsg(xobj,SingleClic);
-	}
-	else if (ks == XK_Return) {
+		SendMsg(xobj, SingleClic);
+	} else if (ks == XK_Return) {
 		EvtMouseVScrollBar(xobj, NULL);
 	}
 }
 
-void ProcessMsgVScrollBar(
-	struct XObj *xobj,unsigned long type,unsigned long *body)
-{
-}
+void
+ProcessMsgVScrollBar(struct XObj *xobj, unsigned long type, unsigned long *body)
+{}

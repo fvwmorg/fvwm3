@@ -22,14 +22,14 @@
 #include "Grab.h"
 
 /* Made into global for module interface.  See module.c. */
-int myxgrabcount = 0;
+int		    myxgrabcount	= 0;
 static unsigned int keyboard_grab_count = 0;
-static unsigned int key_grab_count = 0;
+static unsigned int key_grab_count	= 0;
 
-void MyXGrabServer(Display *disp)
+void
+MyXGrabServer(Display *disp)
 {
-	if (myxgrabcount == 0)
-	{
+	if (myxgrabcount == 0) {
 		XSync(disp, 0);
 		XGrabServer(disp);
 	}
@@ -37,54 +37,54 @@ void MyXGrabServer(Display *disp)
 	++myxgrabcount;
 }
 
-void MyXUngrabServer(Display *disp)
+void
+MyXUngrabServer(Display *disp)
 {
 	if (--myxgrabcount < 0) /* should never happen */
 	{
 		myxgrabcount = 0;
 	}
-	if (myxgrabcount == 0)
-	{
+	if (myxgrabcount == 0) {
 		XUngrabServer(disp);
 	}
 	XSync(disp, 0);
 }
 
-void MyXGrabKeyboard(Display *dpy)
+void
+MyXGrabKeyboard(Display *dpy)
 {
 	keyboard_grab_count++;
-	XGrabKeyboard(
-		dpy, RootWindow(dpy, DefaultScreen(dpy)), False, GrabModeAsync,
-		GrabModeAsync, CurrentTime);
+	XGrabKeyboard(dpy, RootWindow(dpy, DefaultScreen(dpy)), False,
+	    GrabModeAsync, GrabModeAsync, CurrentTime);
 
 	return;
 }
 
-void MyXUngrabKeyboard(Display *dpy)
+void
+MyXUngrabKeyboard(Display *dpy)
 {
-	if (keyboard_grab_count > 0)
-	{
+	if (keyboard_grab_count > 0) {
 		keyboard_grab_count--;
 	}
-	if (keyboard_grab_count == 0 && key_grab_count == 0)
-	{
+	if (keyboard_grab_count == 0 && key_grab_count == 0) {
 		XUngrabKeyboard(dpy, CurrentTime);
 	}
 
 	return;
 }
 
-void MyXGrabKey(Display *disp)
+void
+MyXGrabKey(Display *disp)
 {
 	key_grab_count++;
 
 	return;
 }
 
-void MyXUngrabKey(Display *disp)
+void
+MyXUngrabKey(Display *disp)
 {
-	if (key_grab_count > 0)
-	{
+	if (key_grab_count > 0) {
 		key_grab_count--;
 		keyboard_grab_count++;
 		MyXUngrabKeyboard(disp);

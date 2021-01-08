@@ -7,14 +7,14 @@
  * trailing spaces.  The string is terminated by either a NUL or
  * a newline character.
  **/
-void CopyString(char **dest, const char *source);
-
+void
+CopyString(char **dest, const char *source);
 
 /**
  * Like CopyString, but strips leading and trailing (double) quotes if any.
  **/
-void CopyStringWithQuotes(char **dest, const char *src);
-
+void
+CopyStringWithQuotes(char **dest, const char *src);
 
 /**
  * Copy string into newly-malloced memory, stripping leading and
@@ -23,19 +23,20 @@ void CopyStringWithQuotes(char **dest, const char *src);
  * CopyString() treats a newline as a string terminator (like the NUL
  * character.
  **/
-char *stripcpy( const char *source );
-
+char *
+stripcpy(const char *source);
 
 /**
  * Return 1 if the two strings are equal.  Case is ignored.
  **/
-int StrEquals( const char *s1, const char *s2 );
-
+int
+StrEquals(const char *s1, const char *s2);
 
 /**
  * Return 1 if the string has the given prefix.  Case is ignored.
  **/
-int StrHasPrefix( const char* string, const char* prefix );
+int
+StrHasPrefix(const char *string, const char *prefix);
 
 /**
  * Adds single quotes arround the string and escapes single quotes with
@@ -43,7 +44,8 @@ int StrHasPrefix( const char* string, const char* prefix );
  * The end of destination, i.e. pointer to '\0' is returned.
  * You should allocate dest yourself, at least strlen(source) * 2 + 3.
  **/
-char *QuoteString(char *dest, const char *source);
+char *
+QuoteString(char *dest, const char *source);
 
 /**
  * Adds delim around the source and escapes all characters in escape with
@@ -51,13 +53,15 @@ char *QuoteString(char *dest, const char *source);
  * delim should be included in escape with a proper escaper.
  * Returns a pointer to the end of dest.
  **/
-char *QuoteEscapeString(char *dest, const char *source, char delim,
-			const char *escape, const char *escaper);
+char *
+QuoteEscapeString(char *dest, const char *source, char delim,
+    const char *escape, const char *escaper);
 
 /**
  * Calculates the lenght needed by a escaped by QuoteEscapeString
  * the corresponding escaper.
  **/
-unsigned int QuoteEscapeStringLength(const char *source, const char *escape);
+unsigned int
+QuoteEscapeStringLength(const char *source, const char *escape);
 
 #endif

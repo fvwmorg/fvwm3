@@ -17,7 +17,7 @@
 #if XShmSupport
 
 /* XShm */
-typedef ShmSeg FShmSeg;
+typedef ShmSeg		FShmSeg;
 typedef XShmSegmentInfo FShmSegmentInfo;
 
 #define FShmAttach XShmAttach
@@ -37,22 +37,23 @@ typedef XShmSegmentInfo FShmSegmentInfo;
 
 /* XShm */
 typedef unsigned long FhmSeg;
-typedef struct {
+typedef struct
+{
 	FhmSeg shmseg;
-	int shmid;
-	char *shmaddr;
-	Bool readOnly;
+	int    shmid;
+	char * shmaddr;
+	Bool   readOnly;
 } FShmSegmentInfo;
 
-#define FShmAttach(a, b)                              0
-#define FShmDetach(a, b)                              0
+#define FShmAttach(a, b) 0
+#define FShmDetach(a, b) 0
 #define FShmPutImage(a, b, c, d, e, f, g, h, i, j, k) 0
-#define FShmGetImage(a, b, c, d, e, f)                0
-#define FShmCreateImage(a, b, c, d, e, f, g, h)       NULL
+#define FShmGetImage(a, b, c, d, e, f) 0
+#define FShmCreateImage(a, b, c, d, e, f, g, h) NULL
 
 /* shm */
 #define Fshmget(a, b, c) 0
-#define Fshmat(a, b, c)  NULL;
+#define Fshmat(a, b, c) NULL;
 #define Fshmdt(a)
 #define Fshmctl(a, b, c)
 

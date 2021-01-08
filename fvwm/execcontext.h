@@ -21,16 +21,16 @@ typedef struct
 /* Interface types */
 typedef enum
 {
-	EXCT_NULL = '-',
-	EXCT_INIT = 'I',
-	EXCT_RESTART = 'R',
-	EXCT_QUIT = 'Q',
+	EXCT_NULL      = '-',
+	EXCT_INIT      = 'I',
+	EXCT_RESTART   = 'R',
+	EXCT_QUIT      = 'Q',
 	EXCT_TORESTART = 'r',
-	EXCT_EVENT ='E',
-	EXCT_MODULE ='M',
-	EXCT_MENULOOP ='m',
-	EXCT_PAGING = 'P',
-	EXCT_SCHEDULE = 'S'
+	EXCT_EVENT     = 'E',
+	EXCT_MODULE    = 'M',
+	EXCT_MENULOOP  = 'm',
+	EXCT_PAGING    = 'P',
+	EXCT_SCHEDULE  = 'S'
 } exec_context_type_t;
 
 typedef struct
@@ -41,8 +41,8 @@ typedef struct
 
 typedef struct
 {
-	FvwmWindow *fw;
-	Window w;
+	FvwmWindow *  fw;
+	Window	      w;
 	unsigned long wcontext;
 } window_context_t;
 
@@ -55,29 +55,29 @@ typedef struct
 typedef struct
 {
 	exec_context_type_t type;
-	x_context_t x;
-	window_context_t w;
-	module_context_t m;
+	x_context_t	    x;
+	window_context_t    w;
+	module_context_t    m;
 	/* for internal use *only*. *Never* acces this from outside! */
 	exec_context_privileged_t private_data;
 } exec_context_t;
 
 typedef enum
 {
-	ECC_TYPE = 0x1,
+	ECC_TYPE     = 0x1,
 	ECC_ETRIGGER = 0x2,
-	ECC_FW = 0x4,
-	ECC_W = 0x8,
+	ECC_FW	     = 0x4,
+	ECC_W	     = 0x8,
 	ECC_WCONTEXT = 0x10,
-	ECC_MODULE = 0x20
+	ECC_MODULE   = 0x20
 } exec_context_change_mask_t;
 
 typedef struct
 {
 	exec_context_type_t type;
-	x_context_t x;
-	window_context_t w;
-	module_context_t m;
+	x_context_t	    x;
+	window_context_t    w;
+	module_context_t    m;
 } exec_context_changes_t;
 
 /* ---------------------------- forward declarations ----------------------- */
@@ -96,21 +96,24 @@ typedef struct
  *   mask
  *     The mask of members in ecc to use.
  */
-const exec_context_t *exc_create_context(
-	exec_context_changes_t *ecc, exec_context_change_mask_t mask);
+const exec_context_t *
+exc_create_context(
+    exec_context_changes_t *ecc, exec_context_change_mask_t mask);
 
 /* Similar to exc_create_context(), but the created context contains only dummy
  * information. */
-const exec_context_t *exc_create_null_context(void);
+const exec_context_t *
+exc_create_null_context(void);
 
 /* Works like exc_create_context(), but initialises all values with the data
  * from excin.  The ecc/mask pair overrides these values. */
-const exec_context_t *exc_clone_context(
-	const exec_context_t *excin, exec_context_changes_t *ecc,
-	exec_context_change_mask_t mask);
+const exec_context_t *
+exc_clone_context(const exec_context_t *excin, exec_context_changes_t *ecc,
+    exec_context_change_mask_t mask);
 
 /* Destroys an exec_context structure that was created with
  * exc_create_context(). */
-void exc_destroy_context(const exec_context_t *exc);
+void
+exc_destroy_context(const exec_context_t *exc);
 
 #endif /* FVWM_EXECCONTEXT_H */

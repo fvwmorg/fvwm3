@@ -17,7 +17,8 @@
  *                string.
  *
  */
-int envExpand(char *s, int maxstrlen);
+int
+envExpand(char *s, int maxstrlen);
 
 /*
  *  FUNCTION      Expand environment variables into a new string.
@@ -40,7 +41,8 @@ int envExpand(char *s, int maxstrlen);
  *                string.
  *
  */
-char *envDupExpand(const char *s, int extra);
+char *
+envDupExpand(const char *s, int extra);
 
 /*
  *  FUNCTION      Search for the first environment variable and return
@@ -66,7 +68,8 @@ char *envDupExpand(const char *s, int extra);
  *                returns "/home/username" and beg=5, end=10.
  *
  */
-const char* getFirstEnv(const char *s, int *beg, int *end);
+const char *
+getFirstEnv(const char *s, int *beg, int *end);
 
 /* This function keeps a list of all strings that were set in the environment.
  * If a variable is written again, the old memory is freed.  This function
@@ -78,10 +81,11 @@ const char* getFirstEnv(const char *s, int *beg, int *end);
  * Both arguments are copied internally and should be freed after calling this
  * function.
  */
-void flib_putenv(char *var, char *env);
+void
+flib_putenv(char *var, char *env);
 
 /* Replacement for unsetenv(). */
-void flib_unsetenv(const char *name);
-
+void
+flib_unsetenv(const char *name);
 
 #endif

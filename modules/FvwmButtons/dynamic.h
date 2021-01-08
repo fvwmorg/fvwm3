@@ -17,6 +17,7 @@
 
 /* ---------------------------- interface functions ------------------------- */
 
-void parse_message_line(char *line);
+void
+parse_message_line(char *line);
 
 #endif /* FVWMBUTTONS_DYNAMIC_H */

@@ -17,28 +17,27 @@
 
 #include "config.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <errno.h>
 #include "fio.h"
+#include <errno.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 
 /* ---------------------------- imports ------------------------------------ */
 
 /* ---------------------------- interface functions ------------------------ */
 
-ssize_t fvwm_send(int s, const void *buf, size_t len, int flags)
+ssize_t
+fvwm_send(int s, const void *buf, size_t len, int flags)
 {
-	int rc;
-	size_t offset;
+	int	    rc;
+	size_t	    offset;
 	const char *data;
 
-	data = buf;
+	data   = buf;
 	offset = 0;
-	do
-	{
+	do {
 		rc = send(s, (char *)data + offset, len - offset, flags);
-		if (rc > 0)
-		{
+		if (rc > 0) {
 			offset += rc;
 		}
 	} while ((rc > 0 && (offset < len)) || (rc == -1 && errno == EINTR));
@@ -46,12 +45,12 @@ ssize_t fvwm_send(int s, const void *buf, size_t len, int flags)
 	return rc;
 }
 
-ssize_t fvwm_recv(int s, void *buf, size_t len, int flags)
+ssize_t
+fvwm_recv(int s, void *buf, size_t len, int flags)
 {
 	int rc;
 
-	do
-	{
+	do {
 		rc = recv(s, buf, len, flags);
 	} while (rc == -1 && errno == EINTR);
 

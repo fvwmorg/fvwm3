@@ -12,6 +12,7 @@
  *      It is public domain, no strings attached. No guarantees either.
  *
  */
-int matchWildcards(const char *pattern, const char *string);
+int
+matchWildcards(const char *pattern, const char *string);
 
 #endif /* FVWMLIB_WILD_H */

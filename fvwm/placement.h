@@ -22,13 +22,13 @@ typedef enum
 
 /* ---------------------------- exported variables (globals) --------------- */
 
-extern const pl_penalty_struct default_pl_penalty;
+extern const pl_penalty_struct	       default_pl_penalty;
 extern const pl_percent_penalty_struct default_pl_percent_penalty;
 
 /* ---------------------------- interface functions ------------------------ */
 
-Bool setup_window_placement(
-	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
-	initial_window_options_t *win_opts, placement_mode_t mode);
+Bool
+setup_window_placement(FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
+    initial_window_options_t *win_opts, placement_mode_t mode);
 
 #endif /* FVWM_PLACEMENT_H */

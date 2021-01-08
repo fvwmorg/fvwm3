@@ -18,25 +18,24 @@
 #include <stdio.h>
 
 extern Display *dpy;
-extern int screen;
-extern char *Module;
+extern int	screen;
+extern char *	Module;
 
-unsigned long BackerGetColor(char *name)
+unsigned long
+BackerGetColor(char *name)
 {
-  XColor color;
+	XColor color;
 
-  color.pixel = 0;
-  if (!XParseColor (dpy, DefaultColormap(dpy,screen), name, &color))
-    {
-      fvwm_debug(__func__, "%s:  unknown color \"%s\"\n",Module,name);
-      exit(1);
-    }
-  else if(!XAllocColor (dpy, DefaultColormap(dpy,screen), &color))
-    {
-      fvwm_debug(__func__, "%s:  unable to allocate color for \"%s\"\n",
-                 Module, name);
-      exit(1);
-    }
+	color.pixel = 0;
+	if (!XParseColor(dpy, DefaultColormap(dpy, screen), name, &color)) {
+		fvwm_debug(
+		    __func__, "%s:  unknown color \"%s\"\n", Module, name);
+		exit(1);
+	} else if (!XAllocColor(dpy, DefaultColormap(dpy, screen), &color)) {
+		fvwm_debug(__func__,
+		    "%s:  unable to allocate color for \"%s\"\n", Module, name);
+		exit(1);
+	}
 
-  return color.pixel;
+	return color.pixel;
 }

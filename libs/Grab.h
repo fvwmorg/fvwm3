@@ -9,11 +9,17 @@
 
 #include "fvwm_x11.h"
 
-void MyXGrabServer(Display *disp);
-void MyXUngrabServer(Display *disp);
-void MyXUngrabKeyboard(Display *disp);
-void MyXGrabKeyboard(Display *disp);
-void MyXGrabKey(Display *disp);
-void MyXUngrabKey(Display *disp);
+void
+MyXGrabServer(Display *disp);
+void
+MyXUngrabServer(Display *disp);
+void
+MyXUngrabKeyboard(Display *disp);
+void
+MyXGrabKeyboard(Display *disp);
+void
+MyXGrabKey(Display *disp);
+void
+MyXUngrabKey(Display *disp);
 
 #endif /* FVWMLIB_GRAB_H */

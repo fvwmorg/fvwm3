@@ -4,39 +4,41 @@
 #include "fvwm_x11.h"
 
 #ifdef HAVE_XCURSOR
-	typedef XcursorImage			FcursorImage;
-	typedef XcursorImages			FcursorImages;
-	typedef XcursorPixel			FcursorPixel;
+typedef XcursorImage  FcursorImage;
+typedef XcursorImages FcursorImages;
+typedef XcursorPixel  FcursorPixel;
 
-#	define FcursorFilenameLoadImages(a,b)	XcursorFilenameLoadImages(a,b)
-#	define FcursorGetDefaultSize(a)		XcursorGetDefaultSize(a)
-#	define FcursorImageCreate(a,b)		XcursorImageCreate(a,b)
-#	define FcursorImageDestroy(a)		XcursorImageDestroy(a)
-#	define FcursorImagesDestroy(a)		XcursorImagesDestroy(a)
-#	define FcursorImageLoadCursor(a,b)	XcursorImageLoadCursor(a,b)
-#	define FcursorImagesLoadCursor(a,b)	XcursorImagesLoadCursor(a,b)
+#define FcursorFilenameLoadImages(a, b) XcursorFilenameLoadImages(a, b)
+#define FcursorGetDefaultSize(a) XcursorGetDefaultSize(a)
+#define FcursorImageCreate(a, b) XcursorImageCreate(a, b)
+#define FcursorImageDestroy(a) XcursorImageDestroy(a)
+#define FcursorImagesDestroy(a) XcursorImagesDestroy(a)
+#define FcursorImageLoadCursor(a, b) XcursorImageLoadCursor(a, b)
+#define FcursorImagesLoadCursor(a, b) XcursorImagesLoadCursor(a, b)
 #else
-	typedef struct {
-		int width;
-		int height;
-		int xhot;
-		int yhot;
-		int delay;
-		void *pixels;
-	} FcursorImage;
-	typedef struct {
-		int nimage;
-		FcursorImage **images;
-	} FcursorImages;
-	typedef void FcursorPixel;
+typedef struct
+{
+	int   width;
+	int   height;
+	int   xhot;
+	int   yhot;
+	int   delay;
+	void *pixels;
+} FcursorImage;
+typedef struct
+{
+	int	       nimage;
+	FcursorImage **images;
+} FcursorImages;
+typedef void FcursorPixel;
 
-#	define FcursorFilenameLoadImages(a,b) 0
-#	define FcursorGetDefaultSize(a) 0
-#	define FcursorImageCreate(a,b) 0
-#	define FcursorImageDestroy(a)
-#	define FcursorImagesDestroy(a)
-#	define FcursorImageLoadCursor(a,b) 0
-#	define FcursorImagesLoadCursor(a,b) 0
+#define FcursorFilenameLoadImages(a, b) 0
+#define FcursorGetDefaultSize(a) 0
+#define FcursorImageCreate(a, b) 0
+#define FcursorImageDestroy(a)
+#define FcursorImagesDestroy(a)
+#define FcursorImageLoadCursor(a, b) 0
+#define FcursorImagesLoadCursor(a, b) 0
 #endif
 
 #endif /* FVWMLIB_FCURSOR_H */

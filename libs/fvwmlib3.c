@@ -17,14 +17,14 @@
 
 #include "config.h"
 
-#include "fvwmlib.h"
+#include "Colorset.h"
+#include "FRenderInit.h"
 #include "FScreen.h"
 #include "FShape.h"
 #include "Fsvg.h"
-#include "FRenderInit.h"
 #include "Graphics.h"
 #include "PictureBase.h"
-#include "Colorset.h"
+#include "fvwmlib.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -46,7 +46,8 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-void flib_init_graphics(Display *dpy)
+void
+flib_init_graphics(Display *dpy)
 {
 	PictureInitCMap(dpy);
 	FScreenInit(dpy);

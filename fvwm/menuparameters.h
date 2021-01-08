@@ -4,8 +4,8 @@
 #define FVWM_MENU_PARAMETERS_H
 
 /* ---------------------------- included header files ---------------------- */
-#include "libs/fvwm_x11.h"
 #include "execcontext.h"
+#include "libs/fvwm_x11.h"
 
 /* ---------------------------- forward declarations ----------------------- */
 
@@ -23,7 +23,7 @@ struct FvwmWindow;
 typedef enum MenuRC
 {
 	MENU_ERROR = -1,
-	MENU_NOP = 0,
+	MENU_NOP   = 0,
 	MENU_DONE,
 	MENU_ABORTED,
 	MENU_SUBMENU_DONE,
@@ -46,7 +46,7 @@ typedef enum MenuRC
 
 typedef struct MenuReturn
 {
-	MenuRC rc;
+	MenuRC		 rc;
 	struct MenuRoot *target_menu;
 	struct
 	{
@@ -72,8 +72,8 @@ typedef struct MenuPosHints
 	float context_x_factor;
 	/* same with height */
 	float y_factor;
-	int screen_origin_x;
-	int screen_origin_y;
+	int   screen_origin_x;
+	int   screen_origin_y;
 	/* False if referring to absolute screen position */
 	Bool is_relative;
 	/* True if referring to a part of a menu */
@@ -100,14 +100,14 @@ typedef struct MenuOptions
 
 typedef struct MenuParameters
 {
-	struct MenuRoot *menu;
-	struct MenuRoot *parent_menu;
-	struct MenuItem *parent_item;
+	struct MenuRoot *      menu;
+	struct MenuRoot *      parent_menu;
+	struct MenuItem *      parent_item;
 	const exec_context_t **pexc;
-	struct FvwmWindow *tear_off_root_menu_window;
-	char **ret_paction;
-	XEvent *event_propagate_to_submenu;
-	struct MenuOptions *pops;
+	struct FvwmWindow *    tear_off_root_menu_window;
+	char **		       ret_paction;
+	XEvent *	       event_propagate_to_submenu;
+	struct MenuOptions *   pops;
 	/* A position on the Xinerama screen on which the menu should be
 	 * started. */
 	int screen_origin_x;
@@ -126,7 +126,7 @@ typedef struct MenuParameters
 
 typedef struct MenuRepaintTransparentParameters
 {
-	struct MenuRoot *mr;
+	struct MenuRoot *  mr;
 	struct FvwmWindow *fw;
 } MenuRepaintTransparentParameters;
 

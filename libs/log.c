@@ -17,12 +17,12 @@
 
 #include "config.h"
 
-#include <sys/types.h>
 #include <sys/time.h>
+#include <sys/types.h>
 
 #include <errno.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -31,10 +31,11 @@
 #include "getpwuid.h"
 #include "log.h"
 
-static FILE	*log_file;
-static int	 log_level;
+static FILE *log_file;
+static int   log_level;
 
-static void	 log_vwrite(const char *, const char *, va_list);
+static void
+log_vwrite(const char *, const char *, va_list);
 
 /* Set log level. */
 void
@@ -44,7 +45,8 @@ log_set_level(int ll)
 }
 
 /* Get log level. */
-int log_get_level(void)
+int
+log_get_level(void)
 {
 	return log_level;
 }
@@ -59,7 +61,7 @@ log_open(const char *fvwm_userdir)
 
 	logfile_env = getenv("FVWM3_LOGFILE");
 	if (logfile_env != NULL) {
-		const char	*expanded_path;
+		const char *expanded_path;
 
 		expanded_path = expand_path(logfile_env);
 
@@ -113,15 +115,15 @@ log_close(void)
 static void
 log_vwrite(const char *func, const char *msg, va_list ap)
 {
-	char		*fmt, *sep = ":";
-	struct timeval	 tv;
+	char *	       fmt, *sep = ":";
+	struct timeval tv;
 
 	if (log_file == NULL)
 		return;
 
 	if (func == NULL) {
 		func = "";
-		sep = "";
+		sep  = "";
 	}
 
 	if (vasprintf(&fmt, msg, ap) == -1)
@@ -129,7 +131,8 @@ log_vwrite(const char *func, const char *msg, va_list ap)
 
 	gettimeofday(&tv, NULL);
 	if (fprintf(log_file, "[%lld.%06d] %s%s %s", (long long)tv.tv_sec,
-	    (int)tv.tv_usec, func, sep, fmt) == -1)
+		(int)tv.tv_usec, func, sep, fmt)
+	    == -1)
 		exit(1);
 	/* Compat: some callers from conversion of printf(stderr, ...) most
 	 * likely add a newline.  But we don't want to double-up on newlines
@@ -149,7 +152,7 @@ log_vwrite(const char *func, const char *msg, va_list ap)
 void
 fvwm_debug(const char *func, const char *msg, ...)
 {
-	va_list	ap;
+	va_list ap;
 
 	va_start(ap, msg);
 	log_vwrite(func, msg, ap);

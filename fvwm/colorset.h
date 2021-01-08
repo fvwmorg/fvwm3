@@ -18,9 +18,13 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-void parse_colorset(int n, char *line);
-void cleanup_colorsets(void);
-void alloc_colorset(int n);
-void update_root_transparent_colorset(Atom prop);
+void
+parse_colorset(int n, char *line);
+void
+cleanup_colorsets(void);
+void
+alloc_colorset(int n);
+void
+update_root_transparent_colorset(Atom prop);
 
 #endif /* FVWM_COLORSET_H */

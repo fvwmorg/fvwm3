@@ -7,23 +7,23 @@
 
 #ifndef FVWMLIB_COLORSETS_H
 #define FVWMLIB_COLORSETS_H
-#include "fvwm_x11.h"
 #include "PictureBase.h"
+#include "fvwm_x11.h"
 
 typedef struct Colorset
 {
-	Pixel fg;
-	Pixel bg;
-	Pixel hilite;
-	Pixel shadow;
-	Pixel fgsh;
-	Pixel tint;
-	Pixel icon_tint;
-	Pixmap pixmap;
-	Pixmap shape_mask;
+	Pixel	     fg;
+	Pixel	     bg;
+	Pixel	     hilite;
+	Pixel	     shadow;
+	Pixel	     fgsh;
+	Pixel	     tint;
+	Pixel	     icon_tint;
+	Pixmap	     pixmap;
+	Pixmap	     shape_mask;
 	unsigned int width : 12;
 	unsigned int height : 12;
-	unsigned int pixmap_type: 3;
+	unsigned int pixmap_type : 3;
 	unsigned int shape_width : 12;
 	unsigned int shape_height : 12;
 	unsigned int shape_type : 2;
@@ -34,25 +34,25 @@ typedef struct Colorset
 	unsigned int icon_tint_percent : 7;
 #ifdef FVWM_COLORSET_PRIVATE
 	/* fvwm/colorset.c use only */
-	Pixel fg_tint;
-	Pixel fg_saved;
-	Pixel bg_tint;
-	Pixel bg_saved;
-	Pixmap mask;
-	Pixmap alpha_pixmap;
-	char *pixmap_args;
-	char *gradient_args;
-	char gradient_type;
+	Pixel	     fg_tint;
+	Pixel	     fg_saved;
+	Pixel	     bg_tint;
+	Pixel	     bg_saved;
+	Pixmap	     mask;
+	Pixmap	     alpha_pixmap;
+	char *	     pixmap_args;
+	char *	     gradient_args;
+	char	     gradient_type;
 	unsigned int color_flags;
 	FvwmPicture *picture;
-	Pixel *pixels;
-	int nalloc_pixels;
-	int fg_tint_percent;
-	int bg_tint_percent;
-	short image_alpha_percent;
-	Bool dither;
-	Bool allows_buffered_transparency;
-	Bool is_maybe_root_transparent;
+	Pixel *	     pixels;
+	int	     nalloc_pixels;
+	int	     fg_tint_percent;
+	int	     bg_tint_percent;
+	short	     image_alpha_percent;
+	Bool	     dither;
+	Bool	     allows_buffered_transparency;
+	Bool	     is_maybe_root_transparent;
 #endif
 } colorset_t;
 
@@ -75,125 +75,129 @@ typedef struct Colorset
 #define SH_SUPPLIED 0x8
 #define FGSH_SUPPLIED 0x10
 #define FG_CONTRAST 0x20
-#define BG_AVERAGE  0x40
-#define TINT_SUPPLIED  0x80
-#define FG_TINT_SUPPLIED  0x100
-#define BG_TINT_SUPPLIED  0x200
+#define BG_AVERAGE 0x40
+#define TINT_SUPPLIED 0x80
+#define FG_TINT_SUPPLIED 0x100
+#define BG_TINT_SUPPLIED 0x200
 #define ICON_TINT_SUPPLIED 0x400
 #endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_t *Colorset;
 
-
 /* some macro for transparency */
-#define CSET_IS_TRANSPARENT(cset) \
-    (cset >= 0 && (Colorset[cset].pixmap == ParentRelative || \
-		   (Colorset[cset].pixmap != None && \
-		    (Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
-		     Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))))
+#define CSET_IS_TRANSPARENT(cset)                                             \
+	(cset >= 0                                                            \
+	    && (Colorset[cset].pixmap == ParentRelative                       \
+		|| (Colorset[cset].pixmap != None                             \
+		    && (Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN \
+			|| Colorset[cset].pixmap_type                         \
+			       == PIXMAP_ROOT_PIXMAP_PURE))))
 #define CSET_IS_TRANSPARENT_PR(cset) \
-    (cset >= 0 && Colorset[cset].pixmap == ParentRelative)
-#define CSET_IS_TRANSPARENT_ROOT(cset) \
-    (cset >= 0 && Colorset[cset].pixmap != None && \
-     (Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
-      Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
-#define CSET_IS_TRANSPARENT_PR_PURE(cset) \
-    (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
-     Colorset[cset].tint_percent == 0)
-#define CSET_IS_TRANSPARENT_ROOT_PURE(cset) \
-    (cset >= 0 && Colorset[cset].pixmap != None && \
-     Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
-#define CSET_IS_TRANSPARENT_ROOT_TRAN(cset) \
-    (cset >= 0 && Colorset[cset].pixmap != None && \
-     Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
-#define CSET_IS_TRANSPARENT_PR_TINT(cset) \
-    (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
-     Colorset[cset].tint_percent > 0)
-#define CSET_HAS_PIXMAP(cset) \
-    (cset >= 0 && Colorset[cset].pixmap)
+	(cset >= 0 && Colorset[cset].pixmap == ParentRelative)
+#define CSET_IS_TRANSPARENT_ROOT(cset)                                \
+	(cset >= 0 && Colorset[cset].pixmap != None                   \
+	    && (Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN \
+		|| Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
+#define CSET_IS_TRANSPARENT_PR_PURE(cset)                     \
+	(cset >= 0 && Colorset[cset].pixmap == ParentRelative \
+	    && Colorset[cset].tint_percent == 0)
+#define CSET_IS_TRANSPARENT_ROOT_PURE(cset)         \
+	(cset >= 0 && Colorset[cset].pixmap != None \
+	    && Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
+#define CSET_IS_TRANSPARENT_ROOT_TRAN(cset)         \
+	(cset >= 0 && Colorset[cset].pixmap != None \
+	    && Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
+#define CSET_IS_TRANSPARENT_PR_TINT(cset)                     \
+	(cset >= 0 && Colorset[cset].pixmap == ParentRelative \
+	    && Colorset[cset].tint_percent > 0)
+#define CSET_HAS_PIXMAP(cset) (cset >= 0 && Colorset[cset].pixmap)
 #define CSET_HAS_PIXMAP_TILED(cset) \
-    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_TILED))
+	(CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_TILED))
 #define CSET_HAS_PIXMAP_STRETCH_X(cset) \
-    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_X))
+	(CSET_HAS_PIXMAP(cset)          \
+	    && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_X))
 #define CSET_HAS_PIXMAP_STRETCH_Y(cset) \
-    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_Y))
+	(CSET_HAS_PIXMAP(cset)          \
+	    && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_Y))
 #define CSET_HAS_PIXMAP_STRETCH(cset) \
-    (CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH))
+	(CSET_HAS_PIXMAP(cset) && (Colorset[cset].pixmap_type & PIXMAP_STRETCH))
 #define CSET_HAS_PIXMAP_STRETCH_ASPECT(cset) \
-    (CSET_HAS_PIXMAP(cset) && \
-     (Colorset[cset].pixmap_type & PIXMAP_STRETCH_ASPECT))
+	(CSET_HAS_PIXMAP(cset)               \
+	    && (Colorset[cset].pixmap_type & PIXMAP_STRETCH_ASPECT))
 #define CSET_PIXMAP_IS_XY_STRETCHED(cset) \
-    (CSET_HAS_PIXMAP_STRETCH(cset) || CSET_HAS_PIXMAP_STRETCH_ASPECT(cset))
+	(CSET_HAS_PIXMAP_STRETCH(cset) || CSET_HAS_PIXMAP_STRETCH_ASPECT(cset))
 #define CSET_PIXMAP_IS_X_STRETCHED(cset) \
-    (CSET_PIXMAP_IS_XY_STRETCHED(cset) || CSET_HAS_PIXMAP_STRETCH_X(cset))
+	(CSET_PIXMAP_IS_XY_STRETCHED(cset) || CSET_HAS_PIXMAP_STRETCH_X(cset))
 #define CSET_PIXMAP_IS_Y_STRETCHED(cset) \
-    (CSET_PIXMAP_IS_XY_STRETCHED(cset) || CSET_HAS_PIXMAP_STRETCH_Y(cset))
-#define CSET_PIXMAP_IS_TILED(cset) \
-    (CSET_HAS_PIXMAP_TILED(cset))
+	(CSET_PIXMAP_IS_XY_STRETCHED(cset) || CSET_HAS_PIXMAP_STRETCH_Y(cset))
+#define CSET_PIXMAP_IS_TILED(cset) (CSET_HAS_PIXMAP_TILED(cset))
 
 /* some macro for transparency */
-#define CSETS_IS_TRANSPARENT(cset) \
-    (cset != NULL && (cset->pixmap == ParentRelative || \
-		   (cset->pixmap != None && \
-		    (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
-		     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))))
-#define CSETS_IS_TRANSPARENT_ROOT(cset) \
-    (cset != NULL && cset->pixmap != None && \
-     (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
-      cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
-#define CSETS_IS_TRANSPARENT_PR_PURE(cset) \
-    (cset != NULL && cset->pixmap == ParentRelative && \
-     cset->tint_percent == 0)
-#define CSETS_IS_TRANSPARENT_ROOT_PURE(cset) \
-    (cset != NULL && cset->pixmap != None && \
-     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
-#define CSETS_IS_TRANSPARENT_ROOT_TRAN(cset) \
-    (cset != NULL && cset->pixmap != None && \
-     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
-#define CSETS_IS_TRANSPARENT_PR_TINT(cset) \
-    (cset != NULL && cset->pixmap == ParentRelative && \
-     cset->tint_percent > 0)
+#define CSETS_IS_TRANSPARENT(cset)                                   \
+	(cset != NULL                                                \
+	    && (cset->pixmap == ParentRelative                       \
+		|| (cset->pixmap != None                             \
+		    && (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN \
+			|| cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))))
+#define CSETS_IS_TRANSPARENT_ROOT(cset)                      \
+	(cset != NULL && cset->pixmap != None                \
+	    && (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN \
+		|| cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
+#define CSETS_IS_TRANSPARENT_PR_PURE(cset)              \
+	(cset != NULL && cset->pixmap == ParentRelative \
+	    && cset->tint_percent == 0)
+#define CSETS_IS_TRANSPARENT_ROOT_PURE(cset)  \
+	(cset != NULL && cset->pixmap != None \
+	    && cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
+#define CSETS_IS_TRANSPARENT_ROOT_TRAN(cset)  \
+	(cset != NULL && cset->pixmap != None \
+	    && cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
+#define CSETS_IS_TRANSPARENT_PR_TINT(cset)              \
+	(cset != NULL && cset->pixmap == ParentRelative \
+	    && cset->tint_percent > 0)
 
 #ifndef FVWM_COLORSET_PRIVATE
 /* Create n new colorsets, fvwm/colorset.c does its own thing (different size)
  */
-void AllocColorset(int n);
+void
+AllocColorset(int n);
 #endif
 
 /* dump one */
-char *DumpColorset(int n, colorset_t *colorset);
+char *
+DumpColorset(int n, colorset_t *colorset);
 /* load one */
-int LoadColorset(char *line);
+int
+LoadColorset(char *line);
 
-Pixmap CreateOffsetBackgroundPixmap(
-	Display *dpy, Window win, int x, int y, int width, int height,
-	colorset_t *colorset, unsigned int depth,
-	GC gc, Bool is_mask);
-Pixmap CreateBackgroundPixmap(
-	Display *dpy, Window win, int width, int height,
-	colorset_t *colorset, unsigned int depth,
-	GC gc, Bool is_mask);
-Pixmap ScrollPixmap(
-	Display *dpy, Pixmap p, GC gc, int x_off, int y_off, int width,
-	int height, unsigned int depth);
-void SetWindowBackgroundWithOffset(
-	Display *dpy, Window win, int x_off, int y_off, unsigned int width, unsigned int height,
-	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
-void SetWindowBackground(
-	Display *dpy, Window win, int width, int height,
-	colorset_t *colorset, unsigned int depth, GC gc,
-	Bool clear_area);
-void GetWindowBackgroundPixmapSize(
-	colorset_t *cs_t, int width, int height, int *w, int *h);
-Bool UpdateBackgroundTransparency(
-	Display *dpy, Window win, int width, int height,
-	colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
-void SetRectangleBackground(
-	Display *dpy, Window win, int x, int y, int width, int height,
-	colorset_t *colorset, unsigned int depth, GC gc);
-void SetClippedRectangleBackground(
-	Display *dpy, Window win, int x, int y, int width, int height,
-	XRectangle *clip, colorset_t *colorset,
-	unsigned int depth, GC gc);
+Pixmap
+CreateOffsetBackgroundPixmap(Display *dpy, Window win, int x, int y, int width,
+    int height, colorset_t *colorset, unsigned int depth, GC gc, Bool is_mask);
+Pixmap
+CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
+    colorset_t *colorset, unsigned int depth, GC gc, Bool is_mask);
+Pixmap
+ScrollPixmap(Display *dpy, Pixmap p, GC gc, int x_off, int y_off, int width,
+    int height, unsigned int depth);
+void
+SetWindowBackgroundWithOffset(Display *dpy, Window win, int x_off, int y_off,
+    unsigned int width, unsigned int height, colorset_t *colorset,
+    unsigned int depth, GC gc, Bool clear_area);
+void
+SetWindowBackground(Display *dpy, Window win, int width, int height,
+    colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
+void
+GetWindowBackgroundPixmapSize(
+    colorset_t *cs_t, int width, int height, int *w, int *h);
+Bool
+UpdateBackgroundTransparency(Display *dpy, Window win, int width, int height,
+    colorset_t *colorset, unsigned int depth, GC gc, Bool clear_area);
+void
+SetRectangleBackground(Display *dpy, Window win, int x, int y, int width,
+    int height, colorset_t *colorset, unsigned int depth, GC gc);
+void
+SetClippedRectangleBackground(Display *dpy, Window win, int x, int y, int width,
+    int height, XRectangle *clip, colorset_t *colorset, unsigned int depth,
+    GC gc);
 #endif

@@ -12,58 +12,66 @@
  * Information is spat to stdout/stderr.
  */
 
-#include <stdio.h>
-#include <stdbool.h>
-#include <string.h>
-#include <stdlib.h>
+#include "libs/safemalloc.h"
+#include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
-#include <X11/X.h>
 #include <X11/extensions/Xrandr.h>
 #include <X11/extensions/randr.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/queue.h>
-#include "libs/safemalloc.h"
 
-struct screen_info {
-	int 	 w;
-	int 	 h;
-	int 	 x;
-	int 	 y;
+struct screen_info
+{
+	int w;
+	int h;
+	int x;
+	int y;
 
-	char 	*name;
-	bool 	 is_primary;
-	bool 	 is_disabled;
-	bool 	 wants_update;
+	char *name;
+	bool  is_primary;
+	bool  is_disabled;
+	bool  wants_update;
 };
 
-struct monitor {
-	struct screen_info 	 *si;
+struct monitor
+{
+	struct screen_info *si;
 	TAILQ_ENTRY(monitor) entry;
 };
 TAILQ_HEAD(monitors, monitor);
 
-struct monitors		 monitor_q;
+struct monitors monitor_q;
 
-struct monitor 		*monitor_new(void);
-struct monitor 		*monitor_by_output_info(const char *, XRRMonitorInfo *);
-struct screen_info	*screen_info_new(void);
-struct screen_info	*screen_info_by_name(const char *);
+struct monitor *
+monitor_new(void);
+struct monitor *
+monitor_by_output_info(const char *, XRRMonitorInfo *);
+struct screen_info *
+screen_info_new(void);
+struct screen_info *
+screen_info_by_name(const char *);
 
-Display 	*dpy = NULL;
-Window 		 root;
+Display *		    dpy = NULL;
+Window			    root;
 XRRScreenChangeNotifyEvent *sce;
-int 		 event_base, error_base;
-int 		 major, minor;
-int 		 screen = -1;
-XEvent 		 event;
+int			    event_base, error_base;
+int			    major, minor;
+int			    screen = -1;
+XEvent			    event;
 
-bool is_randr_newest(void);
-void scan_for_monitors(void);
+bool
+is_randr_newest(void);
+void
+scan_for_monitors(void);
 
 struct monitor *
 monitor_new(void)
 {
-	struct monitor 	*m;
+	struct monitor *m;
 
 	m = fxcalloc(1, sizeof *m);
 
@@ -73,9 +81,10 @@ monitor_new(void)
 struct monitor *
 monitor_by_output_info(const char *name, XRRMonitorInfo *rrm)
 {
-	struct monitor 	 *m, *m_ret = NULL;
+	struct monitor *m, *m_ret = NULL;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	TAILQ_FOREACH(m, &monitor_q, entry)
+	{
 		if (strcmp(m->si->name, name) == 0) {
 			m_ret = m;
 			break;
@@ -92,10 +101,11 @@ monitor_by_output_info(const char *name, XRRMonitorInfo *rrm)
 struct screen_info *
 screen_info_by_name(const char *name)
 {
-	struct screen_info 	*si = NULL;
-	struct monitor 		*m, *m2 = NULL;
+	struct screen_info *si = NULL;
+	struct monitor *    m, *m2 = NULL;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	TAILQ_FOREACH(m, &monitor_q, entry)
+	{
 		if (strcmp(m->si->name, name) == 0) {
 			m2 = m;
 			break;
@@ -111,14 +121,15 @@ screen_info_by_name(const char *name)
 struct screen_info *
 screen_info_new(void)
 {
-	struct screen_info 	*si;
+	struct screen_info *si;
 
 	si = fxcalloc(1, sizeof *si);
 
 	return (si);
 }
 
-bool is_randr_newest(void)
+bool
+is_randr_newest(void)
 {
 	if ((RANDR_MAJOR * 100) + RANDR_MINOR < 105) {
 		fvwm_debug(__func__, "Error: randr v1.5+ required\n");
@@ -130,7 +141,7 @@ bool is_randr_newest(void)
 void
 poll_x(void)
 {
-	struct monitor 	*m;
+	struct monitor *m;
 
 	screen = DefaultScreen(dpy);
 	for (;;) {
@@ -140,26 +151,25 @@ poll_x(void)
 		XRRUpdateConfiguration(&event);
 
 		switch (event.type - event_base) {
-		case RRScreenChangeNotify:
-		{
-			struct screen_info 	*si;
+		case RRScreenChangeNotify: {
+			struct screen_info *si;
 			XRRScreenResources *sres;
-			XRROutputInfo *oinfo;
-			int i;
-			sce = (XRRScreenChangeNotifyEvent *) &event;
+			XRROutputInfo *	    oinfo;
+			int		    i;
+			sce  = (XRRScreenChangeNotifyEvent *)&event;
 			sres = XRRGetScreenResources(sce->display, sce->root);
-			
+
 			if (sres == NULL)
 				break;
 
 			scan_for_monitors();
 
 			for (i = 0; i < sres->noutput; ++i) {
-				oinfo = XRRGetOutputInfo(sce->display, sres,
-					    sres->outputs[i]);
+				oinfo = XRRGetOutputInfo(
+				    sce->display, sres, sres->outputs[i]);
 
 				si = screen_info_by_name(oinfo->name);
-				
+
 				if (si != NULL) {
 					switch (oinfo->connection) {
 					case RR_Disconnected:
@@ -174,42 +184,40 @@ poll_x(void)
 				}
 			}
 
-			TAILQ_FOREACH(m, &monitor_q, entry) {
+			TAILQ_FOREACH(m, &monitor_q, entry)
+			{
 				printf("monitor changed: %s (primary: %s) (%s) "
-					"{x: %d, y: %d, w: %d, h: %d}\n",
-					m->si->name,
-					m->si->is_primary ? "true" : "false",
-					m->si->is_disabled ? "disconnected" : "connected",
-					m->si->x, m->si->y, m->si->w, m->si->h);
+				       "{x: %d, y: %d, w: %d, h: %d}\n",
+				    m->si->name,
+				    m->si->is_primary ? "true" : "false",
+				    m->si->is_disabled ? "disconnected"
+						       : "connected",
+				    m->si->x, m->si->y, m->si->w, m->si->h);
 			}
 			XRRFreeScreenResources(sres);
 			XRRFreeOutputInfo(oinfo);
 			break;
 		}
-		case RRNotify_OutputChange:
-		{
+		case RRNotify_OutputChange: {
 			XRROutputChangeNotifyEvent *oce =
-				(XRROutputChangeNotifyEvent *)&event;
+			    (XRROutputChangeNotifyEvent *)&event;
 			XRRScreenConfiguration *sc;
-			XRRScreenResources *sres;
-			XRROutputInfo *oinfo;
-			XRRScreenSize *sizes;
-			Rotation current_rotation;
-			int nsize;
+			XRRScreenResources *	sres;
+			XRROutputInfo *		oinfo;
+			XRRScreenSize *		sizes;
+			Rotation		current_rotation;
+			int			nsize;
 
 			sres = XRRGetScreenResources(oce->display, oce->window);
-			sc = XRRGetScreenInfo(oce->display, oce->window);
-			oinfo = XRRGetOutputInfo(oce->display, sres, oce->output);
+			sc   = XRRGetScreenInfo(oce->display, oce->window);
+			oinfo =
+			    XRRGetOutputInfo(oce->display, sres, oce->output);
 			XRRConfigCurrentConfiguration(sc, &current_rotation);
 			sizes = XRRConfigSizes(sc, &nsize);
-			fvwm_debug(__func__, "%s (%s) %d %dx%d\n",
-				   oinfo->name,
-				   oinfo->connection == RR_Connected ?
-				   "connected" : "disconnected",
-				   0,
-				   sizes[0].width,
-				   sizes[0].height
-			);
+			fvwm_debug(__func__, "%s (%s) %d %dx%d\n", oinfo->name,
+			    oinfo->connection == RR_Connected ? "connected"
+							      : "disconnected",
+			    0, sizes[0].width, sizes[0].height);
 			XRRFreeScreenResources(sres);
 			XRRFreeOutputInfo(oinfo);
 			break;
@@ -221,9 +229,9 @@ poll_x(void)
 void
 scan_for_monitors(void)
 {
-	XRRMonitorInfo		*rrm;
-	struct monitor 		*m;
-    	int			i, n = 0;
+	XRRMonitorInfo *rrm;
+	struct monitor *m;
+	int		i, n = 0;
 
 	rrm = XRRGetMonitors(dpy, root, false, &n);
 	if (n == -1) {
@@ -239,8 +247,8 @@ scan_for_monitors(void)
 			name = "";
 
 		if ((m = monitor_by_output_info(name, &rrm[i])) == NULL) {
-			m = monitor_new();
-			m->si = screen_info_new();
+			m	    = monitor_new();
+			m->si	    = screen_info_new();
 			m->si->name = strdup(name);
 
 			TAILQ_INSERT_TAIL(&monitor_q, m, entry);
@@ -248,19 +256,18 @@ scan_for_monitors(void)
 			printf("New monitor: %s\n", m->si->name);
 		}
 
-		m->si->x = rrm[i].x;
-		m->si->y = rrm[i].y;
-		m->si->w = rrm[i].width;
-		m->si->h = rrm[i].height;
+		m->si->x	  = rrm[i].x;
+		m->si->y	  = rrm[i].y;
+		m->si->w	  = rrm[i].width;
+		m->si->h	  = rrm[i].height;
 		m->si->is_primary = rrm[i].primary > 0;
-
 	}
 }
 
 int
 main(void)
 {
-	struct monitor 	*m;
+	struct monitor *m;
 
 	if ((dpy = XOpenDisplay(NULL)) == NULL) {
 		fvwm_debug(__func__, "Couldn't open display\n");
@@ -272,19 +279,17 @@ main(void)
 	TAILQ_INIT(&monitor_q);
 
 	root = RootWindow(dpy, DefaultScreen(dpy));
-	if (!XRRQueryExtension(dpy, &event_base, &error_base) ||
-        	!XRRQueryVersion (dpy, &major, &minor))
-    	{
+	if (!XRRQueryExtension(dpy, &event_base, &error_base)
+	    || !XRRQueryVersion(dpy, &major, &minor)) {
 		fvwm_debug(__func__, "RandR extension missing\n");
 		return (1);
 	}
 	if (!is_randr_newest())
-		return(1);
+		return (1);
 
-
-	XSelectInput (dpy, root, StructureNotifyMask);
+	XSelectInput(dpy, root, StructureNotifyMask);
 	XRRSelectInput(dpy, DefaultRootWindow(dpy),
-			RRScreenChangeNotifyMask | RROutputChangeNotifyMask);
+	    RRScreenChangeNotifyMask | RROutputChangeNotifyMask);
 
 	scan_for_monitors();
 

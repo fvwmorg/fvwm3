@@ -16,101 +16,102 @@
 #include "config.h"
 
 #include "FvwmIconMan.h"
-#include "readconfig.h"
-#include "xmanager.h"
-#include "x.h"
+#include "libs/FEvent.h"
 #include "libs/Module.h"
 #include "libs/wild.h"
-#include "libs/FEvent.h"
+#include "readconfig.h"
+#include "x.h"
+#include "xmanager.h"
 
-static Button *get_select_button(void);
+static Button *
+get_select_button(void);
 
-static struct {
-	Button *current_button;
+static struct
+{
+	Button *  current_button;
 	Function *fp;
 } function_context;
 
-static void init_function_context(Function *func)
+static void
+init_function_context(Function *func)
 {
 	function_context.current_button = get_select_button();
-	function_context.fp = func;
+	function_context.fp		= func;
 }
 
-void run_function_list(Function *func)
+void
+run_function_list(Function *func)
 {
 	init_function_context(func);
 
-	while (function_context.fp)
-	{
+	while (function_context.fp) {
 		function_context.fp->func(
-			function_context.fp->numargs,
-			function_context.fp->args);
-		if (function_context.fp)
-		{
+		    function_context.fp->numargs, function_context.fp->args);
+		if (function_context.fp) {
 			function_context.fp = function_context.fp->next;
 		}
 	}
 }
 
-static Button *get_select_button(void)
+static Button *
+get_select_button(void)
 {
-	if (globals.select_win)
-	{
+	if (globals.select_win) {
 		return globals.select_win->button;
 	}
 	return NULL;
 }
 
-static Button *get_focus_button(void)
+static Button *
+get_focus_button(void)
 {
-	if (globals.focus_win)
-	{
+	if (globals.focus_win) {
 		return globals.focus_win->button;
 	}
 	return NULL;
 }
 
-static WinManager *get_current_man(void)
+static WinManager *
+get_current_man(void)
 {
 	Button *b = function_context.current_button;
 
-	if (globals.num_managers==1)
-	{
+	if (globals.num_managers == 1) {
 		return globals.managers;
 	}
-	if (b && b->drawn_state.win)
-	{
+	if (b && b->drawn_state.win) {
 		return b->drawn_state.win->manager;
 	}
 	return NULL;
 }
 
-static WinData *get_current_win(void)
+static WinData *
+get_current_win(void)
 {
 	Button *b = function_context.current_button;
 
-	if (b && b->drawn_state.win)
-	{
+	if (b && b->drawn_state.win) {
 		return b->drawn_state.win;
 	}
 	return NULL;
 }
 
-static Button *get_current_button(void)
+static Button *
+get_current_button(void)
 {
 	return function_context.current_button;
 }
 
-static Button *button_move(ButtonValue *bv)
+static Button *
+button_move(ButtonValue *bv)
 {
-	Button *b = NULL, *cur;
+	Button *    b = NULL, *cur;
 	WinManager *man;
-	int i;
+	int	    i;
 
 	cur = get_current_button();
 
-	switch (bv->base)
-	{
+	switch (bv->base) {
 	case NoButton:
 		ConsoleMessage("gotobutton: need a button to change to\n");
 		return cur;
@@ -125,11 +126,9 @@ static Button *button_move(ButtonValue *bv)
 
 	case AbsoluteButton:
 		man = get_current_man();
-		if (man && man->buttons.num_windows > 0)
-		{
+		if (man && man->buttons.num_windows > 0) {
 			i = bv->offset % man->buttons.num_windows;
-			if (i < 0)
-			{
+			if (i < 0) {
 				i += man->buttons.num_windows;
 			}
 			b = man->buttons.buttons[i];
@@ -138,15 +137,13 @@ static Button *button_move(ButtonValue *bv)
 
 	default:
 		man = get_current_man();
-		if (!cur)
-		{
+		if (!cur) {
 			ConsoleDebug(
-				FUNCTIONS, "\tno current button, skipping\n");
+			    FUNCTIONS, "\tno current button, skipping\n");
 			return NULL;
 		}
 
-		switch (bv->base)
-		{
+		switch (bv->base) {
 		case UpButton:
 			b = button_above(man, cur);
 			break;
@@ -180,9 +177,10 @@ static Button *button_move(ButtonValue *bv)
 	return b;
 }
 
-int builtin_gotobutton(int numargs, BuiltinArg *args)
+int
+builtin_gotobutton(int numargs, BuiltinArg *args)
 {
-	Button *b;
+	Button *     b;
 	ButtonValue *bv;
 
 	ConsoleDebug(FUNCTIONS, "gotobutton: ");
@@ -192,19 +190,19 @@ int builtin_gotobutton(int numargs, BuiltinArg *args)
 
 	b = button_move(bv);
 
-	if (b)
-	{
+	if (b) {
 		function_context.current_button = b;
 	}
 
 	return 0;
 }
 
-int builtin_gotomanager(int numargs, BuiltinArg *args)
+int
+builtin_gotomanager(int numargs, BuiltinArg *args)
 {
 	ButtonValue *bv;
-	WinManager *man, *new;
-	int i;
+	WinManager * man, *new;
+	int	     i;
 
 	ConsoleDebug(FUNCTIONS, "gotomanager: ");
 	print_args(numargs, args);
@@ -213,8 +211,7 @@ int builtin_gotomanager(int numargs, BuiltinArg *args)
 
 	new = man = get_current_man();
 
-	switch (bv->base)
-	{
+	switch (bv->base) {
 	case NoButton:
 		ConsoleMessage("gotomanager: need a manager argument\n");
 		return 1;
@@ -222,76 +219,60 @@ int builtin_gotomanager(int numargs, BuiltinArg *args)
 	case SelectButton:
 	case FocusButton:
 		ConsoleMessage(
-			"gotomanager: \"select\" or \"focus\" does not specify"
-			" a manager\n");
+		    "gotomanager: \"select\" or \"focus\" does not specify"
+		    " a manager\n");
 		break;
 
-	case AbsoluteButton:
-	{
+	case AbsoluteButton: {
 		/* Now we find the manager modulo the VISIBLE managers */
 		static WinManager **wa = NULL;
-		int i, num_mapped, n;
+		int		    i, num_mapped, n;
 
 		n = globals.num_managers;
-		if (n)
-		{
-			if (wa == NULL)
-			{
+		if (n) {
+			if (wa == NULL) {
 				wa = fxmalloc(n * sizeof(WinManager *));
 			}
-			for (i = 0, num_mapped = 0; i < n; i++)
-			{
+			for (i = 0, num_mapped = 0; i < n; i++) {
 				if (globals.managers[i].buttons.num_windows > 0
-					&& globals.managers[i].window_mapped)
-				{
+				    && globals.managers[i].window_mapped) {
 					wa[num_mapped++] = &globals.managers[i];
 				}
 			}
-			if (num_mapped)
-			{
+			if (num_mapped) {
 				i = bv->offset % num_mapped;
-				if (i < 0)
-				{
+				if (i < 0) {
 					i += num_mapped;
 				}
 				new = wa[i];
-			}
-			else
-			{
+			} else {
 				new = NULL;
 			}
 		}
-	}
-	break;
+	} break;
 
 	case NextButton:
-		if (man)
-		{
+		if (man) {
 			for (i = man->index + 1, new = man + 1;
-				i < globals.num_managers &&
-				new->buttons.num_windows == 0;
-				i++, new++)
-			{
+			     i < globals.num_managers &&new->buttons.num_windows
+			     == 0;
+			     i++, new ++) {
 				;
 			}
-			if (i == globals.num_managers)
-			{
+			if (i == globals.num_managers) {
 				new = man;
 			}
 		}
 		break;
 
 	case PrevButton:
-		if (man)
-		{
+		if (man) {
 			for (i = man->index - 1, new = man - 1;
-				i > -1 && new->buttons.num_windows == 0;
-				i--, new--)
-			{
+			     i > -1 && new->buttons.num_windows == 0;
+			     i--, new --) {
 				;
 			}
-			if (i == -1)
-			{
+			if (i == -1) {
 				new = man;
 			}
 		}
@@ -302,74 +283,70 @@ int builtin_gotomanager(int numargs, BuiltinArg *args)
 		break;
 	}
 
-	if (new && new != man && new->buttons.num_windows > 0)
-	{
+	if (new &&new != man &&new->buttons.num_windows > 0) {
 		function_context.current_button = new->buttons.buttons[0];
 	}
 
 	return 0;
 }
 
-int builtin_select(int numargs, BuiltinArg *args)
+int
+builtin_select(int numargs, BuiltinArg *args)
 {
 	WinManager *man = get_current_man();
-	if (man)
-	{
+	if (man) {
 		move_highlight(man, get_current_button());
-		if (get_current_button())
-		{
+		if (get_current_button()) {
 			run_binding(man, SELECT);
 		}
 	}
 	return 0;
 }
 
-int builtin_sendcommand(int numargs, BuiltinArg *args)
+int
+builtin_sendcommand(int numargs, BuiltinArg *args)
 {
 	WinData *win = get_current_win();
 
-	char *command, *tmp;
-	Button *current_button;
+	char *	  command, *tmp;
+	Button *  current_button;
 	rectangle r;
-	Window tmpw;
+	Window	  tmpw;
 
-	if (!win)
-	{
+	if (!win) {
 		return 0;
 	}
 
-	command = args[0].value.string_value;
+	command	       = args[0].value.string_value;
 	current_button = win->manager->select_button;
 
-	r.x = current_button->x;
-	r.y = current_button->y;
-	r.width = current_button->w;
+	r.x	 = current_button->x;
+	r.y	 = current_button->y;
+	r.width	 = current_button->w;
 	r.height = current_button->h;
-	XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot,
-		r.x, r.y, &r.x, &r.y, &tmpw);
+	XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot, r.x,
+	    r.y, &r.x, &r.y, &tmpw);
 
 	tmp = module_expand_action(
-		theDisplay, theScreen, command, &r, NULL, NULL);
-	if (tmp)
-	{
+	    theDisplay, theScreen, command, &r, NULL, NULL);
+	if (tmp) {
 		command = tmp;
 	}
 
 	SendFvwmPipe(fvwm_fd, command, win->app_id);
-	if (tmp)
-	{
+	if (tmp) {
 		free(tmp);
 	}
 
 	return 0;
 }
 
-int builtin_printdebug(int numargs, BuiltinArg *args)
+int
+builtin_printdebug(int numargs, BuiltinArg *args)
 {
 	int i;
 
-	for (i = 0; i < globals.num_managers; i++)
-	{
+	for (i = 0; i < globals.num_managers; i++) {
 		ConsoleDebug(FUNCTIONS, "Manager %d\n---------\n", i);
 		ConsoleDebug(FUNCTIONS, "Keys:\n");
 		print_bindings(globals.managers[i].bindings[KEYPRESS]);
@@ -383,7 +360,8 @@ int builtin_printdebug(int numargs, BuiltinArg *args)
 	return 0;
 }
 
-int builtin_quit(int numargs, BuiltinArg *args)
+int
+builtin_quit(int numargs, BuiltinArg *args)
 {
 	ConsoleDebug(FUNCTIONS, "quit: ");
 	print_args(numargs, args);
@@ -391,53 +369,48 @@ int builtin_quit(int numargs, BuiltinArg *args)
 	return 0;
 }
 
-static void do_jmp(int off)
+static void
+do_jmp(int off)
 {
 	int i;
 	ConsoleDebug(FUNCTIONS, "jmp: %d\n", off);
 
-	if (off < 0)
-	{
+	if (off < 0) {
 		ConsoleMessage("Can't have a negative relative jump offset\n");
 		return;
 	}
-	for (i = 0; i < off; i++)
-	{
-		if (function_context.fp)
-		{
+	for (i = 0; i < off; i++) {
+		if (function_context.fp) {
 			function_context.fp = function_context.fp->next;
 		}
 	}
 }
 
-static int eval_if(ButtonValue *bv)
+static int
+eval_if(ButtonValue *bv)
 {
-	Button *cur;
+	Button *    cur;
 	WinManager *man;
 
-	switch (bv->base)
-	{
+	switch (bv->base) {
 	case NoButton:
 		ConsoleMessage("Internal error in eval_if: 1\n");
 		break;
 
 	case SelectButton:
-		if (get_select_button())
-		{
+		if (get_select_button()) {
 			return 1;
 		}
 		break;
 
 	case FocusButton:
-		if (get_focus_button())
-		{
+		if (get_focus_button()) {
 			return 1;
 		}
 		break;
 
 	case AbsoluteButton:
-		if (bv->offset != 0)
-		{
+		if (bv->offset != 0) {
 			return 1;
 		}
 		break;
@@ -445,13 +418,11 @@ static int eval_if(ButtonValue *bv)
 	default:
 		cur = get_current_button();
 		man = get_current_man();
-		if (!cur || !man)
-		{
+		if (!cur || !man) {
 			return 0;
 		}
 
-		switch (bv->base)
-		{
+		switch (bv->base) {
 		case UpButton:
 			return (button_above(man, cur) != cur);
 
@@ -479,33 +450,34 @@ static int eval_if(ButtonValue *bv)
 	return 0;
 }
 
-int builtin_bif(int numargs, BuiltinArg *args)
+int
+builtin_bif(int numargs, BuiltinArg *args)
 {
 	int off = args[1].value.int_value;
 	ConsoleDebug(FUNCTIONS, "bif: off = %d\n", off);
 
-	if (eval_if(&args[0].value.button_value))
-	{
+	if (eval_if(&args[0].value.button_value)) {
 		do_jmp(off);
 	}
 
 	return 0;
 }
 
-int builtin_bifn(int numargs, BuiltinArg *args)
+int
+builtin_bifn(int numargs, BuiltinArg *args)
 {
 	int off = args[1].value.int_value;
 	ConsoleDebug(FUNCTIONS, "bifn: off = %d\n", off);
 
-	if (eval_if(&args[0].value.button_value) == 0)
-	{
+	if (eval_if(&args[0].value.button_value) == 0) {
 		do_jmp(off);
 	}
 
 	return 0;
 }
 
-int builtin_jmp(int numargs, BuiltinArg *args)
+int
+builtin_jmp(int numargs, BuiltinArg *args)
 {
 	int off = args[0].value.int_value;
 	ConsoleDebug(FUNCTIONS, "jmp: off = %d\n", off);
@@ -514,35 +486,35 @@ int builtin_jmp(int numargs, BuiltinArg *args)
 	return 0;
 }
 
-int builtin_ret(int numargs, BuiltinArg *args)
+int
+builtin_ret(int numargs, BuiltinArg *args)
 {
 	function_context.fp = NULL;
 	return 0;
 }
 
-int builtin_print(int numargs, BuiltinArg *args)
+int
+builtin_print(int numargs, BuiltinArg *args)
 {
 	char *s;
 
 	ConsoleDebug(FUNCTIONS, "print: %s\n", args[0].value.string_value);
 
 	s = args[0].value.string_value;
-	if (strlen(s) > 250)
-	{
+	if (strlen(s) > 250) {
 		ConsoleMessage("String too long\n");
-	}
-	else
-	{
+	} else {
 		ConsoleMessage("%s\n", s);
 	}
 
 	return 0;
 }
 
-int builtin_searchforward(int numargs, BuiltinArg *args)
+int
+builtin_searchforward(int numargs, BuiltinArg *args)
 {
-	char *s;
-	Button *b, *cur;
+	char *	    s;
+	Button *    b, *cur;
 	WinManager *man;
 
 	s = args[0].value.string_value;
@@ -551,37 +523,34 @@ int builtin_searchforward(int numargs, BuiltinArg *args)
 
 	cur = get_current_button();
 	man = get_current_man();
-	b = cur;
-	if (cur)
-	{
-		while (1)
-		{
-			if (cur->drawn_state.display_string && matchWildcards(
-				s, cur->drawn_state.display_string))
-			{
+	b   = cur;
+	if (cur) {
+		while (1) {
+			if (cur->drawn_state.display_string
+			    && matchWildcards(
+				s, cur->drawn_state.display_string)) {
 				break;
 			}
 			b = button_next(man, cur);
-			if (b == cur)
-			{
+			if (b == cur) {
 				cur = NULL;
 				break;
 			}
 			cur = b;
 		}
 	}
-	if (cur)
-	{
+	if (cur) {
 		function_context.current_button = cur;
 	}
 
 	return 0;
 }
 
-int builtin_searchback(int numargs, BuiltinArg *args)
+int
+builtin_searchback(int numargs, BuiltinArg *args)
 {
-	char *s;
-	Button *b, *cur;
+	char *	    s;
+	Button *    b, *cur;
 	WinManager *man;
 
 	s = args[0].value.string_value;
@@ -590,55 +559,52 @@ int builtin_searchback(int numargs, BuiltinArg *args)
 
 	cur = get_current_button();
 	man = get_current_man();
-	b = cur;
-	if (cur)
-	{
-		while (1)
-		{
-			if (cur->drawn_state.display_string && matchWildcards(
-				s, cur->drawn_state.display_string))
-			{
+	b   = cur;
+	if (cur) {
+		while (1) {
+			if (cur->drawn_state.display_string
+			    && matchWildcards(
+				s, cur->drawn_state.display_string)) {
 				break;
 			}
 			b = button_prev(man, cur);
-			if (b == cur)
-			{
+			if (b == cur) {
 				cur = NULL;
 				break;
 			}
 			cur = b;
 		}
 	}
-	if (cur)
-	{
+	if (cur) {
 		function_context.current_button = cur;
 	}
 
 	return 0;
 }
 
-int builtin_warp(int numargs, BuiltinArg *args)
+int
+builtin_warp(int numargs, BuiltinArg *args)
 {
-	Button *cur;
+	Button *    cur;
 	WinManager *man;
-	int x, y;
+	int	    x, y;
 
 	ConsoleDebug(FUNCTIONS, "warp\n");
 
 	cur = get_current_button();
-	if (cur)
-	{
+	if (cur) {
 		man = get_current_man();
-		x = cur->x + cur->w / 2;
-		y = cur->y + cur->h / 2;
+		x   = cur->x + cur->w / 2;
+		y   = cur->y + cur->h / 2;
 		FWarpPointer(
-			theDisplay, None, man->theWindow, 0, 0, 0, 0, x, y);
+		    theDisplay, None, man->theWindow, 0, 0, 0, 0, x, y);
 	}
 
 	return 0;
 }
 
-int builtin_refresh(int numargs, BuiltinArg *args)
+int
+builtin_refresh(int numargs, BuiltinArg *args)
 {
 	draw_managers();
 	return 0;
