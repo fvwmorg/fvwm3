@@ -519,7 +519,7 @@ static void get_common_decorations(
 	}
 
 	/* MWMBorder style means thin 3d effects */
-	cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
+	cd->relief_width = (HAS_MWM_BORDER(t) ? 4 : 2);
 
 	if (cd->texture_pixmap)
 	{
@@ -1124,12 +1124,12 @@ static void border_fetch_mwm_layout(
 	 * S = shadow
 	 */
 	ret_size_descr->w_dout = 0;
-	ret_size_descr->w_hiout = 2;
+	ret_size_descr->w_hiout = 3;
 	ret_size_descr->w_trout = 0;
 	ret_size_descr->w_trin = 0;
-	ret_size_descr->w_shin = 1;
+	ret_size_descr->w_shin = 3;
 	ret_size_descr->w_din = 0;
-	ret_size_descr->sum = 3;
+	ret_size_descr->sum = 6;
 	ret_size_descr->trim = ret_size_descr->sum - fw->boundary_width + 1;
 	check_remove_inset(borderstyle, ret_size_descr);
 	trim_border_layout(fw, borderstyle, ret_size_descr);
@@ -1169,15 +1169,15 @@ static void border_fetch_fvwm_layout(
 	 * ||_____ w_hiout	(outer hilight area)
 	 * |______ w_dout	(outer dark area)
 	 */
-	ret_size_descr->w_dout = 1;
-	ret_size_descr->w_hiout = 1;
-	ret_size_descr->w_trout = 1;
-	ret_size_descr->w_trin = 1;
-	ret_size_descr->w_shin = 1;
-	ret_size_descr->w_din = 1;
+	ret_size_descr->w_dout = 2;
+	ret_size_descr->w_hiout = 2;
+	ret_size_descr->w_trout = 2;
+	ret_size_descr->w_trin = 2;
+	ret_size_descr->w_shin = 2;
+	ret_size_descr->w_din = 2;
 	/* w_trout + w_trin counts only as one pixel of border because
 	 * they let one pixel of the original colour shine through. */
-	ret_size_descr->sum = 6;
+	ret_size_descr->sum = 12;
 	ret_size_descr->trim = ret_size_descr->sum - fw->boundary_width;
 	check_remove_inset(borderstyle, ret_size_descr);
 	trim_border_layout(fw, borderstyle, ret_size_descr);
@@ -2978,7 +2978,7 @@ static void border_draw_decor_to_pixmap(
 	}
 	else
 	{
-		border = HAS_MWM_BORDER(fw) ? 1 : 2;
+		border = HAS_MWM_BORDER(fw) ? 4 : 2;
 	}
 	dest_g.width = w_g->width;
 	dest_g.height = w_g->height;
