@@ -29,6 +29,7 @@
 
 **Merged pull requests:**
 
+- Xft2 with fallback [\#403](https://github.com/fvwmorg/fvwm3/pull/403) ([mikeandmore](https://github.com/mikeandmore))
 - move x11 headers out of config.h [\#400](https://github.com/fvwmorg/fvwm3/pull/400) ([mikeandmore](https://github.com/mikeandmore))
 - PanFrames: restore global panframe behaviour [\#399](https://github.com/fvwmorg/fvwm3/pull/399) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmIconMan: handle resolutions for per-monitor [\#397](https://github.com/fvwmorg/fvwm3/pull/397) ([ThomasAdam](https://github.com/ThomasAdam))
