@@ -67,6 +67,7 @@ void init_fft(Display *dpy)
 {
 	fftdpy = dpy;
 	fftscreen = DefaultScreen(dpy);
+	FlocaleCharsetInit(dpy, NULL);
 	fft_initialized = True;
 }
 
