@@ -22,6 +22,7 @@
 - EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
+- LocaleCharset: initialise with font [\#406](https://github.com/fvwmorg/fvwm3/pull/406) ([ThomasAdam](https://github.com/ThomasAdam))
 - fvwm-root: fix Makefile [\#387](https://github.com/fvwmorg/fvwm3/pull/387) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove explicit path to bson.h \(closes \#375\) [\#386](https://github.com/fvwmorg/fvwm3/pull/386) ([slazav](https://github.com/slazav))
 - Fix system.fvwm2rc not found [\#382](https://github.com/fvwmorg/fvwm3/pull/382) ([phileimer](https://github.com/phileimer))
