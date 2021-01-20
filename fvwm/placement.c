@@ -2131,39 +2131,36 @@ static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 		s += strlen(s);
 	}
 	/* screen */
-	if (FScreenIsEnabled() == True)
+	switch (reason->screen.reason)
 	{
-		switch (reason->screen.reason)
-		{
-		case PR_SCREEN_CURRENT:
-			r = "current screen";
-			break;
-		case PR_SCREEN_STYLE:
-			r = "specified by style";
-			break;
-		case PR_SCREEN_X_RESOURCE_FVWMSCREEN:
-			r = "specified by 'fvwmscreen' X resource";
-			break;
-		case PR_SCREEN_IGNORE_CAPTURE:
-			r = "window was (re)captured";
-			break;
-		default:
-			r = "bug";
-			break;
-		}
+	case PR_SCREEN_CURRENT:
+		r = "current screen";
+		break;
+	case PR_SCREEN_STYLE:
+		r = "specified by style";
+		break;
+	case PR_SCREEN_X_RESOURCE_FVWMSCREEN:
+		r = "specified by 'fvwmscreen' X resource";
+		break;
+	case PR_SCREEN_IGNORE_CAPTURE:
+		r = "window was (re)captured";
+		break;
+	default:
+		r = "bug";
+		break;
+	}
+	sprintf(
+		s, "  screen: %s: %d %d %dx%d (%s)\n",
+		reason->screen.screen, reason->screen.g.x,
+		reason->screen.g.y, reason->screen.g.width,
+		reason->screen.g.height, r);
+	s += strlen(s);
+	if (reason->screen.was_modified_by_ewmh_workingarea == 1)
+	{
 		sprintf(
-			s, "  screen: %s: %d %d %dx%d (%s)\n",
-			reason->screen.screen, reason->screen.g.x,
-			reason->screen.g.y, reason->screen.g.width,
-			reason->screen.g.height, r);
+			s, "    (screen area modified by EWMH working"
+			" area)\n");
 		s += strlen(s);
-		if (reason->screen.was_modified_by_ewmh_workingarea == 1)
-		{
-			sprintf(
-				s, "    (screen area modified by EWMH working"
-				" area)\n");
-			s += strlen(s);
-		}
 	}
 	/* position */
 	is_placed_by_algo = 0;

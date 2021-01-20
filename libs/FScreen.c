@@ -70,11 +70,6 @@ static void GetMouseXY(XEvent *eventp, int *x, int *y)
 		disp, DefaultRootWindow(disp), eventp, x, y);
 }
 
-Bool FScreenIsEnabled(void)
-{
-	return (IS_RANDR_ENABLED);
-}
-
 struct monitor *
 monitor_new(void)
 {
@@ -483,7 +478,7 @@ void FScreenInit(Display *dpy)
 		is_randr_present = true;
 
 
-	if (FScreenIsEnabled() && !is_randr_present) {
+	if (!is_randr_present) {
 		/* Something went wrong. */
 		fvwm_debug(__func__, "Couldn't initialise XRandR: %s\n",
 			   strerror(errno));

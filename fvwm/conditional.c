@@ -901,7 +901,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	if (mask->my_flags.do_check_page ||
 	    mask->my_flags.do_check_desk_and_page)
 	{
-		if (FScreenIsEnabled() && !mask->my_flags.do_not_check_screen)
+		if (!mask->my_flags.do_not_check_screen)
 		{
 			is_on_page = !!FScreenIsRectangleOnScreen(
 				NULL, FSCREEN_CURRENT, &(fw->g.frame));
