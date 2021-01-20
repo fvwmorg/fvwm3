@@ -29,12 +29,6 @@
 #include "FScreen.h"
 #include "FEvent.h"
 
-#ifdef HAVE_XRANDR
-#	define IS_RANDR_ENABLED 1
-#else
-#	define IS_RANDR_ENABLED 0
-#endif
-
 #define GLOBAL_SCREEN_NAME "_global"
 
 /* In fact, only corners matter -- there will never be GRAV_NONE */
