@@ -2260,7 +2260,7 @@ static void DoSnapAttract(
 		}
 	}
 	/* Resist moving windows between xineramascreens */
-	if (fw->edge_resistance_xinerama_move > 0 && FScreenIsEnabled())
+	if (fw->edge_resistance_xinerama_move)
 	{
 		int scr_x0, scr_y0;
 		int scr_x1, scr_y1;

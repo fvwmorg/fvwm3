@@ -385,7 +385,7 @@ void list_configure(unsigned long *body)
 
 		target.monitor_id = cfgpacket->monitor_id;
 		target.monitor = fxstrdup("unknown");
-		if (FScreenIsEnabled()) {
+		{
 			free(target.monitor);
 			target.monitor = fxstrdup(
 				monitor_by_output((int)target.monitor_id)->si->name);

@@ -165,7 +165,6 @@ extern int randr_event;
 extern const char *prev_focused_monitor;
 
 /* Control */
-Bool FScreenIsEnabled(void);
 void FScreenInit(Display *dpy);
 void FScreenSelect(Display *dpy);
 void FScreenSetPrimaryScreen(int scr);
