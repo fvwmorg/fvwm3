@@ -1305,9 +1305,7 @@ static void setVersionInfo(void)
 #ifdef HAVE_BIDI
 	strcat(support_str, " Bidi text,");
 #endif
-#ifdef HAVE_XRANDR
 	strcat(support_str, " XRandR,");
-#endif
 #ifdef HAVE_XRENDER
 	strcat(support_str, " XRender,");
 #endif
