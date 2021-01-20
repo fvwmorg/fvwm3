@@ -15,11 +15,11 @@
 
 **Fixed bugs:**
 
+- Can't build FvwmPrompt for PowerPC 32-bit \(golang.org/x/sys/unix doesn't build on PPC32 with gccgo, and regular go doesn't work at all\) [\#407](https://github.com/fvwmorg/fvwm3/issues/407)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
 - RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
 - FvwmIconMan lists wrong windows in \(certain?\) multi-monitor configurations. [\#390](https://github.com/fvwmorg/fvwm3/issues/390)
 - fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
-- EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - LocaleCharset: initialise with font [\#406](https://github.com/fvwmorg/fvwm3/pull/406) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -30,6 +30,7 @@
 
 **Merged pull requests:**
 
+- Deprecate HAVE\_XRandR/FScreenIsEnabled\(\) [\#410](https://github.com/fvwmorg/fvwm3/pull/410) ([ThomasAdam](https://github.com/ThomasAdam))
 - Xft2 with fallback [\#403](https://github.com/fvwmorg/fvwm3/pull/403) ([mikeandmore](https://github.com/mikeandmore))
 - move x11 headers out of config.h [\#400](https://github.com/fvwmorg/fvwm3/pull/400) ([mikeandmore](https://github.com/mikeandmore))
 - PanFrames: restore global panframe behaviour [\#399](https://github.com/fvwmorg/fvwm3/pull/399) ([ThomasAdam](https://github.com/ThomasAdam))
