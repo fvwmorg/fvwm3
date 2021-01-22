@@ -2143,26 +2143,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	{
 		FvwmWindow *lf = get_last_screen_focus_window();
 
-		if (!Scr.flags.is_pointer_on_this_screen)
-		{
-			Scr.flags.is_pointer_on_this_screen = 1;
-			if (lf && lf != &Scr.FvwmRoot &&
-			    !FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(lf)))
-			{
-				SetFocusWindow(lf, True, FOCUS_SET_FORCE);
-			}
-			else if (lf != &Scr.FvwmRoot)
-			{
-				ForceDeleteFocus();
-			}
-			else
-			{
-				/* This was the first EnterNotify event for the
-				 * root window - ignore */
-			}
-			set_last_screen_focus_window(NULL);
-		}
-		else if (!(sf = get_focus_window()) ||
+		if (!(sf = get_focus_window()) ||
 			 FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 		{
 			DeleteFocus(True);
@@ -2179,10 +2160,6 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		}
 		focus_grab_buttons(lf);
 		return;
-	}
-	else
-	{
-		Scr.flags.is_pointer_on_this_screen = 1;
 	}
 
 	/* An EnterEvent in one of the PanFrameWindows activates the Paging or
@@ -2238,7 +2215,6 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 				m = fw->m;
 
 			/* this was in the HandleMotionNotify before, HEDU */
-			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
 			int p = HandlePaging(
 				&e, m->virtual_scr.EdgeScrollX,

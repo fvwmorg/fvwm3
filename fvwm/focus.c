@@ -253,27 +253,6 @@ static void __update_windowlist(
 	return;
 }
 
-static Bool __try_other_screen_focus(const FvwmWindow *fw)
-{
-	if (fw == NULL && !Scr.flags.is_pointer_on_this_screen)
-	{
-		FvwmWindow *sf;
-
-		sf = get_focus_window();
-		set_focus_window(NULL);
-		if (sf != NULL)
-		{
-			focus_grab_buttons(sf);
-		}
-		/* DV (25-Nov-2000): Don't give the Scr.NoFocusWin the focus
-		 * here. This would steal the focus from the other screen's
-		 * root window again. */
-		return True;
-	}
-
-	return False;
-}
-
 /*
  * Sets the input focus to the indicated window.
  */
@@ -293,10 +272,6 @@ static void __set_focus_to_fwin(
 		return;
 	}
 	__update_windowlist(fw, args->set_by, args->is_focus_by_flip_focus_cmd);
-	if (__try_other_screen_focus(fw) == True)
-	{
-		return;
-	}
 
 	if (fw && !args->do_forbid_warp)
 	{

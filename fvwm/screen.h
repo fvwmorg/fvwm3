@@ -460,8 +460,6 @@ typedef struct ScreenInfo
 		unsigned is_executing_complex_function : 1;
 		unsigned is_executing_menu_function : 1;
 		unsigned is_map_desk_in_progress : 1;
-		unsigned is_pointer_on_this_screen : 1;
-		unsigned is_single_screen : 1;
 		unsigned is_window_scheduled_for_destroy : 1;
 		unsigned is_wire_frame_displayed : 1;
 	} flags;

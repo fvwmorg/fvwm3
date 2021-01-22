@@ -1207,10 +1207,6 @@ static void InitVariables(void)
 	/* Not the right place for this, should only be called once
 	 * somewhere .. */
 
-	Scr.flags.is_pointer_on_this_screen = !!FQueryPointer(
-		dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
-		&JunkY, &JunkMask);
-
 	/* make sure colorset 0 exists */
 	alloc_colorset(0);
 
