@@ -85,7 +85,7 @@ static WinManager *get_current_man(void)
 	return NULL;
 }
 
-static WinData *get_current_win(void)
+static struct winlist *get_current_win(void)
 {
 	Button *b = function_context.current_button;
 
@@ -326,7 +326,7 @@ int builtin_select(int numargs, BuiltinArg *args)
 
 int builtin_sendcommand(int numargs, BuiltinArg *args)
 {
-	WinData *win = get_current_win();
+	struct winlist *win = get_current_win();
 
 	char *command, *tmp;
 	Button *current_button;

@@ -19,6 +19,7 @@
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
 #include "libs/FTips.h"
+#include "libs/queue.h"
 
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"
@@ -112,8 +113,40 @@ typedef enum {
 
 typedef struct win_list {
 	int n;
-	struct win_data *head, *tail;
-} WinList;
+	struct button *button;
+	/* stuff shadowed in the Button structure */
+	FvwmPicture pic;
+	FvwmPicture old_pic;
+	Uchar iconified, state;
+
+	Ulong desknum;
+	long x, y, width, height;
+	rectangle icon_g;
+	rectangle real_g; /* geometry of the client possibliy shaded */
+	Ulong app_id;
+	/* Ulong fvwm_flags; */
+	window_flags flags;
+	struct win_data *win_prev, *win_next;
+	struct win_manager *manager;
+	int app_id_set : 1;
+	int geometry_set : 1;
+	Uchar complete;
+
+	/* this data must be freed */
+	char *display_string; /* what gets shown in the manager window */
+	char *resname;
+	char *classname;
+	char *titlename;
+	char *iconname;
+	char *visible_name;
+	char *visible_icon_name;
+	char *monitor;
+
+	TAILQ_ENTRY(winlist) entry;
+};
+TAILQ_HEAD(winlists, winlist);
+
+extern struct winlists		 winlist_q;
 
 typedef struct string_list {
 	NameType type;
@@ -171,37 +204,6 @@ typedef struct Function {
 	struct Function *prev;
 } Function;
 
-typedef struct win_data {
-	struct button *button;
-	/* stuff shadowed in the Button structure */
-	FvwmPicture pic;
-	FvwmPicture old_pic;
-	Uchar iconified, state;
-
-	Ulong desknum;
-	long x, y, width, height;
-	rectangle icon_g;
-	rectangle real_g; /* geometry of the client possibliy shaded */
-	Ulong app_id;
-	/* Ulong fvwm_flags; */
-	window_flags flags;
-	struct win_data *win_prev, *win_next;
-	struct win_manager *manager;
-	int app_id_set : 1;
-	int geometry_set : 1;
-	Uchar complete;
-
-	/* this data must be freed */
-	char *display_string; /* what gets shown in the manager window */
-	char *resname;
-	char *classname;
-	char *titlename;
-	char *iconname;
-	char *visible_name;
-	char *visible_icon_name;
-	char *monitor;
-} WinData;
-
 #define WINDATA_ICONIFIED(win) ((win)->iconified)
 
 typedef struct button {
@@ -210,7 +212,7 @@ typedef struct button {
 	struct {
 		int dirty_flags;
 		FvwmPicture pic;
-		WinData *win;
+		struct winlist *win;
 		char *display_string;
 		int x, y, w, h;
 		Uchar iconified, state;
@@ -355,8 +357,8 @@ typedef struct {
 	WinManager *managers;
 	int num_managers;
 	int transient;
-	WinData *focus_win;
-	WinData *select_win;
+	struct winlist *focus_win;
+	struct winlist *select_win;
 	int got_window_list;
 } GlobalData;
 
@@ -390,15 +392,15 @@ extern void init_globals (void);
 extern int allocate_managers (int num);
 extern int expand_weighted_sorts (void);
 
-extern WinData *new_windata (void);
-extern void free_windata (WinData *p);
-extern int check_win_complete (WinData *p);
-int check_resolution(WinManager *man, WinData *win);
-extern WinManager *figure_win_manager (WinData *win, Uchar mask);
+extern struct winlist *new_windata (void);
+extern void free_windata (struct winlist *p);
+extern int check_win_complete (struct winlist *p);
+int check_resolution(WinManager *man, struct winlist *win);
+extern WinManager *figure_win_manager (struct winlist *win, Uchar mask);
 extern void init_winlists (void);
-extern void delete_win_hashtab (WinData *win);
-extern void insert_win_hashtab (WinData *win);
-extern WinData *find_win_hashtab (Ulong id);
+extern void delete_win_hashtab (struct winlist *win);
+extern void insert_win_hashtab (struct winlist *win);
+extern struct winlist *find_win_hashtab (Ulong id);
 extern void walk_hashtab (void (*func)(void *));
 extern int accumulate_walk_hashtab (int (*func)(void *));
 extern void print_stringlist (StringList *list);
@@ -407,7 +409,7 @@ extern void update_window_stuff (WinManager *man);
 extern void print_managers (void);
 
 extern WinManager *find_windows_manager (Window win);
-extern int win_in_viewport (WinData *win);
-extern WinData *id_to_win(Ulong id);
+extern int win_in_viewport (struct winlist *win);
+extern struct winlist *id_to_win(Ulong id);
 
 #endif /* IN_FVWMICONMAN_H */
