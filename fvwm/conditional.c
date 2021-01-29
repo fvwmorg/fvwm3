@@ -593,6 +593,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_HAS_HANDLES(mask, on);
 			SETM_HAS_HANDLES(mask, 1);
 		}
+		else if (StrEquals(cond, "HasTitle"))
+		{
+			SET_HAS_TITLE(mask, on);
+			SETM_HAS_TITLE(mask, 1);
+		}
+		else if (StrEquals(cond, "HasBorders"))
+		{
+			SET_HAS_NO_BORDER(mask, !on);
+			SETM_HAS_NO_BORDER(mask, 1);
+		}
 		else if (StrEquals(cond,"Iconifiable"))
 		{
 			SET_IS_UNICONIFIABLE(mask, !on);
