@@ -15,6 +15,7 @@
 
 **Fixed bugs:**
 
+- FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
 - Can't build FvwmPrompt for PowerPC 32-bit \(golang.org/x/sys/unix doesn't build on PPC32 with gccgo, and regular go doesn't work at all\) [\#407](https://github.com/fvwmorg/fvwm3/issues/407)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
 - RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
@@ -22,6 +23,8 @@
 - fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
+- Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- FvwmPager: Fix division by zero [\#415](https://github.com/fvwmorg/fvwm3/pull/415) ([Quipyowert2](https://github.com/Quipyowert2))
 - LocaleCharset: initialise with font [\#406](https://github.com/fvwmorg/fvwm3/pull/406) ([ThomasAdam](https://github.com/ThomasAdam))
 - fvwm-root: fix Makefile [\#387](https://github.com/fvwmorg/fvwm3/pull/387) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove explicit path to bson.h \(closes \#375\) [\#386](https://github.com/fvwmorg/fvwm3/pull/386) ([slazav](https://github.com/slazav))
@@ -40,7 +43,6 @@
 - Revert "Remove SAFEFREE macro" [\#388](https://github.com/fvwmorg/fvwm3/pull/388) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: always keep mapped [\#384](https://github.com/fvwmorg/fvwm3/pull/384) ([ThomasAdam](https://github.com/ThomasAdam))
 - update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
-- Working on 1.0.3 [\#368](https://github.com/fvwmorg/fvwm3/pull/368) ([ThomasAdam](https://github.com/ThomasAdam))
 
 ## [1.0.2](https://github.com/fvwmorg/fvwm3/tree/1.0.2) (2020-12-20)
 
@@ -320,7 +322,6 @@
 - Better logging required [\#77](https://github.com/fvwmorg/fvwm3/issues/77)
 - FVWM3 on Kubuntu: unknown type name ‘RROutput’ [\#76](https://github.com/fvwmorg/fvwm3/issues/76)
 - Remove win\_count functionality [\#70](https://github.com/fvwmorg/fvwm3/issues/70)
-- EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
 - Pager problems in gh-28 [\#56](https://github.com/fvwmorg/fvwm3/issues/56)
 - Segmentation fault while using StartsOnScreen and/or StartsOnPage [\#51](https://github.com/fvwmorg/fvwm3/issues/51)
 - UI freeze [\#50](https://github.com/fvwmorg/fvwm3/issues/50)
