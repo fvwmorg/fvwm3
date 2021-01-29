@@ -12,6 +12,7 @@
 
 - FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
 - fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
+- conditionals: add HasBorders/HasTitle [\#416](https://github.com/fvwmorg/fvwm3/pull/416) ([ThomasAdam](https://github.com/ThomasAdam))
 
 **Fixed bugs:**
 
