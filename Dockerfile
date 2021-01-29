@@ -4,6 +4,7 @@ FROM fvwmorg/fvwm3-build:latest
 ENV GOROOT="/usr/lib/go-1.14/"
 ENV PATH="$GOROOT/bin:$PATH"
 ENV GO111MODULE="on"
+ENV CFLAGS="$CFLAGS -coverage"
 
 COPY . /build
 WORKDIR /build
