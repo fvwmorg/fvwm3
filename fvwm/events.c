@@ -1724,7 +1724,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		}
 	}
 	/* raise the window */
-	if (IS_SCHEDULED_FOR_RAISE(fw))
+	if (check_if_fvwm_window_exists(fw) && IS_SCHEDULED_FOR_RAISE(fw))
 	{
 		/* Now that we know the action did not restack the window we
 		 * can raise it.
