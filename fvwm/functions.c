@@ -673,6 +673,11 @@ static void __execute_function(
 	{
 		free(function);
 	}
+	/* Free the string allocated by expand_vars earlier in this function. */
+	if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
+	{
+		free(expaction);
+	}
 	func_depth--;
 
 	return;
