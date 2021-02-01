@@ -1083,7 +1083,7 @@ void checkPanFrames(void)
 				XMoveResizeWindow(
 					dpy, m->PanFrameRight.win,
 					(m->si->x + m->si->w) - edge_thickness,
-					m->si->y + m->si->h,
+					m->si->y,
 					edge_thickness, (m->si->y + m->si->h));
 			}
 			if (!m->PanFrameRight.isMapped)
