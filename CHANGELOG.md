@@ -16,6 +16,7 @@
 
 **Fixed bugs:**
 
+- Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
 - Can't build FvwmPrompt for PowerPC 32-bit \(golang.org/x/sys/unix doesn't build on PPC32 with gccgo, and regular go doesn't work at all\) [\#407](https://github.com/fvwmorg/fvwm3/issues/407)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
@@ -34,6 +35,7 @@
 
 **Merged pull requests:**
 
+- Fix invalid read of size 1 error from Valgrind. [\#419](https://github.com/fvwmorg/fvwm3/pull/419) ([Quipyowert2](https://github.com/Quipyowert2))
 - Deprecate HAVE\_XRandR/FScreenIsEnabled\(\) [\#410](https://github.com/fvwmorg/fvwm3/pull/410) ([ThomasAdam](https://github.com/ThomasAdam))
 - Xft2 with fallback [\#403](https://github.com/fvwmorg/fvwm3/pull/403) ([mikeandmore](https://github.com/mikeandmore))
 - move x11 headers out of config.h [\#400](https://github.com/fvwmorg/fvwm3/pull/400) ([mikeandmore](https://github.com/mikeandmore))
