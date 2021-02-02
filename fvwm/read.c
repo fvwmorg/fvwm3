@@ -248,6 +248,7 @@ int run_command_file(
 	if (push_read_file(full_filename) == 0)
 	{
 		free(full_filename);
+		fclose(f);
 		return 0;
 	}
 	run_command_stream(NULL, f, exc);
