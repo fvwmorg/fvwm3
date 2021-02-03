@@ -37,6 +37,7 @@
 
 **Merged pull requests:**
 
+- Remove package \(libx11-dev\) already present in core dependencies [\#423](https://github.com/fvwmorg/fvwm3/pull/423) ([djwf](https://github.com/djwf))
 - Fix invalid read of size 1 error from Valgrind. [\#419](https://github.com/fvwmorg/fvwm3/pull/419) ([Quipyowert2](https://github.com/Quipyowert2))
 - Deprecate HAVE\_XRandR/FScreenIsEnabled\(\) [\#410](https://github.com/fvwmorg/fvwm3/pull/410) ([ThomasAdam](https://github.com/ThomasAdam))
 - Xft2 with fallback [\#403](https://github.com/fvwmorg/fvwm3/pull/403) ([mikeandmore](https://github.com/mikeandmore))
