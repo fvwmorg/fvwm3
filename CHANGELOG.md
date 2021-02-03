@@ -26,6 +26,7 @@
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- Correct menu error short option from `-t` to `-e` [\#424](https://github.com/fvwmorg/fvwm3/pull/424) ([djwf](https://github.com/djwf))
 - Fix file handle leak. [\#421](https://github.com/fvwmorg/fvwm3/pull/421) ([Quipyowert2](https://github.com/Quipyowert2))
 - FvwmPager: Fix division by zero [\#415](https://github.com/fvwmorg/fvwm3/pull/415) ([Quipyowert2](https://github.com/Quipyowert2))
 - LocaleCharset: initialise with font [\#406](https://github.com/fvwmorg/fvwm3/pull/406) ([ThomasAdam](https://github.com/ThomasAdam))
