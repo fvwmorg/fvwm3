@@ -16,6 +16,7 @@
 
 **Fixed bugs:**
 
+- Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
 - Can't build FvwmPrompt for PowerPC 32-bit \(golang.org/x/sys/unix doesn't build on PPC32 with gccgo, and regular go doesn't work at all\) [\#407](https://github.com/fvwmorg/fvwm3/issues/407)
@@ -26,6 +27,7 @@
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- Fix 22kb memory leak. [\#426](https://github.com/fvwmorg/fvwm3/pull/426) ([Quipyowert2](https://github.com/Quipyowert2))
 - Correct menu error short option from `-t` to `-e` [\#424](https://github.com/fvwmorg/fvwm3/pull/424) ([djwf](https://github.com/djwf))
 - Fix file handle leak. [\#421](https://github.com/fvwmorg/fvwm3/pull/421) ([Quipyowert2](https://github.com/Quipyowert2))
 - FvwmPager: Fix division by zero [\#415](https://github.com/fvwmorg/fvwm3/pull/415) ([Quipyowert2](https://github.com/Quipyowert2))
