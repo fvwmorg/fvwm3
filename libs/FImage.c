@@ -186,6 +186,7 @@ FImage *FCreateFImage (
 		else
 		{
 			free(fim);
+			return NULL;
 		}
 	}
 
