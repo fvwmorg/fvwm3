@@ -1819,6 +1819,7 @@ int setup_visible_names(FvwmWindow *fw, int what_changed)
 			&bits, fw, &style, True);
 		if ((changed_names & bits) || (force_update & 2))
 		{
+			free(fw->visible_icon_name);
 			fw->visible_icon_name = ext_name;
 			affected_titles |= 2;
 		}

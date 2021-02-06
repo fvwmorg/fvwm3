@@ -1738,7 +1738,7 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 	int suffix[2];
 	int mw, mh;
 	char *token;
-	char *taction, *action_cpy;
+	char *taction, *action_cpy, *action_cpy_start;
 	int wrapx;
 	int wrapy;
 	int limitdeskx;
@@ -1752,7 +1752,9 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 
 	m_use = (fw && fw->m) ? fw->m : monitor_get_current();
 	action_cpy = strdup(action);
+	action_cpy_start = action_cpy;
 	token = PeekToken(action_cpy, &action_cpy);
+	free(action_cpy_start);
 
 	if (token == NULL)
 		return (False);
@@ -2332,9 +2334,10 @@ void CMD_DesktopSize(F_CMD_ARGS)
 void CMD_GotoDesk(F_CMD_ARGS)
 {
 	struct monitor  *m_use = monitor_get_current(), *m;
-	char		*action_cpy, *token;
+	char		*action_cpy, *action_cpy_start, *token;
 
 	action_cpy = strdup(action);
+	action_cpy_start = action_cpy;
 	token = PeekToken(action_cpy, &action_cpy);
 
 	m = monitor_resolve_name(token);
@@ -2347,6 +2350,7 @@ void CMD_GotoDesk(F_CMD_ARGS)
 
 	goto_desk(GetDeskNumber(m, action, m->virtual_scr.CurrentDesk), m);
 
+	free(action_cpy_start);
 	return;
 }
 
@@ -2370,11 +2374,12 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 {
 	int val[3];
 	Bool is_new_desk;
-	char *action_cpy;
+	char *action_cpy, *action_cpy_start;
 	char *token;
 	struct monitor  *m_use = monitor_get_current(), *m;
 
 	action_cpy = strdup(action);
+	action_cpy_start = action_cpy;
 	token = PeekToken(action_cpy, &action_cpy);
 
 	m = monitor_resolve_name(token);
@@ -2383,7 +2388,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	else
 		PeekToken(action, &action);
 
-	//free(action_cpy);
+	free(action_cpy_start);
 
 	/* FIXME: monitor needs broadcast when global. */
 

@@ -153,9 +153,9 @@ int set_default_iconv_charsets(FlocaleCharset *fc)
 					    FLC_GET_LOCALE_CHARSET(fc,j)))
 				{
 					FLC_SET_ICONV_TRANSLIT_CHARSET(
-						fc, fxstrdup(translit_csname(
+						fc, translit_csname(
 							FLC_GET_LOCALE_CHARSET(
-								fc,j))));
+								fc,j)));
 				} else {
 					FLC_SET_ICONV_TRANSLIT_CHARSET(
 						fc, FLC_TRANSLIT_NOT_SUPPORTED);
