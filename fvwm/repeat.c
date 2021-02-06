@@ -116,11 +116,16 @@ Bool set_repeat_data(void *data, repeat_t type, const func_t *builtin)
 			return True;
 		}
 		/* Store a backup. */
+		free(last.command_line);
 		last.command_line = (char *)data;
 		/* Since we stored the pointer the caller must not free it. */
 		return False;
 	case REPEAT_MENU:
 	case REPEAT_POPUP:
+		if (last.menu_name != (char*)data)
+		{
+			free(last.menu_name);
+		}
 		last.menu_name = (char *)data;
 		return False;
 	case REPEAT_PAGE:

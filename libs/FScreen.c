@@ -410,8 +410,10 @@ scan_screens(Display *dpy)
 
 		char *name = XGetAtomName(dpy, rrm[i].name);
 
-		if (name == NULL)
-			name = "";
+		if (name == NULL) {
+			fprintf(stderr, "%s: couldn't detect monitor with empty name\n", __func__);
+			exit (101);
+		}
 
 		if (((m = monitor_by_name(name)) == NULL) ||
 		    (m != NULL && strcmp(m->si->name, name) != 0)) {
@@ -447,9 +449,11 @@ set_coords:
 		m->virtual_scr.MyDisplayWidth = monitor_get_all_widths();
 		m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
 
+		XFree(name);
 	}
 
 	monitor_check_primary();
+	XRRFreeMonitors(rrm);
 }
 
 void FScreenInit(Display *dpy)
