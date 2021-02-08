@@ -16,9 +16,9 @@
 
 **Fixed bugs:**
 
+- Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
-- Can't build FvwmPrompt for PowerPC 32-bit \(golang.org/x/sys/unix doesn't build on PPC32 with gccgo, and regular go doesn't work at all\) [\#407](https://github.com/fvwmorg/fvwm3/issues/407)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
 - RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
 - FvwmIconMan lists wrong windows in \(certain?\) multi-monitor configurations. [\#390](https://github.com/fvwmorg/fvwm3/issues/390)
@@ -38,6 +38,7 @@
 
 **Merged pull requests:**
 
+- Fix double free. [\#429](https://github.com/fvwmorg/fvwm3/pull/429) ([Quipyowert2](https://github.com/Quipyowert2))
 - Fix several tiny memory leaks [\#428](https://github.com/fvwmorg/fvwm3/pull/428) ([Quipyowert2](https://github.com/Quipyowert2))
 - Remove package \(libx11-dev\) already present in core dependencies [\#423](https://github.com/fvwmorg/fvwm3/pull/423) ([djwf](https://github.com/djwf))
 - Fix invalid read of size 1 error from Valgrind. [\#419](https://github.com/fvwmorg/fvwm3/pull/419) ([Quipyowert2](https://github.com/Quipyowert2))
