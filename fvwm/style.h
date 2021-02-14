@@ -676,5 +676,6 @@ void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle);
 void free_icon_boxes(icon_boxes *ib);
 void style_destroy_style(style_id_t s_id);
 void print_styles(int verbose);
+void free_style(window_style *style);
 
 #endif /* FVWM_STYLE_H */

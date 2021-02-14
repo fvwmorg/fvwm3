@@ -2699,6 +2699,7 @@ desk_get_fw_count(struct monitor *m, int desk)
 				if (SIS_UNMANAGED(sflags))
 					continue;
 				count++;
+				free_style(&style);
 			}
 		}
 	}
