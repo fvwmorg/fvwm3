@@ -2426,6 +2426,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		AnimatedMoveFvwmWindow(
 			fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False,
 			-1, ppctMovement);
+		free_style(&style);
 	}
 	if (fw->Desk != old_desk)
 	{

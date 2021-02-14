@@ -785,7 +785,7 @@ static void merge_styles(
 	return;
 }
 
-static void free_style(window_style *style)
+void free_style(window_style *style)
 {
 	/* Free contents of style */
 	SAFEFREE(SGET_NAME(*style));
@@ -4764,7 +4764,7 @@ void lookup_style(FvwmWindow *fw, window_style *styles)
 	{
 		if (fw_match_style_id(fw, SGET_ID(*nptr)))
 		{
-			merge_styles(styles, nptr, False);
+			merge_styles(styles, nptr, True);
 		}
 	}
 	EWMH_GetStyle(fw, styles);
