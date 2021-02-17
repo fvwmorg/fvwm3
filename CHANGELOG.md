@@ -16,6 +16,7 @@
 
 **Fixed bugs:**
 
+- 21 byte memory leak in merge\_styles \(3 tiny leaks of 7 bytes\) [\#430](https://github.com/fvwmorg/fvwm3/issues/430)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
@@ -38,8 +39,10 @@
 
 **Merged pull requests:**
 
+- Fix a 21 byte memory leak. [\#431](https://github.com/fvwmorg/fvwm3/pull/431) ([Quipyowert2](https://github.com/Quipyowert2))
 - Fix double free. [\#429](https://github.com/fvwmorg/fvwm3/pull/429) ([Quipyowert2](https://github.com/Quipyowert2))
 - Fix several tiny memory leaks [\#428](https://github.com/fvwmorg/fvwm3/pull/428) ([Quipyowert2](https://github.com/Quipyowert2))
+- Fix returning pointer to freed memory in FCreateFImage. [\#427](https://github.com/fvwmorg/fvwm3/pull/427) ([Quipyowert2](https://github.com/Quipyowert2))
 - Remove package \(libx11-dev\) already present in core dependencies [\#423](https://github.com/fvwmorg/fvwm3/pull/423) ([djwf](https://github.com/djwf))
 - Fix invalid read of size 1 error from Valgrind. [\#419](https://github.com/fvwmorg/fvwm3/pull/419) ([Quipyowert2](https://github.com/Quipyowert2))
 - Deprecate HAVE\_XRandR/FScreenIsEnabled\(\) [\#410](https://github.com/fvwmorg/fvwm3/pull/410) ([ThomasAdam](https://github.com/ThomasAdam))
