@@ -39,6 +39,7 @@
 
 **Merged pull requests:**
 
+- 644: libs/FImage.c [\#432](https://github.com/fvwmorg/fvwm3/pull/432) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix a 21 byte memory leak. [\#431](https://github.com/fvwmorg/fvwm3/pull/431) ([Quipyowert2](https://github.com/Quipyowert2))
 - Fix double free. [\#429](https://github.com/fvwmorg/fvwm3/pull/429) ([Quipyowert2](https://github.com/Quipyowert2))
 - Fix several tiny memory leaks [\#428](https://github.com/fvwmorg/fvwm3/pull/428) ([Quipyowert2](https://github.com/Quipyowert2))
