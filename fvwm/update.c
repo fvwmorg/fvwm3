@@ -655,7 +655,6 @@ void apply_decor_change(FvwmWindow *fw)
 	flags.do_redecorate = True;
 	flags.do_update_window_font_height = True;
 	apply_window_updates(fw, &flags, &style, get_focus_window());
-	free_style(&style);
 
 	return;
 }
@@ -726,7 +725,6 @@ void flush_window_updates(void)
 		}
 		/* now apply the changes */
 		apply_window_updates(t, &flags, &style, focus_fw);
-		free_style(&style);
 	}
 
 	/* restore the focus; also handles the case that the previously focused
