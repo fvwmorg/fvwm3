@@ -1261,19 +1261,23 @@ void initPanFrames(void)
 
 		m = TAILQ_FIRST(&monitor_q);
 
+		attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
 		m->PanFrameTop.win = XCreateWindow(dpy, Scr.Root, 0, 0, gw,
 		    edge_thickness, 0, CopyFromParent, InputOnly,
 		    CopyFromParent, valuemask, &attributes);
 
+		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
 		m->PanFrameLeft.win = XCreateWindow(dpy, Scr.Root, 0, 0,
 		    edge_thickness, gh, 0, CopyFromParent, InputOnly,
 		    CopyFromParent, valuemask, &attributes);
 
+		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
 		m->PanFrameRight.win = XCreateWindow(dpy, Scr.Root,
 		    gw - edge_thickness, 0, edge_thickness, gh, 0,
 		    CopyFromParent, InputOnly, CopyFromParent, valuemask,
 		    &attributes);
 
+		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
 		m->PanFrameBottom.win = XCreateWindow(dpy, Scr.Root, 0,
 		    gh - edge_thickness, gw, edge_thickness, 0,
 		    CopyFromParent, InputOnly, CopyFromParent, valuemask,
