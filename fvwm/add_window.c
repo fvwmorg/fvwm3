@@ -1828,7 +1828,6 @@ int setup_visible_names(FvwmWindow *fw, int what_changed)
 			free(ext_name);
 		}
 	}
-	free_style(&style);
 
 	return (changed_styles) ? changed_styles : affected_titles;
 }
@@ -2359,7 +2358,6 @@ FvwmWindow *AddWindow(
 		}
 		free(fw);
 		MyXUngrabServer(dpy);
-		free_style(&style);
 		return NULL;
 	}
 
@@ -2391,7 +2389,6 @@ FvwmWindow *AddWindow(
 		}
 		free(fw);
 		MyXUngrabServer(dpy);
-		free_style(&style);
 		return AW_UNMANAGED;
 	}
 
@@ -2810,7 +2807,6 @@ FvwmWindow *AddWindow(
 		destroy_window(fw);
 		fw = NULL;
 	}
-	free_style(&style);
 
 	return fw;
 }
