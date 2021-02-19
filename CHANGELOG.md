@@ -16,8 +16,8 @@
 
 **Fixed bugs:**
 
-- 21 byte memory leak in merge\_styles \(3 tiny leaks of 7 bytes\) [\#430](https://github.com/fvwmorg/fvwm3/issues/430)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
+- killing stalonetray also kills RightPanel [\#420](https://github.com/fvwmorg/fvwm3/issues/420)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
@@ -39,6 +39,7 @@
 
 **Merged pull requests:**
 
+- Revert "Fix a 21 byte memory leak." [\#435](https://github.com/fvwmorg/fvwm3/pull/435) ([ThomasAdam](https://github.com/ThomasAdam))
 - 644: libs/FImage.c [\#432](https://github.com/fvwmorg/fvwm3/pull/432) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix a 21 byte memory leak. [\#431](https://github.com/fvwmorg/fvwm3/pull/431) ([Quipyowert2](https://github.com/Quipyowert2))
 - Fix double free. [\#429](https://github.com/fvwmorg/fvwm3/pull/429) ([Quipyowert2](https://github.com/Quipyowert2))
