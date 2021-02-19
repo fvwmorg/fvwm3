@@ -16,6 +16,7 @@
 
 **Fixed bugs:**
 
+- Changing EdgeThickness moves PanFrameRight.win to a wrong position [\#436](https://github.com/fvwmorg/fvwm3/issues/436)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
 - killing stalonetray also kills RightPanel [\#420](https://github.com/fvwmorg/fvwm3/issues/420)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
@@ -39,6 +40,7 @@
 
 **Merged pull requests:**
 
+- PanFrames: correct right panframe location [\#437](https://github.com/fvwmorg/fvwm3/pull/437) ([ThomasAdam](https://github.com/ThomasAdam))
 - Revert "Fix a 21 byte memory leak." [\#435](https://github.com/fvwmorg/fvwm3/pull/435) ([ThomasAdam](https://github.com/ThomasAdam))
 - 644: libs/FImage.c [\#432](https://github.com/fvwmorg/fvwm3/pull/432) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix a 21 byte memory leak. [\#431](https://github.com/fvwmorg/fvwm3/pull/431) ([Quipyowert2](https://github.com/Quipyowert2))
