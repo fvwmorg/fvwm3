@@ -11,6 +11,7 @@
 #include <X11/cursorfont.h>
 #include <X11/Xproto.h>
 #include <X11/Intrinsic.h>
+#include <X11/extensions/Xrandr.h>
 
 #ifdef XPM
 #define XpmSupport 1
@@ -46,10 +47,6 @@ typedef Picture XRenderPicture;
 #include <fontconfig/fontconfig.h>
 #endif
 
-#ifdef HAVE_XRANDR
-#include <X11/extensions/Xrandr.h>
-#endif
-
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif
@@ -69,6 +66,14 @@ typedef Picture XRenderPicture;
 #include <X11/ICE/ICEutil.h>
 #else
 #define SessionSupport 0
+#endif
+
+#ifdef HAVE_X11_XKBLIB_H
+#include <X11/XKBlib.h>
+#define fvwm_KeycodeToKeysym(d, k, l, g) \
+	(XkbKeycodeToKeysym((d), (k), (g), (l)))
+#else
+#define fvwm_KeycodeToKeysym(d, k, x, i) (XKeycodeToKeysym((d), (k), (i)))
 #endif
 
 #endif /* FVWMLIB_X11_H */

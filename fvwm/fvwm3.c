@@ -1303,9 +1303,7 @@ static void setVersionInfo(void)
 #ifdef HAVE_BIDI
 	strcat(support_str, " Bidi text,");
 #endif
-#ifdef HAVE_XRANDR
 	strcat(support_str, " XRandR,");
-#endif
 #ifdef HAVE_XRENDER
 	strcat(support_str, " XRender,");
 #endif
@@ -1505,8 +1503,6 @@ void StartupStuff(void)
 	}
 	/* Have to do this here too because preprocessor modules have not run
 	 * to the end when HandleEvents is entered from the main loop. */
-	checkPanFrames();
-
 	fFvwmInStartup = False;
 
 	/* Make sure the geometry window uses the current font */
@@ -2349,6 +2345,7 @@ int main(int argc, char **argv)
 	TAILQ_FOREACH(m, &monitor_q, entry)
 		EWMH_Init(m);
 
+	initPanFrames();
 	SetRCDefaults();
 	flush_window_updates();
 	simplify_style_list();
@@ -2389,8 +2386,8 @@ int main(int argc, char **argv)
 		xasprintf(&cfg_loc[++nl], "%s/%s", fvwm_userdir, FVWM2RC);
 		xasprintf(&cfg_loc[++nl], "%s/%s", home_dir, FVWM2RC);
 		xasprintf(&cfg_loc[++nl], "%s/%s", FVWM_DATADIR, FVWM2RC);
-		xasprintf(&cfg_loc[++nl], "%s/system/%s", FVWM_DATADIR, FVWM2RC);
-		xasprintf(&cfg_loc[++nl], "%s/system/%s", FVWM_CONFDIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/system%s", FVWM_DATADIR, FVWM2RC);
+		xasprintf(&cfg_loc[++nl], "%s/system%s", FVWM_CONFDIR, FVWM2RC);
 		xasprintf(&cfg_loc[++nl], "%s/default-config/config", FVWM_DATADIR);
 
 		for (nl = 0; nl < upper; nl++) {

@@ -1809,7 +1809,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		if (action == NULL)
 			m = monitor_get_current();
 		else
-			m = monitor_by_name(action);
+			m = monitor_resolve_name(action);
 
 		s.x = m->si->x;
 		s.y = m->si->y;
@@ -2260,7 +2260,7 @@ static void DoSnapAttract(
 		}
 	}
 	/* Resist moving windows between xineramascreens */
-	if (fw->edge_resistance_xinerama_move > 0 && FScreenIsEnabled())
+	if (fw->edge_resistance_xinerama_move)
 	{
 		int scr_x0, scr_y0;
 		int scr_x1, scr_y1;
@@ -4887,13 +4887,14 @@ void CMD_Maximize(F_CMD_ARGS)
 	new_g.height = fw->g.frame.height;
 	get_page_offset_check_visible(&page_x, &page_y, fw);
 
-	/* Check if we should constrain rectangle to some Xinerama screen */
 	if (!is_screen_given)
 	{
-		scr_x = fw->m->si->x;
-		scr_y = fw->m->si->y;
-		scr_w = fw->m->si->w;
-		scr_h = fw->m->si->h;
+		fscreen_scr_arg fscr;
+
+		fscr.xypos.x = fw->g.frame.x + fw->g.frame.width  / 2 - page_x;
+		fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2 - page_y;
+		FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w,
+		    &scr_h);
 	}
 
 	if (!ignore_working_area)

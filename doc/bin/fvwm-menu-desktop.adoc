@@ -109,7 +109,7 @@ below for some solutions.
   Generates all menus listed in a space separated list of full menu
   paths. This option overrides any defaults and
   **--desktop**|*--menu-type* settings.
---menu-error |-t::
+--menu-error |-e::
   If this option is present and python-xdg is not found, the script will
   print the error in the generated menu. Used in the default-config.
 --verbose::

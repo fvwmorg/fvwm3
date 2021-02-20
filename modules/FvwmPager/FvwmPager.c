@@ -787,7 +787,7 @@ void list_configure(unsigned long *body)
   }
 
   is_new_monitor = ((monitor_to_track != NULL) && (t->m != newm));
-  is_new_desk = (t->desk != cfgpacket->desk && is_new_monitor);
+  is_new_desk = (t->desk != cfgpacket->desk);
 
   /* If the monitor is different to the one the window was previously on,
    * remove the window in the pager as it's no longer on that screen.

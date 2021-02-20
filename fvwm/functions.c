@@ -361,6 +361,7 @@ static void __execute_function(
 	const func_t *bif;
 	Bool set_silent;
 	Bool must_free_function = False;
+	Bool must_free_expaction = False;
 	Bool do_keep_rc = False;
 	/* needed to be able to avoid resize to use moved windows for base */
 	extern Window PressedW;
@@ -547,14 +548,16 @@ static void __execute_function(
 			taction, arguments, (bif) ?
 			!!(bif->flags & FUNC_ADD_TO) :
 			False, (taction[0] == '*'), func_rc, exc);
+		must_free_expaction = True;
 		if (func_depth <= 1)
 		{
-			set_repeat_data(expaction, REPEAT_COMMAND, bif);
+			must_free_expaction = set_repeat_data(expaction, REPEAT_COMMAND, bif);
 		}
 	}
 	else
 	{
 		expaction = taction;
+		must_free_expaction = False;
 	}
 
 	/* Note: the module config command, "*" can not be handled by the
@@ -672,6 +675,11 @@ static void __execute_function(
 	if (must_free_function)
 	{
 		free(function);
+	}
+	/* Free the string allocated by expand_vars earlier in this function. */
+	if (must_free_expaction)
+	{
+		free(expaction);
 	}
 	func_depth--;
 

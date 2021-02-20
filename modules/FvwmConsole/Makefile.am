@@ -11,7 +11,6 @@ moduledir = @FVWM_MODULEDIR@
 if !FVWM_BUILD_GOLANG
 
 module_PROGRAMS = FvwmConsole FvwmConsoleC
-module_SCRIPTS = FvwmConsoleC.pl
 
 FvwmConsole_SOURCES = FvwmConsole.c FvwmConsole.h
 FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
@@ -21,11 +20,11 @@ FvwmConsoleC_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 # Use X_EXTRA_LIBS to get socket(), etc.
 LDADD = -L$(top_builddir)/libs -lfvwm3 $(readline_LIBS) $(freetype_LIBS) \
-	$(X_EXTRA_LIBS)
+	$(X_EXTRA_LIBS) $(XFT_LIBS)
 
 # FIXME:
 # Despite not using X functions explicitly, the code includes
 # fvwmlib.h, which *does* include X headers and xpm.h!
 AM_CPPFLAGS = -I$(top_srcdir) $(readline_CFLAGS) $(xpm_CFLAGS) \
-	      $(freetype_CFLAGS) $(X_CFLAGS)
+	      $(freetype_CFLAGS) $(X_CFLAGS) $(XFT_CFLAGS)
 endif !FVWM_BUILD_GOLANG

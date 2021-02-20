@@ -278,14 +278,24 @@ The following options may be specified:
   appropriate type (see the show and dontshow options below) will be
   shown. If desk, then only those windows on the current desk are shown.
   If page, then only those windows on the current page are shown. If
-  screen, then only those windows on the current Xinerama screen are
-  shown. !desk reverses the sense of desk, displaying only those windows
-  not on the current desk. Likewise, !page shows only those windows not
-  on the current page and !screen shows only those windows not on the
-  current Xinerama screen. The default is page. If Xinerama is not
-  active or only a single screen is used, page and screen are
-  equivalent.
+  screen, then only those windows on the current RandR screen are
+  shown.  Note that the specific RandR screen can be specified:
 +
+_NAME_:::
+	The "NAME" of the specific RandR monitor (HDMI, for example)
+_c_:::
+	The current RandR monitor (the monitor containing the pointer)
+_p_:::
+	The primary RandR monitor
+_g_:::
+	The global monitor
+
+!desk reverses the sense of desk, displaying only those windows
+not on the current desk. Likewise, !page shows only those windows not
+on the current page and !screen shows only those windows not on the
+current RandR screen. The default is **page**. If only a single screen is
+used, page and screen are equivalent.
+
 This configuration line is respected when FvwmIconMan is running as
 well, the resolution is changed dynamically.
 

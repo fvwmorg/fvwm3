@@ -29,12 +29,6 @@
 #include "FScreen.h"
 #include "FEvent.h"
 
-#ifdef HAVE_XRANDR
-#	define IS_RANDR_ENABLED 1
-#else
-#	define IS_RANDR_ENABLED 0
-#endif
-
 #define GLOBAL_SCREEN_NAME "_global"
 
 /* In fact, only corners matter -- there will never be GRAV_NONE */
@@ -53,12 +47,15 @@ static bool		 is_randr_present;
 static struct monitor	*monitor_new(void);
 static void		 scan_screens(Display *);
 static void		 monitor_check_primary(void);
+static void		 monitor_refresh_global(void);
+static struct monitor	*monitor_by_name(const char *);
 
 enum monitor_tracking monitor_mode;
 struct screen_infos	 screen_info_q;
 struct monitors		monitor_q;
 int randr_event;
 const char *prev_focused_monitor;
+static struct monitor	*monitor_global;
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -73,11 +70,6 @@ static void GetMouseXY(XEvent *eventp, int *x, int *y)
 		disp, DefaultRootWindow(disp), eventp, x, y);
 }
 
-Bool FScreenIsEnabled(void)
-{
-	return (IS_RANDR_ENABLED);
-}
-
 struct monitor *
 monitor_new(void)
 {
@@ -86,6 +78,33 @@ monitor_new(void)
 	m = fxcalloc(1, sizeof *m);
 
 	return (m);
+}
+
+void
+monitor_refresh_global(void)
+{
+	/* Creating the global monitor outside of the monitor_q structure
+	 * allows for only the relevant information to be presented to callers
+	 * which are asking for a global screen.
+	 *
+	 * This structure therefore only uses some of the fields:
+	 *
+	 *   si->name,
+	 *   si->{x, y, w, h}
+	 */
+	if (monitor_global == NULL) {
+		monitor_global = monitor_new();
+		monitor_global->si = screen_info_new();
+		monitor_global->si->name = fxstrdup(GLOBAL_SCREEN_NAME);
+	}
+
+	/* At this point, the global screen has been initialised.  Refresh the
+	 * coordinate list.
+	 */
+	monitor_global->si->x = 0;
+	monitor_global->si->y = 0;
+	monitor_global->si->w = monitor_get_all_widths();
+	monitor_global->si->h = monitor_get_all_heights();
 }
 
 struct screen_info *
@@ -134,6 +153,41 @@ monitor_get_current(void)
 }
 
 struct monitor *
+monitor_resolve_name(const char *scr)
+{
+	struct monitor	*m = NULL;
+
+	/* Assume the monitor name is a literal RandR name (such as HDMI2) and
+	 * look it up regardless.
+	 */
+	m = monitor_by_name(scr);
+
+	/* If we've asked for "@g" then use the global screen.  The
+	 * x,y,w,h values are already assigned, so skip that.
+	 */
+	if (strcmp(scr, "g") == 0) {
+		monitor_refresh_global();
+		m = monitor_global;
+	}
+
+	/* "@c" is for the current screen. */
+	if (strcmp(scr, "c") == 0)
+		m = monitor_get_current();
+
+	/* "@p" is for the primary screen. */
+	if (strcmp(scr, "p") == 0)
+		m = monitor_by_primary();
+
+	if (m == NULL) {
+		/* Should not happen. */
+		fvwm_debug(__func__, "no monitor found with name '%s'", scr);
+		return (TAILQ_FIRST(&monitor_q));
+	}
+
+	return (m);
+}
+
+static struct monitor *
 monitor_by_name(const char *name)
 {
 	struct monitor	*m, *mret = NULL;
@@ -356,8 +410,10 @@ scan_screens(Display *dpy)
 
 		char *name = XGetAtomName(dpy, rrm[i].name);
 
-		if (name == NULL)
-			name = "";
+		if (name == NULL) {
+			fprintf(stderr, "%s: couldn't detect monitor with empty name\n", __func__);
+			exit (101);
+		}
 
 		if (((m = monitor_by_name(name)) == NULL) ||
 		    (m != NULL && strcmp(m->si->name, name) != 0)) {
@@ -393,9 +449,11 @@ set_coords:
 		m->virtual_scr.MyDisplayWidth = monitor_get_all_widths();
 		m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
 
+		XFree(name);
 	}
 
 	monitor_check_primary();
+	XRRFreeMonitors(rrm);
 }
 
 void FScreenInit(Display *dpy)
@@ -424,7 +482,7 @@ void FScreenInit(Display *dpy)
 		is_randr_present = true;
 
 
-	if (FScreenIsEnabled() && !is_randr_present) {
+	if (!is_randr_present) {
 		/* Something went wrong. */
 		fvwm_debug(__func__, "Couldn't initialise XRandR: %s\n",
 			   strerror(errno));
@@ -573,13 +631,16 @@ FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 	struct monitor	*m = NULL;
 	fscreen_scr_arg  tmp;
 
-	if (monitor_get_count() == 0)
-		return (monitor_by_name(GLOBAL_SCREEN_NAME));
+	if (monitor_get_count() == 0) {
+		monitor_refresh_global();
+		return (monitor_global);
+	}
 
 	switch (screen)
 	{
 	case FSCREEN_GLOBAL:
-		m = monitor_by_name(GLOBAL_SCREEN_NAME);
+		monitor_refresh_global();
+		m = monitor_global;
 		break;
 	case FSCREEN_PRIMARY:
 		m = monitor_by_primary();
@@ -608,7 +669,7 @@ FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 			/* XXX: Work out what to do. */
 			break;
 		}
-		m = monitor_by_name(arg->name);
+		m = monitor_resolve_name(arg->name);
 		break;
 	default:
 		/* XXX: Possible error condition here? */
@@ -868,7 +929,8 @@ int FScreenParseGeometry(
 	char		*scr = NULL;
 	int		 rc, x, y, w, h;
 
-	x = y = 0;
+	x = 0;
+	y = 0;
 	w = monitor_get_all_widths();
 	h = monitor_get_all_heights();
 
@@ -877,29 +939,13 @@ int FScreenParseGeometry(
 		&scr);
 
 	if (scr != NULL) {
-		/* If we've asked for "@g" then use the global screen.  The
-		 * x,y,w,h values are already assigned, so skip that.
-		 */
-		if (strcmp(scr, "g") == 0)
-			goto adapt;
-
-		/* "@c" is for the current screen. */
-		if (strcmp(scr, "c") == 0)
-			goto assign;
-
-		/* "@p" is for the primary screen. */
-		if (strcmp(scr, "p") == 0) {
-			m = monitor_by_primary();
-			goto assign;
-		}
-		m = monitor_by_name(scr);
-	}
-assign:
+		m = monitor_resolve_name(scr);
+		fprintf(stderr, "Found monitor with name of: %s (%s)\n", scr, m->si->name);
 		x = m->si->x;
 		y = m->si->y;
 		w = m->si->w;
 		h = m->si->h;
-adapt:
+	}
 	free(scr);
 
 	/* adapt geometry to selected screen */

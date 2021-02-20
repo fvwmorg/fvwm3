@@ -3,12 +3,7 @@
 #ifndef FVWM_BUILTINS_H
 #define FVWM_BUILTINS_H
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__sun__)
-#include <libbson-1.0/bson.h>
-#else
-#include <bson/bson.h>
-#endif
-
+#include <bson.h>
 #include "fvwm.h"
 #include "screen.h"
 

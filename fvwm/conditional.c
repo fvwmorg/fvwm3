@@ -593,6 +593,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_HAS_HANDLES(mask, on);
 			SETM_HAS_HANDLES(mask, 1);
 		}
+		else if (StrEquals(cond, "HasTitle"))
+		{
+			SET_HAS_TITLE(mask, on);
+			SETM_HAS_TITLE(mask, 1);
+		}
+		else if (StrEquals(cond, "HasBorders"))
+		{
+			SET_HAS_NO_BORDER(mask, !on);
+			SETM_HAS_NO_BORDER(mask, 1);
+		}
 		else if (StrEquals(cond,"Iconifiable"))
 		{
 			SET_IS_UNICONIFIABLE(mask, !on);
@@ -713,7 +723,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 
 			if (sscanf(tmp, "%s", scr_name)) {
 				tmp = SkipNTokens(tmp, 1);
-				mask->screen = monitor_by_name(scr_name);
+				mask->screen = monitor_resolve_name(scr_name);
 			}
 			mask->my_flags.do_check_screen = 1;
 
@@ -901,7 +911,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	if (mask->my_flags.do_check_page ||
 	    mask->my_flags.do_check_desk_and_page)
 	{
-		if (FScreenIsEnabled() && !mask->my_flags.do_not_check_screen)
+		if (!mask->my_flags.do_not_check_screen)
 		{
 			is_on_page = !!FScreenIsRectangleOnScreen(
 				NULL, FSCREEN_CURRENT, &(fw->g.frame));
@@ -1107,7 +1117,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 		get_unshaded_geometry(fw, &g);
 		mon_name = FScreenOfPointerXY(g.x, g.y);
-		scr = monitor_by_name(mon_name);
+		scr = monitor_resolve_name(mon_name);
 
 		if (mask->my_flags.do_not_check_screen) {
 			/* Negation of (!screen n) specified. */

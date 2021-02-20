@@ -35,7 +35,6 @@
 
 #include "libs/fvwm_x11.h"
 #include "libs/PictureBase.h"
-#include "libs/Fft.h"
 #include "libs/FRender.h"
 #include "libs/Flocale.h"
 #include "libs/fvwmrect.h"

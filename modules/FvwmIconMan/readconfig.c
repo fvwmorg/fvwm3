@@ -1652,8 +1652,19 @@ void read_in_resources(void)
 	  r = SHOW_DESKTOP;
 	else if (!strcasecmp(p, "page"))
 	  r = SHOW_PAGE;
-	else if (!strcasecmp(p, "screen"))
+	else if (!strcasecmp(p, "screen")) {
 	  r = SHOW_SCREEN;
+	  p = read_next_cmd(READ_ARG);
+	  if (p != NULL) {
+		  struct monitor *mon = monitor_resolve_name(p);
+		  if (strcasecmp(p, "g") == 0) {
+			  r = SHOW_GLOBAL;
+		  } else {
+		     SET_MANAGER(manager, scr,
+		       copy_string(&globals.managers[id].scr, mon->si->name));
+		  }
+	  }
+	}
 	else if (!strcasecmp(p, "!desk"))
 	  r = NO_SHOW_DESKTOP;
 	else if (!strcasecmp(p, "!page"))
@@ -2309,8 +2320,22 @@ void process_dynamic_config_line(char *line)
 			value = SHOW_DESKTOP;
 		else if (!strcasecmp(token, "page"))
 			value = SHOW_PAGE;
-		else if (!strcasecmp(token, "screen"))
+		else if (!strcasecmp(token, "screen")) {
 			value = SHOW_SCREEN;
+
+			free(token);
+			line = GetNextToken(line, &token);
+
+			if (token == NULL)
+				goto done;
+
+			struct monitor *mon = monitor_resolve_name(token);
+			if (strcasecmp(token, "g") == 0) {
+				value = SHOW_GLOBAL;
+				goto done;
+			}
+			SET_MANAGER(manager, scr, (char *)mon->si->name);
+		}
 		else if (!strcasecmp(token, "!desk"))
 			value = NO_SHOW_DESKTOP;
 		else if (!strcasecmp(token, "!page"))
@@ -2324,7 +2349,7 @@ void process_dynamic_config_line(char *line)
 			free(token);
 			return;
 		}
-
+done:
 		SET_MANAGER(manager, res, value);
 		remanage_winlist();
 	}

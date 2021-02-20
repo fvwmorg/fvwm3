@@ -10,7 +10,7 @@
 *FvwmConsoleSubst '^XC' 'Exec xterm -g 40x6-0+200 -fn 7x14 -C &'
 
 # open xterm with console and FvwmConsole - XCF at the begining
-*FvwmConsoleSubst '^XCF' 'FvwmConsole -C -e /usr/lib/X11/fvwm2/FvwmConsoleC.pl'
+*FvwmConsoleSubst '^XCF' 'FvwmConsole -C'
 
 # list functions
 *FvwmConsoleKey \mc list_func

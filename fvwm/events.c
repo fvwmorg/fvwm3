@@ -1724,7 +1724,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		}
 	}
 	/* raise the window */
-	if (IS_SCHEDULED_FOR_RAISE(fw))
+	if (check_if_fvwm_window_exists(fw) && IS_SCHEDULED_FOR_RAISE(fw))
 	{
 		/* Now that we know the action did not restack the window we
 		 * can raise it.
@@ -1765,7 +1765,6 @@ static void __refocus_stolen_focus_win(const evh_args_t *ea)
 
 /* ---------------------------- event handlers ----------------------------- */
 
-#ifdef HAVE_XRANDR
 void monitor_update_ewmh(void)
 {
 	FvwmWindow	*t;
@@ -1831,7 +1830,6 @@ monitor_emit_broadcast(void)
 		}
 	}
 }
-#endif
 
 void HandleButtonPress(const evh_args_t *ea)
 {
@@ -4046,7 +4044,6 @@ void dispatch_event(XEvent *e)
 
 	XFlush(dpy);
 
-#if HAVE_XRANDR
 	XRRScreenChangeNotifyEvent *sce;
 
 	switch (e->type - randr_event) {
@@ -4059,7 +4056,6 @@ void dispatch_event(XEvent *e)
 			break;
 		}
 	}
-#endif
 
 	if (w == Scr.Root)
 	{

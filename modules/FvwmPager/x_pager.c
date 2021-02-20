@@ -549,7 +549,7 @@ void initialize_pager(void)
   /* Size the window */
   if(Rows < 0)
   {
-    if(Columns < 0)
+    if(Columns <= 0)
     {
       Columns = ndesks;
       Rows = 1;

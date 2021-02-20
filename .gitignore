@@ -53,7 +53,6 @@ modules/FvwmCommand/scripts/test1
 modules/FvwmCommandS/FvwmCommandS
 modules/FvwmConsole/FvwmConsole
 modules/FvwmConsole/FvwmConsoleC
-modules/FvwmConsole/FvwmConsoleC.pl
 modules/FvwmCpp/FvwmCpp
 modules/FvwmDebug/FvwmDebug
 modules/FvwmEvent/FvwmEvent

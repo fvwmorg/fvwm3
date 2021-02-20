@@ -4,14 +4,63 @@
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.2...HEAD)
 
+**Breaking changes:**
+
+- Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
+
+**Implemented enhancements:**
+
+- FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
+- fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
+- conditionals: add HasBorders/HasTitle [\#416](https://github.com/fvwmorg/fvwm3/pull/416) ([ThomasAdam](https://github.com/ThomasAdam))
+
 **Fixed bugs:**
 
+- Changing EdgeThickness moves PanFrameRight.win to a wrong position [\#436](https://github.com/fvwmorg/fvwm3/issues/436)
+- FvwmPager shows app on wrong page with StartsOnDesk [\#433](https://github.com/fvwmorg/fvwm3/issues/433)
+- Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
+- killing stalonetray also kills RightPanel [\#420](https://github.com/fvwmorg/fvwm3/issues/420)
+- Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
+- FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
+- PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
+- RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
+- FvwmIconMan lists wrong windows in \(certain?\) multi-monitor configurations. [\#390](https://github.com/fvwmorg/fvwm3/issues/390)
+- fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
+- libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
+- Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- Pager: don't restrict new\_desk to monitor boundaries [\#434](https://github.com/fvwmorg/fvwm3/pull/434) ([ThomasAdam](https://github.com/ThomasAdam))
+- Fix 22kb memory leak. [\#426](https://github.com/fvwmorg/fvwm3/pull/426) ([Quipyowert2](https://github.com/Quipyowert2))
+- Correct menu error short option from `-t` to `-e` [\#424](https://github.com/fvwmorg/fvwm3/pull/424) ([djwf](https://github.com/djwf))
+- Fix file handle leak. [\#421](https://github.com/fvwmorg/fvwm3/pull/421) ([Quipyowert2](https://github.com/Quipyowert2))
+- FvwmPager: Fix division by zero [\#415](https://github.com/fvwmorg/fvwm3/pull/415) ([Quipyowert2](https://github.com/Quipyowert2))
+- LocaleCharset: initialise with font [\#406](https://github.com/fvwmorg/fvwm3/pull/406) ([ThomasAdam](https://github.com/ThomasAdam))
+- fvwm-root: fix Makefile [\#387](https://github.com/fvwmorg/fvwm3/pull/387) ([ThomasAdam](https://github.com/ThomasAdam))
+- Remove explicit path to bson.h \(closes \#375\) [\#386](https://github.com/fvwmorg/fvwm3/pull/386) ([slazav](https://github.com/slazav))
+- Fix system.fvwm2rc not found [\#382](https://github.com/fvwmorg/fvwm3/pull/382) ([phileimer](https://github.com/phileimer))
+- fix error in manpage name: fvwm-config-2.6 -\> fvwm-convert-2.6 [\#377](https://github.com/fvwmorg/fvwm3/pull/377) ([slazav](https://github.com/slazav))
 
 **Merged pull requests:**
 
+- PanFrames: correct right panframe location [\#437](https://github.com/fvwmorg/fvwm3/pull/437) ([ThomasAdam](https://github.com/ThomasAdam))
+- Revert "Fix a 21 byte memory leak." [\#435](https://github.com/fvwmorg/fvwm3/pull/435) ([ThomasAdam](https://github.com/ThomasAdam))
+- 644: libs/FImage.c [\#432](https://github.com/fvwmorg/fvwm3/pull/432) ([ThomasAdam](https://github.com/ThomasAdam))
+- Fix a 21 byte memory leak. [\#431](https://github.com/fvwmorg/fvwm3/pull/431) ([Quipyowert2](https://github.com/Quipyowert2))
+- Fix double free. [\#429](https://github.com/fvwmorg/fvwm3/pull/429) ([Quipyowert2](https://github.com/Quipyowert2))
+- Fix several tiny memory leaks [\#428](https://github.com/fvwmorg/fvwm3/pull/428) ([Quipyowert2](https://github.com/Quipyowert2))
+- Fix returning pointer to freed memory in FCreateFImage. [\#427](https://github.com/fvwmorg/fvwm3/pull/427) ([Quipyowert2](https://github.com/Quipyowert2))
+- Remove package \(libx11-dev\) already present in core dependencies [\#423](https://github.com/fvwmorg/fvwm3/pull/423) ([djwf](https://github.com/djwf))
+- Fix invalid read of size 1 error from Valgrind. [\#419](https://github.com/fvwmorg/fvwm3/pull/419) ([Quipyowert2](https://github.com/Quipyowert2))
+- Deprecate HAVE\_XRandR/FScreenIsEnabled\(\) [\#410](https://github.com/fvwmorg/fvwm3/pull/410) ([ThomasAdam](https://github.com/ThomasAdam))
+- Xft2 with fallback [\#403](https://github.com/fvwmorg/fvwm3/pull/403) ([mikeandmore](https://github.com/mikeandmore))
+- move x11 headers out of config.h [\#400](https://github.com/fvwmorg/fvwm3/pull/400) ([mikeandmore](https://github.com/mikeandmore))
+- PanFrames: restore global panframe behaviour [\#399](https://github.com/fvwmorg/fvwm3/pull/399) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmIconMan: handle resolutions for per-monitor [\#397](https://github.com/fvwmorg/fvwm3/pull/397) ([ThomasAdam](https://github.com/ThomasAdam))
+- Maximizing: handle RandR screen selection better [\#395](https://github.com/fvwmorg/fvwm3/pull/395) ([ThomasAdam](https://github.com/ThomasAdam))
+- fvwm2: provide compat wrapper FvwmCommandS [\#392](https://github.com/fvwmorg/fvwm3/pull/392) ([ThomasAdam](https://github.com/ThomasAdam))
+- Revert "Remove SAFEFREE macro" [\#388](https://github.com/fvwmorg/fvwm3/pull/388) ([ThomasAdam](https://github.com/ThomasAdam))
+- PanFrames: always keep mapped [\#384](https://github.com/fvwmorg/fvwm3/pull/384) ([ThomasAdam](https://github.com/ThomasAdam))
 - update\_fvwm\_screen: don't lose desk from StartsOnScreen [\#374](https://github.com/fvwmorg/fvwm3/pull/374) ([ThomasAdam](https://github.com/ThomasAdam))
-- Working on 1.0.3 [\#368](https://github.com/fvwmorg/fvwm3/pull/368) ([ThomasAdam](https://github.com/ThomasAdam))
 
 ## [1.0.2](https://github.com/fvwmorg/fvwm3/tree/1.0.2) (2020-12-20)
 
@@ -291,7 +340,6 @@
 - Better logging required [\#77](https://github.com/fvwmorg/fvwm3/issues/77)
 - FVWM3 on Kubuntu: unknown type name ‘RROutput’ [\#76](https://github.com/fvwmorg/fvwm3/issues/76)
 - Remove win\_count functionality [\#70](https://github.com/fvwmorg/fvwm3/issues/70)
-- EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
 - Pager problems in gh-28 [\#56](https://github.com/fvwmorg/fvwm3/issues/56)
 - Segmentation fault while using StartsOnScreen and/or StartsOnPage [\#51](https://github.com/fvwmorg/fvwm3/issues/51)
 - UI freeze [\#50](https://github.com/fvwmorg/fvwm3/issues/50)

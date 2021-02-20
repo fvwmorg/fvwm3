@@ -1273,6 +1273,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 				    (unsigned int*)&JunkBW,
 				    (unsigned int*)&JunkDepth))
 			{
+				free(token);
 				return;
 			}
 			if (val1_unit != m->virtual_scr.MyDisplayWidth)
@@ -1304,5 +1305,6 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			exc->x.elast, dpy, None, exc->w.w, 0, 0, 0, 0, x, y);
 	}
 
+	free(token);
 	return;
 }

@@ -30,6 +30,7 @@
 #include <fcntl.h>
 
 // #define XK_MISCELLANY
+#include "libs/FRender.h"
 #include "libs/Module.h"		/* for headersize, etc. */
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
@@ -963,8 +964,8 @@ static void ct_Input(char *cp)
   item->input.value = fxmalloc(item->input.buf);
   item->input.value[0] = 0;		/* avoid reading unitialized data */
 
-  item->header.size_x = item->header.dt_ptr->dt_Ffont->max_char_width
-    * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
+  item->header.size_x = item->header.dt_ptr->dt_Ffont->height * item->input.size / 2
+			+ 2 * TEXT_SPC + 2 * BOX_SPC;
   item->header.size_y = item->header.dt_ptr->dt_Ffont->height
     + 3 * TEXT_SPC + 2 * BOX_SPC;
   myfprintf((stderr,"Input size_y is %d\n",item->header.size_y));
