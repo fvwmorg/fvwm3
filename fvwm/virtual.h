@@ -11,7 +11,6 @@ int HandlePaging(
 	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
 	Bool do_continue_previous, int delay);
-void checkPanFrames(void);
 void raisePanFrames(void);
 void initPanFrames(void);
 Bool is_pan_frame(Window w);

@@ -18,6 +18,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FGettext.h"
@@ -83,9 +84,9 @@
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
 
+static void checkPanFrames(struct monitor *);
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
-static bool should_free_panframe(PanFrame *);
 
 struct desktop_cmds	 desktop_cmd_q;
 struct desktop_fws	 desktop_fvwm_q;
@@ -954,27 +955,18 @@ int HandlePaging(
  * Hermann Dunkel, HEDU, dunkel@cul-ipn.uni-kiel.de 1/94
  */
 
-static bool
-should_free_panframe(PanFrame *pf)
-{
-	if (pf->command != NULL || pf->command_leave != NULL)
-		return (false);
-
-	return (false);
-}
-
 /*
  * checkPanFrames hides PanFrames if they are on the very border of the
  * VIRTUAL screen and EdgeWrap for that direction is off.
  * (A special cursor for the EdgeWrap border could be nice) HEDU
  */
-void checkPanFrames(void)
+void checkPanFrames(struct monitor *m)
 {
-	Bool do_unmap_l = False;
-	Bool do_unmap_r = False;
-	Bool do_unmap_t = False;
-	Bool do_unmap_b = False;
-	struct monitor	*m;
+	bool do_unmap_l = false;
+	bool do_unmap_r = false;
+	bool do_unmap_t = false;
+	bool do_unmap_b = false;
+	struct monitor	*mcur;
 
 	if (!Scr.flags.are_windows_captured)
 		return;
@@ -982,67 +974,66 @@ void checkPanFrames(void)
 	/* thickness of 0 means remove the pan frames */
 	if (edge_thickness == 0)
 	{
-		do_unmap_l = True;
-		do_unmap_r = True;
-		do_unmap_t = True;
-		do_unmap_b = True;
+		do_unmap_l = true;
+		do_unmap_r = true;
+		do_unmap_t = true;
+		do_unmap_b = true;
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	{
 		/* Remove Pan frames if paging by edge-scroll is permanently or
 		 * temporarily disabled */
 		if (m->virtual_scr.EdgeScrollX == 0 || m->virtual_scr.VxMax == 0)
 		{
-			do_unmap_l = True;
-			do_unmap_r = True;
+			do_unmap_l = true;
+			do_unmap_r = true;
 		}
 		if (m->virtual_scr.EdgeScrollY == 0 || m->virtual_scr.VyMax == 0)
 		{
-			do_unmap_t = True;
-			do_unmap_b = True;
+			do_unmap_t = true;
+			do_unmap_b = true;
 		}
 		if (m->virtual_scr.Vx == 0 && !Scr.flags.do_edge_wrap_x)
 		{
-			do_unmap_l = True;
+			do_unmap_l = true;
 		}
 		if (m->virtual_scr.Vx == m->virtual_scr.VxMax &&
 		    !Scr.flags.do_edge_wrap_x)
 		{
-			do_unmap_r = True;
+			do_unmap_r = true;
 		}
 		if (m->virtual_scr.Vy == 0 && !Scr.flags.do_edge_wrap_y)
 		{
-			do_unmap_t = True;
+			do_unmap_t = true;
 		}
 		if (m->virtual_scr.Vy == m->virtual_scr.VyMax &&
 		    !Scr.flags.do_edge_wrap_y)
 		{
-			do_unmap_b = True;
+			do_unmap_b = true;
 		}
 
 		/* correct the unmap variables if pan frame commands are set */
 		if (edge_thickness != 0) {
-			if (!should_free_panframe(&m->PanFrameLeft))
-				do_unmap_l = False;
-			if (!should_free_panframe(&m->PanFrameRight))
-				do_unmap_r = False;
-			if (!should_free_panframe(&m->PanFrameBottom))
-				do_unmap_b = False;
-			if (!should_free_panframe(&m->PanFrameTop))
-				do_unmap_t = False;
+			if (m->PanFrameLeft.command != NULL ||
+			    m->PanFrameLeft.command_leave != NULL) {
+				do_unmap_l = false;
+			}
+			if (m->PanFrameRight.command != NULL ||
+			    m->PanFrameRight.command_leave != NULL) {
+				do_unmap_r = false;
+			}
+			if (m->PanFrameBottom.command != NULL ||
+			    m->PanFrameBottom.command_leave != NULL) {
+				do_unmap_b = false;
+			}
+			if (m->PanFrameTop.command != NULL ||
+			    m->PanFrameTop.command_leave != NULL) {
+				do_unmap_t = false;
+			}
 		}
 		/*
 		 * hide or show the windows
 		 */
-
-		fvwm_debug(__func__,
-			"1 %s: {left: %d, right; %d, top: %d, bottom: %d}\n",
-			m->si->name,
-			m->PanFrameLeft.isMapped, m->PanFrameRight.isMapped,
-			m->PanFrameTop.isMapped,  m->PanFrameBottom.isMapped);
-		fvwm_debug(__func__,
-			"%s: unmap_t: %d, unmap_b: %d, unmap_l: %d, unmap_r: %d",
-			m->si->name, do_unmap_t, do_unmap_b, do_unmap_l, do_unmap_r);
 
 		/* left */
 		if (do_unmap_l)
@@ -1064,7 +1055,7 @@ void checkPanFrames(void)
 			if (!m->PanFrameLeft.isMapped)
 			{
 				XMapRaised(dpy, m->PanFrameLeft.win);
-				m->PanFrameLeft.isMapped = True;
+				m->PanFrameLeft.isMapped = true;
 			}
 		}
 		/* right */
@@ -1073,7 +1064,7 @@ void checkPanFrames(void)
 			if (m->PanFrameRight.isMapped)
 			{
 				XUnmapWindow(dpy, m->PanFrameRight.win);
-				m->PanFrameRight.isMapped = False;
+				m->PanFrameRight.isMapped = false;
 			}
 		}
 		else
@@ -1089,7 +1080,7 @@ void checkPanFrames(void)
 			if (!m->PanFrameRight.isMapped)
 			{
 				XMapRaised(dpy, m->PanFrameRight.win);
-				m->PanFrameRight.isMapped = True;
+				m->PanFrameRight.isMapped = true;
 			}
 		}
 		/* top */
@@ -1098,7 +1089,7 @@ void checkPanFrames(void)
 			if (m->PanFrameTop.isMapped)
 			{
 				XUnmapWindow(dpy, m->PanFrameTop.win);
-				m->PanFrameTop.isMapped = False;
+				m->PanFrameTop.isMapped = false;
 			}
 		}
 		else
@@ -1113,7 +1104,7 @@ void checkPanFrames(void)
 			if (!m->PanFrameTop.isMapped)
 			{
 				XMapRaised(dpy, m->PanFrameTop.win);
-				m->PanFrameTop.isMapped = True;
+				m->PanFrameTop.isMapped = true;
 			}
 		}
 		/* bottom */
@@ -1122,7 +1113,7 @@ void checkPanFrames(void)
 			if (m->PanFrameBottom.isMapped)
 			{
 				XUnmapWindow(dpy, m->PanFrameBottom.win);
-				m->PanFrameBottom.isMapped = False;
+				m->PanFrameBottom.isMapped = false;
 			}
 		}
 		else
@@ -1137,14 +1128,10 @@ void checkPanFrames(void)
 			if (!m->PanFrameBottom.isMapped)
 			{
 				XMapRaised(dpy, m->PanFrameBottom.win);
-				m->PanFrameBottom.isMapped = True;
+				m->PanFrameBottom.isMapped = true;
 			}
 		}
-		fvwm_debug(__func__,
-			"2 %s: {left: %d, right; %d, top: %d, bottom: %d}\n",
-			m->si->name,
-			m->PanFrameLeft.isMapped, m->PanFrameRight.isMapped,
-			m->PanFrameTop.isMapped,  m->PanFrameBottom.isMapped);
+
 	}
 	last_edge_thickness = edge_thickness;
 }
@@ -1291,7 +1278,7 @@ void initPanFrames(void)
 			memcpy(&mloop->PanFrameRight, &m->PanFrameRight, sizeof(m->PanFrameRight));
 			memcpy(&mloop->PanFrameBottom, &m->PanFrameBottom, sizeof(m->PanFrameBottom));
 		}
-		checkPanFrames();
+		checkPanFrames(m);
 		fvwm_debug(__func__, "finished setting up global panframes");
 		return;
 	}
@@ -1332,9 +1319,9 @@ void initPanFrames(void)
 		m->PanFrameBottom.command_leave = NULL;
 		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
 			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=False;
+		checkPanFrames(m);
 	}
 	edge_thickness = saved_thickness;
-	checkPanFrames();
 	fvwm_debug(__func__, "finished setting up per-monitor panframes");
 }
 
@@ -1587,7 +1574,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 			}
 		}
 	}
-	checkPanFrames();
+	checkPanFrames(m);
 	/* regrab buttons in case something got obscured or unobscured */
 	focus_grab_buttons_all();
 
@@ -2006,8 +1993,6 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 		free(actdup);
 		return;
 	}
-	/* maybe something has changed so we adapt the pan frames */
-	checkPanFrames();
 }
 
 /* EdgeLeaveCommand - binds a function to a pan frame Leave event */
@@ -2079,9 +2064,6 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 		free(actdup);
 		return;
 	}
-
-	/* maybe something has changed so we adapt the pan frames */
-	checkPanFrames();
 }
 
 void CMD_EdgeThickness(F_CMD_ARGS)
@@ -2105,7 +2087,7 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 		return;
 	}
 	edge_thickness = val;
-	checkPanFrames();
+	initPanFrames();
 
 	return;
 }
@@ -2170,9 +2152,9 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		m->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
 		m->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
+		checkPanFrames(m);
 	}
 
-	checkPanFrames();
 
 	return;
 }
@@ -2277,7 +2259,6 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	}
 
 	initPanFrames();
-	checkPanFrames();
 	raisePanFrames();
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
@@ -2326,8 +2307,8 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)m->si->rr_output);
 
 		EWMH_SetDesktopGeometry(m);
+		checkPanFrames(m);
 	}
-	checkPanFrames();
 }
 
 /*
