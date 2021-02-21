@@ -8544,7 +8544,8 @@ _AcceptsFocus_, _AnyScreen_, _CirculateHit_, _CirculateHitIcon_,
 _CirculateHitShaded_, _Closable_, _CurrentDesk_, _CurrentGlobalPage_,
 _CurrentGlobalPageAnyDesk_, _CurrentPage_, _CurrentPageAnyDesk_,
 _CurrentScreen_, _Desk_, _FixedPosition_, _FixedSize_, _Focused_,
-_HasBorders_, _HasHandles_, _HasPointer_, _HasTitle_, _Iconic_,
+_HasBorders_, _HasHandles_, _HasPointer_, _HasTitle_, _TitleAtTop_,
+_TitleAtBottom_, _TitleAtLeft_, _TitleAtRight_, _Iconic_,
 _Iconifiable_, _Layer [n]_, _Maximizable_, _Maximized_, _Overlapped_,
 _PlacedByButton n_, _PlacedByButton3_, _PlacedByFvwm_, _Raised_, _Shaded_,
 _State n_, _Sticky_, _StickyAcrossDesks_, _StickyAcrossPages_, _StickyIcon_,
@@ -8656,6 +8657,9 @@ The _HasPointer_ condition excludes all windows that do not contain
 the pointer.
 +
 The _HasTitle_ condition excludes all windows that do not have a titlebar.
++
+The _TitleAtTop_, _TitleAtBottom_, _TitleAtLeft_, _TitleAtRight_ conditions
+test for the titlebar at that window location.
 +
 The _Iconic_ condition matches only iconic windows.
 +
