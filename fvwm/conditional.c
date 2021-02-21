@@ -598,6 +598,26 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_HAS_TITLE(mask, on);
 			SETM_HAS_TITLE(mask, 1);
 		}
+		else if (StrEquals(cond, "TitleAtTop"))
+		{
+			SET_TITLE_DIR(mask, DIR_N);
+			SETM_TITLE_DIR(mask, 1);
+		}
+		else if (StrEquals(cond, "TitleAtBottom"))
+		{
+			SET_TITLE_DIR(mask, DIR_S);
+			SETM_TITLE_DIR(mask, 1);
+		}
+		else if (StrEquals(cond, "TitleAtLeft"))
+		{
+			SET_TITLE_DIR(mask, DIR_W);
+			SETM_TITLE_DIR(mask, 1);
+		}
+		else if (StrEquals(cond, "TitleAtRight"))
+		{
+			SET_TITLE_DIR(mask, DIR_E);
+			SETM_TITLE_DIR(mask, 1);
+		}
 		else if (StrEquals(cond, "HasBorders"))
 		{
 			SET_HAS_NO_BORDER(mask, !on);
