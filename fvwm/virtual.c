@@ -87,6 +87,7 @@ static int last_edge_thickness = 2;
 static void checkPanFrames(struct monitor *);
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
+static void init_one_panframe(PanFrame *, int, int, int, int, int);
 
 struct desktop_cmds	 desktop_cmd_q;
 struct desktop_fws	 desktop_fvwm_q;
@@ -1183,6 +1184,22 @@ void raisePanFrames(void)
 	}
 }
 
+static void
+init_one_panframe(PanFrame *pf, int x, int y, int w, int h, int cursor)
+{
+	XSetWindowAttributes attributes;
+	unsigned long valuemask;
+
+	attributes.event_mask = XEVMASK_PANFW;
+	valuemask=  (CWEventMask | CWCursor);
+
+	attributes.cursor = Scr.FvwmCursors[cursor];
+	pf->command = NULL;
+	pf->command_leave = NULL;
+	pf->win = XCreateWindow(dpy, Scr.Root, x, y, w, h, 0, CopyFromParent,
+	    InputOnly, CopyFromParent, valuemask, &attributes);
+}
+
 /*
  *
  * Creates the windows for edge-scrolling
@@ -1205,35 +1222,28 @@ void initPanFrames(void)
 		edge_thickness = 2;
 	}
 
-	attributes.event_mask = XEVMASK_PANFW;
-	valuemask=  (CWEventMask | CWCursor);
-
-	attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
-	/* I know these overlap, it's useful when at (0,0) and the top one is
-	 * unmapped */
-
 	/* Free panframes here for all monitors. */
 	fvwm_debug(__func__, "freeing panframes");
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->PanFrameLeft.isMapped)
 		{
 			XUnmapWindow(dpy, m->PanFrameLeft.win);
-			m->PanFrameLeft.isMapped = False;
+			m->PanFrameLeft.isMapped = false;
 		}
 		if (m->PanFrameRight.isMapped)
 		{
 			XUnmapWindow(dpy, m->PanFrameRight.win);
-			m->PanFrameRight.isMapped = False;
+			m->PanFrameRight.isMapped = false;
 		}
 		if (m->PanFrameTop.isMapped)
 		{
 			XUnmapWindow(dpy, m->PanFrameTop.win);
-			m->PanFrameTop.isMapped = False;
+			m->PanFrameTop.isMapped = false;
 		}
 		if (m->PanFrameBottom.isMapped)
 		{
 			XUnmapWindow(dpy, m->PanFrameBottom.win);
-			m->PanFrameBottom.isMapped = False;
+			m->PanFrameBottom.isMapped = false;
 		}
 	}
 
@@ -1248,27 +1258,17 @@ void initPanFrames(void)
 
 		m = TAILQ_FIRST(&monitor_q);
 
-		attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
-		m->PanFrameTop.win = XCreateWindow(dpy, Scr.Root, 0, 0, gw,
-		    edge_thickness, 0, CopyFromParent, InputOnly,
-		    CopyFromParent, valuemask, &attributes);
+		init_one_panframe(&m->PanFrameTop, 0, 0, gw, edge_thickness,
+		    CRS_TOP_EDGE);
+		init_one_panframe(&m->PanFrameLeft, 0, 0, edge_thickness, gh,
+		    CRS_LEFT_EDGE);
+		init_one_panframe(&m->PanFrameRight, gw - edge_thickness, 0,
+		    edge_thickness, gh, CRS_RIGHT_EDGE);
+		init_one_panframe(&m->PanFrameBottom, 0, gh - edge_thickness,
+		    gw, edge_thickness, CRS_BOTTOM_EDGE);
 
-		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
-		m->PanFrameLeft.win = XCreateWindow(dpy, Scr.Root, 0, 0,
-		    edge_thickness, gh, 0, CopyFromParent, InputOnly,
-		    CopyFromParent, valuemask, &attributes);
-
-		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
-		m->PanFrameRight.win = XCreateWindow(dpy, Scr.Root,
-		    gw - edge_thickness, 0, edge_thickness, gh, 0,
-		    CopyFromParent, InputOnly, CopyFromParent, valuemask,
-		    &attributes);
-
-		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
-		m->PanFrameBottom.win = XCreateWindow(dpy, Scr.Root, 0,
-		    gh - edge_thickness, gw, edge_thickness, 0,
-		    CopyFromParent, InputOnly, CopyFromParent, valuemask,
-		    &attributes);
+		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
+			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=false;
 
 		TAILQ_FOREACH(mloop, &monitor_q, entry) {
 			if (mloop == m)
@@ -1284,41 +1284,20 @@ void initPanFrames(void)
 	}
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		m->PanFrameTop.win = XCreateWindow(
-			dpy, Scr.Root, m->si->x, m->si->y,
-			m->si->w, edge_thickness,
-			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
-			&attributes);
-		m->PanFrameTop.command = NULL;
-		m->PanFrameTop.command_leave = NULL;
-		attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
-		m->PanFrameLeft.win = XCreateWindow(
-			dpy, Scr.Root, m->si->x, m->si->y,
-			edge_thickness, m->si->h,
-			0, CopyFromParent, InputOnly, CopyFromParent, valuemask,
-			&attributes);
-		m->PanFrameLeft.command = NULL;
-		m->PanFrameLeft.command_leave = NULL;
-		attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
-		m->PanFrameRight.win = XCreateWindow(
-			dpy, Scr.Root,
-			(m->si->x + m->si->w) - edge_thickness, (m->si->y + m->si->h) - m->si->h,
-			edge_thickness, m->si->h, 0,
-			CopyFromParent, InputOnly, CopyFromParent, valuemask,
-			&attributes);
-		m->PanFrameRight.command = NULL;
-		m->PanFrameRight.command_leave = NULL;
-		attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
-		m->PanFrameBottom.win = XCreateWindow(
-			dpy, Scr.Root, m->si->x,
-			m->si->h - edge_thickness,
-			m->si->w, edge_thickness, 0,
-			CopyFromParent, InputOnly, CopyFromParent, valuemask,
-			&attributes);
-		m->PanFrameBottom.command = NULL;
-		m->PanFrameBottom.command_leave = NULL;
+		init_one_panframe(&m->PanFrameTop, m->si->x, m->si->y, m->si->w,
+		    edge_thickness, CRS_TOP_EDGE);
+		init_one_panframe(&m->PanFrameLeft, m->si->x, m->si->y,
+		    edge_thickness, m->si->h, CRS_LEFT_EDGE);
+		init_one_panframe(&m->PanFrameRight,
+		    (m->si->x + m->si->w) - edge_thickness,
+		    (m->si->y + m->si->h) - m->si->h, edge_thickness, m->si->h,
+		    CRS_RIGHT_EDGE);
+		init_one_panframe(&m->PanFrameBottom, m->si->x,
+		    m->si->h - edge_thickness, m->si->w, edge_thickness,
+		    CRS_BOTTOM_EDGE);
+
 		m->PanFrameTop.isMapped=m->PanFrameLeft.isMapped=
-			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=False;
+			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=false;
 		checkPanFrames(m);
 	}
 	edge_thickness = saved_thickness;
