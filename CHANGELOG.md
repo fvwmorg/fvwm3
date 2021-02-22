@@ -27,9 +27,11 @@
 - RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
 - FvwmIconMan lists wrong windows in \(certain?\) multi-monitor configurations. [\#390](https://github.com/fvwmorg/fvwm3/issues/390)
 - fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
+- EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- PanFrames: handle DesktopConfiguration changes [\#438](https://github.com/fvwmorg/fvwm3/pull/438) ([ThomasAdam](https://github.com/ThomasAdam))
 - Pager: don't restrict new\_desk to monitor boundaries [\#434](https://github.com/fvwmorg/fvwm3/pull/434) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix 22kb memory leak. [\#426](https://github.com/fvwmorg/fvwm3/pull/426) ([Quipyowert2](https://github.com/Quipyowert2))
 - Correct menu error short option from `-t` to `-e` [\#424](https://github.com/fvwmorg/fvwm3/pull/424) ([djwf](https://github.com/djwf))
@@ -145,7 +147,7 @@
 - Asterisk: expand variables in config lines [\#268](https://github.com/fvwmorg/fvwm3/pull/268) ([ThomasAdam](https://github.com/ThomasAdam))
 - Division by zero in FvwmPager when desk\_h==0 or desk\_w==0 [\#261](https://github.com/fvwmorg/fvwm3/pull/261) ([schaecsn](https://github.com/schaecsn))
 - update Changelog [\#259](https://github.com/fvwmorg/fvwm3/pull/259) ([ThomasAdam](https://github.com/ThomasAdam))
-- Add variable/parameter which indicates the state of the FVWM3 logging [\#239](https://github.com/fvwmorg/fvwm3/pull/239) ([NsCDE](https://github.com/NsCDE))
+- Release/1.0.1 [\#245](https://github.com/fvwmorg/fvwm3/pull/245) ([ThomasAdam](https://github.com/ThomasAdam))
 - Release 1.0.2 [\#367](https://github.com/fvwmorg/fvwm3/pull/367) ([ThomasAdam](https://github.com/ThomasAdam))
 - ta/distfix [\#366](https://github.com/fvwmorg/fvwm3/pull/366) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: make pid file slight more unique [\#365](https://github.com/fvwmorg/fvwm3/pull/365) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -222,10 +224,10 @@
 
 **Merged pull requests:**
 
-- Release/1.0.1 [\#245](https://github.com/fvwmorg/fvwm3/pull/245) ([ThomasAdam](https://github.com/ThomasAdam))
 - Added CHANGELOG.md [\#244](https://github.com/fvwmorg/fvwm3/pull/244) ([ThomasAdam](https://github.com/ThomasAdam))
 - EWMH area: don't crop the boundary [\#243](https://github.com/fvwmorg/fvwm3/pull/243) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add support for infostore in EnvIsSet Test case [\#240](https://github.com/fvwmorg/fvwm3/pull/240) ([ThomasAdam](https://github.com/ThomasAdam))
+- Add variable/parameter which indicates the state of the FVWM3 logging [\#239](https://github.com/fvwmorg/fvwm3/pull/239) ([NsCDE](https://github.com/NsCDE))
 - safemalloc: add stddef.h [\#235](https://github.com/fvwmorg/fvwm3/pull/235) ([ThomasAdam](https://github.com/ThomasAdam))
 - OpenBSD: add missing stdarg.h include [\#232](https://github.com/fvwmorg/fvwm3/pull/232) ([ThomasAdam](https://github.com/ThomasAdam))
 - sticky windows: explicitly move to desk [\#230](https://github.com/fvwmorg/fvwm3/pull/230) ([ThomasAdam](https://github.com/ThomasAdam))
