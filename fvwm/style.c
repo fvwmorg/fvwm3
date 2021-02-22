@@ -719,31 +719,65 @@ static void merge_styles(
 	}
 	if (add_style->flags.has_placement_position_string)
 	{
-		SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*merged_style));
-		SSET_PLACEMENT_POSITION_STRING(
-			*merged_style,
-			strdup(SGET_PLACEMENT_POSITION_STRING(*add_style)));
+		if (do_free_src_and_alloc_copy)
+		{
+			SAFEFREE(SGET_PLACEMENT_POSITION_STRING(*merged_style));
+			SSET_PLACEMENT_POSITION_STRING(
+				*merged_style,
+				strdup(SGET_PLACEMENT_POSITION_STRING(*add_style)));
+		}
+		else
+		{
+			SSET_PLACEMENT_POSITION_STRING(
+				*merged_style,
+				SGET_PLACEMENT_POSITION_STRING(*add_style));
+		}
 	}
 	if (add_style->flags.has_initial_map_command_string)
 	{
-		SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*merged_style));
-		SSET_INITIAL_MAP_COMMAND_STRING(
-			*merged_style,
-			strdup(SGET_INITIAL_MAP_COMMAND_STRING(*add_style)));
+		if (do_free_src_and_alloc_copy)
+		{
+			SAFEFREE(SGET_INITIAL_MAP_COMMAND_STRING(*merged_style));
+			SSET_INITIAL_MAP_COMMAND_STRING(
+				*merged_style,
+				strdup(SGET_INITIAL_MAP_COMMAND_STRING(*add_style)));
+		}
+		else
+		{
+			SSET_INITIAL_MAP_COMMAND_STRING(
+				*merged_style,
+				SGET_INITIAL_MAP_COMMAND_STRING(*add_style));
+		}
 	}
 
 	if (add_style->flags.has_title_format_string)
 	{
-		SAFEFREE(SGET_TITLE_FORMAT_STRING(*merged_style));
-		SSET_TITLE_FORMAT_STRING(*merged_style,
+		if (do_free_src_and_alloc_copy)
+		{
+			SAFEFREE(SGET_TITLE_FORMAT_STRING(*merged_style));
+			SSET_TITLE_FORMAT_STRING(*merged_style,
 				strdup(SGET_TITLE_FORMAT_STRING(*add_style)));
+		}
+		else
+		{
+			SSET_TITLE_FORMAT_STRING(*merged_style,
+				SGET_TITLE_FORMAT_STRING(*add_style));
+		}
 	}
 
 	if (add_style->flags.has_icon_title_format_string)
 	{
-		SAFEFREE(SGET_ICON_TITLE_FORMAT_STRING(*merged_style));
-		SSET_ICON_TITLE_FORMAT_STRING(*merged_style,
+		if (do_free_src_and_alloc_copy)
+		{
+			SAFEFREE(SGET_ICON_TITLE_FORMAT_STRING(*merged_style));
+			SSET_ICON_TITLE_FORMAT_STRING(*merged_style,
 				strdup(SGET_ICON_TITLE_FORMAT_STRING(*add_style)));
+		}
+		else
+		{
+			SSET_ICON_TITLE_FORMAT_STRING(*merged_style,
+				SGET_ICON_TITLE_FORMAT_STRING(*add_style));
+		}
 	}
 	/* merge the style flags */
 
