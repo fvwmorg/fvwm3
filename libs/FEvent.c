@@ -897,6 +897,7 @@ Status FGetWMNormalHints(
 {
 	Status ret;
 
+	memset(hints_return, 0, sizeof(XSizeHints));
 	ret = XGetWMNormalHints(display, w, hints_return, supplied_return);
 	fev_sanitize_size_hints(hints_return);
 
