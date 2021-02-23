@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- rename binary fvwm3 -\> fvwm [\#440](https://github.com/fvwmorg/fvwm3/issues/440)
 - Changing EdgeThickness moves PanFrameRight.win to a wrong position [\#436](https://github.com/fvwmorg/fvwm3/issues/436)
 - FvwmPager shows app on wrong page with StartsOnDesk [\#433](https://github.com/fvwmorg/fvwm3/issues/433)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
@@ -31,6 +32,7 @@
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- fix with some pixels off for 3d buttons [\#444](https://github.com/fvwmorg/fvwm3/pull/444) ([mikeandmore](https://github.com/mikeandmore))
 - PanFrames: handle DesktopConfiguration changes [\#438](https://github.com/fvwmorg/fvwm3/pull/438) ([ThomasAdam](https://github.com/ThomasAdam))
 - Pager: don't restrict new\_desk to monitor boundaries [\#434](https://github.com/fvwmorg/fvwm3/pull/434) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix 22kb memory leak. [\#426](https://github.com/fvwmorg/fvwm3/pull/426) ([Quipyowert2](https://github.com/Quipyowert2))
