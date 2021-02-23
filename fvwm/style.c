@@ -1151,6 +1151,7 @@ static int __simplify_style_list(void)
 static void style_set_old_focus_policy(window_style *ps, int policy)
 {
 	focus_policy_t fp;
+	memset(&fp, 0, sizeof(focus_policy_t));
 
 	switch (policy)
 	{
@@ -2086,7 +2087,7 @@ static Bool style_parse_one_style_option(
 	int num;
 	int i;
 	int tmpno[3] = { -1, -1, -1 };
-	int val[4];
+	int val[4] = {0, 0, 0, 0};
 	int spargs = 0;
 	Bool found;
 	int on;
