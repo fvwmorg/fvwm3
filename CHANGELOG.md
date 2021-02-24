@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Font-rendering causes fvwm to lock-up [\#446](https://github.com/fvwmorg/fvwm3/issues/446)
 - \(CurrentPage, AnyScreen\) calculation slightly too generous. \(Regression cf. fvwm2.\) [\#443](https://github.com/fvwmorg/fvwm3/issues/443)
 - rename binary fvwm3 -\> fvwm [\#440](https://github.com/fvwmorg/fvwm3/issues/440)
 - Changing EdgeThickness moves PanFrameRight.win to a wrong position [\#436](https://github.com/fvwmorg/fvwm3/issues/436)
@@ -50,6 +51,7 @@
 
 **Merged pull requests:**
 
+- fix uninitialized value and bad free [\#447](https://github.com/fvwmorg/fvwm3/pull/447) ([mikeandmore](https://github.com/mikeandmore))
 - Fix over-eager window positioning [\#445](https://github.com/fvwmorg/fvwm3/pull/445) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: correct right panframe location [\#437](https://github.com/fvwmorg/fvwm3/pull/437) ([ThomasAdam](https://github.com/ThomasAdam))
 - Revert "Fix a 21 byte memory leak." [\#435](https://github.com/fvwmorg/fvwm3/pull/435) ([ThomasAdam](https://github.com/ThomasAdam))
