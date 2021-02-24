@@ -294,7 +294,14 @@ static void MatchFont(Display *dpy,
 		sp.x = *xoff;
 		sp.y = *yoff;
 		sp.font = font;
+		sp.ucs4 = 0;
+
 		codelen = FcUtf8ToUcs4((const FcChar8 *) p + off, &sp.ucs4, len - off);
+                if (codelen <= 0) {
+			fvwm_debug("XFT", "Malformed UTF8 char %x", (char) *(p + off));
+			codelen = 1;
+			continue;
+		}
 
 		if (!XftCharExists(dpy, font, sp.ucs4)) {
 			// Fallback
