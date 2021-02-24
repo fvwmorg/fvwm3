@@ -17,9 +17,11 @@
 
 **Fixed bugs:**
 
+- \(CurrentPage, AnyScreen\) calculation slightly too generous. \(Regression cf. fvwm2.\) [\#443](https://github.com/fvwmorg/fvwm3/issues/443)
 - rename binary fvwm3 -\> fvwm [\#440](https://github.com/fvwmorg/fvwm3/issues/440)
 - Changing EdgeThickness moves PanFrameRight.win to a wrong position [\#436](https://github.com/fvwmorg/fvwm3/issues/436)
 - FvwmPager shows app on wrong page with StartsOnDesk [\#433](https://github.com/fvwmorg/fvwm3/issues/433)
+- 21 byte memory leak in merge\_styles \(3 tiny leaks of 7 bytes\) [\#430](https://github.com/fvwmorg/fvwm3/issues/430)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
 - killing stalonetray also kills RightPanel [\#420](https://github.com/fvwmorg/fvwm3/issues/420)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
@@ -33,6 +35,7 @@
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
 - fix with some pixels off for 3d buttons [\#444](https://github.com/fvwmorg/fvwm3/pull/444) ([mikeandmore](https://github.com/mikeandmore))
+- Only allocate a copy of style strings if requested. [\#441](https://github.com/fvwmorg/fvwm3/pull/441) ([Quipyowert2](https://github.com/Quipyowert2))
 - PanFrames: handle DesktopConfiguration changes [\#438](https://github.com/fvwmorg/fvwm3/pull/438) ([ThomasAdam](https://github.com/ThomasAdam))
 - Pager: don't restrict new\_desk to monitor boundaries [\#434](https://github.com/fvwmorg/fvwm3/pull/434) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix 22kb memory leak. [\#426](https://github.com/fvwmorg/fvwm3/pull/426) ([Quipyowert2](https://github.com/Quipyowert2))
@@ -47,6 +50,7 @@
 
 **Merged pull requests:**
 
+- Fix over-eager window positioning [\#445](https://github.com/fvwmorg/fvwm3/pull/445) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: correct right panframe location [\#437](https://github.com/fvwmorg/fvwm3/pull/437) ([ThomasAdam](https://github.com/ThomasAdam))
 - Revert "Fix a 21 byte memory leak." [\#435](https://github.com/fvwmorg/fvwm3/pull/435) ([ThomasAdam](https://github.com/ThomasAdam))
 - 644: libs/FImage.c [\#432](https://github.com/fvwmorg/fvwm3/pull/432) ([ThomasAdam](https://github.com/ThomasAdam))
