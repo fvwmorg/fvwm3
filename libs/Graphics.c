@@ -81,14 +81,18 @@ void do_relieve_rectangle_with_rotation(
 {
 	XSegment* seg;
 	GC shadow_gc, relief_gc;
-	int i,i2;
-	int a;
-	int l;
+	int i, cur;
 	int max_w;
 	int max_h;
 
-	a = (use_alternate_shading) ? 1 : 0;
-	l = 1 - a;
+	/*
+	 * If a == 1, then the left segment needs to shift down by one
+	 * pixel. That leads to the top segments shift left by one pixel, right
+	 * shift up, and bottom shift right.
+	 */
+	int a = (use_alternate_shading) ? 1 : 0;
+	int l = 1 - a;
+
 	if (w <= 0 || h <= 0)
 	{
 		return;
@@ -117,52 +121,31 @@ void do_relieve_rectangle_with_rotation(
 	max_h = min((h + 1) / 2, line_width);
 	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
 	/* from 0 to the lesser of line_width & just over half w */
-	for (i = 0; i < max_w; i++)
-	{
-		if (rotation == ROTATION_0)
-		{
-			/* left */
-			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-			seg[i].x2 = x+i; seg[i].y2 = y+h-i+a;
-		}
-		else /* ROTATION_90 */
-		{
-			/* right */
-			seg[i].x1 = x+w-i; seg[i].y1 = y+h-i;
-			seg[i].x2 = x+w-i; seg[i].y2 = y+i+1;
-		}
+
+	/* left */
+	for (i = 0; i < max_w; i++) {
+		seg[i].x1 = x+i; seg[i].y1 = y+i+a;
+		seg[i].x2 = x+i; seg[i].y2 = y+h-1-i+a;
 	}
-	i2 = i;
-	/* draw top segments */
-	for (i = 0; i < max_h; i++,i2++)
-	{
-		seg[i2].x1 = x+w-i+1; seg[i2].y1 = y+i;
-		seg[i2].x2 = x+i; seg[i2].y2 = y+i;
+	cur = i;
+	/* top */
+	for (i = 0; i < max_h; i++, cur++) {
+		seg[cur].x1 = x+w-1-i+l; seg[cur].y1 = y+i;
+		seg[cur].x2 = x+i+l; seg[cur].y2 = y+i;
 	}
-	XDrawSegments(dpy, d, relief_gc, seg, i2);
+	XDrawSegments(dpy, d, relief_gc, seg, cur);
 	/* bottom */
-	for (i = 0; i < max_h; i++)
-	{
+	for (i = 0; i < max_h; i++) {
 		seg[i].x1 = x+i+a;   seg[i].y1 = y+h-i;
-		seg[i].x2 = x+w-i+a; seg[i].y2 = y+h-i;
+		seg[i].x2 = x+w-1-i+a; seg[i].y2 = y+h-i;
 	}
-	i2 = i;
-	for (i = 0; i < max_w; i++,i2++)
-	{
-		if (rotation == ROTATION_0)
-		{
-			/* right */
-			seg[i2].x1 = x+w-i; seg[i2].y1 = y+h-i+1;
-			seg[i2].x2 = x+w-i; seg[i2].y2 = y+i;
-		}
-		else /* ROTATION_90 */
-		{
-			/* left */
-			seg[i2].x1 = x+i; seg[i2].y1 = y+i+a;
-			seg[i2].x2 = x+i; seg[i2].y2 = y+h-i+a;
-		}
+	cur = i;
+	/* right */
+	for (i = 0; i < max_w; i++, cur++) {
+		seg[cur].x1 = x+w-i; seg[cur].y1 = y+h-1-i+l;
+		seg[cur].x2 = x+w-i; seg[cur].y2 = y+i+l;
 	}
-	XDrawSegments(dpy, d, shadow_gc, seg, i2);
+	XDrawSegments(dpy, d, shadow_gc, seg, cur);
 
 	return;
 }
