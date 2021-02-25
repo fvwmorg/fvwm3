@@ -130,8 +130,8 @@ void do_relieve_rectangle_with_rotation(
 	cur = i;
 	/* top */
 	for (i = 0; i < max_h; i++, cur++) {
-		seg[cur].x1 = x+w-1-i+l; seg[cur].y1 = y+i;
-		seg[cur].x2 = x+i+l; seg[cur].y2 = y+i;
+		seg[cur].x1 = x+i+l; seg[cur].y1 = y+i;
+		seg[cur].x2 = x+w-1-i+l; seg[cur].y2 = y+i;
 	}
 	XDrawSegments(dpy, d, relief_gc, seg, cur);
 	/* bottom */
@@ -142,8 +142,8 @@ void do_relieve_rectangle_with_rotation(
 	cur = i;
 	/* right */
 	for (i = 0; i < max_w; i++, cur++) {
-		seg[cur].x1 = x+w-i; seg[cur].y1 = y+h-1-i+l;
-		seg[cur].x2 = x+w-i; seg[cur].y2 = y+i+l;
+		seg[cur].x1 = x+w-i; seg[cur].y1 = y+i+l;
+		seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
 	}
 	XDrawSegments(dpy, d, shadow_gc, seg, cur);
 
