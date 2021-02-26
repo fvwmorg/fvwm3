@@ -2286,14 +2286,21 @@ void CMD_CursorMove(F_CMD_ARGS)
 	int x_pages, y_pages;
 	struct monitor	*m = NULL;
 
-	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
-	{
+	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2) {
 		fvwm_debug(__func__, "CursorMove needs 2 arguments");
 		return;
 	}
-	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-	{
+	if (val1 == 0 && val2 == 0) {
+		/* Move to absolute point */
+		action = SkipNTokens(action, 2);
+		if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2) {
+			return;
+		}
+		/* x and y are 0 and we skip the QueryPointer so that we can
+		 * move to the absolute point. */
+	} else if (FQueryPointer(
+			dpy, Scr.Root, &JunkRoot, &JunkChild,
+			&x, &y, &JunkX, &JunkY, &JunkMask) == False) {
 		/* pointer is on a different screen */
 		return;
 	}
@@ -2369,12 +2376,10 @@ void CMD_CursorMove(F_CMD_ARGS)
 	 * Whilst this stops the cursor short of the edge of the screen in a
 	 * given direction, this is the desired behaviour.
 	 */
-	if (m->virtual_scr.EdgeScrollX == 0 && (x >= m->virtual_scr.MyDisplayWidth ||
-	    x + x_unit >= m->virtual_scr.MyDisplayWidth))
+	if (m->virtual_scr.EdgeScrollX == 0 && x >= m->virtual_scr.MyDisplayWidth)
 		return;
 
-	if (m->virtual_scr.EdgeScrollY == 0 && (y >= m->virtual_scr.MyDisplayHeight ||
-	    y + y_unit >= m->virtual_scr.MyDisplayHeight))
+	if (m->virtual_scr.EdgeScrollY == 0 && y >= m->virtual_scr.MyDisplayHeight)
 		return;
 
 	FWarpPointerUpdateEvpos(
