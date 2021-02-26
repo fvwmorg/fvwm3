@@ -19,6 +19,7 @@
 
 - Font-rendering causes fvwm to lock-up [\#446](https://github.com/fvwmorg/fvwm3/issues/446)
 - \(CurrentPage, AnyScreen\) calculation slightly too generous. \(Regression cf. fvwm2.\) [\#443](https://github.com/fvwmorg/fvwm3/issues/443)
+- \_NET\_CURRENT\_DESKTOP tracking breaks google-chrome [\#442](https://github.com/fvwmorg/fvwm3/issues/442)
 - rename binary fvwm3 -\> fvwm [\#440](https://github.com/fvwmorg/fvwm3/issues/440)
 - Changing EdgeThickness moves PanFrameRight.win to a wrong position [\#436](https://github.com/fvwmorg/fvwm3/issues/436)
 - FvwmPager shows app on wrong page with StartsOnDesk [\#433](https://github.com/fvwmorg/fvwm3/issues/433)
@@ -52,6 +53,7 @@
 
 **Merged pull requests:**
 
+- \_NET\_CURRENT\_DESKTOP: update across monitor boundaries [\#449](https://github.com/fvwmorg/fvwm3/pull/449) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix uninitialized value and bad free [\#447](https://github.com/fvwmorg/fvwm3/pull/447) ([mikeandmore](https://github.com/mikeandmore))
 - Fix over-eager window positioning [\#445](https://github.com/fvwmorg/fvwm3/pull/445) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: correct right panframe location [\#437](https://github.com/fvwmorg/fvwm3/pull/437) ([ThomasAdam](https://github.com/ThomasAdam))
