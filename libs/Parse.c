@@ -840,13 +840,11 @@ int GetTwoPercentArguments(
 {
 	char *tok1;
 	char *tok2;
-	char *next;
 	int n = 0;
 
 	*val1 = 0;
 	*val2 = 0;
 
-	tok1 = PeekToken(action, &next);
 	action = GetNextToken(action, &tok1);
 	if (!tok1)
 	{
