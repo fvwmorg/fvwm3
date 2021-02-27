@@ -54,6 +54,7 @@
 **Merged pull requests:**
 
 - \_NET\_CURRENT\_DESKTOP: update across monitor boundaries [\#449](https://github.com/fvwmorg/fvwm3/pull/449) ([ThomasAdam](https://github.com/ThomasAdam))
+- add a CursorSet command [\#448](https://github.com/fvwmorg/fvwm3/pull/448) ([mikeandmore](https://github.com/mikeandmore))
 - fix uninitialized value and bad free [\#447](https://github.com/fvwmorg/fvwm3/pull/447) ([mikeandmore](https://github.com/mikeandmore))
 - Fix over-eager window positioning [\#445](https://github.com/fvwmorg/fvwm3/pull/445) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrames: correct right panframe location [\#437](https://github.com/fvwmorg/fvwm3/pull/437) ([ThomasAdam](https://github.com/ThomasAdam))
