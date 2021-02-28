@@ -2442,6 +2442,7 @@ int main(int argc, char **argv)
 	fvwm_debug(__func__, "Loading window states via %s", state_filename);
 	LoadWindowStates(state_filename);
 
+	is_tracking_shared = false;
 	TAILQ_FOREACH(m, &monitor_q, entry)
 		EWMH_Init(m);
 

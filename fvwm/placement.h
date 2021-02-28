@@ -31,4 +31,6 @@ Bool setup_window_placement(
 	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
 	initial_window_options_t *win_opts, placement_mode_t mode);
 
+void adjust_for_shared_placement(FvwmWindow *, const exec_context_t *);
+
 #endif /* FVWM_PLACEMENT_H */

@@ -3163,7 +3163,6 @@ void HandleMapRequestKeepRaised(
 			}
 			MyXUngrabServer(dpy);
 
-			UPDATE_FVWM_SCREEN(fw);
 			break;
 
 		case IconicState:

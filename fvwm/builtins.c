@@ -148,8 +148,14 @@ status_send(void)
 	m_cur = monitor_get_current();
 
 	bson_init(&msg);
-	BSON_APPEND_INT64(&msg, "version", 1);
+	BSON_APPEND_INT64(&msg, "version", 2);
 	BSON_APPEND_UTF8(&msg, "current_screen", m_cur->si->name);
+	BSON_APPEND_UTF8(&msg, "desktop_mode",
+	    monitor_mode == MONITOR_TRACKING_G && is_tracking_shared ? "shared" :
+	    monitor_mode == MONITOR_TRACKING_G ? "global" :
+	    monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
+	    "unknown");
+
 	BSON_APPEND_DOCUMENT_BEGIN(&msg, "screens", &screens);
 
 	d_count = 0;

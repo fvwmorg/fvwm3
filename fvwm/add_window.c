@@ -58,6 +58,7 @@
 #include "libs/Grab.h"
 #include "libs/Strings.h"
 #include "libs/XResource.h"
+#include "libs/safemalloc.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -89,6 +90,7 @@
 #include "functions.h"
 #include "virtual.h"
 #include "builtins.h"
+#include "expand.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -2489,7 +2491,12 @@ FvwmWindow *AddWindow(
 	{
 		struct monitor	*tm = (fw && fw->m) ? fw->m :
 			monitor_get_current();
-		goto_desk(fw->Desk, tm);
+
+		char *cmd;
+
+		xasprintf(&cmd, "GotoDesk %s 0 %d", tm->si->name, fw->Desk);
+		execute_function_override_window(NULL, NULL, cmd, 0, fw);
+		free(cmd);
 
 		/* read the requested absolute geometry */
 		gravity_translate_to_northwest_geometry_no_bw(
@@ -2806,6 +2813,19 @@ FvwmWindow *AddWindow(
 		 * it is destroyed. */
 		destroy_window(fw);
 		fw = NULL;
+	}
+
+	if (is_tracking_shared && fw != NULL) {
+		/* If we're in `DesktopConfiguration shared` mode, reposition
+		 * the window, for scenarios involving StartsOn{Screen,Desk}.
+		 * In this cases, the window won't have been placed due to
+		 * XGetGeometry() not knowing about the window.
+		 *
+		 * All other styles will have been applied.
+		 *
+		 * So now just adjust for StartsOn{Screen,Desk}
+		 */
+		adjust_for_shared_placement(fw, exc);
 	}
 
 	return fw;
