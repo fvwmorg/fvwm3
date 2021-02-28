@@ -7468,7 +7468,7 @@ Specifying an invalid decor results in all windows being updated.
 	names starting from desktop 0 are defined, then these names can be
 	used by any EWMH compliant application (as a pager).
 
-*DesktopConfiguration* global | per-monitor::
+*DesktopConfiguration* global | per-monitor | shared::
 	This command controls the behaviour of how desktops should be managed
 	by FVWM. By default, for all screens detected by FVWM through RandR
 	support, the option of global means that all windows on the same desk
@@ -7478,6 +7478,28 @@ Specifying an invalid decor results in all windows being updated.
 With per-monitor , each RandR monitor has a separate copy of desktops,
 and hence function independently of one another when switching
 desks/pages.
++
+When __shared__ is set, the desktops are shared amongst all monitors.  So for
+example, with the following number of desktops defined with two monitors
+(__[]__ is monitor1, and __<>__ is monitor2):
++
+....
+[0]     1      2      <3>     4
+....
++
+
+Moving between desktops would still honor the monitor the desktop is being
+requested on.  If __monitor1__ wanted to switch to desktop 3, then that
+desktop is exchanged with __monitor2__ such that the following showed the
+active desktop on both monitors:
++
+....
+<0>     1      2      [3]     4
+....
++
+This concept is similar to how spectrwm or xmonad handles desktops.
++
+**Note:** these each *DesktopConfiguration* mode can be changed on-the-fly.
 
 *DesktopSize* __Horizontal__x_Vertical_::
 	Defines the virtual desktop size in units of the physical screen size.

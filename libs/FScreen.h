@@ -6,6 +6,8 @@
 #include "fvwm_x11.h"
 #include "fvwmrect.h"
 
+#include <stdbool.h>
+
 typedef struct
 {
 	XEvent *mouse_ev;
@@ -63,9 +65,11 @@ enum monitor_tracking
 {
 	MONITOR_TRACKING_G = 1,
 	MONITOR_TRACKING_M,
+	MONITOR_TRACKING_S,
 };
 
 extern enum monitor_tracking monitor_mode;
+extern bool is_tracking_shared;
 
 struct screen_info {
 	const char		*name;
@@ -131,6 +135,8 @@ struct monitor {
                 int prev_desk_and_page_desk;
                 int prev_desk_and_page_page_x;
                 int prev_desk_and_page_page_y;
+
+		bool is_swapping;
         } virtual_scr;
 
 	PanFrame PanFrameTop;

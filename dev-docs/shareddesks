@@ -1,0 +1,101 @@
+DesktopConfiguration per-monitor
+SetEnv RXVT "urxvt -b 5 -bd '#333333'"
+
+ModuleTimeout 1
+EdgeResistance 800 1
+EdgeThickness 2
+IgnoreModifiers L25
+
+DesktopName 0 0
+DesktopName 1 1
+DesktopName 2 2
+DesktopName 3 3
+DesktopName 4 4
+DesktopName 5 5
+
+DesktopSize 1x1
+
+Key Right   A C GotoDesk next
+Key Left    A C GotoDesk -1 0 0 5
+
+# Window key-bindings
+Key i       A   4   Iconify
+
+Key Left    A   4   Direction West (CurrentDesk, AcceptsFocus, Visible) Focus
+Key Right   A   4   Direction East (CurrentDesk, AcceptsFocus, Visible) Focus
+Key Up      A   4   Direction North (CurrentDesk, AcceptsFocus, Visible) Focus
+Key Down    A   4   Direction South (CurrentDesk, AcceptsFocus, Visible) Focus
+
+Key Return   A   4  Exec exec $[RXVT] -ls 
+Key Return   A   C  Maximize grow grow
+Key A        W   S4  Close
+Key Down     W   M   Lower
+Key Up       W   M Raise
+Key m	     W   4 Maximize
+
+Key L	A CM  Exec exec i3lock -c '#2000FF'
+Key S   A 4   Stick
+
+Key F12 A 4   Module FvwmConsole
+#Key F12 A 4   Exec exec $[RXVT] -bg '#004103' -e FvwmPrompt 
+
+Key Up      WTSF    CM  PackUp
+Key Down    WTSF    CM  PackDown
+Key Left    WTSF    CM  PackLeft
+Key Right   WTSF    CM  PackRight
+
+Key p 	    A       C4  Exec exec rofi-pass
+Key slash   A       M4	Exec exec rofi \
+				-levenshtein-sort \
+				-show window \
+				-bg '#66ba66' \
+				-fg black \
+				-hlbg white \
+				-hlfg black \
+				-bc 'blue' \
+				-bw 4 \
+				-columns 1 \
+				-lines 5 \
+				-fixed-num-lines 1 \
+				-width 40 \
+				-terminal xterm \
+				-hide-scrollbar \
+				-font "Monospace 12"
+
+Key question   A       MS	Exec exec rofi \
+				-levenshtein-sort \
+				-show run \
+				-bg '#66ba66' \
+				-fg black \
+				-hlbg white \
+				-hlfg black \
+				-bc 'blue' \
+				-bw 4 \
+				-columns 1 \
+				-lines 5 \
+				-fixed-num-lines 1 \
+				-width 40 \
+				-terminal xterm \
+				-hide-scrollbar \
+				-font "Monospace 12"
+
+KillModule FvwmPager FP1
+DestroyModuleConfig FP1: *
+*FP1: Monitor DP1-8
+
+Style FP1 StartsOnScreen DP1-8, Sticky, CirculateSkip
+Module FvwmPager FP1 0 5
+
+KillModule FvwmPager FP2
+DestroyModuleConfig FP2: *
+*FP2: Monitor DP1-1-8
+
+Style FP2 StartsOnScreen DP1-1-8, Sticky, CirculateSkip
+Module FvwmPager FP2 0 5
+
+KillModule FvwmPager FP3
+DestroyModuleConfig FP3: *
+*FP3: Monitor HDMI2
+
+Style FP3 StartsOnScreen HDMI2, Sticky, CirculateSkip
+Module FvwmPager FP3 0 5

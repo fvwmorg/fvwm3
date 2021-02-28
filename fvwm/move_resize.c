@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <stdbool.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
@@ -1735,7 +1736,6 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	int dy;
 	FvwmWindow *fw = exc->w.fw;
 	Window w;
-	struct monitor	*m = fw->m;
 
 	if (!is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
 	{
@@ -1777,6 +1777,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle s;
 		rectangle t;
 
+		struct monitor *m;
+
 		do_animate = False;
 		r.x = x;
 		r.y = y;
@@ -1784,16 +1786,39 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		r.height = height;
 		get_absolute_geometry(fw, &t, &r);
 		get_page_offset_rectangle(fw, &page_x, &page_y, &t);
-		if (!get_page_arguments(fw, action, &page_x, &page_y, NULL))
+
+		if (!get_page_arguments(fw, action, &page_x, &page_y, &m))
 		{
+			m = fw->m;
 			page_x = m->virtual_scr.Vx;
 			page_y = m->virtual_scr.Vy;
 		}
+		/* It's possible that we've received a command such as:
+		 *
+		 * MoveToPage HDMI2 0 1
+		 *
+		 * In which case, move the window to the selected monitor,
+		 * first.
+		 */
+		if (m != NULL && m != fw->m) {
+			rectangle ms;
+
+			ms.x = m->si->x;
+			ms.y = m->si->y;
+			ms.width = m->si->w;
+			ms.height = m->si->h;
+
+			/* then move to screen */
+			fvwmrect_move_into_rectangle(&r, &ms);
+			UPDATE_FVWM_SCREEN(fw);
+		}
+
 		s.x = page_x - m->virtual_scr.Vx;
 		s.y = page_y - m->virtual_scr.Vy;
 		s.width = monitor_get_all_widths();
 		s.height = monitor_get_all_heights();
 		fvwmrect_move_into_rectangle(&r, &s);
+
 		FinalX = r.x;
 		FinalY = r.y;
 	}
@@ -1803,11 +1828,14 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle s;
 		rectangle p;
 		struct monitor	*m;
+		char		*token;
 
 		if (action == NULL)
 			m = monitor_get_current();
-		else
-			m = monitor_resolve_name(action);
+		else {
+			token = PeekToken(action, &action);
+			m = monitor_resolve_name(token);
+		}
 
 		s.x = m->si->x;
 		s.y = m->si->y;
@@ -1900,32 +1928,24 @@ void CMD_Move(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_NORMAL);
 	UPDATE_FVWM_SCREEN(exc->w.fw);
-
-	return;
 }
 
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, True, MOVE_NORMAL);
 	UPDATE_FVWM_SCREEN(exc->w.fw);
-
-	return;
 }
 
 void CMD_MoveToPage(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_PAGE);
 	UPDATE_FVWM_SCREEN(exc->w.fw);
-
-	return;
 }
 
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_SCREEN);
 	UPDATE_FVWM_SCREEN(exc->w.fw);
-
-	return;
 }
 
 static void update_pos(

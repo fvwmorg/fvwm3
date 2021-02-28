@@ -26,6 +26,7 @@
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
+#include "functions.h"
 #include "cursor.h"
 #include "bindings.h"
 #include "misc.h"
@@ -320,6 +321,66 @@ const pl_percent_penalty_struct default_pl_percent_penalty =
 };
 
 /* ---------------------------- local functions (PositionPlacement) -------- */
+
+void
+adjust_for_shared_placement(FvwmWindow *fw, const exec_context_t *exc)
+{
+	struct monitor	*m;
+	char		*cmd;
+	window_style	 style;
+
+	if (!is_tracking_shared)
+		return;
+
+	lookup_style(fw, &style);
+
+	if (!SUSE_START_ON_DESK(&style.flags))
+		goto done;
+
+	if (DO_NOT_SHOW_ON_MAP(fw))
+		goto done;
+
+	if (SUSE_START_ON_SCREEN(&style.flags) ||
+	    SUSE_START_ON_DESK(&style.flags)) {
+		struct monitor	*m_style = NULL;
+		char		*sc = SGET_START_SCREEN(style), *e = NULL;
+
+		if (sc != NULL)
+			e = expand_vars(sc, NULL, False, True, NULL, exc);
+
+		if (e != NULL) {
+			m_style = monitor_resolve_name(e);
+			free(e);
+		}
+
+		/* We might not have ascertained the screen yet -- especially
+		 * if only StartsOnDesk was used.  So either we can use the
+		 * screen the window is on, or use the currently active one if
+		 * not.
+		 */
+		if (m_style == NULL) {
+			if (fw->m != NULL)
+				m_style = fw->m;
+			else
+				m_style = monitor_get_current();
+		}
+
+		xasprintf(&cmd, "GotoDesk %s 0 %d", m_style->si->name,
+				fw->Desk);
+		execute_function_override_window(NULL, NULL, cmd, 0, fw);
+		free(cmd);
+	}
+done:
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->virtual_scr.CurrentDesk == fw->Desk) {
+			xasprintf(&cmd, "MoveToScreen %s", m->si->name);
+			execute_function_override_window(NULL, exc, cmd, 0, fw);
+			free(cmd);
+
+			break;
+		}
+	}
+}
 
 static pl_penalty_t __pl_position_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
@@ -1849,7 +1910,7 @@ static int __place_window(
 	/* I think it would be good to switch to the selected desk
 	 * whenever a new window pops up, except during initialization */
 	/*  RBW - 11/02/1998  --  I dont. */
-	if (!win_opts->flags.do_override_ppos && !DO_NOT_SHOW_ON_MAP(fw))
+	if (!is_tracking_shared && !win_opts->flags.do_override_ppos && !DO_NOT_SHOW_ON_MAP(fw))
 	{
 		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 

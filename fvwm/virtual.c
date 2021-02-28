@@ -25,9 +25,11 @@
 #include "libs/Grab.h"
 #include "libs/Parse.h"
 #include "libs/FEvent.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
+#include "expand.h"
 #include "cursor.h"
 #include "events.h"
 #include "eventmask.h"
@@ -52,6 +54,30 @@
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
 #endif
+
+#ifndef NOT_GLOBALLY_ACTIVE
+#define NOT_GLOBALLY_ACTIVE(m1, m2)					       \
+	((monitor_mode == MONITOR_TRACKING_M || is_tracking_shared) && m1 != m2)
+#endif
+
+#define CMD_GOTO_DESK(m, d)						    \
+	do {								    \
+		char	*cmd;						    \
+		xasprintf(&cmd, "GotoDesk %s 0 %d", (m)->si->name, (d));    \
+		execute_function_override_window(NULL, NULL, cmd, 0, NULL); \
+		free(cmd);						    \
+	} while (0)
+
+#define CMD_MOVE_SCREEN_DESK(m, d)					    \
+	do {								    \
+		char	*cmd;						    \
+		xasprintf(&cmd, "All (!Screen %s, Desk %d, !CirculateHit) " \
+		    "MoveToPage %s $[w.pagex] $[w.pagey]",		    \
+		    (m)->si->name, (d), (m)->si->name);			    \
+		execute_function_override_window(NULL, NULL, cmd, 0, NULL); \
+		free(cmd);                                                  \
+	} while (0)
+
 /* ---------------------------- imports ------------------------------------ */
 
 /* ---------------------------- included code files ------------------------ */
@@ -293,6 +319,8 @@ static int GetDeskNumber(struct monitor *mon, char *action, int current_desk)
 	}
 	if (n == 1)
 	{
+		if (is_tracking_shared)
+			return val[0];
 		return current_desk + val[0];
 	}
 	desk = current_desk;
@@ -503,6 +531,9 @@ static void UnmapDesk(struct monitor *m, int desk, Bool grab)
 	FvwmWindow *t;
 	FvwmWindow *sf = get_focus_window();
 
+	if (is_tracking_shared && m->virtual_scr.is_swapping)
+		return;
+
 	if (grab)
 	{
 		MyXGrabServer(dpy);
@@ -575,6 +606,36 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 		/* Only change mapping for non-sticky windows */
 		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
+			if (is_tracking_shared) {
+				char	*cmd;
+
+				if (t->Desk == m->virtual_scr.CurrentDesk) {
+					map_window(t);
+					fvwm_debug(__func__,
+					    "'%s' is on [%s (%d)], "
+					    "and should be on: [%s (%d)]\n",
+					    t->visible_name, t->m->si->name,
+					    t->Desk, m->si->name,
+					    m->virtual_scr.CurrentDesk);
+
+					xasprintf(&cmd,
+					    "MoveToPage %s $[w.pagex] $[w.pagey]",
+					    m->si->name);
+
+					/* execute_function_override_window()
+					 * will expand cmd's variables.
+					 */
+					execute_function_override_window(NULL,
+					    NULL, cmd, 0, t);
+					free(cmd);
+
+					/* No need to map the window as it's
+					 * already mapped, so keep looking for
+					 * other windows.
+					 */
+					continue;
+				}
+			}
 			if (t->Desk == desk)
 			{
 				map_window(t);
@@ -905,7 +966,7 @@ int HandlePaging(
 
 	/* make sure the pointer isn't warped into the panframes */
 	/* Handle global/per-monitor separately.*/
-	if (monitor_mode == MONITOR_TRACKING_G) {
+	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
 		if (*xl < edge_thickness)
 			*xl = edge_thickness;
 		if (*yt < edge_thickness)
@@ -972,7 +1033,7 @@ void checkPanFrames(struct monitor *m)
 	bool do_unmap_r = false;
 	bool do_unmap_t = false;
 	bool do_unmap_b = false;
-	bool global = (monitor_mode == MONITOR_TRACKING_G);
+	bool global = (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared);
 
 	if (!Scr.flags.are_windows_captured)
 		return;
@@ -1253,7 +1314,7 @@ void initPanFrames(void)
 		}
 	}
 
-	if (monitor_mode == MONITOR_TRACKING_G) {
+	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
 		/* Treat the global panframes separately -- the logic for
 		 * handling these along with per-monitor ones was getting too
 		 * cumbersome.
@@ -1442,7 +1503,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
 		while (t != &Scr.FvwmRoot)
 		{
-			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m) {
+			if (NOT_GLOBALLY_ACTIVE(t->m, m)) {
 				/*  Bump to next win...  */
 				t = get_next_window_in_stack_ring(t);
 				continue;
@@ -1498,7 +1559,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
 		while (t1 != &Scr.FvwmRoot)
 		{
-			if ((monitor_mode == MONITOR_TRACKING_M) && t1->m != m) {
+			if (NOT_GLOBALLY_ACTIVE(t1->m, m)) {
 				/*  Bump to next win...  */
 				t1 = get_prev_window_in_stack_ring(t1);
 				continue;
@@ -1541,7 +1602,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 		}
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 		{
-			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
+			if (NOT_GLOBALLY_ACTIVE(t->m, m))
 				continue;
 
 			if (IS_VIEWPORT_MOVED(t))
@@ -1610,7 +1671,6 @@ void goto_desk(int desk, struct monitor *m)
 		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
 		m->virtual_scr.CurrentDesk = desk;
 		MapDesk(m, desk, True);
-
 		monitor_assign_virtual(m);
 
 		focus_grab_buttons_all();
@@ -1636,8 +1696,11 @@ void goto_desk(int desk, struct monitor *m)
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
 			if (m != m2) {
 				m2->Desktops = m->Desktops;
-				m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
-                        }
+				if (!is_tracking_shared) {
+					m2->virtual_scr.CurrentDesk =
+						m->virtual_scr.CurrentDesk;
+				}
+			}
 
 			BroadcastPacket(M_NEW_DESK, 2, (long)m2->virtual_scr.CurrentDesk,
 					(long)m2->si->rr_output);
@@ -1653,7 +1716,6 @@ void goto_desk(int desk, struct monitor *m)
 			 * pager doesn't maintain the stacking order. */
 			BroadcastRestackAllWindows();
 			EWMH_SetCurrentDesktop(m2);
-
 		}
 	}
 }
@@ -2217,12 +2279,12 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		return;
 	}
 
-	if (strcmp(action, "global") == 0) {
+	if (strcasecmp(action, "global") == 0) {
 		/* If we're switching to global mode after coming out of per-monitor
 		 * mode, the desks won't be the same.  Fix this by switching
 		 * other monitor desks to be the same as the current monitor.
 		 */
-
+		is_tracking_shared = false;
 		char *cmd = NULL;
 		TAILQ_FOREACH(m_loop, &monitor_q, entry) {
 			if (m_loop == m)
@@ -2237,13 +2299,134 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 			free(cmd);
 		}
 		monitor_mode = MONITOR_TRACKING_G;
-	} else if (strcmp(action, "per-monitor") == 0)
+		goto update;
+	}
+	if (strcasecmp(action, "per-monitor") == 0) {
 		monitor_mode = MONITOR_TRACKING_M;
-	else {
-		fvwm_debug(__func__, "action not recognised");
-		return;
+		is_tracking_shared = false;
+		goto update;
 	}
 
+	if (strcasecmp(action, "shared") == 0) {
+		/* If shared is already set, then don't go through this dance
+		 * of rearranging desktops each time.  It's visually
+		 * distracting.
+		 */
+		if (is_tracking_shared)
+			return;
+
+		/* If we only have one desktop and one montior defined, do
+		 * nothing (but log this).
+		 */
+		if (number_of_desktops(monitor_get_current()) <= 1 &&
+		    monitor_get_count() == 1) {
+			fvwm_debug(__func__, "Shared mode only works if there "
+			    "is more than one monitor attached, and the "
+			    "number of desktops defined via the DesktopName "
+			    "command is more than one.  For now, this command "
+			    "won't change anything.");
+			return;
+		}
+
+		is_tracking_shared = true;
+
+		/* DesktopName command will update these accordingly.  But for
+		 * now, ensure all monitors point to this.
+		 */
+
+		/* Steps:
+		 *
+		 * 1.	Initialise the shared_desktops structure.
+		 * 2.	Move all windows on all desks to new structure
+		 *	(memmove?)
+		 * 2.	Scan the screens for the current *active* desktop.
+		 *
+		 * 2a.	If global mode is being used, all monitors connected
+		 *	to it are looking at the same desktop.  In which case,
+		 *	take the *first* monitor, and move all the windows to
+		 *	that, and shuffle the active desktops by one on each
+		 *	other monitor.  So for example, if there were three
+		 *	monitors, all pointer to desktop 1 like this:
+		 *
+		 *	M1 => 1, M2 => 1, M3 => 1
+		 *
+		 *	then afterwards:
+		 *
+		 *	M1 => 1, M2 => 2, M3 => 3
+		 *
+		 * 2b.	If per-monitor mode is being used, then for each
+		 *	active desktop point that to the shared_desktops.  If
+		 *	both monitors are pointing to the same desktop as each
+		 *	other, move one of them back across all monitors
+		 *	(making them unique).
+		 */
+
+		if (monitor_mode == MONITOR_TRACKING_G) {
+			/* Every monitor in global mode is on the same desk,
+			 * but the windows will be on different monitors.
+			 * Take the *first* monitor in the list, and move all
+			 * other windows to that, and for all other monitors,
+			 * increment the desktop they're on, having first set
+			 * the tracking mode to be per-monitor.
+			 */
+			struct monitor	*m_first = TAILQ_FIRST(&monitor_q);
+			struct monitor	*m_loop;
+			int		 this_d = m_first->virtual_scr.CurrentDesk;
+
+			CMD_MOVE_SCREEN_DESK(m_first, this_d);
+
+			/* At this point, all windows are on the first screen.
+			 * Go through the other monitors, and assign them a
+			 * new desk which is higher than the previous.
+			 */
+			TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+				if (m_loop == m_first) {
+					this_d++;
+					continue;
+				}
+				CMD_GOTO_DESK(m_loop, this_d++);
+
+				/* For this desk we've switched to, move all
+				 * the windows from other monitos on to it.
+				 */
+				CMD_MOVE_SCREEN_DESK(m_loop, this_d);
+			}
+		} else {
+			/* Per-monitor mode.  In this case, handle two cases:
+			 *
+			 * 1.  The scenario where one or more connected
+			 * monitors are *all* on the same desk.  In this case,
+			 * we want to take the first monitor and nominate that
+			 * as the monitor to move the active desktops to.
+			 *
+			 * 2. All the monitors are different (either to
+			 * begin with, or because they've been moved to be
+			 * different), and windows on those desks now need to
+			 * be moved to the screen for which the desktop has
+			 * the current desktop.
+			 */
+			struct monitor	*m_loop, *first = TAILQ_FIRST(&monitor_q);
+			int		 this_desk = first->virtual_scr.CurrentDesk;
+
+			TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+				if (m_loop == first) {
+					CMD_MOVE_SCREEN_DESK(m_loop,
+					    m_loop->virtual_scr.CurrentDesk);
+					this_desk++;
+					continue;
+				}
+				CMD_GOTO_DESK(m_loop, this_desk++);
+				CMD_MOVE_SCREEN_DESK(m_loop,
+				    m_loop->virtual_scr.CurrentDesk);
+			}
+		}
+		monitor_mode = MONITOR_TRACKING_G;
+		goto update;
+	}
+	fvwm_debug(__func__, "action not recognised");
+	return;
+
+update:
 	initPanFrames();
 	raisePanFrames();
 
@@ -2304,8 +2487,9 @@ void CMD_DesktopSize(F_CMD_ARGS)
  */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
-	struct monitor  *m_use = monitor_get_current(), *m;
+	struct monitor  *m_use = monitor_get_current(), *m, *m_loop;
 	char		*action_cpy, *action_cpy_start, *token;
+	int		 new_desk;
 
 	action_cpy = strdup(action);
 	action_cpy_start = action_cpy;
@@ -2317,10 +2501,41 @@ void CMD_GotoDesk(F_CMD_ARGS)
 	else
 		PeekToken(action, &action);
 
-	fvwm_debug(__func__, "%s: using monitor: %s\n", __func__, m->si->name);
+	new_desk = GetDeskNumber(m, action, m->virtual_scr.CurrentDesk);
 
-	goto_desk(GetDeskNumber(m, action, m->virtual_scr.CurrentDesk), m);
+	if (is_tracking_shared) {
+		/* Check to see if this monitor is requesting a desktop which
+		 * is already mapped.  If it is, this desktop is going to have
+		 * to be exchanged with the other monitor, since there can
+		 * only ever be one desktop of the same number displayed at
+		 * once.
+		 */
+		int	 this_desk_now = m->virtual_scr.CurrentDesk;
 
+		TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+			if (m_loop == m)
+				continue;
+
+			if (m_loop->virtual_scr.CurrentDesk == new_desk) {
+				fvwm_debug(__func__, "Swapping %s/%d with %s/%d",
+				    m_loop->si->name, new_desk, m->si->name,
+				    this_desk_now);
+
+				m_loop->virtual_scr.is_swapping = true;
+				m->virtual_scr.is_swapping = true;
+
+				goto_desk(this_desk_now, m_loop);
+				goto_desk(new_desk, m);
+
+				m_loop->virtual_scr.is_swapping = false;
+				m->virtual_scr.is_swapping = false;
+
+				goto end;
+			}
+		}
+	}
+	goto_desk(new_desk, m);
+end:
 	free(action_cpy_start);
 	return;
 }
@@ -2380,9 +2595,12 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	}
 
 	is_new_desk = (m->virtual_scr.CurrentDesk != val[0]);
-	if (is_new_desk)
-	{
+
+	if (is_tracking_shared && is_new_desk) {
+		CMD_GOTO_DESK(m, val[0]);
+	} else 	if (is_new_desk) {
 		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
+		CMD_GOTO_DESK(m, val[0]);
 	}
 	m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
 	m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
@@ -2400,8 +2618,9 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		 */
 		monitor_assign_virtual(m);
 
-		MapDesk(m, val[0], True);
+		goto_desk(m->virtual_scr.CurrentDesk, m);
 		focus_grab_buttons_all();
+
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 			(long)m->si->rr_output);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
@@ -2477,9 +2696,26 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 	{
 		return;
 	}
-	do_move_window_to_desk(fw, desk);
 
-	return;
+	if (is_tracking_shared) {
+		struct monitor	*m;
+		char		*cmd;
+
+		TAILQ_FOREACH(m, &monitor_q, entry) {
+			if (m->virtual_scr.CurrentDesk == desk) {
+				xasprintf(&cmd,
+				    "MoveToPage %s $[w.pagex] $[w.pagey]",
+				    m->si->name);
+				execute_function_override_window(NULL, NULL,
+				    cmd, 0, fw);
+				free(cmd);
+
+				return;
+			}
+		}
+	}
+
+	do_move_window_to_desk(fw, desk);
 }
 
 void CMD_Scroll(F_CMD_ARGS)
