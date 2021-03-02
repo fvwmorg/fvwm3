@@ -4461,13 +4461,11 @@ MoveToDesk 0 n
 
 === Focus & Mouse Movement
 
-*CursorMove* _horizontal_[p] _vertical_[p] [_absolute horizontal_[p]] [_absolute vertical_[p]]::
-	Moves the mouse pointer by _horizontal_ pages in the X
-	direction and _vertical_ pages in the Y direction. Either or both
-	entries may be negative. Both horizontal and vertical values are
-	expressed in percent of pages. If both horizontal and vertical are zero,
-	then mouse pointer moves _to_ the position specified by _absolute
-	horizontal_ and _absolute vertical_.
+*CursorMove* _horizontal_[p] _vertical_[p]::
+	Moves the mouse pointer by _horizontal_ pages in the X direction and
+	_vertical_ pages in the Y direction. Either or both entries may be
+	negative. Both horizontal and vertical values are expressed in percent
+	of pages, so
 +
 
 ....
@@ -4495,18 +4493,6 @@ CursorMove -10p -10p
 +
 means move ten pixels up and ten pixels left. The CursorMove function
 should not be called from pop-up menus.
-+
-....
-CursorMove 0 0 50 50
-....
-+
-means move the mouse at the center of the screen.
-+
-....
-CursorMove 0 0 100p 100p
-....
-+
-means move the mouse to pixel 100,100 on the screen.
 
 *FlipFocus* [NoWarp]::
 	Executes a *Focus* command as if the user had used the pointer to
