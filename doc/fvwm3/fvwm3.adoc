@@ -4464,8 +4464,10 @@ MoveToDesk 0 n
 *CursorMove* _horizontal_[p] _vertical_[p]::
 	Moves the mouse pointer by _horizontal_ pages in the X direction and
 	_vertical_ pages in the Y direction. Either or both entries may be
-	negative. Both horizontal and vertical values are expressed in percent
-	of pages, so
+	negative. CursorMove can only move the mouse cursor to a relative
+	position. To move the mouse cursor to an absolute position, see
+	*WarpToWindow*. Both horizontal and vertical values are expressed in
+	percent of pages, so
 +
 
 ....
