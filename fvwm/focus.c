@@ -1252,30 +1252,35 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 		}
 		else
 		{
-			warp_to_fvwm_window(exc, 0, 0, 0, 0, do_raise);
+			warp_to_fvwm_window(
+				exc,
+				50, m->virtual_scr.MyDisplayWidth,
+				50, m->virtual_scr.MyDisplayHeight,
+				do_raise);
 		}
 	}
 	else
 	{
-		int x = 0;
-		int y = 0;
+		int wx;
+		int wy;
+		int ww;
+		int wh;
+
+		if (!XGetGeometry(
+				dpy, exc->w.w, &JunkRoot, &wx, &wy,
+				(unsigned int*)&ww, (unsigned int*)&wh,
+				(unsigned int*)&JunkBW,
+				(unsigned int*)&JunkDepth))
+		{
+			free(token);
+			return;
+		}
+
+		int x = (ww - 1) / 2;
+		int y = (wh - 1) / 2;
 
 		if (n == 2)
 		{
-			int wx;
-			int wy;
-			int ww;
-			int wh;
-
-			if (!XGetGeometry(
-				    dpy, exc->w.w, &JunkRoot, &wx, &wy,
-				    (unsigned int*)&ww, (unsigned int*)&wh,
-				    (unsigned int*)&JunkBW,
-				    (unsigned int*)&JunkDepth))
-			{
-				free(token);
-				return;
-			}
 			if (val1_unit != m->virtual_scr.MyDisplayWidth)
 			{
 				x = val1;
