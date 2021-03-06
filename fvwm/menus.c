@@ -6207,6 +6207,9 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 					indirect_depth--;
 					free(*pmp->ret_paction);
 					*pmp->ret_paction = NULL;
+
+					MyXUngrabKeyboard(dpy);
+					return;
 				}
 				last_saved_pos_hints.flags.
 					do_ignore_pos_hints = False;
