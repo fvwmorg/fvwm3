@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Actions from a pinned menu are triggered by mouse move instead of mouse release [\#456](https://github.com/fvwmorg/fvwm3/issues/456)
 - Font-rendering causes fvwm to lock-up [\#446](https://github.com/fvwmorg/fvwm3/issues/446)
 - \(CurrentPage, AnyScreen\) calculation slightly too generous. \(Regression cf. fvwm2.\) [\#443](https://github.com/fvwmorg/fvwm3/issues/443)
 - \_NET\_CURRENT\_DESKTOP tracking breaks google-chrome [\#442](https://github.com/fvwmorg/fvwm3/issues/442)
@@ -53,6 +54,8 @@
 
 **Merged pull requests:**
 
+- EWMH: CurrentDesktop improvements [\#458](https://github.com/fvwmorg/fvwm3/pull/458) ([ThomasAdam](https://github.com/ThomasAdam))
+- Tear-off menu: don't mask pos\_hints [\#457](https://github.com/fvwmorg/fvwm3/pull/457) ([ThomasAdam](https://github.com/ThomasAdam))
 - \_NET\_CURRENT\_DESKTOP: update across monitor boundaries [\#449](https://github.com/fvwmorg/fvwm3/pull/449) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix uninitialized value and bad free [\#447](https://github.com/fvwmorg/fvwm3/pull/447) ([mikeandmore](https://github.com/mikeandmore))
 - Fix over-eager window positioning [\#445](https://github.com/fvwmorg/fvwm3/pull/445) ([ThomasAdam](https://github.com/ThomasAdam))
