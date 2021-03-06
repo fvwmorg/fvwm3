@@ -2543,7 +2543,9 @@ void HandleFocusIn(const evh_args_t *ea)
 				BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
 				    fw->m->si->name /* Name of the monitor. */
 			        );
-				EWMH_SetCurrentDesktop(fw->m);
+				if (pfm->virtual_scr.CurrentDesk !=
+				    fw->m->virtual_scr.CurrentDesk)
+					EWMH_SetCurrentDesktop(fw->m);
 			}
 			status_send();
 		}
