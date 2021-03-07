@@ -972,6 +972,7 @@ void checkPanFrames(struct monitor *m)
 	bool do_unmap_r = false;
 	bool do_unmap_t = false;
 	bool do_unmap_b = false;
+	bool global = (monitor_mode == MONITOR_TRACKING_G);
 	struct monitor	*mcur;
 
 	if (!Scr.flags.are_windows_captured)
@@ -987,6 +988,11 @@ void checkPanFrames(struct monitor *m)
 	}
 
 	{
+		int h = global ? monitor_get_all_heights() : (m->si->y + m->si->h);
+		int w = global ? monitor_get_all_widths() : (m->si->x + m->si->w);
+		int x = global ? 0 : m->si->x;
+		int y = global ? 0 : m->si->y;
+
 		/* Remove Pan frames if paging by edge-scroll is permanently or
 		 * temporarily disabled */
 		if (m->virtual_scr.EdgeScrollX == 0 || m->virtual_scr.VxMax == 0)
@@ -1056,7 +1062,7 @@ void checkPanFrames(struct monitor *m)
 			{
 				XResizeWindow(
 					dpy, m->PanFrameLeft.win, edge_thickness,
-					m->si->y + m->si->h);
+					h);
 			}
 			if (!m->PanFrameLeft.isMapped)
 			{
@@ -1079,9 +1085,8 @@ void checkPanFrames(struct monitor *m)
 			{
 				XMoveResizeWindow(
 					dpy, m->PanFrameRight.win,
-					(m->si->x + m->si->w) - edge_thickness,
-					m->si->y,
-					edge_thickness, (m->si->y + m->si->h));
+					w - edge_thickness,
+					y, edge_thickness, h);
 			}
 			if (!m->PanFrameRight.isMapped)
 			{
@@ -1102,10 +1107,8 @@ void checkPanFrames(struct monitor *m)
 		{
 			if (edge_thickness != last_edge_thickness)
 			{
-				XResizeWindow(
-					dpy, m->PanFrameTop.win,
-					(m->si->x + m->si->w),
-					edge_thickness);
+				XResizeWindow( dpy, m->PanFrameTop.win, w,
+				    edge_thickness);
 			}
 			if (!m->PanFrameTop.isMapped)
 			{
@@ -1127,9 +1130,9 @@ void checkPanFrames(struct monitor *m)
 			if (edge_thickness != last_edge_thickness)
 			{
 				XMoveResizeWindow(
-					dpy, m->PanFrameBottom.win, m->si->x,
-					(m->si->y + m->si->h) - edge_thickness,
-					(m->si->x + m->si->w), edge_thickness);
+					dpy, m->PanFrameBottom.win, x,
+					h - edge_thickness,
+					w, edge_thickness);
 			}
 			if (!m->PanFrameBottom.isMapped)
 			{
@@ -1140,6 +1143,7 @@ void checkPanFrames(struct monitor *m)
 
 	}
 	last_edge_thickness = edge_thickness;
+	monitor_assign_virtual(m);
 }
 
 /*
