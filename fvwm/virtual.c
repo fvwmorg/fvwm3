@@ -1288,6 +1288,7 @@ void initPanFrames(void)
 			memcpy(&mloop->PanFrameBottom, &m->PanFrameBottom, sizeof(m->PanFrameBottom));
 		}
 		checkPanFrames(m);
+		edge_thickness = saved_thickness;
 		fvwm_debug(__func__, "finished setting up global panframes");
 		return;
 	}
