@@ -304,6 +304,10 @@ monitor_assign_virtual(struct monitor *ref)
 			continue;
 
 		memcpy(&m->virtual_scr, &ref->virtual_scr, sizeof(m->virtual_scr));
+		memcpy(&m->PanFrameTop, &ref->PanFrameTop, sizeof(m->PanFrameTop));
+		memcpy(&m->PanFrameLeft, &ref->PanFrameLeft, sizeof(m->PanFrameLeft));
+		memcpy(&m->PanFrameRight, &ref->PanFrameRight, sizeof(m->PanFrameRight));
+		memcpy(&m->PanFrameBottom, &ref->PanFrameBottom, sizeof(m->PanFrameBottom));
 	}
 }
 
