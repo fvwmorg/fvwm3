@@ -902,24 +902,29 @@ int HandlePaging(
 		return 0;
 	}
 
-	/* make sure the pointer isn't warped into the panframes */
-	if (*xl <= (m->si->x + edge_thickness))
-	{
-		*xl = m->si->x + edge_thickness;
-	}
-	if (*yt <= (m->si->y + edge_thickness))
-	{
-		*yt = edge_thickness;
-	}
-	if (*xl >= (m->si->x + m->si->w) - edge_thickness)
-	{
-		*xl = (m->si->x + m->si->w) - edge_thickness -1;
-	}
-	if (*yt >= (m->si->y + m->si->h) - edge_thickness)
-	{
-		*yt = (m->si->y + m->si->h) - edge_thickness -1;
-	}
 
+	/* make sure the pointer isn't warped into the panframes */
+	/* Handle global/per-monitor separately.*/
+	if (monitor_mode == MONITOR_TRACKING_G) {
+		if (*xl < edge_thickness)
+			*xl = edge_thickness;
+		if (*yt < edge_thickness)
+			*yt = edge_thickness;
+		if (*xl >= mwidth - edge_thickness)
+			*xl = mwidth - edge_thickness -1;
+		if (*yt >= mheight - edge_thickness)
+			*yt = mheight - edge_thickness -1;
+	} else {
+		/* Per-monitor warping of the cursor. */
+		if (*xl <= (m->si->x + edge_thickness))
+			*xl = m->si->x + edge_thickness;
+		if (*yt <= (m->si->y + edge_thickness))
+			*yt = edge_thickness;
+		if (*xl >= (m->si->x + m->si->w) - edge_thickness)
+			*xl = (m->si->x + m->si->w) - edge_thickness -1;
+		if (*yt >= (m->si->y + m->si->h) - edge_thickness)
+			*yt = (m->si->y + m->si->h) - edge_thickness -1;
+	}
 	if (Grab)
 	{
 		MyXGrabServer(dpy);
