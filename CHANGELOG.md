@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Two PanFrame/EdgeScroll issues. \(Regression cf. FVWM2.\) [\#459](https://github.com/fvwmorg/fvwm3/issues/459)
 - Actions from a pinned menu are triggered by mouse move instead of mouse release [\#456](https://github.com/fvwmorg/fvwm3/issues/456)
 - Font-rendering causes fvwm to lock-up [\#446](https://github.com/fvwmorg/fvwm3/issues/446)
 - \(CurrentPage, AnyScreen\) calculation slightly too generous. \(Regression cf. fvwm2.\) [\#443](https://github.com/fvwmorg/fvwm3/issues/443)
@@ -26,7 +27,6 @@
 - FvwmPager shows app on wrong page with StartsOnDesk [\#433](https://github.com/fvwmorg/fvwm3/issues/433)
 - 21 byte memory leak in merge\_styles \(3 tiny leaks of 7 bytes\) [\#430](https://github.com/fvwmorg/fvwm3/issues/430)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
-- killing stalonetray also kills RightPanel [\#420](https://github.com/fvwmorg/fvwm3/issues/420)
 - Invalid read of size 1 \(reading freed memory\) [\#418](https://github.com/fvwmorg/fvwm3/issues/418)
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
@@ -54,6 +54,7 @@
 
 **Merged pull requests:**
 
+- PanFrame improvements [\#460](https://github.com/fvwmorg/fvwm3/pull/460) ([ThomasAdam](https://github.com/ThomasAdam))
 - EWMH: CurrentDesktop improvements [\#458](https://github.com/fvwmorg/fvwm3/pull/458) ([ThomasAdam](https://github.com/ThomasAdam))
 - Tear-off menu: don't mask pos\_hints [\#457](https://github.com/fvwmorg/fvwm3/pull/457) ([ThomasAdam](https://github.com/ThomasAdam))
 - \_NET\_CURRENT\_DESKTOP: update across monitor boundaries [\#449](https://github.com/fvwmorg/fvwm3/pull/449) ([ThomasAdam](https://github.com/ThomasAdam))
