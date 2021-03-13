@@ -10,6 +10,7 @@
 
 **Implemented enhancements:**
 
+- Resize edge scroll [\#461](https://github.com/fvwmorg/fvwm3/issues/461)
 - FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
 - fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
 - Conditionals: add TitleAt{Top,Bottom,Left,Right} [\#439](https://github.com/fvwmorg/fvwm3/pull/439) ([ThomasAdam](https://github.com/ThomasAdam))
