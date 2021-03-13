@@ -52,12 +52,6 @@ Items
       explicitly stated.
     * [X] Remove the ewmh_intern.h:CMD_EWMH_ARGS macro, I'd rather have the
       prototypes explicitly stated.
-    * [ ] Consider using doxygen for API-specific documentation?  This would
-      help justify/cleanup functions in the longer-term by identifying
-      similar functions, etc.
-      dv: In my experience using doxygen automatically leads to mostly
-          unuseable function documentation.  I'm against using it since it does
-          not help to understand how functions are related to each other.
 
 * Messages:
     * More debug output to help the user pinning down why a window does not
@@ -66,11 +60,6 @@ Items
       output, when a window first pops up, there is none after the initial
       mapping when the really interesing things happen (messages from the client
       application).
-    * Look over all existing messages, add a proper severity (debug, info,
-      warning, deprecated, error etc.) and feature number and make the messages
-      switchable through the config file.
-    * Allow to disable all messages through configure to allow for smaller
-      builds.
 
 * String handling:
     * [ ] libs/String.[ch] and friends have idioms like CatString3, and
@@ -91,8 +80,8 @@ Items
     * [ ] Configuration:
         * [ ] Enumerate outputs without requiring config file changes.  See:
             http://www.mail-archive.com/fvwm-workers@fvwm.org/msg03649.html
-    * [ ] Separate desktops per monitor:
-	    * [ ] PanWindows per-monitor inhibit moving windows across screen
+    * [X] Separate desktops per monitor:
+	    * [X] PanWindows per-monitor inhibit moving windows across screen
 	      boundaries.  Have a key-binding to stop panning?
 
 * Clients:
