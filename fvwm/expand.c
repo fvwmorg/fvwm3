@@ -590,19 +590,19 @@ static signed int expand_vars_extended(
 		break;
 	case VAR_DESK_WIDTH:
 		is_numeric = True;
-		val = m->virtual_scr.VxMax + m->virtual_scr.MyDisplayWidth;
+		val = m->virtual_scr.VxMax + monitor_get_all_widths();
 		break;
 	case VAR_DESK_HEIGHT:
 		is_numeric = True;
-		val = m->virtual_scr.VyMax + m->virtual_scr.MyDisplayHeight;
+		val = m->virtual_scr.VyMax + monitor_get_all_heights();
 		break;
 	case VAR_DESK_PAGESX:
 		is_numeric = True;
-		val = (int)(m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1;
+		val = (int)(m->virtual_scr.VxMax / monitor_get_all_widths()) + 1;
 		break;
 	case VAR_DESK_PAGESY:
 		is_numeric = True;
-		val = (int)(m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1;
+		val = (int)(m->virtual_scr.VyMax / monitor_get_all_heights()) + 1;
 		break;
 	case VAR_VP_X:
 		is_numeric = True;
@@ -614,11 +614,11 @@ static signed int expand_vars_extended(
 		break;
 	case VAR_VP_WIDTH:
 		is_numeric = True;
-		val = m->virtual_scr.MyDisplayWidth;
+		val = monitor_get_all_widths();
 		break;
 	case VAR_VP_HEIGHT:
 		is_numeric = True;
-		val = m->virtual_scr.MyDisplayHeight;
+		val = monitor_get_all_heights();
 		break;
 	case VAR_WA_HEIGHT:
 		is_numeric = True;

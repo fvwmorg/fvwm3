@@ -935,7 +935,7 @@ void CMD_WindowList(F_CMD_ARGS)
 					sprintf(loc, "+%d",
 						(mon->virtual_scr.Vx + t->g.frame.x +
 						 t->g.frame.width / 2) /
-						mon->virtual_scr.MyDisplayWidth);
+						monitor_get_all_widths());
 					strcat(tname, loc);
 				}
 				if (flags & SHOW_PAGE_Y)
@@ -943,7 +943,7 @@ void CMD_WindowList(F_CMD_ARGS)
 					sprintf(loc, "+%d",
 						(mon->virtual_scr.Vy + t->g.frame.y +
 						 t->g.frame.height/2) /
-						mon->virtual_scr.MyDisplayHeight);
+						monitor_get_all_heights());
 					strcat(tname, loc);
 				}
 				if (!(flags & NO_LAYER))

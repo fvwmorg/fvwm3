@@ -278,8 +278,8 @@ static void hide_screen(
 		valuemask = CWOverrideRedirect | CWCursor | CWSaveUnder |
 			CWBackingStore | CWBackPixmap;
 		hide_win = XCreateWindow(
-			dpy, Scr.Root, 0, 0, m->virtual_scr.MyDisplayWidth,
-			m->virtual_scr.MyDisplayHeight, 0, Pdepth, InputOutput,
+			dpy, Scr.Root, 0, 0, monitor_get_all_widths(),
+			monitor_get_all_heights(), 0, Pdepth, InputOutput,
 			Pvisual, valuemask, &xswa);
 		if (hide_win)
 		{
@@ -289,8 +289,8 @@ static void hide_screen(
 			 * reparent them to an unmapped window that looks like
 			 * the root window. */
 			parent_win = XCreateWindow(
-				dpy, Scr.Root, 0, 0, m->virtual_scr.MyDisplayWidth,
-				m->virtual_scr.MyDisplayHeight, 0, CopyFromParent,
+				dpy, Scr.Root, 0, 0, monitor_get_all_widths(),
+				monitor_get_all_heights(), 0, CopyFromParent,
 				InputOutput, CopyFromParent, valuemask, &xswa);
 			if (!parent_win)
 			{
@@ -2702,8 +2702,8 @@ FvwmWindow *AddWindow(
 		memset(&e, 0, sizeof(e));
 		FWarpPointer(
 			dpy, Scr.Root, Scr.Root, 0, 0,
-			mon->virtual_scr.MyDisplayWidth,
-			mon->virtual_scr.MyDisplayHeight,
+			monitor_get_all_widths(),
+			monitor_get_all_heights(),
 			fw->g.frame.x + (fw->g.frame.width>>1),
 			fw->g.frame.y + (fw->g.frame.height>>1));
 		e.xany.type = ButtonPress;
@@ -3596,25 +3596,25 @@ void RestoreWithdrawnLocation(
 	{
 		/* Don't mess with it if its partially on the screen now */
 		if (unshaded_g.x < 0 || unshaded_g.y < 0 ||
-		    unshaded_g.x >= m->virtual_scr.MyDisplayWidth ||
-		    unshaded_g.y >= m->virtual_scr.MyDisplayHeight)
+		    unshaded_g.x >= monitor_get_all_widths() ||
+		    unshaded_g.y >= monitor_get_all_heights())
 		{
 			w2 = (unshaded_g.width >> 1);
 			h2 = (unshaded_g.height >> 1);
-			if ( xwc.x < -w2 || xwc.x > m->virtual_scr.MyDisplayWidth - w2)
+			if ( xwc.x < -w2 || xwc.x > monitor_get_all_widths() - w2)
 			{
-				xwc.x = xwc.x % m->virtual_scr.MyDisplayWidth;
+				xwc.x = xwc.x % monitor_get_all_widths();
 				if (xwc.x < -w2)
 				{
-					xwc.x += m->virtual_scr.MyDisplayWidth;
+					xwc.x += monitor_get_all_widths();
 				}
 			}
-			if (xwc.y < -h2 || xwc.y > m->virtual_scr.MyDisplayHeight - h2)
+			if (xwc.y < -h2 || xwc.y > monitor_get_all_heights() - h2)
 			{
-				xwc.y = xwc.y % m->virtual_scr.MyDisplayHeight;
+				xwc.y = xwc.y % monitor_get_all_heights();
 				if (xwc.y < -h2)
 				{
-					xwc.y += m->virtual_scr.MyDisplayHeight;
+					xwc.y += monitor_get_all_heights();
 				}
 			}
 		}

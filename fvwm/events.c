@@ -734,8 +734,8 @@ static inline void _cr_detect_icccm_move(
 	/* check full screen */
 	if ((cre->value_mask & (CWX | CWY)) == (CWX | CWY) &&
 	    (has_x || has_y) &&
-	    cre->width == mon->virtual_scr.MyDisplayWidth &&
-	    cre->height == mon->virtual_scr.MyDisplayHeight)
+	    cre->width == monitor_get_all_widths() &&
+	    cre->height == monitor_get_all_heights())
 	{
 		if (grav_g.x == -b->top_left.width &&
 		    grav_g.y == -b->top_left.height)
@@ -804,11 +804,11 @@ static inline void _cr_detect_icccm_move(
 	{
 		mx = CR_MOTION_METHOD_AUTO;
 	}
-	else if (static_g.x == 0 || static_g.x + w == mon->virtual_scr.MyDisplayWidth)
+	else if (static_g.x == 0 || static_g.x + w == monitor_get_all_widths())
 	{
 		mx = CR_MOTION_METHOD_STATIC_GRAV;
 	}
-	else if (grav_g.x == 0 || grav_g.x + w == mon->virtual_scr.MyDisplayWidth)
+	else if (grav_g.x == 0 || grav_g.x + w == monitor_get_all_widths())
 	{
 		mx = CR_MOTION_METHOD_USE_GRAV;
 	}
@@ -820,11 +820,11 @@ static inline void _cr_detect_icccm_move(
 	{
 		my = CR_MOTION_METHOD_AUTO;
 	}
-	else if (static_g.y == 0 || static_g.y + h == mon->virtual_scr.MyDisplayHeight)
+	else if (static_g.y == 0 || static_g.y + h == monitor_get_all_heights())
 	{
 		my = CR_MOTION_METHOD_STATIC_GRAV;
 	}
-	else if (grav_g.y == 0 || grav_g.y + h == mon->virtual_scr.MyDisplayHeight)
+	else if (grav_g.y == 0 || grav_g.y + h == monitor_get_all_heights())
 	{
 		my = CR_MOTION_METHOD_USE_GRAV;
 	}

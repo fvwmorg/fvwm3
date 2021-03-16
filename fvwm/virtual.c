@@ -665,8 +665,8 @@ int HandlePaging(
 	struct monitor	*m = monitor_get_current();
 	int mwidth, mheight;
 
-	mwidth = m->virtual_scr.MyDisplayWidth;
-	mheight = m->virtual_scr.MyDisplayHeight;
+	mwidth = monitor_get_all_widths();
+	mheight = monitor_get_all_heights();
 
 
 	*delta_x = 0;
@@ -1387,8 +1387,8 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =  m->virtual_scr.MyDisplayHeight - deltay - 1;
-	PageRight     =  m->virtual_scr.MyDisplayWidth  - deltax - 1;
+	PageBottom    =  monitor_get_all_heights() - deltay - 1;
+	PageRight     =  monitor_get_all_widths()  - deltax - 1;
 	PageTop       =  0 - deltay;
 	PageLeft      =  0 - deltax;
 
@@ -1419,10 +1419,10 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 				(long)mloop->virtual_scr.Vx,
 				(long)mloop->virtual_scr.Vy,
 				(long)mloop->virtual_scr.CurrentDesk,
-				(long)mloop->virtual_scr.MyDisplayWidth,
-				(long)mloop->virtual_scr.MyDisplayHeight,
-				(long)((mloop->virtual_scr.VxMax / mloop->virtual_scr.MyDisplayWidth ) + 1),
-				(long)((mloop->virtual_scr.VyMax / mloop->virtual_scr.MyDisplayHeight) + 1),
+				(long) monitor_get_all_widths(),
+				(long) monitor_get_all_heights(),
+				(long)((mloop->virtual_scr.VxMax / monitor_get_all_widths()) + 1),
+				(long)((mloop->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
 				(long)mloop->si->rr_output);
 		}
 		/*
@@ -1748,8 +1748,8 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 	if (mret != NULL)
 		*mret = m;
 
-	mw = m->virtual_scr.MyDisplayWidth;
-	mh = m->virtual_scr.MyDisplayHeight;
+	mw = monitor_get_all_widths();
+	mh = monitor_get_all_heights();
 
 	for (; ; action = taction)
 	{
@@ -1854,12 +1854,12 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 		while (*page_x < 0)
 		{
 			*page_x += m->virtual_scr.VxMax +
-				m->virtual_scr.MyDisplayWidth;
+				monitor_get_all_widths();
 		}
 		while (*page_x > m->virtual_scr.VxMax)
 		{
 			*page_x -= m->virtual_scr.VxMax +
-				m->virtual_scr.MyDisplayWidth;
+				monitor_get_all_widths();
 		}
 	}
 	if (limitdesky && !wrapy)
@@ -1878,12 +1878,12 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 		while (*page_y < 0)
 		{
 			*page_y += m->virtual_scr.VyMax +
-				m->virtual_scr.MyDisplayHeight;
+				monitor_get_all_heights();
 		}
 		while (*page_y > m->virtual_scr.VyMax)
 		{
 			*page_y -= m->virtual_scr.VyMax +
-				m->virtual_scr.MyDisplayHeight;
+				monitor_get_all_heights();
 		}
 	}
 
@@ -2233,8 +2233,8 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 			xasprintf(&cmd, "GotoDeskAndPage %s %d %d %d",
 				m_loop->si->name,
 				m->virtual_scr.CurrentDesk,
-				m->virtual_scr.Vx / m->virtual_scr.MyDisplayWidth,
-				m->virtual_scr.Vy / m->virtual_scr.MyDisplayHeight);
+				m->virtual_scr.Vx / monitor_get_all_widths(),
+				m->virtual_scr.Vy / monitor_get_all_heights());
 
 			execute_function_override_window(NULL, NULL, cmd, 0, NULL);
 			free(cmd);
@@ -2260,9 +2260,9 @@ void
 calculate_page_sizes(struct monitor *m, int dx, int dy)
 {
 	m->virtual_scr.VxMax = dx *
-		m->virtual_scr.MyDisplayWidth - m->virtual_scr.MyDisplayWidth;
+		monitor_get_all_widths() - monitor_get_all_widths();
 	m->virtual_scr.VyMax = dy *
-		m->virtual_scr.MyDisplayHeight - m->virtual_scr.MyDisplayHeight;
+		monitor_get_all_heights() - monitor_get_all_heights();
 }
 
 void CMD_DesktopSize(F_CMD_ARGS)
@@ -2289,10 +2289,10 @@ void CMD_DesktopSize(F_CMD_ARGS)
 			(long)m->virtual_scr.Vx,
 			(long)m->virtual_scr.Vy,
 			(long)m->virtual_scr.CurrentDesk,
-			(long)m->virtual_scr.MyDisplayWidth,
-			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long) monitor_get_all_widths(),
+			(long) monitor_get_all_heights(),
+			(long)((m->virtual_scr.VxMax / monitor_get_all_widths()) + 1),
+			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
 			(long)m->si->rr_output);
 
 		EWMH_SetDesktopGeometry(m);
@@ -2374,8 +2374,8 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	}
 	else if (GetIntegerArguments(action, NULL, val, 3) == 3)
 	{
-		val[1] *= m->virtual_scr.MyDisplayWidth;
-		val[2] *= m->virtual_scr.MyDisplayHeight;
+		val[1] *= monitor_get_all_widths();
+		val[2] *= monitor_get_all_heights();
 	}
 	else
 	{
@@ -2530,20 +2530,20 @@ void CMD_Scroll(F_CMD_ARGS)
 	{
 		int xpixels;
 
-		xpixels = (m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth + 1) *
-			m->virtual_scr.MyDisplayWidth;
+		xpixels = (m->virtual_scr.VxMax / monitor_get_all_widths() + 1) *
+			monitor_get_all_widths();
 		x %= xpixels;
-		y += m->virtual_scr.MyDisplayHeight * (1+((x-m->virtual_scr.VxMax-1)/xpixels));
+		y += monitor_get_all_heights() * (1+((x-m->virtual_scr.VxMax-1)/xpixels));
 		if (y > m->virtual_scr.VyMax)
 		{
-			y %= (m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight + 1) *
-				m->virtual_scr.MyDisplayHeight;
+			y %= (m->virtual_scr.VyMax / monitor_get_all_heights() + 1) *
+				monitor_get_all_heights();
 		}
 	}
 	if (((val1 <= -100000)||(val1 >= 100000))&&(x<0))
 	{
 		x = m->virtual_scr.VxMax;
-		y -= m->virtual_scr.MyDisplayHeight;
+		y -= monitor_get_all_heights();
 		if (y < 0)
 		{
 			y=m->virtual_scr.VyMax;
@@ -2551,20 +2551,20 @@ void CMD_Scroll(F_CMD_ARGS)
 	}
 	if (((val2 <= -100000)||(val2>= 100000))&&(y>m->virtual_scr.VyMax))
 	{
-		int ypixels = (m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight + 1) *
-			m->virtual_scr.MyDisplayHeight;
+		int ypixels = (m->virtual_scr.VyMax / monitor_get_all_heights() + 1) *
+			monitor_get_all_heights();
 		y %= ypixels;
-		x += m->virtual_scr.MyDisplayWidth * (1+((y-m->virtual_scr.VyMax-1)/ypixels));
+		x += monitor_get_all_widths() * (1+((y-m->virtual_scr.VyMax-1)/ypixels));
 		if (x > m->virtual_scr.VxMax)
 		{
-			x %= (m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth + 1) *
-				m->virtual_scr.MyDisplayWidth;
+			x %= (m->virtual_scr.VxMax / monitor_get_all_widths() + 1) *
+				monitor_get_all_widths();
 		}
 	}
 	if (((val2 <= -100000)||(val2>= 100000))&&(y<0))
 	{
 		y = m->virtual_scr.VyMax;
-		x -= m->virtual_scr.MyDisplayWidth;
+		x -= monitor_get_all_widths();
 		if (x < 0)
 		{
 			x=m->virtual_scr.VxMax;

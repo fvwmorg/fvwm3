@@ -78,8 +78,8 @@ int GetTwoArguments(
 	char *action, int *val1, int *val2, int *val1_unit, int *val2_unit)
 {
 	struct monitor	*m = monitor_get_current();
-	*val1_unit = m->virtual_scr.MyDisplayWidth;
-	*val2_unit = m->virtual_scr.MyDisplayHeight;
+	*val1_unit = monitor_get_all_widths();
+	*val2_unit = monitor_get_all_heights();
 
 	return GetTwoPercentArguments(action, val1, val2, val1_unit, val2_unit);
 }
@@ -434,9 +434,9 @@ Bool IsRectangleOnThisPage(struct monitor *m, const rectangle *rec, int desk)
 
 	//if (m->virtual_scr.CurrentDesk == desk &&
 	if (rec->x + (signed int)rec->width > 0 &&
-		(rec->x < 0 || rec->x < m->virtual_scr.MyDisplayWidth) &&
+		(rec->x < 0 || rec->x < monitor_get_all_widths()) &&
 		rec->y + (signed int)rec->height > 0 &&
-		(rec->y < 0 || rec->y < m->virtual_scr.MyDisplayHeight)) {
+		(rec->y < 0 || rec->y < monitor_get_all_heights())) {
 			return (True);
 	}
 	return (False);

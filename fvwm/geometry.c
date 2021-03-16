@@ -659,8 +659,8 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	m = fw->m;
 	off_x = fw->g.normal.x - fw->g.max.x - fw->g.max_offset.x;
 	off_y = fw->g.normal.y - fw->g.max.y - fw->g.max_offset.y;
-	dw = m->virtual_scr.MyDisplayWidth;
-	dh = m->virtual_scr.MyDisplayHeight;
+	dw = monitor_get_all_widths();
+	dh = monitor_get_all_heights();
 	if (off_x >= dw)
 	{
 		fw->g.normal.x -= (off_x / dw) * dw;
@@ -949,7 +949,7 @@ void constrain_size(
 		}
 		else if (
 			xmotion < 0 && e->xmotion.x_root >=
-			m->virtual_scr.MyDisplayWidth - round_up.width)
+			monitor_get_all_widths() - round_up.width)
 		{
 			d.width -= inc.width;
 		}
@@ -959,7 +959,7 @@ void constrain_size(
 		}
 		else if (
 			ymotion < 0 && e->xmotion.y_root >=
-			m->virtual_scr.MyDisplayHeight - round_up.height)
+			monitor_get_all_heights() - round_up.height)
 		{
 			d.height -= inc.height;
 		}
@@ -1360,14 +1360,14 @@ void get_page_offset_rectangle(FvwmWindow *fw,
 
 	/* FIXME: broadcast if global monitor in use. */
 
-	int xoff = m->virtual_scr.Vx % m->virtual_scr.MyDisplayWidth;
-	int yoff = m->virtual_scr.Vy % m->virtual_scr.MyDisplayHeight;
+	int xoff = m->virtual_scr.Vx % monitor_get_all_widths();
+	int yoff = m->virtual_scr.Vy % monitor_get_all_heights();
 
 	/* maximize on the page where the center of the window is */
 	*ret_page_x = truncate_to_multiple(
-		r->x + r->width / 2 + xoff, m->virtual_scr.MyDisplayWidth) - xoff;
+		r->x + r->width / 2 + xoff, monitor_get_all_widths()) - xoff;
 	*ret_page_y = truncate_to_multiple(
-		r->y + r->height / 2 + yoff, m->virtual_scr.MyDisplayHeight) - yoff;
+		r->y + r->height / 2 + yoff, monitor_get_all_heights()) - yoff;
 
 	return;
 }

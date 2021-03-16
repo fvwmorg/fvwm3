@@ -1661,12 +1661,12 @@ void AutoPlaceIcon(
     base_x = 0;
     base_y = 0;
     /*Also, if its a stickyWindow, put it on the current page! */
-    new_x = t->g.frame.x % t->m->virtual_scr.MyDisplayWidth;
-    new_y = t->g.frame.y % t->m->virtual_scr.MyDisplayHeight;
+    new_x = t->g.frame.x % monitor_get_all_widths();
+    new_y = t->g.frame.y % monitor_get_all_heights();
     if (new_x + t->g.frame.width <= 0)
-      new_x += t->m->virtual_scr.MyDisplayWidth;
+      new_x += monitor_get_all_widths();
     if (new_y + t->g.frame.height <= 0)
-      new_y += t->m->virtual_scr.MyDisplayHeight;
+      new_y += monitor_get_all_heights();
     frame_setup_window(
 	    t, new_x, new_y, t->g.frame.width, t->g.frame.height, False);
   }
@@ -1678,9 +1678,9 @@ void AutoPlaceIcon(
   else
   {
     base_x = ((t->g.frame.x + t->m->virtual_scr.Vx + (t->g.frame.width >> 1)) /
-      t->m->virtual_scr.MyDisplayWidth) * t->m->virtual_scr.MyDisplayWidth;
+      monitor_get_all_widths()) * monitor_get_all_widths();
     base_y= ((t->g.frame.y + t->m->virtual_scr.Vy + (t->g.frame.height >> 1)) /
-      t->m->virtual_scr.MyDisplayHeight) * t->m->virtual_scr.MyDisplayHeight;
+      monitor_get_all_heights()) * monitor_get_all_heights();
     /* limit icon position to desktop */
     if (base_x > t->m->virtual_scr.VxMax)
       base_x = t->m->virtual_scr.VxMax;
@@ -1710,15 +1710,15 @@ void AutoPlaceIcon(
     dy = g.y;
 
     /* just make sure the icon is on this page */
-    g.x = g.x % t->m->virtual_scr.MyDisplayWidth + base_x;
-    g.y = g.y % t->m->virtual_scr.MyDisplayHeight + base_y;
+    g.x = g.x % monitor_get_all_widths() + base_x;
+    g.y = g.y % monitor_get_all_heights() + base_y;
     if (g.x < 0)
     {
-      g.x += t->m->virtual_scr.MyDisplayWidth;
+      g.x += monitor_get_all_widths();
     }
     if (g.y < 0)
     {
-      g.y += t->m->virtual_scr.MyDisplayHeight;
+      g.y += monitor_get_all_heights();
     }
     dx = g.x - dx;
     dy = g.y - dy;
@@ -2358,11 +2358,11 @@ void DeIconify(FvwmWindow *fw)
 					t->g.frame.x -=
 						truncate_to_multiple(
 							t->g.frame.x,
-							t->m->virtual_scr.MyDisplayWidth);
+							monitor_get_all_widths());
 					t->g.frame.y -=
 						truncate_to_multiple(
 							t->g.frame.y,
-							t->m->virtual_scr.MyDisplayHeight);
+							monitor_get_all_heights());
 					XMoveWindow(
 						dpy, FW_W_FRAME(t),
 						t->g.frame.x, t->g.frame.y);
