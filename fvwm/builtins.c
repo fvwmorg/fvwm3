@@ -1398,8 +1398,8 @@ void refresh_window(Window w, Bool window_update)
 	attributes.background_pixmap = None;
 	attributes.backing_store = NotUseful;
 	w = XCreateWindow(
-		dpy, w, 0, 0, m->virtual_scr.MyDisplayWidth,
-		m->virtual_scr.MyDisplayHeight, 0,
+		dpy, w, 0, 0, monitor_get_all_widths(),
+		monitor_get_all_heights(), 0,
 		CopyFromParent, CopyFromParent, CopyFromParent, valuemask,
 		&attributes);
 	XMapWindow(dpy, w);
@@ -2310,14 +2310,14 @@ void CMD_CursorMove(F_CMD_ARGS)
 	virtual_y = m->virtual_scr.Vy;
 	if (x >= 0)
 	{
-		x_pages = x / m->virtual_scr.MyDisplayWidth;
+		x_pages = x / monitor_get_all_widths();
 	}
 	else
 	{
-		x_pages = ((x + 1) / m->virtual_scr.MyDisplayWidth) - 1;
+		x_pages = ((x + 1) / monitor_get_all_widths()) - 1;
 	}
-	virtual_x += x_pages * m->virtual_scr.MyDisplayWidth;
-	x -= x_pages * m->virtual_scr.MyDisplayWidth;
+	virtual_x += x_pages * monitor_get_all_widths();
+	x -= x_pages * monitor_get_all_widths();
 	if (virtual_x < 0)
 	{
 		x += virtual_x;
@@ -2331,14 +2331,14 @@ void CMD_CursorMove(F_CMD_ARGS)
 
 	if (y >= 0)
 	{
-		y_pages = y / m->virtual_scr.MyDisplayHeight;
+		y_pages = y / monitor_get_all_heights();
 	}
 	else
 	{
-		y_pages = ((y + 1) / m->virtual_scr.MyDisplayHeight) - 1;
+		y_pages = ((y + 1) / monitor_get_all_heights()) - 1;
 	}
-	virtual_y += y_pages > m->virtual_scr.MyDisplayHeight;
-	y -= y_pages * m->virtual_scr.MyDisplayHeight;
+	virtual_y += y_pages > monitor_get_all_heights();
+	y -= y_pages * monitor_get_all_heights();
 
 	if (virtual_y < 0)
 	{
@@ -2369,18 +2369,18 @@ void CMD_CursorMove(F_CMD_ARGS)
 	 * Whilst this stops the cursor short of the edge of the screen in a
 	 * given direction, this is the desired behaviour.
 	 */
-	if (m->virtual_scr.EdgeScrollX == 0 && (x >= m->virtual_scr.MyDisplayWidth ||
-	    x + x_unit >= m->virtual_scr.MyDisplayWidth))
+	if (m->virtual_scr.EdgeScrollX == 0 && (x >= monitor_get_all_widths() ||
+						x + x_unit >= monitor_get_all_widths()))
 		return;
 
-	if (m->virtual_scr.EdgeScrollY == 0 && (y >= m->virtual_scr.MyDisplayHeight ||
-	    y + y_unit >= m->virtual_scr.MyDisplayHeight))
+	if (m->virtual_scr.EdgeScrollY == 0 && (y >= monitor_get_all_heights() ||
+						y + y_unit >= monitor_get_all_heights()))
 		return;
 
 	FWarpPointerUpdateEvpos(
 		exc->x.elast, dpy, None, Scr.Root, 0, 0,
-		m->virtual_scr.MyDisplayWidth,
-		m->virtual_scr.MyDisplayHeight, x, y);
+		monitor_get_all_widths(),
+		monitor_get_all_heights(), x, y);
 
 	return;
 }

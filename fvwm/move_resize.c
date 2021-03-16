@@ -440,8 +440,8 @@ int GetMoveArguments(FvwmWindow *fw,
 	struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 	int scr_x = 0;
 	int scr_y = 0;
-	int scr_w = m->virtual_scr.MyDisplayWidth;
-	int scr_h = m->virtual_scr.MyDisplayHeight;
+	int scr_w = monitor_get_all_widths();
+	int scr_h = monitor_get_all_heights();
 	Bool use_working_area = True;
 	Bool global_flag_parsed = False;
 	int retval = 0;
@@ -544,11 +544,11 @@ int GetMoveArguments(FvwmWindow *fw,
 		/* not enough arguments, switch to current page. */
 		while (*pFinalX < 0)
 		{
-			*pFinalX = fw->m->virtual_scr.MyDisplayWidth + *pFinalX;
+			*pFinalX = monitor_get_all_widths() + *pFinalX;
 		}
 		while (*pFinalY < 0)
 		{
-			*pFinalY = fw->m->virtual_scr.MyDisplayHeight + *pFinalY;
+			*pFinalY = monitor_get_all_heights() + *pFinalY;
 		}
 	}
 
@@ -793,12 +793,12 @@ static int GetResizeArguments(FvwmWindow *fw,
 	m = fw->m;
 	n = 0;
 	n += ParseOneResizeArgument(
-		s1, m->virtual_scr.MyDisplayWidth,
+		s1, monitor_get_all_widths(),
 		m->Desktops->ewmh_working_area.width,
 		m->Desktops->ewmh_dyn_working_area.width, w_base, w_inc,
 		w_add, pFinalW);
 	n += ParseOneResizeArgument(
-		s2, m->virtual_scr.MyDisplayHeight,
+		s2, monitor_get_all_heights(),
 		m->Desktops->ewmh_working_area.height,
 		m->Desktops->ewmh_dyn_working_area.height, h_base, h_inc,
 		h_add, pFinalH);
@@ -1248,8 +1248,8 @@ static void InteractiveMove(
 		struct monitor *m = exc->w.fw->m;
 
 		areapct = 100.0;
-		areapct *= ((float)DragWidth / (float)m->virtual_scr.MyDisplayWidth);
-		areapct *= ((float)DragHeight / (float)m->virtual_scr.MyDisplayHeight);
+		areapct *= ((float)DragWidth / (float) monitor_get_all_widths());
+		areapct *= ((float)DragHeight / (float) monitor_get_all_heights());
 		/* round up */
 		areapct += 0.1;
 		if (Scr.OpaqueSize < 0 ||
@@ -1793,8 +1793,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		}
 		s.x = page_x - m->virtual_scr.Vx;
 		s.y = page_y - m->virtual_scr.Vy;
-		s.width = m->virtual_scr.MyDisplayWidth;
-		s.height = m->virtual_scr.MyDisplayHeight;
+		s.width = monitor_get_all_widths();
+		s.height = monitor_get_all_heights();
 		fvwmrect_move_into_rectangle(&r, &s);
 		FinalX = r.x;
 		FinalY = r.y;
@@ -1825,8 +1825,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		r.height = height;
 		p.x = page_x - m->virtual_scr.Vx;
 		p.y = page_y - m->virtual_scr.Vy;
-		p.width = m->virtual_scr.MyDisplayWidth;
-		p.height = m->virtual_scr.MyDisplayHeight;
+		p.width = monitor_get_all_widths();
+		p.height = monitor_get_all_heights();
 		/* move to page first */
 		fvwmrect_move_into_rectangle(&r, &p);
 		/* then move to screen */
@@ -1981,8 +1981,8 @@ static void DoSnapAttract(
 	if (m == NULL)
 		m = monitor_get_current();
 
-	scr_w = m->virtual_scr.MyDisplayWidth;
-	scr_h = m->virtual_scr.MyDisplayHeight;
+	scr_w = monitor_get_all_widths();
+	scr_h = monitor_get_all_heights();
 
 	/*
 	 * Snap grid handling
@@ -2367,8 +2367,8 @@ Bool __move_loop(
 	m = fw->m;
 	vx = m->virtual_scr.Vx;
 	vy = m->virtual_scr.Vy;
-	dx = m->virtual_scr.EdgeScrollX ? m->virtual_scr.EdgeScrollX : m->virtual_scr.MyDisplayWidth;
-	dy = m->virtual_scr.EdgeScrollY ? m->virtual_scr.EdgeScrollY : m->virtual_scr.MyDisplayHeight;
+	dx = m->virtual_scr.EdgeScrollX ? m->virtual_scr.EdgeScrollX : monitor_get_all_widths();
+	dy = m->virtual_scr.EdgeScrollY ? m->virtual_scr.EdgeScrollY : monitor_get_all_heights();
 
 	if (!GrabEm(cursor, GRAB_NORMAL))
 	{
@@ -2717,8 +2717,8 @@ Bool __move_loop(
 			       (xl >= 0 && xl2 <  0) ||
 			       (yt <  0 && yt2 >= 0) ||
 			       (yt >= 0 && yt2 <  0)) &&
-			      (abs(xl - xl2) > m->virtual_scr.MyDisplayWidth / 2 ||
-			       abs(yt - yt2) > m->virtual_scr.MyDisplayHeight / 2)))
+			      (abs(xl - xl2) > monitor_get_all_widths() / 2 ||
+			       abs(yt - yt2) > monitor_get_all_heights() / 2)))
 			{
 				xl = xl2;
 				yt = yt2;
@@ -2754,14 +2754,14 @@ Bool __move_loop(
 				(e.xmotion.state & Mod1Mask) ? False : True;
 			xl = e.xmotion.x_root;
 			yt = e.xmotion.y_root;
-			if (xl > 0 && xl < m->virtual_scr.MyDisplayWidth - 1)
+			if (xl > 0 && xl < monitor_get_all_widths() - 1)
 			{
 				/* pointer was moved away from the left/right
 				 * border with the mouse, reset the virtual x
 				 * offset */
 				x_virtual_offset = 0;
 			}
-			if (yt > 0 && yt < m->virtual_scr.MyDisplayHeight - 1)
+			if (yt > 0 && yt < monitor_get_all_heights() - 1)
 			{
 				/* pointer was moved away from the top/bottom
 				 * border with the mouse, reset the virtual y
@@ -3665,8 +3665,8 @@ static Bool __resize_window(F_CMD_ARGS)
 	int warp_x = 0;
 	int warp_y = 0;
 
-	dx = mon->virtual_scr.EdgeScrollX ? mon->virtual_scr.EdgeScrollX : mon->virtual_scr.MyDisplayWidth;
-	dy = mon->virtual_scr.EdgeScrollY ? mon->virtual_scr.EdgeScrollY : mon->virtual_scr.MyDisplayHeight;
+	dx = mon->virtual_scr.EdgeScrollX ? mon->virtual_scr.EdgeScrollX : monitor_get_all_widths();
+	dy = mon->virtual_scr.EdgeScrollY ? mon->virtual_scr.EdgeScrollY : monitor_get_all_heights();
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
@@ -4448,16 +4448,16 @@ static void move_sticky_window_to_same_page(FvwmWindow *fw,
 	{
 		while (*x11 >= x22)
 		{
-			*x11 -= m->virtual_scr.MyDisplayWidth;
-			*x12 -= m->virtual_scr.MyDisplayWidth;
+			*x11 -= monitor_get_all_widths();
+			*x12 -= monitor_get_all_widths();
 		}
 	}
 	else if (*x12 <= x21)
 	{
 		while (*x12 <= x21)
 		{
-			*x11 += m->virtual_scr.MyDisplayWidth;
-			*x12 += m->virtual_scr.MyDisplayWidth;
+			*x11 += monitor_get_all_widths();
+			*x12 += monitor_get_all_widths();
 		}
 	}
 	/* make sure the y coordinate is on the same page as the reference
@@ -4466,16 +4466,16 @@ static void move_sticky_window_to_same_page(FvwmWindow *fw,
 	{
 		while (*y11 >= y22)
 		{
-			*y11 -= m->virtual_scr.MyDisplayHeight;
-			*y12 -= m->virtual_scr.MyDisplayHeight;
+			*y11 -= monitor_get_all_heights();
+			*y12 -= monitor_get_all_heights();
 		}
 	}
 	else if (*y12 <= y21)
 	{
 		while (*y12 <= y21)
 		{
-			*y11 += m->virtual_scr.MyDisplayHeight;
-			*y12 += m->virtual_scr.MyDisplayHeight;
+			*y11 += monitor_get_all_heights();
+			*y12 += monitor_get_all_heights();
 		}
 	}
 

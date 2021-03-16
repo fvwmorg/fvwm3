@@ -131,8 +131,6 @@ struct monitor {
                 int prev_desk_and_page_desk;
                 int prev_desk_and_page_page_x;
                 int prev_desk_and_page_page_y;
-		int MyDisplayWidth;
-		int MyDisplayHeight;
         } virtual_scr;
 
 	PanFrame PanFrameTop;

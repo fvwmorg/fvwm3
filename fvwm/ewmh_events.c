@@ -75,8 +75,8 @@ int ewmh_DesktopGeometry(
 	long height = ev->xclient.data.l[1];
 	struct monitor	*m = monitor_get_current();
 
-	width = width / m->virtual_scr.MyDisplayWidth;
-	height = height / m->virtual_scr.MyDisplayHeight;
+	width = width / monitor_get_all_widths();
+	height = height / monitor_get_all_heights();
 
 	if (width <= 0 || height <= 0)
 	{

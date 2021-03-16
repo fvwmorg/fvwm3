@@ -1504,9 +1504,9 @@ static int __place_get_nowm_pos(
 		 * then 2) readjust relative to the current page. */
 		if (attr_g->x < 0)
 		{
-			attr_g->x += m->virtual_scr.MyDisplayWidth;
+			attr_g->x += monitor_get_all_widths();
 		}
-		attr_g->x %= m->virtual_scr.MyDisplayWidth;
+		attr_g->x %= monitor_get_all_widths();
 		attr_g->x -= pdeltax;
 		/* Noticed a quirk here. With some apps (e.g., xman), we find
 		 * the placement has moved 1 pixel away from where we
@@ -1515,9 +1515,9 @@ static int __place_get_nowm_pos(
 		 * -borderwidth 100 */
 		if (attr_g->y < 0)
 		{
-			attr_g->y += m->virtual_scr.MyDisplayHeight;
+			attr_g->y += monitor_get_all_heights();
 		}
-		attr_g->y %= m->virtual_scr.MyDisplayHeight;
+		attr_g->y %= monitor_get_all_heights();
 		attr_g->y -= pdeltay;
 		if (attr_g->x != old_x || attr_g->y != old_y)
 		{
@@ -1876,8 +1876,8 @@ static int __place_window(
 			px = start_style.page_x - 1;
 			py = start_style.page_y - 1;
 			reason->page.reason = PR_PAGE_STYLE;
-			px *= m->virtual_scr.MyDisplayWidth;
-			py *= m->virtual_scr.MyDisplayHeight;
+			px *= monitor_get_all_widths();
+			py *= monitor_get_all_heights();
 			if (!win_opts->flags.do_override_ppos &&
 			    !DO_NOT_SHOW_ON_MAP(fw))
 			{

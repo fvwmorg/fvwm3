@@ -1372,8 +1372,8 @@ LoadWindowStates(char *filename)
 			matches[num_match - 1].h = 100;
 			matches[num_match - 1].x_max = 0;
 			matches[num_match - 1].y_max = 0;
-			matches[num_match - 1].w_max = m->virtual_scr.MyDisplayWidth;
-			matches[num_match - 1].h_max = m->virtual_scr.MyDisplayHeight;
+			matches[num_match - 1].w_max = monitor_get_all_widths();
+			matches[num_match - 1].h_max = monitor_get_all_heights();
 			matches[num_match - 1].width_defect_max = 0;
 			matches[num_match - 1].height_defect_max = 0;
 			matches[num_match - 1].icon_x = 0;

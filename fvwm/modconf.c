@@ -283,8 +283,8 @@ static void send_desktop_geometry(fmodule *module)
 	struct monitor	*m = monitor_get_current();
 
 	sprintf(msg, "DesktopSize %d %d\n",
-		m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth + 1,
-		m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight + 1);
+		m->virtual_scr.VxMax / monitor_get_all_widths() + 1,
+		m->virtual_scr.VyMax / monitor_get_all_heights() + 1);
 	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;

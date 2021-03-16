@@ -474,8 +474,8 @@ void BroadcastMonitorList(fmodule *this)
 				m->si->name,
 				(int)m->si->rr_output,
 				m == monitor_get_current(),
-				m->virtual_scr.MyDisplayWidth,
-				m->virtual_scr.MyDisplayHeight,
+				monitor_get_all_widths(),
+				monitor_get_all_heights(),
 				m->virtual_scr.Vx,
 				m->virtual_scr.Vy,
 				m->virtual_scr.VxMax,
@@ -893,10 +893,11 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 			(long)m->si->rr_output);
 		SendPacket(
 			mod, M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
-			(long)m->virtual_scr.CurrentDesk, (long)m->virtual_scr.MyDisplayWidth,
-			(long)m->virtual_scr.MyDisplayHeight,
-			(long)((m->virtual_scr.VxMax / m->virtual_scr.MyDisplayWidth) + 1),
-			(long)((m->virtual_scr.VyMax / m->virtual_scr.MyDisplayHeight) + 1),
+			(long)m->virtual_scr.CurrentDesk,
+			(long) monitor_get_all_widths(),
+			(long) monitor_get_all_heights(),
+			(long)((m->virtual_scr.VxMax / monitor_get_all_widths()) + 1),
+			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
 			(long)m->si->rr_output);
 
 		if (Scr.Hilite != NULL)

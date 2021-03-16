@@ -1183,7 +1183,7 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	struct monitor	*m = monitor_get_current();
 	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
 	{
-		label_offset[i] = 2 * m->virtual_scr.MyDisplayWidth;
+		label_offset[i] = 2 * monitor_get_all_widths();
 	}
 
 	x = MST_BORDER_WIDTH(msp->menu);
@@ -6170,8 +6170,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			struct monitor	*m = monitor_get_current();
 			FWarpPointer(
 				dpy, 0, Scr.Root, 0, 0,
-				m->virtual_scr.MyDisplayWidth,
-				m->virtual_scr.MyDisplayHeight,
+				monitor_get_all_widths(),
+				monitor_get_all_heights(),
 				x_start, y_start);
 			if ((*pmp->pexc)->x.elast->type == KeyPress)
 			{

@@ -1164,28 +1164,28 @@ float ewmh_GetStrutIntersection(struct monitor *m,
 	x21 = 0;
 	y21 = 0;
 	x22 = left;
-	y22 = m->virtual_scr.MyDisplayHeight;
+	y22 = monitor_get_all_heights();
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* right */
-	x21 = m->virtual_scr.MyDisplayWidth - right;
+	x21 = monitor_get_all_widths() - right;
 	y21 = 0;
-	x22 = m->virtual_scr.MyDisplayWidth;
-	y22 = m->virtual_scr.MyDisplayHeight;
+	x22 = monitor_get_all_widths();
+	y22 = monitor_get_all_heights();
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* top */
 	x21 = 0;
 	y21 = 0;
-	x22 = m->virtual_scr.MyDisplayWidth;
+	x22 = monitor_get_all_widths();
 	y22 = top;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* bottom */
 	x21 = 0;
-	y21 = m->virtual_scr.MyDisplayHeight - bottom;
-	x22 = m->virtual_scr.MyDisplayWidth;
-	y22 = m->virtual_scr.MyDisplayHeight;
+	y21 = monitor_get_all_heights() - bottom;
+	x22 = monitor_get_all_widths();
+	y22 = monitor_get_all_heights();
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 
@@ -1209,11 +1209,11 @@ float EWMH_GetStrutIntersection(struct monitor *m,
 	/* FIXME: needs broadcast if global monitor in use. */
 
 	left = m->Desktops->ewmh_working_area.x;
-	right = m->virtual_scr.MyDisplayWidth -
+	right = monitor_get_all_widths() -
 		(m->Desktops->ewmh_working_area.x
 		 + m->Desktops->ewmh_working_area.width);
 	top = m->Desktops->ewmh_working_area.y;
-	bottom = m->virtual_scr.MyDisplayHeight -
+	bottom = monitor_get_all_heights() -
 		(m->Desktops->ewmh_working_area.y
 		 + m->Desktops->ewmh_working_area.height);
 

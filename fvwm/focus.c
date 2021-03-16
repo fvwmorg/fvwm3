@@ -478,8 +478,8 @@ static void warp_to_fvwm_window(
 		cx = t->g.frame.x + t->g.frame.width/2;
 		cy = t->g.frame.y + t->g.frame.height/2;
 	}
-	dx = (cx + m->virtual_scr.Vx) / m->virtual_scr.MyDisplayWidth * m->virtual_scr.MyDisplayWidth;
-	dy = (cy + m->virtual_scr.Vy) / m->virtual_scr.MyDisplayHeight * m->virtual_scr.MyDisplayHeight;
+	dx = (cx + m->virtual_scr.Vx) / monitor_get_all_widths() * monitor_get_all_widths();
+	dy = (cy + m->virtual_scr.Vy) / monitor_get_all_heights() * monitor_get_all_heights();
 	if (dx != m->virtual_scr.Vx || dy != m->virtual_scr.Vy)
 	{
 		MoveViewport(m, dx, dy, True);
@@ -499,11 +499,11 @@ static void warp_to_fvwm_window(
 	}
 	else
 	{
-		if (x_unit != m->virtual_scr.MyDisplayWidth && warp_x >= 0)
+		if (x_unit != monitor_get_all_widths() && warp_x >= 0)
 		{
 			x = t->g.frame.x + warp_x;
 		}
-		else if (x_unit != m->virtual_scr.MyDisplayWidth)
+		else if (x_unit != monitor_get_all_widths())
 		{
 			x = t->g.frame.x + t->g.frame.width + warp_x;
 		}
@@ -518,11 +518,11 @@ static void warp_to_fvwm_window(
 				(t->g.frame.width - 1) * (100 + warp_x) / 100;
 		}
 
-		if (y_unit != m->virtual_scr.MyDisplayHeight && warp_y >= 0)
+		if (y_unit != monitor_get_all_heights() && warp_y >= 0)
 		{
 			y = t->g.frame.y + warp_y;
 		}
-		else if (y_unit != m->virtual_scr.MyDisplayHeight)
+		else if (y_unit != monitor_get_all_heights())
 		{
 			y = t->g.frame.y + t->g.frame.height + warp_y;
 		}
@@ -546,8 +546,8 @@ static void warp_to_fvwm_window(
 	/* If the window is still not visible, make it visible! */
 	if (t->g.frame.x + t->g.frame.width  < 0 ||
 	    t->g.frame.y + t->g.frame.height < 0 ||
-	    t->g.frame.x >= m->virtual_scr.MyDisplayWidth ||
-	    t->g.frame.y >= m->virtual_scr.MyDisplayHeight)
+	    t->g.frame.x >= monitor_get_all_widths() ||
+	    t->g.frame.y >= monitor_get_all_heights())
 	{
 		frame_setup_window(
 			t, 0, 0, t->g.frame.width, t->g.frame.height, False);
@@ -698,16 +698,16 @@ static void __activate_window_by_command(
 			cy = fw->g.frame.y + fw->g.frame.height/2;
 		}
 		if (
-			cx < 0 || cx >= m->virtual_scr.MyDisplayWidth ||
-			cy < 0 || cy >= m->virtual_scr.MyDisplayHeight)
+			cx < 0 || cx >= monitor_get_all_widths() ||
+			cy < 0 || cy >= monitor_get_all_heights())
 		{
 			int dx;
 			int dy;
 
-			dx = ((cx + m->virtual_scr.Vx) / m->virtual_scr.MyDisplayWidth) *
-				m->virtual_scr.MyDisplayWidth;
-			dy = ((cy + m->virtual_scr.Vy) / m->virtual_scr.MyDisplayHeight) *
-				m->virtual_scr.MyDisplayHeight;
+			dx = ((cx + m->virtual_scr.Vx) / monitor_get_all_widths()) *
+				monitor_get_all_widths();
+			dy = ((cy + m->virtual_scr.Vy) / monitor_get_all_heights()) *
+				monitor_get_all_heights();
 			MoveViewport(m, dx, dy, True);
 		}
 #if 0 /* can not happen */
@@ -1276,7 +1276,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 				free(token);
 				return;
 			}
-			if (val1_unit != m->virtual_scr.MyDisplayWidth)
+			if (val1_unit != monitor_get_all_widths())
 			{
 				x = val1;
 			}
@@ -1284,7 +1284,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			{
 				x = (ww - 1) * val1 / 100;
 			}
-			if (val2_unit != m->virtual_scr.MyDisplayHeight)
+			if (val2_unit != monitor_get_all_heights())
 			{
 				y = val2;
 			}

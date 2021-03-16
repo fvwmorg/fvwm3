@@ -450,8 +450,6 @@ set_coords:
 			m->flags |= MONITOR_PRIMARY;
 		else
 			m->flags &= ~MONITOR_PRIMARY;
-		m->virtual_scr.MyDisplayWidth = monitor_get_all_widths();
-		m->virtual_scr.MyDisplayHeight = monitor_get_all_heights();
 
 		XFree(name);
 	}
@@ -567,10 +565,10 @@ monitor_dump_state(struct monitor *m)
 			   m2->virtual_scr.EdgeScrollX,
 			   m2->virtual_scr.EdgeScrollY,
 			   m2->virtual_scr.CurrentDesk,
-			   (int)(m2->virtual_scr.Vx / m2->virtual_scr.MyDisplayWidth),
-			   (int)(m2->virtual_scr.Vy / m2->virtual_scr.MyDisplayHeight),
-			   m2->virtual_scr.MyDisplayWidth,
-			   m2->virtual_scr.MyDisplayHeight,
+			   (int)(m2->virtual_scr.Vx / monitor_get_all_widths()),
+			   (int)(m2->virtual_scr.Vy / monitor_get_all_heights()),
+			   monitor_get_all_widths(),
+			   monitor_get_all_heights(),
 			   m2->Desktops ? "yes" : "no",
 			   monitor_mode == MONITOR_TRACKING_G ? "global" :
 			   monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
@@ -956,14 +954,14 @@ int FScreenParseGeometry(
 	if (rc & XValue)
 	{
 		if (rc & XNegative)
-			*x_return -= (m->virtual_scr.MyDisplayWidth - w - x);
+			*x_return -= (monitor_get_all_widths() - w - x);
 		else
 			*x_return += x;
 	}
 	if (rc & YValue)
 	{
 		if (rc & YNegative)
-			*y_return -= (m->virtual_scr.MyDisplayHeight - h - y);
+			*y_return -= (monitor_get_all_heights() - h - y);
 		else
 			*y_return += y;
 	}
