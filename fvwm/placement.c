@@ -1698,7 +1698,13 @@ static int __place_window(
 			 *
 			 * This is necessary for StartsOnScreen
 			 */
-			fw->m = monitor_resolve_name(arg.name);
+			/* But only do this if the requested screen IS NOT "g"
+			 * for global, as this would assign the monitor to the
+			 * "_global" screen, which is a faked monitor for the
+			 * purposes of an older API.
+			 */
+			if (strcmp(arg.name, "g") != 0)
+				fw->m = monitor_resolve_name(arg.name);
 			free(e);
 		}
 		else
