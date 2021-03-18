@@ -10,7 +10,6 @@
 
 **Implemented enhancements:**
 
-- Resize edge scroll [\#461](https://github.com/fvwmorg/fvwm3/issues/461)
 - FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
 - fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
 - Conditionals: add TitleAt{Top,Bottom,Left,Right} [\#439](https://github.com/fvwmorg/fvwm3/pull/439) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -18,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Core dump at start with NsCDE as configuration [\#464](https://github.com/fvwmorg/fvwm3/issues/464)
 - Two PanFrame/EdgeScroll issues. \(Regression cf. FVWM2.\) [\#459](https://github.com/fvwmorg/fvwm3/issues/459)
 - Actions from a pinned menu are triggered by mouse move instead of mouse release [\#456](https://github.com/fvwmorg/fvwm3/issues/456)
 - Font-rendering causes fvwm to lock-up [\#446](https://github.com/fvwmorg/fvwm3/issues/446)
@@ -55,6 +55,7 @@
 
 **Merged pull requests:**
 
+- placement: don't clobber monitor if global [\#465](https://github.com/fvwmorg/fvwm3/pull/465) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrame improvements [\#460](https://github.com/fvwmorg/fvwm3/pull/460) ([ThomasAdam](https://github.com/ThomasAdam))
 - EWMH: CurrentDesktop improvements [\#458](https://github.com/fvwmorg/fvwm3/pull/458) ([ThomasAdam](https://github.com/ThomasAdam))
 - Tear-off menu: don't mask pos\_hints [\#457](https://github.com/fvwmorg/fvwm3/pull/457) ([ThomasAdam](https://github.com/ThomasAdam))
