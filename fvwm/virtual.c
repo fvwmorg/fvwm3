@@ -973,7 +973,6 @@ void checkPanFrames(struct monitor *m)
 	bool do_unmap_t = false;
 	bool do_unmap_b = false;
 	bool global = (monitor_mode == MONITOR_TRACKING_G);
-	struct monitor	*mcur;
 
 	if (!Scr.flags.are_windows_captured)
 		return;
@@ -1216,8 +1215,6 @@ init_one_panframe(PanFrame *pf, int x, int y, int w, int h, int cursor)
  */
 void initPanFrames(void)
 {
-	XSetWindowAttributes attributes;
-	unsigned long valuemask;
 	int saved_thickness;
 	struct monitor	*m;
 

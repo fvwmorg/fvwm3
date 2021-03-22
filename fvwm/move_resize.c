@@ -437,7 +437,6 @@ int GetMoveArguments(FvwmWindow *fw,
 	char *token = NULL;
 	char *action;
 	char *naction;
-	struct monitor	*m = fw->m ? fw->m : monitor_get_current();
 	int scr_x = 0;
 	int scr_y = 0;
 	int scr_w = monitor_get_all_widths();
@@ -1245,7 +1244,6 @@ static void InteractiveMove(
 	else if (IS_MAPPED(exc->w.fw))
 	{
 		float areapct;
-		struct monitor *m = exc->w.fw->m;
 
 		areapct = 100.0;
 		areapct *= ((float)DragWidth / (float) monitor_get_all_widths());
@@ -4440,8 +4438,6 @@ static void move_sticky_window_to_same_page(FvwmWindow *fw,
 	int *x11, int *x12, int *y11, int *y12,
 	int x21, int x22, int y21, int y22)
 {
-	struct monitor	*m = fw->m;
-
 	/* make sure the x coordinate is on the same page as the reference
 	 * window */
 	if (*x11 >= x22)

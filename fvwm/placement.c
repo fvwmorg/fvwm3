@@ -1413,7 +1413,6 @@ static int __place_get_nowm_pos(
 {
 	FvwmWindow *fw = exc->w.fw;
 	size_borders b;
-	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	if (!win_opts->flags.do_override_ppos)
 	{

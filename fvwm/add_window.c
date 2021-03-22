@@ -251,7 +251,6 @@ static void hide_screen(
 	static Window parent_win = None;
 	XSetWindowAttributes xswa;
 	unsigned long valuemask;
-	struct monitor	*m = monitor_get_current();
 
 	if (do_hide == is_hidden)
 	{
@@ -3545,14 +3544,11 @@ void RestoreWithdrawnLocation(
 	rectangle naked_g;
 	rectangle unshaded_g;
 	XSetWindowAttributes xswa;
-	struct monitor	*m = NULL;
 
 	if (!fw)
 	{
 		return;
 	}
-
-	m = fw->m;
 
 	/* always get the latest size hints in case the application changed
 	 * the gravity and we do not yet know about it */

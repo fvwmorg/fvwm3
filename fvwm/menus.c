@@ -1180,7 +1180,6 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	}
 	/* Place the individual items off the menu in case they are not
 	 * set in the format string. */
-	struct monitor	*m = monitor_get_current();
 	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
 	{
 		label_offset[i] = 2 * monitor_get_all_widths();
@@ -6167,7 +6166,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			 * brought up with a keypress and we're returning from
 			 * a top level menu, and a button release event didn't
 			 * end it */
-			struct monitor	*m = monitor_get_current();
 			FWarpPointer(
 				dpy, 0, Scr.Root, 0, 0,
 				monitor_get_all_widths(),
