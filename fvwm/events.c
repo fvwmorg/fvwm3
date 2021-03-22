@@ -625,7 +625,6 @@ static inline void _cr_detect_icccm_move(
 	rectangle static_g;
 	rectangle dg_g;
 	rectangle ds_g;
-	struct monitor	*mon = fw->m;
 	int mx;
 	int my;
 	int m;

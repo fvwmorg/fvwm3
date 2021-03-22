@@ -649,14 +649,12 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	int off_y;
 	int dh;
 	int dw;
-	struct monitor	*m;
 
 	if (!IS_MAXIMIZED(fw))
 	{
 		/* otherwise we might corrupt the g.normal */
 		return;
 	}
-	m = fw->m;
 	off_x = fw->g.normal.x - fw->g.max.x - fw->g.max_offset.x;
 	off_y = fw->g.normal.y - fw->g.max.y - fw->g.max_offset.y;
 	dw = monitor_get_all_widths();
@@ -826,7 +824,6 @@ void constrain_size(
 	size_rect d;
 	size_rect old;
 	size_borders b;
-	struct monitor	*m = fw->m;
 
 	if (DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw) == 1)
 	{

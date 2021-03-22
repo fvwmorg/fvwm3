@@ -77,7 +77,6 @@ static void change_grab_cursor(int cursor)
 int GetTwoArguments(
 	char *action, int *val1, int *val2, int *val1_unit, int *val2_unit)
 {
-	struct monitor	*m = monitor_get_current();
 	*val1_unit = monitor_get_all_widths();
 	*val2_unit = monitor_get_all_heights();
 

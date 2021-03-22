@@ -1309,7 +1309,6 @@ void
 LoadWindowStates(char *filename)
 {
 	FILE *f;
-	struct monitor	*m = monitor_get_current();
 	char s[4096], s1[4096];
 	char *s2;
 	int i, pos, pos1;

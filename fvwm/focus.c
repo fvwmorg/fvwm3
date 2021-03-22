@@ -1224,7 +1224,6 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 	int do_raise;
 	char *next;
 	char *token;
-	struct monitor	*m = monitor_get_current();
 
 	next = GetNextToken(action, &token);
 	if (StrEquals(token, "!raise"))

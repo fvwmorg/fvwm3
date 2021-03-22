@@ -73,7 +73,6 @@ int ewmh_DesktopGeometry(
 	char action[256];
 	long width = ev->xclient.data.l[0];
 	long height = ev->xclient.data.l[1];
-	struct monitor	*m = monitor_get_current();
 
 	width = width / monitor_get_all_widths();
 	height = height / monitor_get_all_heights();

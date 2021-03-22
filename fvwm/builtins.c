@@ -1387,9 +1387,6 @@ void refresh_window(Window w, Bool window_update)
 {
 	XSetWindowAttributes attributes;
 	unsigned long valuemask;
-	/* FIXME: this monitor check will be wrong. */
-	struct monitor	*m = monitor_get_current();
-
 
 	valuemask = CWOverrideRedirect | CWBackingStore | CWSaveUnder |
 		CWBackPixmap;
