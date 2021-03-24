@@ -14,6 +14,7 @@ SUBDIRS = \
 	$(FVWM_PERLLIB) \
 	doc \
 	dev-docs \
+	po \
 	$(POSUB)
 
 ## ---------------------------------------------------------------------------
@@ -37,3 +38,7 @@ distcheck2: distcheck
 	fi
 
 distclean2: distclean
+
+ACLOCAL_AMFLAGS = -I m4
+
+EXTRA_DIST = m4/ChangeLog

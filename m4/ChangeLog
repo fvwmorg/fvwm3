@@ -1,0 +1,13 @@
+2021-03-24  gettextize  <bug-gnu-gettext@gnu.org>
+
+	* gettext.m4: New file, from gettext-0.21.
+	* host-cpu-c-abi.m4: New file, from gettext-0.21.
+	* iconv.m4: New file, from gettext-0.21.
+	* intlmacosx.m4: New file, from gettext-0.21.
+	* lib-ld.m4: New file, from gettext-0.21.
+	* lib-link.m4: New file, from gettext-0.21.
+	* lib-prefix.m4: New file, from gettext-0.21.
+	* nls.m4: New file, from gettext-0.21.
+	* po.m4: New file, from gettext-0.21.
+	* progtest.m4: New file, from gettext-0.21.
+

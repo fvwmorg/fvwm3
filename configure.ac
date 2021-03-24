@@ -936,67 +936,10 @@ AH_TEMPLATE([HAVE_XOUTPUT_METHOD],[Enable X output method])
 AC_CHECK_LIB(X11, XOpenOM, AC_DEFINE(HAVE_XOUTPUT_METHOD),, $X_LIBS -lX11)
 
 # ******** iconv
-with_iconv=no
-with_iconv_type=no
-with_lib_iconv=no
-with_sys_iconv=no
-problem_iconv=": Explicitly disabled"
-
-AC_ARG_ENABLE(iconv,
-  AS_HELP_STRING([--disable-iconv],
-    [disable support for iconv character conversion]),
-  [ac_cv_iconv="$enableval"],
-  [ac_cv_iconv="yes"])
-
-AH_TEMPLATE([USE_LIBICONV],
-  [define if we use libiconv (not needed in general: for example iconv is
-  native with recent glibc)])
-AH_TEMPLATE([HAVE_ICONV],
-  [Define if iconv (in the libc) or libiconv is available])
-if test ! x"$ac_cv_iconv" = xno; then
-  # * first check for gnu libiconv
-  $UNSET ac_cv_header_libiconv_h
-  $UNSET ac_cv_lib_libiconv_libiconv_open
-  smr_CHECK_LIB(
-  	iconv, , if not found sys iconv is used, libiconv_open, iconv.h)
-  if test ! x"$iconv_LIBS" = x; then
-     AC_DEFINE(USE_LIBICONV)
-     with_lib_iconv=yes
-  fi
-  AC_SUBST(iconv_LIBS)
-  AC_SUBST(iconv_CFLAGS)
-
-  # * check for system iconv
-
-  AC_CHECK_FUNC(iconv_open, with_sys_iconv=yes)
-
-  if test x"$with_lib_iconv" = xyes && test x"$with_sys_iconv" = xyes; then
-     AC_MSG_WARN([***  Both system iconv and libiconv found: use libiconv])
-     AC_MSG_WARN([***  Use --with-iconv-library=no to use the system iconv])
-  fi
-
-  # * libiconv found check for libcharset to get the good iconv charset
-  if test x"$with_lib_iconv" = xyes; then
-     CHECK_LIBCHARSET
-  fi
-
-  test x"$with_lib_iconv" = xyes -o x"$with_sys_iconv" = xyes &&
-	 with_iconv=yes && problem_iconv=""
-  test x"$with_lib_iconv" = xyes && with_iconv_type="yes (libiconv)"
-  test x"$with_sys_iconv" = xyes && with_iconv_type="yes (from C library)"
-
-  if test x"$with_iconv" = xno; then
-    AC_MSG_WARN([*** ])
-    AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv])
-    AC_MSG_WARN([*** Please install libiconv ftp://ftp.gnu.org/pub/gnu/libiconv/])
-    AC_MSG_WARN([*** ])
-  fi
-
-  if test x"$with_iconv" = xyes; then
-     AC_DEFINE(HAVE_ICONV)
-     ICONV_SECOND_ARG
-  fi
-fi
+AM_GNU_GETTEXT_VERSION([0.19.6])
+AM_GNU_GETTEXT([external])
+AM_ICONV
+ICONV_SECOND_ARG
 AH_VERBATIM([_HAVE_LIBCHARSET],
 [#ifdef USE_LIBICONV
 /* define to use locale_charset in the place of nl_langinfog if libiconv
@@ -1004,6 +947,11 @@ AH_VERBATIM([_HAVE_LIBCHARSET],
 #undef HAVE_LIBCHARSET
 #endif])
 
+AC_MSG_WARN("ICONV: $LIBICONV")
+
+iconv_LIBS="$LIBICONV"
+AC_SUBST(iconv_LIBS)
+AC_SUBST(iconv_CFLAGS)
 
 # ******** nl_langinfo and CODESET
 AH_TEMPLATE([HAVE_CODESET],[Have nl_langinfo (CODESET)])
@@ -1503,6 +1451,7 @@ dnl
 	default-config/Makefile
 	doc/Makefile
 	dev-docs/Makefile
+	po/Makefile.in
 	po/Makefile
 dnl
 	modules/FvwmAnimate/Makefile
