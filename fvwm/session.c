@@ -373,7 +373,7 @@ static Bool VerifyVersionInfo(char *filename)
 		if (!strcmp(s1, "[FVWM_VERSION]"))
 		{
 			char *current_v = get_version_string();
-			sscanf(s, "%*s %[^\n]", s1);
+			sscanf(s, "%*s %4095[^\n]", s1);
 			if (strcmp(s1, current_v) == 0)
 			{
 				does_file_version_match = True;
@@ -1222,7 +1222,7 @@ LoadGlobalState(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			is_key = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[VALUE]"))
@@ -1233,7 +1233,7 @@ LoadGlobalState(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			is_value = fxstrdup(s1);
 
 			if (is_key != NULL && is_value != NULL)
@@ -1347,7 +1347,7 @@ LoadWindowStates(char *filename)
 		if (!SessionSupport /* migo: temporarily */ &&
 		    !strcmp(s1, "[REAL_STATE_FILENAME]"))
 		{
-			sscanf(s, "%*s %s", s1);
+			sscanf(s, "%*s %4095s", s1);
 			set_sm_properties(sm_conn, s1, FSmRestartIfRunning);
 			set_real_state_filename(s1);
 		}
@@ -1466,7 +1466,7 @@ LoadWindowStates(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			matches[num_match - 1].client_id = duplicate(s1);
 		}
 		else if (!strcmp(s1, "[WINDOW_ROLE]"))
@@ -1476,7 +1476,7 @@ LoadWindowStates(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			matches[num_match - 1].window_role = duplicate(s1);
 		}
 		else if (!strcmp(s1, "[RES_NAME]"))
@@ -1486,7 +1486,7 @@ LoadWindowStates(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			matches[num_match - 1].res_name = duplicate(s1);
 		}
 		else if (!strcmp(s1, "[RES_CLASS]"))
@@ -1496,7 +1496,7 @@ LoadWindowStates(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			matches[num_match - 1].res_class = duplicate(s1);
 		}
 		else if (!strcmp(s1, "[WM_NAME]"))
@@ -1506,7 +1506,7 @@ LoadWindowStates(char *filename)
 			{
 				s2++;
 			}
-			sscanf(s2, "%[^\n]", s1);
+			sscanf(s2, "%4095[^\n]", s1);
 			matches[num_match - 1].wm_name = duplicate(s1);
 		}
 		else if (!strcmp(s1, "[WM_COMMAND]"))
@@ -1520,7 +1520,7 @@ LoadWindowStates(char *filename)
 			for (i = 0;
 			     i < matches[num_match - 1].wm_command_count; i++)
 			{
-				sscanf (s+pos, "%s%n", s1, &pos1);
+				sscanf (s+pos, "%4095s%n", s1, &pos1);
 				pos += pos1;
 				matches[num_match - 1].wm_command[i] =
 					duplicate (s1);
