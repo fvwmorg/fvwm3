@@ -726,6 +726,9 @@ typedef struct window_g
 /* for each window that is on the display, one of these structures
  * is allocated and linked into a list
  */
+
+struct grouped_window;
+
 typedef struct FvwmWindow
 {
 	/* name of the window */
@@ -739,6 +742,9 @@ typedef struct FvwmWindow
 	char *style_name;
 	int name_count;
 	int icon_name_count;
+
+	struct grouped_window *gw;
+
 	/* next fvwm window */
 	struct FvwmWindow *next;
 	/* prev fvwm window */
@@ -989,6 +995,22 @@ typedef struct FvwmWindow
 	struct monitor *m;
 	struct monitor *m_prev;
 } FvwmWindow;
+
+struct grouped_window {
+
+	TAILQ_ENTRY(grouped_window)	 entry;
+	FvwmWindow			*fw;
+	Window				 title;
+	char				*name;
+	char				*class;
+	int				 w, h;
+	int				 tabx, tabw;
+};
+TAILQ_HEAD(grouped_windows, grouped_window);
+
+extern struct grouped_windows	 grouped_window_q;
+
+struct grouped_window *group_new(FvwmWindow *);
 
 /* ---------------------------- exported variables (globals) --------------- */
 
