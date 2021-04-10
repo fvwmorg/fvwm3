@@ -32,6 +32,7 @@
 #include "borders.h"
 #include "icons.h"
 #include "add_window.h"
+#include "virtual.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -599,7 +600,15 @@ void update_absolute_geometry(FvwmWindow *fw)
 {
 	rectangle *dest_g;
 	rectangle frame_g;
-	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
+	struct monitor	*m;
+
+	/* Tell the client which screen it is on, prior to its geometry being
+	 * updated here.  Certain callers, when updating a window's geometry,
+	 * bypass some of the sanity checks, and the screen assignment gets
+	 * outdated.
+	 */
+	UPDATE_FVWM_SCREEN(fw);
+	m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* store orig values in absolute coords */
 	dest_g = (IS_MAXIMIZED(fw)) ? &fw->g.max : &fw->g.normal;
