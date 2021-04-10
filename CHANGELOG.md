@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Moving shaded windows across screens [\#473](https://github.com/fvwmorg/fvwm3/issues/473)
 - Core dump at start with NsCDE as configuration [\#464](https://github.com/fvwmorg/fvwm3/issues/464)
 - Two PanFrame/EdgeScroll issues. \(Regression cf. FVWM2.\) [\#459](https://github.com/fvwmorg/fvwm3/issues/459)
 - Actions from a pinned menu are triggered by mouse move instead of mouse release [\#456](https://github.com/fvwmorg/fvwm3/issues/456)
@@ -55,6 +56,7 @@
 
 **Merged pull requests:**
 
+- absolute geometry: update screen [\#474](https://github.com/fvwmorg/fvwm3/pull/474) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: don't clobber monitor if global [\#465](https://github.com/fvwmorg/fvwm3/pull/465) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrame improvements [\#460](https://github.com/fvwmorg/fvwm3/pull/460) ([ThomasAdam](https://github.com/ThomasAdam))
 - EWMH: CurrentDesktop improvements [\#458](https://github.com/fvwmorg/fvwm3/pull/458) ([ThomasAdam](https://github.com/ThomasAdam))
