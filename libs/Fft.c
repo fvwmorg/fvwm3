@@ -487,7 +487,8 @@ void FftDrawString(
 	if (flf->shadow_size != 0 && has_fg_pixels)
 	{
 		while (FlocaleGetShadowTextPosition(&xt, &yt, &gstp_args)) {
-			MatchFont(dpy, uf, &xt, &yt, str, len, &RenderCharFontSpec, &batch);
+			int mxt = xt, myt = yt;
+			MatchFont(dpy, uf, &mxt, &myt, str, len, &RenderCharFontSpec, &batch);
 			RenderCharFontSpec(&batch, NULL);
 		}
 	}
