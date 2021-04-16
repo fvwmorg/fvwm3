@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Font shadow offset miscalculated [\#475](https://github.com/fvwmorg/fvwm3/issues/475)
 - Moving shaded windows across screens [\#473](https://github.com/fvwmorg/fvwm3/issues/473)
 - Core dump at start with NsCDE as configuration [\#464](https://github.com/fvwmorg/fvwm3/issues/464)
 - Two PanFrame/EdgeScroll issues. \(Regression cf. FVWM2.\) [\#459](https://github.com/fvwmorg/fvwm3/issues/459)
@@ -56,6 +57,7 @@
 
 **Merged pull requests:**
 
+- fix shadow position bug [\#476](https://github.com/fvwmorg/fvwm3/pull/476) ([mikeandmore](https://github.com/mikeandmore))
 - absolute geometry: update screen [\#474](https://github.com/fvwmorg/fvwm3/pull/474) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: don't clobber monitor if global [\#465](https://github.com/fvwmorg/fvwm3/pull/465) ([ThomasAdam](https://github.com/ThomasAdam))
 - PanFrame improvements [\#460](https://github.com/fvwmorg/fvwm3/pull/460) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -151,7 +153,7 @@
 - libs: remove CatString2/CatString3 [\#336](https://github.com/fvwmorg/fvwm3/pull/336) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: Allow Title to contain just "-" [\#314](https://github.com/fvwmorg/fvwm3/pull/314) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: fix geometry string values when using @MONITORNAME [\#309](https://github.com/fvwmorg/fvwm3/pull/309) ([ThomasAdam](https://github.com/ThomasAdam))
-- Increase memory space to avoid overflow [\#306](https://github.com/fvwmorg/fvwm3/pull/306) ([klebertarcisio](https://github.com/klebertarcisio))
+- Increase memory space to avoid overflow [\#306](https://github.com/fvwmorg/fvwm3/pull/306) ([binho1991](https://github.com/binho1991))
 - CI: additional flags [\#304](https://github.com/fvwmorg/fvwm3/pull/304) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: build CHANGELOG on master only [\#302](https://github.com/fvwmorg/fvwm3/pull/302) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: enable CHANGELOG generation on push/PR [\#301](https://github.com/fvwmorg/fvwm3/pull/301) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -351,7 +353,7 @@
 - unmaximize: use window's current screen for positioning [\#69](https://github.com/fvwmorg/fvwm3/pull/69) ([ThomasAdam](https://github.com/ThomasAdam))
 - SnapAttraction: fix coord detection [\#62](https://github.com/fvwmorg/fvwm3/pull/62) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix broken positions when drawing 3d borders [\#48](https://github.com/fvwmorg/fvwm3/pull/48) ([mikeandmore](https://github.com/mikeandmore))
-- Do we need to check the value returned from FCreateFImage? [\#43](https://github.com/fvwmorg/fvwm3/pull/43) ([klebertarcisio](https://github.com/klebertarcisio))
+- Do we need to check the value returned from FCreateFImage? [\#43](https://github.com/fvwmorg/fvwm3/pull/43) ([binho1991](https://github.com/binho1991))
 
 **Closed issues:**
 
@@ -402,7 +404,7 @@
 - Remove support for libstroke [\#166](https://github.com/fvwmorg/fvwm3/pull/166) ([ThomasAdam](https://github.com/ThomasAdam))
 - Additional FVWM3 references [\#159](https://github.com/fvwmorg/fvwm3/pull/159) ([ThomasAdam](https://github.com/ThomasAdam))
 - Update DEVELOPERS.md [\#158](https://github.com/fvwmorg/fvwm3/pull/158) ([ThomasAdam](https://github.com/ThomasAdam))
-- Replace calloc by fxcalloc [\#156](https://github.com/fvwmorg/fvwm3/pull/156) ([klebertarcisio](https://github.com/klebertarcisio))
+- Replace calloc by fxcalloc [\#156](https://github.com/fvwmorg/fvwm3/pull/156) ([binho1991](https://github.com/binho1991))
 - screen\_info\_new: use fxcalloc [\#154](https://github.com/fvwmorg/fvwm3/pull/154) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: Fvwm Module Front Loader [\#153](https://github.com/fvwmorg/fvwm3/pull/153) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: switch to using image on Docker hub [\#150](https://github.com/fvwmorg/fvwm3/pull/150) ([ThomasAdam](https://github.com/ThomasAdam))
