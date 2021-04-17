@@ -607,7 +607,8 @@ void update_absolute_geometry(FvwmWindow *fw)
 	 * bypass some of the sanity checks, and the screen assignment gets
 	 * outdated.
 	 */
-	UPDATE_FVWM_SCREEN(fw);
+	if (IS_SHADED(fw))
+		UPDATE_FVWM_SCREEN(fw);
 	m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* store orig values in absolute coords */
