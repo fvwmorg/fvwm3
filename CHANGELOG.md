@@ -57,6 +57,7 @@
 
 **Merged pull requests:**
 
+- absolute\_geometry: clamp check to shaded windows [\#479](https://github.com/fvwmorg/fvwm3/pull/479) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix shadow position bug [\#476](https://github.com/fvwmorg/fvwm3/pull/476) ([mikeandmore](https://github.com/mikeandmore))
 - absolute geometry: update screen [\#474](https://github.com/fvwmorg/fvwm3/pull/474) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: don't clobber monitor if global [\#465](https://github.com/fvwmorg/fvwm3/pull/465) ([ThomasAdam](https://github.com/ThomasAdam))
