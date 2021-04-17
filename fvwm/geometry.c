@@ -23,6 +23,7 @@
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "fvwm.h"
+#include "fvwm/ewmh.h"
 #include "externs.h"
 #include "execcontext.h"
 #include "misc.h"

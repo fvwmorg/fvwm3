@@ -490,6 +490,7 @@ typedef struct ScreenInfo
 		(fw)->m_prev = (fw)->m;					   \
 		(fw)->m = mnew;						   \
 		(fw)->Desk = mnew->virtual_scr.CurrentDesk;		   \
+		EWMH_SetCurrentDesktop((fw)->m);			   \
 		desk_add_fw((fw));					   \
 		BroadcastConfig(M_CONFIGURE_WINDOW, (fw));		   \
 	} while(0)
