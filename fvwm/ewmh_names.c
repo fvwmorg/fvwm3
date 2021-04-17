@@ -296,6 +296,9 @@ void EWMH_SetDesktopNames(struct monitor *m)
 	{
 		return;
 	}
+
+	m->ewmhc.NumberOfDesktops = nbr;
+
 	names = fxmalloc(sizeof(*names)*nbr);
 	for (i = 0; i < nbr; i++)
 	{
