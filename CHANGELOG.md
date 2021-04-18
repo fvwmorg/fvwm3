@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Desktop Names wrongly reported by wmctrl under fvwm3 [\#477](https://github.com/fvwmorg/fvwm3/issues/477)
 - Font shadow offset miscalculated [\#475](https://github.com/fvwmorg/fvwm3/issues/475)
 - Moving shaded windows across screens [\#473](https://github.com/fvwmorg/fvwm3/issues/473)
 - Core dump at start with NsCDE as configuration [\#464](https://github.com/fvwmorg/fvwm3/issues/464)
@@ -58,6 +59,7 @@
 **Merged pull requests:**
 
 - absolute\_geometry: clamp check to shaded windows [\#479](https://github.com/fvwmorg/fvwm3/pull/479) ([ThomasAdam](https://github.com/ThomasAdam))
+- ta/gh 477 [\#478](https://github.com/fvwmorg/fvwm3/pull/478) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix shadow position bug [\#476](https://github.com/fvwmorg/fvwm3/pull/476) ([mikeandmore](https://github.com/mikeandmore))
 - absolute geometry: update screen [\#474](https://github.com/fvwmorg/fvwm3/pull/474) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: don't clobber monitor if global [\#465](https://github.com/fvwmorg/fvwm3/pull/465) ([ThomasAdam](https://github.com/ThomasAdam))
