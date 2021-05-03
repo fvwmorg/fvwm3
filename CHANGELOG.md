@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- fvwm/session.c has left FVWM\_SM\_DEBUG\_FILES enabled [\#480](https://github.com/fvwmorg/fvwm3/issues/480)
 - Desktop Names wrongly reported by wmctrl under fvwm3 [\#477](https://github.com/fvwmorg/fvwm3/issues/477)
 - Font shadow offset miscalculated [\#475](https://github.com/fvwmorg/fvwm3/issues/475)
 - Moving shaded windows across screens [\#473](https://github.com/fvwmorg/fvwm3/issues/473)
