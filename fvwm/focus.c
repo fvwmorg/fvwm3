@@ -733,7 +733,6 @@ static void __activate_window_by_command(
 	}
 	UngrabEm(GRAB_NORMAL);
 
-	//if (fw->Desk == m->virtual_scr.CurrentDesk)
 	{
 		FvwmWindow *sf;
 

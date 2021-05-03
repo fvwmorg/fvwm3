@@ -47,8 +47,6 @@
 #include <stdio.h>
 #include <ctype.h>
 
-// #define XK_MISCELLANY
-
 #include "FvwmForm.h"
 
 static void process_regular_char_input(unsigned char *buf);

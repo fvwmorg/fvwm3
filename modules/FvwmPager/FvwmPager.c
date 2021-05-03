@@ -324,13 +324,13 @@ int main(int argc, char **argv)
 
   if (argc < opt_num + 1)
     {
-      desk1 = 0; //Scr.CurrentDesk;
-      desk2 = 0; //Scr.CurrentDesk;
+      desk1 = 0;
+      desk2 = 0;
     }
   else if (StrEquals(argv[opt_num], "*"))
     {
-      desk1 = 0; //Scr.CurrentDesk;
-      desk2 = 0; //Scr.CurrentDesk;
+      desk1 = 0;
+      desk2 = 0;
       fAlwaysCurrentDesk = 1;
     }
   else
@@ -729,7 +729,6 @@ void list_add(unsigned long *body)
 
 	while(t != NULL)
 	{
-		//t->m = newm;
 		if (t->w == cfgpacket->w)
 		{
 			/* it's already there, do nothing */
@@ -1691,7 +1690,7 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   if (StrEquals(arg1, "*"))
   {
     all_desks = True;
-    desk = 0; //Scr.CurrentDesk;
+    desk = 0;
   }
   else
   {
@@ -2026,7 +2025,7 @@ void ParseOptions(void)
     {
       if (StrEquals(arg1, "*"))
       {
-	desk = 0; //Scr.CurrentDesk;
+	desk = 0;
       }
       else
       {
@@ -2073,7 +2072,7 @@ void ParseOptions(void)
     {
       if (StrEquals(arg1, "*"))
       {
-	desk = 0; //Scr.CurrentDesk;
+	desk = 0;
       }
       else
       {
@@ -2119,7 +2118,7 @@ void ParseOptions(void)
     {
       if (StrEquals(arg1, "*"))
       {
-	desk = 0; //Scr.CurrentDesk;
+	desk = 0;
       }
       else
       {

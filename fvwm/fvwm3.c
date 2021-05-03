@@ -1133,23 +1133,11 @@ static void InitVariables(void)
 	Scr.FvwmRoot.number_cmap_windows = 0;
 	Scr.FvwmRoot.attr_backup.colormap = Pcmap;
 
-	//Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
-	//Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
 	Scr.BusyCursor = BUSY_NONE;
 	Scr.Hilite = NULL;
 	Scr.DefaultFont = NULL;
-	//Scr.VxMax = 2*Scr.MyDisplayWidth;
-	//Scr.VyMax = 2*Scr.MyDisplayHeight;
-	//Scr.Vx = 0;
-	//Scr.Vy = 0;
 	Scr.SizeWindow = None;
 
-	/* Sets the current desktop number to zero */
-	/* Multiple desks are available even in non-virtual
-	 * compilations */
-	//Scr.CurrentDesk = 0;
-	//Scr.EdgeScrollX = DEFAULT_EDGE_SCROLL * Scr.MyDisplayWidth / 100;
-	//Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL * Scr.MyDisplayHeight / 100;
 	Scr.ScrollDelay = DEFAULT_SCROLL_DELAY;
 	Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
 	Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;

@@ -324,13 +324,13 @@ FlocaleCharset UnknownCharset =
 
 FlocaleCharset FlocaleCharsetTable[] =
 {
-	// Common unicode. Almost everybody use UTF8 now.
+	/* Common unicode. Almost everybody use UTF8 now. */
 	CT_ENTRY_WET("UTF-8",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
 	CT_ENTRY_WET("USC-2",  usc_2,  "USC-2",  FLC_ENCODING_TYPE_USC_2),
 	CT_ENTRY_WET("USC-4",  usc_4,  NULL,     FLC_ENCODING_TYPE_USC_4),
 	CT_ENTRY_WET("UTF-16", utf_16, NULL,     FLC_ENCODING_TYPE_UTF_16),
 
-	// Less common locale
+	/* Less common locale */
 	CT_ENTRY("ARMSCII-8",           armscii_8,           NULL),
 	CT_ENTRY("BIG5-0",              big5_0,              NULL),
 	CT_ENTRY("BIG5HKSCS-0",         big5hkscs_0,         NULL),

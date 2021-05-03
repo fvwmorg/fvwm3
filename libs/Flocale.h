@@ -13,7 +13,6 @@
 
 #include "fvwmlib.h"
 #include "gravity.h"
-// #include "Fft.h"
 #include "FftInterface.h"
 #include "Colorset.h"
 
