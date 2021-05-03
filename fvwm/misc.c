@@ -431,7 +431,6 @@ Bool IsRectangleOnThisPage(struct monitor *m, const rectangle *rec, int desk)
 	if (m == NULL)
 		return (False);
 
-	//if (m->virtual_scr.CurrentDesk == desk &&
 	if (rec->x + (signed int)rec->width > 0 &&
 		(rec->x < 0 || rec->x < monitor_get_all_widths()) &&
 		rec->y + (signed int)rec->height > 0 &&

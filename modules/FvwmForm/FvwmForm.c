@@ -29,7 +29,6 @@
 #include "libs/ftime.h"
 #include <fcntl.h>
 
-// #define XK_MISCELLANY
 #include "libs/FRender.h"
 #include "libs/Module.h"		/* for headersize, etc. */
 #include "libs/fvwmlib.h"

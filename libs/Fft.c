@@ -304,7 +304,7 @@ static void MatchFont(Display *dpy,
 		}
 
 		if (!XftCharExists(dpy, font, sp.ucs4)) {
-			// Fallback
+			/* Fallback */
 			if (!template) {
 				int slant = 0, weight = 0;
 				double font_size = 0.0;
@@ -325,7 +325,7 @@ static void MatchFont(Display *dpy,
 			FcCharSetAddChar(fallback_charset, sp.ucs4);
 			FcPatternAddCharSet(template, FC_CHARSET, fallback_charset);
 
-			// Lookup from the cache first!
+			/* Lookup from the cache first! */
 			FcResult result = FcResultMatch;
 			FcPattern *font_pattern = MatchCacheFont(sp.ucs4, template, &result);
 			if (!font_pattern) {

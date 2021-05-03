@@ -20,7 +20,7 @@ typedef struct _FlocaleWinString FlocaleWinString;
 
 typedef struct
 {
-	XftFont *fftfont[4]; // Four rotations
+	XftFont *fftfont[4]; /* Four rotations */
 	char *encoding;
 } FftFontType;
 

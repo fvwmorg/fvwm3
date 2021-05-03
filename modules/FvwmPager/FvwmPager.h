@@ -67,7 +67,6 @@ typedef struct ScreenInfo
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
   unsigned VScale;       /* Panner scale factor */
-  //int CurrentDesk;
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
