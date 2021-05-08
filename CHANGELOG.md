@@ -59,6 +59,7 @@
 
 **Merged pull requests:**
 
+- session: don't leave debug files around [\#483](https://github.com/fvwmorg/fvwm3/pull/483) ([ThomasAdam](https://github.com/ThomasAdam))
 - absolute\_geometry: clamp check to shaded windows [\#479](https://github.com/fvwmorg/fvwm3/pull/479) ([ThomasAdam](https://github.com/ThomasAdam))
 - ta/gh 477 [\#478](https://github.com/fvwmorg/fvwm3/pull/478) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix shadow position bug [\#476](https://github.com/fvwmorg/fvwm3/pull/476) ([mikeandmore](https://github.com/mikeandmore))
