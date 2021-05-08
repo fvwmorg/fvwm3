@@ -53,7 +53,6 @@
 
 /*#define FVWM_SM_DEBUG_PROTO*/
 /*#define FVWM_SM_DEBUG_WINMATCH*/
-#define FVWM_SM_DEBUG_FILES
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -752,17 +751,6 @@ static int save_state_file(char *filename)
 	if (fclose(f) != 0)
 		return 0;
 
-#ifdef FVWM_SM_DEBUG_FILES
-	char *rs;
-
-	xasprintf(&rs, "mkdir -p /tmp/fs-save; cp %s /tmp/fs-save", filename);
-	system(rs);
-	free(rs);
-#endif
-#if defined(FVWM_SM_DEBUG_PROTO) || defined(FVWM_SM_DEBUG_FILES)
-	fvwm_debug(__func__, "[FVWM_SMDEBUG] Saving %s\n", filename);
-#endif
-
 	return success;
 }
 
@@ -1328,17 +1316,6 @@ LoadWindowStates(char *filename)
 	{
 		return;
 	}
-
-#if defined(FVWM_SM_DEBUG_PROTO) ||  defined(FVWM_SM_DEBUG_FILES)
-	fvwm_debug(__func__, "[FVWM_SMDEBUG] Loading %s\n", filename);
-#endif
-#ifdef FVWM_SM_DEBUG_FILES
-	char *rs;
-
-	xasprintf(&rs, "mkdir -p /tmp/fs-load; cp %s /tmp/fs-load", filename);
-	system(rs);
-	free(rs);
-#endif
 
 	while (fgets(s, sizeof(s), f))
 	{
