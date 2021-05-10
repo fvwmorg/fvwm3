@@ -1,0 +1,31 @@
+# github.com/abiosoft/ishell v2.0.0+incompatible
+## explicit
+github.com/abiosoft/ishell
+# github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db
+## explicit
+github.com/abiosoft/readline
+# github.com/chzyer/logex v1.1.10
+## explicit
+# github.com/chzyer/test v0.0.0-20180213035817-a1ea475d72b1
+## explicit
+# github.com/fatih/color v1.9.0
+## explicit
+github.com/fatih/color
+# github.com/flynn-archive/go-shlex v0.0.0-20150515145356-3f9db97f8568
+## explicit
+github.com/flynn-archive/go-shlex
+# github.com/konsorten/go-windows-terminal-sequences v1.0.3
+github.com/konsorten/go-windows-terminal-sequences
+# github.com/mattn/go-colorable v0.1.4
+github.com/mattn/go-colorable
+# github.com/mattn/go-isatty v0.0.12
+## explicit
+github.com/mattn/go-isatty
+# github.com/sirupsen/logrus v1.6.0
+## explicit
+github.com/sirupsen/logrus
+# github.com/stretchr/testify v1.6.1
+## explicit
+# golang.org/x/sys v0.0.0-20200212091648-12a6c2dcc1e4
+## explicit
+golang.org/x/sys/unix
