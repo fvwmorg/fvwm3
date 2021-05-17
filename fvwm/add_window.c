@@ -2632,6 +2632,10 @@ FvwmWindow *AddWindow(
 	/****** inform modules of new window ******/
 	UPDATE_FVWM_SCREEN(fw);
 	BroadcastConfig(M_ADD_WINDOW,fw);
+	if (!IS_SHADED(fw) && !IS_ICONIFIED(fw)) {
+		SendConfigureNotify(fw, fw->g.frame.x, fw->g.frame.y,
+		    fw->g.frame.width, fw->g.frame.height, 0, False);
+	}
 	BroadcastWindowIconNames(fw, True, False);
 
 	mon = fw->m;
