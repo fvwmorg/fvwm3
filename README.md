@@ -31,7 +31,7 @@ See [the installation instructions](./dev-docs/INSTALL.md)
 Help & Support
 --------------
 
-We have a strong community on IRC (freenode), in the `#fvwm` channel if you
+We have a strong community on IRC (libera.chat), in the `#fvwm` channel if you
 fancy a chat.
 
 There is also the [Fvwm Forums](https://fvwmforums.org) where you can ask
