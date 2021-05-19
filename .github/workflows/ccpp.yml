@@ -52,7 +52,7 @@ jobs:
         if: github.event_name == 'pull_request'
         with:
           server: "irc.libera.chat"
-          notice: true
+          notice: false
           channel: "#fvwm"
           nickname: fvwm3-gh
           message: "PR: [${{ github.event.pull_request.number }}]: ${{ github.event.pull_request.title }} -- [${{ github.event.pull_request.user.login }}]"
@@ -61,7 +61,7 @@ jobs:
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         with:
           server: "irc.libera.chat"
-          notice: true
+          notice: false
           channel: "#fvwm"
           nickname: fvwm-gh
           message: ${{ github.actor }} tagged ${{ github.repository }} ${{ github.event.ref }}
