@@ -408,7 +408,7 @@ AddToMenu   MenuSendToPage
 # Fvwm Man Pages (Help) Menu
 DestroyMenu MenuFvwmManPages
 AddToMenu   MenuFvwmManPages "Help" Title
-+ "fvwm"                ViewManPage fvwm
++ "fvwm3"               ViewManPage fvwm3
 + "FvwmAnimate"         ViewManPage FvwmAnimate
 + "FvwmAuto"            ViewManPage FvwmAuto
 + "FvwmBacker"          ViewManPage FvwmBacker
@@ -420,7 +420,6 @@ AddToMenu   MenuFvwmManPages "Help" Title
 + "FvwmIdent"           ViewManPage FvwmIdent
 + "FvwmPager"           ViewManPage FvwmPager
 + "FvwmPerl"            ViewManPage FvwmPerl
-+ "FvwmProxy"           ViewManPage FvwmProxy
 + "FvwmRearrange"       ViewManPage FvwmRearrange
 + "FvwmScript"          ViewManPage FvwmScript
 + "" Nop
