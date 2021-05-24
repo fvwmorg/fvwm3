@@ -256,6 +256,7 @@ uninstall-local-yes:
 	    done; \
 	  done; \
 	done
+	if test -d @FVWM_DATADIR@"/locale"; then rm -fr @FVWM_DATADIR@"/locale"; fi
 
 update-po: Makefile
 	$(MAKE) $(FVWM_DOMAIN).pot-update
