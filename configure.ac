@@ -719,7 +719,6 @@ if test ! x"$xpm_LIBS" = x; then
   if test x"$with_xpm" = xyes; then
     AC_DEFINE(XPM)
     # FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
-    # XPMROOT=xpmroot AC_SUBST(XPMROOT)
     # FVWMSCRIPT=FvwmScript AC_SUBST(FVWMSCRIPT)
   else
     xpm_LIBS=

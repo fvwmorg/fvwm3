@@ -75,11 +75,6 @@ fast root-transparent menus in fvwm.
 *--version*::
   Shows a version number.
 
-== COMPATIBILITY
-
-In the past this utility was called _xpmroot_. This name is still
-supported as a symlink.
-
 == BUGS
 
 Repeated use of fvwm-root with different xpm pixmaps will use up slots
