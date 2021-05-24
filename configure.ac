@@ -1145,7 +1145,7 @@ AC_SUBST(FVWMTASKBAR_DOMAIN)
 AC_SUBST(FVWMSCRIPT_DOMAIN)
 AC_SUBST(ALL_DOMAINS)
 
-LOCALEDIR='${datadir}'"/locale"
+LOCALEDIR="$FVWM_DATADIR/locale"
 with_gettext="yes"
 problem_gettext=""
 
