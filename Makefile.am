@@ -37,3 +37,6 @@ distcheck2: distcheck
 	fi
 
 distclean2: distclean
+
+uninstall-hook:
+	-rmdir @FVWM_DATADIR@
