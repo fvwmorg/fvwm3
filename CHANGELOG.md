@@ -42,6 +42,7 @@
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- Update manpages in default-config [\#493](https://github.com/fvwmorg/fvwm3/pull/493) ([somiaj](https://github.com/somiaj))
 - Fix the pixel overflow problem and clean up the math. [\#451](https://github.com/fvwmorg/fvwm3/pull/451) ([mikeandmore](https://github.com/mikeandmore))
 - fix with some pixels off for 3d buttons [\#444](https://github.com/fvwmorg/fvwm3/pull/444) ([mikeandmore](https://github.com/mikeandmore))
 - Only allocate a copy of style strings if requested. [\#441](https://github.com/fvwmorg/fvwm3/pull/441) ([Quipyowert2](https://github.com/Quipyowert2))
