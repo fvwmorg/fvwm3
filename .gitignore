@@ -11,6 +11,7 @@ Makefile
 Makefile.in
 aclocal.m4
 autom4te.cache/
+bin/FvwmCommand
 bin/fvwm-bug
 bin/fvwm-config
 bin/fvwm-convert-2.4
@@ -61,6 +62,8 @@ modules/FvwmForm/FvwmTalk
 modules/FvwmIconMan/FvwmIconMan
 modules/FvwmIdent/FvwmIdent
 modules/FvwmM4/FvwmM4
+modules/FvwmMFL/FvwmCommandS
+modules/FvwmMFL/FvwmMFL
 modules/FvwmPager/FvwmPager
 modules/FvwmPerl/FvwmPerl
 modules/FvwmProxy/FvwmProxy
