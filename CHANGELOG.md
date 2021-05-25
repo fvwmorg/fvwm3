@@ -177,7 +177,6 @@
 - Division by zero in FvwmPager when desk\_h==0 or desk\_w==0 [\#261](https://github.com/fvwmorg/fvwm3/pull/261) ([schaecsn](https://github.com/schaecsn))
 - update Changelog [\#259](https://github.com/fvwmorg/fvwm3/pull/259) ([ThomasAdam](https://github.com/ThomasAdam))
 - Release/1.0.1 [\#245](https://github.com/fvwmorg/fvwm3/pull/245) ([ThomasAdam](https://github.com/ThomasAdam))
-- EWMH area: don't crop the boundary [\#243](https://github.com/fvwmorg/fvwm3/pull/243) ([ThomasAdam](https://github.com/ThomasAdam))
 - Release 1.0.2 [\#367](https://github.com/fvwmorg/fvwm3/pull/367) ([ThomasAdam](https://github.com/ThomasAdam))
 - ta/distfix [\#366](https://github.com/fvwmorg/fvwm3/pull/366) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: make pid file slight more unique [\#365](https://github.com/fvwmorg/fvwm3/pull/365) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -255,6 +254,7 @@
 **Merged pull requests:**
 
 - Added CHANGELOG.md [\#244](https://github.com/fvwmorg/fvwm3/pull/244) ([ThomasAdam](https://github.com/ThomasAdam))
+- EWMH area: don't crop the boundary [\#243](https://github.com/fvwmorg/fvwm3/pull/243) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add support for infostore in EnvIsSet Test case [\#240](https://github.com/fvwmorg/fvwm3/pull/240) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add variable/parameter which indicates the state of the FVWM3 logging [\#239](https://github.com/fvwmorg/fvwm3/pull/239) ([NsCDE](https://github.com/NsCDE))
 - safemalloc: add stddef.h [\#235](https://github.com/fvwmorg/fvwm3/pull/235) ([ThomasAdam](https://github.com/ThomasAdam))
