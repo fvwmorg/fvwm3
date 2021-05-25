@@ -6,6 +6,7 @@
 
 **Breaking changes:**
 
+- Remove xpmroot link. [\#495](https://github.com/fvwmorg/fvwm3/pull/495) ([somiaj](https://github.com/somiaj))
 - Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 
 **Implemented enhancements:**
