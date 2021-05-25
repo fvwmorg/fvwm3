@@ -321,8 +321,8 @@ AC_CHECK_PROG(ASCIIDOC, asciidoctor, asciidoctor, "")
 AC_SUBST(ASCIIDOC)
 
 AC_ARG_ENABLE(mandoc,
-  AS_HELP_STRING([--disable-mandoc],
-    [disable generation of man pages]),
+  AS_HELP_STRING([--enable-mandoc],
+    [enable generation of man pages]),
   [ if test x"$enableval" = xyes; then
 		with_mandoc="yes, check"
 	else
