@@ -15,5 +15,5 @@ jobs:
                   server: "irc.libera.chat"
                   notice: false
                   channel: "#fvwm"
-                  nickname: fvwm3-gh
+                  nickname: fvwm3-gh-issues
                   message: "Issue [${{ github.event.issue.state }}]: [${{ github.event.issue.number }}]: ${{ github.event.issue.title }} -- [${{ github.event.issue.user.login }}]"

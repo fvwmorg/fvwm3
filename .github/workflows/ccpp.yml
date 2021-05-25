@@ -54,7 +54,7 @@ jobs:
           server: "irc.libera.chat"
           notice: false
           channel: "#fvwm"
-          nickname: fvwm3-gh
+          nickname: fvwm3-gh-pr
           message: "PR: [${{ github.event.pull_request.number }}]: ${{ github.event.pull_request.title }} -- [${{ github.event.pull_request.user.login }}]"
       - name: irc tag created
         uses: Gottox/irc-message-action@v1.3.1
