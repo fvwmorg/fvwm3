@@ -69,6 +69,7 @@
 
 - Manpages renamed by automakes renaming options. [\#500](https://github.com/fvwmorg/fvwm3/pull/500) ([somiaj](https://github.com/somiaj))
 - Move locale directory to $FVWM\_DATADIR [\#499](https://github.com/fvwmorg/fvwm3/pull/499) ([somiaj](https://github.com/somiaj))
+- Update configure --help to provide --enable-mandoc [\#498](https://github.com/fvwmorg/fvwm3/pull/498) ([somiaj](https://github.com/somiaj))
 - Notifier: switch IRC actions [\#489](https://github.com/fvwmorg/fvwm3/pull/489) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPrompt: add vendored libraries [\#485](https://github.com/fvwmorg/fvwm3/pull/485) ([ThomasAdam](https://github.com/ThomasAdam))
 - session: don't leave debug files around [\#483](https://github.com/fvwmorg/fvwm3/pull/483) ([ThomasAdam](https://github.com/ThomasAdam))
