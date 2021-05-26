@@ -61,8 +61,14 @@
 - Fix system.fvwm2rc not found [\#382](https://github.com/fvwmorg/fvwm3/pull/382) ([phileimer](https://github.com/phileimer))
 - fix error in manpage name: fvwm-config-2.6 -\> fvwm-convert-2.6 [\#377](https://github.com/fvwmorg/fvwm3/pull/377) ([slazav](https://github.com/slazav))
 
+**Closed issues:**
+
+- Documentation: man pages should honour `program-transform-name` [\#492](https://github.com/fvwmorg/fvwm3/issues/492)
+
 **Merged pull requests:**
 
+- Manpages renamed by automakes renaming options. [\#500](https://github.com/fvwmorg/fvwm3/pull/500) ([somiaj](https://github.com/somiaj))
+- Move locale directory to $FVWM\_DATADIR [\#499](https://github.com/fvwmorg/fvwm3/pull/499) ([somiaj](https://github.com/somiaj))
 - Notifier: switch IRC actions [\#489](https://github.com/fvwmorg/fvwm3/pull/489) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPrompt: add vendored libraries [\#485](https://github.com/fvwmorg/fvwm3/pull/485) ([ThomasAdam](https://github.com/ThomasAdam))
 - session: don't leave debug files around [\#483](https://github.com/fvwmorg/fvwm3/pull/483) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -121,6 +127,7 @@
 - FvwmButtons Geometry - @g tag positions objects on active monitor instead of globally  [\#269](https://github.com/fvwmorg/fvwm3/issues/269)
 - Maximize on second monitor gives wrong window size [\#250](https://github.com/fvwmorg/fvwm3/issues/250)
 - Man page `fvwm3.1` not built by default [\#246](https://github.com/fvwmorg/fvwm3/issues/246)
+- FvwmPager sometimes ignores styles [\#142](https://github.com/fvwmorg/fvwm3/issues/142)
 - FvwmMFL can start many instances [\#348](https://github.com/fvwmorg/fvwm3/issues/348)
 - Windows are disappearing from screen when they resized and placed again [\#338](https://github.com/fvwmorg/fvwm3/issues/338)
 - FvwmBacker.c:699:7: error: format not a string literal and no format arguments \[-Werror=format-security\] [\#334](https://github.com/fvwmorg/fvwm3/issues/334)
@@ -324,7 +331,6 @@
 - ModuleMFL doesn't appear to open socket [\#172](https://github.com/fvwmorg/fvwm3/issues/172)
 - Typo in configure script line 535, confusing libbson error message  [\#162](https://github.com/fvwmorg/fvwm3/issues/162)
 - EdgeScroll not working properly when values change via FvwmConsole [\#144](https://github.com/fvwmorg/fvwm3/issues/144)
-- FvwmPager sometimes ignores styles [\#142](https://github.com/fvwmorg/fvwm3/issues/142)
 - FvwmIconMan won't correctly apply colorsets when swallowed [\#135](https://github.com/fvwmorg/fvwm3/issues/135)
 - Steam crashes on FVWM3 [\#124](https://github.com/fvwmorg/fvwm3/issues/124)
 - multiple definition error when using gcc 10 [\#119](https://github.com/fvwmorg/fvwm3/issues/119)
