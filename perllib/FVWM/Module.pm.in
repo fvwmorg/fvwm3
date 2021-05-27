@@ -677,10 +677,10 @@ sub search_dirs ($) {
 # support old API, like addHandler, dispatch to add_handler
 sub AUTOLOAD ($;@) {
 	my $self = shift;
-	my @params = @_; 
+	my @params = @_;
 
 	my $autoload_method = $AUTOLOAD;
-	my $method = $autoload_method;  
+	my $method = $autoload_method;
 
 	# remove the package name
 	$method =~ s/.*://g;
@@ -1188,7 +1188,6 @@ Randy J. Ray <randy@byz.org>.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm> and L<FVWM::Module::Tk>,
-L<FVWM::Tracker>.
+For more information, see L<fvwm> andcL<FVWM::Tracker>.
 
 =cut
