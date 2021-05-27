@@ -150,11 +150,7 @@ FVWM::Module::Toolkit - FVWM::Module with abstract widget toolkit attached
 =head1 SYNOPSIS
 
 1) May be used anywhere to require external Perl classes and report error in
-the nice dialog if absent:
-
-    use FVWM::Module::Toolkit qw(Tk X11::Protocol Tk::Balloon);
-
-    use FVWM::Module::Toolkit qw(Tk=804.024,catch X11::Protocol>=0.52);
+the nice dialog if absent.
 
 There is the same syntactic sugar as in "perl -M", with an addition
 of ">=" being fully equivalent to "=". The ">=" form may look better for
@@ -204,7 +200,7 @@ A new toolkit subclass implementation may look like this:
 
 The B<FVWM::Module::Toolkit> package is a sub-class of B<FVWM::Module> that
 is intended to be uses as the base of sub-classes that attach widget
-toolkit library, like Perl/Tk. It does some common work to load
+toolkit library.  It does some common work to load
 widget toolkit libraries and to show an error in the external window like
 xmessage if the required libraries are not available.
 
@@ -266,6 +262,6 @@ Mikhael Goikhman <migo@homemail.com>.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm>, L<FVWM::Module>, L<FVWM::Module::Tk>.
+For more information, see L<fvwm>, L<FVWM::Module>.
 
 =cut

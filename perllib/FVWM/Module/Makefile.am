@@ -2,6 +2,6 @@
 
 configdir = @FVWM_PERLLIBDIR@/FVWM/Module
 
-config_DATA = Toolkit.pm Terminal.pm Tk.pm
+config_DATA = Toolkit.pm Terminal.pm
 
 EXTRA_DIST = $(config_DATA)
