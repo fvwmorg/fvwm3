@@ -6,6 +6,8 @@
 
 **Breaking changes:**
 
+- perllib: remove Tk bindings [\#501](https://github.com/fvwmorg/fvwm3/issues/501)
+- perllib: remove references to Tk [\#502](https://github.com/fvwmorg/fvwm3/pull/502) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove xpmroot link. [\#495](https://github.com/fvwmorg/fvwm3/pull/495) ([somiaj](https://github.com/somiaj))
 - Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 
