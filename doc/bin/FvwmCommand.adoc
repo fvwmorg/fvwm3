@@ -1,0 +1,50 @@
+= FvwmConsole(1)
+
+:doctype: manpage
+:mantitle: FvwmCommand
+:manname: FvwmCommand
+:manvolnum: 1
+:page-layout: base
+
+== NAME
+
+FvwmCommand - send commands to fvwm3.
+
+== SYNOPSIS
+
+FvwmCommand __command__
+
+== DESCRIPTION
+
+FvwmCommand allows the user to send commands to fvwm3.  This is useful for
+external use from shell-scripts or other languages.
+
+== INVOCATION
+
+FvwmCommand __command__
+
+== CONFIGURATION OPTIONS
+
+FvwmCommand accepts the following command-line arguments:
+
+-c::
+	Read and send commands from stdin
+
+-f __filename__::
+	Use unix socket (__filename__) to connect to __FvwmMFL__
+
+-i [infolevel]::
+----
+0 - default
+>0 - print output from FvwmMFL
+----
+
+-d::
+	Print detailed diagnostic messages
+
+-v::
+	Print version number.
+
+== AUTHOR
+
+FvwmCommand is the original work of Miroslav (NsCDE)
