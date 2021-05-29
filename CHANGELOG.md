@@ -6,7 +6,6 @@
 
 **Breaking changes:**
 
-- perllib: remove Tk bindings [\#501](https://github.com/fvwmorg/fvwm3/issues/501)
 - perllib: remove references to Tk [\#502](https://github.com/fvwmorg/fvwm3/pull/502) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove xpmroot link. [\#495](https://github.com/fvwmorg/fvwm3/pull/495) ([somiaj](https://github.com/somiaj))
 - Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
@@ -46,6 +45,7 @@
 - libbson detection fails in Linux. [\#375](https://github.com/fvwmorg/fvwm3/issues/375)
 - SkipMapping disables StartsOnPage/StartsOnDesk [\#373](https://github.com/fvwmorg/fvwm3/issues/373)
 - Fvwm-menu-desktop fails if used with --get-menus [\#234](https://github.com/fvwmorg/fvwm3/issues/234)
+- Recapture: fix erroneous maximizing of windows [\#504](https://github.com/fvwmorg/fvwm3/pull/504) ([ThomasAdam](https://github.com/ThomasAdam))
 - Ensure make uninstall removes default-config links. [\#496](https://github.com/fvwmorg/fvwm3/pull/496) ([somiaj](https://github.com/somiaj))
 - Update manpages in default-config [\#493](https://github.com/fvwmorg/fvwm3/pull/493) ([somiaj](https://github.com/somiaj))
 - Fix the pixel overflow problem and clean up the math. [\#451](https://github.com/fvwmorg/fvwm3/pull/451) ([mikeandmore](https://github.com/mikeandmore))
@@ -65,6 +65,7 @@
 
 **Closed issues:**
 
+- perllib: remove Tk bindings [\#501](https://github.com/fvwmorg/fvwm3/issues/501)
 - Documentation: man pages should honour `program-transform-name` [\#492](https://github.com/fvwmorg/fvwm3/issues/492)
 
 **Merged pull requests:**
