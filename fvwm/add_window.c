@@ -2770,9 +2770,9 @@ FvwmWindow *AddWindow(
 			fw, fw->g.frame.x, fw->g.frame.y, fw->g.frame.width,
 			fw->g.frame.height, 0, False);
 	}
-	if (
-		HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
-		HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
+	if (IS_MAXIMIZED(fw) &&
+		(HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
+		HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT))
 	{
 		int h;
 		int v;
