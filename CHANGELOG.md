@@ -8,7 +8,6 @@
 
 - perllib: remove references to Tk [\#502](https://github.com/fvwmorg/fvwm3/pull/502) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove xpmroot link. [\#495](https://github.com/fvwmorg/fvwm3/pull/495) ([somiaj](https://github.com/somiaj))
-- Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 
 **Implemented enhancements:**
 
@@ -39,6 +38,7 @@
 - FvwmPager: Division by zero in x\_pager.c [\#413](https://github.com/fvwmorg/fvwm3/issues/413)
 - PanFrames: surround monitor edges only for global mode [\#398](https://github.com/fvwmorg/fvwm3/issues/398)
 - RandR: Maximizing windows between boundaries picks wrong monitor [\#394](https://github.com/fvwmorg/fvwm3/issues/394)
+- FvwmCommand is missing a man page [\#393](https://github.com/fvwmorg/fvwm3/issues/393)
 - FvwmIconMan lists wrong windows in \(certain?\) multi-monitor configurations. [\#390](https://github.com/fvwmorg/fvwm3/issues/390)
 - fvwm crash with Program terminated with signal SIGABRT [\#383](https://github.com/fvwmorg/fvwm3/issues/383)
 - EdgeScroll does not work [\#381](https://github.com/fvwmorg/fvwm3/issues/381)
@@ -70,6 +70,7 @@
 
 **Merged pull requests:**
 
+- manpage: add FvwmCommand [\#503](https://github.com/fvwmorg/fvwm3/pull/503) ([ThomasAdam](https://github.com/ThomasAdam))
 - Manpages renamed by automakes renaming options. [\#500](https://github.com/fvwmorg/fvwm3/pull/500) ([somiaj](https://github.com/somiaj))
 - Move locale directory to $FVWM\_DATADIR [\#499](https://github.com/fvwmorg/fvwm3/pull/499) ([somiaj](https://github.com/somiaj))
 - Update configure --help to provide --enable-mandoc [\#498](https://github.com/fvwmorg/fvwm3/pull/498) ([somiaj](https://github.com/somiaj))
@@ -114,6 +115,7 @@
 **Breaking changes:**
 
 - Deprecate librplay support in FvwmEvent [\#316](https://github.com/fvwmorg/fvwm3/issues/316)
+- Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 - documentation: remove docbook in favour of asciidoc [\#290](https://github.com/fvwmorg/fvwm3/pull/290) ([ThomasAdam](https://github.com/ThomasAdam))
 
 **Implemented enhancements:**
