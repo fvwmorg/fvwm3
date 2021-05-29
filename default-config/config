@@ -37,6 +37,17 @@ InfoStoreAdd terminal xterm
 InfoStoreAdd runcmd "dmenu_run"
 InfoStoreAdd runcmdopt "-nb '#2b4e5e'"
 
+# DesktopConfiguration sets if virtual desktops/pages are "Global" 
+# This means all screens share deskstops/pages.
+# "Per-Monitor" in witch every monitor has its own virtual desktop/pages. 
+# For this mode it's recommended that FvwmPager is configured to 
+# use the monitor configuration option, so that only windows on that 
+# specific monitor are shown. Or "Shared" witch works in the same manner
+# that Xmonad or Herbsflutwm handles desks. This mode only works with 
+# >=2 monitors attached.
+#
+DesktopConfiguration global
+
 ###########
 # 1: Functions
 #
