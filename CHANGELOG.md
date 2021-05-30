@@ -72,6 +72,7 @@
 
 **Merged pull requests:**
 
+- Add DesktopConfigure to config [\#505](https://github.com/fvwmorg/fvwm3/pull/505) ([lgsobalvarro](https://github.com/lgsobalvarro))
 - manpage: add FvwmCommand [\#503](https://github.com/fvwmorg/fvwm3/pull/503) ([ThomasAdam](https://github.com/ThomasAdam))
 - Manpages renamed by automakes renaming options. [\#500](https://github.com/fvwmorg/fvwm3/pull/500) ([somiaj](https://github.com/somiaj))
 - Move locale directory to $FVWM\_DATADIR [\#499](https://github.com/fvwmorg/fvwm3/pull/499) ([somiaj](https://github.com/somiaj))
