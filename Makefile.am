@@ -23,6 +23,8 @@ SUBDIRS = \
 #    make distcheck2  # instead of make distcheck
 #    make distclean2  # instead of make distclean
 
+EXTRA_DIST = CHANGELOG.md
+
 DISTCHECK_CONFIGURE_FLAGS = --enable-mandoc
 
 distcheck2: distcheck
