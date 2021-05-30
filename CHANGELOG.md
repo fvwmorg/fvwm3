@@ -14,7 +14,9 @@
 
 - FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
 - fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
+- Support desktop configuration similar to xmonad/herbstluftwm [\#260](https://github.com/fvwmorg/fvwm3/issues/260)
 - Improve runcmd in the default-config. [\#506](https://github.com/fvwmorg/fvwm3/pull/506) ([somiaj](https://github.com/somiaj))
+- DesktopConfiguration: introduce `shared` option [\#452](https://github.com/fvwmorg/fvwm3/pull/452) ([ThomasAdam](https://github.com/ThomasAdam))
 - Conditionals: add TitleAt{Top,Bottom,Left,Right} [\#439](https://github.com/fvwmorg/fvwm3/pull/439) ([ThomasAdam](https://github.com/ThomasAdam))
 - conditionals: add HasBorders/HasTitle [\#416](https://github.com/fvwmorg/fvwm3/pull/416) ([ThomasAdam](https://github.com/ThomasAdam))
 
