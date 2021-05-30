@@ -370,7 +370,7 @@ NoSize:::
     This option specifies that this button will not be considered at all
     when making the initial calculations of button sizes. Useful for the
     odd button that gets just a couple of pixels too large to keep in
-    line, and therefor blows up your whole buttonbox. "NoSize" is
+    line, and therefore blows up your whole buttonbox. "NoSize" is
     equivalent to "Size 0 0".
 
 Padding width height:::
@@ -1128,7 +1128,7 @@ whitespace character.
 The FvwmButtons program, and the concept for interfacing this module to
 the Window Manager, are all original work by Robert Nation.
 
-Originally, FvwmGoodStuff preceeded FvwmButtons.
+Originally, FvwmGoodStuff preceded FvwmButtons.
 
 == AUTHOR
 

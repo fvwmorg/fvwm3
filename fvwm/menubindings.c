@@ -452,7 +452,7 @@ int menu_binding(
 	if ((modifier & AnyModifier) && (modifier & (~AnyModifier)))
 	{
 		fvwm_debug(__func__, "Binding specified AnyModifier"
-			   " and other modifers too. Excess modifiers are"
+			   " and other modifiers too. Excess modifiers are"
 			   " ignored.");
 		modifier = AnyModifier;
 	}
