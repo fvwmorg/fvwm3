@@ -8,11 +8,13 @@
 
 - perllib: remove references to Tk [\#502](https://github.com/fvwmorg/fvwm3/pull/502) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove xpmroot link. [\#495](https://github.com/fvwmorg/fvwm3/pull/495) ([somiaj](https://github.com/somiaj))
+- Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 
 **Implemented enhancements:**
 
 - FvwmIconMan must handle resolution settings better in per-monitor mode [\#396](https://github.com/fvwmorg/fvwm3/issues/396)
 - fvwm2 compat: provide FvwmCommandS symlink to Module FvwmMFL [\#391](https://github.com/fvwmorg/fvwm3/issues/391)
+- Improve runcmd in the default-config. [\#506](https://github.com/fvwmorg/fvwm3/pull/506) ([somiaj](https://github.com/somiaj))
 - Conditionals: add TitleAt{Top,Bottom,Left,Right} [\#439](https://github.com/fvwmorg/fvwm3/pull/439) ([ThomasAdam](https://github.com/ThomasAdam))
 - conditionals: add HasBorders/HasTitle [\#416](https://github.com/fvwmorg/fvwm3/pull/416) ([ThomasAdam](https://github.com/ThomasAdam))
 
@@ -115,7 +117,6 @@
 **Breaking changes:**
 
 - Deprecate librplay support in FvwmEvent [\#316](https://github.com/fvwmorg/fvwm3/issues/316)
-- Remove FvwmConsoleC.pl front-end [\#379](https://github.com/fvwmorg/fvwm3/pull/379) ([slazav](https://github.com/slazav))
 - documentation: remove docbook in favour of asciidoc [\#290](https://github.com/fvwmorg/fvwm3/pull/290) ([ThomasAdam](https://github.com/ThomasAdam))
 
 **Implemented enhancements:**
