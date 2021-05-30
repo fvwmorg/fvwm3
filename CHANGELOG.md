@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased](https://github.com/fvwmorg/fvwm3/tree/HEAD)
+
+[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.3...HEAD)
+
+**Merged pull requests:**
+
+- build: add CHANGELOG.md to dist [\#510](https://github.com/fvwmorg/fvwm3/pull/510) ([ThomasAdam](https://github.com/ThomasAdam))
+- Working on 1.0.4 [\#509](https://github.com/fvwmorg/fvwm3/pull/509) ([ThomasAdam](https://github.com/ThomasAdam))
+
 ## [1.0.3](https://github.com/fvwmorg/fvwm3/tree/1.0.3) (2021-05-30)
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.2...1.0.3)
@@ -74,7 +83,6 @@
 
 **Merged pull requests:**
 
-- Working on 1.0.4 [\#509](https://github.com/fvwmorg/fvwm3/pull/509) ([ThomasAdam](https://github.com/ThomasAdam))
 - Manpages renamed by automakes renaming options. [\#500](https://github.com/fvwmorg/fvwm3/pull/500) ([somiaj](https://github.com/somiaj))
 - Move locale directory to $FVWM\_DATADIR [\#499](https://github.com/fvwmorg/fvwm3/pull/499) ([somiaj](https://github.com/somiaj))
 - Update configure --help to provide --enable-mandoc [\#498](https://github.com/fvwmorg/fvwm3/pull/498) ([somiaj](https://github.com/somiaj))
