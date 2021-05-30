@@ -489,7 +489,7 @@ static int ParseBinding(
 	{
 		fvwm_debug(
 			__func__, "Binding specified AnyModifier"
-			" and other modifers too. Excess modifiers are"
+			" and other modifiers too. Excess modifiers are"
 			" ignored.");
 		modifier = AnyModifier;
 	}

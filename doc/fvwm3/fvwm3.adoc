@@ -1719,7 +1719,7 @@ Mouse 3 FS N WindowShade $$[func.context]
 
 $[debuglog.state]::
 	Either _0_ (debug log closed) or _1_. Indicates the current state of
-	debuging and logging facility.
+	debugging and logging facility.
 
 $[gt._str_]::
 	return the translation of _str_ by looking in the current locale
@@ -3960,7 +3960,7 @@ current desk or the selected desktop if the _Desk_ condition is used.
 The _NoCurrentDeskTitle_ option removes this title. _TitleForAllDesks_
 causes fvwm to add a menu title with the desk name and/or number
 before each group of windows on the same desk. With _NoLayer_, the
-layer of the window is not diplayed. The options _ShowPage_,
+layer of the window is not displayed. The options _ShowPage_,
 _ShowPageX_ and _ShowPageY_ enable displaying the page of the window
 rounded multiples of the display size. With _ShowScreen_, the window's
 screen name is displayed.

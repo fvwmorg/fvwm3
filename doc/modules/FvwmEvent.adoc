@@ -146,8 +146,8 @@ The following events are valid:
 |new_page 		| Occurs when a new page is switched to
 |old_add_window 	| DEPRECATED
 |old_configure_window 	| DEPRECATED
-|property_change 	| Occurs when a window recieves a PropertNotify event
-|raise_window 		| Occurs when a windowis raised
+|property_change 	| Occurs when a window receives a PropertNotify event
+|raise_window 		| Occurs when a window is raised
 |res_class 		| Occurs when a window's Class is set
 |res_name 		| Occurs when a window's Resource is set
 |restack 		| Occurs when windows are restacked

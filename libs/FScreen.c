@@ -499,7 +499,7 @@ void FScreenInit(Display *dpy)
 
 	if (res == NULL || (res != NULL && res->noutput == 0)) {
 		XRRFreeScreenResources(res);
-		fvwm_debug(__func__, "RandR present, yet no ouputs found.");
+		fvwm_debug(__func__, "RandR present, yet no outputs found.");
 		goto randr_fail;
 	}
 	XRRFreeScreenResources(res);
