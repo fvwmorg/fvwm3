@@ -3,7 +3,7 @@ dnl
 AC_PREREQ(2.60)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED="no"
+ISRELEASED="yes"
 if test $ISRELEASED = "no"; then
 	RELDATELONG=""
 	RELDATESHORT=""
@@ -26,9 +26,9 @@ VERSIONINFO=m4_esyscmd([./utils/fvwm-version-str.sh])
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="20 December 20"
-RELDATESHORT="20-Dec-20"
-RELDATENUM="20-12-20"
+RELDATELONG="30 May 21"
+RELDATESHORT="30-May-21"
+RELDATENUM="21-05-30"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"
