@@ -4,8 +4,13 @@
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.3...HEAD)
 
+**Fixed bugs:**
+
+- Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
+
 **Merged pull requests:**
 
+- Spelling error fixes. [\#512](https://github.com/fvwmorg/fvwm3/pull/512) ([somiaj](https://github.com/somiaj))
 - build: add CHANGELOG.md to dist [\#510](https://github.com/fvwmorg/fvwm3/pull/510) ([ThomasAdam](https://github.com/ThomasAdam))
 - Working on 1.0.4 [\#509](https://github.com/fvwmorg/fvwm3/pull/509) ([ThomasAdam](https://github.com/ThomasAdam))
 
