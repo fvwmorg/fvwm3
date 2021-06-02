@@ -13,7 +13,7 @@ import json
 # at this moment, that is all. It doesn't parse json structures yet, or anything
 # fancy and new from FVWM3 new command processing interface.
 
-def mflclnt(verbose, read_from_stdin, info, fvwm_socket):
+def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
     # Create a unix domain socket
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
@@ -59,8 +59,8 @@ def mflclnt(verbose, read_from_stdin, info, fvwm_socket):
                 message = stdline.encode()
                 sock.sendall(message)
         else:
-            message = sys.argv[-1].encode()
-            if sys.argv[0] is not sys.argv[-1]:
+            message = " ".join(args).encode()
+            if len(args) > 0:
                 sock.sendall(message)
         if verbose:
             print('Sent {!r}'.format(message) + " to FvwmMFL")
@@ -142,7 +142,7 @@ def main():
             assert False, "unhandled option"
 
     # Call out socket function finally.
-    mflclnt(verbose, read_from_stdin, info, fvwm_socket)
+    mflclnt(verbose, read_from_stdin, info, fvwm_socket, args)
 
 if __name__ == "__main__":
     main()
