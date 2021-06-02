@@ -7,6 +7,7 @@
 **Fixed bugs:**
 
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
+- Update FvwmCommand to allow multiple args. [\#514](https://github.com/fvwmorg/fvwm3/pull/514) ([somiaj](https://github.com/somiaj))
 
 **Merged pull requests:**
 
