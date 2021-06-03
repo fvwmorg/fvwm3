@@ -4,6 +4,10 @@
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.3...HEAD)
 
+**Breaking changes:**
+
+- Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
+
 **Fixed bugs:**
 
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
