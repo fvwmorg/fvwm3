@@ -6,24 +6,6 @@ program_transform_name =
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmRearrange
 
-## These modules were made obsolete in November, 1998.
-## Remove from fvwm distribution no later than October, 1999.
-module_SCRIPTS = FvwmCascade FvwmTile
-
-FvwmCascade: ../../config.h Makefile
-	echo "#!/bin/sh" > $@
-	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
-	echo 'shift;shift;shift;shift;shift' >> $@
-	echo exec ${moduledir}'/FvwmRearrange $$modargs -cascade $$@' >> $@
-
-FvwmTile: ../../config.h Makefile
-	echo "#!/bin/sh" > $@
-	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
-	echo 'shift;shift;shift;shift;shift' >> $@
-	echo exec ${moduledir}'/FvwmRearrange $$modargs -tile $$@' >> $@
-
-CLEANFILES = $(module_SCRIPTS)
-
 FvwmRearrange_SOURCES = FvwmRearrange.c
 FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 

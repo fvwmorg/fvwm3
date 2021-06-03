@@ -87,8 +87,8 @@ int do_maximize = 0;
 int do_animate = 0;
 int do_ewmhiwa = 0;
 
-char FvwmTile;
-char FvwmCascade;
+int FvwmTile = 0;
+int FvwmCascade = 1;
 
 
 RETSIGTYPE DeadPipe(int sig)
@@ -402,8 +402,14 @@ void parse_args(char *s, int argc, char *argv[], int argi)
   /* parse args */
   for (; argi < argc; ++argi)
   {
-    if (!strcmp(argv[argi], "-tile") || !strcmp(argv[argi], "-cascade")) {
-      /* ignore */
+    if (!strcmp(argv[argi], "-tile")) {
+      FvwmTile = 1;
+      FvwmCascade = 0;
+      resize = 1;
+    }
+    else if (!strcmp(argv[argi], "-cascade")) {
+      FvwmCascade = 1;
+      FvwmTile = 0;
     }
     else if (!strcmp(argv[argi], "-u")) {
       untitled = 1;
@@ -500,15 +506,11 @@ void parse_args(char *s, int argc, char *argv[], int argi)
       } else if (nsargc == 2) {
 	ofsy = atopixel(argv[argi], dheight);
       } else if (nsargc == 3) {
-	if (FvwmCascade)
-	  maxw = atopixel(argv[argi], dwidth);
-	else /* FvwmTile */
-	  maxx = atopixel(argv[argi], dwidth);
+	maxw = atopixel(argv[argi], dwidth);
+	maxx = maxw;
       } else if (nsargc == 4) {
-	if (FvwmCascade)
-	  maxh = atopixel(argv[argi], dheight);
-	else /* FvwmTile */
-	  maxy = atopixel(argv[argi], dheight);
+	maxh = atopixel(argv[argi], dheight);
+	maxy = maxh;
       }
     }
   }
@@ -558,17 +560,6 @@ int main(int argc, char *argv[])
   }
   FScreenGetScrRect(NULL, FSCREEN_CURRENT, &dx, &dy, &dwidth, &dheight);
 
-  if (strcmp(module->name, "FvwmCascade") &&
-      (!strcmp(module->name, "FvwmTile") ||
-       (argc >= 7 && !strcmp(argv[6], "-tile")))) {
-    FvwmTile = 1;
-    FvwmCascade = 0;
-    resize = 1;
-  } else {
-    FvwmCascade = 1;
-    FvwmTile = 0;
-    resize = 0;
-  }
   parse_args("module args", module->user_argc, module->user_argv, 0);
 
   SetMessageMask(fd,
