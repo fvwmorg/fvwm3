@@ -37,14 +37,18 @@ InfoStoreAdd terminal xterm
 InfoStoreAdd runcmd "dmenu_run"
 InfoStoreAdd runcmdopt "-nb '#2b4e5e'"
 
-# DesktopConfiguration sets if virtual desktops/pages are "Global" 
-# This means all screens share deskstops/pages.
-# "Per-Monitor" in witch every monitor has its own virtual desktop/pages. 
-# For this mode it's recommended that FvwmPager is configured to 
-# use the monitor configuration option, so that only windows on that 
-# specific monitor are shown. Or "Shared" witch works in the same manner
-# that Xmonad or Herbsflutwm handles desks. This mode only works with 
-# >=2 monitors attached.
+# DesktopConfiguration sets how fvwm handles desktops:
+#
+# * global -- the default. This means all screens show the same desktops/pages.
+# * per-monitor -- every monitor has its own virtual desktop/pages.
+#     For this mode it's recommended that FvwmPager is configured to
+#     use the monitor configuration option, so that only windows on that
+#     specific monitor are shown.
+# * shared -- the virtual desktops are shared across all monitors and each
+#     monitor shows a single desktop at a time. If one monitor switches to a
+#     desktop currently being viewed by another, the two monitors swap which
+#     desktop they are viewing.  This is similar to how Xmonad or Herbsflutwm
+#     handle desks.  This mode only works with two or more monitors.
 #
 DesktopConfiguration global
 
@@ -468,7 +472,7 @@ AddToMenu   MenuFvwmManPages "Help" Title
 # Super_R (windows key) will launch a terminal.
 # Alt-Space to launch dmenu (Note: dmenu must be present in the system)
 #
-# Silent supresses any errors (such as keyboards with no Menu key).
+# Silent suppresses any errors (such as keyboards with no Menu key).
 Silent Key F1 A M Menu MenuFvwmRoot
 Silent Key Menu A A Menu MenuFvwmRoot
 Silent Key Tab A M WindowList Root c c NoDeskSort, SelectOnRelease Meta_L
