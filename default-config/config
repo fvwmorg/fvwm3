@@ -145,11 +145,8 @@ AddToFunc   IconManClick
 # This function will toggle if fvwm shows the TitleBar.
 DestroyFunc ToggleTitle
 AddToFunc   ToggleTitle
-+ I ThisWindow (State 1) WindowStyle Title
-+ I TestRc (Match) State 1 False
-+ I TestRc (Match) Break
-+ I WindowStyle !Title
-+ I State 1 True
++ I ThisWindow (HasTitle) WindowStyle !Title
++ I TestRc (NoMatch) WindowStyle Title
 
 # Function: ChangeDesk
 #
