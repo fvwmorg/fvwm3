@@ -1469,9 +1469,6 @@ dnl with autoconf <2.60 this is needed
 AC_SUBST(datarootdir)
 AC_SUBST(docdir)
 
-LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
-AC_SUBST(LOCAL_BUGADDR)
-
 AC_OUTPUT(
 	Makefile
 	libs/Makefile
