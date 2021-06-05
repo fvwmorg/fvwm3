@@ -15,6 +15,7 @@
 
 **Merged pull requests:**
 
+- configure: remove stale references to BUGADDR [\#517](https://github.com/fvwmorg/fvwm3/pull/517) ([ThomasAdam](https://github.com/ThomasAdam))
 - Configuration tweaks [\#516](https://github.com/fvwmorg/fvwm3/pull/516) ([ThomasAdam](https://github.com/ThomasAdam))
 - Spelling error fixes. [\#512](https://github.com/fvwmorg/fvwm3/pull/512) ([somiaj](https://github.com/somiaj))
 - build: add CHANGELOG.md to dist [\#510](https://github.com/fvwmorg/fvwm3/pull/510) ([ThomasAdam](https://github.com/ThomasAdam))
