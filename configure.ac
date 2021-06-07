@@ -1498,7 +1498,6 @@ dnl
 	perllib/FVWM/Module.pm
 	default-config/Makefile
 	doc/Makefile
-	dev-docs/Makefile
 	po/Makefile
 dnl
 	modules/FvwmAnimate/Makefile
