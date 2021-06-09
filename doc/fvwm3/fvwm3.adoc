@@ -7873,18 +7873,21 @@ DestroyFunc PrintFunction
 ....
 
 *Echo* _string_::
-	Prints a message to _stderr_. Potentially useful for debugging things
-	in your _config_.
+	Prints a message to the debug log file, which requires logging to be
+	enabled. See the *-v* option or *PrintInfo* for more information on both
+	enabling debug logging and the log file location. Potentially useful for
+	debugging things in your _config_ or getting the value of variables.
 +
 
 ....
 Echo Beginning style definitions...
+Echo Current desk $[desk.n].
 ....
 
 *EchoFuncDefinition* _function_::
 	The *EchoFuncDefinition* is similar to the *Echo* command but prints
-	the definition for the given _function_ to _stderr_. It is useful to
-	find out how fvwm handles quoting and for debugging functions .
+	the definition for the given _function_ to the debug log file. It is
+	useful to find out how fvwm handles quoting and for debugging functions.
 
 *Exec* _command_::
 	Executes _command_. You should not use an ampersand '&' at the end of
