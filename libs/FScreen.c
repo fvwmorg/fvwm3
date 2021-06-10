@@ -49,6 +49,7 @@ static void		 scan_screens(Display *);
 static void		 monitor_check_primary(void);
 static void		 monitor_refresh_global(void);
 static struct monitor	*monitor_by_name(const char *);
+static void		 monitor_scan_edges(struct monitor *);
 
 enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
@@ -79,6 +80,33 @@ monitor_new(void)
 	m = fxcalloc(1, sizeof *m);
 
 	return (m);
+}
+
+static void
+monitor_scan_edges(struct monitor *m)
+{
+	struct monitor	*m_loop;
+
+	m->edge.top = m->edge.bottom = m->edge.left = m->edge.right =
+		MONITOR_OUTSIDE_EDGE;
+
+	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		if (m_loop == m)
+			continue;
+
+		/* Top Edge */
+		if ( m->si->y == m_loop->si->y + m_loop->si->h )
+			m->edge.top = MONITOR_INSIDE_EDGE;
+		/* Bottom Edge */
+		if ( m->si->y + m->si->h == m_loop->si->y )
+			m->edge.bottom = MONITOR_INSIDE_EDGE;
+		/* Left Edge */
+		if ( m->si->x == m_loop->si->x + m_loop->si->w )
+			m->edge.left = MONITOR_INSIDE_EDGE;
+		/* Right Edge */
+		if ( m->si->x + m->si->w == m_loop->si->x )
+			m->edge.right = MONITOR_INSIDE_EDGE;
+	}
 }
 
 void
@@ -305,10 +333,6 @@ monitor_assign_virtual(struct monitor *ref)
 			continue;
 
 		memcpy(&m->virtual_scr, &ref->virtual_scr, sizeof(m->virtual_scr));
-		memcpy(&m->PanFrameTop, &ref->PanFrameTop, sizeof(m->PanFrameTop));
-		memcpy(&m->PanFrameLeft, &ref->PanFrameLeft, sizeof(m->PanFrameLeft));
-		memcpy(&m->PanFrameRight, &ref->PanFrameRight, sizeof(m->PanFrameRight));
-		memcpy(&m->PanFrameBottom, &ref->PanFrameBottom, sizeof(m->PanFrameBottom));
 	}
 }
 
@@ -394,6 +418,9 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	}
 	XRRFreeScreenResources(res);
 
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		monitor_scan_edges(m);
+
 	monitor_check_primary();
 }
 
@@ -455,6 +482,7 @@ set_coords:
 		XFree(name);
 	}
 
+	monitor_scan_edges(m);
 	monitor_check_primary();
 	XRRFreeMonitors(rrm);
 }
@@ -513,6 +541,7 @@ void FScreenInit(Display *dpy)
 		m->Desktops->next = NULL;
 		m->Desktops->desk = 0;
 		m->flags |= (MONITOR_NEW|MONITOR_ENABLED);
+		monitor_scan_edges(m);
 	}
 
 	monitor_check_primary();

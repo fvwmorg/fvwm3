@@ -4089,6 +4089,7 @@ void dispatch_event(XEvent *e)
 			XRRUpdateConfiguration(e);
 			monitor_update_ewmh();
 			monitor_emit_broadcast();
+			initPanFrames();
 			break;
 		}
 	}
