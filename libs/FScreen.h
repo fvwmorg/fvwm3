@@ -92,6 +92,9 @@ struct screen_info	*screen_info_by_name(const char *);
 #define MONITOR_CHANGED 0x10
 #define MONITOR_ALL (MONITOR_DISABLED|MONITOR_ENABLED|MONITOR_CHANGED)
 
+#define MONITOR_OUTSIDE_EDGE 0
+#define MONITOR_INSIDE_EDGE 1
+
 struct monitor {
 	struct screen_info	*si;
 	int			 flags;
@@ -118,6 +121,13 @@ struct monitor {
                 } BaseStrut;
 
         } ewmhc;
+
+	struct {
+		bool top;
+		bool bottom;
+		bool left;
+		bool right;
+	} edge;
 
         struct {
                 int VxMax;
