@@ -15,6 +15,7 @@
 
 **Merged pull requests:**
 
+- Update manual for Echo/EchoFuncDefinition [\#520](https://github.com/fvwmorg/fvwm3/pull/520) ([somiaj](https://github.com/somiaj))
 - release: remove dev-docs from release tarball [\#518](https://github.com/fvwmorg/fvwm3/pull/518) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure: remove stale references to BUGADDR [\#517](https://github.com/fvwmorg/fvwm3/pull/517) ([ThomasAdam](https://github.com/ThomasAdam))
 - Configuration tweaks [\#516](https://github.com/fvwmorg/fvwm3/pull/516) ([ThomasAdam](https://github.com/ThomasAdam))
