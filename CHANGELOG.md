@@ -8,6 +8,10 @@
 
 - Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
 
+**Implemented enhancements:**
+
+- Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
+
 **Fixed bugs:**
 
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
@@ -17,6 +21,7 @@
 
 **Merged pull requests:**
 
+- EdgeScroll: a few improvements [\#524](https://github.com/fvwmorg/fvwm3/pull/524) ([ThomasAdam](https://github.com/ThomasAdam))
 - Update manual for Echo/EchoFuncDefinition [\#520](https://github.com/fvwmorg/fvwm3/pull/520) ([somiaj](https://github.com/somiaj))
 - release: remove dev-docs from release tarball [\#518](https://github.com/fvwmorg/fvwm3/pull/518) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure: remove stale references to BUGADDR [\#517](https://github.com/fvwmorg/fvwm3/pull/517) ([ThomasAdam](https://github.com/ThomasAdam))
