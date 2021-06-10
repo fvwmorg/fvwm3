@@ -2076,79 +2076,44 @@ static void DoSnapAttract(
 				continue;
 			}
 			/* snap horizontally */
-			if (
-				other.y + other.height > *py &&
-				other.y < *py + self.height)
+			if (other.y + other.height > *py &&
+			    other.y < *py + self.height)
 			{
-				if (*px + self.width >= other.x &&
-				    *px + self.width <
-				    other.x + fw->snap_attraction.proximity)
-				{
-					update_pos(
-						&score_x, &nxl, *px,
-						other.x - self.width);
-				}
-				if (*px + self.width >=
-				    other.x - fw->snap_attraction.proximity &&
-				    *px + self.width < other.x)
-				{
-					update_pos(
-						&score_x, &nxl, *px,
-						other.x - self.width);
-				}
-				if (*px <= other.x + other.width &&
-				    *px > other.x + other.width -
+				if (*px + self.width >= other.x -
+				    fw->snap_attraction.proximity &&
+				    *px + self.width <= other.x +
 				    fw->snap_attraction.proximity)
 				{
-					update_pos(
-						&score_x, &nxl, *px,
-						other.x + other.width);
+					update_pos(&score_x, &nxl, *px,
+						other.x - self.width);
 				}
 				if (*px <= other.x + other.width +
 				    fw->snap_attraction.proximity &&
-				    *px > other.x + other.width)
+				    *px >= other.x + other.width -
+				    fw->snap_attraction.proximity)
 				{
-					update_pos(
-						&score_x, &nxl, *px,
+					update_pos(&score_x, &nxl, *px,
 						other.x + other.width);
 				}
 			}
 			/* snap vertically */
-			if (
-				other.x + other.width > *px &&
-				other.x < *px + self.width)
+			if (other.x + other.width > *px &&
+			    other.x < *px + self.width)
 			{
-				if (*py + self.height >= other.y &&
-				    *py + self.height < other.y +
+				if (*py + self.height >= other.y -
+				    fw->snap_attraction.proximity &&
+				    *py + self.height <= other.y +
 				    fw->snap_attraction.proximity)
 				{
-					update_pos(
-						&score_y, &nyt, *py,
+					update_pos(&score_y, &nyt, *py,
 						other.y - self.height);
-				}
-				if (*py + self.height >=
-				    other.y - fw->snap_attraction.proximity &&
-				    *py + self.height < other.y)
-				{
-					update_pos(
-						&score_y, &nyt, *py,
-						other.y - self.height);
-				}
-				if (*py <=
-				    other.y + other.height &&
-				    *py > other.y + other.height -
-				    fw->snap_attraction.proximity)
-				{
-					update_pos(
-						&score_y, &nyt, *py,
-						other.y + other.height);
 				}
 				if (*py <= other.y + other.height +
 				    fw->snap_attraction.proximity &&
-				    *py > other.y + other.height)
+				    *py >= other.y + other.height -
+				    fw->snap_attraction.proximity)
 				{
-					update_pos(
-						&score_y, &nyt, *py,
+					update_pos(&score_y, &nyt, *py,
 						other.y + other.height);
 				}
 			}
