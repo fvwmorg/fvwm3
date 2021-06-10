@@ -445,6 +445,17 @@ output will be moved to the next active output (the output which
 contains the mouse pointer). If the same output reappears, Fvwm will
 move those windows back again.
 
+In addition to specific *FvwmEvent* conditions which can be used to track a
+monitor's change, there is a function called _RandRFunc_ which the user can
+define to be run when a screen event occurs (such as
+enabling/disabling/resolution change):
+
+....
+DestroyFunc RandRFunc
+AddToFunc   RandRFunc
++ I Exec exec xmessage "A screen changed"
+....
+
 == DESKTOP BEHAVIOUR
 
 Because Fvwm has the capability to track outputs, Fvwm can be told how
