@@ -1973,6 +1973,7 @@ static void DoSnapAttract(
 	int score_x;
 	int score_y;
 	int scr_w, scr_h;
+	int mon_w, mon_h, mon_x, mon_y;
 	struct monitor *m;
 
 	nxl = -99999;
@@ -1993,11 +1994,6 @@ static void DoSnapAttract(
 			self.height += g.height;
 		}
 	}
-
-	m = fw->m;
-
-	if (m == NULL)
-		m = monitor_get_current();
 
 	scr_w = monitor_get_all_widths();
 	scr_h = monitor_get_all_heights();
@@ -2159,7 +2155,7 @@ static void DoSnapAttract(
 		} /* for */
 	} /* snap to other windows */
 
-	/* snap to screen egdes */
+	/* snap to monitor edges */
 	if (fw->snap_attraction.proximity > 0 && (
 			( fw->snap_attraction.mode & SNAP_SCREEN && (
 				fw->snap_attraction.mode & SNAP_SAME ||
@@ -2173,68 +2169,50 @@ static void DoSnapAttract(
 				fw->snap_attraction.mode & SNAP_SCREEN_ICONS ) ||
 			fw->snap_attraction.mode & SNAP_SCREEN_ALL ))
 	{
-		/* vertically */
-		if (!(scr_w < (*px) ||
-		      (*px + self.width) < 0))
+		/* Loop over each monitor */
+		TAILQ_FOREACH(m, &monitor_q, entry)
 		{
-			if (*py + self.height >=
-			    scr_h &&
-			    *py + self.height <
-			    scr_h + fw->snap_attraction.proximity)
+			mon_x = m->si->x;
+			mon_y = m->si->y;
+			mon_w = m->si->w;
+			mon_h = m->si->h;
+
+			/* vertically */
+			if (!(*px + self.width < mon_x || *px > mon_x + mon_w))
 			{
-				update_pos(
-					&score_y, &nyt, *py,
-					scr_h - self.height);
+				if (*py + self.height >=
+					mon_h + mon_y - fw->snap_attraction.proximity &&
+					*py + self.height <=
+				 	mon_h + mon_y + fw->snap_attraction.proximity)
+				{
+					update_pos(&score_y, &nyt, *py,
+						mon_h + mon_y - self.height);
+				}
+				if (*py <= mon_y + fw->snap_attraction.proximity &&
+					*py > mon_y - fw->snap_attraction.proximity)
+				{
+					update_pos(&score_y, &nyt, *py, mon_y);
+				}
 			}
-			if (*py + self.height >=
-			    scr_h - fw->snap_attraction.proximity &&
-			    *py + self.height < scr_h)
+			/* horizontally */
+			if (!(*py + self.height < mon_y || *py > mon_y + mon_h))
 			{
-				update_pos(
-					&score_y, &nyt, *py,
-					scr_h - self.height);
+				if (*px + self.width >= 
+					mon_w + mon_x - fw->snap_attraction.proximity &&
+					*px + self.width <=
+					mon_w + mon_x + fw->snap_attraction.proximity)
+				{
+					update_pos(&score_x, &nxl, *px,
+						mon_w + mon_x - self.width);
+				}
+				if ((*px <= mon_x + fw->snap_attraction.proximity) &&
+					(*px >= mon_x - fw->snap_attraction.proximity))
+				{
+					update_pos(&score_x, &nxl, *px, mon_x);
+				}
 			}
-			if ((*py <= 0)&&(*py > - fw->snap_attraction.proximity))
-			{
-				update_pos(&score_y, &nyt, *py, 0);
-			}
-			if ((*py <=  fw->snap_attraction.proximity)&&(*py > 0))
-			{
-				update_pos(&score_y, &nyt, *py, 0);
-			}
-		} /* vertically */
-		/* horizontally */
-		if (!(scr_h < (*py) ||
-		      (*py + self.height) < 0))
-		{
-			if (*px + self.width >= scr_w &&
-			    *px + self.width <
-			    scr_w + fw->snap_attraction.proximity)
-			{
-				update_pos(
-					&score_x, &nxl, *px,
-					scr_w - self.width);
-			}
-			if (*px + self.width >=
-			    scr_w - fw->snap_attraction.proximity &&
-			    *px + self.width < scr_w)
-			{
-				update_pos(
-					&score_x, &nxl, *px,
-					scr_w - self.width);
-			}
-			if ((*px <= 0) &&
-			    (*px > - fw->snap_attraction.proximity))
-			{
-				update_pos(&score_x, &nxl, *px, 0);
-			}
-			if ((*px <= fw->snap_attraction.proximity) &&
-			    (*px > 0))
-			{
-				update_pos(&score_x, &nxl, *px, 0);
-			}
-		} /* horizontally */
-	} /* snap to screen edges */
+		} /* monitor loop */
+	} /* snap to monitor edges */
 
 	if (nxl != -99999)
 	{
