@@ -1814,18 +1814,31 @@ void
 monitor_emit_broadcast(void)
 {
 	struct monitor	*m;
+	const char	*randrfunc = "RandRFunc";
 
 	TAILQ_FOREACH (m, &monitor_q, entry) {
 		if (m->emit & MONITOR_CHANGED) {
 			BroadcastName(MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
 			m->emit &= ~MONITOR_ALL;
 			m->flags &= ~MONITOR_CHANGED;
+
+			/* Run the RandRFunc in case a user has set it. */
+			execute_function_override_window(NULL, NULL, randrfunc,
+			    0, NULL);
 		}
 		if (m->emit & MONITOR_ENABLED) {
 			BroadcastName(MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
+
+			/* Run the RandRFunc in case a user has set it. */
+			execute_function_override_window(NULL, NULL, randrfunc,
+			    0, NULL);
 		}
 		if (m->emit & MONITOR_DISABLED) {
 			BroadcastName(MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
+
+			/* Run the RandRFunc in case a user has set it. */
+			execute_function_override_window(NULL, NULL, randrfunc,
+			    0, NULL);
 		}
 	}
 }
