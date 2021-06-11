@@ -118,6 +118,8 @@ Window icon_win;	       /* icon window */
 
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 
+static void adjust_for_sizehints(int, int, bool);
+static void set_vp_size_and_loc(int *, int *, int *, int *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
@@ -130,7 +132,6 @@ Pixmap default_pixmap = None;
 #else
 #define MYFPRINTF(X)
 #endif
-
 
 #define  MAX_UNPROCESSED_MESSAGES 1
 /* sums up pixels to scroll. If do_send_message is True a Scroll command is
@@ -405,14 +406,14 @@ void draw_desk_background(int i, int page_w, int page_h)
 char *pager_name = "Fvwm Pager";
 XSizeHints sizehints =
 {
-  (PMinSize | PResizeInc | PBaseSize | PWinGravity),
-  0, 0, 100, 100,			/* x, y, width and height */
-  1, 1,					/* Min width and height */
-  0, 0,					/* Max width and height */
-  1, 1,					/* Width and height increments */
-  {0, 0}, {0, 0},			/* Aspect ratio - not used */
-  1, 1,					/* base size */
-  (NorthWestGravity)			/* gravity */
+	(PMinSize | PResizeInc | PBaseSize | PWinGravity), /* flags */
+	0, 0, 100, 100,		/* x, y, width and height (legacy) */
+	1, 1,			/* Min width and height */
+	0, 0,			/* Max width and height */
+	1, 1,			/* Width and height increments */
+	{0, 0}, {0, 0},		/* Aspect ratio */
+	1, 1,			/* base size */
+	(NorthWestGravity)	/* gravity */
 };
 
 void initialize_balloon_window(void)
@@ -446,6 +447,71 @@ void initialize_balloon_window(void)
 	return;
 }
 
+/* XXX: Here be dragons!  Ideally, this function should be parameterised,
+ * however due to all the global state in FvwmPager, there's no point.  This
+ * should get added to a clean up TODO at some point.
+ */
+static void
+adjust_for_sizehints(int VxPages, int VyPages, bool check_aspect)
+{
+	/* Resize increments are one pixel per visible page. */
+	sizehints.width_inc = Columns * VxPages;
+	sizehints.height_inc = Rows * VyPages;
+	/* Set Min size for 1 pixel pages */
+	sizehints.min_width = VxPages * Columns + Columns - 1;
+	sizehints.min_height = (VyPages + label_h + 1) * Rows - 1;
+	sizehints.base_width = sizehints.min_width;
+	sizehints.base_height = sizehints.min_height;
+
+	/* Adjust window size to be even multiples of increment size. */
+	if (window_w > 0) {
+		window_w = (window_w - sizehints.base_width) /
+			sizehints.width_inc;
+		window_w = window_w * sizehints.width_inc +
+			sizehints.base_width;
+	}
+	if (window_h > 0) {
+		window_h = (window_h - sizehints.base_height) /
+			sizehints.height_inc;
+ 		window_h = window_h * sizehints.height_inc +
+			sizehints.base_height;
+	}
+	if (check_aspect && sizehints.min_aspect.x > 0) {
+		sizehints.min_aspect.x = sizehints.max_aspect.x = window_w;
+		sizehints.min_aspect.y = sizehints.max_aspect.y = window_h;
+	}
+
+	desk_w = (window_w - Columns + 1) / Columns;
+	desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
+}
+
+/* Set size and location of current page view */
+static void
+set_vp_size_and_loc(int *page_x, int *page_y, int *page_w, int *page_h)
+{
+	struct fpmonitor *mon = fpmonitor_this();
+
+	int VxPages = mon->virtual_scr.VxPages;
+	int VyPages = mon->virtual_scr.VyPages;
+	int Vx = mon->virtual_scr.Vx;
+	int Vy = mon->virtual_scr.Vy;
+	int vWidth = monitor_get_all_widths();
+	int vHeight = monitor_get_all_heights();
+	int offset_x = 0, offset_y = 0;
+
+	if (monitor_to_track != NULL) {
+		offset_x = (Vx / vWidth) * mon->x + mon->x;
+		offset_y = (Vy / vHeight) * mon->y + mon->y;
+		vWidth = mon->w;
+		vHeight = mon->h;
+	}
+	*page_w = desk_w / VxPages;
+	*page_h = desk_h / VyPages;
+	*page_x = (Vx * desk_w) / vWidth + offset_x;
+	*page_y = (Vy * desk_h) / vHeight + offset_y;
+
+}
+
 void initialize_pager(void)
 {
   XWMHints wmhints;
@@ -456,11 +522,12 @@ void initialize_pager(void)
   extern char *WindowBack, *WindowFore, *WindowHiBack, *WindowHiFore;
   extern char *BalloonFont;
   extern char *font_string, *smallFont;
-  int n,m,w,h,i,x,y;
+  int w = 0, h = 0, x = 0, y = 0, i = 0;
   XGCValues gcv;
   char dash_list[2];
   FlocaleFont *balloon_font;
   struct fpmonitor *mon = fpmonitor_this();
+  int VxPages = mon->virtual_scr.VxPages, VyPages = mon->virtual_scr.VyPages;
 
   /* I don't think that this is necessary - just let pager die */
   /* domivogt (07-mar-1999): But it is! A window being moved in the pager
@@ -543,9 +610,6 @@ void initialize_pager(void)
 				  fore_pix,back_pix,Pdepth);
   }
 
-  n = mon->virtual_scr.VxMax / (mon->x + mon->w); //mon->virtual_scr.MyDisplayWidth;
-  m = mon->virtual_scr.VyMax / (mon->y + mon->h); //mon->virtual_scr.MyDisplayHeight;
-
   /* Size the window */
   if(Rows < 0)
   {
@@ -579,34 +643,37 @@ void initialize_pager(void)
       Rows++;
   }
 
-  sizehints.width_inc = Columns*(n+1);
-  sizehints.height_inc = Rows*(m+1);
-  sizehints.base_width = Columns * n + Columns - 1;
-  sizehints.base_height = Rows * (m + label_h + 1) - 1;
+  /* Set window size if not fully set by user to match */
+  /* aspect ratio of monitor(s) being shown. */
+  if ( window_w == 0 || window_h == 0 ) {
+	  int vWidth  = monitor_get_all_widths();
+	  int vHeight = monitor_get_all_heights();
+	  if (monitor_to_track != NULL) {
+		  vWidth = mon->w;
+		  vHeight = mon->h;
+	  }
 
-  int vWidth  = mon->virtual_scr.VxPages * (mon->x + mon->w);
-  int vHeight = mon->virtual_scr.VyPages * (mon->y + mon->h);
+	  if (window_w > 0) {
+		  window_h = (window_w * vHeight) / vWidth +
+			  label_h * Rows + Rows;
+	  } else if (window_h > label_h * Rows) {
+		  window_w = ((window_h - label_h * Rows + Rows) *
+				  vWidth) / vHeight + Columns;
+	  } else {
+		  window_w = (VxPages * vWidth * Columns) / Scr.VScale +
+			  Columns;
+		  window_h = (VyPages * vHeight * Rows) / Scr.VScale +
+			  label_h * Rows + Rows;
+	  }
+	  sizehints.flags = (sizehints.flags | PAspect);
+	  sizehints.min_aspect.x = sizehints.max_aspect.x = window_w;
+	  sizehints.min_aspect.y = sizehints.max_aspect.y = window_h;
+  }
+  /* Adjust the window to handle these new sizehints.  This is also called
+   * from ReConfigure().
+   */
+  adjust_for_sizehints(VxPages, VyPages, true);
 
-  if (window_w > 0)
-  {
-    window_w = (window_w - sizehints.base_width) / sizehints.width_inc;
-    window_w = window_w * sizehints.width_inc + sizehints.base_width;
-  }
-  else
-  {
-    window_w = Columns * (vWidth / Scr.VScale + n) + Columns - 1;
-  }
-  if (window_h > 0)
-  {
-    window_h = (window_h - sizehints.base_height) / sizehints.height_inc;
-    window_h = window_h * sizehints.height_inc + sizehints.base_height;
-  }
-  else
-  {
-    window_h = Rows * (vHeight / Scr.VScale + m + label_h + 1) - 1;
-  }
-  desk_w = (window_w - Columns + 1) / Columns;
-  desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
   if (is_transient)
   {
     rectangle screen_g;
@@ -617,6 +684,8 @@ void initialize_pager(void)
     FScreenGetScrRect(
       &fscr, FSCREEN_XYPOS,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+    /* FIXME: Recalculate what to do if window is off screen. */
+    /* Leaving alone for now */
     if (window_w + window_x > screen_g.x + screen_g.width)
     {
       window_x = screen_g.x + screen_g.width - mon->w; //mon->virtual_scr.MyDisplayWidth;
@@ -689,12 +758,12 @@ void initialize_pager(void)
 
   attributes.event_mask = (StructureNotifyMask| ExposureMask);
   if(icon_w < 1)
-    icon_w = (window_w - Columns+1)/Columns;
+    icon_w = (window_w - Columns + 1) / Columns;
   if(icon_h < 1)
-    icon_h = (window_h - Rows* label_h - Rows + 1)/Rows;
+    icon_h = (window_h - Rows * label_h - Rows + 1) / Rows;
 
-  icon_w = (icon_w / (n+1)) *(n+1)+n;
-  icon_h = (icon_h / (m+1)) *(m+1)+m;
+  icon_w = (icon_w / (VxPages + 1)) * (VxPages + 1) + VxPages;
+  icon_h = (icon_h / (VyPages + 1)) * (VyPages + 1) + VyPages;
   icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y, icon_w, icon_h,
 			    0, Pdepth, InputOutput, Pvisual, valuemask,
 			    &attributes);
@@ -767,12 +836,10 @@ void initialize_pager(void)
   }
 
   balloon_font = FlocaleLoadFont(dpy, BalloonFont, MyName);
+
   for(i=0;i<ndesks;i++)
   {
-    w = window_w / Columns;
-    h = window_h / Rows;
-    x = (w + 1) * (i % Columns);
-    y = (h + 1) * (i / Columns);
+    set_vp_size_and_loc(&x, &y, &w, &h);
 
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
@@ -910,8 +977,6 @@ void initialize_pager(void)
 	  : Colorset[Desks[i].highcolorset].bg;
       }
 
-      w = w / (n + 1);
-      h = desk_h / (m + 1);
       Desks[i].CPagerWin=XCreateWindow(dpy, Desks[i].w, -32768, -32768, w, h, 0,
 				       CopyFromParent, InputOutput,
 				       CopyFromParent, valuemask, &attributes);
@@ -1333,11 +1398,12 @@ void ReConfigure(void)
 {
   Window root;
   unsigned border_width, depth;
-  int n,m,w,h,n1,m1,x,y,i,j,k;
+  int w = 0, h = 0, x = 0, y = 0, i = 0, j = 0, k = 0;
   int old_ww;
   int old_wh;
   int is_size_changed;
   struct fpmonitor *mon = fpmonitor_this();
+  int VxPages = mon->virtual_scr.VxPages, VyPages = mon->virtual_scr.VyPages;
 
   old_ww = window_w;
   old_wh = window_h;
@@ -1348,36 +1414,11 @@ void ReConfigure(void)
   }
   is_size_changed = (old_ww != window_w || old_wh != window_h);
 
-  n1 = mon->virtual_scr.Vx / mon->virtual_scr.MyDisplayWidth;
-  m1 = mon->virtual_scr.Vy / mon->virtual_scr.MyDisplayHeight;
-  n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-  m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-
-  sizehints.width_inc = Columns * (n + 1);
-  sizehints.height_inc = Rows * (m + 1);
-  sizehints.base_width = Columns * n + Columns - 1;
-  sizehints.base_height = Rows*(m + label_h+1) - 1;
-  sizehints.min_width = sizehints.base_width;
-  sizehints.min_height = sizehints.base_height;
-  if (window_w > 0)
-  {
-    window_w = (window_w - sizehints.base_width) / sizehints.width_inc;
-    window_w = window_w * sizehints.width_inc + sizehints.base_width;
-  }
-  if (window_h > 0)
-  {
-    window_h = (window_h - sizehints.base_height) / sizehints.height_inc;
-    window_h = window_h * sizehints.height_inc + sizehints.base_height;
-  }
-  desk_w = (window_w - Columns + 1) / Columns;
-  desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
-  w = (desk_w - n)/(n+1);
-  h = (desk_h - m)/(m+1);
+  adjust_for_sizehints(VxPages, VyPages, false);
 
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
-  x = (desk_w - n) * mon->virtual_scr.Vx / mon->virtual_scr.VWidth + n1;
-  y = (desk_h - m) * mon->virtual_scr.Vy / mon->virtual_scr.VHeight + m1;
+  set_vp_size_and_loc(&x, &y, &w, &h);
 
   for(k=0;k<Rows;k++)
   {
@@ -1431,14 +1472,10 @@ static
 void update_pr_transparent_subwindows(int i)
 {
 	int cset;
-	int n,m,w,h;
+	int x,y,w,h;
 	PagerWindow *t;
-	struct fpmonitor *mon = fpmonitor_this();
 
-	n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-	m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-	w = (desk_w - n)/(n+1);
-	h = (desk_h - m)/(m+1);
+	set_vp_size_and_loc(&x, &y, &w, &h);
 
 	if (CSET_IS_TRANSPARENT_PR(Desks[i].highcolorset) && HilightDesks)
 	{
@@ -1477,14 +1514,10 @@ void update_pr_transparent_subwindows(int i)
 void update_pr_transparent_windows(void)
 {
 	int i,j,k,cset;
-	int n,m,w,h;
+	int x = 0, y = 0, w = 0, h = 0;
 	PagerWindow *t;
-	struct fpmonitor *mon = fpmonitor_this();
 
-	n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-	m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-	w = (desk_w - n)/(n+1);
-	h = (desk_h - m)/(m+1);
+	set_vp_size_and_loc(&x, &y, &w, &h);
 
 	for(k=0;k<Rows;k++)
 	{

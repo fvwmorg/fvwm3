@@ -611,6 +611,7 @@ Test (!x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[monitor.$[monitor.p
 # This module displays the location of the windows on the various Pages
 # and Desks. This is setup to show only the Pages on the current Desk.
 DestroyModuleConfig FvwmPager:*
+*FvwmPager: Geometry 110x80
 *FvwmPager: Colorset * 10
 *FvwmPager: HilightColorset * 13
 *FvwmPager: BalloonColorset * 10
