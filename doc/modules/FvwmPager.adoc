@@ -15,6 +15,12 @@ both desk numbers are omitted, the current desk is used instead. If you
 use an asterisk '*' in place of _first desk_ the pager will always show
 the current desktop, even when you switch desks.
 
+FvwmPager will compute its initial window size based on your monitor(s)
+configuration. By default it makes a page 1/32 the size of your monitor(s)
+resolution (see _DeskTopScale_) and matches either the global aspect ratio
+or a single monitor if _Monitor_ is set. FvwmPager will preserve this
+aspect ratio when you resize it. See the _Geometry_ option for more info.
+
 Example lines to put in your .fvwm2rc:
 
 ....
@@ -143,9 +149,16 @@ The invocation method was shown in the synopsis section
 
 *FvwmPager: Geometry geometry::
   Completely or partially specifies the pager windows location and
-  geometry, in standard X11 notation. In order to maintain an
-  undistorted aspect ratio, you might want to leave out either the width
-  or height dimension of the geometry specification.
+  geometry, in standard X11 notation. If both width and height are
+  set, FvwmPager will use that size and no longer preserve the
+  aspect ratio when resized. If you wish to maintain an undistorted
+  aspect ratio, you can set one dimension to zero. For example
+  '400x0' will make a 400 pixel wide window whose height matches
+  the aspect ratio and will also preserve aspect ratio when resized.
++
+*Note*: FvwmPager's dimensions will be slightly adjusted to ensure
+every page shown has the exact same number of pixels. So the actual
+size may be slightly different than the specified size.
 *FvwmPager: Rows rows::
   Tells fvwm how many rows of desks to use when laying out the pager
   window.
