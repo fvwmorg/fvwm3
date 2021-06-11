@@ -958,7 +958,6 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	int bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
-	int w, h;
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -980,11 +979,9 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	x = left;
 	y = top;
-	w = monitor_get_all_widths();
-	h = monitor_get_all_heights();
 
-	width =  w - (left + right);
-	height = h - (top + bottom);
+	width =  m->si->w - (left + right);
+	height = m->si->h - (top + bottom);
 
 	fvwm_debug(__func__, "monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
 		"{x: %d, y: %d, w: %d, h: %d}\n", m->si->name,
@@ -1017,7 +1014,6 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 	int dyn_bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
-	int w,h;
 
 	/* FIXME: needs broadcast if global monitor in use. */
 
@@ -1039,11 +1035,9 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 
 	x = dyn_left;
 	y = dyn_top;
-	w = monitor_get_all_widths();
-	h = monitor_get_all_heights();
 
-	width  = w - (dyn_left + dyn_right);
-	height = h - (dyn_top + dyn_bottom);
+	width  = m->si->w - (dyn_left + dyn_right);
+	height = m->si->h - (dyn_top + dyn_bottom);
 
 	if (
 		m->Desktops->ewmh_dyn_working_area.x != x ||
@@ -1107,10 +1101,10 @@ void EWMH_GetWorkAreaIntersection(
 		area_w = m->Desktops->ewmh_dyn_working_area.width;
 		area_h = m->Desktops->ewmh_dyn_working_area.height;
 	}
-	nx = max(*x, area_x);
-	ny = max(*y, area_y);
-	nw = min(*x + *w, area_x + area_w) - nx;
-	nh = min(*y + *h, area_y + area_h) - ny;
+	nx = max(*x, area_x + m->si->x);
+	ny = max(*y, area_y + m->si->y);
+	nw = min(*x + *w, area_x + area_w) - nx + m->si->x;
+	nh = min(*y + *h, area_y + area_h) - ny + m->si->y;
 
 	*x = nx;
 	*y = ny;
