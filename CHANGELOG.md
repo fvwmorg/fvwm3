@@ -18,12 +18,14 @@
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
 - SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Set base struts only for primary monitor in default-config. [\#528](https://github.com/fvwmorg/fvwm3/pull/528) ([somiaj](https://github.com/somiaj))
 - EWMH\_GetWorkArea use monitor dimensions. [\#526](https://github.com/fvwmorg/fvwm3/pull/526) ([somiaj](https://github.com/somiaj))
 - Make SnapAttraction snap to edges of all monitors. [\#521](https://github.com/fvwmorg/fvwm3/pull/521) ([somiaj](https://github.com/somiaj))
 - Update FvwmCommand to allow multiple args. [\#514](https://github.com/fvwmorg/fvwm3/pull/514) ([somiaj](https://github.com/somiaj))
 
 **Merged pull requests:**
 
+- Fix broken link. [\#529](https://github.com/fvwmorg/fvwm3/pull/529) ([somiaj](https://github.com/somiaj))
 - EdgeScroll: a few improvements [\#524](https://github.com/fvwmorg/fvwm3/pull/524) ([ThomasAdam](https://github.com/ThomasAdam))
 - Update manual for Echo/EchoFuncDefinition [\#520](https://github.com/fvwmorg/fvwm3/pull/520) ([somiaj](https://github.com/somiaj))
 - release: remove dev-docs from release tarball [\#518](https://github.com/fvwmorg/fvwm3/pull/518) ([ThomasAdam](https://github.com/ThomasAdam))
