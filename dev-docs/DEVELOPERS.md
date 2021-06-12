@@ -6,8 +6,8 @@ Developing for FVWM
 This document aims to help the developer with the expectations when dealing
 with the FVWM3 source code.
 
-The FVWM3 source conforms to the [Linux kernel style
-guide](https://www.kernel.org/doc/Documentation/CodingStyle).
+The FVWM3 source conforms to the [Linux kernel style guide](
+https://www.kernel.org/doc/html/latest/process/coding-style.html).
 
 Command Parsing
 ===============
