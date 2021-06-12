@@ -193,10 +193,10 @@ EdgeResistance 450
 EdgeThickness 1
 Style * EdgeMoveDelay 350, EdgeMoveResistance 350
 
-# EwmhBaseStruts [left] [right] [top] [bottom]
+# EwmhBaseStruts [screen name] [left] [right] [top] [bottom]
 # Reserves space along the edge(s) of the Screen that will not
 # be covered when maximizing or placing windows.
-EwmhBaseStruts 0 120 0 0
+EwmhBaseStruts screen $[monitor.primary] 0 120 0 0
 
 # This sets the ClickTime and MoveThreshold used to determine
 # Double Clicks, Hold and Move for the mouse.
