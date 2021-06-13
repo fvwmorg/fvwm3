@@ -1368,8 +1368,7 @@ static int __place_get_wm_pos(
 	arg.reason = reason;
 	arg.place_fw = exc->w.fw;
 
-	if (arg.place_fw->m == NULL)
-		arg.place_fw->m = monitor_get_current();
+	arg.place_fw->m = monitor_get_current();
 	arg.place_g = arg.place_fw->g.frame;
 	arg.screen_g = screen_g;
 	arg.page_p1.x = arg.screen_g.x - pdeltax;
