@@ -144,7 +144,7 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	static int psx = 0;
 	static int psy = 0;
 	static int messages_sent = 0;
-	char command[256];
+	char command[256], screen[32] = "";
 	psx+=sx;
 	psy+=sy;
 	if (is_message_recieved)
@@ -160,7 +160,9 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	if ((do_send_message || messages_sent < MAX_UNPROCESSED_MESSAGES) &&
 	    ( psx != 0 || psy != 0 ))
 	{
-		sprintf(command, "Scroll %dp %dp", psx, psy);
+		if (monitor_to_track != NULL)
+			sprintf(screen, "screen %s", monitor_to_track);
+		sprintf(command, "Scroll %s %dp %dp", screen, psx, psy);
 		SendText(fd, command, 0);
 		messages_sent++;
 		SendText(fd, "Send_Reply ScrollDone", 0);
@@ -2411,7 +2413,7 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	}
 	if (Wait == 0 || last_sx != sx || last_sy != sy)
 	{
-		do_scroll(sx, sy, False, False);
+		do_scroll(sx, sy, True, False);
 
 		/* Here we need to track the view offset on the desk. */
 		/* sx/y are are pixels on the screen to scroll. */

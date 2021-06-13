@@ -7705,7 +7705,7 @@ GotoPage prev
 GotoPage +2p -1p
 ....
 
-*Scroll* [_horizonal_[p] _vertical_[p] | reverse]::
+*Scroll* [screen RANDRNAME] [_horizonal_[p] _vertical_[p] | reverse]::
 	Scrolls the virtual desktop's viewport by _horizontal_ pages in the
 	x-direction and _vertical_ pages in the y-direction or starts
 	interactive scrolling of the viewport. Either or both entries may be
@@ -7763,6 +7763,11 @@ Mouse 1 A CM Scroll reverse
 +
 gives an effect of grabbing and dragging the viewport with button 1 if Control
 and Meta is pressed.
++
+If _screen_ is given, followed by the RANDRNAME of a given display, then
+the specified screen is scrolled. This is only useful if using per-monitor
+or shared _DesktopConfiguration_ and wanting to scroll a monitor other than
+the current monitor. Interactive scrolling always scrolls the current monitor.
 
 === User Functions and Shell Commands
 
