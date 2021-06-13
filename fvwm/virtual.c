@@ -2706,13 +2706,28 @@ void CMD_Scroll(F_CMD_ARGS)
 {
 	int x,y;
 	int val1, val2, val1_unit, val2_unit;
+	char *option;
 	struct monitor  *m = monitor_get_current();
+
+	option = PeekToken(action, NULL);
+	if (StrEquals(option, "screen")) {
+		/* Skip literal 'screen' */
+		option = PeekToken(action, &action);
+		/* Actually get the screen value. */
+		option = PeekToken(action, &action);
+
+		m = monitor_resolve_name(option);
+		if (strcmp(m->si->name, option) != 0) {
+		fvwm_debug(__func__,
+			"Invalid screen: %s", option);
+		return;
+		}
+	}
 
 	if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
 	{
 		/* less then two integer parameters implies interactive
 		 * scroll check if we are scrolling in reverse direction */
-		char *option;
 		int scroll_speed = 1;
 
 		option = PeekToken(action, NULL);
