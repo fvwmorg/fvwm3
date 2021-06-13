@@ -114,8 +114,8 @@ int BalloonBorderWidth = 1;
 int BalloonYOffset = 3;
 Window BalloonView = None;
 
-int window_w=0, window_h=0, window_x=0, window_y=0;
-int icon_x=-10000, icon_y=-10000, icon_w=0, icon_h=0;
+rectangle pwindow = {0, 0, 0, 0};
+rectangle icon = {-10000, -10000, 0, 0};
 int usposition = 0,uselabel = 1;
 int xneg = 0, yneg = 0;
 int icon_xneg = 0, icon_yneg = 0;
@@ -404,12 +404,12 @@ int main(int argc, char **argv)
   if (is_transient)
   {
     if (FQueryPointer(
-	  dpy, Scr.Root, &JunkRoot, &JunkChild, &window_x, &window_y, &JunkX,
+	  dpy, Scr.Root, &JunkRoot, &JunkChild, &pwindow.x, &pwindow.y, &JunkX,
 	  &JunkY, &JunkMask) == False)
     {
       /* pointer is on a different screen */
-      window_x = 0;
-      window_y = 0;
+      pwindow.x = 0;
+      pwindow.y = 0;
     }
     usposition = 1;
     xneg = 0;
@@ -522,7 +522,7 @@ void Loop(int *fd)
       int x,y;
 
       if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
-		      (unsigned *)&window_w,(unsigned *)&window_h,
+		      (unsigned *)&pwindow.width,(unsigned *)&pwindow.height,
 		      &border_width,&depth)==0)
       {
 	/* does not return */
@@ -1956,25 +1956,25 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "Geometry"))
     {
-      window_w = 0;
-      window_h = 0;
-      window_x = 0;
-      window_y = 0;
+      pwindow.width = 0;
+      pwindow.height = 0;
+      pwindow.x = 0;
+      pwindow.y = 0;
       xneg = 0;
       yneg = 0;
       usposition = 0;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
       {
-	window_w = width;
+	pwindow.width = width;
       }
       if (flags & HeightValue)
       {
-	window_h = height;
+	pwindow.height = height;
       }
       if (flags & XValue)
       {
-	window_x = g_x;
+	pwindow.x = g_x;
 	usposition = 1;
 	if (flags & XNegative)
 	{
@@ -1983,7 +1983,7 @@ void ParseOptions(void)
       }
       if (flags & YValue)
       {
-	window_y = g_y;
+	pwindow.y = g_y;
 	usposition = 1;
 	if (flags & YNegative)
 	{
@@ -1993,20 +1993,20 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "IconGeometry"))
     {
-      icon_w = 0;
-      icon_h = 0;
-      icon_x = -10000;
-      icon_y = -10000;
+      icon.width = 0;
+      icon.height = 0;
+      icon.x = -10000;
+      icon.y = -10000;
       icon_xneg = 0;
       icon_yneg = 0;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
-	icon_w = width;
+	icon.width = width;
       if (flags & HeightValue)
-	icon_h = height;
+	icon.height = height;
       if (flags & XValue)
       {
-	icon_x = g_x;
+	icon.x = g_x;
 	if (flags & XNegative)
 	{
 	  icon_xneg = 1;
@@ -2014,7 +2014,7 @@ void ParseOptions(void)
       }
       if (flags & YValue)
       {
-	icon_y = g_y;
+	icon.y = g_y;
 	if (flags & YNegative)
 	{
 	  icon_yneg = 1;

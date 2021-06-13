@@ -50,7 +50,8 @@ Pixel focus_fore_pix;
 extern int windowcolorset, activecolorset;
 extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
 extern Bool win_pix_set, win_hi_pix_set;
-extern int window_w, window_h,window_x,window_y,usposition,uselabel,xneg,yneg;
+extern rectangle pwindow;
+extern int usposition,uselabel,xneg,yneg;
 extern int StartIconic;
 extern int MiniIcons;
 extern int LabelsBelow;
@@ -72,7 +73,8 @@ extern char fAlwaysCurrentDesk;
 
 extern int MoveThreshold;
 
-extern int icon_w, icon_h, icon_x, icon_y, icon_xneg, icon_yneg;
+extern rectangle icon;
+extern int icon_xneg, icon_yneg;
 FlocaleFont *Ffont, *FwindowFont;
 FlocaleWinString *FwinString;
 
@@ -119,7 +121,7 @@ Window icon_win;	       /* icon window */
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 
 static void adjust_for_sizehints(int, int, bool);
-static void set_vp_size_and_loc(int *, int *, int *, int *);
+static rectangle set_vp_size_and_loc(void);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
@@ -466,31 +468,32 @@ adjust_for_sizehints(int VxPages, int VyPages, bool check_aspect)
 	sizehints.base_height = sizehints.min_height;
 
 	/* Adjust window size to be even multiples of increment size. */
-	if (window_w > 0) {
-		window_w = (window_w - sizehints.base_width) /
+	if (pwindow.width > 0) {
+		pwindow.width = (pwindow.width - sizehints.base_width) /
 			sizehints.width_inc;
-		window_w = window_w * sizehints.width_inc +
+		pwindow.width = pwindow.width * sizehints.width_inc +
 			sizehints.base_width;
 	}
-	if (window_h > 0) {
-		window_h = (window_h - sizehints.base_height) /
+	if (pwindow.height > 0) {
+		pwindow.height = (pwindow.height - sizehints.base_height) /
 			sizehints.height_inc;
- 		window_h = window_h * sizehints.height_inc +
+ 		pwindow.height = pwindow.height * sizehints.height_inc +
 			sizehints.base_height;
 	}
 	if (check_aspect && sizehints.min_aspect.x > 0) {
-		sizehints.min_aspect.x = sizehints.max_aspect.x = window_w;
-		sizehints.min_aspect.y = sizehints.max_aspect.y = window_h;
+		sizehints.min_aspect.x = sizehints.max_aspect.x = pwindow.width;
+		sizehints.min_aspect.y = sizehints.max_aspect.y = pwindow.height;
 	}
 
-	desk_w = (window_w - Columns + 1) / Columns;
-	desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
+	desk_w = (pwindow.width - Columns + 1) / Columns;
+	desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
 }
 
 /* Set size and location of current page view */
-static void
-set_vp_size_and_loc(int *page_x, int *page_y, int *page_w, int *page_h)
+static rectangle
+set_vp_size_and_loc(void)
 {
+	rectangle vp;
 	struct fpmonitor *mon = fpmonitor_this();
 
 	int VxPages = mon->virtual_scr.VxPages;
@@ -507,11 +510,12 @@ set_vp_size_and_loc(int *page_x, int *page_y, int *page_w, int *page_h)
 		vWidth = mon->w;
 		vHeight = mon->h;
 	}
-	*page_w = desk_w / VxPages;
-	*page_h = desk_h / VyPages;
-	*page_x = (Vx * desk_w) / vWidth + offset_x;
-	*page_y = (Vy * desk_h) / vHeight + offset_y;
+	vp.width = desk_w / VxPages;
+	vp.height = desk_h / VyPages;
+	vp.x = (Vx * desk_w) / vWidth + offset_x;
+	vp.y = (Vy * desk_h) / vHeight + offset_y;
 
+	return vp;
 }
 
 void initialize_pager(void)
@@ -524,7 +528,8 @@ void initialize_pager(void)
   extern char *WindowBack, *WindowFore, *WindowHiBack, *WindowHiFore;
   extern char *BalloonFont;
   extern char *font_string, *smallFont;
-  int w = 0, h = 0, x = 0, y = 0, i = 0;
+  rectangle vp;
+  int i = 0;
   XGCValues gcv;
   char dash_list[2];
   FlocaleFont *balloon_font;
@@ -647,7 +652,7 @@ void initialize_pager(void)
 
   /* Set window size if not fully set by user to match */
   /* aspect ratio of monitor(s) being shown. */
-  if ( window_w == 0 || window_h == 0 ) {
+  if ( pwindow.width == 0 || pwindow.height == 0 ) {
 	  int vWidth  = monitor_get_all_widths();
 	  int vHeight = monitor_get_all_heights();
 	  if (monitor_to_track != NULL) {
@@ -655,21 +660,21 @@ void initialize_pager(void)
 		  vHeight = mon->h;
 	  }
 
-	  if (window_w > 0) {
-		  window_h = (window_w * vHeight) / vWidth +
+	  if (pwindow.width > 0) {
+		  pwindow.height = (pwindow.width * vHeight) / vWidth +
 			  label_h * Rows + Rows;
-	  } else if (window_h > label_h * Rows) {
-		  window_w = ((window_h - label_h * Rows + Rows) *
+	  } else if (pwindow.height > label_h * Rows) {
+		  pwindow.width = ((pwindow.height - label_h * Rows + Rows) *
 				  vWidth) / vHeight + Columns;
 	  } else {
-		  window_w = (VxPages * vWidth * Columns) / Scr.VScale +
+		  pwindow.width = (VxPages * vWidth * Columns) / Scr.VScale +
 			  Columns;
-		  window_h = (VyPages * vHeight * Rows) / Scr.VScale +
+		  pwindow.height = (VyPages * vHeight * Rows) / Scr.VScale +
 			  label_h * Rows + Rows;
 	  }
 	  sizehints.flags = (sizehints.flags | PAspect);
-	  sizehints.min_aspect.x = sizehints.max_aspect.x = window_w;
-	  sizehints.min_aspect.y = sizehints.max_aspect.y = window_h;
+	  sizehints.min_aspect.x = sizehints.max_aspect.x = pwindow.width;
+	  sizehints.min_aspect.y = sizehints.max_aspect.y = pwindow.height;
   }
   /* Adjust the window to handle these new sizehints.  This is also called
    * from ReConfigure().
@@ -681,39 +686,39 @@ void initialize_pager(void)
     rectangle screen_g;
     fscreen_scr_arg fscr;
 
-    fscr.xypos.x = window_x;
-    fscr.xypos.y = window_y;
+    fscr.xypos.x = pwindow.x;
+    fscr.xypos.y = pwindow.y;
     FScreenGetScrRect(
       &fscr, FSCREEN_XYPOS,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     /* FIXME: Recalculate what to do if window is off screen. */
     /* Leaving alone for now */
-    if (window_w + window_x > screen_g.x + screen_g.width)
+    if (pwindow.width + pwindow.x > screen_g.x + screen_g.width)
     {
-      window_x = screen_g.x + screen_g.width - mon->w; //mon->virtual_scr.MyDisplayWidth;
+      pwindow.x = screen_g.x + screen_g.width - mon->w; //mon->virtual_scr.MyDisplayWidth;
       xneg = 1;
     }
-    if (window_h + window_y > screen_g.y + screen_g.height)
+    if (pwindow.height + pwindow.y > screen_g.y + screen_g.height)
     {
-      window_y = screen_g.y + screen_g.height - mon->h; //mon->virtual_scr.MyDisplayHeight;
+      pwindow.y = screen_g.y + screen_g.height - mon->h; //mon->virtual_scr.MyDisplayHeight;
       yneg = 1;
     }
   }
   if (xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
-    window_x = monitor_get_all_widths() - window_w + window_x;
+    pwindow.x = monitor_get_all_widths() - pwindow.width + pwindow.x;
   }
   if (yneg)
   {
-    window_y = monitor_get_all_heights() - window_h + window_y;
+    pwindow.y = monitor_get_all_heights() - pwindow.height + pwindow.y;
     if(sizehints.win_gravity == NorthEastGravity)
       sizehints.win_gravity = SouthEastGravity;
     else
       sizehints.win_gravity = SouthWestGravity;
   }
-  sizehints.width = window_w;
-  sizehints.height = window_h;
+  sizehints.width = pwindow.width;
+  sizehints.height = pwindow.height;
 
   if(usposition)
     sizehints.flags |= USPosition;
@@ -727,8 +732,8 @@ void initialize_pager(void)
   /* destroy the temp window first, don't worry if it's the Root */
   if (Scr.Pager_w != Scr.Root)
     XDestroyWindow(dpy, Scr.Pager_w);
-  Scr.Pager_w = XCreateWindow (dpy, Scr.Root, window_x, window_y, window_w,
-			       window_h, 0, Pdepth, InputOutput, Pvisual,
+  Scr.Pager_w = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y, pwindow.width,
+			       pwindow.height, 0, Pdepth, InputOutput, Pvisual,
 			       valuemask, &attributes);
   XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
   /* hack to prevent mapping on wrong screen with StartsOnScreen */
@@ -759,14 +764,15 @@ void initialize_pager(void)
   }
 
   attributes.event_mask = (StructureNotifyMask| ExposureMask);
-  if(icon_w < 1)
-    icon_w = (window_w - Columns + 1) / Columns;
-  if(icon_h < 1)
-    icon_h = (window_h - Rows * label_h - Rows + 1) / Rows;
+  if(icon.width < 1)
+    icon.width = (pwindow.width - Columns + 1) / Columns;
+  if(icon.height < 1)
+    icon.height = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
 
-  icon_w = (icon_w / (VxPages + 1)) * (VxPages + 1) + VxPages;
-  icon_h = (icon_h / (VyPages + 1)) * (VyPages + 1) + VyPages;
-  icon_win = XCreateWindow (dpy, Scr.Root, window_x, window_y, icon_w, icon_h,
+  icon.width = (icon.width / (VxPages + 1)) * (VxPages + 1) + VxPages;
+  icon.height = (icon.height / (VyPages + 1)) * (VyPages + 1) + VyPages;
+  icon_win = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y,
+			    icon.width, icon.height,
 			    0, Pdepth, InputOutput, Pvisual, valuemask,
 			    &attributes);
   XGrabButton(dpy, 1, AnyModifier, icon_win,
@@ -787,23 +793,23 @@ void initialize_pager(void)
   else
     wmhints.initial_state = IconicState;
   wmhints.flags = 0;
-  if (icon_x != -10000)
+  if (icon.x != -10000)
   {
     if (icon_xneg)
-      icon_x = mon->virtual_scr.MyDisplayWidth + icon_x - icon_w;
-    if (icon_y != -10000)
+      icon.x = mon->virtual_scr.MyDisplayWidth + icon.x - icon.width;
+    if (icon.y != -10000)
     {
       if (icon_yneg)
-	icon_y = mon->virtual_scr.MyDisplayHeight + icon_y - icon_h;
+	icon.y = mon->virtual_scr.MyDisplayHeight + icon.y - icon.height;
     }
     else
     {
-      icon_y = 0;
+      icon.y = 0;
     }
     icon_xneg = 0;
     icon_yneg = 0;
-    wmhints.icon_x = icon_x;
-    wmhints.icon_y = icon_y;
+    wmhints.icon_x = icon.x;
+    wmhints.icon_y = icon.y;
     wmhints.flags = IconPositionHint;
   }
   wmhints.icon_window = icon_win;
@@ -839,10 +845,9 @@ void initialize_pager(void)
 
   balloon_font = FlocaleLoadFont(dpy, BalloonFont, MyName);
 
+  vp = set_vp_size_and_loc();
   for(i=0;i<ndesks;i++)
   {
-    set_vp_size_and_loc(&x, &y, &w, &h);
-
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
@@ -913,12 +918,12 @@ void initialize_pager(void)
       : Colorset[Desks[i].colorset].fg;
     attributes.event_mask = (ExposureMask | ButtonReleaseMask);
     Desks[i].title_w = XCreateWindow(
-      dpy, Scr.Pager_w, x - 1, y - 1, w, h, 1, CopyFromParent, InputOutput,
-      CopyFromParent, valuemask, &attributes);
+      dpy, Scr.Pager_w, vp.x - 1, vp.y - 1, vp.width, vp.height, 1,
+      CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
     attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			     ButtonPressMask |ButtonMotionMask);
     /* or just: desk_h = h - label_h; */
-    desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
+    desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
 
     valuemask &= ~(CWBackPixel);
 
@@ -952,8 +957,9 @@ void initialize_pager(void)
     }
 
     Desks[i].w = XCreateWindow(
-	    dpy, Desks[i].title_w, x - 1, LabelsBelow ? -1 : label_h - 1, w, desk_h,
-      1, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
+	    dpy, Desks[i].title_w, vp.x - 1, LabelsBelow ? -1 : label_h - 1,
+	    vp.width, desk_h, 1, CopyFromParent, InputOutput, CopyFromParent,
+	    valuemask, &attributes);
 
     if (HilightDesks)
     {
@@ -979,10 +985,11 @@ void initialize_pager(void)
 	  : Colorset[Desks[i].highcolorset].bg;
       }
 
-      Desks[i].CPagerWin=XCreateWindow(dpy, Desks[i].w, -32768, -32768, w, h, 0,
+      Desks[i].CPagerWin=XCreateWindow(dpy, Desks[i].w, -32768, -32768,
+				       vp.width, vp.height, 0,
 				       CopyFromParent, InputOutput,
 				       CopyFromParent, valuemask, &attributes);
-      draw_desk_background(i, w, h);
+      draw_desk_background(i, vp.width, vp.height);
       XMapRaised(dpy,Desks[i].CPagerWin);
     }
     else
@@ -1167,7 +1174,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	Scroll(icon_w, icon_h, x, y, 0, True);
+	Scroll(icon.width, icon.height, x, y, 0, True);
       }
       /* Flush any pending scroll operations */
       do_scroll(0, 0, True, False);
@@ -1234,7 +1241,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	Scroll(icon_w, icon_h, x, y, 0, True);
+	Scroll(icon.width, icon.height, x, y, 0, True);
       }
     }
     break;
@@ -1264,7 +1271,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	Scroll(icon_w, icon_h, x, y, 0, True);
+	Scroll(icon.width, icon.height, x, y, 0, True);
       }
 
     }
@@ -1400,27 +1407,28 @@ void ReConfigure(void)
 {
   Window root;
   unsigned border_width, depth;
-  int w = 0, h = 0, x = 0, y = 0, i = 0, j = 0, k = 0;
+  rectangle vp = {0, 0, 0, 0};
+  int i = 0, j = 0, k = 0;
   int old_ww;
   int old_wh;
   int is_size_changed;
   struct fpmonitor *mon = fpmonitor_this();
   int VxPages = mon->virtual_scr.VxPages, VyPages = mon->virtual_scr.VyPages;
 
-  old_ww = window_w;
-  old_wh = window_h;
-  if (!XGetGeometry(dpy, Scr.Pager_w, &root, &x, &y, (unsigned *)&window_w,
-		    (unsigned *)&window_h, &border_width,&depth))
+  old_ww = pwindow.width;
+  old_wh = pwindow.height;
+  if (!XGetGeometry(dpy, Scr.Pager_w, &root, &vp.x, &vp.y, (unsigned *)&pwindow.width,
+		    (unsigned *)&pwindow.height, &border_width,&depth))
   {
     return;
   }
-  is_size_changed = (old_ww != window_w || old_wh != window_h);
+  is_size_changed = (old_ww != pwindow.width || old_wh != pwindow.height);
 
   adjust_for_sizehints(VxPages, VyPages, false);
 
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
-  set_vp_size_and_loc(&x, &y, &w, &h);
+  vp = set_vp_size_and_loc();
 
   for(k=0;k<Rows;k++)
   {
@@ -1438,17 +1446,19 @@ void ReConfigure(void)
 	{
 		if (CSET_IS_TRANSPARENT(Desks[i].colorset))
 		{
-			draw_desk_background(i, w, h);
+			draw_desk_background(i, vp.width, vp.height);
 		}
 	}
 	if (HilightDesks)
 	{
 	  if(i == mon->virtual_scr.CurrentDesk - desk1)
-	    XMoveResizeWindow(dpy, Desks[i].CPagerWin, x,y,w,h);
+	    XMoveResizeWindow(dpy, Desks[i].CPagerWin,
+				vp.x, vp.y, vp.width, vp.height);
 	  else
-	    XMoveResizeWindow(dpy, Desks[i].CPagerWin, -32768, -32768,w,h);
+	    XMoveResizeWindow(dpy, Desks[i].CPagerWin,
+				-32768, -32768, vp.width, vp.height);
 	}
-	draw_desk_background(i, w, h);
+	draw_desk_background(i, vp.width, vp.height);
       }
     }
   }
@@ -1474,15 +1484,15 @@ static
 void update_pr_transparent_subwindows(int i)
 {
 	int cset;
-	int x,y,w,h;
+	rectangle vp;
 	PagerWindow *t;
 
-	set_vp_size_and_loc(&x, &y, &w, &h);
+	vp = set_vp_size_and_loc();
 
 	if (CSET_IS_TRANSPARENT_PR(Desks[i].highcolorset) && HilightDesks)
 	{
 		SetWindowBackground(
-			dpy, Desks[i].CPagerWin, w, h,
+			dpy, Desks[i].CPagerWin, vp.width, vp.height,
 			&Colorset[Desks[i].highcolorset],
 			Pdepth, Scr.NormalGC, True);
 	}
@@ -1516,10 +1526,10 @@ void update_pr_transparent_subwindows(int i)
 void update_pr_transparent_windows(void)
 {
 	int i,j,k,cset;
-	int x = 0, y = 0, w = 0, h = 0;
+	rectangle vp;
 	PagerWindow *t;
 
-	set_vp_size_and_loc(&x, &y, &w, &h);
+	vp = set_vp_size_and_loc();
 
 	for(k=0;k<Rows;k++)
 	{
@@ -1530,13 +1540,15 @@ void update_pr_transparent_windows(void)
 			{
 				if (CSET_IS_TRANSPARENT_PR(Desks[i].colorset))
 				{
-					draw_desk_background(i, w, h);
+					draw_desk_background(i, vp.width,
+						vp.height);
 				}
 				else if (CSET_IS_TRANSPARENT_PR(
 					Desks[i].highcolorset) && HilightDesks)
 				{
 					SetWindowBackground(
-						dpy, Desks[i].CPagerWin, w, h,
+						dpy, Desks[i].CPagerWin,
+						vp.width, vp.height,
 						&Colorset[Desks[i].highcolorset],
 						Pdepth, Scr.NormalGC, True);
 				}
@@ -1673,7 +1685,7 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
   {
     if (do_reconfigure_desk_only && t->desk != mon->virtual_scr.CurrentDesk)
       continue;
-    CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+    CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
     t->icon_view_x = x;
     t->icon_view_y = y;
     t->icon_view_width = w;
@@ -1879,10 +1891,10 @@ void DrawIconGrid(int erase)
 
   x = mon->virtual_scr.MyDisplayWidth;
   y1 = 0;
-  y2 = icon_h;
+  y2 = icon.height;
   while(x < mon->virtual_scr.VWidth)
   {
-    x1 = x * icon_w / mon->virtual_scr.VWidth;
+    x1 = x * icon.width / mon->virtual_scr.VWidth;
     if (!use_no_separators)
       for(i=0;i<ndesks;i++)
 	XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x1,y2);
@@ -1891,10 +1903,10 @@ void DrawIconGrid(int erase)
 
   y = mon->virtual_scr.MyDisplayHeight;
   x1 = 0;
-  x2 = icon_w;
+  x2 = icon.width;
   while(y < mon->virtual_scr.VHeight)
   {
-    y1 = y * icon_h / mon->virtual_scr.VHeight;
+    y1 = y * icon.height / mon->virtual_scr.VHeight;
     if (!use_no_separators)
       for(i=0;i<ndesks;i++)
 	XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x2,y1);
@@ -1904,11 +1916,11 @@ void DrawIconGrid(int erase)
   m1 = mon->virtual_scr.Vy / mon->virtual_scr.MyDisplayHeight;
   n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
   m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-  w = (icon_w - n) / (n + 1);
-  h = (icon_h - m) / (m + 1);
+  w = (icon.width - n) / (n + 1);
+  h = (icon.height - m) / (m + 1);
 
-  x = (icon_w - n) * mon->virtual_scr.Vx / mon->virtual_scr.VWidth + n1;
-  y = (icon_h - m) * mon->virtual_scr.Vy / mon->virtual_scr.VHeight + m1;
+  x = (icon.width - n) * mon->virtual_scr.Vx / mon->virtual_scr.VWidth + n1;
+  y = (icon.height - m) * mon->virtual_scr.Vy / mon->virtual_scr.VHeight + m1;
 
   if (HilightDesks)
   {
@@ -2001,8 +2013,10 @@ void IconSwitchPage(XEvent *Event)
 
   sprintf(command,"GotoPage %s %d %d",
 	  monitor_to_track ? mon->name : "",
-	  Event->xbutton.x * mon->virtual_scr.VWidth / (icon_w * mon->virtual_scr.MyDisplayWidth),
-	  Event->xbutton.y * mon->virtual_scr.VHeight / (icon_h * mon->virtual_scr.MyDisplayHeight));
+	  Event->xbutton.x * mon->virtual_scr.VWidth /
+		  (icon.width * mon->virtual_scr.MyDisplayWidth),
+	  Event->xbutton.y * mon->virtual_scr.VHeight /
+		  (icon.height * mon->virtual_scr.MyDisplayHeight));
   fprintf(stderr, "%s: cmd: %s\n", __func__, command);
   SendText(fd, command, 0);
   Wait = 1;
@@ -2062,7 +2076,7 @@ void AddNewWindow(PagerWindow *t)
 		t->PagerView = None;
 	}
 
-	CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+	CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
 	t->icon_view_x = x;
 	t->icon_view_y = y;
 	t->icon_view_width = w;
@@ -2153,7 +2167,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   }
   t->desk = i+desk1;
 
-  CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+  CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
   size_changed = (t->icon_view_width != w || t->icon_view_height != h);
   t->icon_view_x = x;
   t->icon_view_y = y;
@@ -2230,7 +2244,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
     return;
   }
 
-  CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+  CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
   position_changed = (t->icon_view_x != x || t->icon_view_y != y);
   size_changed = (t->icon_view_width != w || t->icon_view_height != h);
   t->icon_view_x = x;
@@ -2386,13 +2400,13 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 		y = 0;
 	}
 
-	if (x > window_w-adjx)
+	if (x > window_w - adjx)
 	{
-		x = window_w-adjx;
+		x = window_w - adjx;
 	}
-	if (y > window_h-adjy)
+	if (y > window_h - adjy)
 	{
-		y = window_h-adjy;
+		y = window_h - adjy;
 	}
 
 	sx = 0;
@@ -2526,8 +2540,8 @@ void MoveWindow(XEvent *Event)
 				yi = y;
 				moved = 1;
 			}
-			if (x < -5 || y < -5 || x > window_w + 5 ||
-			   y > window_h + 5)
+			if (x < -5 || y < -5 || x > pwindow.width + 5 ||
+			   y > pwindow.height + 5)
 			{
 				KeepMoving = 1;
 				finished = 1;
@@ -3055,8 +3069,8 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 			}
 
 			XMoveWindow(dpy, t->IconView, x - x1, y - y1);
-			if (x < -5 || y < -5 || x > icon_w + 5 ||
-			    y > icon_h + 5)
+			if (x < -5 || y < -5 || x > icon.width + 5 ||
+			    y > icon.height + 5)
 			{
 				finished = 1;
 				KeepMoving = 1;
@@ -3102,10 +3116,14 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	{
 		x = x - x1;
 		y = y - y1;
-		n1 = x * mon->virtual_scr.VWidth / (icon_w * mon->virtual_scr.MyDisplayWidth);
-		m1 = y * mon->virtual_scr.VHeight / (icon_h * mon->virtual_scr.MyDisplayHeight);
-		x = (x - n1) * mon->virtual_scr.VWidth / (icon_w - n) - mon->virtual_scr.Vx;
-		y = (y - m1) * mon->virtual_scr.VHeight / (icon_h - m) - mon->virtual_scr.Vy;
+		n1 = x * mon->virtual_scr.VWidth /
+			(icon.width * mon->virtual_scr.MyDisplayWidth);
+		m1 = y * mon->virtual_scr.VHeight /
+			(icon.height * mon->virtual_scr.MyDisplayHeight);
+		x = (x - n1) * mon->virtual_scr.VWidth / (icon.width - n) -
+			mon->virtual_scr.Vx;
+		y = (y - m1) * mon->virtual_scr.VHeight / (icon.height - m) -
+			mon->virtual_scr.Vy;
 		/* force onto desk */
 		if (x + t->icon_width + mon->virtual_scr.Vx < 0 )
 		{
