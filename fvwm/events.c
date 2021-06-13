@@ -1814,7 +1814,7 @@ void
 monitor_emit_broadcast(void)
 {
 	struct monitor	*m;
-	const char	*randrfunc = "RandRFunc";
+	char		*randrfunc = "RandRFunc";
 
 	TAILQ_FOREACH (m, &monitor_q, entry) {
 		if (m->emit & MONITOR_CHANGED) {
