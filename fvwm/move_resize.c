@@ -468,6 +468,13 @@ int GetMoveArguments(FvwmWindow *fw,
 		token = PeekToken(action, &action);
 		parg.name = token;
 
+		/* When being asked to move a window to coordinates which are
+		 * relative to a given screen, don't assume to use the
+		 * screen's working area, as the coordinates given are not
+		 * relative to that.
+		 */
+		use_working_area = False;
+
 		FScreenGetScrRect(&parg, FSCREEN_BY_NAME, &scr_x, &scr_y,
 				  &scr_w, &scr_h);
 		action = GetNextToken(action, &s1);
