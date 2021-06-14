@@ -1880,84 +1880,57 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 
 void DrawIconGrid(int erase)
 {
-  int y, y1, y2, x, x1, x2,w,h,n,m,n1,m1;
-  int i;
-  struct fpmonitor *mon = fpmonitor_this();
+	rectangle rec;
+	struct fpmonitor *mon = fpmonitor_this();
+	int i, tmp = (mon->virtual_scr.CurrentDesk - desk1);
 
-  if(erase)
-  {
-    int tmp=(mon->virtual_scr.CurrentDesk - desk1);
+	if (tmp < 0 || tmp >= ndesks)
+		tmp = 0;
 
-    if ((tmp < 0) || (tmp >= ndesks))
-    {
-      if (PixmapBack)
-	XSetWindowBackgroundPixmap(dpy, icon_win,PixmapBack->picture);
-      else
-	XSetWindowBackground(dpy, icon_win, back_pix);
-    }
-    else
-    {
-      if (Desks[tmp].bgPixmap)
-	XSetWindowBackgroundPixmap(
-	    dpy, icon_win,Desks[tmp].bgPixmap->picture);
-      else if (Desks[tmp].Dcolor)
-	XSetWindowBackground(dpy, icon_win, GetColor(Desks[tmp].Dcolor));
-      else if (PixmapBack)
-	XSetWindowBackgroundPixmap(dpy, icon_win, PixmapBack->picture);
-      else
-	XSetWindowBackground(dpy, icon_win, back_pix);
-    }
+	if (erase) {
+		if (Desks[tmp].bgPixmap)
+			XSetWindowBackgroundPixmap(dpy, icon_win,
+				Desks[tmp].bgPixmap->picture);
+		else if (Desks[tmp].Dcolor)
+			XSetWindowBackground(dpy, icon_win,
+				GetColor(Desks[tmp].Dcolor));
+		else if (PixmapBack)
+			XSetWindowBackgroundPixmap(dpy, icon_win,
+				PixmapBack->picture);
+		else if (Desks[tmp].colorset > 0)
+			XSetWindowBackground(dpy, icon_win,
+				Colorset[Desks[tmp].colorset].bg);
+		else
+			XSetWindowBackground(dpy, icon_win, back_pix);
 
-    XClearWindow(dpy,icon_win);
-  }
+		XClearWindow(dpy,icon_win);
+	}
 
-  x = mon->virtual_scr.MyDisplayWidth;
-  y1 = 0;
-  y2 = icon.height;
-  while(x < mon->virtual_scr.VWidth)
-  {
-    x1 = x * icon.width / mon->virtual_scr.VWidth;
-    if (!use_no_separators)
-      for(i=0;i<ndesks;i++)
-	XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x1,y2);
-    x += mon->virtual_scr.MyDisplayWidth;
-  }
+	rec.x = mon->virtual_scr.VxPages;
+	rec.y = mon->virtual_scr.VyPages;
+	rec.width = icon.width / rec.x;
+	rec.height = icon.height / rec.y;
+	if (!use_no_separators) {
+		for(i = 1; i < rec.x; i++)
+			XDrawLine(dpy, icon_win, Desks[tmp].DashedGC,
+				i * rec.width, 0, i * rec.width, icon.height);
+		for(i = 1; i < rec.y; i++)
+			XDrawLine(dpy, icon_win, Desks[tmp].DashedGC,
+				0, i * rec.height, icon.width, i * rec.height);
+	}
 
-  y = mon->virtual_scr.MyDisplayHeight;
-  x1 = 0;
-  x2 = icon.width;
-  while(y < mon->virtual_scr.VHeight)
-  {
-    y1 = y * icon.height / mon->virtual_scr.VHeight;
-    if (!use_no_separators)
-      for(i=0;i<ndesks;i++)
-	XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x2,y1);
-    y += mon->virtual_scr.MyDisplayHeight;
-  }
-  n1 = mon->virtual_scr.Vx / mon->virtual_scr.MyDisplayWidth;
-  m1 = mon->virtual_scr.Vy / mon->virtual_scr.MyDisplayHeight;
-  n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-  m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-  w = (icon.width - n) / (n + 1);
-  h = (icon.height - m) / (m + 1);
-
-  x = (icon.width - n) * mon->virtual_scr.Vx / mon->virtual_scr.VWidth + n1;
-  y = (icon.height - m) * mon->virtual_scr.Vy / mon->virtual_scr.VHeight + m1;
-
-  if (HilightDesks)
-  {
-    if (HilightPixmap)
-    {
-      for(i=0;i<ndesks;i++)
-	XCopyArea(dpy, HilightPixmap->picture, icon_win, Scr.NormalGC, 0, 0,
-		  w, h, x, y);
-    }
-    else
-    {
-      for(i=0;i<ndesks;i++)
-	XFillRectangle (dpy, icon_win, Desks[i].HiliteGC, x, y, w, h);
-    }
-  }
+	rec.x = (mon->virtual_scr.Vx * rec.width) / mon->virtual_scr.MyDisplayWidth;
+	rec.y = (mon->virtual_scr.Vy * rec.height) / mon->virtual_scr.MyDisplayHeight;
+	if (HilightDesks) {
+		if (HilightPixmap) {
+			XCopyArea(dpy, HilightPixmap->picture, icon_win,
+				Scr.NormalGC, 0, 0, rec.width, rec.height,
+				rec.x, rec.y);
+		} else {
+			XFillRectangle(dpy, icon_win, Desks[tmp].HiliteGC,
+				rec.x, rec.y, rec.width, rec.height);
+		}
+	}
 }
 
 
