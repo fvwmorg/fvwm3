@@ -87,7 +87,7 @@ char *WindowHiFore = NULL;
 char *WindowLabelFormat = NULL;
 
 unsigned int WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
-unsigned int MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + 1;
+unsigned int MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + 5;
 Bool WindowBorders3d = False;
 
 Bool UseSkipList = False;
@@ -2292,7 +2292,7 @@ void ParseOptions(void)
     else if (StrEquals(resource, "WindowBorderWidth"))
     {
       sscanf(arg1, "%d", &WindowBorderWidth);
-      MinSize = 2 * WindowBorderWidth + 1;
+      MinSize = 2 * WindowBorderWidth + 5;
     }
     else if (StrEquals(resource, "Window3dBorders"))
     {
