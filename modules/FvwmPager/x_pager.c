@@ -121,7 +121,9 @@ Window icon_win;	       /* icon window */
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 
 static void adjust_for_sizehints(int, int, bool);
+static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(void);
+static void fvwmrec_to_pager(rectangle *, bool);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
@@ -215,58 +217,25 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
 	return;
 }
 
-static void CalcGeom(PagerWindow *t, int win_w, int win_h,
-		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
+static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 {
-	int wfull, hfull, xwin, ywin;
+	rectangle rec = {0,0,0,0};
 	struct fpmonitor *m = fpmonitor_this();
 
 	/* Only track windows on the appropriate monitor if per-monitor mode. */
-	if (monitor_to_track != NULL && t->m != m) {
-		*x_ret = 0;
-		*y_ret = 0;
-		*w_ret = 0;
-		*h_ret = 0;
-		return;
-	}
+	if (monitor_to_track != NULL && t->m != m)
+		return rec;
 
-	if (monitor_to_track == NULL) {
-		wfull = m->virtual_scr.VWidth;
-		hfull = m->virtual_scr.VHeight;
-		xwin = m->virtual_scr.Vx + t->x;
-		ywin = m->virtual_scr.Vy + t->y;
-	} else {
-		int page;
+	rec.x = m->virtual_scr.Vx + t->x;
+	rec.y = m->virtual_scr.Vy + t->y;
+	rec.width = t->width;
+	rec.height = t->height;
 
-		/* Shrink geometry to current monitor. */
-		wfull = m->w * m->virtual_scr.VxPages;
-		hfull = m->h * m->virtual_scr.VyPages;
-		xwin = m->virtual_scr.Vx + t->x;
-		ywin = m->virtual_scr.Vy + t->y;
+	fvwmrec_to_pager(&rec, is_icon);
 
-		/* Adjust coordinates to be inside current monitor
-		 * Moves windows not in current monitor to the monitor's edge.
-		 */
-		page = xwin / m->virtual_scr.MyDisplayWidth;
-		xwin = page * m->w + min(m->w,
-			max(0, xwin % m->virtual_scr.MyDisplayWidth - m->x));
-		page = ywin / m->virtual_scr.MyDisplayHeight;
-		ywin = page * m->h + min(m->h,
-			max(0, ywin % m->virtual_scr.MyDisplayHeight - m->y));
-	}
-	/* fprintf(stderr, "Input: {Mon: %s, Wfull: %d, Xwin: %d, Hfull: %d, "
-	 *                "Ywin: %d}\n",
-	 *		m->name, wfull, xwin, hfull, ywin );
-	 */
-
-	/* Due to rounding some windows may appear slightly off the page
-	 * edges when they are not. Should add some cleanup/snapping
-	 * code to help improve the visual effect.
-	 */
-	*x_ret = (xwin * win_w) / wfull;
-	*w_ret = max(MinSize, (t->width * win_w) / wfull);
-	*y_ret = (ywin * win_h) / hfull;
-	*h_ret = max(MinSize, (t->height * win_h) / hfull);
+	rec.width = max(MinSize, rec.width);
+	rec.height = max(MinSize, rec.height);
+	return rec;
 }
 
 /*
@@ -489,7 +458,41 @@ adjust_for_sizehints(int VxPages, int VyPages, bool check_aspect)
 	desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
 }
 
-/* Set size and location of current page view */
+/* Computes pager size rectangle from fvwm size or visa versa */
+static void
+fvwmrec_to_pager(rectangle *rec, bool is_icon)
+{
+	struct fpmonitor *mon = fpmonitor_this();
+
+	int m_width = monitor_get_all_widths();
+	int m_height = monitor_get_all_heights();
+	int offset_x = 0, offset_y = 0;
+
+	if (monitor_to_track != NULL) {
+		offset_x = (m_width - mon->w) * (rec->x / m_width) + mon->x;
+		offset_y = (m_height - mon->h) * (rec->y / m_height) + mon->y;
+		m_width = mon->w;
+		m_height = mon->h;
+	}
+
+	int scale_w = desk_w, scale_h = desk_h;
+	if ( is_icon ) {
+		scale_w = icon.width;
+		scale_h = icon.height;
+	}
+
+	/* Due to rounding some windows may appear slightly off the page
+	 * edges when they are not. Should add some cleanup/snapping
+	 * code to help improve the visual effect.
+	 */
+	m_width = m_width * mon->virtual_scr.VxPages;
+	m_height = m_height * mon->virtual_scr.VyPages;
+	rec->width = (rec->width * scale_w) / m_width + 1;
+	rec->height = (rec->height * scale_h) / m_height + 1;
+	rec->x = ((rec->x - offset_x) * scale_w) / m_width;
+	rec->y = ((rec->y - offset_y) * scale_h) / m_height;
+}
+
 static rectangle
 set_vp_size_and_loc(void)
 {
@@ -1678,22 +1681,22 @@ void ReConfigureAll(void)
 void ReConfigureIcons(Bool do_reconfigure_desk_only)
 {
   PagerWindow *t;
-  int x, y, w, h;
+  rectangle rec;
   struct fpmonitor *mon = fpmonitor_this();
 
   for (t = Start; t != NULL; t = t->next)
   {
     if (do_reconfigure_desk_only && t->desk != mon->virtual_scr.CurrentDesk)
       continue;
-    CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
-    t->icon_view_x = x;
-    t->icon_view_y = y;
-    t->icon_view_width = w;
-    t->icon_view_height = h;
+    rec = CalcGeom(t, true);
+    t->icon_view_x = rec.x;
+    t->icon_view_y = rec.y;
+    t->icon_view_width = rec.width;
+    t->icon_view_height = rec.height;
     if(mon->virtual_scr.CurrentDesk == t->desk)
-      XMoveResizeWindow(dpy, t->IconView, x, y, w, h);
+      XMoveResizeWindow(dpy, t->IconView, rec.x, rec.y, rec.width, rec.height);
     else
-      XMoveResizeWindow(dpy, t->IconView, -32768, -32768, w, h);
+      XMoveResizeWindow(dpy, t->IconView, -32768, -32768, rec.width, rec.height);
   }
 }
 
@@ -2027,15 +2030,16 @@ void AddNewWindow(PagerWindow *t)
 {
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
-	int i, x, y, w, h;
+	rectangle rec;
+	int i;
 	struct fpmonitor	*mon = fpmonitor_this();
 
 	i = t->desk - desk1;
-	CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
-	t->pager_view_x = x;
-	t->pager_view_y = y;
-	t->pager_view_width = w;
-	t->pager_view_height = h;
+	rec = CalcGeom(t, false);
+	t->pager_view_x = rec.x;
+	t->pager_view_y = rec.y;
+	t->pager_view_width = rec.width;
+	t->pager_view_height = rec.height;
 	valuemask = CWBackPixel | CWEventMask;
 	attributes.background_pixel = t->back;
 	attributes.event_mask = ExposureMask;
@@ -2051,12 +2055,13 @@ void AddNewWindow(PagerWindow *t)
 			return;
 
 		t->PagerView = XCreateWindow(
-			dpy,Desks[i].w, x, y, w, h, 0, CopyFromParent,
-			InputOutput, CopyFromParent, valuemask, &attributes);
+			dpy,Desks[i].w, rec.x, rec.y, rec.width, rec.height,
+			0, CopyFromParent, InputOutput, CopyFromParent,
+			valuemask, &attributes);
 		if (windowcolorset > -1)
 		{
 			SetWindowBackground(
-				dpy, t->PagerView, w, h,
+				dpy, t->PagerView, rec.width, rec.height,
 				&Colorset[windowcolorset], Pdepth,
 				Scr.NormalGC, True);
 		}
@@ -2076,24 +2081,25 @@ void AddNewWindow(PagerWindow *t)
 		t->PagerView = None;
 	}
 
-	CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
-	t->icon_view_x = x;
-	t->icon_view_y = y;
-	t->icon_view_width = w;
-	t->icon_view_height = h;
+	rec = CalcGeom(t, true);
+	t->icon_view_x = rec.x;
+	t->icon_view_y = rec.y;
+	t->icon_view_width = rec.width;
+	t->icon_view_height = rec.height;
 	if(mon->virtual_scr.CurrentDesk != t->desk)
 	{
-		x = -32768;
-		y = -32768;
+		rec.x = -32768;
+		rec.y = -32768;
 	}
 	t->IconView = XCreateWindow(
-		dpy,icon_win, x, y, w, h, 0, CopyFromParent, InputOutput,
-		CopyFromParent, valuemask, &attributes);
+		dpy,icon_win, rec.x, rec.y, rec.width, rec.height, 0,
+		CopyFromParent, InputOutput, CopyFromParent,
+		valuemask, &attributes);
 	if (windowcolorset > -1)
 	{
 		SetWindowBackground(
-			dpy, t->IconView, w, h, &Colorset[windowcolorset],
-			Pdepth, Scr.NormalGC, True);
+			dpy, t->IconView, rec.width, rec.height,
+			&Colorset[windowcolorset], Pdepth, Scr.NormalGC, True);
 	}
 	if(mon->virtual_scr.CurrentDesk == t->desk)
 	{
@@ -2125,7 +2131,8 @@ void AddNewWindow(PagerWindow *t)
 
 void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 {
-  int i, x, y, w, h;
+  rectangle rec;
+  int i;
   Bool size_changed = False;
   struct fpmonitor *mon = fpmonitor_this();
 
@@ -2138,20 +2145,21 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
     return;
   }
 
-  CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
-  size_changed = (t->pager_view_width != w || t->pager_view_height != h);
-  t->pager_view_x = x;
-  t->pager_view_y = y;
-  t->pager_view_width = w;
-  t->pager_view_height = h;
+  rec = CalcGeom(t, false);
+  size_changed = (t->pager_view_width != rec.width ||
+	  t->pager_view_height != rec.height);
+  t->pager_view_x = rec.x;
+  t->pager_view_y = rec.y;
+  t->pager_view_width = rec.width;
+  t->pager_view_height = rec.height;
 
   if ((i >= 0) && (i < ndesks))
   {
     int cset;
 
-    XReparentWindow(dpy, t->PagerView, Desks[i].w, x, y);
+    XReparentWindow(dpy, t->PagerView, Desks[i].w, rec.x, rec.y);
     if (size_changed)
-      XResizeWindow(dpy, t->PagerView, w, h);
+      XResizeWindow(dpy, t->PagerView, rec.width, rec.height);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
     if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
     {
@@ -2167,19 +2175,20 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   }
   t->desk = i+desk1;
 
-  CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
-  size_changed = (t->icon_view_width != w || t->icon_view_height != h);
-  t->icon_view_x = x;
-  t->icon_view_y = y;
-  t->icon_view_width = w;
-  t->icon_view_height = h;
+  rec = CalcGeom(t, true);
+  size_changed = (t->icon_view_width != rec.width ||
+	  t->icon_view_height != rec.height);
+  t->icon_view_x = rec.x;
+  t->icon_view_y = rec.y;
+  t->icon_view_width = rec.width;
+  t->icon_view_height = rec.height;
   if(mon->virtual_scr.CurrentDesk != t->desk)
-    XMoveResizeWindow(dpy,t->IconView,-32768,-32768,w,h);
+    XMoveResizeWindow(dpy,t->IconView,-32768,-32768,rec.width,rec.height);
   else
   {
     int cset;
 
-    XMoveResizeWindow(dpy,t->IconView,x,y,w,h);
+    XMoveResizeWindow(dpy,t->IconView,rec.x,rec.y,rec.width,rec.height);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
     if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
     {
@@ -2192,7 +2201,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 
 void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 {
-  int x, y, w, h;
+  rectangle rec;
   Bool size_changed;
   Bool position_changed;
   struct fpmonitor *mon = fpmonitor_this();
@@ -2214,20 +2223,21 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
     t->myflags.is_mapped = 1;
   }
 
-  CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
-  position_changed = (t->pager_view_x != x || t->pager_view_y != y);
-  size_changed = (t->pager_view_width != w || t->pager_view_height != h);
-  t->pager_view_x = x;
-  t->pager_view_y = y;
-  t->pager_view_width = w;
-  t->pager_view_height = h;
+  rec = CalcGeom(t, false);
+  position_changed = (t->pager_view_x != rec.x || t->pager_view_y != rec.y);
+  size_changed = (t->pager_view_width != rec.width ||
+	  t->pager_view_height != rec.height);
+  t->pager_view_x = rec.x;
+  t->pager_view_y = rec.y;
+  t->pager_view_width = rec.width;
+  t->pager_view_height = rec.height;
   if (t->PagerView != None)
   {
     if (size_changed || position_changed || do_force_redraw)
     {
       int cset;
 
-      XMoveResizeWindow(dpy, t->PagerView, x, y, w, h);
+      XMoveResizeWindow(dpy, t->PagerView, rec.x, rec.y, rec.width, rec.height);
       cset = (t != FocusWin) ? windowcolorset : activecolorset;
       if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
       {
@@ -2244,18 +2254,19 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
     return;
   }
 
-  CalcGeom(t, icon.width, icon.height, &x, &y, &w, &h);
-  position_changed = (t->icon_view_x != x || t->icon_view_y != y);
-  size_changed = (t->icon_view_width != w || t->icon_view_height != h);
-  t->icon_view_x = x;
-  t->icon_view_y = y;
-  t->icon_view_width = w;
-  t->icon_view_height = h;
+  rec = CalcGeom(t, true);
+  position_changed = (t->icon_view_x != rec.x || t->icon_view_y != rec.y);
+  size_changed = (t->icon_view_width != rec.width ||
+	  t->icon_view_height != rec.height);
+  t->icon_view_x = rec.x;
+  t->icon_view_y = rec.y;
+  t->icon_view_width = rec.width;
+  t->icon_view_height = rec.height;
   if (mon->virtual_scr.CurrentDesk == t->desk)
   {
     int cset;
 
-    XMoveResizeWindow(dpy, t->IconView, x, y, w, h);
+    XMoveResizeWindow(dpy, t->IconView, rec.x, rec.y, rec.width, rec.height);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
     if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
     {
@@ -2266,7 +2277,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
   }
   else
   {
-    XMoveResizeWindow(dpy, t->IconView, -32768, -32768, w, h);
+    XMoveResizeWindow(dpy, t->IconView, -32768, -32768, rec.width, rec.height);
   }
 }
 
