@@ -216,8 +216,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
 void MoveStickyWindow(Bool is_new_page, Bool is_new_desk);
 void Hilight(PagerWindow *, int);
-void Scroll(int window_w, int window_h, int x, int y, int Desk,
-	    Bool do_scroll_icon);
+void Scroll(int x, int y, int Desk, Bool do_scroll_icon);
 void MoveWindow(XEvent *Event);
 void BorderWindow(PagerWindow *t);
 void BorderIconWindow(PagerWindow *t);
