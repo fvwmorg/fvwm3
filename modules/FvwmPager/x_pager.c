@@ -2981,82 +2981,66 @@ void PictureIconWindow (PagerWindow *t)
 
 void IconMoveWindow(XEvent *Event, PagerWindow *t)
 {
-	int x1, y1, finished = 0, n, x = 0, y = 0, xi = 0, yi = 0;
+	int finished = 0, x = 0, y = 0, xi = 0, yi = 0;
 	Window dumwin;
-	int m, n1, m1;
 	int moved = 0;
 	int KeepMoving = 0;
 	Window JunkRoot, JunkChild;
 	int JunkX, JunkY;
 	unsigned JunkMask;
 	struct fpmonitor *mon = fpmonitor_this();
+	rectangle rec;
 
 	if (t == NULL || !t->allowed_actions.is_movable)
-	{
 		return;
-	}
 
-	n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-	m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-	n1 = (mon->virtual_scr.Vx + t->x) / mon->virtual_scr.MyDisplayWidth;
-	m1 = (mon->virtual_scr.Vy + t->y) / mon->virtual_scr.MyDisplayHeight;
+	rec.x = mon->virtual_scr.Vx + t->x;
+	rec.y = mon->virtual_scr.Vy + t->y;
+	rec.width = t->width;
+	rec.height = t->height;
+	fvwmrec_to_pager(&rec, true);
 
 	XRaiseWindow(dpy, t->IconView);
 
 	XTranslateCoordinates(dpy, Event->xany.window, t->IconView,
-			      Event->xbutton.x, Event->xbutton.y, &x1, &y1,
-			      &dumwin);
-	while (!finished)
-	{
+			      Event->xbutton.x, Event->xbutton.y,
+			      &rec.x, &rec.y, &dumwin);
+
+	while (!finished) {
 		FMaskEvent(dpy, ButtonReleaseMask | ButtonMotionMask |
 			   ExposureMask, Event);
 
-		if (Event->type == MotionNotify)
-		{
+		if (Event->type == MotionNotify) {
 			x = Event->xbutton.x;
 			y = Event->xbutton.y;
-			if (moved == 0)
-			{
+			if (moved == 0) {
 				xi = x;
 				yi = y;
 				moved = 1;
 			}
 
-			XMoveWindow(dpy, t->IconView, x - x1, y - y1);
+			XMoveWindow(dpy, t->IconView, x - rec.x, y - rec.y);
 			if (x < -5 || y < -5 || x > icon.width + 5 ||
-			    y > icon.height + 5)
-			{
+			    y > icon.height + 5) {
 				finished = 1;
 				KeepMoving = 1;
 			}
-		}
-		else if (Event->type == ButtonRelease)
-		{
+		} else if (Event->type == ButtonRelease) {
 			x = Event->xbutton.x;
 			y = Event->xbutton.y;
-			XMoveWindow(dpy, t->PagerView, x - x1, y - y1);
+			XMoveWindow(dpy, t->PagerView, x - rec.x, y - rec.y);
 			finished = 1;
-		}
-		else if (Event->type == Expose)
-		{
+		} else if (Event->type == Expose) {
 			HandleExpose(Event);
 		}
 	}
 
-	if (moved)
-	{
-		if (abs(x - xi) < MoveThreshold &&
-		    abs(y - yi) < MoveThreshold)
-		{
+	if (moved && (abs(x - xi) < MoveThreshold && abs(y - yi) < MoveThreshold))
 			moved = 0;
-		}
-	}
 
-	if (KeepMoving)
-	{
+	if (KeepMoving)	{
 		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-		{
+				  &x, &y, &JunkX, &JunkY, &JunkMask) == False) {
 			/* pointer is on a different screen */
 			x = 0;
 			y = 0;
@@ -3065,75 +3049,27 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		XSync(dpy, 0);
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent Move Pointer", t->w);
-	}
-	else
-	{
-		x = x - x1;
-		y = y - y1;
-		n1 = x * mon->virtual_scr.VWidth /
-			(icon.width * mon->virtual_scr.MyDisplayWidth);
-		m1 = y * mon->virtual_scr.VHeight /
-			(icon.height * mon->virtual_scr.MyDisplayHeight);
-		x = (x - n1) * mon->virtual_scr.VWidth / (icon.width - n) -
-			mon->virtual_scr.Vx;
-		y = (y - m1) * mon->virtual_scr.VHeight / (icon.height - m) -
-			mon->virtual_scr.Vy;
-		/* force onto desk */
-		if (x + t->icon_width + mon->virtual_scr.Vx < 0 )
-		{
-			x = - mon->virtual_scr.Vx - t->icon_width;
-		}
-		if (y + t->icon_height + mon->virtual_scr.Vy < 0)
-		{
-			y = - mon->virtual_scr.Vy - t->icon_height;
-		}
-		if (x + mon->virtual_scr.Vx >= mon->virtual_scr.VWidth)
-		{
-			x = mon->virtual_scr.VWidth - mon->virtual_scr.Vx - 1;
-		}
-		if (y + mon->virtual_scr.Vy >= mon->virtual_scr.VHeight)
-		{
-			y = mon->virtual_scr.VHeight - mon->virtual_scr.Vy - 1;
-		}
-		if ((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
-		   IS_STICKY_ACROSS_DESKS(t))
-		{
-			if (x > mon->virtual_scr.MyDisplayWidth - 16)
-			{
-				x = mon->virtual_scr.MyDisplayWidth - 16;
-			}
-			if (y > mon->virtual_scr.MyDisplayHeight - 16)
-			{
-				y = mon->virtual_scr.MyDisplayHeight - 16;
-			}
-			if (x + t->width < 16)
-			{
-				x = 16 - t->width;
-			}
-			if (y + t->height < 16)
-			{
-				y = 16 - t->height;
-			}
-		}
-		if (moved)
-		{
+	} else {
+		rec.x = x - rec.x;
+		rec.y = y - rec.y;
+		pagerrec_to_fvwm(&rec, true);
+		rec.x = rec.x - mon->virtual_scr.Vx;
+		rec.y = rec.y - mon->virtual_scr.Vy;
+
+		if (moved) {
 			char buf[64];
-			sprintf(buf, "Silent Move +%dp +%dp", x, y);
+			sprintf(buf, "Silent Move +%dp +%dp ewmhiwa",
+				rec.x, rec.y);
 			SendText(fd, buf, t->w);
 			XSync(dpy, 0);
-		}
-		else
-		{
+		} else {
 			MoveResizePagerView(t, True);
 		}
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent FlipFocus NoWarp", t->w);
 	}
 	if (is_transient)
-	{
-		/* does not return */
-		ExitPager();
-	}
+		ExitPager(); /* does not return */
 }
 
 
