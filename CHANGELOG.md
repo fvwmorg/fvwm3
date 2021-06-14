@@ -21,6 +21,7 @@
 - SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Move: disable working area when screen given [\#535](https://github.com/fvwmorg/fvwm3/pull/535) ([ThomasAdam](https://github.com/ThomasAdam))
 - Make RightPanel use primary monitor dimensions. [\#530](https://github.com/fvwmorg/fvwm3/pull/530) ([somiaj](https://github.com/somiaj))
 - Set base struts only for primary monitor in default-config. [\#528](https://github.com/fvwmorg/fvwm3/pull/528) ([somiaj](https://github.com/somiaj))
 - Change FvwmPager Logic for initial window size. [\#527](https://github.com/fvwmorg/fvwm3/pull/527) ([somiaj](https://github.com/somiaj))
