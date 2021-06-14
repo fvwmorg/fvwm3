@@ -130,14 +130,6 @@ extern void ExitPager(void);
 
 Pixmap default_pixmap = None;
 
-#ifdef DEBUG
-#define MYFPRINTF(X) \
-  fprintf X;\
-  fflush (stderr);
-#else
-#define MYFPRINTF(X)
-#endif
-
 #define  MAX_UNPROCESSED_MESSAGES 1
 /* sums up pixels to scroll. If do_send_message is True a Scroll command is
  * sent back to fvwm. The function shall be called with is_message_recieved
@@ -1037,10 +1029,6 @@ void initialize_pager(void)
 
     /* get font for balloon */
     Desks[i].balloon.Ffont = balloon_font;
-    if (Desks[i].balloon.Ffont == NULL)
-    {
-      fprintf(stderr, "%s: No fonts available, giving up!.\n", MyName);
-    }
     Desks[i].balloon.height = Desks[i].balloon.Ffont->height + 1;
   }
   initialize_balloon_window();
@@ -1690,7 +1678,6 @@ void MovePage(Bool is_new_desk)
     if (FlocaleTextListToTextProperty(
 	  dpy, &sptr, 1, XStdICCTextStyle, &name) == 0)
     {
-      fprintf(stderr,"%s: cannot allocate window name", MyName);
       return;
     }
     XSetWMIconName(dpy,Scr.Pager_w,&name);
@@ -1981,7 +1968,6 @@ void SwitchToDesk(int Desk)
 
 	sprintf(command, "GotoDesk %s 0 %d", monitor_to_track ? m->name : "",
 			Desk + desk1);
-	fprintf(stderr, "%s: cmd: %s\n", __func__, command);
 	SendText(fd,command,0);
 }
 
@@ -2007,7 +1993,6 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
     mon->virtual_scr.Vy = vy * mon->virtual_scr.MyDisplayHeight;
     sprintf(command, "GotoDeskAndPage %s %d %d %d",
 		monitor_to_track ? mon->name : "", Desk + desk1, vx, vy);
-    fprintf(stderr, "%s: cmd: %s\n", __func__, command);
     SendText(fd, command, 0);
 
   }
@@ -2035,7 +2020,6 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
     if (y * mon->virtual_scr.MyDisplayHeight > mon->virtual_scr.VyMax)
       y = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
     sprintf(command, "GotoPage %s %d %d", monitor_to_track ? mon->name : "", x, y);
-    fprintf(stderr, "%s: cmd: %s\n", __func__, command);
     SendText(fd, command, 0);
   }
   Wait = 1;
@@ -2052,7 +2036,6 @@ void IconSwitchPage(XEvent *Event)
 		  (icon.width * mon->virtual_scr.MyDisplayWidth),
 	  Event->xbutton.y * mon->virtual_scr.VHeight /
 		  (icon.height * mon->virtual_scr.MyDisplayHeight));
-  fprintf(stderr, "%s: cmd: %s\n", __func__, command);
   SendText(fd, command, 0);
   Wait = 1;
 }
@@ -2463,8 +2446,6 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 	{
 		sy = (y * mon->virtual_scr.VHeight / window_h - MyVy);
 	}
-	MYFPRINTF((stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h,
-		   x, y, sx, sy));
 	if (sx == 0 && sy == 0)
 	{
 		return;
