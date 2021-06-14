@@ -124,6 +124,7 @@ static void adjust_for_sizehints(int, int, bool);
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(void);
 static void fvwmrec_to_pager(rectangle *, bool);
+static void pagerrec_to_fvwm(rectangle *, bool);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
@@ -491,6 +492,37 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 	rec->height = (rec->height * scale_h) / m_height + 1;
 	rec->x = ((rec->x - offset_x) * scale_w) / m_width;
 	rec->y = ((rec->y - offset_y) * scale_h) / m_height;
+}
+static void
+pagerrec_to_fvwm(rectangle *rec, bool is_icon)
+{
+	struct fpmonitor *mon = fpmonitor_this();
+
+	int m_width = monitor_get_all_widths();
+	int m_height = monitor_get_all_heights();
+	int offset_x = 0, offset_y = 0;
+
+	int scale_w = desk_w, scale_h = desk_h;
+	if ( is_icon ) {
+		scale_w = icon.width;
+		scale_h = icon.height;
+	}
+
+	if (monitor_to_track != NULL) {
+		offset_x = (m_width - mon->w) * ((mon->virtual_scr.VxPages *
+			rec->x) / scale_w) + mon->x;
+		offset_y = (m_height - mon->h) * ((mon->virtual_scr.VyPages *
+			rec->y) / scale_h) + mon->y;
+		m_width = mon->w;
+		m_height = mon->h;
+	}
+
+	m_width = m_width * mon->virtual_scr.VxPages;
+	m_height = m_height * mon->virtual_scr.VyPages;
+	rec->width = (rec->width * m_width) / scale_w;
+	rec->height = (rec->height * m_height) / scale_h;
+	rec->x = (rec->x * m_width) / scale_w + offset_x;
+	rec->y = (rec->y * m_height) / scale_h + offset_y;
 }
 
 static rectangle
@@ -2469,11 +2501,10 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 void MoveWindow(XEvent *Event)
 {
 	char command[100];
-	int x1, y1, wx, wy, n, x, y, xi = 0, yi = 0, wx1, wy1, x2, y2;
+	int x, y, xi = 0, yi = 0;
 	int finished = 0;
 	Window dumwin;
 	PagerWindow *t;
-	int m, n1, m1;
 	int NewDesk, KeepMoving = 0;
 	int moved = 0;
 	int row, column;
@@ -2482,124 +2513,96 @@ void MoveWindow(XEvent *Event)
 	unsigned JunkMask;
 	int do_switch_desk_later = 0;
 	struct fpmonitor *mon = fpmonitor_this();
+	rectangle rec;
 
 	t = Start;
 	while (t != NULL && t->PagerView != Event->xbutton.subwindow)
-	{
 		t = t->next;
-	}
-
-	if (t == NULL)
-	{
+	if (t == NULL) {
 		t = Start;
 		while (t != NULL && t->IconView != Event->xbutton.subwindow)
-		{
 			t = t->next;
-		}
-		if (t != NULL)
-		{
+		if (t != NULL) {
 			IconMoveWindow(Event, t);
 			return;
 		}
 	}
 
 	if (t == NULL || !t->allowed_actions.is_movable)
-	{
 		return;
-	}
 
 	NewDesk = t->desk - desk1;
 	if (NewDesk < 0 || NewDesk >= ndesks)
-	{
 		return;
-	}
 
-	n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-	m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-	n1 = (mon->virtual_scr.Vx + t->x) / mon->virtual_scr.MyDisplayWidth;
-	m1 = (mon->virtual_scr.Vy + t->y) / mon->virtual_scr.MyDisplayHeight;
-	wx = (mon->virtual_scr.Vx + t->x) * (desk_w - n) / mon->virtual_scr.VWidth + n1;
-	wy = (mon->virtual_scr.Vy + t->y) * (desk_h - m) / mon->virtual_scr.VHeight + m1;
-	wx1 = wx + (desk_w + 1) * (NewDesk % Columns);
-	wy1 = wy + label_h + (desk_h + label_h + 1) * (NewDesk / Columns);
+	rec.x = mon->virtual_scr.Vx + t->x;
+	rec.y = mon->virtual_scr.Vy + t->y;
+	rec.width = t->width;
+	rec.height = t->height;
+	fvwmrec_to_pager(&rec, false);
+
+	rec.x = rec.x + (desk_w + 1) * (NewDesk % Columns);
+	rec.y = rec.y + label_h + (desk_h + label_h + 1) * (NewDesk / Columns);
 	if (LabelsBelow)
-	{
-		wy1 -= label_h;
-	}
+		rec.y -= label_h;
 
-	XReparentWindow(dpy, t->PagerView, Scr.Pager_w, wx1, wy1);
+	XReparentWindow(dpy, t->PagerView, Scr.Pager_w, rec.x, rec.y);
 	XRaiseWindow(dpy, t->PagerView);
 
 	XTranslateCoordinates(dpy, Event->xany.window, t->PagerView,
-			      Event->xbutton.x, Event->xbutton.y, &x1, &y1,
+			      Event->xbutton.x, Event->xbutton.y, &rec.x, &rec.y,
 			      &dumwin);
-	xi = x1;
-	yi = y1;
-	while (!finished)
-	{
+	xi = rec.x;
+	yi = rec.y;
+	while (!finished) {
 		FMaskEvent(dpy, ButtonReleaseMask | ButtonMotionMask |
 			   ExposureMask, Event);
-		if (Event->type == MotionNotify)
-		{
+		if (Event->type == MotionNotify) {
 			XTranslateCoordinates(dpy, Event->xany.window,
 					      Scr.Pager_w, Event->xmotion.x,
 					      Event->xmotion.y, &x, &y,
 					      &dumwin);
 
-			if (moved == 0)
-			{
+			if (moved == 0) {
 				xi = x;
 				yi = y;
 				moved = 1;
 			}
 			if (x < -5 || y < -5 || x > pwindow.width + 5 ||
-			   y > pwindow.height + 5)
-			{
+			   y > pwindow.height + 5) {
 				KeepMoving = 1;
 				finished = 1;
 			}
-			XMoveWindow(dpy, t->PagerView, x - x1, y - y1);
+			XMoveWindow(dpy, t->PagerView, x - rec.x, y - rec.y);
 		}
-		else if (Event->type == ButtonRelease)
-		{
+		else if (Event->type == ButtonRelease) {
 			XTranslateCoordinates(dpy, Event->xany.window,
 					      Scr.Pager_w, Event->xbutton.x,
 					      Event->xbutton.y, &x, &y,
 					      &dumwin);
-			XMoveWindow(dpy, t->PagerView, x - x1, y - y1);
+			XMoveWindow(dpy, t->PagerView, x - rec.x, y - rec.y);
 			finished = 1;
-		}
-		else if (Event->type == Expose)
-		{
+		} else if (Event->type == Expose) {
 			HandleExpose(Event);
 		}
 	}
 
-	if (moved)
-	{
-		if (abs(x - xi) < MoveThreshold &&
-		    abs(y - yi) < MoveThreshold)
-		{
+	if (moved && abs(x - xi) < MoveThreshold && abs(y - yi) < MoveThreshold)
 			moved = 0;
-		}
-	}
+
 	if (KeepMoving)
 	{
 		NewDesk = mon->virtual_scr.CurrentDesk;
 
-		if (NewDesk >= desk1 && NewDesk <= desk2)
-		{
+		if (NewDesk >= desk1 && NewDesk <= desk2) {
 			XReparentWindow(dpy, t->PagerView,
 					Desks[NewDesk-desk1].w, 0, 0);
-		}
-		else
-		{
+		} else {
 			XDestroyWindow(dpy, t->PagerView);
 			t->PagerView = None;
 		}
 		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-		{
+				  &x, &y, &JunkX, &JunkY, &JunkMask) == False) {
 			/* pointer is on a different screen */
 			x = 0;
 			y = 0;
@@ -2607,8 +2610,7 @@ void MoveWindow(XEvent *Event)
 		XUngrabPointer(dpy,CurrentTime);
 		XSync(dpy,0);
 
-		if (NewDesk != t->desk)
-		{
+		if (NewDesk != t->desk)	{
 			/* griph: This used to move to NewDesk, but NewDesk
 			 * is current desk, and if fvwm is on another
 			 * desk (due to async operation) we have to move
@@ -2621,109 +2623,51 @@ void MoveWindow(XEvent *Event)
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent Move Pointer", t->w);
 		return;
-	}
-	else
-	{
+	} else {
 		column = x / (desk_w + 1);
 		if (column >= Columns)
-		{
 			column = Columns - 1;
-		}
 		if (column < 0)
-		{
 			column = 0;
-		}
+
 		row = y / (desk_h + label_h + 1);
 		if (row >= Rows)
-		{
 			row = Rows - 1;
-		}
 		if (row < 0)
-		{
 			row = 0;
-		}
+
 		NewDesk = column + row * Columns;
-		while (NewDesk < 0)
-		{
+		while (NewDesk < 0) {
 			NewDesk += Columns;
 			if (NewDesk >= ndesks)
-			{
 				NewDesk = 0;
-			}
 		}
-		while (NewDesk >= ndesks)
-		{
+		while (NewDesk >= ndesks) {
 			NewDesk -= Columns;
 			if (NewDesk < 0)
-			{
 				NewDesk = ndesks - 1;
-			}
 		}
-		XTranslateCoordinates(dpy, Scr.Pager_w, Desks[NewDesk].w,
-				      x - x1, y - y1, &x2, &y2, &dumwin);
 
-		n1 = x2 * mon->virtual_scr.VWidth / (desk_w * mon->virtual_scr.MyDisplayWidth);
-		m1 = y2 * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
-		x = (x2 - n1) * mon->virtual_scr.VWidth / (desk_w - n) - mon->virtual_scr.Vx;
-		y = (y2 - m1) * mon->virtual_scr.VHeight / (desk_h - m) - mon->virtual_scr.Vy;
-		/* force onto desk */
-		if (x + t->frame_width + mon->virtual_scr.Vx < 0 )
-		{
-			x = -mon->virtual_scr.Vx - t->frame_width;
-		}
-		if (y + t->frame_height + mon->virtual_scr.Vy < 0)
-		{
-			y = -mon->virtual_scr.Vy - t->frame_height;
-		}
-		if (x + mon->virtual_scr.Vx >= mon->virtual_scr.VWidth)
-		{
-			x = mon->virtual_scr.VWidth - mon->virtual_scr.Vx - 1;
-		}
-		if (y + mon->virtual_scr.Vy >= mon->virtual_scr.VHeight)
-		{
-			y = mon->virtual_scr.VHeight - mon->virtual_scr.Vy - 1;
-		}
-		if ((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
-		   (IS_STICKY_ACROSS_DESKS(t)))
-		{
-			NewDesk = mon->virtual_scr.CurrentDesk - desk1;
-			if (x > mon->virtual_scr.MyDisplayWidth - 16)
-			{
-				x = mon->virtual_scr.MyDisplayWidth - 16;
-			}
-			if (y > mon->virtual_scr.MyDisplayHeight - 16)
-			{
-				y = mon->virtual_scr.MyDisplayHeight - 16;
-			}
-			if (x + t->width < 16)
-			{
-				x = 16 - t->width;
-			}
-			if (y + t->height < 16)
-			{
-				y = 16 - t->height;
-			}
-		}
-		if (NewDesk + desk1 != t->desk)
-		{
+		XTranslateCoordinates(dpy, Scr.Pager_w, Desks[NewDesk].w,
+				      x - rec.x, y - rec.y, &rec.x, &rec.y, &dumwin);
+
+		pagerrec_to_fvwm(&rec, false);
+		rec.x = rec.x - mon->virtual_scr.Vx;
+		rec.y = rec.y - mon->virtual_scr.Vy;
+
+		if (NewDesk + desk1 != t->desk) {
 			if ((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t))
-			   || (IS_STICKY_ACROSS_DESKS(t)))
-			{
+			   || (IS_STICKY_ACROSS_DESKS(t))) {
 				NewDesk = mon->virtual_scr.CurrentDesk - desk1;
 				if (t->desk != mon->virtual_scr.CurrentDesk)
-				{
 					ChangeDeskForWindow(t,mon->virtual_scr.CurrentDesk);
-				}
 			}
-			else if (NewDesk + desk1 != mon->virtual_scr.CurrentDesk)
-			{
+			else if (NewDesk + desk1 != mon->virtual_scr.CurrentDesk) {
 				sprintf(command, "Silent MoveToDesk 0 %d",
 					NewDesk + desk1);
 				SendText(fd, command, t->w);
 				t->desk = NewDesk + desk1;
-			}
-			else
-			{
+			} else {
 				do_switch_desk_later = 1;
 			}
 		}
@@ -2731,32 +2675,32 @@ void MoveWindow(XEvent *Event)
 		if (NewDesk >= 0 && NewDesk < ndesks)
 		{
 			XReparentWindow(dpy, t->PagerView,
-					Desks[NewDesk].w, x2, y2);
+					Desks[NewDesk].w, rec.x, rec.y);
 			t->desk = NewDesk;
 			XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-			if (moved)
-			{
+			if (moved) {
 				char buf[64];
-				sprintf(buf, "Silent Move +%dp +%dp", x, y);
-
+				/* XXX: Note the use of ewmhiwa to disable
+				 * clipping the coordinates to the wrong area!
+				 */
+				sprintf(buf, "Silent Move +%dp +%dp ewmhiwa",
+					rec.x, rec.y);
 				SendText(fd, buf, t->w);
 				XSync(dpy,0);
-			}
-			else
-			{
+			} else {
 				MoveResizePagerView(t, True);
 			}
 			SendText(fd, "Silent Raise", t->w);
 		}
-		if (do_switch_desk_later)
-		{
+
+		if (do_switch_desk_later) {
 			sprintf(command, "Silent MoveToDesk 0 %d", NewDesk +
 				desk1);
 			SendText(fd, command, t->w);
 			t->desk = NewDesk + desk1;
 		}
-		if (mon->virtual_scr.CurrentDesk == t->desk)
-		{
+
+		if (mon->virtual_scr.CurrentDesk == t->desk) {
 			XSync(dpy,0);
 			usleep(5000);
 			XSync(dpy,0);
@@ -2764,11 +2708,9 @@ void MoveWindow(XEvent *Event)
 			SendText(fd, "Silent FlipFocus NoWarp", t->w);
 		}
 	}
+
 	if (is_transient)
-	{
-		/* does not return */
-		ExitPager();
-	}
+		ExitPager(); /* does not return */
 }
 
 
