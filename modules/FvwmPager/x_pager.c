@@ -1167,7 +1167,7 @@ void DispatchEvent(XEvent *Event)
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
-	  Scroll(desk_w, desk_h, x, y, i, False);
+	  Scroll(x, y, i, False);
 	}
       }
       if(Event->xany.window == icon_win)
@@ -1177,7 +1177,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	Scroll(icon.width, icon.height, x, y, 0, True);
+	Scroll(x, y, -1, True);
       }
       /* Flush any pending scroll operations */
       do_scroll(0, 0, True, False);
@@ -1228,7 +1228,7 @@ void DispatchEvent(XEvent *Event)
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
-	  Scroll(desk_w, desk_h, x, y, mon->virtual_scr.CurrentDesk, False);
+	  Scroll(x, y, mon->virtual_scr.CurrentDesk, False);
 	  if (mon->virtual_scr.CurrentDesk != i + desk1)
 	  {
 	    Wait = 0;
@@ -1244,7 +1244,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	Scroll(icon.width, icon.height, x, y, 0, True);
+	Scroll(x, y, -1, True);
       }
     }
     break;
@@ -1264,7 +1264,7 @@ void DispatchEvent(XEvent *Event)
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
-	  Scroll(desk_w, desk_h, x, y, i, False);
+	  Scroll(x, y, i, False);
 	}
       }
       if(Event->xany.window == icon_win)
@@ -1274,7 +1274,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	Scroll(icon.width, icon.height, x, y, 0, True);
+	Scroll(x, y, -1, True);
       }
 
     }
@@ -2379,14 +2379,11 @@ void Hilight(PagerWindow *t, int on)
 }
 
 /* Use Desk == -1 to scroll the icon window */
-void Scroll(int window_w, int window_h, int x, int y, int Desk,
-	    Bool do_scroll_icon)
+void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 {
 	static int last_sx = -999999;
 	static int last_sy = -999999;
-	int sx;
-	int sy;
-	int adjx,adjy;
+	int window_w = desk_w, window_h = desk_h, sx, sy, adjx, adjy;
 	struct fpmonitor *mon = fpmonitor_this();
 
 	/* Desk < 0 means we want to scroll an icon window */
@@ -2395,9 +2392,13 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 		return;
 	}
 
+	if (do_scroll_icon) {
+		window_w = icon.width;
+		window_h = icon.height;
+	}
 	/* center around mouse */
-	adjx = (desk_w / (1 + mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth));
-	adjy = (desk_h / (1 + mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight));
+	adjx = (window_w / (1 + mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth));
+	adjy = (window_h / (1 + mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight));
 	x -= adjx/2;
 	y -= adjy/2;
 
