@@ -11,6 +11,7 @@
 **Implemented enhancements:**
 
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
+- expand: add desk, pagex, pagey variables [\#539](https://github.com/fvwmorg/fvwm3/pull/539) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add a screen option to the Scroll command. [\#531](https://github.com/fvwmorg/fvwm3/pull/531) ([ThomasAdam](https://github.com/ThomasAdam))
 - RandR: support RandRFunc for screen changes [\#525](https://github.com/fvwmorg/fvwm3/pull/525) ([ThomasAdam](https://github.com/ThomasAdam))
 
