@@ -1661,7 +1661,7 @@ $[pointer.screen]::
 +
 This command is deprecated; use $[monitor.current] instead.
 
-$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.primary], $[monitor.current], $[monitor.output], $[monitor.count]::
+$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.current], $[monitor.output], $[monitor.count]::
 	Returns information about the selected monitor. These can be nested, for
 	example: $[monitor.$[monitor.primary].width]
 +
@@ -1675,6 +1675,12 @@ returns the monitor's height (in pixels)
 monitor which has the mouse pointer.
 +
 "count" returns the number of active monitors.
++
+"desk" returns the current desk displayed on the referenced monitor.
++
+"pagex" returns the X page on the referenced monitor.
++
+"pagey" returns the Y page of the referenced monitor.
 +
 "primary" is the name of the output set as primary via xrandr(1).
 
