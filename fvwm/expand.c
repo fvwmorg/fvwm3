@@ -571,7 +571,27 @@ static signed int expand_vars_extended(
 
 			if (strcmp(rest, "output") == 0) {
 				is_numeric = True;
-				val = (int)m->si->rr_output;
+				val = (int)mon->si->rr_output;
+				goto GOT_STRING;
+			}
+
+			if (strcmp(rest, "desk") == 0) {
+				is_numeric = True;
+				val = mon->virtual_scr.CurrentDesk;
+				goto GOT_STRING;
+			}
+
+			if (strcmp(rest, "pagex") == 0) {
+				is_numeric = True;
+				val = (int)(mon->virtual_scr.Vx /
+					monitor_get_all_widths());
+				goto GOT_STRING;
+			}
+
+			if (strcmp(rest, "pagey") == 0) {
+				is_numeric = True;
+				val = (int)(mon->virtual_scr.Vy /
+					monitor_get_all_heights());
 				goto GOT_STRING;
 			}
 		}
