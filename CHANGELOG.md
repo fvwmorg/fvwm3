@@ -16,11 +16,14 @@
 
 **Fixed bugs:**
 
+- FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
 - SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
+- FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Rework FvwmPager to move windows easier [\#536](https://github.com/fvwmorg/fvwm3/pull/536) ([ThomasAdam](https://github.com/ThomasAdam))
 - Move: disable working area when screen given [\#535](https://github.com/fvwmorg/fvwm3/pull/535) ([ThomasAdam](https://github.com/ThomasAdam))
 - Make RightPanel use primary monitor dimensions. [\#530](https://github.com/fvwmorg/fvwm3/pull/530) ([somiaj](https://github.com/somiaj))
 - Set base struts only for primary monitor in default-config. [\#528](https://github.com/fvwmorg/fvwm3/pull/528) ([somiaj](https://github.com/somiaj))
@@ -31,6 +34,7 @@
 
 **Merged pull requests:**
 
+- pager: teach Icon view about colorsets [\#538](https://github.com/fvwmorg/fvwm3/pull/538) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: fix mouse positioning [\#533](https://github.com/fvwmorg/fvwm3/pull/533) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix broken link. [\#529](https://github.com/fvwmorg/fvwm3/pull/529) ([somiaj](https://github.com/somiaj))
 - EdgeScroll: a few improvements [\#524](https://github.com/fvwmorg/fvwm3/pull/524) ([ThomasAdam](https://github.com/ThomasAdam))
