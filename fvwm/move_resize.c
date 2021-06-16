@@ -100,7 +100,8 @@ static int move_drag_finish_button_mask =
 extern Window PressedW;
 
 static void draw_move_resize_grid(int x, int  y, int  width, int height);
-
+static void grow_to_closest_type(FvwmWindow *, rectangle *, rectangle, int *,
+    int, bool);
 /* ----- end of resize globals ----- */
 
 /*
@@ -2169,7 +2170,7 @@ static void DoSnapAttract(
 			/* horizontally */
 			if (!(*py + self.height < mon_y || *py > mon_y + mon_h))
 			{
-				if (*px + self.width >= 
+				if (*px + self.width >=
 					mon_w + mon_x - fw->snap_attraction.proximity &&
 					*px + self.width <=
 					mon_w + mon_x + fw->snap_attraction.proximity)
@@ -4405,9 +4406,16 @@ Bool is_window_sticky_across_desks(FvwmWindow *fw)
 }
 
 static void move_sticky_window_to_same_page(FvwmWindow *fw,
-	int *x11, int *x12, int *y11, int *y12,
-	int x21, int x22, int y21, int y22)
+	int *x11, int *x12, int *y11, int *y12)
 {
+	int x21, x22, y21, y22, page_x, page_y;
+
+	get_page_offset_check_visible(&page_x, &page_y, fw);
+	x21 = page_x;
+	x22 = page_x + monitor_get_all_widths();
+	y21 = page_y;
+	y22 = page_y + monitor_get_all_heights();
+
 	/* make sure the x coordinate is on the same page as the reference
 	 * window */
 	if (*x11 >= x22)
@@ -4448,166 +4456,120 @@ static void move_sticky_window_to_same_page(FvwmWindow *fw,
 	return;
 }
 
-static void MaximizeHeight(
-	FvwmWindow *win, int win_width, int win_x, int *win_height,
-	int *win_y, Bool grow_up, Bool grow_down, int top_border,
-	int bottom_border, int *layers)
+
+/*
+ * Grows a window rectangle until its edges touch the closest window based
+ * on snap type, layers = { min_layer, max_layer }, or the boundary rectangle.
+ */
+static void grow_to_closest_type(
+	FvwmWindow *fw, rectangle *win_r, rectangle bound, int *layers,
+	int type, bool consider_touching)
 {
-	struct monitor	*mon;
-	FvwmWindow *cwin;
-	int x11, x12, x21, x22;
-	int y11, y12, y21, y22;
-	int new_y1, new_y2;
-	rectangle g;
-	Bool rc;
+	FvwmWindow *twin;
+	rectangle other;
+	int maskout = (SNAP_SCREEN | SNAP_SCREEN_WINDOWS |
+			SNAP_SCREEN_ICONS | SNAP_SCREEN_ALL);
 
-	x11 = win_x;             /* Start x */
-	y11 = *win_y;            /* Start y */
-	x12 = x11 + win_width;   /* End x   */
-	y12 = y11 + *win_height; /* End y   */
-	new_y1 = top_border;
-	new_y2 = bottom_border;
+	/* window coordinates for original window, other, and new */
+	int xw1, yw1, xw2, yw2;
+	int xo1, yo1, xo2, yo2;
+	int new_x1, new_x2, new_y1, new_y2;
 
-	mon = win->m;
+	xw1 = win_r->x;
+	xw2 = xw1 + win_r->width;
+	yw1 = win_r->y;
+	yw2 = yw1 + win_r->height;
 
-	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
+	new_x1 = bound.x;
+	new_x2 = new_x1 + bound.width;
+	new_y1 = bound.y;
+	new_y2 = new_y1 + bound.height;
+
+	/* Use other windows to shrink boundary to get closest */
+	for (twin = Scr.FvwmRoot.next; twin; twin = twin->next)
 	{
-		if (cwin->m != mon)
-			continue;
-
-		if (cwin == win ||
-		    (cwin->Desk != win->Desk &&
-		     !is_window_sticky_across_desks(cwin)))
+		if (twin == fw || !IS_PARTIALLY_VISIBLE(twin) ||
+			(twin->Desk != fw->Desk &&
+			!is_window_sticky_across_desks(twin)))
 		{
 			continue;
 		}
-		if ((layers[0] >= 0 && cwin->layer < layers[0]) ||
-		    (layers[1] >= 0 && cwin->layer > layers[1]))
+		switch (type & ~(maskout))
 		{
-			continue;
-		}
-		rc = get_visible_window_or_icon_geometry(cwin, &g);
-		if (rc == False)
-		{
-			continue;
-		}
-		x21 = g.x;
-		y21 = g.y;
-		x22 = x21 + g.width;
-		y22 = y21 + g.height;
-		if (is_window_sticky_across_pages(cwin))
-		{
-			move_sticky_window_to_same_page(cwin,
-				&x21, &x22, &new_y1, &new_y2, x11, x12, y11,
-				y12);
-		}
-
-		/* Are they in the same X space? */
-		if (!((x22 <= x11) || (x21 >= x12)))
-		{
-			if ((y22 <= y11) && (y22 >= new_y1))
+		case SNAP_WINDOWS:  /* we only consider windows */
+			if (IS_ICONIFIED(twin))
 			{
-				new_y1 = y22;
+				continue;
 			}
-			else if ((y12 <= y21) && (new_y2 >= y21))
+			break;
+		case SNAP_ICONS:  /* we only consider icons */
+			if (!IS_ICONIFIED(twin))
 			{
-				new_y2 = y21;
+				continue;
+			}
+			break;
+		case SNAP_SAME:  /* we don't consider unequal */
+			if (IS_ICONIFIED(twin) != IS_ICONIFIED(fw))
+			{
+				continue;
+			}
+			break;
+		default:
+			break;
+		}
+		if ((layers[0] >= 0 && twin->layer < layers[0]) ||
+			(layers[1] >= 0 && twin->layer > layers[1]))
+		{
+			continue;
+		}
+		if (!get_visible_window_or_icon_geometry(twin, &other))
+		{
+			continue;
+		}
+		xo1 = other.x;
+		xo2 = xo1 + other.width;
+		yo1 = other.y;
+		yo2 = yo1 + other.height;
+
+		if (is_window_sticky_across_pages(twin))
+                {
+                        move_sticky_window_to_same_page(fw,
+                                &xo1, &xo2, &yo1, &yo2);
+                }
+
+		/* Shrink left/right edges */
+		if (yo1 < yw2 && yo2 > yw1)
+		{
+			if (new_x1 < xo2 && (xw1 > xo2 ||
+				(consider_touching && xw1 == xo2)))
+			{
+				new_x1 = xo2;
+			}
+			if (new_x2 > xo1 && (xw2 < xo1 ||
+				(consider_touching && xw2 == xo1)))
+			{
+				new_x2 = xo1;
 			}
 		}
-	}
-	if (!grow_up)
-	{
-		new_y1 = y11;
-	}
-	if (!grow_down)
-	{
-		new_y2 = y12;
-	}
-	*win_height = new_y2 - new_y1;
-	*win_y = new_y1;
-
-	return;
-}
-
-static void MaximizeWidth(
-	FvwmWindow *win, int *win_width, int *win_x, int win_height,
-	int win_y, Bool grow_left, Bool grow_right, int left_border,
-	int right_border, int *layers)
-{
-	struct monitor	*mon;
-	FvwmWindow *cwin;
-	int x11, x12, x21, x22;
-	int y11, y12, y21, y22;
-	int new_x1, new_x2;
-	rectangle g;
-	Bool rc;
-
-	x11 = *win_x;            /* Start x */
-	y11 = win_y;             /* Start y */
-	x12 = x11 + *win_width;  /* End x   */
-	y12 = y11 + win_height;  /* End y   */
-	new_x1 = left_border;
-	new_x2 = right_border;
-
-	mon = win->m;
-
-	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
-	{
-		if (cwin->m != mon)
-			continue;
-
-		if (cwin == win ||
-		    (cwin->Desk != win->Desk &&
-		     !is_window_sticky_across_desks(cwin)))
+		/* Shrink top/bottom edges */
+		if (xo1 < xw2 && xo2 > xw1)
 		{
-			continue;
-		}
-		if ((layers[0] >= 0 && cwin->layer < layers[0]) ||
-		    (layers[1] >= 0 && cwin->layer > layers[1]))
-		{
-			continue;
-		}
-		rc = get_visible_window_or_icon_geometry(cwin, &g);
-		if (rc == False)
-		{
-			continue;
-		}
-		x21 = g.x;
-		y21 = g.y;
-		x22 = x21 + g.width;
-		y22 = y21 + g.height;
-		if (is_window_sticky_across_pages(cwin))
-		{
-			move_sticky_window_to_same_page(cwin,
-				&new_x1, &new_x2, &y21, &y22, x11, x12, y11,
-				y12);
-		}
-
-		/* Are they in the same Y space? */
-		if (!((y22 <= y11) || (y21 >= y12)))
-		{
-			if ((x22 <= x11) && (x22 >= new_x1))
+			if (new_y1 < yo2 && (yw1 > yo2 ||
+				(consider_touching && yw1 == yo2)))
 			{
-				new_x1 = x22;
+				new_y1 = yo2;
 			}
-			else if ((x12 <= x21) && (new_x2 >= x21))
+			if (new_y2 > yo1 && (yw2 < yo1 ||
+				(consider_touching && yw2 == yo1)))
 			{
-				new_x2 = x21;
+				new_y2 = yo1;
 			}
 		}
 	}
-	if (!grow_left)
-	{
-		new_x1 = x11;
-	}
-	if (!grow_right)
-	{
-		new_x2 = x12;
-	}
-	*win_width  = new_x2 - new_x1;
-	*win_x = new_x1;
-
-	return;
+	win_r->x = new_x1;
+	win_r->width = new_x2 - new_x1;
+	win_r->y = new_y1;
+	win_r->height = new_y2 - new_y1;
 }
 
 static void unmaximize_fvwm_window(
@@ -4750,7 +4712,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool global_flag_parsed = False;
 	int  scr_x, scr_y;
 	int scr_w, scr_h;
-	rectangle new_g;
+	rectangle new_g, bound;
 	FvwmWindow *fw = exc->w.fw;
 
 	if (
@@ -4993,10 +4955,18 @@ void CMD_Maximize(F_CMD_ARGS)
 		/* handle command line arguments */
 		if (grow_up || grow_down)
 		{
-			MaximizeHeight(
-				fw, new_g.width, new_g.x, &new_g.height,
-				&new_g.y, grow_up, grow_down, page_y + scr_y,
-				page_y + scr_y + scr_h, layers);
+			bound = new_g;
+			if (grow_up)
+			{
+				bound.y = page_y + scr_y;
+				bound.height = new_g.y + new_g.height - bound.y;
+			}
+			if (grow_down)
+			{
+				bound.height = page_y + scr_y + scr_h - bound.y;
+			}
+			grow_to_closest_type(fw, &new_g, bound, layers,
+				SNAP_NONE, true);
 		}
 		else if (val2 > 0)
 		{
@@ -5005,11 +4975,18 @@ void CMD_Maximize(F_CMD_ARGS)
 		}
 		if (grow_left || grow_right)
 		{
-			MaximizeWidth(
-				fw, &new_g.width, &new_g.x, new_g.height,
-				new_g.y, grow_left, grow_right,
-				page_x + scr_x, page_x + scr_x + scr_w,
-				layers);
+			bound = new_g;
+			if (grow_left)
+			{
+				bound.x = page_x + scr_x;
+				bound.width = new_g.x + new_g.width - bound.x;
+			}
+			if (grow_right)
+			{
+				bound.width = page_x + scr_x + scr_w - bound.x;
+			}
+			grow_to_closest_type(fw, &new_g, bound, layers,
+				SNAP_NONE, true);
 		}
 		else if (val1 >0)
 		{
