@@ -56,7 +56,7 @@ extern Atom propriete;
 extern char *LastString;
 char *FvwmUserDir = NULL;
 char *BufCom;
-char Command[255]="None";
+char Command[256]="None";
 time_t TimeCom=0;
 
 /*
