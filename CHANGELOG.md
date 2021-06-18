@@ -24,6 +24,7 @@
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Fix compiler warnings in modules/FvwmScript/Instructions.c [\#544](https://github.com/fvwmorg/fvwm3/pull/544) ([pm215](https://github.com/pm215))
 - Rework FvwmPager to move windows easier [\#536](https://github.com/fvwmorg/fvwm3/pull/536) ([ThomasAdam](https://github.com/ThomasAdam))
 - Move: disable working area when screen given [\#535](https://github.com/fvwmorg/fvwm3/pull/535) ([ThomasAdam](https://github.com/ThomasAdam))
 - Make RightPanel use primary monitor dimensions. [\#530](https://github.com/fvwmorg/fvwm3/pull/530) ([somiaj](https://github.com/somiaj))
