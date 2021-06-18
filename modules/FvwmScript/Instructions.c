@@ -1740,9 +1740,7 @@ static void WriteToFile (int NbArg,long *TabArg)
   }
   if (CurrPos==size)
   {
-    sprintf(buf,"%s\n%s%d\n",buf,StrBegin,getpid());
-    sprintf(buf,"%s%s",buf,arg[1]);
-    sprintf(buf,"%s%s\n",buf,StrEnd);
+    sprintf(buf + strlen(buf),"\n%s%d\n%s%s\n",StrBegin,getpid(),arg[1],StrEnd);
   }
   else
   {
