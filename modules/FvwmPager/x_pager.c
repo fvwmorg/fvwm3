@@ -226,8 +226,35 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 
 	fvwmrec_to_pager(&rec, is_icon);
 
-	rec.width = max(MinSize, rec.width);
-	rec.height = max(MinSize, rec.height);
+	/* Set geometry to MinSize and snap to page boundary if needed */
+	if (rec.width < MinSize)
+	{
+		int page_w = desk_w;
+		if (is_icon)
+			page_w = icon.width;
+		page_w = page_w / m->virtual_scr.VxPages;
+
+		rec.width = MinSize;
+		if (rec.x > page_w - MinSize &&
+			(rec.x + rec.width)%page_w < MinSize)
+		{
+			rec.x = ((rec.x / page_w) + 1)*page_w - MinSize + 1;
+		}
+	}
+	if (rec.height < MinSize)
+	{
+		int page_h = desk_h;
+		if (is_icon)
+			page_h = icon.height;
+		page_h = page_h / m->virtual_scr.VyPages;
+
+		rec.height = MinSize;
+		if (rec.y > page_h - MinSize &&
+			(rec.y + rec.height)%page_h < MinSize)
+		{
+			rec.y = ((rec.y / page_h) + 1)*page_h - MinSize + 1;
+		}
+	}
 	return rec;
 }
 
