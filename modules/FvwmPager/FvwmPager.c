@@ -93,6 +93,8 @@ Bool WindowBorders3d = False;
 
 Bool UseSkipList = False;
 
+Bool HideSmallWindows = False;
+
 FvwmPicture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
@@ -2305,6 +2307,10 @@ void ParseOptions(void)
         MinSize = 2 * WindowBorderWidth + MinSize;
       else
         MinSize = 2 * WindowBorderWidth + DEFAULT_PAGER_WINDOW_MIN_SIZE;
+    }
+    else if (StrEquals(resource, "HideSmallWindows"))
+    {
+      HideSmallWindows = true;
     }
     else if (StrEquals(resource, "Window3dBorders"))
     {

@@ -66,6 +66,7 @@ extern unsigned int WindowBorderWidth;
 extern unsigned int MinSize;
 extern Bool WindowBorders3d;
 extern Bool UseSkipList;
+extern Bool HideSmallWindows;
 extern FvwmPicture *PixmapBack;
 extern FvwmPicture *HilightPixmap;
 extern int HilightDesks;
@@ -1739,10 +1740,13 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
     t->icon_view_y = rec.y;
     t->icon_view_width = rec.width;
     t->icon_view_height = rec.height;
-    if(mon->virtual_scr.CurrentDesk == t->desk)
-      XMoveResizeWindow(dpy, t->IconView, rec.x, rec.y, rec.width, rec.height);
-    else
-      XMoveResizeWindow(dpy, t->IconView, -32768, -32768, rec.width, rec.height);
+    if ((mon->virtual_scr.CurrentDesk != t->desk) ||
+        (HideSmallWindows && (rec.width == MinSize || rec.height == MinSize)))
+    {
+      rec.x = -32768;
+      rec.y = -32768;
+    }
+    XMoveResizeWindow(dpy, t->IconView, rec.x, rec.y, rec.width, rec.height);
   }
 }
 
@@ -2059,6 +2063,12 @@ void AddNewWindow(PagerWindow *t)
 	attributes.background_pixel = t->back;
 	attributes.event_mask = ExposureMask;
 
+	if (HideSmallWindows && (rec.width == MinSize || rec.height == MinSize))
+	{
+		rec.x = -32768;
+		rec.y = -32768;
+	}
+
 	/* ric@giccs.georgetown.edu -- added Enter and Leave events for
 	   popping up balloon window */
 	attributes.event_mask =
@@ -2101,7 +2111,9 @@ void AddNewWindow(PagerWindow *t)
 	t->icon_view_y = rec.y;
 	t->icon_view_width = rec.width;
 	t->icon_view_height = rec.height;
-	if(mon->virtual_scr.CurrentDesk != t->desk)
+	if((mon->virtual_scr.CurrentDesk != t->desk) ||
+		(HideSmallWindows && (rec.width == MinSize ||
+		rec.height == MinSize)))
 	{
 		rec.x = -32768;
 		rec.y = -32768;
@@ -2168,6 +2180,12 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   t->pager_view_width = rec.width;
   t->pager_view_height = rec.height;
 
+  if (HideSmallWindows && (rec.width == MinSize || rec.height == MinSize))
+  {
+    rec.x = -32768;
+    rec.y = -32768;
+  }
+
   if ((i >= 0) && (i < ndesks))
   {
     int cset;
@@ -2197,6 +2215,11 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   t->icon_view_y = rec.y;
   t->icon_view_width = rec.width;
   t->icon_view_height = rec.height;
+  if (HideSmallWindows && (rec.width == MinSize || rec.height == MinSize))
+  {
+    rec.x = -32768;
+    rec.y = -32768;
+  }
   if(mon->virtual_scr.CurrentDesk != t->desk)
     XMoveResizeWindow(dpy,t->IconView,-32768,-32768,rec.width,rec.height);
   else
@@ -2252,6 +2275,11 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
     {
       int cset;
 
+      if (HideSmallWindows && (rec.width == MinSize || rec.height == MinSize))
+      {
+        rec.x = -32768;
+        rec.y = -32768;
+      }
       XMoveResizeWindow(dpy, t->PagerView, rec.x, rec.y, rec.width, rec.height);
       cset = (t != FocusWin) ? windowcolorset : activecolorset;
       if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
@@ -2281,6 +2309,11 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
   {
     int cset;
 
+    if (HideSmallWindows && (rec.width == MinSize || rec.height == MinSize))
+    {
+      rec.x = -32768;
+      rec.y = -32768;
+    }
     XMoveResizeWindow(dpy, t->IconView, rec.x, rec.y, rec.width, rec.height);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
     if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
