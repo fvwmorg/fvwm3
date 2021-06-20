@@ -4689,6 +4689,7 @@ static void unmaximize_fvwm_window(
 	 * window being restored from fullscreen to a non-maximized state.
 	 */
 	apply_decor_change(fw);
+	EWMH_SetWMState(fw, True);
 	return;
 }
 
