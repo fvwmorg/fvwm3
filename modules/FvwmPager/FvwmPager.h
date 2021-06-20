@@ -8,6 +8,10 @@
 #include "libs/Flocale.h"
 #include "libs/Module.h"
 
+#define DEFAULT_PAGER_WINDOW_BORDER_WIDTH 1
+#define DEFAULT_PAGER_WINDOW_MIN_SIZE 3
+#define DEFAULT_PAGER_MOVE_THRESHOLD 3
+
 struct fpmonitor {
 	char		*name;
 	int		 is_primary, output;

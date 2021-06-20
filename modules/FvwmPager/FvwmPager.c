@@ -87,7 +87,8 @@ char *WindowHiFore = NULL;
 char *WindowLabelFormat = NULL;
 
 unsigned int WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
-unsigned int MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + 5;
+unsigned int MinSize = (2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH +
+	DEFAULT_PAGER_WINDOW_MIN_SIZE);
 Bool WindowBorders3d = False;
 
 Bool UseSkipList = False;
@@ -96,7 +97,6 @@ FvwmPicture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
 
-#define DEFAULT_PAGER_MOVE_THRESHOLD 3
 int MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
@@ -2291,8 +2291,20 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "WindowBorderWidth"))
     {
+      MinSize = MinSize - 2*WindowBorderWidth;
       sscanf(arg1, "%d", &WindowBorderWidth);
-      MinSize = 2 * WindowBorderWidth + 5;
+      if (WindowBorderWidth > 0)
+        MinSize = 2 * WindowBorderWidth + MinSize;
+      else
+        MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + MinSize;
+    }
+    else if (StrEquals(resource, "WindowMinSize"))
+    {
+      sscanf(arg1, "%d", &MinSize);
+      if (MinSize > 0)
+        MinSize = 2 * WindowBorderWidth + MinSize;
+      else
+        MinSize = 2 * WindowBorderWidth + DEFAULT_PAGER_WINDOW_MIN_SIZE;
     }
     else if (StrEquals(resource, "Window3dBorders"))
     {
