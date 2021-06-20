@@ -1493,7 +1493,10 @@ void StartupStuff(void)
 	}
 	/* Have to do this here too because preprocessor modules have not run
 	 * to the end when HandleEvents is entered from the main loop. */
-	initPanFrames();
+	struct monitor *m;
+	TAILQ_FOREACH(m, &monitor_q, entry)
+		checkPanFrames(m);
+
 	fFvwmInStartup = False;
 
 	/* Make sure the geometry window uses the current font */
