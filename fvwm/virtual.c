@@ -110,7 +110,6 @@
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
 
-static void checkPanFrames(struct monitor *);
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 static void init_one_panframe(PanFrame *, int, int, int, int, int);
