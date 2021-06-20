@@ -109,6 +109,7 @@
  */
 static int edge_thickness = 2;
 static int last_edge_thickness = 2;
+static bool pan_frames_mapped = false;
 
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
@@ -1288,6 +1289,9 @@ void initPanFrames(void)
 	int saved_thickness;
 	struct monitor	*m;
 
+	if (pan_frames_mapped)
+		return;
+
 	/* Not creating the frames disables all subsequent behavior */
 	/* TKP. This is bad, it will cause an XMap request on a null window
 	 * later*/
@@ -1340,6 +1344,7 @@ void initPanFrames(void)
 		checkPanFrames(m);
 	}
 	edge_thickness = saved_thickness;
+	pan_frames_mapped = true;
 	fvwm_debug(__func__, "finished setting up per-monitor panframes");
 }
 
