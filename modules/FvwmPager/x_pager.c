@@ -569,6 +569,8 @@ set_vp_size_and_loc(void)
 	vp.height = desk_h / VyPages;
 	vp.x = (Vx * desk_w) / vWidth + offset_x;
 	vp.y = (Vy * desk_h) / vHeight + offset_y;
+	vp.x = vp.x / VxPages;
+	vp.y = vp.y / VyPages;
 
 	return vp;
 }
