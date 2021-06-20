@@ -17,6 +17,7 @@
 
 **Fixed bugs:**
 
+- Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
@@ -24,6 +25,7 @@
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Unmaximize: restore \_NET\_WM\_STATE [\#546](https://github.com/fvwmorg/fvwm3/pull/546) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix compiler warnings in modules/FvwmScript/Instructions.c [\#544](https://github.com/fvwmorg/fvwm3/pull/544) ([pm215](https://github.com/pm215))
 - Rework FvwmPager to move windows easier [\#536](https://github.com/fvwmorg/fvwm3/pull/536) ([ThomasAdam](https://github.com/ThomasAdam))
 - Move: disable working area when screen given [\#535](https://github.com/fvwmorg/fvwm3/pull/535) ([ThomasAdam](https://github.com/ThomasAdam))
