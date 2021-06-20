@@ -1083,6 +1083,18 @@ void checkPanFrames(struct monitor *m)
 		do_unmap_b = true;
 	}
 
+	/* Remove panframes if in global mode and on inside edge */
+	if (global) {
+		if (m->edge.left)
+			do_unmap_l = true;
+		if (m->edge.right)
+			do_unmap_r = true;
+		if (m->edge.bottom)
+			do_unmap_b = true;
+		if (m->edge.top)
+			do_unmap_t = true;
+	}
+
 	/* correct the unmap variables if pan frame commands are set */
 	if (edge_thickness != 0) {
 		if (m->PanFrameLeft.command != NULL ||
@@ -1101,17 +1113,6 @@ void checkPanFrames(struct monitor *m)
 		    m->PanFrameTop.command_leave != NULL) {
 			do_unmap_t = false;
 		}
-	}
-	/* Remove panframes if in global mode and on inside edge */
-	if (global) {
-		if (m->edge.left)
-			do_unmap_l = true;
-		if (m->edge.right)
-			do_unmap_r = true;
-		if (m->edge.bottom)
-			do_unmap_b = true;
-		if (m->edge.top)
-			do_unmap_t = true;
 	}
 
 	/*
