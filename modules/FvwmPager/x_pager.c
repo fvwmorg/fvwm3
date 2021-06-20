@@ -2758,7 +2758,7 @@ static void draw_window_border(PagerWindow *t, Window w, int width, int height)
     {
       XSetForeground(dpy, Scr.NormalGC, Scr.black);
       RelieveRectangle(
-	dpy, w, 0, 0, width - 1, t->pager_view_height - 1,
+	dpy, w, 0, 0, width - 1, height - 1,
 	Scr.NormalGC, Scr.NormalGC, WindowBorderWidth);
     }
     else if (t == FocusWin)
