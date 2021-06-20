@@ -551,27 +551,12 @@ set_vp_size_and_loc(void)
 	rectangle vp;
 	struct fpmonitor *mon = fpmonitor_this();
 
-	int VxPages = mon->virtual_scr.VxPages;
-	int VyPages = mon->virtual_scr.VyPages;
-	int Vx = mon->virtual_scr.Vx;
-	int Vy = mon->virtual_scr.Vy;
-	int vWidth = monitor_get_all_widths();
-	int vHeight = monitor_get_all_heights();
-	int offset_x = 0, offset_y = 0;
-
-	if (monitor_to_track != NULL) {
-		offset_x = (Vx / vWidth) * mon->x + mon->x;
-		offset_y = (Vy / vHeight) * mon->y + mon->y;
-		vWidth = mon->w;
-		vHeight = mon->h;
-	}
-	vp.width = desk_w / VxPages;
-	vp.height = desk_h / VyPages;
-	vp.x = (Vx * desk_w) / vWidth + offset_x;
-	vp.y = (Vy * desk_h) / vHeight + offset_y;
-	vp.x = vp.x / VxPages;
-	vp.y = vp.y / VyPages;
-
+	vp.width = desk_w / mon->virtual_scr.VxPages;
+	vp.height = desk_h / mon->virtual_scr.VyPages;
+	vp.x = (mon->virtual_scr.Vx * vp.width) /
+		mon->virtual_scr.MyDisplayWidth;
+	vp.y = (mon->virtual_scr.Vy * vp.height) /
+		mon->virtual_scr.MyDisplayHeight;
 	return vp;
 }
 
@@ -1650,22 +1635,15 @@ void update_pr_transparent_windows(void)
 
 void MovePage(Bool is_new_desk)
 {
-  int n1,m1,x,y,n,m,i,w,h;
+  int i;
+  rectangle vp;
   XTextProperty name;
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
   struct fpmonitor *mon = fpmonitor_this();
 
   Wait = 0;
-  n1 = mon->virtual_scr.Vx/mon->virtual_scr.MyDisplayWidth;
-  m1 = mon->virtual_scr.Vy/mon->virtual_scr.MyDisplayHeight;
-  n = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
-  m = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-
-  x = (desk_w - n) * mon->virtual_scr.Vx / mon->virtual_scr.VWidth + n1;
-  y = (desk_h - m) * mon->virtual_scr.Vy / mon->virtual_scr.VHeight + m1;
-  w = (desk_w - n)/(n+1);
-  h = (desk_h - m)/(m+1);
+  vp = set_vp_size_and_loc();
 
   for(i=0;i<ndesks;i++)
   {
@@ -1673,12 +1651,12 @@ void MovePage(Bool is_new_desk)
     {
       if(i == mon->virtual_scr.CurrentDesk - desk1)
       {
-	XMoveWindow(dpy, Desks[i].CPagerWin, x,y);
+	XMoveWindow(dpy, Desks[i].CPagerWin, vp.x, vp.y);
 	XLowerWindow(dpy,Desks[i].CPagerWin);
 	if (CSET_IS_TRANSPARENT(Desks[i].highcolorset))
 	{
 		SetWindowBackground(
-			dpy, Desks[i].CPagerWin, w, h,
+			dpy, Desks[i].CPagerWin, vp.width, vp.height,
 			&Colorset[Desks[i].highcolorset], Pdepth,
 			Scr.NormalGC, True);
 	}
