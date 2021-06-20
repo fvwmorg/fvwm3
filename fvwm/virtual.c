@@ -2022,6 +2022,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 				fvwm_debug(__func__,
 					   "Internal error in CMD_EdgeCommand");
 			}
+			checkPanFrames(m);
 		}
 		free(command);
 		free(actdup);
@@ -2093,6 +2094,7 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 				/* this should never happen */
 				fvwm_debug(__func__, "Internal error");
 			}
+			checkPanFrames(m);
 		}
 		free(command);
 		free(actdup);
