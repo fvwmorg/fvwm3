@@ -106,10 +106,6 @@
 #define DEFAULT_CURSOR_FORE_COLOR         "black"
 #define DEFAULT_CURSOR_BACK_COLOR         "white"
 
-/*** pager ***/
-#define DEFAULT_MOVE_THRESHOLD             3 /* pixels */
-#define DEFAULT_PAGER_WINDOW_BORDER_WIDTH  1 /* pixels */
-
 /*** fonts ***/
 #define EXTRA_TITLE_FONT_HEIGHT            3 /* pixels */
 #define EXTRA_TITLE_FONT_WIDTH             3 /* pixels */

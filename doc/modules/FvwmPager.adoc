@@ -339,10 +339,14 @@ done about this - except not using SloppyFocus in the pager.
   Uses colorsets in the same way as *FvwmPager: WindowColors. The shadow
   and hilight colors of the colorset are only used for the window
   borders if the *FvwmPager: Window3DBorders is specified too.
+*FvwmPager: WindowMinSize n::
+  Specifies the minimum size as _n_ pixels of the mini windows. This does
+  not include the width of the border, so the actual minimum size is
+  2 * _WindowBorderWidth_ + _WindowMinSize_. The default is 3.
 *FvwmPager: WindowBorderWidth n::
   Specifies the width of the border drawn around the mini windows. This
-  also sets the minimum size of the mini windows to (2 * _n_ + 1). The
-  default is 1.
+  also affects the minimum size of the mini windows, which will be
+  2 * _WindowBorderWidth_ + _WindowMinSize_. The default is 1.
 *FvwmPager: Window3DBorders::
   Specifies that the mini windows should have a 3d borders based on the
   mini window background. This option only works if *FvwmPager:
