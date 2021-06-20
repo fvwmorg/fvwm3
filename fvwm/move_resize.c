@@ -291,6 +291,204 @@ static int ParsePositionArgumentSuffix(
 	return n;
 }
 
+/* Functions to shuffle windows to the closest boundary. */
+static void grow_bound_to_next_monitor(
+	FvwmWindow *fw, rectangle *bound, rectangle win_r, direction_t dir)
+{
+	int page_x, page_y;
+	struct monitor *m;
+
+	get_page_offset_check_visible(&page_x, &page_y, fw);
+	bound->x -= page_x;
+	bound->y -= page_y;
+	win_r.x -= page_x;
+	win_r.y -= page_y;
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+	{
+		if (fw->m == m)
+			continue;
+
+		if (dir == DIR_N && m->si->y + m->si->h == fw->m->si->y &&
+			win_r.x < m->si->x + m->si->w &&
+			win_r.x + win_r.width > m->si->x)
+		{
+			bound->y = m->si->y + m->ewmhc.BaseStrut.top;
+			bound->height = win_r.y + win_r.height - bound->y;
+		}
+		else if (dir == DIR_E && m->si->x == fw->m->si->x +
+			fw->m->si->w &&	win_r.y < m->si->y + m->si->h &&
+				win_r.y + win_r.height > m->si->y)
+		{
+			bound->width = m->si->x + m->si->w - bound->x -
+				m->ewmhc.BaseStrut.right;
+		}
+		else if (dir == DIR_S && m->si->y == fw->m->si->y +
+			fw->m->si->h &&	win_r.x < m->si->x + m->si->w &&
+			win_r.x + win_r.width > m->si->x)
+		{
+			bound->height = m->si->y + m->si->h - bound->y -
+				m->ewmhc.BaseStrut.bottom;
+		}
+		else if (dir == DIR_W && m->si->x + m->si->w == fw->m->si->x &&
+			win_r.y < m->si->y + m->si->h &&
+			win_r.y + win_r.height > m->si->y)
+		{
+			bound->x = m->si->x + m->ewmhc.BaseStrut.left;
+			bound->width = win_r.x + win_r.width - bound->x;
+		}
+	}
+	bound->x += page_x;
+	bound->y += page_y;
+}
+static void shuffle_win_to_closest(
+	FvwmWindow *fw, char **action, int *pFinalX, int *pFinalY, Bool *fWarp)
+{
+	direction_t dir;
+	rectangle cwin, bound;
+	char *naction, *token = NULL;
+	int page_x, page_y, n;
+	int snap = SNAP_NONE;
+	int layers[2] = { -1, -1 };
+
+	cwin = fw->g.frame;
+	get_page_offset_check_visible(&page_x, &page_y, fw);
+
+	token = PeekToken(*action, &naction);
+	/* Get flags */
+	while (token)
+	{
+		if (StrEquals(token, "snap"))
+		{
+			*action = naction;
+			token = PeekToken(*action, &naction);
+			if (StrEquals(token, "windows"))
+				snap = SNAP_WINDOWS;
+			else if (StrEquals(token, "icons"))
+				snap = SNAP_ICONS;
+			else if (StrEquals(token, "same"))
+				snap = SNAP_SAME;
+		}
+		else if (StrEquals(token, "layers"))
+		{
+			*action = naction;
+			n = GetIntegerArguments(*action, &naction, layers, 2);
+			if (n != 2)
+			{
+				layers[0] = -1;
+				layers[1] = -1;
+			}
+		}
+		else if (StrEquals(token, "Warp") && fWarp != NULL)
+		{
+			*fWarp = true;
+		}
+		else
+		{
+			break;
+		}
+		*action = naction;
+		token = PeekToken(*action, &naction);
+
+	}
+
+	/* Get direction(s) */
+	while (token)
+	{
+		dir = gravity_parse_dir_argument(
+				*action, &naction, DIR_NONE);
+
+		switch (dir)
+		{
+		case DIR_N:
+			bound.x = cwin.x;
+			bound.y = fw->m->si->y + page_y;
+			if (cwin.y - bound.y > fw->m->ewmhc.BaseStrut.top)
+				bound.y += fw->m->ewmhc.BaseStrut.top;
+			bound.width = cwin.width;
+			bound.height = cwin.y + cwin.height - bound.y;
+			if (cwin.y <= bound.y)
+			{
+				grow_bound_to_next_monitor(
+					fw, &bound, cwin, DIR_N);
+			}
+			grow_to_closest_type(fw, &cwin, bound, layers,
+				snap, false);
+			cwin.height = fw->g.frame.height;
+			break;
+		case DIR_E:
+			bound.x = cwin.x;
+			bound.y = cwin.y;
+			bound.width = fw->m->si->x + fw->m->si->w -
+				bound.x + page_x;
+			if (bound.x + bound.width - cwin.x - cwin.width >
+				fw->m->ewmhc.BaseStrut.right)
+			{
+				bound.width -= fw->m->ewmhc.BaseStrut.right;
+			}
+			bound.height = cwin.height;
+			if (cwin.x + cwin.width >= bound.x + bound.width)
+			{
+				grow_bound_to_next_monitor(
+					fw, &bound, cwin, DIR_E);
+			}
+			grow_to_closest_type(fw, &cwin, bound, layers,
+				snap, false);
+			cwin.x = cwin.x + cwin.width - fw->g.frame.width;
+			cwin.width = fw->g.frame.width;
+			break;
+		case DIR_S:
+			bound.x = cwin.x;
+			bound.y = cwin.y;
+			bound.width = cwin.width;
+			bound.height = fw->m->si->y + fw->m->si->h -
+				bound.y + page_y;
+			if (bound.y + bound.height - cwin.y - cwin.height >
+				fw->m->ewmhc.BaseStrut.bottom)
+			{
+				bound.height -= fw->m->ewmhc.BaseStrut.bottom;
+			}
+			if (cwin.y + cwin.height >= bound.y + bound.height)
+			{
+				grow_bound_to_next_monitor(
+					fw, &bound, cwin, DIR_S);
+			}
+			grow_to_closest_type(fw, &cwin, bound, layers,
+				snap, false);
+			cwin.y = cwin.y + cwin.height -	fw->g.frame.height;
+			cwin.height = fw->g.frame.height;
+			break;
+		case DIR_W:
+			bound.x = fw->m->si->x + page_x;
+			if (cwin.x - bound.x > fw->m->ewmhc.BaseStrut.left)
+				bound.x += fw->m->ewmhc.BaseStrut.left;
+			bound.y = cwin.y;
+			bound.width = cwin.y + cwin.width - bound.x;
+			bound.height = cwin.height;
+			bound.height = cwin.y + cwin.height - bound.y;
+			if (cwin.x <= bound.x)
+			{
+				grow_bound_to_next_monitor(
+					fw, &bound, cwin, DIR_W);
+			}
+			grow_to_closest_type(fw, &cwin, bound, layers,
+				snap, false);
+			cwin.width = fw->g.frame.width;
+			break;
+		case DIR_NONE:
+			/* No direction found, need to move to next token */
+			token = PeekToken(*action, &naction);
+			break;
+		default:
+			break;
+		}
+		*action = naction;
+		token = PeekToken(*action, &naction);
+	}
+	*pFinalX = cwin.x;
+	*pFinalY = cwin.y;
+}
+
 static int __get_shift(int val, float factor)
 {
 	int shift;
@@ -459,6 +657,14 @@ int GetMoveArguments(FvwmWindow *fw,
 		*paction = action;
 		free(s1);
 		return 0;
+	}
+	if (s1 && StrEquals(s1, "shuffle"))
+	{
+		free(s1);
+		shuffle_win_to_closest(fw, &action, pFinalX, pFinalY, fWarp);
+		*paction = action;
+		return 2;
+
 	}
 	if (s1 && StrEquals(s1, "screen"))
 	{
