@@ -1967,6 +1967,8 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	if (action != NULL)
 		actdup = fxstrdup(action);
 
+	initPanFrames();
+
 	/* get the direction */
 	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
 
@@ -2042,6 +2044,8 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 
 	if (action != NULL)
 		actdup = fxstrdup(action);
+
+	initPanFrames();
 
 	/* get the direction */
 	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
