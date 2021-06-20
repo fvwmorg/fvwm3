@@ -10,6 +10,7 @@
 
 **Implemented enhancements:**
 
+- Set min. size for windows shown in pager [\#542](https://github.com/fvwmorg/fvwm3/issues/542)
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
 - expand: add desk, pagex, pagey variables [\#539](https://github.com/fvwmorg/fvwm3/pull/539) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add a screen option to the Scroll command. [\#531](https://github.com/fvwmorg/fvwm3/pull/531) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -18,6 +19,7 @@
 **Fixed bugs:**
 
 - Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
+- Pager do not show smalls windows in the correct place when snapped to the edge [\#541](https://github.com/fvwmorg/fvwm3/issues/541)
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
@@ -38,6 +40,7 @@
 
 **Merged pull requests:**
 
+- FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
 - pager: teach Icon view about colorsets [\#538](https://github.com/fvwmorg/fvwm3/pull/538) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: fix mouse positioning [\#533](https://github.com/fvwmorg/fvwm3/pull/533) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix broken link. [\#529](https://github.com/fvwmorg/fvwm3/pull/529) ([somiaj](https://github.com/somiaj))
