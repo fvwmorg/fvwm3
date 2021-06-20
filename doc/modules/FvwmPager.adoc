@@ -347,6 +347,9 @@ done about this - except not using SloppyFocus in the pager.
   Specifies the width of the border drawn around the mini windows. This
   also affects the minimum size of the mini windows, which will be
   2 * _WindowBorderWidth_ + _WindowMinSize_. The default is 1.
+*FvwmPager: HideSmallWindows::
+  Tells FvwmPager to not show windows that are the minimum size. Useful
+  for tiny pagers where small windows will appear out of place.
 *FvwmPager: Window3DBorders::
   Specifies that the mini windows should have a 3d borders based on the
   mini window background. This option only works if *FvwmPager:
