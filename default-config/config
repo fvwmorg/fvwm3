@@ -510,6 +510,27 @@ Mouse 1	I    A RaiseMoveX Move "Iconify off"
 Mouse 3	T    A Menu MenuWindowOps
 Mouse 3 I    A Menu MenuIconOps
 
+# Shuffle moves a window in a given direction until it hits another window.
+# These bindings will shuffle a window using the arrow keys.
+#    Ctrl-Alt Up_Arrow     - Shuffle window up
+#    Ctrl-Alt Right_Arrow  - Shuffle window right
+#    Ctrl-Alt Down_Arrow   - Shuffle window down
+#    Ctrl-Alt Left_Arrow   - Shuffle window left
+# Holding shift (Ctrl-Alt-Shift) will grow the window in the given direction.
+DestroyFunc ShuffleDir
+AddToFunc   ShuffleDir
++ I Move shuffle layers $[w.layer] $[w.layer] snap windows $0
++ I WarpToWindow 50 50
+
+Key Up      WTSF    CM  ShuffleDir up
+Key Down    WTSF    CM  ShuffleDir down
+Key Left    WTSF    CM  ShuffleDir left
+Key Right   WTSF    CM  ShuffleDir right
+Key Up      WTSF    CSM Maximize True 0 growup
+Key Down    WTSF    CSM Maximize True 0 growdown
+Key Right   WTSF    CSM Maximize True growright 0
+Key Left    WTSF    CSM Maximize True growleft 0
+
 #######
 # 6: Window Decor
 #
