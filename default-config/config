@@ -303,7 +303,7 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "&Programs%icons/programs.png%" Popup MenuPrograms
 + "XDG &Menu%icons/apps.png%" Popup XDGMenu
 + "&XTerm%icons/terminal.png%" Exec exec $[infostore.terminal]
-Test (x $[infostore.runcmd]) + "Run command" Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
+Test (x $[infostore.runcmd]) + "R&un Command%icons/run_arrow.png%" Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
 + "" Nop
 + "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
 + "&Wallpapers%icons/wallpaper.png%" Popup BGMenu
