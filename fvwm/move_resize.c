@@ -1903,9 +1903,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 			fw->g.frame.height, True);
 		if (fWarp & !do_animate)
 		{
-			FWarpPointer(
-				dpy, None, None, 0, 0, 0, 0, FinalX - x,
-				FinalY - y);
+			char *cmd = "WarpToWindow 50 50";
+			execute_function_override_window(NULL, exc, cmd, 0, fw);
 		}
 		if (IS_MAXIMIZED(fw))
 		{
@@ -2169,7 +2168,7 @@ static void DoSnapAttract(
 			/* horizontally */
 			if (!(*py + self.height < mon_y || *py > mon_y + mon_h))
 			{
-				if (*px + self.width >= 
+				if (*px + self.width >=
 					mon_w + mon_x - fw->snap_attraction.proximity &&
 					*px + self.width <=
 					mon_w + mon_x + fw->snap_attraction.proximity)
