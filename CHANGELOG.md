@@ -19,6 +19,7 @@
 
 **Fixed bugs:**
 
+- Move X Y Warp doesn't move pointer to window. [\#551](https://github.com/fvwmorg/fvwm3/issues/551)
 - Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
 - Pager do not show smalls windows in the correct place when snapped to the edge [\#541](https://github.com/fvwmorg/fvwm3/issues/541)
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
@@ -41,6 +42,7 @@
 
 **Merged pull requests:**
 
+- move: Warp: move pointer to centre of window [\#553](https://github.com/fvwmorg/fvwm3/pull/553) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
 - pager: teach Icon view about colorsets [\#538](https://github.com/fvwmorg/fvwm3/pull/538) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: fix mouse positioning [\#533](https://github.com/fvwmorg/fvwm3/pull/533) ([ThomasAdam](https://github.com/ThomasAdam))
