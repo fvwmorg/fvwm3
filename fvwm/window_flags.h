@@ -237,8 +237,6 @@
 	((fw)->flags.common.s.has_override_size)
 #define DO_ICONIFY_WINDOW_GROUPS(fw) \
 	((fw)->flags.common.s.do_iconify_window_groups)
-#define DO_IGNORE_GNOME_HINTS(fw) \
-	((fw)->flags.common.s.do_ignore_gnome_hints)
 #define DO_IGNORE_RESTACK(fw) \
 	((fw)->flags.common.s.do_ignore_restack)
 #define DO_IGNORE_ICON_BOXES(fw) \
