@@ -4026,11 +4026,69 @@ consider the windows with _WindowListSkip_ style.)
 	the optional argument _Warp_ is specified the pointer is warped with
 	the window.
 
+*GeometryWindow* Hide | Show | Colorset _n_ | Position _x_ _y_ | Screen _S_::
+	Configures the position or size window that is usually shown when a
+	window is moved or resized interactively. This can be used to hide,
+	show, change the colorset, change the location, or change the screen
+	of the geometry window. Multiple options can be set at once separated
+	by spaces. Details of each option are described below.
++
+> *GeometryWindow* Hide [Never | Move | Resize]
++
+Hides or switches off the geometry window. If the optional parameters _Move_
+or _Resize_ are given, it will only hide the geometry window during the
+respective operation. The parameter _Never_ will switch the geometry back on
+again (equivalent to _Show_).
++
+> *GeometryWindow* Show [Never | Move | Resize]
++
+Shows or switches on the geometry window (equivalent to _Hide Never_). If
+the optional parameters _Move_ or _Resize_ are given, it will only show the
+geometry window during the respective operation. The parameter _Never_ will
+switch the geometry window off (equivalent to _Hide_).
++
+> *GeometryWindow* Colorset _cset_
++
+Sets colorset of the gometry window to _cset_. Use the literal option
+_default_ for _cset_ to use the default colorset.
++
+> *GeometryWindow* Position \[\+|-]_x_[p] \[+|-]_y_[p]
++
+Configures the position the geometry window appears. _x_ and _y_ are the
+relative coordinates as a percentage of the screen size. If a leading '-'
+is provided the coordinates are computed from the left/bottom of the screen
+respectively. If the coordinates are appended with a 'p', they are interpreted
+as the number of pixels from the respective screen edge. If no position
+arguments are given, the geometry window's position will return to its default
+state of the upper left corner or the center if emulating MWM.
++
+> *GeometryWindow* Screen _RANDRNAME_
++
+Configure which screen the geometry window is shown on. By default the
+geometry window is shown on the current screen. If a valid _RANDRNAME_
+is provided, the geometry window will always be shown on that screen.
+Use _current_ as the _RANDRNAME_ to return the default.
++
+Examples:
++
+
+....
+# Position the geometry window in the center of the screen
+GeometryWindow Position 50 50
+# Position the geometry window next to the RightPanel
+GeometryWindow Position -120p 0
+# Use colorset 2 for the geometry window
+GeometryWindow Colorset 2
+# Only show the geometry window on the primary monitor
+GeometryWindow Screen $[monitor.primary]
+# Hide the geometry window
+GeometryWindow Hide
+....
+
+
 *HideGeometryWindow* [Never | Move | Resize]::
-	Hides the position or size window that is usually shown when a window
-	is moved or resized interactively. To switch it off only for move or
-	resize operations the optional parameters _Move_ and _Resize_ can be
-	used respectively. To switch both on again use the _Never_ option.
+	This command has been depreciated and is now obsolete. Use
+        *GeometryWindow Hide* instead.
 
 *Layer* [_arg1_ _arg2_] | [default]::
 	Puts the current window in a new layer. If _arg1_ is non zero then the

@@ -1487,7 +1487,7 @@ void ApplyDefaultFontAndColors(void)
 			dpy, Scr.NoFocusWin, gcm, &gcv);
 	}
 	/* update the geometry window for move/resize */
-	if (Scr.SizeWindow != None)
+	if (Scr.SizeWindow.win != None)
 	{
 		resize_geometry_window();
 	}
@@ -3891,6 +3891,12 @@ void CMD_Emulate(F_CMD_ARGS)
 		fvwm_debug(__func__, "Unknown style '%s'", style);
 		return;
 	}
+	/* This command might have been issued after any GeometryWindow
+	 * commands, in which case set those values to their defaults.
+	 */
+	Scr.SizeWindow.is_configured = false;
+	Scr.SizeWindow.m = NULL;
+
 	Scr.flags.do_need_window_update = 1;
 	Scr.flags.has_default_font_changed = 1;
 	Scr.flags.has_default_color_changed = 1;

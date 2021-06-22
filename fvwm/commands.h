@@ -68,6 +68,7 @@ enum
 	F_FAKE_KEYPRESS,
 	F_FOCUSSTYLE,
 	F_FUNCTION,
+	F_GEOMWINDOW,
 	F_GLOBAL_OPTS,
 	F_GOTO_DESK,
 	F_GOTO_PAGE,
@@ -274,6 +275,7 @@ void CMD_FlipFocus(F_CMD_ARGS);
 void CMD_Focus(F_CMD_ARGS);
 void CMD_FocusStyle(F_CMD_ARGS);
 void CMD_Function(F_CMD_ARGS);
+void CMD_GeometryWindow(F_CMD_ARGS);
 void CMD_GlobalOpts(F_CMD_ARGS);
 void CMD_GotoDesk(F_CMD_ARGS);
 void CMD_GotoDeskAndPage(F_CMD_ARGS);
