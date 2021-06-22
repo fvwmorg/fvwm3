@@ -1136,7 +1136,10 @@ static void InitVariables(void)
 	Scr.BusyCursor = BUSY_NONE;
 	Scr.Hilite = NULL;
 	Scr.DefaultFont = NULL;
-	Scr.SizeWindow = None;
+
+	memset(&Scr.SizeWindow, 0, sizeof Scr.SizeWindow);
+	Scr.SizeWindow.m = NULL;
+	Scr.SizeWindow.cset = -1;
 
 	Scr.ScrollDelay = DEFAULT_SCROLL_DELAY;
 	Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
@@ -2540,7 +2543,7 @@ int main(int argc, char **argv)
 	attributes.border_pixel = 0;
 	valuemask = CWBackPixel | CWColormap | CWBorderPixel;
 
-	Scr.SizeWindow = XCreateWindow(
+	Scr.SizeWindow.win = XCreateWindow(
 		dpy, Scr.Root, 0, 0, 1, 1, 0, Pdepth,
 		InputOutput, Pvisual, valuemask, &attributes);
 	resize_geometry_window();

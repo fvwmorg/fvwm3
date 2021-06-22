@@ -282,6 +282,9 @@ const func_t func_table[] =
 	CMD_ENT("function", CMD_Function, F_FUNCTION, 0, 0),
 	/* Function - Execute a user defined function, see AddToFunc */
 
+	CMD_ENT("geometrywindow", CMD_GeometryWindow, F_GEOMWINDOW, 0, 0),
+	/* - Configuration settings for position/size window */
+
 	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0),
 	/* - (obsolete, use corresponding Style * instead) */
 
@@ -296,7 +299,7 @@ const func_t func_table[] =
 
 	CMD_ENT("hidegeometrywindow", CMD_HideGeometryWindow,
 		F_HIDEGEOMWINDOW, 0, 0),
-	/* - Hide/show the position/size window */
+	/* - (obsolete, use GeometryWindow Hide instead) */
 
 	CMD_ENT("hilightcolor", CMD_HilightColor, F_HICOLOR, 0, 0),
 	/* - (obsolete, use Style * HighlightFore/Back) */

@@ -307,8 +307,21 @@ typedef struct ScreenInfo
 	FvwmWindow FvwmRoot;
 	/* the root window */
 	Window Root;
-	/* the resize dimensions window */
-	Window SizeWindow;
+	/* the resize dimensions window and options */
+	struct
+	{
+		Window win;
+		struct monitor *m;
+		int cset;
+		int StringWidth; /* minimum width */
+		int x;
+		int y;
+		bool xneg;
+		bool yneg;
+		bool xrel;
+		bool yrel;
+		bool is_configured;
+	} SizeWindow;
 	/* Window which will own focus when no other windows have it */
 	Window NoFocusWin;
 
@@ -372,8 +385,6 @@ typedef struct ScreenInfo
 	GC ScratchGC4;
 	GC TitleGC;
 	GC BordersGC;
-	/* minimum width of size window */
-	int SizeStringWidth;
 
 	/* decoration style(s) */
 	FvwmDecor DefaultDecor;

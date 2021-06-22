@@ -102,6 +102,9 @@ extern Window PressedW;
 static void draw_move_resize_grid(int x, int  y, int  width, int height);
 static void grow_to_closest_type(FvwmWindow *, rectangle *, rectangle, int *,
     int, bool);
+static void set_geom_win_visible_val(char *, bool);
+static bool set_geom_win_position_val(char *, int *, bool *, bool *);
+
 /* ----- end of resize globals ----- */
 
 /*
@@ -1059,36 +1062,65 @@ static int GetResizeMoveArguments(FvwmWindow *fw,
 	return 4;
 }
 
-/* Positions the SizeWindow on the current ("moused") xinerama-screen */
+/* Positions the SizeWindow */
 static void position_geometry_window(const XEvent *eventp)
 {
-	int x;
-	int y;
+	int x, y, sgnx = 1, sgny = 1;
+	fscreen_scr_t screen = FSCREEN_CURRENT;
 	fscreen_scr_arg fscr;
 
-	fscr.mouse_ev = (XEvent *)eventp;
-	/* Probably should remove this positioning code from {builtins,fvwm}.c?
+	/* If we're being called without having been told which screen to use
+	 * explicitly, then use the current screen.  This emulates the
+	 * behaviour whereby the geometry window follows the pointer.
 	 */
-	if (Scr.gs.do_emulate_mwm)
-	{
+	if (Scr.SizeWindow.m == NULL) {
+		fscr.mouse_ev = (XEvent *)eventp;
+		screen = FSCREEN_CURRENT;
+		fscr.name = NULL;
+	} else {
+		fscr.mouse_ev = (XEvent *)NULL;
+		screen = FSCREEN_BY_NAME;
+		fscr.name = Scr.SizeWindow.m->si->name;
+	}
+
+	if (Scr.SizeWindow.is_configured) {
+		rectangle scr_g;
+		FScreenGetScrRect(&fscr, screen, &scr_g.x, &scr_g.y, &scr_g.width,
+				&scr_g.height);
+
+		if (Scr.SizeWindow.xneg)
+			sgnx = -1;
+		x = scr_g.x + sgnx * (Scr.SizeWindow.x * (scr_g.width -
+			sizew_g.width)) / 100;
+		if (!Scr.SizeWindow.xrel)
+			x = scr_g.x + sgnx * Scr.SizeWindow.x;
+		if (Scr.SizeWindow.xneg)
+			x += scr_g.width - sizew_g.width;
+
+		if (Scr.SizeWindow.yneg)
+			sgny = -1;
+		y = scr_g.y + sgny * (Scr.SizeWindow.y * (scr_g.height -
+			sizew_g.height)) / 100;
+		if (!Scr.SizeWindow.yrel)
+			y = scr_g.y + sgny * Scr.SizeWindow.y;
+		if (Scr.SizeWindow.yneg)
+			y += scr_g.height - sizew_g.height;
+	} else if (Scr.gs.do_emulate_mwm) {
 		FScreenCenterOnScreen(
-			&fscr, FSCREEN_CURRENT, &x, &y, sizew_g.width,
+			&fscr, screen, &x, &y, sizew_g.width,
 			sizew_g.height);
+	} else {
+		FScreenGetScrRect(&fscr, screen, &x, &y, NULL, NULL);
 	}
-	else
-	{
-		FScreenGetScrRect(&fscr, FSCREEN_CURRENT, &x, &y, NULL, NULL);
-	}
+
 	if (x != sizew_g.x || y != sizew_g.y)
 	{
 		switch_move_resize_grid(False);
-		XMoveWindow(dpy, Scr.SizeWindow, x, y);
+		XMoveWindow(dpy, Scr.SizeWindow.win, x, y);
 		switch_move_resize_grid(True);
 		sizew_g.x = x;
 		sizew_g.y = y;
 	}
-
-	return;
 }
 
 void resize_geometry_window(void)
@@ -1097,26 +1129,29 @@ void resize_geometry_window(void)
 	int h;
 	int cset = Scr.DefaultColorset;
 
-	Scr.SizeStringWidth =
+	if (Scr.SizeWindow.cset >= 0)
+		cset = Scr.SizeWindow.cset;
+
+	Scr.SizeWindow.StringWidth =
 		FlocaleTextWidth(Scr.DefaultFont, GEOMETRY_WINDOW_STRING,
 				 sizeof(GEOMETRY_WINDOW_STRING) - 1);
-	w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
+	w = Scr.SizeWindow.StringWidth + 2 * GEOMETRY_WINDOW_BW;
 	h = Scr.DefaultFont->height + 2 * GEOMETRY_WINDOW_BW;
 	if (w != sizew_g.width || h != sizew_g.height)
 	{
-		XResizeWindow(dpy, Scr.SizeWindow, w, h);
+		XResizeWindow(dpy, Scr.SizeWindow.win, w, h);
 		sizew_g.width = w;
 		sizew_g.height = h;
 	}
 	if (cset >= 0)
 	{
 		SetWindowBackground(
-			dpy, Scr.SizeWindow, w, h, &Colorset[cset], Pdepth,
+			dpy, Scr.SizeWindow.win, w, h, &Colorset[cset], Pdepth,
 			Scr.StdGC, False);
 	}
 	else
 	{
-		XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
+		XSetWindowBackground(dpy, Scr.SizeWindow.win, Scr.StdBack);
 	}
 
 	return;
@@ -1138,6 +1173,7 @@ static void DisplayPosition(
 {
 	char str[100];
 	int offset;
+	GC reliefGC, shadowGC;
 	FlocaleWinString fstr;
 	fscreen_scr_arg fscr;
 
@@ -1155,36 +1191,59 @@ static void DisplayPosition(
 	(void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, x, y);
 	if (Init)
 	{
-		XClearWindow(dpy, Scr.SizeWindow);
+		XClearWindow(dpy, Scr.SizeWindow.win);
 	}
 	else
 	{
 		/* just clear indside the relief lines to reduce flicker */
-		XClearArea(dpy, Scr.SizeWindow,
+		XClearArea(dpy, Scr.SizeWindow.win,
 			   GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
-			   Scr.SizeStringWidth, Scr.DefaultFont->height, False);
+			   Scr.SizeWindow.StringWidth,
+			   Scr.DefaultFont->height, False);
+	}
+
+	memset(&fstr, 0, sizeof(fstr));
+	if (Scr.SizeWindow.cset >= 0)
+	{
+		fstr.colorset = &Colorset[Scr.SizeWindow.cset];
+		fstr.flags.has_colorset = True;
+	}
+	else if (Scr.DefaultColorset >= 0)
+	{
+		fstr.colorset = &Colorset[Scr.DefaultColorset];
+		fstr.flags.has_colorset = True;
+	}
+	if (fstr.flags.has_colorset)
+	{
+		XGCValues gcv;
+
+		gcv.foreground = fstr.colorset->hilite;
+		reliefGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
+			GCForeground, &gcv);
+		gcv.foreground = fstr.colorset->shadow;
+		shadowGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
+			GCForeground, &gcv);
+	}
+	else
+	{
+		reliefGC = Scr.StdReliefGC;
+		shadowGC = Scr.StdShadowGC;
 	}
 
 	if (Pdepth >= 2)
 	{
 		RelieveRectangle(
-			dpy, Scr.SizeWindow, 0, 0,
-			Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
+			dpy, Scr.SizeWindow.win, 0, 0,
+			Scr.SizeWindow.StringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
 			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW * 2 - 1,
-			Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
+			reliefGC, shadowGC, GEOMETRY_WINDOW_BW);
 	}
-	offset = (Scr.SizeStringWidth -
+	offset = (Scr.SizeWindow.StringWidth -
 		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
 	offset += GEOMETRY_WINDOW_BW;
 
-	memset(&fstr, 0, sizeof(fstr));
-	if (Scr.DefaultColorset >= 0)
-	{
-		fstr.colorset = &Colorset[Scr.DefaultColorset];
-		fstr.flags.has_colorset = True;
-	}
 	fstr.str = str;
-	fstr.win = Scr.SizeWindow;
+	fstr.win = Scr.SizeWindow.win;
 	fstr.gc = Scr.StdGC;
 	fstr.x = offset;
 	fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
@@ -1214,6 +1273,7 @@ static void DisplaySize(
 	size_borders b;
 	static int last_width = 0;
 	static int last_height = 0;
+	GC reliefGC, shadowGC;
 	FlocaleWinString fstr;
 
 	if (Scr.gs.do_hide_resize_window)
@@ -1244,36 +1304,60 @@ static void DisplaySize(
 	(void)sprintf(str, GEOMETRY_WINDOW_SIZE_STRING, dwidth, dheight);
 	if (Init)
 	{
-		XClearWindow(dpy,Scr.SizeWindow);
+		XClearWindow(dpy,Scr.SizeWindow.win);
 	}
 	else
 	{
 		/* just clear indside the relief lines to reduce flicker */
 		XClearArea(
-			dpy, Scr.SizeWindow, GEOMETRY_WINDOW_BW,
-			GEOMETRY_WINDOW_BW, Scr.SizeStringWidth,
+			dpy, Scr.SizeWindow.win, GEOMETRY_WINDOW_BW,
+			GEOMETRY_WINDOW_BW, Scr.SizeWindow.StringWidth,
 			Scr.DefaultFont->height, False);
+	}
+
+	memset(&fstr, 0, sizeof(fstr));
+	if (Scr.SizeWindow.cset >= 0)
+	{
+		fstr.colorset = &Colorset[Scr.SizeWindow.cset];
+		fstr.flags.has_colorset = True;
+	}
+	else if (Scr.DefaultColorset >= 0)
+	{
+		fstr.colorset = &Colorset[Scr.DefaultColorset];
+		fstr.flags.has_colorset = True;
+	}
+	if (fstr.flags.has_colorset)
+	{
+		XGCValues gcv;
+
+
+		gcv.foreground = fstr.colorset->hilite;
+		reliefGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
+			GCForeground, &gcv);
+		gcv.foreground = fstr.colorset->shadow;
+		shadowGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
+			GCForeground, &gcv);
+	}
+	else
+	{
+		reliefGC = Scr.StdReliefGC;
+		shadowGC = Scr.StdShadowGC;
 	}
 
 	if (Pdepth >= 2)
 	{
 		RelieveRectangle(
-			dpy, Scr.SizeWindow, 0, 0,
-			Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
+			dpy, Scr.SizeWindow.win, 0, 0,
+			Scr.SizeWindow.StringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
 			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW*2 - 1,
-			Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
+			reliefGC, shadowGC, GEOMETRY_WINDOW_BW);
 	}
-	offset = (Scr.SizeStringWidth -
+	offset = (Scr.SizeWindow.StringWidth -
 		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
 	offset += GEOMETRY_WINDOW_BW;
-	memset(&fstr, 0, sizeof(fstr));
-	if (Scr.DefaultColorset >= 0)
-	{
-		fstr.colorset = &Colorset[Scr.DefaultColorset];
-		fstr.flags.has_colorset = True;
-	}
+
 	fstr.str = str;
-	fstr.win = Scr.SizeWindow;
+	fstr.win = Scr.SizeWindow.win;
 	fstr.gc = Scr.StdGC;
 	fstr.x = offset;
 	fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
@@ -1489,15 +1573,16 @@ static void InteractiveMove(
 	YOffset = origDragY - DragY;
 	if (!Scr.gs.do_hide_position_window)
 	{
+		resize_geometry_window();
 		position_geometry_window(NULL);
-		XMapRaised(dpy,Scr.SizeWindow);
+		XMapRaised(dpy,Scr.SizeWindow.win);
 	}
 	__move_loop(
 		exc, XOffset, YOffset, DragWidth, DragHeight, FinalX, FinalY,
 		do_move_opaque, CRS_MOVE);
 	if (!Scr.gs.do_hide_position_window)
 	{
-		XUnmapWindow(dpy,Scr.SizeWindow);
+		XUnmapWindow(dpy,Scr.SizeWindow.win);
 	}
 	if (Scr.bo.do_install_root_cmap)
 	{
@@ -3098,7 +3183,7 @@ Bool __move_loop(
 
 	if (!Scr.gs.do_hide_position_window)
 	{
-		XUnmapWindow(dpy,Scr.SizeWindow);
+		XUnmapWindow(dpy,Scr.SizeWindow.win);
 	}
 	if (is_aborted || bad_window == FW_W(fw))
 	{
@@ -3182,37 +3267,121 @@ void CMD_OpaqueMoveSize(F_CMD_ARGS)
 	return;
 }
 
-
-static char *hide_options[] =
+static void set_geom_win_visible_val(char *token, bool val)
 {
-	"never",
-	"move",
-	"resize",
-	NULL
-};
+	if (token == NULL)
+		return;
+
+	Scr.gs.do_hide_position_window = !val;
+	Scr.gs.do_hide_resize_window = !val;
+
+	if (StrEquals(token, "never"))
+	{
+		Scr.gs.do_hide_position_window = val;
+		Scr.gs.do_hide_resize_window = val;
+	}
+	else if (StrEquals(token, "move"))
+	{
+		Scr.gs.do_hide_resize_window = val;
+	}
+	else if (StrEquals(token, "resize"))
+	{
+		Scr.gs.do_hide_position_window = val;
+	}
+}
+
+static bool set_geom_win_position_val(char *s, int *coord, bool *neg, bool *rel)
+{
+	int val, n;
+
+	if (sscanf(s, "-%d%n", &val, &n) >= 1)
+	{
+		*coord = val;
+		*neg = true;
+	}
+	else if (sscanf(s, "+%d%n", &val, &n) >= 1 ||
+			sscanf(s, "%d%n", &val, &n) >= 1)
+	{
+		*coord = val;
+		*neg = false;
+	}
+	else
+	{
+		/* syntax error */
+		return false;
+	}
+	s += n;
+	*rel = true;
+	if (*s == 'p')
+		*rel = false;
+
+	return true;
+}
+
+void CMD_GeometryWindow(F_CMD_ARGS)
+{
+	int val;
+	char *token = NULL, *s = NULL;
+
+	while ((token = PeekToken(action, &action)) != NULL) {
+		if (StrEquals(token, "hide")) {
+			set_geom_win_visible_val(PeekToken(action, &action), false);
+		}
+		if (StrEquals(token, "show")) {
+			set_geom_win_visible_val(PeekToken(action, &action), true);
+		}
+		if (StrEquals(token, "colorset")) {
+			if (GetIntegerArguments(action, &action, &val, 1) != 1)
+			{
+				val = -1;
+			}
+			Scr.SizeWindow.cset = val;
+		}
+		if (StrEquals(token, "position")) {
+			Scr.SizeWindow.is_configured = false;
+
+			/* x-coordinate */
+			if ((s = PeekToken(action, &action)) != NULL &&
+				!set_geom_win_position_val(s, &Scr.SizeWindow.x,
+				&Scr.SizeWindow.xneg, &Scr.SizeWindow.xrel))
+			{
+				continue;
+			}
+			/* y-coordinate */
+			if ((s = PeekToken(action, &action)) != NULL &&
+				!set_geom_win_position_val(s, &Scr.SizeWindow.y,
+				&Scr.SizeWindow.yneg, &Scr.SizeWindow.yrel))
+			{
+				continue;
+			}
+
+			if (s != NULL)
+				Scr.SizeWindow.is_configured = true;
+		}
+		if (StrEquals(token, "screen")) {
+			token = PeekToken(action, &action);
+			if (token != NULL)
+			{
+				Scr.SizeWindow.m = monitor_resolve_name(token);
+				if (strcasecmp(Scr.SizeWindow.m->si->name, token) != 0) {
+					/* Incorrect RandR screen found. */
+					Scr.SizeWindow.m = NULL;
+				}
+			}
+		}
+	}
+}
 
 void CMD_HideGeometryWindow(F_CMD_ARGS)
 {
-	char *token = PeekToken(action, NULL);
+	char *cmd;
 
-	Scr.gs.do_hide_position_window = 0;
-	Scr.gs.do_hide_resize_window = 0;
-	switch(GetTokenIndex(token, hide_options, 0, NULL))
-	{
-	case 0:
-		break;
-	case 1:
-		Scr.gs.do_hide_position_window = 1;
-		break;
-	case 2:
-		Scr.gs.do_hide_resize_window = 1;
-		break;
-	default:
-		Scr.gs.do_hide_position_window = 1;
-		Scr.gs.do_hide_resize_window = 1;
-		break;
-	}
-	return;
+	fvwm_debug(__func__, "HideGeometryWindow is deprecated.  "
+	    "Converting to use: GeometryWindow hide %s", action);
+
+	xasprintf(&cmd, "GeometryWindow hide %s", action);
+	execute_function_override_window(NULL, NULL, cmd, 0, NULL);
+	free(cmd);
 }
 
 void CMD_SnapAttraction(F_CMD_ARGS)
@@ -4010,8 +4179,9 @@ static Bool __resize_window(F_CMD_ARGS)
 	/* pop up a resize dimensions window */
 	if (!Scr.gs.do_hide_resize_window)
 	{
+		resize_geometry_window();
 		position_geometry_window(NULL);
-		XMapRaised(dpy, Scr.SizeWindow);
+		XMapRaised(dpy, Scr.SizeWindow.win);
 	}
 	DisplaySize(fw, exc->x.elast, orig->width, orig->height, True, True);
 
@@ -4430,7 +4600,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	/* pop down the size window */
 	if (!Scr.gs.do_hide_resize_window)
 	{
-		XUnmapWindow(dpy, Scr.SizeWindow);
+		XUnmapWindow(dpy, Scr.SizeWindow.win);
 	}
 	if (is_aborted || bad_window == FW_W(fw))
 	{

@@ -1029,6 +1029,15 @@ CMD_FOCUSSTYLE = "FocusStyle" STYLEOPTIONS
 CMD_FUNCTION = "Function" [FUNCNAME]
 ```
 ```
+CMD_GEOMETRYWINDOW = "GeometryWindow" GEOMWIN_CMD
+GEOMWIN_CMD = "Hide" [GEOMWIN_HIDEOPT]
+GEOMWIN_CMD =/ "Show" [GEOMWIN_HIDEOPT]
+GEOMWIN_CMD =/ "Colorset" INT
+GEOMWIN_CMD =/ "Position" [+/-]INT[p] [+/-]INT[p]
+GEOMWIN_CMD =/ "Screen" XRANDRMONITORNAME
+GEOMWIN_HIDEOPT = "Never" / "Move" / "Resize"
+```
+```
 CMD_GOTODESK = "GotoDesk" DESKNUMBER
 DESKNUMBER = ["prev" / (INT [INT [INT [INT]]])]
 ```
@@ -1041,12 +1050,6 @@ PAGE_ARGUMENTS = ["prev" / ([OPTIONS] 2(PAGECCORD[PAGESUFFIX])
 OPTIONS = ["!"] ("wrapx" / "wrapy" / "nodesklimitx" / "nodesklimity")
 PAGECOORD = INT
 PAGESUFFIX = "p"
-```
-```
-CMD_HIDEGEOMETRYWINDOW = "HideGeometryWindow" [HIDEGEOMETRYWINDOWCOMMAND]
-HIDEGEOMETRYWINDOWCOMMAND = "Never"
-HIDEGEOMETRYWINDOWCOMMAND =/ "Move"
-HIDEGEOMETRYWINDOWCOMMAND =/ "Resize"
 ```
 ```
 CMD_HILIGHTCOLORSET = "HilightColorset" [COLORSET_NUM]
@@ -1817,6 +1820,7 @@ CMD_WINDOWSDESK = "WindowsDesk" ; See 'MoveToDesk'
 CMD_DESK = "Desk" ; See 'Gotodesk'
 CMD_EDGERESISTANCE = "EdgeResistance" ; Style * EdgeMoveDelay, EdgeMoveResistance
 CMD_GLOBALOPTS = "GlobalOpts" ; Various Style options
+CMD_HIDEGEOMETRYWINDOW = "HideGeometryWindow" ; GeometryWindow Hide
 CMD_HILIGHTCOLOR = "HilightColor" ; Style
 CMD_ICONFONT = "IconFont" FONTNAME ; Style
 CMD_ICONPATH = "IconPath" ; ImagePath

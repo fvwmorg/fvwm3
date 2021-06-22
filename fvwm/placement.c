@@ -609,9 +609,9 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 		DragWidth = arg->place_g.width;
 		DragHeight = arg->place_g.height;
 
-		if (Scr.SizeWindow != None)
+		if (Scr.SizeWindow.win != None)
 		{
-			XMapRaised(dpy, Scr.SizeWindow);
+			XMapRaised(dpy, Scr.SizeWindow.win);
 		}
 		FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
 		if (__move_loop(
@@ -620,9 +620,9 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 		{
 			ret->flags.do_resize_too = 1;
 		}
-		if (Scr.SizeWindow != None)
+		if (Scr.SizeWindow.win != None)
 		{
-			XUnmapWindow(dpy, Scr.SizeWindow);
+			XUnmapWindow(dpy, Scr.SizeWindow.win);
 		}
 		MyXUngrabKeyboard(dpy);
 		MyXUngrabServer(dpy);
