@@ -827,6 +827,8 @@ void constrain_size(
 	FvwmWindow *fw, const XEvent *e, int *widthp, int *heightp,
 	int xmotion, int ymotion, int flags)
 {
+	int tmp;
+	window_style style;
 	size_rect min;
 	size_rect max;
 	size_rect inc;
@@ -863,28 +865,35 @@ void constrain_size(
 	d.width -= b.total_size.width;
 	d.height -= b.total_size.height;
 
+	/* Need to know if using client size for Min/Max WindowSize
+	 * styles to decided if border width is included in the size.
+	 */
+	lookup_style(fw, &style);
+
 	min.width = fw->hints.min_width;
 	min.height = fw->hints.min_height;
-	if (min.width < fw->min_window_width - b.total_size.width)
+	tmp = SGET_MIN_WINDOW_WIDTH_IS_C(style) ? 0 : b.total_size.width;
+	if (min.width < fw->min_window_width - tmp)
 	{
-		min.width = fw->min_window_width - b.total_size.width;
+		min.width = fw->min_window_width - tmp;
 	}
-	if (min.height < fw->min_window_height - b.total_size.height)
+	tmp = SGET_MIN_WINDOW_HEIGHT_IS_C(style) ? 0 : b.total_size.height;
+	if (min.height < fw->min_window_height - tmp)
 	{
-		min.height =
-			fw->min_window_height - b.total_size.height;
+		min.height = fw->min_window_height - tmp;
 	}
 
 	max.width = fw->hints.max_width;
 	max.height =  fw->hints.max_height;
-	if (max.width > fw->max_window_width - b.total_size.width)
+	tmp = SGET_MAX_WINDOW_WIDTH_IS_C(style) ? 0 : b.total_size.width;
+	if (max.width > fw->max_window_width - tmp)
 	{
-		max.width = fw->max_window_width - b.total_size.width;
+		max.width = fw->max_window_width - tmp;
 	}
-	if (max.height > fw->max_window_height - b.total_size.height)
+	tmp = SGET_MAX_WINDOW_HEIGHT_IS_C(style) ? 0 : b.total_size.height;
+	if (max.height > fw->max_window_height - tmp)
 	{
-		max.height =
-			fw->max_window_height - b.total_size.height;
+		max.height = fw->max_window_height - tmp;
 	}
 
 	if (min.width > max.width)

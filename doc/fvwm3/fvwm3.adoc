@@ -6140,22 +6140,27 @@ character size in many applications). This can be handy for broken
 applications that refuse to be resized. Do not use it if you do not
 need it. The default (opposite) style is _NoResizeOverride_.
 +
-_MinWindowSize [ width [ p ] height [ p ] ]_ Tells fvwm the minimum
-width and height of a window. The values are the percentage of the
-total screen area. If the letter '_p_' is appended to either of the
-values, the numbers are interpreted as pixels. This command is useful
-for certain versions of xemacs which freak out if their windows become
-too small. If you omit he parameters or their values are invalid, both
-limits are set to 0 pixels (which is the default value).
+_MinWindowSize [ width [ p | c ] height [ p | c ] ]_ Tells fvwm the
+minimum width and height of a window. The values are the percentage of
+the total screen area. If the letter '_p_' is appended to either of the
+values, the numbers are interpreted as pixels. If the letter '_c_' is
+appended to either of the values, the numbers are in terms of the client
+window's size hints, which can be useful for windows such as terminals to
+specify the number of rows or columns. This command is useful to deal with
+windows that freak out if their window becomes too small. If you omit the
+parameters or their values are invalid, both limits are set to 0 pixels
+(which is the default value).
 +
-_MaxWindowSize [ width [ p ] height [ p ] ]_ Tells fvwm the maximum
-width and height of a window. The values are the percentage of the
-total screen area. If the letter '_p_' is appended to either of the
-values, the numbers are interpreted as pixels. This command is useful
-to force large application windows to be fully visible. Neither
-_height_ nor _width_ may be less than 100 pixels. If you omit the
-parameters or their values are invalid, both limits are set to 32767
-pixels (which is the default).
+_MaxWindowSize [ width [ p | c ] height [ p | c ] ]_ Tells fvwm the
+maximum width and height of a window. The values are the percentage of
+the total screen area. If the letter '_p_' is appended to either of the
+values, the numbers are interpreted as pixels. If the letter '_c_' is
+appended to either of the values, the numbers are in terms of the client
+window's size hints, which can be useful for windows such as terminals to
+specify the number of rows or columns. This command is useful to force
+large application windows to be fully visible. Neither _height_ nor _width_
+may be less than 100 pixels. If you omit the parameters or their values
+are invalid, both limits are set to 32767 pixels (which is the default).
 +
 With _IconifyWindowGroups_ all windows in the same window group are
 iconified and deiconified at once when any window in the group is

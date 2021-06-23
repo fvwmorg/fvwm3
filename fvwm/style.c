@@ -551,15 +551,23 @@ static void merge_styles(
 	{
 		SSET_MIN_WINDOW_WIDTH(
 			*merged_style, SGET_MIN_WINDOW_WIDTH(*add_style));
+		SSET_MIN_WINDOW_WIDTH_IS_C(
+			*merged_style, SGET_MIN_WINDOW_WIDTH_IS_C(*add_style));
 		SSET_MIN_WINDOW_HEIGHT(
 			*merged_style, SGET_MIN_WINDOW_HEIGHT(*add_style));
+		SSET_MIN_WINDOW_HEIGHT_IS_C(
+			*merged_style, SGET_MIN_WINDOW_HEIGHT_IS_C(*add_style));
 	}
 	if (add_style->flags.has_max_window_size)
 	{
 		SSET_MAX_WINDOW_WIDTH(
 			*merged_style, SGET_MAX_WINDOW_WIDTH(*add_style));
+		SSET_MAX_WINDOW_WIDTH_IS_C(
+			*merged_style, SGET_MAX_WINDOW_WIDTH_IS_C(*add_style));
 		SSET_MAX_WINDOW_HEIGHT(
 			*merged_style, SGET_MAX_WINDOW_HEIGHT(*add_style));
+		SSET_MAX_WINDOW_HEIGHT_IS_C(
+			*merged_style, SGET_MAX_WINDOW_HEIGHT_IS_C(*add_style));
 	}
 	if (add_style->flags.has_icon_background_relief)
 	{
@@ -3426,76 +3434,105 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "MinWindowSize"))
 		{
-			int val1;
-			int val2;
-			int val1_unit;
-			int val2_unit;
+			int units[2] = {100, 100};
+			int mondim[2];
+			bool use_client[2] = {false, false};
 
-			num = GetTwoArguments(
-				rest, &val1, &val2, &val1_unit, &val2_unit);
-			rest = SkipNTokens(rest, num);
+			mondim[0] = monitor_get_all_widths();
+			mondim[1] = monitor_get_all_heights();
+
+			num = GetSuffixedIntegerArguments(
+				rest, &rest, val, 2, "pc", tmpno);
 			if (num != 2)
 			{
-				val1 = 0;
-				val2 = 0;
+				val[0] = 0;
+				val[1] = 0;
 			}
 			else
 			{
-				val1 = val1 * val1_unit / 100;
-				val2 = val2 * val2_unit / 100;
+				for (i = 0; i < 2; i++)
+				{
+					switch (tmpno[i])
+					{
+					case 0: /* no suffix */
+						units[i] = mondim[i];
+						break;
+					case 1: /* p suffix */
+						break;
+					case 2: /* c suffix */
+						use_client[i] = true;
+						break;
+					default: /* shouldn't happen */
+						val[i] = 0;
+						break;
+					}
+					val[i] = val[i] * units[i] / 100;
+					if (val[i] < 0)
+					{
+						val[i] = 0;
+						use_client[i] = false;
+					}
+				}
 			}
-			if (val1 < 0)
-			{
-				val1 = 0;
-			}
-			if (val2 < 0)
-			{
-				val2 = 0;
-			}
-			SSET_MIN_WINDOW_WIDTH(*ps, val1);
-			SSET_MIN_WINDOW_HEIGHT(*ps, val2);
+			SSET_MIN_WINDOW_WIDTH(*ps, val[0]);
+			SSET_MIN_WINDOW_WIDTH_IS_C(*ps, use_client[0]);
+			SSET_MIN_WINDOW_HEIGHT(*ps, val[1]);
+			SSET_MIN_WINDOW_HEIGHT_IS_C(*ps, use_client[1]);
 			ps->flags.has_min_window_size = 1;
 			ps->flag_mask.has_min_window_size = 1;
 			ps->change_mask.has_min_window_size = 1;
 		}
 		else if (StrEquals(token, "MaxWindowSize"))
 		{
-			int val1;
-			int val2;
-			int val1_unit;
-			int val2_unit;
+			int units[2] = {100, 100};
+			int mondim[2];
+			bool use_client[2] = {false, false};
+			int maxsize[2] = {DEFAULT_MAX_MAX_WINDOW_WIDTH,
+				DEFAULT_MAX_MAX_WINDOW_HEIGHT};
 
-			num = GetTwoArguments(
-				rest, &val1, &val2, &val1_unit, &val2_unit);
-			rest = SkipNTokens(rest, num);
+			mondim[0] = monitor_get_all_widths();
+			mondim[1] = monitor_get_all_heights();
+
+			num = GetSuffixedIntegerArguments(
+				rest, &rest, val, 2, "pc", tmpno);
 			if (num != 2)
 			{
-				val1 = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-				val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+				val[0] = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+				val[1] = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 			}
 			else
 			{
-				val1 = val1 * val1_unit / 100;
-				val2 = val2 * val2_unit / 100;
+				for (i = 0; i < 2; i++)
+				{
+					switch (tmpno[i])
+					{
+					case 0: /* no suffix */
+						units[i] = mondim[i];
+						break;
+					case 1: /* p suffix */
+						break;
+					case 2: /* c suffix */
+						use_client[i] = true;
+						break;
+					default: /* shouldn't happen */
+						val[i] = 0;
+						break;
+					}
+					val[i] = val[i] * units[i] / 100;
+					/* Actual check is done later once the
+					 * size of the client window is known.
+					 */
+					if (val[i] < 1 || val[i] > maxsize[i])
+					{
+						val[i] = maxsize[i];
+						use_client[i] = false;
+					}
+				}
 			}
-			if (val1 < DEFAULT_MIN_MAX_WINDOW_WIDTH)
-			{
-				val1 = DEFAULT_MIN_MAX_WINDOW_WIDTH;
-			}
-			if (val1 > DEFAULT_MAX_MAX_WINDOW_WIDTH || val1 <= 0)
-			{
-				val1 = DEFAULT_MAX_MAX_WINDOW_WIDTH;
-			}
-			if (val2 < DEFAULT_MIN_MAX_WINDOW_HEIGHT)
-			{
-				val2 = DEFAULT_MIN_MAX_WINDOW_HEIGHT;
-			}
-			if (val2 > DEFAULT_MAX_MAX_WINDOW_HEIGHT || val2 <= 0)
-			{
-				val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-			}
-			SSET_MAX_WINDOW_WIDTH(*ps, val1);
-			SSET_MAX_WINDOW_HEIGHT(*ps, val2);
+			SSET_MAX_WINDOW_WIDTH(*ps, val[0]);
+			SSET_MAX_WINDOW_WIDTH_IS_C(*ps, use_client[0]);
+			SSET_MAX_WINDOW_HEIGHT(*ps, val[1]);
+			SSET_MAX_WINDOW_HEIGHT_IS_C(*ps, use_client[1]);
 			ps->flags.has_max_window_size = 1;
 			ps->flag_mask.has_max_window_size = 1;
 			ps->change_mask.has_max_window_size = 1;

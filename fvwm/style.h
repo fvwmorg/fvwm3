@@ -546,20 +546,36 @@
 	((s).icon_title_relief = (x))
 #define SGET_MIN_WINDOW_WIDTH(s) \
 	((s).min_window_width)
+#define SGET_MIN_WINDOW_WIDTH_IS_C(s) \
+	((s).min_window_width_is_c)
 #define SSET_MIN_WINDOW_WIDTH(s,x) \
 	((s).min_window_width = (x))
+#define SSET_MIN_WINDOW_WIDTH_IS_C(s,x) \
+	((s).min_window_width_is_c = (x))
 #define SGET_MAX_WINDOW_WIDTH(s) \
 	((s).max_window_width)
+#define SGET_MAX_WINDOW_WIDTH_IS_C(s) \
+	((s).max_window_width_is_c)
 #define SSET_MAX_WINDOW_WIDTH(s,x) \
 	((s).max_window_width = (x))
+#define SSET_MAX_WINDOW_WIDTH_IS_C(s,x) \
+	((s).max_window_width_is_c = (x))
 #define SGET_MIN_WINDOW_HEIGHT(s) \
 	((s).min_window_height)
+#define SGET_MIN_WINDOW_HEIGHT_IS_C(s) \
+	((s).min_window_height_is_c)
 #define SSET_MIN_WINDOW_HEIGHT(s,x) \
 	((s).min_window_height = (x))
+#define SSET_MIN_WINDOW_HEIGHT_IS_C(s,x) \
+	((s).min_window_height_is_c = (x))
 #define SGET_MAX_WINDOW_HEIGHT(s) \
 	((s).max_window_height)
+#define SGET_MAX_WINDOW_HEIGHT_IS_C(s) \
+	((s).max_window_height_is_c)
 #define SSET_MAX_WINDOW_HEIGHT(s,x) \
 	((s).max_window_height = (x))
+#define SSET_MAX_WINDOW_HEIGHT_IS_C(s,x) \
+	((s).max_window_height_is_c = (x))
 #define SGET_WINDOW_SHADE_STEPS(s) \
 	((s).shade_anim_steps)
 #define SSET_WINDOW_SHADE_STEPS(s,x) \
