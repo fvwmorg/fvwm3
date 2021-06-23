@@ -680,6 +680,11 @@ typedef struct window_style
 	int min_window_height;
 	int max_window_width;
 	int max_window_height;
+	/* sizes are in terms of client window size hints */
+	bool min_window_width_is_c;
+	bool min_window_height_is_c;
+	bool max_window_width_is_c;
+	bool max_window_height_is_c;
 	int shade_anim_steps;
 #if 1 /*!!!*/
 	snap_attraction_t snap_attraction;

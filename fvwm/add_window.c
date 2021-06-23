@@ -2095,7 +2095,13 @@ void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 	if (SHAS_MIN_WINDOW_SIZE(&pstyle->flags))
 	{
 		fw->min_window_width = SGET_MIN_WINDOW_WIDTH(*pstyle);
+		if (SGET_MIN_WINDOW_WIDTH_IS_C(*pstyle))
+			fw->min_window_width = fw->min_window_width *
+				fw->hints.width_inc + fw->hints.base_width;
 		fw->min_window_height = SGET_MIN_WINDOW_HEIGHT(*pstyle);
+		if (SGET_MIN_WINDOW_HEIGHT_IS_C(*pstyle))
+			fw->min_window_height = fw->min_window_width *
+				fw->hints.height_inc + fw->hints.base_height;
 	}
 	else
 	{
@@ -2105,7 +2111,23 @@ void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 	if (SHAS_MAX_WINDOW_SIZE(&pstyle->flags))
 	{
 		fw->max_window_width = SGET_MAX_WINDOW_WIDTH(*pstyle);
+		if (SGET_MAX_WINDOW_WIDTH_IS_C(*pstyle))
+			fw->max_window_width = fw->max_window_width *
+				fw->hints.width_inc + fw->hints.base_width;
 		fw->max_window_height = SGET_MAX_WINDOW_HEIGHT(*pstyle);
+		if (SGET_MAX_WINDOW_HEIGHT_IS_C(*pstyle))
+			fw->max_window_height = fw->max_window_height *
+				fw->hints.height_inc + fw->hints.base_height;
+
+		/* Checking size now that the client window is known. */
+		if (fw->max_window_width < DEFAULT_MIN_MAX_WINDOW_WIDTH)
+			fw->max_window_width = DEFAULT_MIN_MAX_WINDOW_WIDTH;
+		if (fw->max_window_width > DEFAULT_MAX_MAX_WINDOW_WIDTH)
+			fw->max_window_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+		if (fw->max_window_height < DEFAULT_MIN_MAX_WINDOW_HEIGHT)
+			fw->max_window_height = DEFAULT_MIN_MAX_WINDOW_HEIGHT;
+		if (fw->max_window_width > DEFAULT_MAX_MAX_WINDOW_HEIGHT)
+			fw->max_window_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 	}
 	else
 	{
