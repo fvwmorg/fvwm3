@@ -6,6 +6,7 @@
 
 **Breaking changes:**
 
+- Add commands to configure the size/position window. [\#558](https://github.com/fvwmorg/fvwm3/pull/558) ([ThomasAdam](https://github.com/ThomasAdam))
 - Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
 
 **Implemented enhancements:**
@@ -13,6 +14,7 @@
 - Set min. size for windows shown in pager [\#542](https://github.com/fvwmorg/fvwm3/issues/542)
 - Moving windows: allow for "warping" to other windows in a given direction [\#540](https://github.com/fvwmorg/fvwm3/issues/540)
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
+- Two issues with the WindowList [\#151](https://github.com/fvwmorg/fvwm3/issues/151)
 - Add local configuration file to the default-config. [\#557](https://github.com/fvwmorg/fvwm3/pull/557) ([somiaj](https://github.com/somiaj))
 - Add icon for Run Command. [\#552](https://github.com/fvwmorg/fvwm3/pull/552) ([somiaj](https://github.com/somiaj))
 - Add command: Move shuffle \[flags\] direction\(s\) [\#550](https://github.com/fvwmorg/fvwm3/pull/550) ([somiaj](https://github.com/somiaj))
@@ -33,6 +35,7 @@
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- GNOME: remove DO\_IGNORE\_GNOME\_HINTS [\#556](https://github.com/fvwmorg/fvwm3/pull/556) ([lgsobalvarro](https://github.com/lgsobalvarro))
 - Unmaximize: restore \_NET\_WM\_STATE [\#546](https://github.com/fvwmorg/fvwm3/pull/546) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix compiler warnings in modules/FvwmScript/Instructions.c [\#544](https://github.com/fvwmorg/fvwm3/pull/544) ([pm215](https://github.com/pm215))
 - Rework FvwmPager to move windows easier [\#536](https://github.com/fvwmorg/fvwm3/pull/536) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -46,6 +49,7 @@
 
 **Merged pull requests:**
 
+- Add more columns to default-config menu ItemFormat. [\#559](https://github.com/fvwmorg/fvwm3/pull/559) ([somiaj](https://github.com/somiaj))
 - move: Warp: move pointer to centre of window [\#553](https://github.com/fvwmorg/fvwm3/pull/553) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
 - PanFrame improvements [\#547](https://github.com/fvwmorg/fvwm3/pull/547) ([ThomasAdam](https://github.com/ThomasAdam))
