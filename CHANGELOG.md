@@ -11,8 +11,11 @@
 **Implemented enhancements:**
 
 - Set min. size for windows shown in pager [\#542](https://github.com/fvwmorg/fvwm3/issues/542)
+- Moving windows: allow for "warping" to other windows in a given direction [\#540](https://github.com/fvwmorg/fvwm3/issues/540)
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
+- Add local configuration file to the default-config. [\#557](https://github.com/fvwmorg/fvwm3/pull/557) ([somiaj](https://github.com/somiaj))
 - Add icon for Run Command. [\#552](https://github.com/fvwmorg/fvwm3/pull/552) ([somiaj](https://github.com/somiaj))
+- Add command: Move shuffle \[flags\] direction\(s\) [\#550](https://github.com/fvwmorg/fvwm3/pull/550) ([somiaj](https://github.com/somiaj))
 - expand: add desk, pagex, pagey variables [\#539](https://github.com/fvwmorg/fvwm3/pull/539) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add a screen option to the Scroll command. [\#531](https://github.com/fvwmorg/fvwm3/pull/531) ([ThomasAdam](https://github.com/ThomasAdam))
 - RandR: support RandRFunc for screen changes [\#525](https://github.com/fvwmorg/fvwm3/pull/525) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -21,6 +24,7 @@
 
 - Move X Y Warp doesn't move pointer to window. [\#551](https://github.com/fvwmorg/fvwm3/issues/551)
 - Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
+- EdgeLeaveCommand don't work or need a page change to work [\#543](https://github.com/fvwmorg/fvwm3/issues/543)
 - Pager do not show smalls windows in the correct place when snapped to the edge [\#541](https://github.com/fvwmorg/fvwm3/issues/541)
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
@@ -44,6 +48,7 @@
 
 - move: Warp: move pointer to centre of window [\#553](https://github.com/fvwmorg/fvwm3/pull/553) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
+- PanFrame improvements [\#547](https://github.com/fvwmorg/fvwm3/pull/547) ([ThomasAdam](https://github.com/ThomasAdam))
 - pager: teach Icon view about colorsets [\#538](https://github.com/fvwmorg/fvwm3/pull/538) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: fix mouse positioning [\#533](https://github.com/fvwmorg/fvwm3/pull/533) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix broken link. [\#529](https://github.com/fvwmorg/fvwm3/pull/529) ([somiaj](https://github.com/somiaj))
