@@ -656,3 +656,11 @@ DestroyModuleConfig FvwmIconMan:*
 DestroyModuleConfig EventNewDesk:*
 *EventNewDesk: PassID
 *EventNewDesk: new_desk ChangeDesk
+
+# Local configuration file. For use with the default-config.
+#
+# If $FVWMUSER_DIR/local.config ($HOME/.fvwm/local.config by default)
+# exists, then read it. This allows changes to default-config settings
+# without needing a full copy of the default-config. This will also allow
+# default-config changes to get used after upgrades (if applicable).
+Test (f $[FVWM_USERDIR]/local.config) Read $[FVWM_USERDIR]/local.config
