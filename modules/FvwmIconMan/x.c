@@ -738,8 +738,6 @@ void X_init_manager (int man_id)
 		    &man->managed_g.width, &man->managed_g.height);
   man->geometry.x = man->managed_g.x;
   man->geometry.y = man->managed_g.y;
-  if (man->scr == NULL)
-	  man->scr = (char *)monitor_by_primary()->si->name;
   if (man->geometry_str) {
     char *scr;
     fscreen_scr_arg arg;
@@ -918,24 +916,10 @@ void create_manager_window (int man_id)
   else
     winattr.event_mask |= ButtonPressMask;
 
-  if (man->res == SHOW_SCREEN || man->res == NO_SHOW_SCREEN)
-  {
-    fscreen_scr_arg fscr;
-
-    fscr.xypos.x = sizehints.x;
-    fscr.xypos.y = sizehints.y;
-    FScreenGetScrRect(
-      &fscr, FSCREEN_XYPOS,
-      &man->managed_g.x, &man->managed_g.y,
-      &man->managed_g.width, &man->managed_g.height);
-  }
-  else
-  {
-    FScreenGetScrRect(
+  FScreenGetScrRect(
       NULL, FSCREEN_GLOBAL,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
-  }
 
   man->theWindow = XCreateWindow(theDisplay, theRoot, sizehints.x, sizehints.y,
 				 man->geometry.width, man->geometry.height,

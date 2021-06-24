@@ -54,14 +54,22 @@ typedef unsigned char Uchar;
 
 typedef signed char Schar;
 
-typedef enum {
-	SHOW_GLOBAL,
-	SHOW_DESKTOP,
-	SHOW_PAGE,
-	SHOW_SCREEN,
-	NO_SHOW_DESKTOP,  /* "!desk" Show windows not on the current desk */
-	NO_SHOW_PAGE,     /* "!page" Show windows not on the current page */
-	NO_SHOW_SCREEN,   /* "!screen" Show windows not on the current screen */
+typedef struct Resolution {
+	/* Page/Desk/Screen to show. -1 is current. */
+	int pagex_n;
+	int pagey_n;
+	int desk_n;
+	bool invert;
+	enum {
+		SHOW_ALL = 0x00,
+		SHOW_DESK = 0x01,
+		SHOW_PAGE = 0x02,
+		SHOW_SCREEN = 0x04,
+		NO_SHOW_DESK = 0x10,
+		NO_SHOW_PAGE = 0x20,
+		NO_SHOW_SCREEN = 0x40,
+	} type;
+		
 } Resolution;
 
 typedef enum {
@@ -269,10 +277,10 @@ typedef struct {
 typedef struct win_manager {
 	unsigned int magic;
 	int index;
-	char *scr;
 
 	/* .fvwm2rc options or things set as a result of options */
 	Resolution res;
+	char *scr; /* RandR monitor name */
 	Reverse rev;
 	Pixel backcolor[NUM_CONTEXTS], forecolor[NUM_CONTEXTS];
 	Pixel hicolor[NUM_CONTEXTS], shadowcolor[NUM_CONTEXTS];

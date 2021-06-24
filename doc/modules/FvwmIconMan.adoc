@@ -110,8 +110,8 @@ NoIconAction    animate iconification      NOP
 PlainButton     style for normal buttons   up black grey
 PlainColorset
 ReliefThickness size of button relief      2
-Resolution      global/desk/page/screen    page
-Reverse         normal, icon or none	   none
+Resolution      window filters             desk page
+Reverse         normal, icon or none       none
 SelectButton    style for selected buttons flat black grey
 SelectColorset
 Shape           use shape extension        false
@@ -271,33 +271,48 @@ The following options may be specified:
   _IconButton_, _PlainButton_, _SelectButton_, and _TitleButton_ were
   all set to _flat_. If _num_ is negative, the button will be inverted
   as if you had used _Reverse_ for all classes.
-*FvwmIconMan: [id] Resolution resolution::
-  Specifies when the manager will display an entry for a certain window.
-  _resolution_ may take one of the following values: global, desk, page,
-  screen, !desk, !page, or !screen. If global, then all windows of the
-  appropriate type (see the show and dontshow options below) will be
-  shown. If desk, then only those windows on the current desk are shown.
-  If page, then only those windows on the current page are shown. If
-  screen, then only those windows on the current RandR screen are
-  shown.  Note that the specific RandR screen can be specified:
+*FvwmIconMan: [id] Resolution [_filter(s)_]::
+  Specifies a list of _filters_, separated by spaces, that configure which
+  windows are displayed. If no filters are given, then all windows of the
+  appropriate type are shown (see the show and dontshow options below).
+  Each _filter_ then limits the windows that are displayed and may take
+  one of the following values: desk, page, screen, !desk, !page, !screen,
+  or invert. _desk_ only shows windows on the current desk, and _page_
+  only shows windows on the current page. _!desk_ and _!page_ only show
+  windows not on the current desk or page respectively. _invert_ reverses
+  the filter displaying the windows that did not match.
 +
-_NAME_:::
-	The "NAME" of the specific RandR monitor (HDMI, for example)
-_c_:::
-	The current RandR monitor (the monitor containing the pointer)
-_p_:::
-	The primary RandR monitor
-_g_:::
-	The global monitor
-
-!desk reverses the sense of desk, displaying only those windows
-not on the current desk. Likewise, !page shows only those windows not
-on the current page and !screen shows only those windows not on the
-current RandR screen. The default is **page**. If only a single screen is
-used, page and screen are equivalent.
-
+Notes: _page_ and _desk_ are independent. If the only filter is _page_,
+then you will see windows on the current page on all desks. To only see
+windows on the current page and desk (the default) you need both filters,
+'desk page'. You can only have one of desk/!desk, page/!page, or
+screen/!screen, the last one issued take precedence. The invert filter
+reverses the whole filter so 'invert desk page' is not the same as
+'!desk !page'. Sticky windows are visible on all pages and desks, so
+they match all page and desk filters, but won't match the inverted filter.
++
+The filters can take additional parameters to state which desk, page,
+or screen to show (or not show). _[!]desk [n]_ can take the desk number,
+which will only show windows (not) on the stated desk. _[!]page [x] [y]_
+can take the horizontal, _x_, and vertical, _y_, page numbers, which will
+only show windows (not) on the stated page.
++
+_[!]screen [S]_ shows windows (not) on monitor _S_, which can be:
++
+> _NAME_: The "NAME" of the specific RandR monitor.
++
+> _c_: The current RandR monitor (containing the pointer)
++
+> _p_: The primary RandR monitor
++
+> _g_: The global monitor
++
+Since all windows are on the global monitor, _screen g_ effectively does
+nothing. _c_ is the current monitor at the time resolution is issued, and
+once set will not change. This filter is best used with a RandR _NAME_.
++
 This configuration line is respected when FvwmIconMan is running as
-well, the resolution is changed dynamically.
+well, the resolution is changed dynamically when sent to fvwm.
 
 *FvwmIconMan: [id] Reverse class::
   Causes certain classes of buttons to have their relief lines reversed
