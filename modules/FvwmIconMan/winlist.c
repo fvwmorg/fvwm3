@@ -135,63 +135,74 @@ static int matches_string (NameType type, char *pattern, char *tname,
 
 int check_resolution(WinManager *manager, WinData *win)
 {
-  int flag = 0;
-  int reverse = 0;
-  rectangle g;
+	int show = 1; /* Initially show all windows */
+	rectangle g, cur_g = manager->managed_g;
 
-  assert (manager);
+	assert (manager);
 
-  if (IS_ICONIFIED(win) && !IS_ICON_SUPPRESSED(win))
-  {
-	  g = win->icon_g;
-  }
-  else
-  {
-	  g.x = win->x;
-	  g.y = win->y;
-	  g.width = win->width;
-	  g.height = win->height;
-  }
-  switch (manager->res) {
-  case SHOW_GLOBAL:
-    flag = 1;
-    break;
+	/* Window rectangle */
+	if (IS_ICONIFIED(win) && !IS_ICON_SUPPRESSED(win)) {
+		g = win->icon_g;
+	} else {
+		g.x = win->x;
+		g.y = win->y;
+		g.width = win->width;
+		g.height = win->height;
+	}
 
-  case NO_SHOW_DESKTOP:
-    reverse = 1;
-    /* fall through to next case */
-  case SHOW_DESKTOP:
-    if (IS_STICKY_ACROSS_PAGES(win) || win->desknum == globals.desknum)
-      flag = 1;
-    break;
+	/* Page rectangle */
+	if (manager->res.pagex_n >= 0 && manager->res.pagey_n >= 0) {
+		cur_g.width = monitor_get_all_widths();
+		cur_g.height = monitor_get_all_heights();
+		cur_g.x = manager->res.pagex_n * cur_g.width - globals.x;
+		cur_g.y = manager->res.pagey_n * cur_g.height - globals.y;
+	}
 
-  case NO_SHOW_PAGE:
-    reverse = 1;
-    /* fall through to next case */
-  case SHOW_PAGE:
-    if (IS_STICKY_ACROSS_PAGES(win)) {
-      flag = 1;
-    } else if (win->desknum == globals.desknum) {
-      /* win and screen intersect if they are not disjoint in x and y */
-      flag = fvwmrect_do_rectangles_intersect(&g, &manager->managed_g);
-    }
-    break;
+	/* DESK filter */
+	if ((manager->res.type & NO_SHOW_DESK) &&
+		((manager->res.desk_n < 0 && win->desknum == globals.desknum) ||
+		win->desknum == manager->res.desk_n))
+	{
+		show = 0;
+	}
+	if ((manager->res.type & SHOW_DESK) &&
+		((manager->res.desk_n < 0 && win->desknum != globals.desknum) ||
+		(manager->res.desk_n >= 0 && win->desknum != manager->res.desk_n)))
+	{
+		show = 0;
+	}
 
-  case NO_SHOW_SCREEN:
-    reverse = 1;
-    /* fall through to next case */
-  case SHOW_SCREEN:
-    {
-	if (strcasecmp(manager->scr, win->monitor) == 0)
-		flag = 1;
-	else
-		flag = 0;
-    }
-    break;
-  }
-  flag ^= reverse;
+	/* PAGE filter */
+	if ((manager->res.type & NO_SHOW_PAGE) &&
+		fvwmrect_do_rectangles_intersect(&g, &cur_g))
+	{
+		show = 0;
+	}
+	if ((manager->res.type & SHOW_PAGE) &&
+		!fvwmrect_do_rectangles_intersect(&g, &cur_g))
+	{
+		show = 0;
+	}
 
-  return flag;
+	/* Bring back sticky windows */
+	if (IS_STICKY_ACROSS_PAGES(win))
+		show = 1;
+
+	/* SCREEN filter */
+	/* NULL is used for global monitor */
+	if ((manager->res.type & NO_SHOW_SCREEN) && (manager->scr == NULL ||
+		strcasecmp(manager->scr, win->monitor) == 0))
+	{
+		show = 0;
+	}
+	if ((manager->res.type & SHOW_SCREEN) && manager->scr != NULL &&
+		strcasecmp(manager->scr, win->monitor) != 0)
+	{
+		show = 0;
+	}
+	show ^= manager->res.invert;
+
+	return show;
 }
 
 static int iconmanager_show (WinManager *man, char *tname, char *iname,

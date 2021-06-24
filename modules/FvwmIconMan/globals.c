@@ -58,7 +58,11 @@ static void init_win_manager(int id)
 	memset(&globals.managers[id], 0, sizeof(WinManager));
 	globals.managers[id].magic = 0x12344321;
 	globals.managers[id].index = id;
-	globals.managers[id].res = SHOW_PAGE;
+	globals.managers[id].scr = NULL;
+	globals.managers[id].res.type = SHOW_DESK | SHOW_PAGE;
+	globals.managers[id].res.invert = false;
+	globals.managers[id].res.desk_n = -1;
+	globals.managers[id].res.pagex_n = -1;
 	globals.managers[id].rev = REVERSE_NONE;
 	globals.managers[id].titlename = alloc_string("FvwmIconMan");
 	globals.managers[id].iconname = alloc_string("FvwmIconMan");
@@ -100,13 +104,13 @@ void print_managers(void)
 	for (i = 0; i < globals.num_managers; i++)
 	{
 		ConsoleDebug(CORE, "Manager %d:\n", i + 1);
-		if (globals.managers[i].res == SHOW_GLOBAL)
+		if (globals.managers[i].res.type == SHOW_GLOBAL)
 			ConsoleDebug(CORE, "ShowGlobal\n");
-		else if (globals.managers[i].res == SHOW_DESKTOP)
+		else if (globals.managers[i].res.type == SHOW_DESKTOP)
 			ConsoleDebug(CORE, "ShowDesktop\n");
-		else if (globals.managers[i].res == SHOW_PAGE)
+		else if (globals.managers[i].res.type == SHOW_PAGE)
 			ConsoleDebug(CORE, "ShowPage\n");
-		else if (globals.managers[i].res == SHOW_SCREEN)
+		else if (globals.managers[i].res.type == SHOW_SCREEN)
 			ConsoleDebug(CORE, "ShowScreen\n");
 
 		ConsoleDebug(CORE, "DontShow:\n");

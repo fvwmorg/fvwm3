@@ -1133,6 +1133,86 @@ static void handle_button_config(int manager, int context, char *option)
 		copy_string(&globals.managers[id].backColorName[context], p));
 }
 
+static void handle_resolution_config(int man, char *line)
+{
+	char *token = NULL, *nline;
+	int n, type;
+	Resolution r;
+
+	/* Reset to initial state of no filters */
+	r.type = SHOW_ALL;
+	r.invert = false;
+	r.desk_n = -1;
+	r.pagex_n = -1;
+	r.pagey_n = -1;
+
+	/* Apply filters */
+	while ((token = PeekToken(line, &line)) != NULL)
+	{
+		/* Since multiple filters can be sent, ensure
+		 * only the last one takes precedence.
+		 */
+		if (!strcasecmp(token, "invert")) {
+			r.invert = true;
+			continue;
+		} else if (!strcasecmp(token, "desk")) {
+			type = SHOW_DESK;
+			r.type = (r.type | SHOW_DESK) & ~(NO_SHOW_DESK);
+		} else if (!strcasecmp(token, "page")) {
+			type = SHOW_PAGE;
+			r.type = (r.type | SHOW_PAGE) & ~(NO_SHOW_PAGE);
+		} else if (!strcasecmp(token, "screen")) {
+			type = SHOW_SCREEN;
+			r.type = (r.type | SHOW_SCREEN) & ~(NO_SHOW_SCREEN);
+		} else if (!strcasecmp(token, "!desk")) {
+			type = SHOW_DESK;
+			r.type = (r.type | NO_SHOW_DESK) & ~(SHOW_DESK);
+		} else if (!strcasecmp(token, "!page")) {
+			type = SHOW_PAGE;
+			r.type = (r.type | NO_SHOW_PAGE) & ~(SHOW_PAGE);
+		} else if (!strcasecmp(token, "!screen")) {
+			type = SHOW_SCREEN;
+			r.type = (r.type | NO_SHOW_SCREEN) & ~(SHOW_SCREEN);
+		} else {
+			continue;
+		}
+		token = PeekToken(line, &nline);
+
+		switch (type)
+		{
+		case SHOW_DESK:
+			if (token && extract_int(token, &n) && n >= 0) {
+				r.desk_n = n;
+				line = nline;
+			}
+			break;
+		case SHOW_PAGE:
+			if (token && extract_int(token, &n) && n >= 0) {
+				r.pagex_n = n;
+				line = nline;
+			}
+			token = PeekToken(line, &nline);
+			if (token && extract_int(token, &n) && n >= 0) {
+				r.pagey_n = n;
+				line = nline;
+			}
+			break;
+		case SHOW_SCREEN:
+			if (token == NULL) {
+				SET_MANAGER(man, scr, NULL);
+				break;
+			}
+			struct monitor *mon = monitor_resolve_name(token);
+			SET_MANAGER(man, scr, (char *)mon->si->name);
+			line = nline;
+			break;
+		default:
+			break;
+		}
+	}
+	SET_MANAGER(man, res, r);
+}
+
 static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort)
 {
 	WeightedSort *p;
@@ -1175,7 +1255,6 @@ void read_in_resources(void)
   int i, n, manager;
   char *option1;
   Binding *binding = NULL;
-  Resolution r;
   Reverse rv;
 
   InitGetConfigLine(fvwm_fd, Module);
@@ -1640,44 +1719,8 @@ void read_in_resources(void)
 		     copy_string(&globals.managers[id].geometry_str, p));
       }
       else if (!strcasecmp(option1, "resolution")) {
-	p = read_next_cmd(READ_ARG);
-	if (!p) {
-	  ConsoleMessage("Bad line: %s\n", current_line);
-	  continue;
-	}
-	ConsoleDebug(CONFIG, "resolution: %s\n", p);
-	if (!strcasecmp(p, "global"))
-	  r = SHOW_GLOBAL;
-	else if (!strcasecmp(p, "desk"))
-	  r = SHOW_DESKTOP;
-	else if (!strcasecmp(p, "page"))
-	  r = SHOW_PAGE;
-	else if (!strcasecmp(p, "screen")) {
-	  r = SHOW_SCREEN;
-	  p = read_next_cmd(READ_ARG);
-	  if (p != NULL) {
-		  struct monitor *mon = monitor_resolve_name(p);
-		  if (strcasecmp(p, "g") == 0) {
-			  r = SHOW_GLOBAL;
-		  } else {
-		     SET_MANAGER(manager, scr,
-		       copy_string(&globals.managers[id].scr, mon->si->name));
-		  }
-	  }
-	}
-	else if (!strcasecmp(p, "!desk"))
-	  r = NO_SHOW_DESKTOP;
-	else if (!strcasecmp(p, "!page"))
-	  r = NO_SHOW_PAGE;
-	else if (!strcasecmp(p, "!screen"))
-	  r = NO_SHOW_SCREEN;
-	else {
-	  ConsoleMessage("Bad line: %s\n", current_line);
-	  ConsoleMessage("What kind of resolution is this?\n");
-	  continue;
-	}
-
-	SET_MANAGER(manager, res, r);
+	p = read_next_cmd(READ_REST_OF_LINE);
+	handle_resolution_config(manager, p);
       }
       else if (!strcasecmp(option1, "reverse")) {
 	p = read_next_cmd(READ_ARG);
@@ -2306,51 +2349,7 @@ void process_dynamic_config_line(char *line)
 	/* currently supports only "resolution" and "tips" */
 	if (strcasecmp(token, "resolution") == 0)
 	{
-		int value;
-
-		free(token);
-		line = GetNextToken(line, &token);
-		if (!token)
-		{
-			return;
-		}
-		if (!strcasecmp(token, "global"))
-			value = SHOW_GLOBAL;
-		else if (!strcasecmp(token, "desk"))
-			value = SHOW_DESKTOP;
-		else if (!strcasecmp(token, "page"))
-			value = SHOW_PAGE;
-		else if (!strcasecmp(token, "screen")) {
-			value = SHOW_SCREEN;
-
-			free(token);
-			line = GetNextToken(line, &token);
-
-			if (token == NULL)
-				goto done;
-
-			struct monitor *mon = monitor_resolve_name(token);
-			if (strcasecmp(token, "g") == 0) {
-				value = SHOW_GLOBAL;
-				goto done;
-			}
-			SET_MANAGER(manager, scr, (char *)mon->si->name);
-		}
-		else if (!strcasecmp(token, "!desk"))
-			value = NO_SHOW_DESKTOP;
-		else if (!strcasecmp(token, "!page"))
-			value = NO_SHOW_PAGE;
-		else if (!strcasecmp(token, "!screen"))
-			value = NO_SHOW_SCREEN;
-		else
-		{
-			fvwm_debug(__func__, "%s: unknown resolution %s.\n",
-				   MyName, token);
-			free(token);
-			return;
-		}
-done:
-		SET_MANAGER(manager, res, value);
+		handle_resolution_config(manager, line);
 		remanage_winlist();
 	}
 	else if (strcasecmp(token, "tips") == 0)
