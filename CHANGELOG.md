@@ -6,6 +6,7 @@
 
 **Breaking changes:**
 
+- Extend \*FvwmIconMan:Resolution to include specific Desktop / Pager [\#455](https://github.com/fvwmorg/fvwm3/issues/455)
 - Add commands to configure the size/position window. [\#558](https://github.com/fvwmorg/fvwm3/pull/558) ([ThomasAdam](https://github.com/ThomasAdam))
 - Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
 
@@ -15,6 +16,7 @@
 - Moving windows: allow for "warping" to other windows in a given direction [\#540](https://github.com/fvwmorg/fvwm3/issues/540)
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
 - Two issues with the WindowList [\#151](https://github.com/fvwmorg/fvwm3/issues/151)
+- Feature Request: Enable using the 'c' unit with the "MinWindowSize" and "MaxWindowSize" styles [\#145](https://github.com/fvwmorg/fvwm3/issues/145)
 - Add local configuration file to the default-config. [\#557](https://github.com/fvwmorg/fvwm3/pull/557) ([somiaj](https://github.com/somiaj))
 - Add icon for Run Command. [\#552](https://github.com/fvwmorg/fvwm3/pull/552) ([somiaj](https://github.com/somiaj))
 - Add command: Move shuffle \[flags\] direction\(s\) [\#550](https://github.com/fvwmorg/fvwm3/pull/550) ([somiaj](https://github.com/somiaj))
@@ -49,6 +51,8 @@
 
 **Merged pull requests:**
 
+- Extend FvwmIconMan Resolution configuration. [\#561](https://github.com/fvwmorg/fvwm3/pull/561) ([somiaj](https://github.com/somiaj))
+- Allow Min/Max WindowSize style to use client size [\#560](https://github.com/fvwmorg/fvwm3/pull/560) ([somiaj](https://github.com/somiaj))
 - Add more columns to default-config menu ItemFormat. [\#559](https://github.com/fvwmorg/fvwm3/pull/559) ([somiaj](https://github.com/somiaj))
 - move: Warp: move pointer to centre of window [\#553](https://github.com/fvwmorg/fvwm3/pull/553) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
