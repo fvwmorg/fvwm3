@@ -27,6 +27,7 @@
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/cJSON.h"
 #include "libs/setpgrp.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"
@@ -129,86 +130,82 @@ static FILE *status_fp;
 void
 status_send(void)
 {
-	bson_t		 msg, screens;
-	bson_t		*desktops[256], *desk_doc[256], *individual_d[256];
-	int 		 i, d_count;
+	cJSON		*msg = NULL, *screens = NULL;
+	cJSON		*desk_doc[1024], *individual_d[1024];
+	int 		 m_count, d_count;
 	FvwmWindow	*fw_cur;
 	DesktopsInfo 	*di;
 	struct monitor	*m, *m_cur;
-	size_t		 json_len;
-	char		*as_json;
+	char		*as_json = NULL;
 
-	if (status_fp == NULL)
+	if (status_fp == NULL || !Scr.flags.are_windows_captured)
 		return;
 
-	memset(desktops, 0, sizeof(bson_t));
-	memset(individual_d, 0, sizeof(bson_t));
-	memset(desk_doc, 0, sizeof(bson_t));
+	memset(individual_d, 0, sizeof(cJSON));
+	memset(desk_doc, 0, sizeof(cJSON));
+
+	msg = cJSON_CreateObject();
 
 	m_cur = monitor_get_current();
 
-	bson_init(&msg);
-	BSON_APPEND_INT64(&msg, "version", 2);
-	BSON_APPEND_UTF8(&msg, "current_screen", m_cur->si->name);
-	BSON_APPEND_UTF8(&msg, "desktop_mode",
+	cJSON_AddNumberToObject(msg, "version", 2);
+	cJSON_AddStringToObject(msg, "current_screen", m_cur->si->name);
+	cJSON_AddStringToObject(msg, "desktop_mode",
 	    monitor_mode == MONITOR_TRACKING_G && is_tracking_shared ? "shared" :
 	    monitor_mode == MONITOR_TRACKING_G ? "global" :
 	    monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
 	    "unknown");
 
-	BSON_APPEND_DOCUMENT_BEGIN(&msg, "screens", &screens);
+	screens = cJSON_AddObjectToObject(msg, "screens");
 
-	d_count = 0;
+	d_count = 0, m_count = 0;
 	TAILQ_FOREACH(m, &monitor_q, entry) {
-		desktops[d_count] = bson_new();
-		desk_doc[d_count] = bson_new();
+		cJSON	*this_desktop;
+		if ((desk_doc[d_count] = cJSON_CreateObject()) == NULL)
+			goto out;
+
+		this_desktop = cJSON_AddObjectToObject(desk_doc[d_count],
+		    "desktops");
 
 		di = m->Desktops->next;
 		while (di != NULL) {
-			individual_d[d_count] = bson_new();
-			BSON_APPEND_INT64(individual_d[d_count], "number",
+			if ((individual_d[d_count] = cJSON_CreateObject()) == NULL)
+				goto out;
+			cJSON_AddNumberToObject(individual_d[d_count], "number",
 				di->desk);
-			BSON_APPEND_BOOL(individual_d[d_count], "is_current",
+			cJSON_AddBoolToObject(individual_d[d_count], "is_current",
 				di->desk == m->virtual_scr.CurrentDesk);
-			BSON_APPEND_BOOL(individual_d[d_count], "is_urgent",
+			cJSON_AddBoolToObject(individual_d[d_count], "is_urgent",
 				desk_get_fw_urgent(m, di->desk));
-			BSON_APPEND_INT64(individual_d[d_count],
+			cJSON_AddNumberToObject(individual_d[d_count],
 				"number_of_clients", desk_get_fw_count(m, di->desk));
-			BSON_APPEND_DOCUMENT(desktops[d_count], di->name,
-				individual_d[d_count]);
-			BSON_APPEND_DOCUMENT(desk_doc[d_count], "desktops",
-				desktops[d_count]);
+			cJSON_AddItemToObject(this_desktop, di->name, individual_d[d_count]);
 
 			di = di->next;
 		}
+
 		fw_cur = get_focus_window();
 		if (fw_cur != NULL && fw_cur->m == m) {
-			BSON_APPEND_UTF8(desk_doc[d_count], "current_client",
-				fw_cur->visible_name);
+			cJSON_AddStringToObject(desk_doc[d_count],
+			    "current_client", fw_cur->visible_name);
 		}
-		BSON_APPEND_DOCUMENT(&screens, m->si->name, desk_doc[d_count]);
-		d_count++;
-	}
-	bson_append_document_end(&msg, &screens);
 
-	if ((as_json = bson_as_relaxed_extended_json(&msg, &json_len)) == NULL)
+		cJSON_AddItemToObject(screens, m->si->name, desk_doc[d_count]);
+
+		d_count++;
+		m_count++;
+	}
+	if ((as_json = cJSON_PrintUnformatted(msg)) == NULL) {
 		goto out;
+	}
 
 	fflush(status_fp);
 	fprintf(status_fp, "%s\n", as_json);
 	fflush(status_fp);
 
 out:
-	bson_free(as_json);
-	for (i = 0; i < d_count; i++) {
-		if (desk_doc[i] != NULL)
-			bson_free(desk_doc[i]);
-		if (desktops[i] != NULL)
-			bson_free(desktops[i]);
-		if (individual_d[i] != NULL)
-			bson_free(individual_d[i]);
-	}
-	bson_destroy(&msg);
+	cJSON_free(as_json);
+	cJSON_Delete(msg);
 }
 
 #define PIPENAME "fvwm3.pipe"

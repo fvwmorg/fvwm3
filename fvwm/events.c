@@ -2559,7 +2559,6 @@ void HandleFocusIn(const evh_args_t *ea)
 				    fw->m->virtual_scr.CurrentDesk)
 					EWMH_SetCurrentDesktop(fw->m);
 			}
-			status_send();
 		}
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;
