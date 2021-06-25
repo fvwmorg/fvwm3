@@ -7,6 +7,7 @@
 **Breaking changes:**
 
 - Extend \*FvwmIconMan:Resolution to include specific Desktop / Pager [\#455](https://github.com/fvwmorg/fvwm3/issues/455)
+- Deprecate Label for FvwmPager [\#342](https://github.com/fvwmorg/fvwm3/issues/342)
 - Add commands to configure the size/position window. [\#558](https://github.com/fvwmorg/fvwm3/pull/558) ([ThomasAdam](https://github.com/ThomasAdam))
 - Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
 
@@ -51,6 +52,8 @@
 
 **Merged pull requests:**
 
+- Menu: add option to grey entries out [\#563](https://github.com/fvwmorg/fvwm3/pull/563) ([ThomasAdam](https://github.com/ThomasAdam))
+- Remove \*FvwmPager: Label configuration option. [\#562](https://github.com/fvwmorg/fvwm3/pull/562) ([somiaj](https://github.com/somiaj))
 - Extend FvwmIconMan Resolution configuration. [\#561](https://github.com/fvwmorg/fvwm3/pull/561) ([somiaj](https://github.com/somiaj))
 - Allow Min/Max WindowSize style to use client size [\#560](https://github.com/fvwmorg/fvwm3/pull/560) ([somiaj](https://github.com/somiaj))
 - Add more columns to default-config menu ItemFormat. [\#559](https://github.com/fvwmorg/fvwm3/pull/559) ([somiaj](https://github.com/somiaj))
