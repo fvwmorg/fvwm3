@@ -2023,20 +2023,6 @@ void ParseOptions(void)
 	}
       }
     }
-    else if (StrEquals(resource, "Label"))
-    {
-      if (StrEquals(arg1, "*"))
-      {
-	desk = 0;
-      }
-      else
-      {
-	desk = desk1;
-	sscanf(arg1,"%d",&desk);
-      }
-      TAILQ_FOREACH(m, &fp_monitor_q, entry)
-	      SetDeskLabel(m, desk, (const char *)arg2);
-    }
     else if (StrEquals(resource, "Font"))
     {
       if (font_string)

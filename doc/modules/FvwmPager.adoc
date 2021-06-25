@@ -221,21 +221,6 @@ size may be slightly different than the specified size.
   window. Possible flags are: %t, %i, %c, and %r for the window's title,
   icon title, class, or resource name, respectively. The default is
   "%i".
-*FvwmPager: Label desk label::
-  Assigns the text _label_ to desk _desk_ (or the current desk if desk
-  is "*") in the pager window. Useful for assigning symbolic names to
-  desktops, i.e.
-+
-....
-*FvwmPager: Label 1 Mail
-*FvwmPager: Label 2 Maker
-*FvwmPager: Label * Matlab
-....
-+
-*Note*: There is currently a much better way to specify desk names
-globally (and not just in FvwmPager) using *DesktopName* command, so you
-should not use this option anymore.
-
 *FvwmPager: DeskColor desk color::
   Assigns the color _color_ to desk _desk_ (or the current desk if desk
   is "*") in the pager window. This replaces the background color for
