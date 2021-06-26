@@ -38,6 +38,7 @@
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Cleanup FvwmScript manual page. [\#565](https://github.com/fvwmorg/fvwm3/pull/565) ([somiaj](https://github.com/somiaj))
 - GNOME: remove DO\_IGNORE\_GNOME\_HINTS [\#556](https://github.com/fvwmorg/fvwm3/pull/556) ([lgsobalvarro](https://github.com/lgsobalvarro))
 - Unmaximize: restore \_NET\_WM\_STATE [\#546](https://github.com/fvwmorg/fvwm3/pull/546) ([ThomasAdam](https://github.com/ThomasAdam))
 - Fix compiler warnings in modules/FvwmScript/Instructions.c [\#544](https://github.com/fvwmorg/fvwm3/pull/544) ([pm215](https://github.com/pm215))
