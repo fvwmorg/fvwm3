@@ -50,6 +50,8 @@ foreach my $path (@all_filelist) {
 
 my $fvwmform_commands = "
 DestroyModuleConfig  ${modname}: *
+*${modname}: Colorset 5
+*${modname}: ItemColorset 5
 *${modname}: Title      \"\$[gt.Fvwm XDGMenu Config]\"
 *${modname}: WarpPointer
 #*${modname}: Line       center
