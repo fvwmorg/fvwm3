@@ -311,14 +311,14 @@ The size is set to 19x34.
 *PopupMenu*: Display a pop up menu.::
   *Value*: specify what option is selected.
 +
-*Title*: the title has the following syntax: \{Option 1|Option
+*Title*: the title has the following syntax: {Option 1|Option
 2|...|Option N}."Option 1|Option 2|...|Option N" is the pop up menu
 which is displayed when pressing mouse button.
 +
 The size property is ignored.
 
 *PushButton*: Display push button with an icon and/or a string.::
-  *Title*: this string has the following syntax \{Title of the
+  *Title*: this string has the following syntax {Title of the
   button|Option 1|Option 2|Option3|...|Option N}. "Option 1|Option
   2|...|Option N" is the pop up menu which is displayed when pressing
   the right button.
@@ -411,9 +411,9 @@ ChangeLocaleTitle id1 id2::
 ChangeIcon id1 id2::
   Set the icon of the widget numbered _id1_ to _id2_.
 ChangeForeColor id1 \{color}::
-  Set the foreground color of the widget numbered _id1_ to \{_color_}.
+  Set the foreground color of the widget numbered _id1_ to {_color_}.
 ChangeBackColor id1 \{color}::
-  Set the background color of the widget numbered _id1_ to \{_color_}.
+  Set the background color of the widget numbered _id1_ to {_color_}.
 ChangeColorSet id1 id2::
   Set the colorset of the widget numbered _id1_ to _id2_. Specifying
   widget 0 sets the main window colorset.
@@ -428,7 +428,7 @@ WarpPointer id::
 WriteToFile filename \{str1} \{str2} etc::
   Write to the file _filename_ the string which is the concatenation of
   all arguments _str1_, _str2_, etc.
-Do \{command args}::
+Do {command args}::
   Execute the fvwm command inside the Do block. Any fvwm command as
   described in the fvwm2 man page can be used. Commands are sent from
   this module to the fvwm main program for processing. The length of the
@@ -517,17 +517,17 @@ Here is the complete list of arguments:
   This function returns the identification number of the script father.
 (ReceivFromScript \{int})::
   This function returns the message sent by the script numbered int.
-(RemainderOfDiv \{int1 int2}): t::
+(RemainderOfDiv {int1 int2}): t::
   This function returns the remainder of the division (_int1_/_int2_).
 (GetTime)::
   This function returns the time in seconds.
 
 (GetPid)::
   This function returns the process id of the script.
-(Gettext \{_str_})::
+(Gettext {_str_})::
   This function return the translation of _str_ by using the locale
   catalog(s) defined with UseGettext.
-(SendMsgAndGet \{_comId_} \{_cmd_} _bool_)::
+(SendMsgAndGet {_comId_} {_cmd_} _bool_)::
   Sends the command _cmd_ with identifier _comId_ to an external program
   ready to communicate with the script using a protocol specific to
   FvwmScript. If _bool_ is 0 FvwmScript does not wait for an answer from
@@ -538,7 +538,7 @@ Here is the complete list of arguments:
   more than 32000 characters). If the communication fails, the returned
   value is 0. See the section *A COMMUNICATION PROTOCOL* for a
   description of the communication protocol used.
-(Parse \{_str_} _int_)::
+(Parse {_str_} _int_)::
   where _str_ must be a string of the form: X1S1X2S2X3S3...SnXn
 +
 where the Xn are numbers containing four decimal digits and where Sn are
@@ -562,7 +562,7 @@ There are three kinds of conditional loops. The instruction
 "If-Then-Else" has the following syntax:
 
 ....
-If $ToDo==\{Open xcalc} Then
+If $ToDo=={Open xcalc} Then
   Do {Exec xcalc &} 		# List of instructions
   Else
   Begin
@@ -597,16 +597,16 @@ End
 
 The following fvwm command may be executed at any time
 
-....
+====
 SendToModule _ScriptName_ SendString _id_ _sig_ _str_
-....
+====
 
 it sends to any module with alias or name which matches _ScriptName_ the
 string
 
-....
+====
 SendString _id_ _sig_ _str_
-....
+====
 
 When an FvwmScript receives such a message it sends to the Widget _id_
 the signal numbered _sig_ and the string _str_ can be obtained with the
@@ -648,9 +648,9 @@ the title of Widget 33 to str.
 
 This command can be used to change the window title
 
-....
+====
 SendToModule _ScriptName_ ChangeWindowTitle _newTitle_ _[oldTitle]_
-....
+====
 
 it causes that any module with alias or name which matches _ScriptName_
 changes its associated window title to _newTitle_. The optional argument
@@ -737,9 +737,9 @@ The protocol uses two fifos, in the fvwm user directory, named:
 and listen on the .tmp-com-in-_comId_ fifo. Then, when FvwmScript
 executes a function of the form:
 
-....
-Set $answer = (SendMsgAndGet \{_comId_} \{_cmd_} _bool_)
-....
+====
+Set $answer = (SendMsgAndGet {_comId_} {_cmd_} _bool_)
+====
 
 FvwmScript writes the _cmd_ on this fifo. This way the program can read
 the _cmd_ and can execute the appropriate action (it should remove the
