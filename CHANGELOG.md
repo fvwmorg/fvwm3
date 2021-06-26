@@ -52,6 +52,7 @@
 
 **Merged pull requests:**
 
+- Configure a colorset for XDGMenu options. [\#564](https://github.com/fvwmorg/fvwm3/pull/564) ([somiaj](https://github.com/somiaj))
 - Menu: add option to grey entries out [\#563](https://github.com/fvwmorg/fvwm3/pull/563) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove \*FvwmPager: Label configuration option. [\#562](https://github.com/fvwmorg/fvwm3/pull/562) ([somiaj](https://github.com/somiaj))
 - Extend FvwmIconMan Resolution configuration. [\#561](https://github.com/fvwmorg/fvwm3/pull/561) ([somiaj](https://github.com/somiaj))
