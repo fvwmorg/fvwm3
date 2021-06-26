@@ -1,6 +1,8 @@
 # FvwmForm-XDGMenuHelp - Help Text for fvwm-menu-desktop-config XDGMenu
 # V 1.0.4
 DestroyModuleConfig  FvwmForm-XDGMenuHelp: *
+*FvwmForm-XDGMenuHelp:   Colorset 5
+*FvwmForm-XDGMenuHelp:   ItemColorset 5
 *FvwmForm-XDGMenuHelp:   Title   "$[gt.XDGMenu Help]"
 *FvwmForm-XDGMenuHelp:   WarpPointer
 # Layout
