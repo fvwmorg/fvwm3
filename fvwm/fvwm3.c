@@ -1345,34 +1345,30 @@ static void SetRCDefaults(void)
 		{ "TitleStyle Centered -- Raised", "", "" },
 		{ "Style * Color lightgrey/dimgrey", "", "" },
 		{ "Style * HilightFore black, HilightBack grey", "", "" },
-		{ "DestroyFunc FvwmMakeMissingDesktopMenu", "", "" },
-		{ "AddToFunc   FvwmMakeMissingDesktopMenu I PipeRead 'fvwm-menu-desktop --enable-mini-icons --fvwm-icons'", "", "" },
+		{ "AddToFunc LoadDefaultConfig", "", "" },
+		{ "+ I Read "FVWM_DATADIR"/default-config/config", "", "" },
+		{ "+ I StartFunction", "", "" },
 		{
 			"AddToMenu MenuFvwmRoot \"",
 			_("Builtin Menu"),
 			"\" Title"
 		},
-                { "+ MissingSubmenuFunction FvwmMakeMissingDesktopMenu","",""},
-		{ "+ \"&1. XTerm\" Exec xterm", "", ""},
+		{ "+ \"&1. XTerm\" Exec xterm", "", "" },
+		{ "+ \"&2. FvwmConsole\" Module FvwmConsole", "", "" },
 		{
-			"+ \"&2. ",
-			_("Issue fvwm commands"),
-			"\" Module FvwmConsole"
+			"+ \"&3. ",
+			_("Load Default Config"),
+			"\" LoadDefaultConfig"
 		},
 		{
-			"+ \"&D. ",
-			_("Desktop Menu"),
-			"\" Popup FvwmMenu"
+			"+ \"&4. ",
+			_("Restart"),
+			" Fvwm\" Restart"
 		},
 		{
-			"+ \"&R. ",
-			_("Restart fvwm"),
-			"\" Restart"
-		},
-		{
-			"+ \"&X. ",
-			_("Exit fvwm"),
-			"\" Quit"
+			"+ \"&5. ",
+			_("Quit"),
+			" Fvwm\" Quit"
 		},
 		{ "Mouse 1 R A Menu MenuFvwmRoot", "", "" },
 		/* default menu navigation */
