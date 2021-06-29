@@ -1403,7 +1403,8 @@ static void SetRCDefaults(void)
 		ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
-		xasprintf(&cmd, defaults[i][0], defaults[i][1], defaults[i][2]);
+		xasprintf(&cmd, "%s%s%s", defaults[i][0], defaults[i][1],
+			defaults[i][2]);
 		execute_function(NULL, exc, cmd, 0);
 		free(cmd);
 		exc_destroy_context(exc);
