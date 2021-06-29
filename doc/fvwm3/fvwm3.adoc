@@ -60,95 +60,96 @@ These are the command line options that are recognized by fvwm:
 
 *-i* | *--clientid* _id_::
 
-This option is used when fvwm is started by a session manager. Should
-not be used by a user.
+	This option is used when fvwm is started by a session manager. Should
+	not be used by a user.
 
 *-c* | *--cmd* _config-command_::
 
-Causes fvwm to use _config-command_ instead of '*Read* _config_' (or
-'*Read* _.fvwm2rc_') as its initialization command. (Note that up to 10
-*-f* and *-c* parameters can be given, and they are executed in the
-order specified.)
+	Causes fvwm to use _config-command_ instead of '*Read* _config_' (or
+	'*Read* _.fvwm2rc_') as its initialization command. (Note that up to 10
+	*-f* and *-c* parameters can be given, and they are executed in the
+	order specified.)
 +
 Any module started by command line arguments is assumed to be a module
 that sends back config commands. All command line modules have to quit
 before fvwm proceeds on to the StartFunction and setting border
 decorations and styles. There is a potential deadlock if you start a
-module other than *FvwmCpp*/*FvwmM4*/*FvwmPerl* but there is a timeout
+module other than *FvwmPerl* but there is a timeout
 so fvwm eventually gets going.
 +
 As an example, starting the pager this way hangs fvwm until the timeout,
 but the following should work well:
-
++
 ....
 fvwm -c "AddToFunc StartFunction I Module FvwmPager"
 ....
 
 *-d* | *--display* _displayname_::
 
-Manage the display called _displayname_ instead of the name obtained
-from the environment variable _$DISPLAY_.
+	Manage the display called _displayname_ instead of the name obtained
+	from the environment variable _$DISPLAY_.
 
 *-D* | *--debug*::
 
-Puts X transactions in synchronous mode, which dramatically slows things
-down, but guarantees that fvwm's internal error messages are correct.
+	Puts X transactions in synchronous mode, which dramatically slows things
+	down, but guarantees that fvwm's internal error messages are correct.
 
 *-f* _config-file_::
 
-Causes fvwm to read _config-file_ instead of _~/.fvwm/config_ as its
-initialization file. _$FVWM_USERDIR_ can also be used to change location
-of default user directory _~/.fvwm_.
+	Causes fvwm to read _config-file_ instead of _~/.fvwm/config_ as its
+	initialization file. _$FVWM_USERDIR_ can also be used to change location
+	of default user directory _~/.fvwm_.
 
 *-h* | *--help*::
 
-A short usage description is printed.
+	A short usage description is printed.
 
 *-r* | *--replace*::
 
-Try to take over from a previously running wm. This does not work unless
-the other wm is ICCCM2 2.0 compliant.
+	Try to take over from a previously running wm. This does not work unless
+	the other wm is ICCCM2 2.0 compliant.
 
 *-F* | *--restore* _state-file_::
 
-This option is used when fvwm is started by a session manager. Should
-not be used by a user.
+	This option is used when fvwm is started by a session manager. Should
+	not be used by a user.
 
 *-s* | *--single-screen* [_screen_num_]::
 
-On a multi-screen display, run fvwm only on the screen named in the
-_$DISPLAY_ environment variable or provided through the *-d* option. The
-optional argument _screen_num_ should be positive or null and override
-the screen number. Normally, fvwm attempts to start up on all screens of
-a multi-screen display.
+	On a multi-screen display, run fvwm only on the screen named in the
+	_$DISPLAY_ environment variable or provided through the *-d* option. The
+	optional argument _screen_num_ should be positive or null and override
+	the screen number. Normally, fvwm attempts to start up on all screens of
+	a multi-screen display.
 
 *-V* | *--version*::
 
-Prints the version of fvwm to _stderr_. Also prints an information about
-the compiled in support for readline, xpm, png, svg, GNOME hints,
-EWMH hints, session management, bidirectional text, multibyte
-characters, RandR and Xft aa font rendering.
+	Prints the version of fvwm to _stderr_. Also prints an information about
+	the compiled in support for readline, xpm, png, svg, EWMH hints,
+	session management, bidirectional text, multibyte
+	characters, RandR and Xft aa font rendering.
 
 *-C* | *--visual* _visual-class_::
 
-Causes fvwm to use _visual-class_ for the window borders and menus.
-_visual-class_ can be "StaticGray", "GrayScale", "StaticColor",
-"PseudoColor", "TrueColor" or "DirectColor".
+	Causes fvwm to use _visual-class_ for the window borders and menus.
+	_visual-class_ can be "StaticGray", "GrayScale", "StaticColor",
+	"PseudoColor", "TrueColor" or "DirectColor".
 
 *-I* | *--visualid* _id_::
 
-Causes fvwm to use _id_ as the visual id for the window borders and
-menus. _id_ can be specified as N for decimal or 0xN for hexadecimal.
-See man page of xdpyinfo for a list of supported visuals.
+	Causes fvwm to use _id_ as the visual id for the window borders and
+	menus. _id_ can be specified as N for decimal or 0xN for hexadecimal.
+	See man page of xdpyinfo for a list of supported visuals.
 
 *-l* | *--color-limit* _limit_::
 
-Specifies a _limit_ on the colors used in image, gradient and possibly
-simple colors used by fvwm. In fact, fvwm (and all the modules) uses a
-palette with at most _limit_ colors. This option is only useful with
-screens that display 256 colors (or less) with a dynamic visual
-(PseudoColor, GrayScale or DirectColor). The default depends on your X
-server and how you run fvwm. In most case this default is reasonable.
+	Specifies a _limit_ on the colors used in image, gradient and possibly
+	simple colors used by fvwm. In fact, fvwm (and all the modules) uses a
+	palette with at most _limit_ colors. This option is only useful with
+	screens that display 256 colors (or less) with a dynamic visual
+	(PseudoColor, GrayScale or DirectColor). The default depends on your X
+	server and how you run fvwm. In most case this default is reasonable.
++
 The *-l* option should be used only if you encounter problems with
 colors. By default, fvwm tries to detect large pre-allocated palettes.
 If such a palette is detected fvwm uses it and a priori the *-l* must
@@ -223,55 +224,55 @@ used by fvwm in rgb format (the last integer gives the number of times
 fvwm has allocated the colors).
 
 *-L* | *--strict-color-limit*::
-
-If the screen displays 256 colors (or less) and has a dynamic visual,
-causes fvwm to use its palette for all the colors. By default, the
-palette is used only for images and gradients.
+	
+	If the screen displays 256 colors (or less) and has a dynamic visual,
+	causes fvwm to use its palette for all the colors. By default, the
+	palette is used only for images and gradients.
 
 *-P* | *--visual-palette*::
-
-If the screen displays 256 colors (or less) and has a dynamic visual,
-this option causes fvwm to use a palette designed for limiting the
-"visual" color distance between the points of the palette. Moreover, for
-better color sharing, if possible colors with a name in the X rgb data
-base are used for defining the colors (with the hope that applications
-and images prefer to use named colors). If the *-l* option is not used
-this palette has 61 colors. This palette is also automatically selected
-if 61 or 9 is used as argument to the *-l* option.
+	
+	If the screen displays 256 colors (or less) and has a dynamic visual,
+	this option causes fvwm to use a palette designed for limiting the
+	"visual" color distance between the points of the palette. Moreover, for
+	better color sharing, if possible colors with a name in the X rgb data
+	base are used for defining the colors (with the hope that applications
+	and images prefer to use named colors). If the *-l* option is not used
+	this palette has 61 colors. This palette is also automatically selected
+	if 61 or 9 is used as argument to the *-l* option.
 
 *-A* | *--allocate-palette*::
 
-If the screen displays 256 colors (or less) and has a dynamic visual
-this option causes fvwm to allocate all the colors of its palette at
-start up for reserving these colors for future use. This option forces
-the *-static-palette* option. By default, fvwm allocates (reserves) a
-color in its palette only if it needs this color.
+	If the screen displays 256 colors (or less) and has a dynamic visual
+	this option causes fvwm to allocate all the colors of its palette at
+	start up for reserving these colors for future use. This option forces
+	the *-static-palette* option. By default, fvwm allocates (reserves) a
+	color in its palette only if it needs this color.
 
 *-S* | *--static-palette*::
-
-If the screen displays 256 colors (or less) and has a dynamic visual
-this option causes fvwm to never free the colors in its palette. By
-default, when fvwm does not need a color any more it frees this color so
-that a new color can be used. This option may speed up image loading and
-save a few bits of memory.
+	
+	If the screen displays 256 colors (or less) and has a dynamic visual
+	this option causes fvwm to never free the colors in its palette. By
+	default, when fvwm does not need a color any more it frees this color so
+	that a new color can be used. This option may speed up image loading and
+	save a few bits of memory.
 
 *-blackout*::
-
-This option is provided for backward compatibility only. Blacking out
-the screen during startup is not necessary (and doesn't work) anymore.
-This option will be removed in the future.
+	
+	This option is provided for backward compatibility only. Blacking out
+	the screen during startup is not necessary (and doesn't work) anymore.
+	This option will be removed in the future.
 
 *--debug-stack-ring*::
-
-Enables stack ring debugging. This option is only intended for internal
-debugging and should only be used by developers.
+	
+	Enables stack ring debugging. This option is only intended for internal
+	debugging and should only be used by developers.
 
 *-v*::
 
-Enables debug logging. Writes in append mode to fvwm log file, which is
-~/.fvwm/fvwm3-output.log by default. See ENVIRONMENT section on how to
-override this location on fvwm3 startup using _$FVWM_USERDIR_ or
-_$FVWM3_LOGFILE_ .
+	Enables debug logging. Writes in append mode to fvwm log file, which is
+	~/.fvwm/fvwm3-output.log by default. See ENVIRONMENT section on how to
+	override this location on fvwm3 startup using _$FVWM_USERDIR_ or
+	_$FVWM3_LOGFILE_ .
 +
 Logging can also be dynamically toggled on and off using signals:
 +
@@ -495,12 +496,8 @@ $HOME/.fvwm2rc
 Please note, the last 5 locations are not guaranteed to be supported in
 the future.
 
-If a configuration file is not found, the left mouse button, or
-
-or
-
-keys on the root window bring up menus and forms that can create a
-starting configuration file.
+If a configuration file is not found, then the default config is used
+instead.
 
 Fvwm sets two environment variables which are inherited by its children.
 These are _$DISPLAY_ which describes the display on which fvwm is
@@ -564,7 +561,6 @@ AddToFunc StartFunction
 
 DestroyFunc InitFunction
 AddToFunc InitFunction
- + I Module FvwmBanner
  + I Module FvwmIconMan
  + I Exec xsetroot -solid cyan
  + I Exec xterm
@@ -863,12 +859,6 @@ AddToFunc UrgencyDoneFunc
  + I Nop
 ....
 
-== GNOME COMPLIANCE
-
-Fvwm attempts to be GNOME (version 1) compliant. Check
-_http://www.gnome.org_ for what that may mean. To disable GNOME hints
-for some or all windows, the _GNOMEIgnoreHints_ style can be used.
-
 == EXTENDED WINDOW MANAGER HINTS
 
 Fvwm attempts to respect the extended window manager hints (ewmh or EWMH
@@ -1015,11 +1005,9 @@ This "first" font depends of your font path and also of your locale.
 Fonts which match the locale charset are loaded in priority order. For
 example with
 
-
 ....
 -adobe-courier-bold-r-normal--10-*
 ....
-
 
 if the locale charset is ISO8859-1, then fvwm tries to load a font which
 matches
@@ -1190,7 +1178,6 @@ name isn't normal, for example:
 
 you need to add the encoding after the font name using a slash as a
 delimiter. For example:
-
 
 ....
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
@@ -1517,10 +1504,9 @@ $*::
 	parameters that follow after "$9".
 
 $[_n_]::
-
-The _n_:th positional parameter given to a complex function, counting
-from 0. If the corresponding parameter is undefined, the "$[_n_]" is
-deleted from the command line. The parameter is expanded unquoted.
+	The _n_:th positional parameter given to a complex function, counting
+	from 0. If the corresponding parameter is undefined, the "$[_n_]" is
+	deleted from the command line. The parameter is expanded unquoted.
 
 $[_n_-_m_]::
 	The positional parameters given to a complex function, starting with
@@ -1659,7 +1645,7 @@ $[pointer.screen]::
 	The screen name the pointer is currently on. No expansion if RandR is
 	not enabled.
 +
-This command is deprecated; use $[monitor.current] instead.
+	This command is deprecated; use $[monitor.current] instead.
 
 $[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.current], $[monitor.output], $[monitor.count]::
 	Returns information about the selected monitor. These can be nested, for
@@ -1692,7 +1678,6 @@ $[screen.count]::
 	The total number of screens detected. Assumes RandR.
 +
 This is deprecated; use $[monitor.count] instead.
-
 
 $[fg.cs<n>] $[bg.cs<n>] $[hilight.cs<n>] $[shadow.cs<n>] $[fgsh.cs<n>]::
 	These parameters are replaced with the name of the foreground (fg),
@@ -2379,22 +2364,22 @@ _This_:::
 _Rectangle_ <__geometry__>:::
 	the rectangle defined by <__geometry__> in X geometry format. Width
 	and height default to 1 if omitted.
-
++
 If the context-rectangle is omitted or illegal (e.g. "item" on a
 window), "Mouse" is the default. Note that not all of these make sense
 under all circumstances (e.g. "Icon" if the pointer is on a menu).
-
++
 The offset values _x_ and _y_ specify how far the menu is moved from
 its default position. By default, the numeric value given is
 interpreted as a percentage of the context rectangle's width (height),
 but with a trailing '_m_' the menu's width (height) is used instead.
 Furthermore a trailing '_p_' changes the interpretation to mean
 pixels.
-
++
 Instead of a single value you can use a list of values. All additional
 numbers after the first one are separated from their predecessor by
 their sign. Do not use any other separators.
-
++
 If _x_ or _y_ are prefixed with "'__o__<number>" where <number> is an
 integer, the menu and the rectangle are moved to overlap at the
 specified position before any other offsets are applied. The menu and
@@ -2406,34 +2391,33 @@ borders and if you use "o50" they are centered upon each other (try it
 and you will see it is much simpler than this description). The
 default is "o0". The prefix "o<number>" is an abbreviation for
 "+<number>-<number>m".
-
++
 A prefix of '_c_' is equivalent to "o50". Examples:
-
++
 ....
 # window list in the middle of the screen
 WindowList Root c c
-
++
 # menu to the left of a window
 Menu name window -100m c+0
-
++
 # popup menu 8 pixels above the mouse pointer
 Popup name mouse c -100m-8p
-
++
 # somewhere on the screen
 Menu name rectangle 512x384+1+1 +0 +0
-
++
 # centered vertically around a menu item
 AddToMenu foobar-menu
  + "first item" Nop
  + "special item" Popup "another menu" item +100 c
  + "last item" Nop
-
++
 # above the first menu item
 AddToMenu foobar-menu
  + "first item" Popup "another menu" item +0 -100m
 ....
-
-
++
 Note that you can put a sub menu far off the current menu so you could
 not reach it with the mouse without leaving the menu. If the pointer
 leaves the current menu in the general direction of the sub menu the
@@ -2870,7 +2854,6 @@ Examples:
 MenuStyle * ItemFormat "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
 ....
 
-
 Is the default string used by fvwm: (side picture + 4 pixels gap)
 (beginning of the hilighted area + 1 pixel gap) (mini icon + 5p)
 (first column left aligned + 5p) (second column left aligned + 5p)
@@ -2880,7 +2863,6 @@ menu triangle + 3p) (1p + end of hilighted area).
 ....
 MenuStyle * ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 ....
-
 
 Is used by fvwm with the _SubmenusLeft_ option below.
 
@@ -2959,7 +2941,6 @@ MenuStyle red Font lucidasanstypewriter-12
 MenuStyle red MenuFace DGradient 64 Red Black
 ....
 
-
 Note that all style options could be placed on a single line for each
 style name.
 
@@ -2982,7 +2963,7 @@ never overlap the parent menu.
 When the _anim_ option is given, sub menus that do not fit on the
 screen cause the parent menu to be shifted to the left so the sub menu
 can be seen. See also *SetAnimation* command.
-
+	
 *Popup* _PopupName_ [_position_] [_default-action_]::
 	This command has two purposes: to bind a menu to a key or mouse
 	button, and to bind a sub menu into a menu. The formats for the two
@@ -3003,12 +2984,10 @@ The following example binds mouse buttons 2 and 3 to a pop-up called
 the window frame, side-bar, or title-bar, with no modifiers (none of
 shift, control, or meta).
 +
-
 ....
 Mouse 2 FST N Popup "Window Ops"
 Mouse 3 FST N Popup "Window Ops"
 ....
-
 +
 Pop-ups can be bound to keys through the use of the *Key* command.
 Pop-ups can be operated without using the mouse by binding to keys and
@@ -3020,7 +2999,6 @@ sub menu:
 The following example defines a sub menu "Quit-Verify" and binds it
 into a main menu, called "RootMenu":
 +
-
 ....
 AddToMenu Quit-Verify
  + "Really Quit Fvwm?" Title
@@ -3052,7 +3030,6 @@ AddToMenu RootMenu "Root Menu" Title
  + ""                  Nop
  + Quit                Popup Quit-Verify
 ....
-
 +
 Popup differs from *Menu* in that pop-ups do not stay up if the user
 simply clicks. These are popup-menus, which are a little hard on the
@@ -3060,13 +3037,13 @@ wrist. *Menu* menus stay up on a click action. See the *Menu* command
 for an explanation of the interactive behavior of menus. A menu can be
 open up to ten times at once, so a menu may even use itself or any of
 its predecessors as a sub menu.
+	
 *TearMenuOff*::
-When assigned to a menu item, it inserts a tear off bar into the menu
-(a horizontal broken line). Activating that item tears off the menu.
-If the menu item has a label, it is shown instead of the broken line.
-If used outside menus, this command does nothing. Examples:
+	When assigned to a menu item, it inserts a tear off bar into the menu
+	(a horizontal broken line). Activating that item tears off the menu.
+	If the menu item has a label, it is shown instead of the broken line.
+	If used outside menus, this command does nothing. Examples:
 +
-
 ....
 AddToMenu WindowMenu
 + I "" TearMenuOff
@@ -3074,7 +3051,7 @@ AddToMenu WindowMenu
 AddToMenu RootMenu
 + I "click here to tear me off" TearMenuOff
 ....
-
+	
 *Title*::
 	Does nothing This is used to insert a title line in a popup or menu.
 
@@ -3177,12 +3154,10 @@ case this option may help.
 	displays the cursor of the _WAIT_ context of the *CursorStyle*
 	command. "False" forces to not display the cursor. The default is:
 +
-
 ....
 BusyCursor DynamicMenu False, ModuleSynchronous False, \
 Read False, Wait False
 ....
-
 +
 The _*_ option refers to all available options.
 +
@@ -3211,19 +3186,17 @@ default root cursor, you must set your root cursor with the
 	a button release for the *Function* command to consider the action a
 	mouse click. The default delay is 150 milliseconds. Omitting the delay
 	value resets the *ClickTime* to the default.
-
-*ColorLimit* _limit_::
-	This command is obsolete. See the *--color-limit* option to fvwm.
-
-*ColormapFocus* FollowsMouse | FollowsFocus::
-	By default, fvwm installs the colormap of the window that the cursor
-	is in. If you use
 +
-
+*ColorLimit* _limit_::
+This command is obsolete. See the *--color-limit* option to fvwm.
++
+*ColormapFocus* FollowsMouse | FollowsFocus::
+By default, fvwm installs the colormap of the window that the cursor
+is in. If you use
++
 ....
 ColormapFocus FollowsFocus
 ....
-
 +
 then the installed colormap is the one for the window that currently
 has the keyboard focus.
@@ -3318,7 +3291,6 @@ CursorStyle DESTROY 56
 CursorStyle DESTROY gumby
 ....
 
-
 Alternatively, the cursor can be loaded from an (XPM, PNG or SVG)
 image _file_. If fvwm is compiled with Xcursor support, full ARGB is
 used, and (possibly animated) cursor files made with the *xcursorgen*
@@ -3357,11 +3329,9 @@ CursorStyle ROOT nice_arrow.xpm yellow black
 	the *DefaultColors* command. To revert back to the *DefaultColors*
 	colors use
 +
-
 ....
 DefaultColorset -1
 ....
-
 +
 or any variant of the *DefaultColors* command.
 
@@ -3405,14 +3375,11 @@ or any variant of the *DefaultColors* command.
 	*EscapeFunc* command used with the *Key* command allows for
 	configuring this key sequence. An example:
 +
-
 ....
 Key Escape A MC -
 Key Escape A  S EscapeFunc
 ....
-
 +
-
 replaces the Ctrl-Alt-Escape  key sequence with Shift-Escape for aborting a
 *Wait* pause and *ModuleSynchronous* command.  *EscapeFunc* used outside the
 *Key* command does nothing.
@@ -3439,11 +3406,9 @@ replaces the Ctrl-Alt-Escape  key sequence with Shift-Escape for aborting a
 	smallest window that contains the pointer. Note that events propagate
 	upward.
 +
-
 ....
 FakeClick depth 2 press 1 wait 250 release 1
 ....
-
 +
 This simulates a click with button 1 in the parent window (depth 2)
 with a delay of 250 milliseconds between the press and the release.
@@ -3463,18 +3428,15 @@ Note: all command names can be abbreviated with their first letter.
 +
 Save all GVim sessions with: "Esc:w\n"
 +
-
 ....
 All (gvim) FakeKeypress press Escape \
                   press colon \
                   press w \
                   press Return
 ....
-
 +
 Save & exit all GVim sessions with: "Esc:wq\n"
 +
-
 ....
 All (gvim) FakeKeypress press Escape \
                   press colon \
@@ -3482,15 +3444,12 @@ All (gvim) FakeKeypress press Escape \
                   press q \
                   press Return
 ....
-
 +
 Send A to a specific window:
 +
-
 ....
 WindowId 0x3800002 FakeKeypress press A
 ....
-
 +
 Note: all command names can be abbreviated with their first letter.
 
@@ -3498,7 +3457,6 @@ Note: all command names can be abbreviated with their first letter.
 	This command is obsolete. Please replace the global options in your
 	configuration file according to the following table:
 +
-
 ....
 GlobalOpts WindowShadeShrinks
 -->
@@ -3585,11 +3543,9 @@ BugOpts RaiseOverNativeWindows off
 	This command is obsoleted by the *Style* options _HilightFore_ and
 	_HilightBack_. Please use
 +
-
 ....
 Style * HilightFore textcolor, HilightBack backgroundcolor
 ....
-
 +
 instead.
 
@@ -3597,22 +3553,18 @@ instead.
 	This command is obsoleted by the *Style* option _HilightColorset_.
 	Please use
 +
-
 ....
 Style * HilightColorset num
 ....
-
 +
 instead.
 
 *IconFont* [_fontname_]::
 	This command is obsoleted by the *Style* option _IconFont_. Please use
 +
-
 ....
 Style * IconFont fontname
 ....
-
 +
 instead.
 
@@ -3640,25 +3592,9 @@ easily.
 +
 For example:
 +
-
 ....
 ImagePath $HOME/icons:+:/usr/include/X11/bitmaps
 ....
-
-+
-Note: if the *FvwmM4* module is used to parse your _config_ files,
-then m4 may want to mangle the word "include" which frequently shows
-up in the *ImagePath* command. To fix this one may add
-+
-
-....
-undefine(`include')
-....
-
-+
-prior to the *ImagePath* command, or better: use the *-m4-prefix*
-option to force all *m4* directives to have a prefix of "m4_" (see the
-*FvwmM4* man page).
 
 *LocalePath* _path_::
 	Specifies a colon separated list of "locale path" in which to search
@@ -3666,20 +3602,16 @@ option to force all *m4* directives to have a prefix of "m4_" (see the
 	path and a text domain separated by a semicolon (';'). As an example
 	the default locale path is:
 +
-
 ....
 /install_prefix/share/locale;fvwm
 ....
-
 +
 where install_prefix is the fvwm installation directory. With such a
 locale path translations are searched for in
 +
-
 ....
 /install_prefix/share/locale/lang/LC_MESSAGES/fvwm.mo
 ....
-
 +
 where _lang_ depends on the locale. If no directory is given the
 default directory path is assumed. If no text domain is given, *fvwm*
@@ -3687,16 +3619,6 @@ is assumed. Without argument the default locale path is restored.
 +
 As for the *ImagePath* command, _path_ may contain environment
 variables and a '+' to append or prepend the locale path easily.
-+
-For example, the fvwm-themes package uses
-+
-
-....
-LocalePath ";fvwm-themes:+"
-....
-
-+
-to add locale catalogs.
 +
 The default fvwm catalog contains a few strings used by the fvwm
 executable itself (Desk and Geometry) and strings used in some default
@@ -3707,7 +3629,6 @@ very few languages are supported.
 +
 The main use of locale catalogs is via the "$[gt.string]" parameter:
 +
-
 ....
 DestroyMenu MenuFvwmWindowOps
 AddToMenu   MenuFvwmWindowOps "$[gt.Window Ops]" Title
@@ -3722,7 +3643,6 @@ AddToMenu   MenuFvwmWindowOps "$[gt.Window Ops]" Title
 + "$[gt.&Close]"             Close
 + "$[gt.&Destroy]"           Destroy
 ....
-
 +
 gives a menu in the locale languages if translations are available.
 +
@@ -3795,7 +3715,7 @@ option.
 	and its arguments undergo the usual command line expansion, and, when
 	_command_ is finally executed, it is expanded again. It may therefore
 	be necessary to quote the parts of the command that must not be
-expanded twice.
+	expanded twice.
 +
 Note: A window's id as it is returned with $[w.id] can be used as the
 _command_id_. Example:
@@ -3810,12 +3730,10 @@ The *Schedule* command also supports the optional keyword _Periodic_
 which indicates that the _command_ should be executed every
 _delay_ms_. Example:
 +
-
 ....
 Schedule Periodic 10000 PipeRead '[ -N "$MAIL" ] && echo \
  Echo You have mail'
 ....
-
 +
 Use the *Deschedule* command to stop periodic commands.
 
@@ -3849,7 +3767,6 @@ menu causes the interpreted function "WindowListFunc" to be run with
 the window id of that window passed in as $0. The default
 "WindowListFunc" looks like this:
 +
-
 ....
 AddToFunc WindowListFunc
 + I Iconify off
@@ -3857,7 +3774,6 @@ AddToFunc WindowListFunc
 + I Raise
 + I WarpToWindow 5p 5p
 ....
-
 +
 You can destroy the built-in "WindowListFunc" and create your own if
 these defaults do not suit you.
@@ -3866,19 +3782,15 @@ The window list menu uses the "WindowList" menu style if it is defined
 (see *MenuStyle* command). Otherwise the default menu style is used.
 To switch back to the default menu style, issue the command
 +
-
 ....
 DestroyMenuStyle WindowList
 ....
-
 +
 Example:
 +
-
 ....
 MenuStyle WindowList SelectOnRelease Meta_L
 ....
-
 +
 The _conditions_ can be used to exclude certain windows from the
 window list. Please refer to the *Current* command for details. Only
@@ -3896,7 +3808,6 @@ of more than one word.
 The _double-click-action_ is useful to define a default window if you
 have bound the window list to a key (or button) like this:
 +
-
 ....
 # Here we call an existing function, but
 # it may be different.  See the default
@@ -3907,7 +3818,6 @@ AddToFunc SwitchToWindow
 
 Key Tab A M WindowList "Prev SwitchToWindow"
 ....
-
 +
 Hitting Alt-Tab once it brings up the window list, if you hit it twice the
 focus is flipped between the current and the last focused window. With the
@@ -3948,12 +3858,10 @@ key. To switch it off, use _SelectOnRelease_ without a key name.
 If you pass in a function via *Function* funcname, it is called within
 a window context of the selected window:
 +
-
 ....
 AddToFunc IFunc I Iconify toggle
 WindowList Function IFunc, NoSticky, CurrentDesk, NoIcons
 ....
-
 +
 If you use the _Layer_ _m_ [_n_] option, only windows in layers
 between m and n are displayed. n defaults to m. With the
@@ -3992,11 +3900,9 @@ visible.
 If you wanted to use the *WindowList* as an icon manager, you could
 invoke the following:
 +
-
 ....
 WindowList OnlyIcons, Sticky, OnTop, Geometry
 ....
-
 +
 (Note - the _Only_ options essentially wipe out all other ones... but
 the _OnlyListSkip_ option which just causes *WindowList* to only
@@ -4035,45 +3941,40 @@ consider the windows with _WindowListSkip_ style.)
 	show, change the colorset, change the location, or change the screen
 	of the geometry window. Multiple options can be set at once separated
 	by spaces. Details of each option are described below.
-+
-> *GeometryWindow* Hide [Never | Move | Resize]
-+
-Hides or switches off the geometry window. If the optional parameters _Move_
-or _Resize_ are given, it will only hide the geometry window during the
-respective operation. The parameter _Never_ will switch the geometry back on
-again (equivalent to _Show_).
-+
-> *GeometryWindow* Show [Never | Move | Resize]
-+
-Shows or switches on the geometry window (equivalent to _Hide Never_). If
-the optional parameters _Move_ or _Resize_ are given, it will only show the
-geometry window during the respective operation. The parameter _Never_ will
-switch the geometry window off (equivalent to _Hide_).
-+
-> *GeometryWindow* Colorset _cset_
-+
-Sets colorset of the gometry window to _cset_. Use the literal option
-_default_ for _cset_ to use the default colorset.
-+
-> *GeometryWindow* Position \[\+|-]_x_[p] \[+|-]_y_[p]
-+
-Configures the position the geometry window appears. _x_ and _y_ are the
-relative coordinates as a percentage of the screen size. If a leading '-'
-is provided the coordinates are computed from the left/bottom of the screen
-respectively. If the coordinates are appended with a 'p', they are interpreted
-as the number of pixels from the respective screen edge. If no position
-arguments are given, the geometry window's position will return to its default
-state of the upper left corner or the center if emulating MWM.
-+
-> *GeometryWindow* Screen _RANDRNAME_
-+
-Configure which screen the geometry window is shown on. By default the
-geometry window is shown on the current screen. If a valid _RANDRNAME_
-is provided, the geometry window will always be shown on that screen.
-Use _current_ as the _RANDRNAME_ to return the default.
-+
+
+
+*GeometryWindow* Hide [Never | Move | Resize]
+	Hides or switches off the geometry window. If the optional parameters _Move_
+	or _Resize_ are given, it will only hide the geometry window during the
+	respective operation. The parameter _Never_ will switch the geometry back on
+	again (equivalent to _Show_).
+
+*GeometryWindow* Show [Never | Move | Resize]
+	Shows or switches on the geometry window (equivalent to _Hide Never_). If
+	the optional parameters _Move_ or _Resize_ are given, it will only show the
+	geometry window during the respective operation. The parameter _Never_ will
+	switch the geometry window off (equivalent to _Hide_).
+
+*GeometryWindow* Colorset _cset_
+	Sets colorset of the gometry window to _cset_. Use the literal option
+	_default_ for _cset_ to use the default colorset.
+
+*GeometryWindow* Position \[\+|-]_x_[p] \[+|-]_y_[p]
+	Configures the position the geometry window appears. _x_ and _y_ are the
+	relative coordinates as a percentage of the screen size. If a leading '-'
+	is provided the coordinates are computed from the left/bottom of the screen
+	respectively. If the coordinates are appended with a 'p', they are interpreted
+	as the number of pixels from the respective screen edge. If no position
+	arguments are given, the geometry window's position will return to its default
+	state of the upper left corner or the center if emulating MWM.
+
+*GeometryWindow* Screen _RANDRNAME_
+	Configure which screen the geometry window is shown on. By default the
+	geometry window is shown on the current screen. If a valid _RANDRNAME_
+	is provided, the geometry window will always be shown on that screen.
+	Use _current_ as the _RANDRNAME_ to return the default.
+
 Examples:
-+
 
 ....
 # Position the geometry window in the center of the screen
@@ -4088,10 +3989,9 @@ GeometryWindow Screen $[monitor.primary]
 GeometryWindow Hide
 ....
 
-
 *HideGeometryWindow* [Never | Move | Resize]::
 	This command has been depreciated and is now obsolete. Use
-        *GeometryWindow Hide* instead.
+	*GeometryWindow Hide* instead.
 
 *Layer* [_arg1_ _arg2_] | [default]::
 	Puts the current window in a new layer. If _arg1_ is non zero then the
@@ -4106,7 +4006,6 @@ arguments are specified.
 	Allows the user to lower a window. Note that this lowers a window only
 	in its layer. To bring a window to the absolute bottom, use
 +
-
 ....
 AddToFunc lower-to-bottom
  + I Layer 0 0
@@ -4141,16 +4040,12 @@ If the single argument _pointer_ is given, the top left corner of the
 window is moved to the pointer position before starting an interactive
 move; this is mainly intended for internal use by modules like *FvwmPager*.
 +
-
-> *Move* pointer
-
+*Move* pointer
 +
 To move a window in a given direction until it hits another window, icon,
 or screen boundary use:
 +
-
-> *Move* shuffle [Warp] [snap _type_] [layers _min_ _max_] _direction_(s)
-
+*Move* shuffle [Warp] [snap _type_] [layers _min_ _max_] _direction_(s)
 +
 The _direction_ can be _North_/_N_/_Up_/_U_, _East_/_E_/_Right_/_R_,
 _South_/_S_/_Down_/_D_, or _West_/_W_/_Left_/_L_. The window will move
@@ -4181,7 +4076,7 @@ Move shuffle Up Left
 *Move* can be used to moved a window to a specified position:
 +
 
-> *Move* [screen _S_] \[w | m]_x_[p | w] \[w | m]_y_[p | w] [Warp] [ewmhiwa]
+*Move* [screen _S_] \[w | m]_x_[p | w] \[w | m]_y_[p | w] [Warp] [ewmhiwa]
 
 +
 This will move the window to the _x_ and _y_ position (see below).
@@ -4299,7 +4194,6 @@ options).
 +
 Examples:
 +
-
 ....
 # Move window to page (2,3)
 MoveToPage 2 3
@@ -4324,28 +4218,22 @@ MoveToPage wrapx wrapy +2p -1p
 	should be used. The percentage is percent of the total screen area
 	(may be greater than 100). With
 +
-
 ....
 OpaqueMoveSize 0
 ....
-
 +
 all windows are moved using the traditional rubber-band outline. With
 +
-
 ....
 OpaqueMoveSize unlimited
 ....
-
 +
 or if a negative percentage is given all windows are moved as solid
 windows. The default is
 +
-
 ....
 OpaqueMoveSize 5
 ....
-
 +
 which allows small windows to be moved in an opaque manner but large
 windows are moved as rubber-bands. If _percentage_ is omitted or
@@ -4365,13 +4253,11 @@ manner you can use the _ResizeOpaque_ style. See the *Style* command.
 	Allows the user to raise a window. Note that this raises a window only
 	in its layer. To bring a window to the absolute top, use
 +
-
 ....
 AddToFunc raise-to-top
  + I Layer 0 ontop
  + I Raise
 ....
-
 +
 where ontop is the highest layer used in your setup.
 
@@ -4381,7 +4267,7 @@ where ontop is the highest layer used in your setup.
 	_RaiseTransient_ style is used; see the *Style* command) otherwise it
 	is lowered.
 
-*Resize* [[frame] [direction _dir_] [warptoborder _automatic_] [fixeddirection] [w]_width_[p | c | wa | da] [w]_height_[p | c]]::
+*Resize* [[frame] [direction _dir_] [warptoborder _automatic_] [fixeddirection] \[w]_width_[p | c | wa | da] \[w]_height_[p | c]]::
 	Allows for resizing a window. If called from somewhere in a window or
 	its border, then that window is resized. If called from the root
 	window then the user is allowed to select the target window.
@@ -4400,11 +4286,9 @@ by the client application (hence the c) is used. With the suffix
 EWMH working area, and with the suffix '_da_' it is a percentage of
 the width or height of the EWMH dynamic working area. So you can say
 +
-
 ....
 Resize 80c 24c
 ....
-
 +
 to make a terminal window just big enough for 80x24 characters.
 +
@@ -4412,23 +4296,19 @@ If the _width_ or _height_ is prefixed with the letter '_w_' the size
 is not taken as an absolute value but added to the current size of the
 window. Example:
 +
-
 ....
 # Enlarge window by one line
 Resize keep w+1c
 ....
-
 +
 Both, _width_ and _height_ can be negative. In this case the new size
 is the screen size minus the given value. If either value is "_keep_",
 the corresponding dimension of the window is left untouched. The new
 size is the size of the client window, thus
 +
-
 ....
 Resize 100 100
 ....
-
 +
 may make the window bigger than the screen. To base the new size on
 the size of the whole fvwm window, add the _frame_ option after the
@@ -4448,7 +4328,6 @@ pointer's proximity to a given border. Also, if resizing is started by
 clicking on the window border, the pointer is warped to the outer edge
 of the border.
 +
-
 ....
 AddToFunc ResizeSE I Resize Direction SE
 Mouse 3 A M ResizeSE
@@ -4481,7 +4360,6 @@ Mouse 3 A M ResizeSE
 +
 Examples:
 +
-
 ....
 # Move window to top left corner and cover
 # most of the screen
@@ -4490,7 +4368,6 @@ ResizeMove -10p -20p 0 0
 # Grow the focused window towards the top of screen
 Current Resize keep w+$[w.y]p keep 0
 ....
-
 +
 Note: Fvwm may not be able to parse the command properly if the option
 _bottomright_ of the *Resize* command is used.
@@ -4524,12 +4401,10 @@ _bottomright_ of the *Resize* command is used.
 	as a fraction of the difference between the starting location and the
 	ending location. e.g.:
 +
-
 ....
 SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \
 .45 .6 .75 .85 .90 .94 .97 .99 1.0
 ....
-
 +
 Sets the delay between frames to 10 milliseconds, and sets the
 positions of the 16 frames of the animation motion. Negative values
@@ -4557,19 +4432,15 @@ the arguments for which are the same as for the *GotoDesk* command.
 You cannot simply change the name of the command: the syntax has
 changed. If you used:
 +
-
 ....
 WindowsDesk n
 ....
-
 +
 to move a window to desk n, you have to change it to:
 +
-
 ....
 MoveToDesk 0 n
 ....
-
 *XorPixmap* [_pixmap_]::
 	Selects the pixmap with which bits are xor'ed when doing rubber-band
 	window moving or resizing. This has a better chance of making the
@@ -4596,29 +4467,23 @@ MoveToDesk 0 n
 	*WarpToWindow*. Both horizontal and vertical values are expressed in
 	percent of pages, so
 +
-
 ....
 CursorMove 100 100
 ....
-
 +
 means to move down and right by one full page.
 +
-
 ....
 CursorMove 50 25
 ....
-
 +
 means to move right half a page and down a quarter of a page.
 Alternatively, the distance can be specified in pixels by appending a
 '_p_' to the horizontal and/or vertical specification. For example
 +
-
 ....
 CursorMove -10p -10p
 ....
-
 +
 means move ten pixels up and ten pixels left. The CursorMove function
 should not be called from pop-up menus.
@@ -4647,7 +4512,6 @@ keyboard focus to windows on other desks.
 To raise and/or warp a pointer to a window together with *Focus* or
 *FlipFocus*, use a function, like:
 +
-
 ....
 AddToFunc SelectWindow
 + I Focus
@@ -4667,11 +4531,9 @@ AddToFunc SelectWindow
 	it is not visible. For example it is possible to warp the pointer to
 	the center of the root window on screen 1:
 +
-
 ....
 WindowId root 1 WarpToWindow 50 50
 ....
-
 
 === Window State
 
@@ -4747,53 +4609,41 @@ must have an argument which specifies the screen on which to operate.
 Here are some examples. The following adds a title-bar button to
 switch a window to the full vertical size of the screen:
 +
-
 ....
 Mouse 0 4 A Maximize 0 100
 ....
-
 +
 The following causes windows to be stretched to the full width:
 +
-
 ....
 Mouse 0 4 A Maximize 100 0
 ....
-
 +
 This makes a window that is half the screen size in each direction:
 +
-
 ....
 Mouse 0 4 A Maximize 50 50
 ....
-
 +
 To expand a window horizontally until any other window is found:
 +
-
 ....
 Mouse 0 4 A Maximize 0 grow
 ....
-
 +
 To expand a window until any other window on the same or a higher
 layer is hit.
 +
-
 ....
 Mouse 0 4 A Maximize growonlayers $[w.layer] -1 grow grow
 ....
-
 +
 To expand a window but leave the lower 60 pixels of the screen
 unoccupied:
 +
-
 ....
 Mouse 0 4 A Maximize 100 -60p
 ....
-
 +
 Values larger than 100 can be used with caution.
 
@@ -4842,7 +4692,6 @@ Values larger than 100 can be used with caution.
 	_WindowShadeLazy_, _WindowShadeAlwaysLazy_ and _WindowShadeBusy_
 	options of the *Style* command. Examples:
 +
-
 ....
 Style * WindowShadeShrinks, WindowShadeSteps 20, \
   WindowShadeLazy
@@ -4851,7 +4700,6 @@ Mouse 1 [ S WindowShade West
 Mouse 1 ] S WindowShade E
 Mouse 1 _ S WindowShade S
 ....
-
 +
 Note: When a window that has been shaded with a _direction_ argument
 changes the direction of the window title (see _TitleAtTop_ *Style*
@@ -4884,11 +4732,9 @@ if the num-lock and scroll-lock keys interfere with your shortcuts. With
 XFree86 '2' usually is the num-lock  modifier and '5' refers to the
 scroll-lock key. To turn all these pesky modifiers off you can use this command:
 +
-
 ....
 IgnoreModifiers L25
 ....
-
 +
 If the _Modifiers_ argument is the string "_default_", fvwm reverts
 back to the default value "L".
@@ -4921,7 +4767,6 @@ or lower certain windows when the mouse pointer enters an edge.
 The following example raises *FvwmButtons* if the mouse pointer enters
 the top edge of the screen.
 +
-
 ....
 # Disable EdgeScrolling but make it possible
 # to move windows over the screen edge
@@ -4954,7 +4799,6 @@ DestroyFunc AutoRaiseFunction
 AddToFunc AutoRaiseFunction
 + I Current (FvwmButtons) Raise
 ....
-
 +
 Normally, the invisible pan frames are only on the screen edges that
 border virtual pages. If a screen edge has a command bound to it, the
@@ -5011,11 +4855,9 @@ The following example binds the built-in window list to pop up when
 +
 is hit, no matter where the mouse pointer is:
 +
-
 ....
 Key F11 A SCM WindowList
 ....
-
 +
 Binding a key to a title-bar button causes that button to appear.
 Please refer to the *Mouse* command for details.
@@ -5073,13 +4915,11 @@ The following example makes all buttons but button 3 usable for
 interactive placement and makes drag moves started by other buttons
 than one cancel if button 1 is pressed before finishing the move:
 +
-
 ....
 Mouse 0 P N PlaceWindow
 Mouse 3 P N CancelPlacement
 Mouse 1 P N CancelPlacementDrag
 ....
-
 +
 By default, the binding applies to all windows. You can specify that a
 binding only applies to specific windows by specifying the window name
@@ -5090,14 +4930,12 @@ to.
 The following example shows how the same key-binding can be used to
 perform different functions depending on the window that is focused:
 +
-
 ....
 Key (rxvt)  V A C Echo ctrl-V-in-RXVT
 Key (*term) V A C Echo ctrl-V-in-Term
 Key (*vim)  V A C --
 Key         V A C Echo ctrl-V-elsewhere
 ....
-
 +
 A '_--_' action indicates that the event should be propagated to the
 specified window to handle. This is only a valid action for
@@ -5106,11 +4944,9 @@ window-specific bindings.
 This example shows how to display the WindowList when Button 3 is
 pressed on an rxvt window:
 +
-
 ....
 Mouse (rxvt) 3 A A WindowList
 ....
-
 +
 Note that Fvwm actually intercepts all events for a window-specific
 binding and (if the focused window doesn't match any of the bindings)
@@ -5120,11 +4956,9 @@ programs ignore these synthetic events by default - xterm is one of
 them. To enable handling of these events, add the following line to
 your _~/.Xdefaults_ file:
 +
-
 ....
 XTerm*allowSendEvents:  true
 ....
-
 +
 _Modifiers_ is any combination of '_N_' for no modifiers, '_C_' for
 control, '_S_' for shift, '_M_' for Meta, '_L_' for Caps-Lock or '_A_'
@@ -5145,11 +4979,9 @@ Smaller-numbered buttons are displayed toward the outside of the
 window while larger-numbered buttons appear toward the middle of the
 window (0 is short for 10). In summary, the buttons are numbered:
 +
-
 ....
 1 3 5 7 9    0 8 6 4 2
 ....
-
 +
 The highest odd numbered button which has an action bound to it
 determines the number of buttons drawn on the left side of the title
@@ -5170,12 +5002,10 @@ or keyboard keys.
 +
 Example:
 +
-
 ....
 Style * SloppyFocus
 PointerKey f1 a m Menu MainMenu
 ....
-
 
 === Controlling Window Styles
 
@@ -5189,15 +5019,12 @@ the end of this section.
 	but at the cost of a little bit of time. *FocusStyle* is meant to make
 	the configuration file more readable. Example:
 +
-
 ....
 FocusStyle * EnterToFocus, !LeaveToUnfocus
 ....
-
 +
 is equivalent to
 +
-
 ....
 Style * FPEnterToFocus, !FPLeaveToUnfocus
 ....
@@ -5211,11 +5038,9 @@ Style * FPEnterToFocus, !FPLeaveToUnfocus
 Destroying style "*" can be done, but isn't really to be recommended.
 For example:
 +
-
 ....
 DestroyStyle Application*
 ....
-
 +
 This removes all settings for the style named "Application*", NOT all
 styles starting with "Application".
@@ -5285,9 +5110,8 @@ _StartsOnPageIgnoresTransients_, _IconTitle_ / _!IconTitle_,
 _MwmButtons_ / _FvwmButtons_, _MwmBorder_ / _FvwmBorder_, _MwmDecor_ /
 _!MwmDecor_, _MwmFunctions_ / _!MwmFunctions_, _HintOverride_ /
 _!HintOverride_, _!Button_ / _Button_, _ResizeHintOverride_ /
-_!ResizeHintOverride_, _OLDecor_ / _!OLDecor_, _GNOMEUseHints_ /
-_GNOMEIgnoreHints_, _StickyIcon_ / _SlipperyIcon_,
-_StickyAcrossPagesIcon_ / _!StickyAcrossPagesIcon_,
+_!ResizeHintOverride_, _OLDecor_ / _!OLDecor_, _StickyIcon_ /
+_SlipperyIcon_, _StickyAcrossPagesIcon_ / _!StickyAcrossPagesIcon_,
 _StickyAcrossDesksIcon_ / _!StickyAcrossDesksIcon_, _ManualPlacement_
 / _CascadePlacement_ / _MinOverlapPlacement_ /
 _MinOverlapPercentPlacement_ / _TileManualPlacement_ /
@@ -5623,41 +5447,33 @@ These styles replace the older *WindowFont* and _IconFont_ commands.
 The deprecated _IndexedWindowName_ style causes fvwm to use window
 titles in the form
 +
-
 ....
 name (i)
 ....
-
 +
 where _name_ is the exact window name and _i_ is an integer which
 represents the _i th_ window with _name_ as window name. This has
 been replaced with:
 +
-
 ....
 TitleFormat %n (%t)
 ....
-
 +
 _ExactWindowName_ restores the default which is to use the exact
 window name. Deprecated in favour of:
 +
-
 ....
 TitleFormat %n
 ....
-
 +
 _IndexedIconName_ and _ExactIconName_ work the same as
 _IndexedWindowName_ and _ExactWindowName_ styles but for the icon
 titles. Both are deprecated in favour of:
 +
-
 ....
 IconTitleFormat %n (%t)
 IconTitleFormat %n
 ....
-
 +
 _TitleFormat_ describes what the visible name of a window should
 look like, with the following placeholders being valid:
@@ -5683,20 +5499,16 @@ at least one of the placeholders mentioned. No quote stripping is
 performed on the string, so for example the following is printed
 verbatim:
 +
-
 ....
 TitleFormat " %n " -> [%t] ->      [%c]
 ....
-
 +
 Note: It's perfectly possible to use a _TitleFormat_ which can
 result in wiping out the visible title altogether. For example:
 +
-
 ....
 TitleFormat %z
 ....
-
 +
 Simply because the placeholder '%z' isn't supported. This is not a
 bug but rather a facet of how the formatting parser works.
@@ -5757,21 +5569,17 @@ disabled again with the _FirmBorder_ style.
 +
 There is one exception to these rules, namely
 +
-
 ....
 Style * Icon unknown.xpm
 ....
-
 +
 doesn't force the unknown.xpm icon on every window, it just sets the
 default icon like the DefaultIcon command. If you really want all
 windows to have the same icon, you can use
 +
-
 ....
 Style ** Icon unknown.xpm
 ....
-
 +
 If the _NoIcon_ attribute is set then the specified window simply
 disappears when it is iconified. The window can be recovered through
@@ -5779,30 +5587,24 @@ the window-list. If _Icon_ is set without an argument then the
 _NoIcon_ attribute is cleared but no icon is specified. An example
 which allows only the *FvwmPager* module icon to exist:
 +
-
 ....
 Style * NoIcon
 Style FvwmPager Icon
 ....
-
 +
 _IconBox_ takes no argument, four numeric arguments (plus optionally
 a screen specification), an X11 geometry string or the string
 "none":
 +
-
 ....
 IconBox [screen scr-spec] l t r b
 ....
-
 +
 or
 +
-
 ....
 IconBox geometry
 ....
-
 +
 Where _l_ is the left coordinate, _t_ is the top, _r_ is right and
 _b_ is bottom. Negative coordinates indicate distance from the right
@@ -5813,22 +5615,18 @@ window center is located. This is only useful with multiple screens.
 The "l t r b" specification is more flexible than an X11 geometry.
 For example:
 +
-
 ....
 IconBox -80 240 -1 -1
 ....
-
 +
 defines a box that is 80 pixels wide from the right edge, 240 pixels
 down from the top, and continues to the bottom of the screen.
 +
 Perhaps it is easier to use is an X11 geometry string though:
 +
-
 ....
 IconBox 1000x70-1-1
 ....
-
 +
 places an 1000 by 70 pixel icon box on the bottom of the screen
 starting in the lower right hand corner of the screen. One way to
@@ -5842,12 +5640,10 @@ overflow areas. When the first icon box is full, the second one is
 filled. All the icon boxes for one style must be defined in one
 *Style* command. For example:
 +
-
 ....
 Style * IconBox -80 240 -1 -1, \
   IconBox 1000x70-1-1
 ....
-
 +
 A Style command with the IconBox option replaces any icon box
 defined previously by another Style command for the same style.
@@ -5869,13 +5665,11 @@ Hint: You can auto arrange your icons in the icon box with a simple
 fvwm function. Put the "DeiconifyAndRearrange" function below in
 your configuration file:
 +
-
 ....
 AddToFunc DeiconifyAndRearrange
  + C Iconify off
  + C All (CurrentPage, Iconic) PlaceAgain Icon
 ....
-
 +
 And then replace all places where you call the *Iconify* command to
 de-iconify an icon with a call to the new function. For example
@@ -5891,11 +5685,9 @@ AddToFunc IconFunc
 
 Mouse 1 I A Iconify off
 ....
-
 +
 with
 +
-
 ....
 AddToFunc IconFunc
  + C DeiconifyAndRearrange
@@ -5905,15 +5697,12 @@ AddToFunc IconFunc
 
 Mouse 1 I A DeiconifyAndRearrange
 ....
-
 +
 _IconGrid_ takes 2 numeric arguments greater than zero.
 +
-
 ....
 IconGrid x y
 ....
-
 +
 Icons are placed in an icon box by stepping through the icon box
 using the _x_ and _y_ values for the icon grid, looking for a free
@@ -5923,30 +5712,24 @@ larger than your largest icon. Use the _IconSize_ argument to clip
 or stretch an icon to a maximum size. An _IconGrid_ definition must
 follow the *IconBox* definition that it applies to:
 +
-
 ....
 Style * IconBox -80x240-1-1, IconGrid 90 90
 ....
-
 +
 _IconFill_ takes 2 arguments.
 +
-
 ....
 IconFill Bottom Right
 ....
-
 +
 Icons are placed in an icon box by stepping through the icon box
 using these arguments to control the direction the box is filled in.
 By default the direction is left to right, then top to bottom. This
 would be expressed as:
 +
-
 ....
 IconFill left top
 ....
-
 +
 To fill an icon box in columns instead of rows, specify the vertical
 direction (top or bottom) first. The directions can be abbreviated
@@ -5954,20 +5737,16 @@ or spelled out as follows: "t", "top", "b", "bot", "bottom", "l",
 "lft", "left", "r", "rgt", "right". An *IconFill* definition must
 follow the *IconBox* definition that it applies to:
 +
-
 ....
 Style * IconBox -80x240-1-1, IconFill b r
 ....
-
 +
 _IconSize_ sets limits on the size of an icon image. Both
 user-provided and application-provided icon images are affected.
 +
-
 ....
 IconSize [ width height [ maxwidth maxheight ] ]
 ....
-
 +
 All arguments are measured in pixels. When all four arguments are
 passed to _IconSize,_ _width_ and _height_ represent the minimum
@@ -6032,13 +5811,11 @@ background. If you do not like the result, do not use the
 _ResizeOpaque_ style for these windows. To exempt certain windows from
 opaque resizing you could use these lines in your configuration file:
 +
-
 ....
 Style * ResizeOpaque
 Style rxvt ResizeOutline
 Style emacs ResizeOutline
 ....
-
 +
 _Sticky_ makes the window sticky, i.e. it is always visible on each
 page and each desk. The opposite style, _Slippery_ reverts back to the
@@ -6225,11 +6002,9 @@ viewport is scrolled. If -1 is given as the delay, page flipping is
 disabled completely. The defaults are no delay for moving (0) and no
 flipping for resizing (-1). Using these styles without any argument
 restores the default settings. Note that, with
-
 ....
 EdgeScroll 0 0
 ....
-
 it is still possible to move or resize windows across the edge of the
 current screen. See also *EdgeThickness*.
 
@@ -6248,11 +6023,9 @@ _EdgeMoveResistance_ can be used without any parameters.
 
 The option _InitialMapCommand_ allows for any valid fvwm command or
 function to run when the window is initially mapped by fvwm. Example:
-
 ....
 Style MyWindow StartsOnPage 0 0, InitialMapCommand Iconify
 ....
-
 
 This would hence place the window called _MyWindow_ on page 0 0 for
 the current desk, and immediately run the *Iconify* command on that
@@ -6262,12 +6035,10 @@ Note that should _InitialMapCommand_ be used as a global option for
 all windows, but there is a need that some windows should not have
 this command applied, then an action of *Nop* can be used on those
 windows, as in the following example:
-
 ....
 Style * InitialMapCommand Iconify
 Style XTeddy InitialMapCommand Nop
 ....
-
 *Window Manager placement*::
 	Applications can place windows at a particular spot on the screen
 	either by window manager hints or a geometry specification. When they
@@ -6726,12 +6497,6 @@ _OLDecor_ makes fvwm attempt to recognize and respect the olwm and
 olvwm hints that many older XView and OLIT applications use. Switch
 this option off with _NoOLDecor_.
 +
-With _GNOMEIgnoreHints_ fvwm ignores all GNOME hints for the window,
-even if GNOME compliance is compiled in. This is useful for those
-pesky applications that try to be more clever than the user and use
-GNOME hints to force the window manager to ignore the user's
-preferences. The _GNOMEUseHints_ style switches back to the default
-behavior.
 +
 _UseDecor_ This style is deprecated and will be removed in the future.
 There are plans to replace it with a more flexible solution in
@@ -6873,7 +6638,7 @@ specified is used.
 
 === Window Styles
 
-*AddButtonStyle* button [_state_] [_style_] [-- [!]_flag_ ...]::
+*AddButtonStyle* button [_state_] [_style_] \[-- [!]_flag_ ...]::
 	Adds a button style to _button_. _button_ can be a button number, or
 	one of "_All_", "_Left_" or "_Right_". _state_ can be "_ActiveUp_",
 	"_ActiveDown_", "_InactiveUp_" or "_InactiveDown_", or "_Active_" (the
@@ -6923,7 +6688,7 @@ for all buttons, which causes fvwm to draw any styles set with
 used to place additional pixmaps for both "ActiveUp" and "ActiveDown"
 states and a vector button style is drawn on top of all states.
 
-*AddTitleStyle* [_state_] [_style_] [-- [!]_flag_ ...]::
+*AddTitleStyle* [_state_] [_style_] [-- \[!]_flag_ ...]::
 	Adds a title style to the title-bar. _state_ can be "_ActiveUp_",
 	"_ActiveDown_", "_InactiveUp_" or "_InactiveDown_", or "_Active_" (the
 	same as both "ActiveUp" and "ActiveDown") or "_Inactive_" (the same as
@@ -7000,7 +6765,7 @@ and now apply the style again:
 Style xterm UseStyle FlatStyle
 ....
 
-*BorderStyle* _state_ [_style_] [-- [!]_flag_ ...]::
+*BorderStyle* _state_ [_style_] \[-- [!]_flag_ ...]::
 	Defines a border style for windows. _state_ can be either "_Active_"
 	or "_Inactive_". If _state_ is omitted, then the style is set for both
 	states. If the _style_ and _flags_ are enclosed in parentheses, then
@@ -7085,7 +6850,7 @@ If _InactiveDown_ argument is "False" (only applied when _Inactive_ is
 are drawn using "InactiveUp" or "ActiveUp" states depending on the
 values of the other key words.
 
-*ButtonStyle* button [_state_] [_style_] [-- [!]_flag_ ...]::
+*ButtonStyle* button [_state_] [_style_] \[-- [!]_flag_ ...]::
 	Sets the button style for a title-bar button. _button_ is the
 	title-bar button number between 0 and 9, or one of "_All_", "_Left_",
 	"_Right_", or "_Reset_". Button numbering is described in the *Mouse*
@@ -7349,7 +7114,7 @@ Style Emacs MiniIcon mini-doc.xpm
 ButtonStyle 1 MiniIcon
 ....
 
-*ButtonStyle* _button_ - [!]_flag_ ...::
+*ButtonStyle* _button_ - \[!]_flag_ ...::
 	Sets state-independent flags for the specified _button_.
 	State-independent flags affect button behavior. Each _flag_ is
 	separated by a space. If a '!' is prefixed to the flag then the
@@ -7439,7 +7204,7 @@ DestroyDecor CustomDecor1
 TitleStyle LeftJustified Height 24
 ....
 
-*TitleStyle* [_state_] [_style_] [-- [!]_flag_ ...]::
+*TitleStyle* [_state_] [_style_] \[-- [!]_flag_ ...]::
 	Sets the style for the title-bar. See also *AddTitleStyle* and
 	*ButtonStyle* _state_ can be one of "_ActiveUp_", "_ActiveDown_",
 	"_InactiveUp_", or "_InactiveDown_". Shortcuts like "_Active_" and
@@ -8208,19 +7973,7 @@ section *Conditional Commands* for the meaning of return codes).
 *SetEnv* _variable_ _value_::
 	Set an environment variable to a new value, similar to the shell's
 	export or setenv command. The _variable_ and its _value_ are inherited
-	by processes started directly by fvwm. This can be especially useful
-	in conjunction with the *FvwmM4* module. For example:
-+
-
-....
-SetEnv height HEIGHT
-....
-
-+
-makes the *FvwmM4* set variable _HEIGHT_ usable by processes started
-by fvwm as the environment variable _$height_. If _value_ includes
-whitespace, you should enclose it in quotes. If no _value_ is given,
-the variable is deleted.
+	by processes started directly by fvwm.
 
 *Silent* _command_::
 	A number of commands require a window to operate on. If no window was
@@ -8573,7 +8326,7 @@ Test (F $[FVWM_USERDIR]/local-config) Read local-config
 Test (X xterm-utf16) Exec exec xterm-utf16
 ....
 +
-*TestRc* [([!]_returncode_)] _command_:::
+*TestRc* \[([!]_returncode_)] _command_:::
 	Performs _command_ if the last conditional command returned the
 	value _returncode_. Instead of the numeric values 0 (no match), 1
 	(match), -1 (error), and -2 (break) the symbolic names "_NoMatch_",
@@ -8982,20 +8735,15 @@ Module FvwmForm MyForm
 At the current time the available modules (included with fvwm) are
 *FvwmAnimate* (produces animation effects when a window is iconified
 or de-iconified), *FvwmAuto* (an auto raise module), *FvwmBacker* (to
-change the background when you change desktops), *FvwmBanner* (to
-display a spiffy XBM, XPM, PNG or SVG), *FvwmButtons* (brings up a
-customizable tool bar), *FvwmCommandS* (a command server to use with
-shell's FvwmCommand client), *FvwmConsole* (to execute fvwm commands
-directly), *FvwmCpp* (to preprocess your _config_ with cpp),
-*FvwmEvent* (trigger various actions by events), *FvwmForm* (to bring
-up dialogs), *FvwmIconMan* (a flexible icon manager), *FvwmIdent* (to
-get window info), *FvwmM4* (to preprocess your _config_ with m4),
-*FvwmPager* (a mini version of the desktop), *FvwmPerl* (a Perl
-manipulator and preprocessor), *FvwmProxy* (to locate and control
-obscured windows by using small proxy windows), *FvwmRearrange* (to
-rearrange windows), *FvwmScript* (another powerful dialog toolkit),
-These modules have their own man pages. There may be other modules out
-on there as well.
+change the background when you change desktops), *FvwmButtons* (brings
+up a customizable tool bar), *FvwmConsole* (to execute fvwm commands
+directly), *FvwmEvent* (trigger various actions by events), *FvwmForm*
+(to bring up dialogs), *FvwmIconMan* (a flexible icon manager),
+*FvwmIdent* (to get window info), *FvwmPager* (a mini version of the
+desktop), *FvwmPerl* (a Perl manipulator and preprocessor),
+*FvwmRearrange* (to rearrange windows), *FvwmScript* (another powerful
+dialog toolkit). These modules have their own man pages. There may be
+other modules out on there as well.
 +
 Modules can be short lived transient programs or, like *FvwmButtons* ,
 can remain for the duration of the X session. Modules are terminated
@@ -9124,16 +8872,7 @@ The same as *Restart* without parameters but the name for the current
 window manager is replaced with the specified _window_manager_ and
 original arguments are preserved.
 +
-This command is useful if you use initial arguments like
-+
 
-....
--cmd FvwmCpp
-....
-
-+
-and want to switch to another fvwm version without losing the initial
-arguments.
 *Restart* *--dont-preserve-state* [_other-params_]::
 The same as
 +
@@ -9464,7 +9203,7 @@ background using this percentage. The default is 100 and it is
 restored if no argument is given.
 
 _Note_: It is equivalent to use "Tint a_color rate" and "Alpha a" if a
-= 100 and the bg color is a_color. This equivalence does not hold for
+100 and the bg color is a_color. This equivalence does not hold for
 IconAlpha and IconTint as the background can be an image or a gradient
 (and not a uniform color background). However, in some cases you can
 achieve (almost) the same effect by using IconTint in the place of
@@ -9529,7 +9268,6 @@ Makes colorset 7 blink.
 
 The color names used in colorsets are saved as fvwm variables which
 can be substituted in any fvwm command. For example:
-
 
 ....
 AddToFunc InitFunction
@@ -9598,7 +9336,6 @@ MenuFace DGradient 100 3 Red 20 Blue 30 Black 50 Grey
 # 50% from yellow to red
 Colorset 0 HGradient 128 3 Blue 1000 Green 1 Yellow 1000 Red
 ....
-
 
 == ENVIRONMENT
 
