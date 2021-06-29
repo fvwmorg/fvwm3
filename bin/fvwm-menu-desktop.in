@@ -407,9 +407,9 @@ Standard output is a series Fvwm commands."""
         if menu_error:
             printtext('DestroyMenu "%s"' % top)
             printtext('AddToMenu "%s" "%s" Title' % (top, top))
-            printtext('+ "Error: python-xdg not found" Nop')
+            printtext('+ "$[gt.Error]: python-xdg $[gt.not found]" Nop')
             printtext('+ "" Nop')
-            printtext('+ "Regenerate" PipeRead `fvwm-menu-desktop -e`')
+            printtext('+ "$[gt.Regenerate]" PipeRead `fvwm-menu-desktop -e`')
         else:
             sys.stderr.write('Python module python-xdg not found.')
         sys.exit(1)
@@ -453,9 +453,9 @@ Standard output is a series Fvwm commands."""
         if menu_error:
             printtext('DestroyMenu "%s"' % top)
             printtext('AddToMenu "%s" "%s" Title' % (top, top))
-            printtext('+ "Error: No menus found" Nop')
+            printtext('+ "$[gt.Error]: $[gt.No menus found]" Nop')
             printtext('+ "" Nop')
-            printtext('+ "Regenerate" PipeRead `fvwm-menu-desktop -e`')
+            printtext('+ "$[gt.Regenerate]" PipeRead `fvwm-menu-desktop -e`')
         else:
             sys.stderr.write(install_prefix+desktop+menu_type+".menu not available on this system. Exiting...\n")
         sys.exit(1)
