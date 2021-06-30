@@ -224,13 +224,13 @@ used by fvwm in rgb format (the last integer gives the number of times
 fvwm has allocated the colors).
 
 *-L* | *--strict-color-limit*::
-	
+
 	If the screen displays 256 colors (or less) and has a dynamic visual,
 	causes fvwm to use its palette for all the colors. By default, the
 	palette is used only for images and gradients.
 
 *-P* | *--visual-palette*::
-	
+
 	If the screen displays 256 colors (or less) and has a dynamic visual,
 	this option causes fvwm to use a palette designed for limiting the
 	"visual" color distance between the points of the palette. Moreover, for
@@ -249,7 +249,7 @@ fvwm has allocated the colors).
 	color in its palette only if it needs this color.
 
 *-S* | *--static-palette*::
-	
+
 	If the screen displays 256 colors (or less) and has a dynamic visual
 	this option causes fvwm to never free the colors in its palette. By
 	default, when fvwm does not need a color any more it frees this color so
@@ -257,13 +257,13 @@ fvwm has allocated the colors).
 	save a few bits of memory.
 
 *-blackout*::
-	
+
 	This option is provided for backward compatibility only. Blacking out
 	the screen during startup is not necessary (and doesn't work) anymore.
 	This option will be removed in the future.
 
 *--debug-stack-ring*::
-	
+
 	Enables stack ring debugging. This option is only intended for internal
 	debugging and should only be used by developers.
 
@@ -1935,7 +1935,7 @@ using the *Key* and *Mouse* commands with the special context 'M',
 possible combined with 'T' for the menu title, 'I' for other menu
 items, 'S' for any border or sidepic, '[' for left border including a
 left sidepic, ']' for right border including a right sidepic, '-' for
-top border, '_' for bottom border. The menu context uses its own set
+top border, '\_' for bottom border. The menu context uses its own set
 of actions that can be bound to keys and mouse buttons. These are
 _MenuClose_, _MenuCloseAndExec_, _MenuEnterContinuation_,
 _MenuEnterSubmenu_, _MenuLeaveSubmenu_, _MenuMoveCursor_,
@@ -2963,7 +2963,7 @@ never overlap the parent menu.
 When the _anim_ option is given, sub menus that do not fit on the
 screen cause the parent menu to be shifted to the left so the sub menu
 can be seen. See also *SetAnimation* command.
-	
+
 *Popup* _PopupName_ [_position_] [_default-action_]::
 	This command has two purposes: to bind a menu to a key or mouse
 	button, and to bind a sub menu into a menu. The formats for the two
@@ -3037,7 +3037,7 @@ wrist. *Menu* menus stay up on a click action. See the *Menu* command
 for an explanation of the interactive behavior of menus. A menu can be
 open up to ten times at once, so a menu may even use itself or any of
 its predecessors as a sub menu.
-	
+
 *TearMenuOff*::
 	When assigned to a menu item, it inserts a tear off bar into the menu
 	(a horizontal broken line). Activating that item tears off the menu.
@@ -3051,7 +3051,7 @@ AddToMenu WindowMenu
 AddToMenu RootMenu
 + I "click here to tear me off" TearMenuOff
 ....
-	
+
 *Title*::
 	Does nothing This is used to insert a title line in a popup or menu.
 
@@ -6496,7 +6496,6 @@ allows turns off the mwm hints completely.
 _OLDecor_ makes fvwm attempt to recognize and respect the olwm and
 olvwm hints that many older XView and OLIT applications use. Switch
 this option off with _NoOLDecor_.
-+
 +
 _UseDecor_ This style is deprecated and will be removed in the future.
 There are plans to replace it with a more flexible solution in
