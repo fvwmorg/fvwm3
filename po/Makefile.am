@@ -2,17 +2,21 @@
 localedir = @LOCALEDIR@
 
 FVWM_POT_FILES = \
-     ../fvwm/fvwm.c \
+     ../fvwm/fvwm3.c \
      ../fvwm/expand.c \
      ../fvwm/windowlist.c \
      ../fvwm/virtual.c \
      ../fvwm/menus.c
 
 FVWMRC_POT_FILES = \
-     ../fvwm/ConfigFvwmSetup \
-     ../modules/FvwmForm/FvwmForm-Setup.in
+     ../default-config/config \
+     ../bin/fvwm-menu-desktop-config.fpl \
+     ../modules/FvwmForm/FvwmForm-XDGMenuHelp \
+     ../modules/FvwmForm/FvwmForm-XDGOptionsHelp
 
 FVWMSCRIPT_POT_FILES = \
+        ../default-config/FvwmScript-ConfirmQuit \
+        ../default-config/FvwmScript-ConfirmCopyConfig \
 	../modules/FvwmScript/Scripts/FvwmScript-BellSetup \
 	../modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup \
 	../modules/FvwmScript/Scripts/FvwmScript-PointerSetup \
@@ -72,8 +76,7 @@ $(FVWM_DOMAIN).pot-update: $(FVWM_POT_FILES) \
 	rcpotfiles='$(FVWMRC_POT_FILES)'; \
 	rm -f duplicate; \
 	for file in $$rcpotfiles; do \
-	  perl -ne 's/\[gt\.((\\.|.)+?)\]/ print \
-	  "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
+	  perl -ne 's/\[gt\.((\\.|.)+?)\]/ print "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
 	  $$file >> duplicate; \
 	done; \
 	msguniq duplicate > fvwmrc.pot;
@@ -109,12 +112,15 @@ $(FVWMSCRIPT_DOMAIN).pot-update: $(FVWMSCRIPT_POT_FILES) \
 	potfiles='$(FVWMSCRIPT_POT_FILES)'; \
 	rm -f duplicate; \
 	for file in $$potfiles; do \
-	  perl -ne 's/LocaleTitle\s+\{((\\.|.)+?)\}/ print \
-	  "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
+	  perl -ne 's/LocaleTitle\s+\{((\\.|.)+?)\}/ print "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
 	  $$file >> duplicate; \
 	done; \
 	msguniq duplicate > duplicate.pot; \
-	cat pot_head_sample >  $(FVWMSCRIPT_DOMAIN).pot; \
+        potfiles='/dev/null'; \
+        $(XGETTEXT) \
+          --add-comments=TRANSLATORS: --language=C -o $(FVWMSCRIPT_DOMAIN).pot \
+          --copyright-holder='$(COPYRIGHT_HOLDER)' --force-po $$potfiles; \
+	echo >> $(FVWMSCRIPT_DOMAIN).pot; \
 	cat duplicate.pot >> $(FVWMSCRIPT_DOMAIN).pot; \
 	rm -f duplicate duplicate.pot;
 
