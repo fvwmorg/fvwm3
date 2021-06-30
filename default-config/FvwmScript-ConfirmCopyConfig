@@ -1,4 +1,5 @@
-WindowTitle {ConfirmCopyConfig}
+UseGettext
+WindowLocaleTitle {ConfirmCopyConfig}
 WindowSize  500 160
 Font "xft:Sans:size=10"
 Init
@@ -17,7 +18,7 @@ Init
 
 Widget 1
 Property
- Title {Fvwm Default Configuration}
+ LocaleTitle {Fvwm Default Configuration}
  Font "xft:Sans:size=14"
  Size  500 25
  Position 0 0
@@ -32,7 +33,7 @@ End
 
 Widget 2
 Property
- Title {This script copies the default configuration into your home directory:}
+ LocaleTitle {This script copies the default configuration into your home directory:}
  Size  400 12
  Position 15 30
  Type ItemDraw
@@ -60,7 +61,7 @@ End
 
 Widget 4
 Property
- Title {A backup of your current configuration will be located at:}
+ LocaleTitle {A backup of your current configuration will be located at:}
  Size  400 12
  Position 15 70
  Type ItemDraw
@@ -88,7 +89,7 @@ End
 
 Widget 6
 Property
- Title {Click Confirm to continue and restart Fvwm.}
+ LocaleTitle {Click Confirm to continue and restart Fvwm.}
  Size  400 15
  Position 15 107
  Type ItemDraw
@@ -103,7 +104,7 @@ End
 
 Widget 7
 Property
- Title {Confirm}
+ LocaleTitle {Confirm}
  Colorset 13
  Size 60 28
  Position 100 130
@@ -123,7 +124,7 @@ End
 
 Widget 8
 Property
- Title {Cancel}
+ LocaleTitle {Cancel}
  Colorset 13
  Size 60 28
  Position 350 130
