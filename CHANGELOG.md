@@ -18,6 +18,8 @@
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
 - Two issues with the WindowList [\#151](https://github.com/fvwmorg/fvwm3/issues/151)
 - Feature Request: Enable using the 'c' unit with the "MinWindowSize" and "MaxWindowSize" styles [\#145](https://github.com/fvwmorg/fvwm3/issues/145)
+- Improve translations [\#568](https://github.com/fvwmorg/fvwm3/pull/568) ([somiaj](https://github.com/somiaj))
+- Cleanup SetRCDefaults\(\) [\#567](https://github.com/fvwmorg/fvwm3/pull/567) ([somiaj](https://github.com/somiaj))
 - Add local configuration file to the default-config. [\#557](https://github.com/fvwmorg/fvwm3/pull/557) ([somiaj](https://github.com/somiaj))
 - Add icon for Run Command. [\#552](https://github.com/fvwmorg/fvwm3/pull/552) ([somiaj](https://github.com/somiaj))
 - Add command: Move shuffle \[flags\] direction\(s\) [\#550](https://github.com/fvwmorg/fvwm3/pull/550) ([somiaj](https://github.com/somiaj))
