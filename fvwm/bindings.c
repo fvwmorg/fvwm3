@@ -392,6 +392,8 @@ static int ParseBinding(
 	if (action != NULL)
 	{
 		action = SkipSpaces(action, NULL, 0);
+		if (action != NULL)
+			is_pass_through = is_pass_through_action(action);
 	}
 	if (
 		action == NULL || *action == 0 ||
@@ -399,27 +401,23 @@ static int ParseBinding(
 	{
 		is_unbind_request = True;
 	}
-	else
+	else if (is_pass_through)
 	{
-		is_pass_through = is_pass_through_action(action);
-		if (is_pass_through)
+		/* pass-through actions indicate that the event be
+		 * allowed to pass through to the underlying window. */
+		if (window_name == NULL)
 		{
-			/* pass-through actions indicate that the event be
-			 * allowed to pass through to the underlying window. */
-			if (window_name == NULL)
+			/* It doesn't make sense to have a pass-through
+			 * action on global bindings. */
+			if (!is_silent)
 			{
-				/* It doesn't make sense to have a pass-through
-				 * action on global bindings. */
-				if (!is_silent)
-				{
-					fvwm_debug(
-						__func__,
-						"Invalid action for global "
-						"binding: %s", tline);
-				}
-
-				return 0;
+				fvwm_debug(
+					__func__,
+					"Invalid action for global "
+					"binding: %s", tline);
 			}
+
+			return 0;
 		}
 	}
 
