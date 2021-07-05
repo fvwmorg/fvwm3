@@ -17,6 +17,7 @@
 #include "libs/vpacket.h"
 #include "libs/getpwuid.h"
 #include "libs/envvar.h"
+#include "libs/cJSON.h"
 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -29,12 +30,6 @@
 #include <errno.h>
 #include <stdbool.h>
 #include <unistd.h>
-
-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__sun__)
-#include <libbson-1.0/bson.h>
-#else
-#include <bson/bson.h>
-#endif
 
 #include <event2/event.h>
 /* FIXME: including event_struct.h won't be binary comaptible with future
@@ -76,7 +71,8 @@ struct fvwm_comms {
 struct fvwm_comms	 fc;
 
 struct fvwm_msg {
-	bson_t	*msg;
+	cJSON	*j_obj;
+	char	*msg;
 	int	 fw;
 };
 
@@ -128,6 +124,16 @@ static int check_pid(void);
 static void set_pid_file(void);
 static void create_pid_file(void);
 static void delete_pid_file(void);
+static void fm_to_json(struct fvwm_msg *);
+
+static void
+fm_to_json(struct fvwm_msg *fm)
+{
+	if ((fm->msg = cJSON_PrintUnformatted(fm->j_obj)) == NULL) {
+		fm->msg = NULL;
+		cJSON_Delete(fm->j_obj);
+	}
+}
 
 static void
 delete_pid_file(void)
@@ -215,13 +221,18 @@ fvwm_msg_new(void)
 
 	fm = fxcalloc(1, sizeof *fm);
 
+	if ((fm->j_obj = cJSON_CreateObject()) == NULL) {
+		fprintf(stderr, "FvwmMFL: couldn't initialise JSON struct\n");
+		exit(1);
+	}
 	return (fm);
 }
 
 static void
 fvwm_msg_free(struct fvwm_msg *fm)
 {
-	bson_destroy(fm->msg);
+	cJSON_free(fm->msg);
+	cJSON_Delete(fm->j_obj);
 	free(fm);
 }
 
@@ -259,31 +270,30 @@ static void
 send_version_info(struct client *c)
 {
 	struct fvwm_msg		*fm;
-	size_t			 json_len;
-	char			*as_json, *to_client;
+	cJSON			*content;
+	char			*to_client;
 
 	fm = fvwm_msg_new();
-	fm->msg = BCON_NEW("connection_profile",
-		"{",
-		    "version", BCON_UTF8(VERSION),
-		    "version_info", BCON_UTF8(VERSIONINFO),
-		"}"
-	);
-	as_json = bson_as_relaxed_extended_json(fm->msg, &json_len);
-	if (as_json == NULL) {
-		free(fm);
+
+	content = cJSON_CreateObject();
+	cJSON_AddStringToObject(content, "version", VERSION);
+	cJSON_AddStringToObject(content, "version_info", VERSIONINFO);
+	cJSON_AddItemToObject(fm->j_obj, "connection_profile", content);
+
+	fm_to_json(fm);
+	if (fm->msg == NULL) {
+		fvwm_msg_free(fm);
 		return;
 	}
 
 	/* Ensure there's a newline at the end of the string, so that
 	 * buffered output can be sent.
 	 */
-	asprintf(&to_client, "%s\n", as_json);
+	asprintf(&to_client, "%s\n", fm->msg);
 
 	bufferevent_write(c->comms, to_client, strlen(to_client));
 	bufferevent_flush(c->comms, EV_WRITE, BEV_NORMAL);
-	free(fm);
-	free(to_client);
+	fvwm_msg_free(fm);
 }
 
 static struct fvwm_msg *
@@ -308,82 +318,90 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	switch(type) {
 	case MX_ENTER_WINDOW:
 	case MX_LEAVE_WINDOW: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "window", BCON_UTF8(xwid),
-		  "}"
-		);
+		cJSON *content = cJSON_CreateObject();
+		cJSON_AddStringToObject(content, "window", xwid);
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case MX_ECHO: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		    "message", BCON_UTF8((char *)&body[3]),
-		  "}"
-		);
+		cJSON *content = cJSON_CreateObject();
+		cJSON_AddStringToObject(content, "message", (char *)&body[3]);
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_ADD_WINDOW:
 	case M_CONFIGURE_WINDOW: {
-		struct ConfigWinPacket *cwp = (void *)body;
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		    "window", BCON_UTF8(xwid),
-		    "title_height", BCON_INT64(cwp->title_height),
-		    "border_width", BCON_INT64(cwp->border_width),
-		    "frame", "{",
-		      "window", BCON_INT64(cwp->frame),
-		      "x", BCON_INT64(cwp->frame_x),
-		      "y", BCON_INT64(cwp->frame_y),
-		      "width", BCON_INT64(cwp->frame_width),
-		      "height", BCON_INT64(cwp->frame_height),
-		    "}",
-		    "hints",
-		    "{",
-			"base_width", BCON_INT64(cwp->hints_base_width),
-			"base_height", BCON_INT64(cwp->hints_base_height),
-			"inc_width", BCON_INT64(cwp->hints_width_inc),
-			"inc_height", BCON_INT64(cwp->hints_height_inc),
-			"orig_inc_width", BCON_INT64(cwp->orig_hints_width_inc),
-			"orig_inc_height", BCON_INT64(cwp->orig_hints_height_inc),
-			"min_width", BCON_INT64(cwp->hints_min_width),
-			"min_height", BCON_INT64(cwp->hints_min_height),
-			"max_width", BCON_INT64(cwp->hints_max_width),
-			"max_height", BCON_INT64(cwp->hints_max_height),
-		     "}",
-		     "ewmh",
-		      "{",
-		        "layer", BCON_INT64(cwp->ewmh_hint_layer),
-			"desktop", BCON_INT64(cwp->ewmh_hint_desktop),
-			"window_type", BCON_INT64(cwp->ewmh_window_type),
-		      "}",
-		  "}"
-		);
+		struct ConfigWinPacket	*cwp = (void *)body;
+		cJSON			*hints, *ewmh, *frame, *content;
+
+		content = cJSON_CreateObject();
+
+		cJSON_AddStringToObject(content, "window", xwid);
+		cJSON_AddNumberToObject(content, "title_height", cwp->title_height);
+		cJSON_AddNumberToObject(content, "border_width", cwp->border_width);
+
+		frame = cJSON_CreateObject();
+		cJSON_AddNumberToObject(frame, "window", cwp->frame);
+		cJSON_AddNumberToObject(frame, "x", cwp->frame_x);
+		cJSON_AddNumberToObject(frame, "y", cwp->frame_y);
+		cJSON_AddNumberToObject(frame, "width", cwp->frame_width);
+		cJSON_AddNumberToObject(frame, "height", cwp->frame_height);
+		cJSON_AddItemToObject(content, "frame", frame);
+
+		hints = cJSON_CreateObject();
+		cJSON_AddNumberToObject(hints, "base_width", cwp->hints_base_width);
+		cJSON_AddNumberToObject(hints, "base_height", cwp->hints_base_height);
+		cJSON_AddNumberToObject(hints, "inc_width", cwp->hints_width_inc);
+		cJSON_AddNumberToObject(hints, "inc_height", cwp->hints_height_inc);
+		cJSON_AddNumberToObject(hints, "orig_inc_width", cwp->orig_hints_width_inc);
+		cJSON_AddNumberToObject(hints, "orig_inc_height", cwp->orig_hints_height_inc);
+		cJSON_AddNumberToObject(hints, "min_width", cwp->hints_min_width);
+		cJSON_AddNumberToObject(hints, "min_height", cwp->hints_min_height);
+		cJSON_AddNumberToObject(hints, "max_width", cwp->hints_max_width);
+		cJSON_AddNumberToObject(hints, "max_height", cwp->hints_max_height);
+		cJSON_AddItemToObject(content, "hints", hints);
+
+		ewmh = cJSON_CreateObject();
+		cJSON_AddNumberToObject(ewmh, "layer", cwp->ewmh_hint_layer);
+		cJSON_AddNumberToObject(ewmh, "desktop", cwp->ewmh_hint_desktop);
+		cJSON_AddNumberToObject(ewmh, "window_type", cwp->ewmh_window_type);
+		cJSON_AddItemToObject(content, "ewmh", ewmh);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_MAP:
 	case M_LOWER_WINDOW:
 	case M_RAISE_WINDOW:
 	case M_DESTROY_WINDOW: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "window", BCON_UTF8(xwid),
-		  "}"
-		);
+		cJSON *content = cJSON_CreateObject();
+		cJSON_AddStringToObject(content, "window", xwid);
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_FOCUS_CHANGE: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "window", BCON_UTF8(xwid),
-		      "type", BCON_INT64(body[2]),
-		      "hilight",
-		      "{",
-		          "text_colour", BCON_INT64(body[3]),
-			  "bg_colour", BCON_INT64(body[4]),
-		      "}",
-		  "}"
-		);
+		cJSON	*hilight, *content;
+
+		content = cJSON_CreateObject();
+
+		cJSON_AddStringToObject(content, "window", xwid);
+		cJSON_AddNumberToObject(content, "type", body[2]);
+
+		hilight = cJSON_CreateObject();
+		cJSON_AddNumberToObject(hilight, "text_colour", body[3]);
+		cJSON_AddNumberToObject(hilight, "bg_colour", body[4]);
+		cJSON_AddItemToObject(content, "hilight", hilight);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_WINDOW_NAME:
@@ -392,76 +410,91 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	case M_ICON_NAME:
 	case M_RES_CLASS:
 	case M_RES_NAME: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "window", BCON_UTF8(xwid),
-		      "name", BCON_UTF8((char *)&body[3]),
-		  "}"
-		);
+		cJSON	*content;
 
+		content = cJSON_CreateObject();
+		cJSON_AddStringToObject(content, "window", xwid);
+		cJSON_AddStringToObject(content, "name", (char *)&body[3]);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_NEW_DESK: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "desk", BCON_INT64(body[0]),
-		      "monitor_id", BCON_INT32(body[1]),
-		  "}"
-		);
+		cJSON	*content;
+
+		content = cJSON_CreateObject();
+		cJSON_AddNumberToObject(content, "desk", body[0]);
+		cJSON_AddNumberToObject(content, "monitor_id", body[1]);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_NEW_PAGE: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "virtual_scr",
-		      "{",
-		          "vx", BCON_INT64(body[0]),
-			  "vy", BCON_INT64(body[1]),
-			  "vx_pages", BCON_INT64(body[5]),
-			  "vy_pages", BCON_INT64(body[6]),
-			  "current_desk", BCON_INT64(body[2]),
-		       "}",
-		       "display",
-		       "{",
-		           "width", BCON_INT64(body[3]),
-			   "height", BCON_INT64(body[4]),
-		        "}",
-			"monitor_id", BCON_INT32(body[7]),
-		  "}"
-		);
+		cJSON	*content, *virtual, *display;
+
+		content = cJSON_CreateObject();
+		cJSON_AddNumberToObject(content, "monitor_id", body[7]);
+
+		virtual = cJSON_CreateObject();
+		cJSON_AddNumberToObject(virtual, "vx", body[0]);
+		cJSON_AddNumberToObject(virtual, "vy", body[1]);
+		cJSON_AddNumberToObject(virtual, "vx_pages", body[5]);
+		cJSON_AddNumberToObject(virtual, "vy_pages", body[6]);
+		cJSON_AddNumberToObject(virtual, "current_desk", body[2]);
+		cJSON_AddItemToObject(content, "virtual_scr", virtual);
+
+		display = cJSON_CreateObject();
+		cJSON_AddNumberToObject(display, "width", body[3]);
+		cJSON_AddNumberToObject(display, "height", body[4]);
+		cJSON_AddItemToObject(content, "display", display);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_ICON_LOCATION: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "window", BCON_UTF8(xwid),
-		      "x", BCON_INT64(body[3]),
-		      "y", BCON_INT64(body[4]),
-		      "width", BCON_INT64(body[5]),
-		      "height", BCON_INT64(body[6]),
-		   "}"
-		);
+		cJSON	*content;
+
+		content = cJSON_CreateObject();
+		cJSON_AddStringToObject(content, "window", xwid);
+		cJSON_AddNumberToObject(content, "x", body[3]);
+		cJSON_AddNumberToObject(content, "y", body[4]);
+		cJSON_AddNumberToObject(content, "width", body[5]);
+		cJSON_AddNumberToObject(content, "height", body[6]);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	case M_ICONIFY: {
-		fm->msg = BCON_NEW(type_name,
-		  "{",
-		      "window", BCON_UTF8(xwid),
-		      "icon",
-		      "{",
-		          "x", BCON_INT64(body[3]),
-		          "y", BCON_INT64(body[4]),
-		          "width", BCON_INT64(body[5]),
-		          "height", BCON_INT64(body[6]),
-		       "}",
-		       "frame",
-		       "{",
-		           "x", BCON_INT64(body[7]),
-			   "y", BCON_INT64(body[8]),
-			   "width", BCON_INT64(body[9]),
-			   "height", BCON_INT64(body[1]),
-		       "}"
-		);
+		cJSON	*content, *icon, *frame;
+
+		content = cJSON_CreateObject();
+		cJSON_AddStringToObject(content, "window", xwid);
+
+		icon = cJSON_CreateObject();
+		cJSON_AddNumberToObject(icon, "x", body[3]);
+		cJSON_AddNumberToObject(icon, "y", body[4]);
+		cJSON_AddNumberToObject(icon, "width", body[5]);
+		cJSON_AddNumberToObject(icon, "height", body[6]);
+		cJSON_AddItemToObject(content, "icon", icon);
+
+		frame = cJSON_CreateObject();
+		cJSON_AddNumberToObject(frame, "x", body[7]);
+		cJSON_AddNumberToObject(frame, "y", body[8]);
+		cJSON_AddNumberToObject(frame, "width", body[9]);
+		cJSON_AddNumberToObject(frame, "height", body[1]);
+		cJSON_AddItemToObject(content, "frame", frame);
+
+		cJSON_AddItemToObject(fm->j_obj, type_name, content);
+
+		fm_to_json(fm);
 		return (fm);
 	}
 	default:
@@ -584,8 +617,7 @@ broadcast_to_client(FvwmPacket *packet)
 {
 	struct client		*c;
 	struct fvwm_msg		*fm;
-	char			*as_json, *to_client;
-	size_t			 json_len;
+	char			*to_client;
 	unsigned long		*body = packet->body;
 	unsigned long		 type =	packet->type;
 	unsigned long		 length = packet->size;
@@ -616,9 +648,8 @@ broadcast_to_client(FvwmPacket *packet)
 			continue;
 		}
 
-		as_json = bson_as_relaxed_extended_json(fm->msg, &json_len);
-		if (as_json == NULL) {
-			free(fm);
+		if (fm->msg == NULL) {
+			fvwm_msg_free(fm);
 			continue;
 		}
 		c->fm = fm;
@@ -626,11 +657,11 @@ broadcast_to_client(FvwmPacket *packet)
 		/* Ensure there's a newline at the end of the string, so that
 		 * buffered output can be sent.
 		 */
-		asprintf(&to_client, "%s\n", as_json);
+		asprintf(&to_client, "%s\n", fm->msg);
 
 		bufferevent_write(c->comms, to_client, strlen(to_client));
 		bufferevent_flush(c->comms, EV_WRITE, BEV_NORMAL);
-		free(fm);
+		fvwm_msg_free(fm);
 		free(to_client);
 	}
 }
