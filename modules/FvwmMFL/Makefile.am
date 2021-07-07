@@ -25,7 +25,7 @@ CLEANFILES = $(module_SCRIPTS)
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3  \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) $(XRandR_LIBS) \
-	$(libevent_LIBS) $(libbson_LIBS) $(Xft_LIBS)
+	$(libevent_LIBS) $(Xft_LIBS)
 
-AM_CPPFLAGS = -I$(top_srcdir) $(X_CFLAGS) $(libbson_CFLAGS) $(Xft_CFLAGS)
+AM_CPPFLAGS = -I$(top_srcdir) $(X_CFLAGS) $(Xft_CFLAGS)
 

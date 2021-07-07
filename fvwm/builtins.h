@@ -3,7 +3,6 @@
 #ifndef FVWM_BUILTINS_H
 #define FVWM_BUILTINS_H
 
-#include <bson.h>
 #include "fvwm.h"
 #include "screen.h"
 

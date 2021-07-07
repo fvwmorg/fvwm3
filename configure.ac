@@ -460,19 +460,6 @@ AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
 AH_TEMPLATE([HAVE_TAILQ],[Check if tailq is present.])
 AC_CHECK_HEADER(queue.h, AC_DEFINE(HAVE_TAILQ))
 
-# libbson
-AH_TEMPLATE([HAVE_LIBBSON],[Define if libbson is used.])
-PKG_CHECK_MODULES([libbson], [libbson-1.0],
-[
-	 AC_DEFINE(HAVE_LIBBSON)
-	libbson_LIBS=-lbson-1.0
-],
-[
-	 AC_MSG_ERROR([*** libbson not found.  Install its header files. ***])
-])
-AC_SUBST(libbson_LIBS)
-AC_SUBST(libbson_CFLAGS)
-
 # libevent
 AH_TEMPLATE([HAVE_LIBEVENT],[Define if libevent is used.])
 PKG_CHECK_MODULES([libevent], [libevent >= 2.0],
