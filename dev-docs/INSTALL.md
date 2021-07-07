@@ -19,7 +19,6 @@ FVWM3 has the following dependencies.
 
 ## Core dependencies
 
-* libbson-dev (>= 1.16.2)
 * libevent-dev (>= 2.0)
 * libx11-dev
 * libxrandr-dev (>= 1.5)
@@ -50,7 +49,7 @@ Generating documentation
 To generate `fvwm3`'s documentation:
 
 1. Install `asciidoctor`
-2. Pass `--enable-mandoc` to `./configure` (see below(
+2. Pass `--enable-mandoc` to `./configure` (see below)
 
 `fvwm3` won't compile documentation by default, so it's opt-in.
 
