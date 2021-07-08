@@ -7,7 +7,9 @@
 **Breaking changes:**
 
 - Extend \*FvwmIconMan:Resolution to include specific Desktop / Pager [\#455](https://github.com/fvwmorg/fvwm3/issues/455)
+- Replace libbson with cJSON [\#408](https://github.com/fvwmorg/fvwm3/issues/408)
 - Deprecate Label for FvwmPager [\#342](https://github.com/fvwmorg/fvwm3/issues/342)
+- Replace libbson with cJSON [\#571](https://github.com/fvwmorg/fvwm3/pull/571) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add commands to configure the size/position window. [\#558](https://github.com/fvwmorg/fvwm3/pull/558) ([ThomasAdam](https://github.com/ThomasAdam))
 - Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
 
@@ -36,7 +38,6 @@
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
-- SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
@@ -100,6 +101,7 @@
 
 **Fixed bugs:**
 
+- SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - Core dump at start with NsCDE as configuration [\#464](https://github.com/fvwmorg/fvwm3/issues/464)
 - rename binary fvwm3 -\> fvwm [\#440](https://github.com/fvwmorg/fvwm3/issues/440)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
