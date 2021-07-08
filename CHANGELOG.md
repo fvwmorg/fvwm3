@@ -37,7 +37,9 @@
 - Pager do not show smalls windows in the correct place when snapped to the edge [\#541](https://github.com/fvwmorg/fvwm3/issues/541)
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
+- AnimatedMove [\#513](https://github.com/fvwmorg/fvwm3/issues/513)
 - Spelling errors found by lintian. [\#511](https://github.com/fvwmorg/fvwm3/issues/511)
+- SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
@@ -58,6 +60,7 @@
 
 **Merged pull requests:**
 
+- conditional: fix whitespace/comma parsing [\#572](https://github.com/fvwmorg/fvwm3/pull/572) ([ThomasAdam](https://github.com/ThomasAdam))
 - Configure a colorset for XDGMenu options. [\#564](https://github.com/fvwmorg/fvwm3/pull/564) ([somiaj](https://github.com/somiaj))
 - Menu: add option to grey entries out [\#563](https://github.com/fvwmorg/fvwm3/pull/563) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove \*FvwmPager: Label configuration option. [\#562](https://github.com/fvwmorg/fvwm3/pull/562) ([somiaj](https://github.com/somiaj))
@@ -101,7 +104,6 @@
 
 **Fixed bugs:**
 
-- SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - Core dump at start with NsCDE as configuration [\#464](https://github.com/fvwmorg/fvwm3/issues/464)
 - rename binary fvwm3 -\> fvwm [\#440](https://github.com/fvwmorg/fvwm3/issues/440)
 - Memory leak in \_\_execute\_function [\#425](https://github.com/fvwmorg/fvwm3/issues/425)
