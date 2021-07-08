@@ -779,17 +779,24 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 		}
 
-		if (allocated_condition != NULL)
+		if (tmp && *tmp)
 		{
-			free(allocated_condition);
-			allocated_condition = NULL;
+			fvwm_debug( __func__,
+			    "Use comma instead of whiespace to separate "
+			    "conditions");
+		} else {
+			if (allocated_condition != NULL)
+			{
+				free(allocated_condition);
+				allocated_condition = NULL;
+			}
+			if (next_condition && *next_condition)
+			{
+				next_condition = GetNextFullOption(
+					next_condition, &allocated_condition);
+			}
+			tmp = allocated_condition;
 		}
-		if (next_condition && *next_condition)
-		{
-			next_condition = GetNextFullOption(
-				next_condition, &allocated_condition);
-		}
-		tmp = allocated_condition;
 		condition = PeekToken(tmp, &tmp);
 	}
 
