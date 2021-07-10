@@ -148,20 +148,20 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 		if (minAspectX * dheight > minAspectY * dwidth)
 		{
 			delta = makemult(
-				minAspectX * dheight / minAspectY - dwidth,
-				xinc);
-			if (dwidth + delta <= maxWidth)
+				dheight - minAspectY * dwidth / minAspectX,
+				yinc);
+			if (dheight - delta >= minHeight)
 			{
-				dwidth += delta;
+				dheight -= delta;
 			}
 			else
 			{
 				delta = makemult(
-					dheight - minAspectY*dwidth/minAspectX,
-					yinc);
-				if (dheight - delta >= minHeight)
+					minAspectX * dheight / minAspectY -
+					dwidth,	xinc);
+				if (dwidth + delta <= maxWidth)
 				{
-					dheight -= delta;
+					dwidth += delta;
 				}
 			}
 		}
@@ -169,20 +169,20 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 		if (maxAspectX * dheight < maxAspectY * dwidth)
 		{
 			delta = makemult(
-				dwidth * maxAspectY / maxAspectX - dheight,
-				yinc);
-			if (dheight + delta <= maxHeight)
+				dwidth - maxAspectX * dheight / maxAspectY,
+				xinc);
+			if (dwidth - delta >= minWidth)
 			{
-				dheight += delta;
+				dwidth -= delta;
 			}
 			else
 			{
 				delta = makemult(
-					dwidth - maxAspectX*dheight/maxAspectY,
-					xinc);
-				if (dwidth - delta >= minWidth)
+					dwidth * maxAspectY / maxAspectX -
+					dheight, yinc);
+				if (dheight + delta <= maxHeight)
 				{
-					dwidth -= delta;
+					dheight += delta;
 				}
 			}
 		}
