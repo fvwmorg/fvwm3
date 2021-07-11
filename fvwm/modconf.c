@@ -152,7 +152,6 @@ static struct moduleInfoList *AddToModList(char *tline)
 
 	exc = exc_create_null_context();
 	this->data = expand_vars(rline, NULL, False, True, NULL, exc);
-	strcpy(this->data, rline);
 	exc_destroy_context(exc);
 	/* Free rline only if it is xasprintf'd memory (not pointing at tline
 	 * anymore). If we free our tline argument it causes a crash in __execute_function. */
