@@ -31,6 +31,7 @@
 
 **Fixed bugs:**
 
+- Fvwm segfaults parsing module configuration [\#575](https://github.com/fvwmorg/fvwm3/issues/575)
 - Move X Y Warp doesn't move pointer to window. [\#551](https://github.com/fvwmorg/fvwm3/issues/551)
 - Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
 - EdgeLeaveCommand don't work or need a page change to work [\#543](https://github.com/fvwmorg/fvwm3/issues/543)
@@ -60,6 +61,7 @@
 
 **Merged pull requests:**
 
+- module expand: don't overwrite previous expansion [\#576](https://github.com/fvwmorg/fvwm3/pull/576) ([ThomasAdam](https://github.com/ThomasAdam))
 - conditional: fix whitespace/comma parsing [\#572](https://github.com/fvwmorg/fvwm3/pull/572) ([ThomasAdam](https://github.com/ThomasAdam))
 - Configure a colorset for XDGMenu options. [\#564](https://github.com/fvwmorg/fvwm3/pull/564) ([somiaj](https://github.com/somiaj))
 - Menu: add option to grey entries out [\#563](https://github.com/fvwmorg/fvwm3/pull/563) ([ThomasAdam](https://github.com/ThomasAdam))
