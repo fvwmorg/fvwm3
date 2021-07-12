@@ -9,6 +9,7 @@
 - Extend \*FvwmIconMan:Resolution to include specific Desktop / Pager [\#455](https://github.com/fvwmorg/fvwm3/issues/455)
 - Replace libbson with cJSON [\#408](https://github.com/fvwmorg/fvwm3/issues/408)
 - Deprecate Label for FvwmPager [\#342](https://github.com/fvwmorg/fvwm3/issues/342)
+- FvwmButtons: Shrink windows when honoring Hints. [\#577](https://github.com/fvwmorg/fvwm3/pull/577) ([somiaj](https://github.com/somiaj))
 - Replace libbson with cJSON [\#571](https://github.com/fvwmorg/fvwm3/pull/571) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add commands to configure the size/position window. [\#558](https://github.com/fvwmorg/fvwm3/pull/558) ([ThomasAdam](https://github.com/ThomasAdam))
 - Retire FvwmTile and FvwmCascade wrappers. [\#515](https://github.com/fvwmorg/fvwm3/pull/515) ([somiaj](https://github.com/somiaj))
@@ -32,6 +33,7 @@
 **Fixed bugs:**
 
 - Fvwm segfaults parsing module configuration [\#575](https://github.com/fvwmorg/fvwm3/issues/575)
+- Swallowing FvwmPager inside FvwmButtons breaks resizing FvwmButtons when aspect ratio resizing is used [\#573](https://github.com/fvwmorg/fvwm3/issues/573)
 - Move X Y Warp doesn't move pointer to window. [\#551](https://github.com/fvwmorg/fvwm3/issues/551)
 - Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
 - EdgeLeaveCommand don't work or need a page change to work [\#543](https://github.com/fvwmorg/fvwm3/issues/543)
@@ -375,7 +377,6 @@
 - configure: default CFLAGS, add no-security guard [\#210](https://github.com/fvwmorg/fvwm3/pull/210) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: libbson: guard for FreeBSD [\#207](https://github.com/fvwmorg/fvwm3/pull/207) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: fix golang binary check [\#205](https://github.com/fvwmorg/fvwm3/pull/205) ([ThomasAdam](https://github.com/ThomasAdam))
-- Fixed \_NET\_WM\_STATE for maximized windows [\#204](https://github.com/fvwmorg/fvwm3/pull/204) ([xuzhen](https://github.com/xuzhen))
 - Ta/release 1.0.0 [\#199](https://github.com/fvwmorg/fvwm3/pull/199) ([ThomasAdam](https://github.com/ThomasAdam))
 - perllib: update to include MX\_MONITOR\_\* events [\#227](https://github.com/fvwmorg/fvwm3/pull/227) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: honour TMPDIR for socket [\#220](https://github.com/fvwmorg/fvwm3/pull/220) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -493,6 +494,7 @@
 
 **Merged pull requests:**
 
+- Fixed \_NET\_WM\_STATE for maximized windows [\#204](https://github.com/fvwmorg/fvwm3/pull/204) ([xuzhen](https://github.com/xuzhen))
 - Ta/gh 143 [\#193](https://github.com/fvwmorg/fvwm3/pull/193) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: check for xt [\#192](https://github.com/fvwmorg/fvwm3/pull/192) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: look for golang [\#190](https://github.com/fvwmorg/fvwm3/pull/190) ([ThomasAdam](https://github.com/ThomasAdam))
