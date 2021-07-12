@@ -594,6 +594,26 @@ static signed int expand_vars_extended(
 					monitor_get_all_heights());
 				goto GOT_STRING;
 			}
+
+			if (strcmp(rest, "prev_desk") == 0) {
+				is_numeric = True;
+				val = m->virtual_scr.prev_desk_and_page_desk;
+				goto GOT_STRING;
+			}
+
+			if (strcmp(rest, "prev_pagex") == 0) {
+				is_numeric = True;
+				val = (int)(m->virtual_scr.prev_page_x /
+					monitor_get_all_widths());
+				goto GOT_STRING;
+			}
+
+			if (strcmp(rest, "prev_pagey") == 0) {
+				is_numeric = True;
+				val = (int)(m->virtual_scr.prev_page_y /
+					monitor_get_all_heights());
+				goto GOT_STRING;
+			}
 		}
 		break;
 	}

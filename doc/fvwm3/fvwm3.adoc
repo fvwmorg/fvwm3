@@ -1661,7 +1661,7 @@ $[pointer.screen]::
 +
 This command is deprecated; use $[monitor.current] instead.
 
-$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.current], $[monitor.output], $[monitor.count]::
+$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.current], $[monitor.output], $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
 	Returns information about the selected monitor. These can be nested, for
 	example: $[monitor.$[monitor.primary].width]
 +
@@ -1683,6 +1683,12 @@ monitor which has the mouse pointer.
 "pagey" returns the Y page of the referenced monitor.
 +
 "primary" is the name of the output set as primary via xrandr(1).
++
+"prev_desk" returns the previous desk on the referenced monitor.
++
+"prev_pagex" returns the previous X page on the referenced monitor.
++
+"prev_pagey" retuns the previous Y page on the referenced monitor.
 
 $[screen]::
 	The screen number fvwm is running on. Useful for setups with multiple
