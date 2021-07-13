@@ -21,6 +21,7 @@
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
 - Two issues with the WindowList [\#151](https://github.com/fvwmorg/fvwm3/issues/151)
 - Feature Request: Enable using the 'c' unit with the "MinWindowSize" and "MaxWindowSize" styles [\#145](https://github.com/fvwmorg/fvwm3/issues/145)
+- expand: add prev\_{desk,pagex,pagey} [\#579](https://github.com/fvwmorg/fvwm3/pull/579) ([ThomasAdam](https://github.com/ThomasAdam))
 - Improve translations [\#568](https://github.com/fvwmorg/fvwm3/pull/568) ([somiaj](https://github.com/somiaj))
 - Cleanup SetRCDefaults\(\) [\#567](https://github.com/fvwmorg/fvwm3/pull/567) ([somiaj](https://github.com/somiaj))
 - Add local configuration file to the default-config. [\#557](https://github.com/fvwmorg/fvwm3/pull/557) ([somiaj](https://github.com/somiaj))
@@ -377,6 +378,7 @@
 - configure: default CFLAGS, add no-security guard [\#210](https://github.com/fvwmorg/fvwm3/pull/210) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: libbson: guard for FreeBSD [\#207](https://github.com/fvwmorg/fvwm3/pull/207) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: fix golang binary check [\#205](https://github.com/fvwmorg/fvwm3/pull/205) ([ThomasAdam](https://github.com/ThomasAdam))
+- Fixed \_NET\_WM\_STATE for maximized windows [\#204](https://github.com/fvwmorg/fvwm3/pull/204) ([xuzhen](https://github.com/xuzhen))
 - Ta/release 1.0.0 [\#199](https://github.com/fvwmorg/fvwm3/pull/199) ([ThomasAdam](https://github.com/ThomasAdam))
 - perllib: update to include MX\_MONITOR\_\* events [\#227](https://github.com/fvwmorg/fvwm3/pull/227) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: honour TMPDIR for socket [\#220](https://github.com/fvwmorg/fvwm3/pull/220) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -494,7 +496,6 @@
 
 **Merged pull requests:**
 
-- Fixed \_NET\_WM\_STATE for maximized windows [\#204](https://github.com/fvwmorg/fvwm3/pull/204) ([xuzhen](https://github.com/xuzhen))
 - Ta/gh 143 [\#193](https://github.com/fvwmorg/fvwm3/pull/193) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: check for xt [\#192](https://github.com/fvwmorg/fvwm3/pull/192) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure.ac: look for golang [\#190](https://github.com/fvwmorg/fvwm3/pull/190) ([ThomasAdam](https://github.com/ThomasAdam))
