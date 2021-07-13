@@ -302,6 +302,7 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	struct fvwm_msg		*fm = NULL;
 	const char		*type_name = flag_to_event(type);
 	char			 xwid[20];
+	cJSON			*content;
 
 	if (type_name == NULL) {
 		fprintf(stderr, "Couldn't find type_name\n");
@@ -318,7 +319,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	switch(type) {
 	case MX_ENTER_WINDOW:
 	case MX_LEAVE_WINDOW: {
-		cJSON *content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddStringToObject(content, "window", xwid);
 		cJSON_AddItemToObject(fm->j_obj, type_name, content);
 
@@ -326,7 +328,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case MX_ECHO: {
-		cJSON *content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddStringToObject(content, "message", (char *)&body[3]);
 		cJSON_AddItemToObject(fm->j_obj, type_name, content);
 
@@ -336,15 +339,17 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	case M_ADD_WINDOW:
 	case M_CONFIGURE_WINDOW: {
 		struct ConfigWinPacket	*cwp = (void *)body;
-		cJSON			*hints, *ewmh, *frame, *content;
+		cJSON			*hints, *ewmh, *frame;
 
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 
 		cJSON_AddStringToObject(content, "window", xwid);
 		cJSON_AddNumberToObject(content, "title_height", cwp->title_height);
 		cJSON_AddNumberToObject(content, "border_width", cwp->border_width);
 
-		frame = cJSON_CreateObject();
+		if ((frame = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(frame, "window", cwp->frame);
 		cJSON_AddNumberToObject(frame, "x", cwp->frame_x);
 		cJSON_AddNumberToObject(frame, "y", cwp->frame_y);
@@ -352,7 +357,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		cJSON_AddNumberToObject(frame, "height", cwp->frame_height);
 		cJSON_AddItemToObject(content, "frame", frame);
 
-		hints = cJSON_CreateObject();
+		if ((hints = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(hints, "base_width", cwp->hints_base_width);
 		cJSON_AddNumberToObject(hints, "base_height", cwp->hints_base_height);
 		cJSON_AddNumberToObject(hints, "inc_width", cwp->hints_width_inc);
@@ -365,7 +371,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		cJSON_AddNumberToObject(hints, "max_height", cwp->hints_max_height);
 		cJSON_AddItemToObject(content, "hints", hints);
 
-		ewmh = cJSON_CreateObject();
+		if ((ewmh = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(ewmh, "layer", cwp->ewmh_hint_layer);
 		cJSON_AddNumberToObject(ewmh, "desktop", cwp->ewmh_hint_desktop);
 		cJSON_AddNumberToObject(ewmh, "window_type", cwp->ewmh_window_type);
@@ -379,7 +386,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	case M_LOWER_WINDOW:
 	case M_RAISE_WINDOW:
 	case M_DESTROY_WINDOW: {
-		cJSON *content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddStringToObject(content, "window", xwid);
 		cJSON_AddItemToObject(fm->j_obj, type_name, content);
 
@@ -387,14 +395,16 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_FOCUS_CHANGE: {
-		cJSON	*hilight, *content;
+		cJSON	*hilight;
 
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 
 		cJSON_AddStringToObject(content, "window", xwid);
 		cJSON_AddNumberToObject(content, "type", body[2]);
 
-		hilight = cJSON_CreateObject();
+		if ((hilight = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(hilight, "text_colour", body[3]);
 		cJSON_AddNumberToObject(hilight, "bg_colour", body[4]);
 		cJSON_AddItemToObject(content, "hilight", hilight);
@@ -410,9 +420,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	case M_ICON_NAME:
 	case M_RES_CLASS:
 	case M_RES_NAME: {
-		cJSON	*content;
-
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddStringToObject(content, "window", xwid);
 		cJSON_AddStringToObject(content, "name", (char *)&body[3]);
 
@@ -422,9 +431,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_NEW_DESK: {
-		cJSON	*content;
-
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(content, "desk", body[0]);
 		cJSON_AddNumberToObject(content, "monitor_id", body[1]);
 
@@ -434,12 +442,14 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_NEW_PAGE: {
-		cJSON	*content, *virtual, *display;
+		cJSON	*virtual, *display;
 
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(content, "monitor_id", body[7]);
 
-		virtual = cJSON_CreateObject();
+		if ((virtual = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(virtual, "vx", body[0]);
 		cJSON_AddNumberToObject(virtual, "vy", body[1]);
 		cJSON_AddNumberToObject(virtual, "vx_pages", body[5]);
@@ -447,7 +457,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		cJSON_AddNumberToObject(virtual, "current_desk", body[2]);
 		cJSON_AddItemToObject(content, "virtual_scr", virtual);
 
-		display = cJSON_CreateObject();
+		if ((display = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(display, "width", body[3]);
 		cJSON_AddNumberToObject(display, "height", body[4]);
 		cJSON_AddItemToObject(content, "display", display);
@@ -458,9 +469,8 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_ICON_LOCATION: {
-		cJSON	*content;
-
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddStringToObject(content, "window", xwid);
 		cJSON_AddNumberToObject(content, "x", body[3]);
 		cJSON_AddNumberToObject(content, "y", body[4]);
@@ -473,19 +483,22 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_ICONIFY: {
-		cJSON	*content, *icon, *frame;
+		cJSON	*icon, *frame;
 
-		content = cJSON_CreateObject();
+		if ((content = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddStringToObject(content, "window", xwid);
 
-		icon = cJSON_CreateObject();
+		if ((icon = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(icon, "x", body[3]);
 		cJSON_AddNumberToObject(icon, "y", body[4]);
 		cJSON_AddNumberToObject(icon, "width", body[5]);
 		cJSON_AddNumberToObject(icon, "height", body[6]);
 		cJSON_AddItemToObject(content, "icon", icon);
 
-		frame = cJSON_CreateObject();
+		if ((frame = cJSON_CreateObject()) == NULL)
+			goto out;
 		cJSON_AddNumberToObject(frame, "x", body[7]);
 		cJSON_AddNumberToObject(frame, "y", body[8]);
 		cJSON_AddNumberToObject(frame, "width", body[9]);

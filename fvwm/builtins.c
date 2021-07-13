@@ -144,7 +144,8 @@ status_send(void)
 	memset(individual_d, 0, sizeof(cJSON));
 	memset(desk_doc, 0, sizeof(cJSON));
 
-	msg = cJSON_CreateObject();
+	if ((msg = cJSON_CreateObject()) == NULL)
+		return;
 
 	m_cur = monitor_get_current();
 
@@ -195,9 +196,8 @@ status_send(void)
 		d_count++;
 		m_count++;
 	}
-	if ((as_json = cJSON_PrintUnformatted(msg)) == NULL) {
+	if ((as_json = cJSON_PrintUnformatted(msg)) == NULL)
 		goto out;
-	}
 
 	fflush(status_fp);
 	fprintf(status_fp, "%s\n", as_json);
