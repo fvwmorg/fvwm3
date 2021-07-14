@@ -1,6 +1,7 @@
 decorations none
 geometry 6x1
 icon_size 18
+kludges force_icons_size
 max_geometry 6x1
 parent_bg true
 transparent false
