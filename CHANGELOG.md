@@ -47,6 +47,7 @@
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
 - EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
+- Add force\_icons\_size kludge to .stalonetrayrc. [\#581](https://github.com/fvwmorg/fvwm3/pull/581) ([somiaj](https://github.com/somiaj))
 - Fix pass through binding logic. [\#570](https://github.com/fvwmorg/fvwm3/pull/570) ([somiaj](https://github.com/somiaj))
 - Make default-config greyed colorset grey. [\#566](https://github.com/fvwmorg/fvwm3/pull/566) ([somiaj](https://github.com/somiaj))
 - Cleanup FvwmScript manual page. [\#565](https://github.com/fvwmorg/fvwm3/pull/565) ([somiaj](https://github.com/somiaj))
