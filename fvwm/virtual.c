@@ -1983,23 +1983,29 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	initPanFrames();
 
 	/* get the direction */
-	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
+	action = SkipSpaces(action, NULL, 0);
+	if (action != NULL && *action != '\0') {
+		direction = gravity_parse_dir_argument(
+			action, &action, DIR_NONE);
 
-	if (direction < 0 || direction > DIR_MAJOR_MASK)
-	{
-		fvwm_debug(__func__, "EdgeCommand needs a direction\n");
-		return;
-	}
+		if (direction < 0 || direction > DIR_MAJOR_MASK)
+		{
+			fvwm_debug(__func__,
+				"EdgeLeaveCommand needs a valid direction.\n");
+			return;
+		}
 
-	/* check if the command does contain at least one token */
-	option = PeekToken(action, NULL);
-	if (option != NULL && *option != '\0')
-		command = action;
+		/* check if the command does contain at least one token */
+		option = PeekToken(action, NULL);
+		if (option != NULL && *option != '\0')
+			command = action;
+	} else
+		direction = DIR_C;
 
 	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
 		/* assign command to the edge(s) */
 		if (m == NULL || m_loop == m) {
-			if (direction == DIR_N)
+			if (direction == DIR_N || direction == DIR_C)
 			{
 				free(m_loop->PanFrameTop.command);
 				m_loop->PanFrameTop.command = NULL;
@@ -2007,7 +2013,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 					m_loop->PanFrameTop.command =
 						fxstrdup(command);
 			}
-			else if (direction == DIR_S)
+			if (direction == DIR_S || direction == DIR_C)
 			{
 				free(m_loop->PanFrameBottom.command);
 				m_loop->PanFrameBottom.command = NULL;
@@ -2015,7 +2021,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 					m_loop->PanFrameBottom.command =
 						fxstrdup(command);
 			}
-			else if (direction == DIR_W)
+			if (direction == DIR_W || direction == DIR_C)
 			{
 				free(m_loop->PanFrameLeft.command);
 				m_loop->PanFrameLeft.command = NULL;
@@ -2023,19 +2029,13 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 					m_loop->PanFrameLeft.command =
 						fxstrdup(command);
 			}
-			else if (direction == DIR_E)
+			if (direction == DIR_E || direction == DIR_C)
 			{
 				free(m_loop->PanFrameRight.command);
 				m_loop->PanFrameRight.command = NULL;
 				if (command != NULL)
 					m_loop->PanFrameRight.command =
 						fxstrdup(command);
-			}
-			else
-			{
-				/* this should never happen */
-				fvwm_debug(__func__,
-					   "Internal error in CMD_EdgeCommand");
 			}
 			checkPanFrames(m_loop);
 		}
@@ -2068,23 +2068,29 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 	initPanFrames();
 
 	/* get the direction */
-	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
+	action = SkipSpaces(action, NULL, 0);
+	if (action != NULL && *action != '\0') {
+		direction = gravity_parse_dir_argument(
+			action, &action, DIR_NONE);
 
-	if (direction < 0 || direction > DIR_MAJOR_MASK)
-	{
-		fvwm_debug(__func__, "EdgeLeaveCommand needs a direction\n");
-		return;
-	}
+		if (direction < 0 || direction > DIR_MAJOR_MASK)
+		{
+			fvwm_debug(__func__,
+				"EdgeLeaveCommand needs a valid direction.\n");
+			return;
+		}
 
-	/* check if the command does contain at least one token */
-	option = PeekToken(action, NULL);
-	if (option != NULL && *option != '\0')
-		command = action;
+		/* check if the command does contain at least one token */
+		option = PeekToken(action, NULL);
+		if (option != NULL && *option != '\0')
+			command = action;
+	} else
+		direction = DIR_C;
 
 	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
 		if (m == NULL || m == m_loop) {
 			/* assign command to the edge(s) */
-			if (direction == DIR_N)
+			if (direction == DIR_N || direction == DIR_C)
 			{
 				free(m_loop->PanFrameTop.command_leave);
 				m_loop->PanFrameTop.command_leave = NULL;
@@ -2092,7 +2098,7 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 					m_loop->PanFrameTop.command_leave =
 						fxstrdup(command);
 			}
-			else if (direction == DIR_S)
+			if (direction == DIR_S || direction == DIR_C)
 			{
 				free(m_loop->PanFrameBottom.command_leave);
 				m_loop->PanFrameBottom.command_leave = NULL;
@@ -2100,7 +2106,7 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 					m_loop->PanFrameBottom.command_leave =
 						fxstrdup(command);
 			}
-			else if (direction == DIR_W)
+			if (direction == DIR_W || direction == DIR_C)
 			{
 				free(m_loop->PanFrameLeft.command_leave);
 				m_loop->PanFrameLeft.command_leave = NULL;
@@ -2108,18 +2114,13 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 					m_loop->PanFrameLeft.command_leave =
 						fxstrdup(command);
 			}
-			else if (direction == DIR_E)
+			if (direction == DIR_E || direction == DIR_C)
 			{
 				free(m_loop->PanFrameRight.command_leave);
 				m_loop->PanFrameRight.command_leave = NULL;
 				if (command != NULL)
 					m_loop->PanFrameRight.command_leave =
 						fxstrdup(command);
-			}
-			else
-			{
-				/* this should never happen */
-				fvwm_debug(__func__, "Internal error");
 			}
 			checkPanFrames(m_loop);
 		}
