@@ -21,6 +21,7 @@
 - Update monitor struct to know if monintor edges are OUTSIDE\_EDGE or INSIDE\_EDGE [\#523](https://github.com/fvwmorg/fvwm3/issues/523)
 - Two issues with the WindowList [\#151](https://github.com/fvwmorg/fvwm3/issues/151)
 - Feature Request: Enable using the 'c' unit with the "MinWindowSize" and "MaxWindowSize" styles [\#145](https://github.com/fvwmorg/fvwm3/issues/145)
+- Allow per monitor EdgeCommand and EdgeLeaveCommand [\#582](https://github.com/fvwmorg/fvwm3/pull/582) ([somiaj](https://github.com/somiaj))
 - expand: add prev\_{desk,pagex,pagey} [\#579](https://github.com/fvwmorg/fvwm3/pull/579) ([ThomasAdam](https://github.com/ThomasAdam))
 - Improve translations [\#568](https://github.com/fvwmorg/fvwm3/pull/568) ([somiaj](https://github.com/somiaj))
 - Cleanup SetRCDefaults\(\) [\#567](https://github.com/fvwmorg/fvwm3/pull/567) ([somiaj](https://github.com/somiaj))
