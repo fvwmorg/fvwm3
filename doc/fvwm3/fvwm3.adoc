@@ -4909,12 +4909,14 @@ modifiers. I.e. do not ignore
 if you have no problem with it. In the _FAQ_ you can find a better
 solution of this problem.
 
-*EdgeCommand* [_direction_ [_Function_]]::
+*EdgeCommand* [screen _RANDRNAME_] [_direction_ [_Function_]]::
 	Binds a specified fvwm command _Function_ to an edge of the screen.
 	Direction may be one of "_North_", "_Top_", "_West_", "_Left_",
 	"_South_", "_Bottom_", "_Right_" and "_East_". If _Function_ is
 	omitted the binding for this edge is removed. If EdgeCommand is called
-	without any arguments all edge bindings are removed.
+	without any arguments all edge bindings are removed. If the literal
+	option _screen_ followed by a RandR screen name _RANDRNAME_ is given,
+	the command is set only for the given monitor.
 +
 _Function_ is executed when the mouse pointer enters the invisible pan
 frames that surround the visible screen. The binding works only if
@@ -4966,12 +4968,15 @@ Normally, the invisible pan frames are only on the screen edges that
 border virtual pages. If a screen edge has a command bound to it, the
 pan frame is always created on that edge.
 
-*EdgeLeaveCommand* [_direction_ [_Function_]]::
+*EdgeLeaveCommand* [screen _RANDRNAME_] [_direction_ [_Function_]]::
 	Binds a specified fvwm command _Function_ to an edge of the screen.
 	Direction may be one of "_North_", "_Top_", "_West_", "_Left_",
 	"_South_", "_Bottom_", "_Right_" and "_East_". If _Function_ is
 	omitted the binding for this edge is removed. If EdgeLeaveCommand is
-	called without any arguments all edge bindings are removed.
+	called without any arguments all edge bindings are removed. If the
+	literal option _screen_ followed by a RandR screen name _RANDRNAME_
+	is given, the command is set only for the given monitor.
+
 +
 _Function_ is executed when the mouse pointer leaves the invisible pan
 frames that surround the visible screen. The binding works only if
