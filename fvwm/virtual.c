@@ -114,6 +114,7 @@ static bool pan_frames_mapped = false;
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 static void init_one_panframe(PanFrame *, int, int, int, int, int);
+static void parse_edge_leave_command(char *, int);
 
 struct desktop_cmds	 desktop_cmd_q;
 struct desktop_fws	 desktop_fvwm_q;
@@ -1957,12 +1958,16 @@ char *GetDesktopName(struct monitor *m, int desk)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-/* EdgeCommand - binds a function to a pan frame enter event */
-void CMD_EdgeCommand(F_CMD_ARGS)
+#define EDGE_CMD 1
+#define EDGE_LEAVE_CMD 2
+void parse_edge_leave_command(char *action, int type)
 {
 	direction_t direction;
-	char *command = NULL, *option;
+	char *command = NULL, *option, *cmd_type;
 	struct monitor	*m = NULL, *m_loop;
+	bool free_all_cmds = false;
+
+	cmd_type = (type == EDGE_CMD) ? "EdgeCommand" : "EdgeLeaveCommand";
 
 	/* check for screen */
 	option = PeekToken(action, NULL);
@@ -1980,151 +1985,85 @@ void CMD_EdgeCommand(F_CMD_ARGS)
                 }
         }
 
+	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
+
+	/* If action is the empty string here, then we were given
+	 * "EdgeCommand" or "EdgeLeaveCommand", and no other options.  In this
+	 * case, we remove all the actions for any defined direction.
+	 */
+	if (strcmp(action, "") == 0)
+		free_all_cmds = true;
+
+	if (!free_all_cmds && (direction < 0 || direction > DIR_MAJOR_MASK))
+	{
+		fvwm_debug(__func__, "%s needs a valid direction.\n", cmd_type);
+		return;
+	}
+
+	/* check if the command does contain at least one token */
+	if ((option = PeekToken(action, NULL)) != NULL)
+		command = action;
+
 	initPanFrames();
 
-	/* get the direction */
-	action = SkipSpaces(action, NULL, 0);
-	if (action != NULL && *action != '\0') {
-		direction = gravity_parse_dir_argument(
-			action, &action, DIR_NONE);
-
-		if (direction < 0 || direction > DIR_MAJOR_MASK)
-		{
-			fvwm_debug(__func__,
-				"EdgeLeaveCommand needs a valid direction.\n");
-			return;
-		}
-
-		/* check if the command does contain at least one token */
-		option = PeekToken(action, NULL);
-		if (option != NULL && *option != '\0')
-			command = action;
-	} else
-		direction = DIR_C;
-
 	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
-		/* assign command to the edge(s) */
-		if (m == NULL || m_loop == m) {
-			if (direction == DIR_N || direction == DIR_C)
-			{
-				free(m_loop->PanFrameTop.command);
-				m_loop->PanFrameTop.command = NULL;
-				if (command != NULL)
-					m_loop->PanFrameTop.command =
-						fxstrdup(command);
-			}
-			if (direction == DIR_S || direction == DIR_C)
-			{
-				free(m_loop->PanFrameBottom.command);
-				m_loop->PanFrameBottom.command = NULL;
-				if (command != NULL)
-					m_loop->PanFrameBottom.command =
-						fxstrdup(command);
-			}
-			if (direction == DIR_W || direction == DIR_C)
-			{
-				free(m_loop->PanFrameLeft.command);
-				m_loop->PanFrameLeft.command = NULL;
-				if (command != NULL)
-					m_loop->PanFrameLeft.command =
-						fxstrdup(command);
-			}
-			if (direction == DIR_E || direction == DIR_C)
-			{
-				free(m_loop->PanFrameRight.command);
-				m_loop->PanFrameRight.command = NULL;
-				if (command != NULL)
-					m_loop->PanFrameRight.command =
-						fxstrdup(command);
-			}
-			checkPanFrames(m_loop);
+		char **target;
+
+		/* Skip this monitor if it's not the one we're after. */
+		if (m != NULL && m_loop != m)
+			continue;
+
+		if (direction == DIR_N || free_all_cmds) {
+			target = (type == EDGE_CMD) ?
+				&m_loop->PanFrameTop.command :
+				&m_loop->PanFrameTop.command_leave;
+			free(*target);
+			*target = NULL;
+			if (command != NULL)
+				*target = fxstrdup(command);
 		}
+		if (direction == DIR_S || free_all_cmds) {
+			target = (type == EDGE_CMD) ?
+				&m_loop->PanFrameBottom.command :
+				&m_loop->PanFrameBottom.command_leave;
+			free(*target);
+			*target = NULL;
+			if (command != NULL)
+				*target = fxstrdup(command);
+		}
+		if (direction == DIR_W || free_all_cmds) {
+			target = (type == EDGE_CMD) ?
+				&m_loop->PanFrameLeft.command :
+				&m_loop->PanFrameLeft.command_leave;
+			free(*target);
+			*target = NULL;
+			if (command != NULL)
+				*target = fxstrdup(command);
+		}
+		if (direction == DIR_E || free_all_cmds) {
+			target = (type == EDGE_CMD) ?
+				&m_loop->PanFrameRight.command :
+				&m_loop->PanFrameRight.command_leave;
+			free(*target);
+			*target = NULL;
+			if (command != NULL)
+				*target = fxstrdup(command);
+		}
+		checkPanFrames(m_loop);
 	}
+
+}
+
+/* EdgeCommand - binds a function to a pan frame enter event */
+void CMD_EdgeCommand(F_CMD_ARGS)
+{
+	parse_edge_leave_command(action, EDGE_CMD);
 }
 
 /* EdgeLeaveCommand - binds a function to a pan frame Leave event */
 void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 {
-	direction_t direction;
-	char *command = NULL, *option;
-	struct monitor *m = NULL, *m_loop;
-
-	/* check for screen */
-	option = PeekToken(action, NULL);
-        if (StrEquals(option, "screen")) {
-                /* Skip literal 'screen' */
-                option = PeekToken(action, &action);
-                /* Actually get the screen value. */
-                option = PeekToken(action, &action);
-
-                m = monitor_resolve_name(option);
-                if (strcmp(m->si->name, option) != 0) {
-                        fvwm_debug(__func__,
-                                   "Invalid screen: %s", option);
-                        return;
-                }
-        }
-
-	initPanFrames();
-
-	/* get the direction */
-	action = SkipSpaces(action, NULL, 0);
-	if (action != NULL && *action != '\0') {
-		direction = gravity_parse_dir_argument(
-			action, &action, DIR_NONE);
-
-		if (direction < 0 || direction > DIR_MAJOR_MASK)
-		{
-			fvwm_debug(__func__,
-				"EdgeLeaveCommand needs a valid direction.\n");
-			return;
-		}
-
-		/* check if the command does contain at least one token */
-		option = PeekToken(action, NULL);
-		if (option != NULL && *option != '\0')
-			command = action;
-	} else
-		direction = DIR_C;
-
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
-		if (m == NULL || m == m_loop) {
-			/* assign command to the edge(s) */
-			if (direction == DIR_N || direction == DIR_C)
-			{
-				free(m_loop->PanFrameTop.command_leave);
-				m_loop->PanFrameTop.command_leave = NULL;
-				if (command != NULL)
-					m_loop->PanFrameTop.command_leave =
-						fxstrdup(command);
-			}
-			if (direction == DIR_S || direction == DIR_C)
-			{
-				free(m_loop->PanFrameBottom.command_leave);
-				m_loop->PanFrameBottom.command_leave = NULL;
-				if (command != NULL)
-					m_loop->PanFrameBottom.command_leave =
-						fxstrdup(command);
-			}
-			if (direction == DIR_W || direction == DIR_C)
-			{
-				free(m_loop->PanFrameLeft.command_leave);
-				m_loop->PanFrameLeft.command_leave = NULL;
-				if (command != NULL)
-					m_loop->PanFrameLeft.command_leave =
-						fxstrdup(command);
-			}
-			if (direction == DIR_E || direction == DIR_C)
-			{
-				free(m_loop->PanFrameRight.command_leave);
-				m_loop->PanFrameRight.command_leave = NULL;
-				if (command != NULL)
-					m_loop->PanFrameRight.command_leave =
-						fxstrdup(command);
-			}
-			checkPanFrames(m_loop);
-		}
-	}
+	parse_edge_leave_command(action, EDGE_LEAVE_CMD);
 }
 
 void CMD_EdgeThickness(F_CMD_ARGS)
