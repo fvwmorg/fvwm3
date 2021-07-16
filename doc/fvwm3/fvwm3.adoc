@@ -4671,11 +4671,11 @@ AddToFunc SelectWindow
 	reversed. This command works also with windows that are not managed by
 	fvwm. In this case fvwm does not bring the window onto the screen if
 	it is not visible. For example it is possible to warp the pointer to
-	the center of the root window on screen 1:
+	the center of the root window:
 +
 
 ....
-WindowId root 1 WarpToWindow 50 50
+WindowId root WarpToWindow 50 50
 ....
 
 
@@ -8615,11 +8615,10 @@ This command implies the conditions _CirculateHit_,
 _CirculateHitIcon_ and _CirculateHitShaded_. They can be turned off
 by specifying "!CirculateHit" etc. explicitly.
 +
-*WindowId* [_id_] [(_conditions_)] | [root [_screen_]] _command_:::
+*WindowId* [_id_ | root] [(_conditions_)] _command_:::
 	The *WindowId* command looks for a specific window _id_ and runs the
-	specified _command_ on it. The second form of syntax retrieves the
-	window id of the root window of the given _screen_. If no _screen_
-	is given, the current screen is assumed. The window indicated by
+	specified _command_ on it. If the literal option _root_ is given for
+	the window id, the root window is used. The window indicated by
 	_id_ may belong to a window not managed by fvwm or even a window on
 	a different screen. Although most commands can not operate on such
 	windows, there are some exceptions, for example the *WarpToWindow*
@@ -8635,7 +8634,7 @@ Examples:
 
 ....
 WindowId 0x34567890 Raise
-WindowId root 1 WarpToWindow 50 50
+WindowId root WarpToWindow 50 50
 WindowId $0 (Silly_Popup) Delete
 ....
 
