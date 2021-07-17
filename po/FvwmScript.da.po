@@ -6,7 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fvwm version-2_6_6-142-g1a05b191-dirty\n"
-"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-29 23:39-0600\n"
 "PO-Revision-Date: 2017-02-07 00:00+0100\n"
 "Last-Translator: scootergrisen\n"
 "Language-Team: Danish\n"
@@ -16,12 +17,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#. ./default-config/FvwmScript-ConfirmQuit: line 11
+msgid "Do you really want to quit Fvwm?"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/FvwmScript-ConfirmQuit: line 25
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 85
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 89
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 94
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 235
+msgid "Quit"
+msgstr "Afslut"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/FvwmScript-ConfirmQuit: line 41
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 127
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 58
+msgid "Cancel"
+msgstr "Annuller"
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 2
+msgid "ConfirmCopyConfig"
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 21
+#, fuzzy
+msgid "Fvwm Default Configuration"
+msgstr "Musekonfiguration:"
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 36
+msgid "This script copies the default configuration into your home directory:"
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 64
+msgid "A backup of your current configuration will be located at:"
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 92
+msgid "Click Confirm to continue and restart Fvwm."
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 107
+msgid "Confirm"
+msgstr ""
+
 #. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 2
 msgid "Bell Setup"
 msgstr "Opsætning af klokke"
 
 #. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 44
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 49
 #. #-#-#-#-#  duplicate  #-#-#-#-#
 #. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 43
 #. #-#-#-#-#  duplicate  #-#-#-#-#
@@ -32,7 +84,7 @@ msgid "Apply"
 msgstr "Anvend"
 
 #. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 62
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 67
 #. #-#-#-#-#  duplicate  #-#-#-#-#
 #. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 62
 #. #-#-#-#-#  duplicate  #-#-#-#-#
@@ -42,34 +94,23 @@ msgstr "Anvend"
 msgid "Save"
 msgstr "Gem"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 80
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 89
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 94
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 235
-msgid "Quit"
-msgstr "Afslut"
-
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 95
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 100
 msgid "Beep"
 msgstr "Bip"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 130
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 135
 msgid "Volume:"
 msgstr "Lydstyrke:"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 156
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 161
 msgid "Pitch(Hz):"
 msgstr "Tonehøjde (Hz):"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 182
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 187
 msgid "Duration(ms):"
 msgstr "Varighed (ms):"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 207
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 212
 msgid "Bell"
 msgstr "Klokke"
 
@@ -209,10 +250,6 @@ msgstr "Filbrowser"
 #. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 42
 msgid "OK"
 msgstr "OK"
-
-#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 58
-msgid "Cancel"
-msgstr "Annuller"
 
 #. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 86
 msgid "Path:"
