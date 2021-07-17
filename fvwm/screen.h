@@ -301,8 +301,6 @@ typedef struct ScreenInfo
 {
 	unsigned long screen;
 	Screen *pscreen;
-	/* number of screens on display */
-	int NumberOfScreens;
 	/* the head of the fvwm window list */
 	FvwmWindow FvwmRoot;
 	/* the root window */
