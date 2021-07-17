@@ -1822,7 +1822,7 @@ static char *style_parse_icon_box_style(
 
 	/* otherwise try to parse the icon box */
 	IconBoxes = fxcalloc(1, sizeof(icon_boxes));
-	IconBoxes->IconScreen = "global";
+	IconBoxes->IconScreen = fxstrdup("global");
 	/* init grid x */
 	IconBoxes->IconGrid[0] = 3;
 	/* init grid y */
@@ -1834,7 +1834,10 @@ static char *style_parse_icon_box_style(
 		is_screen_given = True;
 		option = PeekToken(rest, &rest); /* skip screen */
 		option = PeekToken(rest, &rest); /* get the screen spec */
-		IconBoxes->IconScreen = option;
+		free(IconBoxes->IconScreen);
+		IconBoxes->IconScreen = fxstrdup(option);
+
+		fvwm_debug(__func__, "screen set: %s", option);
 	}
 
 	/* try for 4 numbers x y x y */
@@ -1888,14 +1891,17 @@ static char *style_parse_icon_box_style(
 		option = PeekToken(rest, NULL);
 		if (!option)
 		{
+			fvwm_debug(__func__, "No option set, returning: <<%s>>", rest);
 			return rest;
 		}
 		l = strlen(option);
 		if (l > 0 && l < 24)
 		{
+			fvwm_debug(__func__, "option 1: %s", option);
 			/* advance */
 			option = PeekToken(rest, &rest);
 			/* if word found, not too long */
+			fvwm_debug(__func__, "option 2: %s", option);
 			geom_flags = FScreenParseGeometryWithScreen(
 				option, &IconBoxes->IconBox[0],
 				&IconBoxes->IconBox[1],	(unsigned int*)&width,
@@ -4794,6 +4800,7 @@ void free_icon_boxes(icon_boxes *ib)
 		temp = ib->next;
 		if (ib->use_count == 0)
 		{
+			free(ib->IconScreen);
 			free(ib);
 		}
 		else
