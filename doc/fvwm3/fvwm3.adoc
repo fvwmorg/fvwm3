@@ -1688,7 +1688,7 @@ monitor which has the mouse pointer.
 +
 "prev_pagex" returns the previous X page on the referenced monitor.
 +
-"prev_pagey" retuns the previous Y page on the referenced monitor.
+"prev_pagey" returns the previous Y page on the referenced monitor.
 
 $[screen]::
 	The screen number fvwm is running on. Useful for setups with multiple
