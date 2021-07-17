@@ -1,14 +1,14 @@
 # Changelog
 
-## [Unreleased](https://github.com/fvwmorg/fvwm3/tree/HEAD)
+## [1.0.4](https://github.com/fvwmorg/fvwm3/tree/1.0.4) (2021-07-17)
 
-[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.3...HEAD)
+[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.3...1.0.4)
 
 **Breaking changes:**
 
+- Deprecate Label for FvwmPager [\#342](https://github.com/fvwmorg/fvwm3/issues/342)
 - Extend \*FvwmIconMan:Resolution to include specific Desktop / Pager [\#455](https://github.com/fvwmorg/fvwm3/issues/455)
 - Replace libbson with cJSON [\#408](https://github.com/fvwmorg/fvwm3/issues/408)
-- Deprecate Label for FvwmPager [\#342](https://github.com/fvwmorg/fvwm3/issues/342)
 - FvwmButtons: Shrink windows when honoring Hints. [\#577](https://github.com/fvwmorg/fvwm3/pull/577) ([somiaj](https://github.com/somiaj))
 - Replace libbson with cJSON [\#571](https://github.com/fvwmorg/fvwm3/pull/571) ([ThomasAdam](https://github.com/ThomasAdam))
 - Add commands to configure the size/position window. [\#558](https://github.com/fvwmorg/fvwm3/pull/558) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -34,12 +34,13 @@
 
 **Fixed bugs:**
 
+- Pager do not show smalls windows in the correct place when snapped to the edge [\#541](https://github.com/fvwmorg/fvwm3/issues/541)
+- EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
 - Fvwm segfaults parsing module configuration [\#575](https://github.com/fvwmorg/fvwm3/issues/575)
 - Swallowing FvwmPager inside FvwmButtons breaks resizing FvwmButtons when aspect ratio resizing is used [\#573](https://github.com/fvwmorg/fvwm3/issues/573)
 - Move X Y Warp doesn't move pointer to window. [\#551](https://github.com/fvwmorg/fvwm3/issues/551)
 - Maximize fullscreen command does not clear \_NET\_WM\_STATE\_FULLSCREEN when exiting fullscreen [\#545](https://github.com/fvwmorg/fvwm3/issues/545)
 - EdgeLeaveCommand don't work or need a page change to work [\#543](https://github.com/fvwmorg/fvwm3/issues/543)
-- Pager do not show smalls windows in the correct place when snapped to the edge [\#541](https://github.com/fvwmorg/fvwm3/issues/541)
 - FvwmPager Icon view fix background color. [\#537](https://github.com/fvwmorg/fvwm3/issues/537)
 - FvwmPager with bad aspect ratio on dual-head display [\#522](https://github.com/fvwmorg/fvwm3/issues/522)
 - AnimatedMove [\#513](https://github.com/fvwmorg/fvwm3/issues/513)
@@ -47,7 +48,6 @@
 - SnapAttraction: take into account individual monitors [\#466](https://github.com/fvwmorg/fvwm3/issues/466)
 - FvwmPager not taking into account global screen dimensions when configured with DeskTopScale [\#223](https://github.com/fvwmorg/fvwm3/issues/223)
 - FvwmPager: moving windows inside FvwmPager is inconsistent [\#198](https://github.com/fvwmorg/fvwm3/issues/198)
-- EwmhBaseStruts glitch when using screen with different resolutions [\#66](https://github.com/fvwmorg/fvwm3/issues/66)
 - Add force\_icons\_size kludge to .stalonetrayrc. [\#581](https://github.com/fvwmorg/fvwm3/pull/581) ([somiaj](https://github.com/somiaj))
 - Fix pass through binding logic. [\#570](https://github.com/fvwmorg/fvwm3/pull/570) ([somiaj](https://github.com/somiaj))
 - Make default-config greyed colorset grey. [\#566](https://github.com/fvwmorg/fvwm3/pull/566) ([somiaj](https://github.com/somiaj))
@@ -66,28 +66,28 @@
 
 **Merged pull requests:**
 
+- Extend FvwmIconMan Resolution configuration. [\#561](https://github.com/fvwmorg/fvwm3/pull/561) ([somiaj](https://github.com/somiaj))
+- Allow Min/Max WindowSize style to use client size [\#560](https://github.com/fvwmorg/fvwm3/pull/560) ([somiaj](https://github.com/somiaj))
+- Add more columns to default-config menu ItemFormat. [\#559](https://github.com/fvwmorg/fvwm3/pull/559) ([somiaj](https://github.com/somiaj))
+- Fix broken link. [\#529](https://github.com/fvwmorg/fvwm3/pull/529) ([somiaj](https://github.com/somiaj))
+- Spelling error fixes. [\#512](https://github.com/fvwmorg/fvwm3/pull/512) ([somiaj](https://github.com/somiaj))
+- Working on 1.0.4 [\#509](https://github.com/fvwmorg/fvwm3/pull/509) ([ThomasAdam](https://github.com/ThomasAdam))
 - module expand: don't overwrite previous expansion [\#576](https://github.com/fvwmorg/fvwm3/pull/576) ([ThomasAdam](https://github.com/ThomasAdam))
 - conditional: fix whitespace/comma parsing [\#572](https://github.com/fvwmorg/fvwm3/pull/572) ([ThomasAdam](https://github.com/ThomasAdam))
 - Configure a colorset for XDGMenu options. [\#564](https://github.com/fvwmorg/fvwm3/pull/564) ([somiaj](https://github.com/somiaj))
 - Menu: add option to grey entries out [\#563](https://github.com/fvwmorg/fvwm3/pull/563) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove \*FvwmPager: Label configuration option. [\#562](https://github.com/fvwmorg/fvwm3/pull/562) ([somiaj](https://github.com/somiaj))
-- Extend FvwmIconMan Resolution configuration. [\#561](https://github.com/fvwmorg/fvwm3/pull/561) ([somiaj](https://github.com/somiaj))
-- Allow Min/Max WindowSize style to use client size [\#560](https://github.com/fvwmorg/fvwm3/pull/560) ([somiaj](https://github.com/somiaj))
-- Add more columns to default-config menu ItemFormat. [\#559](https://github.com/fvwmorg/fvwm3/pull/559) ([somiaj](https://github.com/somiaj))
 - move: Warp: move pointer to centre of window [\#553](https://github.com/fvwmorg/fvwm3/pull/553) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
 - PanFrame improvements [\#547](https://github.com/fvwmorg/fvwm3/pull/547) ([ThomasAdam](https://github.com/ThomasAdam))
 - pager: teach Icon view about colorsets [\#538](https://github.com/fvwmorg/fvwm3/pull/538) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: fix mouse positioning [\#533](https://github.com/fvwmorg/fvwm3/pull/533) ([ThomasAdam](https://github.com/ThomasAdam))
-- Fix broken link. [\#529](https://github.com/fvwmorg/fvwm3/pull/529) ([somiaj](https://github.com/somiaj))
 - EdgeScroll: a few improvements [\#524](https://github.com/fvwmorg/fvwm3/pull/524) ([ThomasAdam](https://github.com/ThomasAdam))
 - Update manual for Echo/EchoFuncDefinition [\#520](https://github.com/fvwmorg/fvwm3/pull/520) ([somiaj](https://github.com/somiaj))
 - release: remove dev-docs from release tarball [\#518](https://github.com/fvwmorg/fvwm3/pull/518) ([ThomasAdam](https://github.com/ThomasAdam))
 - configure: remove stale references to BUGADDR [\#517](https://github.com/fvwmorg/fvwm3/pull/517) ([ThomasAdam](https://github.com/ThomasAdam))
 - Configuration tweaks [\#516](https://github.com/fvwmorg/fvwm3/pull/516) ([ThomasAdam](https://github.com/ThomasAdam))
-- Spelling error fixes. [\#512](https://github.com/fvwmorg/fvwm3/pull/512) ([somiaj](https://github.com/somiaj))
 - build: add CHANGELOG.md to dist [\#510](https://github.com/fvwmorg/fvwm3/pull/510) ([ThomasAdam](https://github.com/ThomasAdam))
-- Working on 1.0.4 [\#509](https://github.com/fvwmorg/fvwm3/pull/509) ([ThomasAdam](https://github.com/ThomasAdam))
 
 ## [1.0.3](https://github.com/fvwmorg/fvwm3/tree/1.0.3) (2021-05-30)
 
@@ -574,3 +574,4 @@
 
 
 
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*

@@ -6,7 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: fvwm\n"
-"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-29 23:39-0600\n"
 "PO-Revision-Date: 2003-04-13 11:35+0200\n"
 "Last-Translator: Andrei Mitrofanow <smilebef@web.de>\n"
 "Language-Team: German\n"
@@ -16,12 +17,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#. ./default-config/FvwmScript-ConfirmQuit: line 11
+msgid "Do you really want to quit Fvwm?"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/FvwmScript-ConfirmQuit: line 25
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 85
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 89
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 94
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 235
+msgid "Quit"
+msgstr "Beenden"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/FvwmScript-ConfirmQuit: line 41
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 127
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 58
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 2
+msgid "ConfirmCopyConfig"
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 21
+#, fuzzy
+msgid "Fvwm Default Configuration"
+msgstr "Maus Konfiguration:"
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 36
+msgid "This script copies the default configuration into your home directory:"
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 64
+msgid "A backup of your current configuration will be located at:"
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 92
+msgid "Click Confirm to continue and restart Fvwm."
+msgstr ""
+
+#. ./default-config/FvwmScript-ConfirmCopyConfig: line 107
+msgid "Confirm"
+msgstr ""
+
 #. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 2
 msgid "Bell Setup"
 msgstr "Lautsprecher Konfiguration"
 
 #. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 44
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 49
 #. #-#-#-#-#  duplicate  #-#-#-#-#
 #. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 43
 #. #-#-#-#-#  duplicate  #-#-#-#-#
@@ -32,7 +84,7 @@ msgid "Apply"
 msgstr "Akzeptieren"
 
 #. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 62
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 67
 #. #-#-#-#-#  duplicate  #-#-#-#-#
 #. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 62
 #. #-#-#-#-#  duplicate  #-#-#-#-#
@@ -42,34 +94,23 @@ msgstr "Akzeptieren"
 msgid "Save"
 msgstr "Speichern"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 80
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup: line 89
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-PointerSetup: line 94
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmScript/Scripts/FvwmScript-ScreenSetup: line 235
-msgid "Quit"
-msgstr "Beenden"
-
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 95
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 100
 msgid "Beep"
 msgstr "Piebton"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 130
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 135
 msgid "Volume:"
 msgstr "Lautstärke:"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 156
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 161
 msgid "Pitch(Hz):"
 msgstr "Tonhöhe(Hz)"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 182
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 187
 msgid "Duration(ms):"
 msgstr "Dauer(ms):"
 
-#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 207
+#. ./modules/FvwmScript/Scripts/FvwmScript-BellSetup: line 212
 msgid "Bell"
 msgstr "Lautsprecher"
 
@@ -207,10 +248,6 @@ msgstr "Dateimanager"
 #. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 42
 msgid "OK"
 msgstr "OK"
-
-#. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 58
-msgid "Cancel"
-msgstr "Abbrechen"
 
 #. ./modules/FvwmScript/Scripts/FvwmScript-FileBrowser: line 86
 msgid "Path:"
