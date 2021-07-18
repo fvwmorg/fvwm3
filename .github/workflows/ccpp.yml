@@ -18,31 +18,6 @@ jobs:
     - name: Build Package
       run: 'docker build -t fvwm3 .'
 
-  changelog:
-      name: Update Changelog
-      runs-on: ubuntu-20.04
-      needs: build
-      steps:
-          - name: Checkout code
-            if: github.ref == 'refs/heads/master'
-            uses: actions/checkout@v2
-            with:
-                ref: master
-          - name: Update CHANGELOG
-            if: github.ref == 'refs/heads/master'
-            run: |
-                    docker run -v $(pwd):$(pwd) ferrarimarco/github-changelog-generator --exclude-labels "skip:changelog" --breaking-labels "type:breaking" --enhancement-labels "type:enhancement","type:new-feature" --bug-labels "type:bug" -t ${{ secrets.GITHUB_TOKEN }} --user fvwmorg --project fvwm3 -o "$(pwd)/CHANGELOG.md"
-                    sed -i '/This Changelog was automatically generated/d' CHANGELOG.md
-          - name: Commit CHANGELOG
-            if: github.ref == 'refs/heads/master'
-            uses: stefanzweifel/git-auto-commit-action@v4
-            with:
-                commit_user_name: Fvwm Automation
-                commit_user_email: fvwm-automation@example.org
-                commit_author: Fvwm Automation <fvwm-automation@example.org>
-                commit_message: '[AUTO]: update CHANGELOG'
-                file_pattern: CHANGELOG.md
-
   notification:
     runs-on: ubuntu-20.04
     name: notifications
