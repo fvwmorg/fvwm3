@@ -3269,13 +3269,14 @@ void CMD_OpaqueMoveSize(F_CMD_ARGS)
 
 static void set_geom_win_visible_val(char *token, bool val)
 {
-	if (token == NULL)
-		return;
-
 	Scr.gs.do_hide_position_window = !val;
 	Scr.gs.do_hide_resize_window = !val;
 
-	if (StrEquals(token, "never"))
+	if (token == NULL)
+	{
+		return;
+	}
+	else if (StrEquals(token, "never"))
 	{
 		Scr.gs.do_hide_position_window = val;
 		Scr.gs.do_hide_resize_window = val;
