@@ -2617,6 +2617,9 @@ void CMD_Wait(F_CMD_ARGS)
 	char *wait_string, *rest;
 	FvwmWindow *t;
 
+	if (!Scr.flags.are_windows_captured)
+		return;
+
 	/* try to get a single token */
 	rest = GetNextToken(action, &wait_string);
 	if (wait_string)
