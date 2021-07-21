@@ -475,7 +475,6 @@ Standard output is a series Fvwm commands."""
         fh.write(current_theme)
         fh.close()
 
-    if force:
         for ent in desktop_entries:
             style_id = ent.getStartupWMClass()
             if not style_id:
