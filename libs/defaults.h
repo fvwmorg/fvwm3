@@ -25,7 +25,7 @@
 /* The "extended" buttons do not provide the full functionality because X has
  * no bit mask value for them.  Things like dragging windows don't work with
  * them. */
-#define NUMBER_OF_EXTENDED_MOUSE_BUTTONS   9
+#define NUMBER_OF_EXTENDED_MOUSE_BUTTONS   15
 #if NUMBER_OF_EXTENDED_MOUSE_BUTTONS > 31
 #error No more than 31 mouse buttons can be supported on 32 bit platforms
 #endif
