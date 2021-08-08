@@ -395,8 +395,9 @@ static void release_manager_size(WinManager *man)
 /* Like XMoveResizeWindow(), but can move in arbitary directions */
 static void resize_window(WinManager *man)
 {
+  XWindowAttributes attribs;
   ManGeometry *g;
-  int x_changed, y_changed, dir;
+  int x_changed, y_changed, dir, counter = 20000;
 
   dir = man->geometry.dir;
   /* Remove any size limits so that the window can be resized without
@@ -440,6 +441,16 @@ static void resize_window(WinManager *man)
 		     man->geometry.height);
     }
     MyXUngrabServer(theDisplay);
+  }
+  /* Wait until the window has resized -- there could be a timing issue and
+   * we don't want to warn about incorrect sizehints when this is still
+   * happening.
+   */
+  while (counter && (attribs.width != man->geometry.width ||
+	 attribs.height != man->geometry.height)) {
+		if (!XGetWindowAttributes(theDisplay, man->theWindow, &attribs))
+			break;
+		counter--;
   }
   fix_manager_size(man, man->geometry.width, man->geometry.height);
 }
