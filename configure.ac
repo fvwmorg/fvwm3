@@ -304,11 +304,7 @@ freebsd*)
 	;;
 esac
 
-# *** pkg-config
-# unfortunately, we need pkg-config for the detection of certain libs:
-# - version of fontconfig without fontconfig-config
-# - version of fribidi without fribidi-config
-AM_CHECK_PKG_CONFIG
+PKG_PROG_PKG_CONFIG
 
 PKG_CHECK_MODULES([xt],[xt],
 [],
@@ -772,7 +768,7 @@ AC_ARG_ENABLE(rsvg,
 )
 if test ! x"$with_rsvg" = xno; then
    with_rsvg=no
-   if test ! x"$PKG_CONFIG" = xno ; then
+   if test ! x"$PKG_CONFIG" = x ; then
       AC_MSG_CHECKING(for librsvg - version >= $rsvg_min_version)
       if $PKG_CONFIG --exists librsvg-2.0 ; then
          if $PKG_CONFIG --exists "librsvg-2.0 >= $rsvg_min_version" ; then
@@ -1021,7 +1017,7 @@ if test ! x"$with_bidi" = xno; then
     AS_HELP_STRING([--with-fribidi-bindir=DIR],
       [directory of fribidi-config if not in PATH]),
     FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
-  if test ! x"$PKG_CONFIG" = xno && $PKG_CONFIG --exists "fribidi >= $fribidi_min_version"; then
+  if test ! x"$PKG_CONFIG" = x && $PKG_CONFIG --exists "fribidi >= $fribidi_min_version"; then
     FRIBIDI_CONFIG="$PKG_CONFIG fribidi"
   else
     AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
