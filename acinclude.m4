@@ -542,37 +542,6 @@ c = locale_charset ();
 ])
 
 #-----------------------------------------------------------------------------
-# pkg-config
-
-dnl
-dnl
-AC_DEFUN([AM_CHECK_PKG_CONFIG],
-[dnl
-dnl Get the cflags and libraries from the freetype-config script
-dnl
-AC_ARG_WITH(pkgconfig-prefix,
-AS_HELP_STRING([--with-pkgconfig-prefix=PFX],[prefix where pkg-config is installed]),
-            pkgconfig_config_prefix="$withval", pkgconfig_config_prefix="")
-AC_ARG_WITH(pkgconfig-exec-prefix,
-AS_HELP_STRING([--with-pkgconfig-exec-prefix=PFX],[exec prefix where pkg-config is installed]),
-            pkgconfig_config_exec_prefix="$withval",pkgconfig_config_exec_prefix="")
-
-if test x$pkgconfig_config_exec_prefix != x ; then
-  pkgconfig_config_args="$pkgconfig_config_args --exec-prefix=$pkgconfig_config_exec_prefix"
-  if test x${PKG_CONFIG+set} != xset ; then
-    PKG_CONFIG=$pkgconfig_config_exec_prefix/bin/pkg-config
-  fi
-fi
-if test x$pkgconfig_config_prefix != x ; then
-  pkgconfig_config_args="$pkgconfig_config_args --prefix=$pkgconfig_config_prefix"
-  if test x${PKG_CONFIG+set} != xset ; then
-    PKG_CONFIG=$pkgconfig_config_prefix/bin/pkg-config
-  fi
-fi
-AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
-])
-
-#-----------------------------------------------------------------------------
 # Configure paths for fontconfig
 # Marcelo Magallon 2001-10-26, based on gtk.m4 by Owen Taylor
 # modified by olicha for fontconfig
