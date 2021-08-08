@@ -3217,6 +3217,9 @@ default root cursor, you must set your root cursor with the
 	a button release for the *Function* command to consider the action a
 	mouse click. The default delay is 150 milliseconds. Omitting the delay
 	value resets the *ClickTime* to the default.
++
+ClickTime also specifies the delay between two clicks to be interpreted as a
+double-click.
 
 *ColorLimit* _limit_::
 	This command is obsolete. See the *--color-limit* option to fvwm.
