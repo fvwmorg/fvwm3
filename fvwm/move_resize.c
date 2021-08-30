@@ -2126,15 +2126,11 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle r;
 		rectangle s;
 		rectangle p;
-		struct monitor	*m;
+		struct monitor	*m = monitor_get_current();
 		char		*token;
 
-		if (action == NULL)
-			m = monitor_get_current();
-		else {
-			token = PeekToken(action, &action);
+		if (action != NULL && (token = PeekToken(action, &action)) != NULL)
 			m = monitor_resolve_name(token);
-		}
 
 		s.x = m->si->x;
 		s.y = m->si->y;
