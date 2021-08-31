@@ -2801,10 +2801,8 @@ store_desktop_cmd(int desk, char *name)
 	}
 
 	TAILQ_FOREACH(dc_loop, &desktop_cmd_q, entry) {
-		/* Update the name for an existing desktop, only if it
-		 * differs.
-		 */
-		if (dc_loop->desk == desk && (strcmp(dc_loop->name, name) != 0)) {
+		/* Update the name for an existing desktop. */
+		if (dc_loop->desk == desk) {
 			free(dc_loop->name);
 			dc_loop->name = fxstrdup(name);
 
