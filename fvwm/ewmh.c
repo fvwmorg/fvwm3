@@ -1858,7 +1858,7 @@ void EWMH_Init(struct monitor *m)
 	int supported_count = 0;
 	long val;
 	XTextProperty text;
-	unsigned char utf_name[4];
+	unsigned char utf_name[5];
 	char *names[1];
 	XClassHint classhints;
 
@@ -1881,9 +1881,9 @@ void EWMH_Init(struct monitor *m)
 		Scr.NoFocusWin, "_NET_SUPPORTING_WM_CHECK",
 		EWMH_ATOM_LIST_FVWM_ROOT, (unsigned char *)&val, 1);
 
-	names[0] = "fvwm";
-	classhints.res_name= "fvwm";
-	classhints.res_class= "FVWM";
+	names[0] = "fvwm3";
+	classhints.res_name= "fvwm3";
+	classhints.res_class= "FVWM3";
 
 	XSetClassHint(dpy, Scr.NoFocusWin, &classhints);
 	if (XStringListToTextProperty(names, 1, &text))
@@ -1897,6 +1897,7 @@ void EWMH_Init(struct monitor *m)
 	utf_name[1] = 0x56;
 	utf_name[2] = 0x57;
 	utf_name[3] = 0x4D;
+	utf_name[4] = 0x3;
 
 	ewmh_ChangeProperty(
 		Scr.NoFocusWin, "_NET_WM_NAME", EWMH_ATOM_LIST_PROPERTY_NOTIFY,
