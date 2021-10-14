@@ -24,6 +24,7 @@ FVWM3 has the following dependencies.
 * libxrandr-dev (>= 1.5)
 * libxrender-dev
 * libxt-dev
+* libxft-dev
 
 ## Optional dependencies
 
@@ -38,7 +39,6 @@ FVWM3 has the following dependencies.
 * libsm-dev
 * libxcursor-dev
 * libxext-dev
-* libxft-dev
 * libxi-dev
 * libxpm-dev
 * sharutils
