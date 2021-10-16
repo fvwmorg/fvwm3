@@ -152,7 +152,7 @@ AC_SUBST(FVWM_PERLLIBDIR)
 AC_SUBST(FVWM_CONFDIR)
 AC_SUBST(FVWM_DOCDIR)
 
-# Check for compatiblity for missing implementations.
+# Check for compatibility for missing implementations.
 AC_REPLACE_FUNCS([ \
     asprintf \
 ])
@@ -1155,7 +1155,7 @@ else
   USE_NLS=no
 fi
 
-# libs and buil
+# libs and build
 AC_SUBST(intl_LIBS)
 AC_SUBST(intl_CFLAGS)
 AC_SUBST(USE_NLS)

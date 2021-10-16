@@ -475,8 +475,8 @@ int main ()
           echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"],
         [                 (echo "*** The test program failed to compile or link. See the file config.log for the" >&5) 2>/dev/null || \
           echo "*** The test program failed to compile or link. See the file config.log for the"
-                          (echo "*** exact error that occured. This usually means IMLIB was incorrectly installed" >&5) 2>/dev/null || \
-          echo "*** exact error that occured. This usually means IMLIB was incorrectly installed"
+                          (echo "*** exact error that occurred. This usually means IMLIB was incorrectly installed" >&5) 2>/dev/null || \
+          echo "*** exact error that occurred. This usually means IMLIB was incorrectly installed"
                           (echo "*** or that you have moved IMLIB since it was installed. In the latter case, you" >&5) 2>/dev/null || \
           echo "*** or that you have moved IMLIB since it was installed. In the latter case, you"
                           (echo "*** may want to edit the imlib-config script: $IMLIBCONF" >&5) 2>/dev/null || \
@@ -687,7 +687,7 @@ else
     echo "*** The Fontconfig test program failed to run.  If your system uses"
     echo "*** shared libraries and they are installed outside the normal"
     echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
-    echo "*** (or whatever is appropiate for your system) is correctly set."
+    echo "*** (or whatever is appropriate for your system) is correctly set."
   fi
   FC_CFLAGS=""
   FC_LIBS=""
@@ -848,7 +848,7 @@ else
     echo "*** The Xft test program failed to run.  If your system uses"
     echo "*** shared libraries and they are installed outside the normal"
     echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
-    echo "*** (or whatever is appropiate for your system) is correctly set."
+    echo "*** (or whatever is appropriate for your system) is correctly set."
   fi
   XFT_CFLAGS=""
   XFT_LIBS=""
