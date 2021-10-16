@@ -20,7 +20,7 @@ Changes in stable release 2.6.8 (31-Mar-2018)
   - fvwm-perllib pod2man fixes.
   - FvwmIconMan no longer triggers a warning about bad size hints
     in the fvwm core.
-  - VMware windows do not disapper when switching between
+  - VMware windows do not disappear when switching between
     fullscreen and normal state.
   - Fix (de)installation with the configure options
     --program-prefix, --program-suffix and
@@ -132,7 +132,7 @@ Changes in stable release 2.6.6 (15-Mar-2016)
     the XDG menu specification.
   - Fix fvwm-menu-desktop keyError bug.  Use "others" if no desktop
     environment found.
-  - FvwmIconMan had problems displaying the hilight colour on some
+  - FvwmIconMan had problems displaying the highlight colour on some
     systems (64 bit issue?).
   - Globally active windows cannot take the focus if the style
     forbids programs to take focus themselves (style
@@ -155,8 +155,8 @@ Changes in stable release 2.6.6 (15-Mar-2016)
   - The option "NoDeskLimitY" option of the GotoPage command did
     not work.
   - Negative coordinates in the "rectangle" option to the Menu
-    commend did not work correctly.  This has been fixed.
-  - Removes a slight graphics problem whith the ResizeMaximize
+    command did not work correctly.  This has been fixed.
+  - Removes a slight graphics problem with the ResizeMaximize
     command being invoked from a window button menu.
   - When an attempt to reparent a client window (i.e. decorate
     it) fails, fvwm no longer throws away all events but only the
@@ -586,7 +586,7 @@ Changes in beta release 2.5.22 (29-Aug-2007)
    - Replaced "UseListSkip" with "UseSkipList" & "OnlyListSkip" with
      "OnlySkipList" in WindowList command. (Old options deprecated.)
    - New subject ImageCache for PrintInfo command.
-   - The new commad EchoFuncDefinition prints a function's
+   - The new command EchoFuncDefinition prints a function's
      definition to the console for debugging purposes.
    - The CursorStyle command can now load PNG and SVG images as
      mouse cursors.  New x and y arguments to specify the
@@ -621,7 +621,7 @@ Changes in beta release 2.5.22 (29-Aug-2007)
      correctly.
    - Fixed a possible crash with modules closing down.
    - Fixed broken demo script fvwm_make_browse_menu.sh.
-   - The conditon following a comma separator without whitespace
+   - The condition following a comma separator without whitespace
      padding was previously ignored if the presiding condition was
      multi-worded.
    - Various FvwmButtons drawing problems.
@@ -657,7 +657,7 @@ Changes in beta release 2.5.20 (15-Jan-2007)
      and !StickyStippledIconTitle.
    - Full support for menu context (M) key and mouse bindings.  See
      the section Menu Bindings in the man page for details.
-   - Hilighted menu backgrounds now use pixmaps gradients and
+   - Highlighted menu backgrounds now use pixmaps gradients and
      transparency from their related colorset.
    - New window conditions: StickyIcon, StickyAcrossPagesIcon and
      StickyAcrossDesksIcon.
@@ -875,7 +875,7 @@ Changes in beta release 2.5.14 (24-Aug-2005)
    - Fixed an annoying MouseFocus/SloppyFocus problem in
      conjunction with EdgeResistance + EdgeScroll (sometimes a
      window did not get the focus as it should have). This
-     problem first occured in 2.5.11.
+     problem first occurred in 2.5.11.
 
 -------------------------------------------------------------------
 
@@ -1273,7 +1273,7 @@ Changes in alpha release 2.5.4 (20-Oct-2002)
 
 * The HilightBack and ActiveFore menu styles are independent of
   each other.  HilightBack without using ActiveFore does no longer
-  hilight the item text.
+  highlight the item text.
 
 * New WindowList option SortByResource; the previously added
   SortClassName option is renamed to SortByClass.
@@ -1623,7 +1623,7 @@ Changes in stable release 2.4.19 (30-Sep-2004)
 
 * Fixed BackingStore style option.
 
-* Fixed MoveToDesk commend with a single argument.
+* Fixed MoveToDesk command with a single argument.
 
 * Allow whitespace in menu names.
 
@@ -1880,7 +1880,7 @@ Changes in stable release 2.4.10 (15-Sep-2002)
 * The commands Maximize, Resize and ResizeMove can be used on icons
   as it was in 2.2.x.
 
-* Fixed hilighting of menu items with HGradient and VGradient
+* Fixed highlighting of menu items with HGradient and VGradient
   MenuFace.  Reduced flickering with these options.
 
 * Fixed a minor problem with entering submenus via keyboard.
@@ -1910,7 +1910,7 @@ Changes in stable release 2.4.10 (15-Sep-2002)
 * No more flickering when a transient overlapping its parent window
   is lowered.
 
-* Fixed hilighting of unfocused windows.
+* Fixed highlighting of unfocused windows.
 
 -------------------------------------------------------------------
 
@@ -1975,7 +1975,7 @@ Changes in stable release 2.4.9 (11-Aug-2002)
   by several keys.
 
 * Fixed a possible crash when a window was recaptured and the
-  focus could not be transfered to another window.
+  focus could not be transferred to another window.
 
 * Fixed a minor problem with clicks on focused windows being
   ignored.
@@ -2100,7 +2100,7 @@ Changes in stable release 2.4.6 (10-Mar-2002)
 * Fixed moving windows with the keyboard over the edge of the
   screen when the pointer remained of the previous page.
 
-* Do not hilight windows after ResizeMove.
+* Do not highlight windows after ResizeMove.
 
 * New conditional command ThisWindow.
 
@@ -2296,7 +2296,7 @@ Changes in stable release 2.4.1 (15-Sep-2001)
   windows that showed up on certain setups.
 
 * Fixed bug that caused transient windows to be buried below their
-  parents with the "BugOpts RaiseOverUnmanaged on".  This occured
+  parents with the "BugOpts RaiseOverUnmanaged on".  This occurred
   with the system.fvwm2rc-sample-95 configuration.
 
 * The modules FvwmPager, FvwmIconMan, FvwmWinList and FvwmButtos
