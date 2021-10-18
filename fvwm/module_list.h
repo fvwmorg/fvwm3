@@ -103,7 +103,7 @@ void module_kill_all(void);
 /* kill a module */
 void module_kill(fmodule *module);
 
-/* execute module wraper, desperate mode */
+/* execute module wrapper, desperate mode */
 fmodule *executeModuleDesperate(F_CMD_ARGS);
 
 
@@ -115,7 +115,7 @@ fmodule *executeModuleDesperate(F_CMD_ARGS);
 /* module_send(fmodule *module, unsigned long *ptr, int size); */
 void PositiveWrite(fmodule *module, unsigned long *ptr, int size);
 
-/* returns a dynamicaly allocated struct with the received data
+/* returns a dynamically allocated struct with the received data
  * or NULL on error */
 fmodule_input *module_receive(fmodule *module);
 

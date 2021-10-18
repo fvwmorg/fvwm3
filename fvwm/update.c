@@ -359,7 +359,7 @@ static void apply_window_updates(
 
 		setup_title_geometry(t, pstyle);
 		/* frame_force_setup_window needs to know if the window is
-		 * hilighted */
+		 * highlighted */
 		tmp = get_focus_window();
 		set_focus_window(focus_w);
 		frame_force_setup_window(
@@ -481,7 +481,7 @@ static void apply_window_updates(
 		FvwmWindow *tmp;
 
 		/* frame_redraw_decorations needs to know if the window is
-		 * hilighted */
+		 * highlighted */
 		tmp = get_focus_window();
 		set_focus_window(focus_w);
 		if (IS_ICONIFIED(t))

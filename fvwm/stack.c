@@ -743,7 +743,7 @@ static Bool is_transient_subtree_straight(
 	}
 	/* find out on which windows to operate */
 	/* iteration are done reverse (bottom up, since that's the way the
-	 * transients wil be stacked if all is well */
+	 * transients will be stacked if all is well */
 	if (layer >= 0)
 	{
 		/* only work on the given layer */
@@ -965,7 +965,7 @@ static Bool __restack_window(
 		 * raised/lowered too */
 		raise_or_lower_window(t, mode, True, False, is_client_request);
 		/* make sure the stacking order is correct - may be the
-		 * sledge-hammer method, but the recursion ist too hard to
+		 * sledge-hammer method, but the recursion is too hard to
 		 * understand. */
 		ResyncXStackingOrder();
 
@@ -1626,7 +1626,7 @@ void remove_window_from_stack_ring(FvwmWindow *t)
 	}
 	t->stack_prev->stack_next = t->stack_next;
 	t->stack_next->stack_prev = t->stack_prev;
-	/* not really necessary, but gives a little more saftey */
+	/* not really necessary, but gives a little more safety */
 	t->stack_prev = NULL;
 	t->stack_next = NULL;
 

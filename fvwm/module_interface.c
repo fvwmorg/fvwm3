@@ -1002,7 +1002,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		}
 
 		/* If we're tracking just the global monitor, then stop here
-		 * -- essentialy, we only need to send this informatio once.
+		 * -- essentially, we only need to send this information once.
 		 */
 		if (monitor_mode == MONITOR_TRACKING_G)
 			break;

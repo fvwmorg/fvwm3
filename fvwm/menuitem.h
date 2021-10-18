@@ -57,7 +57,7 @@ typedef struct MenuItem
 
 	/* the strings displayed in the item */
 	char *label[MAX_MENU_ITEM_LABELS];
-	/* witdh of label[i] */
+	/* width of label[i] */
 	int label_offset[MAX_MENU_ITEM_LABELS];
 	/* strlen(label[i]) */
 	int label_strlen[MAX_MENU_ITEM_LABELS];
