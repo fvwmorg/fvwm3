@@ -1,5 +1,5 @@
 /* -*-c-*- */
-/* This module is based on Twm, but has been siginificantly modified
+/* This module is based on Twm, but has been significantly modified
  * by Rob Nation */
 /*
  *       Copyright 1988 by Evans & Sutherland Computer Corporation,

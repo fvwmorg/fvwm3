@@ -2656,7 +2656,7 @@ Bool __move_loop(
 			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
 			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
-		/* This is allright here since the window may not be mapped
+		/* This is all right here since the window may not be mapped
 		 * yet. */
 	}
 
@@ -3463,7 +3463,7 @@ void CMD_XorValue(F_CMD_ARGS)
 		Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
 	}
 
-	/* free up XorPixmap if neccesary */
+	/* free up XorPixmap if necessary */
 	if (XorPixmap != None) {
 		XFreePixmap(dpy, XorPixmap);
 		XorPixmap = None;
@@ -4220,7 +4220,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			}
 		}
 	}
-	/* don't warp if the resize was triggered by a press somwhere on the
+	/* don't warp if the resize was triggered by a press somewhere on the
 	 * title bar */
 	if (PressedW != Scr.Root && xmotion == 0 && ymotion == 0 &&
 	    !called_from_title)

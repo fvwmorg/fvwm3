@@ -502,7 +502,7 @@ static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
 		return NULL;
 	}
 
-	/* first look for a menu that is aleady mapped */
+	/* first look for a menu that is already mapped */
 	menu = seek_submenu_instance(mr, mi);
 	if (menu)
 	{
@@ -778,7 +778,7 @@ static void scanForStrings(
 
 	type = -1;
 	/* string is set whenever type >= 0, and unused otherwise
-	 * set to NULL to supress compiler warning */
+	 * set to NULL to suppress compiler warning */
 	string = NULL;
 	for (s = instring; *s != '\0'; s++)
 	{
@@ -1346,7 +1346,7 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 					x += relief_thickness + gap_left;
 					/* This is a hack: for now we record
 					 * the x coordinate of the end of the
-					 * hilight area, but later we'll place
+					 * highlight area, but later we'll place
 					 * the width in here. */
 					MR_HILIGHT_WIDTH(msp->menu) = x;
 					x += gap_right;
@@ -6294,7 +6294,7 @@ void update_transparent_menu_bg(
  *
  *  Procedure:
  *      repaint_transparent_menu - repaint the menu background if it is
- *      tranparent during an animated move. Called in move_resize.c
+ *      transparent during an animated move. Called in move_resize.c
  *      (AnimatedMoveAnyWindow). Performance improvement Welcome!
  *  ideas: - write the foreground into a pixmap and a mask the first time
  *          this function is called. Then use these pixmaps to draw

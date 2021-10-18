@@ -352,7 +352,7 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 			(animated && StrEquals(animated, "anim")) ?
 			"Animation" : "AnimationOff");
 		fvwm_debug(__func__,
-			   "The old MenuStyle snytax has been deprecated.  "
+			   "The old MenuStyle syntax has been deprecated.  "
 			   "Use 'MenuStyle %s' instead of 'MenuStyle %s'\n",
 			   buffer, action);
 		action = buffer;
@@ -693,7 +693,7 @@ void menustyle_update(MenuStyle *ms)
 		c_title.hilight = c_inactive.hilight;
 		c_title.shadow = c_inactive.shadow;
 	}
-	/* override hilighting colours if necessary */
+	/* override highlighting colours if necessary */
 	if (!ST_DO_HILIGHT_FORE(ms))
 	{
 		c_active.fore = c_inactive.fore;
@@ -1662,7 +1662,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 {
 	FvwmPictureAttributes fpa;
 	/* Copy origms to destms, be aware of all pointers in the MenuStyle
-	   strcture. Use  the same order as in menustyle_parse_style */
+	   structure. Use  the same order as in menustyle_parse_style */
 
 	/* menu colors */
 	fvwmlib_copy_color(

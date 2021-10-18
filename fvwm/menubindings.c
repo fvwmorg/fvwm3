@@ -544,7 +544,7 @@ void menu_shortcuts(
 				mx >= menu_x && mx < menu_x + menu_width &&
 				my >= menu_y && my < menu_y + menu_height)
 			{
-				/* pointer is on the meny somewhere not over
+				/* pointer is on the menu somewhere not over
 				 * an item */
 				if (my < menu_y + MST_BORDER_WIDTH(mr))
 				{

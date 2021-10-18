@@ -17,7 +17,7 @@ extern const char *get_current_read_dir(void);
  *
  * Parameters eventp, fw, context, and Module supply the context
  * for executing the commands.
- * cond_rc_t is passed thru incase piperead is running in a function.
+ * cond_rc_t is passed thru in case piperead is running in a function.
  **/
 void run_command_stream(
 	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc);
