@@ -1674,7 +1674,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 
 /* This function is really tricky. The two offsets are the offsets of the
- * colorset members of the DeskInfo and PagerSringList structures to be
+ * colorset members of the DeskInfo and PagerStringList structures to be
  * modified. The lines accessing this info look very ugly, but they work. */
 static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
 			  void *offset_item, int *colorset_global)
@@ -2458,7 +2458,7 @@ void ParseOptions(void)
   return;
 }
 
-/* Returns the item in the sring list that has item->next->desk == desk or
+/* Returns the item in the string list that has item->next->desk == desk or
  * the last item (item->next == NULL) if no entry matches the desk number. */
 PagerStringList *FindDeskStrings(int desk)
 {

@@ -352,7 +352,7 @@ data to the given key.
 =item B<observables>
 
 A subclass should define a list of observables that a caller may listen to
-using B<observe> method. It is the subclass responsiblity to actually signal
+using B<observe> method. It is the subclass responsibility to actually signal
 every observable listed using B<notify> method.
 
 Returns a reference to a string array.
@@ -384,7 +384,7 @@ I<observable-params>.
 
 =item B<request_windowlist_events>
 
-Subclasses that work using I<fvwm> events sent in responce to
+Subclasses that work using I<fvwm> events sent in response to
 B<Send_WindowList> command should call this shortcut method.
 Automatically sends the needed command (after the tracker event mask is
 counted) and defines a handler that terminates the initial tracker event
@@ -392,7 +392,7 @@ loop in response to I<M_END_WINDOWLIST> event.
 
 =item B<request_configinfo_events>
 
-Subclasses that work using I<fvwm> events sent in responce to
+Subclasses that work using I<fvwm> events sent in response to
 B<Send_ConfigInfo> command should call this shortcut method.
 Automatically sends the needed command (after a tracker event mask is
 counted) and defines a handler that terminates the initial tracker event

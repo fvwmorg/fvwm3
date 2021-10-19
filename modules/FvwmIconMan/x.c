@@ -445,7 +445,7 @@ void xevent_loop (void)
 
       /* must refresh transparent buttons when:
        * - moved and buttons is root transparent
-       * - bg change and  butons is parental relative */
+       * - bg change and  buttons is parental relative */
       if (moved || recreate_bg)
       {
 	      Bool r = False;

@@ -77,11 +77,11 @@
 #define PICTURE_use_named           1000
 #define PICTURE_TABLETYPE_LENGHT    7
 
-/* humm ... dither is probably borken with gamma correction. Anyway I do
+/* humm ... dither is probably broken with gamma correction. Anyway I do
  * do think that using gamma correction for the colors cubes is a good
  * idea */
 #define USE_GAMMA_CORECTION 0
-/* 2.2 is recommanded by the Poynon colors FAQ, some others suggest 1.5 and 2
+/* 2.2 is recommended by the Poynon colors FAQ, some others suggest 1.5 and 2
  * Use float constants!*/
 #define COLOR_GAMMA 1.5
 #define GREY_GAMMA  2.0
@@ -317,7 +317,7 @@ int my_dither(int x, int y, XColor *c)
 		tb = ((c->blue * bs) + dith) >> 8;
 		index = tr * gb + tg * b + tb;
 #if 0
-		/* try to use the additonal grey. Not easy, good for
+		/* try to use the additional grey. Not easy, good for
 		 * certain image/gradient bad for others */
 		if (Pcsi.d_ngrey_bits)
 		{
@@ -1166,7 +1166,7 @@ void create_mapping_table(
 			Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb, non_regular_pallet);
 	}
 
-	/* initialize colors number fo index computation */
+	/* initialize colors number for index computation */
 	if (PColorLimit == 2)
 	{
 		/* ok */
@@ -1534,7 +1534,7 @@ int PictureAllocColorTable(
 	}
 
 	/* first try to see if we have a "pre-allocated" color cube.
-	 * The bultin RENDER X extension pre-allocate a color cube plus
+	 * The builtin RENDER X extension pre-allocate a color cube plus
 	 * some grey's (xc/programs/Xserver/render/miindex)
 	 * See gdk/gdkrgb.c for the cubes used by gtk+-2, 666 is the default,
 	 * 555 is the minimal cc (this may change): if gtk cannot allocate

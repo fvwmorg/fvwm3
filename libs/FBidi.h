@@ -19,7 +19,7 @@
  *
  * The is_rtl aggument may be used for 2 purposes. The first is to change the
  * string alignment if there is a free space (but it probably worth not to
- * override the user specified string aligment). The second is to determine
+ * override the user specified string alignment). The second is to determine
  * where to put ellipses if the string is longer than the available space.
  *
  * There are several possible ways to solve the ellipses problem.

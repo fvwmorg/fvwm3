@@ -11,7 +11,7 @@
  * dpy:           Specifies the connection to the X server.
  * pixmap:        Source pixmap.
  * mask:          Source mask (can be None).
- * alpha:         Source alpha chanel (can be None).
+ * alpha:         Source alpha channel (can be None).
  * depth:         depth of the pixmap (1 or Pdepth).
  * d:             Destination drawable which should be of depth Pdepth.
  * GC gc:         Specifies the a visual GC.

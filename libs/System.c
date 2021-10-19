@@ -149,14 +149,14 @@ char *searchPath(
 		/* No search if filename begins with a slash */
 		strcpy(path, filename);
 
-		/* test if the path is accessable -- the module code assumes
+		/* test if the path is accessible -- the module code assumes
 		 * this is done */
 		if (access(filename, type) == 0)
 		{
 			return path;
 		}
 
-		/* the file is not accessable (don't test suffixes with full
+		/* the file is not accessible (don't test suffixes with full
 		 * path), return NULL */
 		free(path);
 
@@ -179,7 +179,7 @@ char *searchPath(
 			strcpy(path, pathlist);
 		}
 
-		/* handle specially the path extention using semicolon */
+		/* handle specially the path extension using semicolon */
 		curr_end = strchr(path, ';');
 		if (curr_end != NULL)
 		{

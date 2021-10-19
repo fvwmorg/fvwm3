@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
 /*
- *  Convinence functions for manipulating rectangles, segments, regions ...etc.
+ *  Convenience functions for manipulating rectangles, segments, regions ...etc.
  */
 
 #ifndef FVWMLIB_RECTANGLES_H
@@ -23,9 +23,9 @@
 /* ---------------------------- interface functions ------------------------ */
 
 /* If the two rectangles [x1, y1, w1, h2] and [x2, x2, w2, h2] have a
- * non emtpy interstection this function return True and the
+ * non empty interstection this function return True and the
  * XRectangle *r is set to the intersection (if not NULL). If the two
- * rectangles have an emty intersection False is returned and r is not
+ * rectangles have an empty intersection False is returned and r is not
  * modified.  */
 Bool frect_get_intersection(
 	int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2,

@@ -191,7 +191,7 @@ int main(int argc, char **argv)
 	/* tell fvwm we're running */
 	SendFinishedStartupNotification(fvwm_fd);
 
-	/* Recieve all messages from fvwm */
+	/* Receive all messages from fvwm */
 	EndLessLoop();
 
 	/* Should never get here! */
@@ -293,7 +293,7 @@ void SetDeskPageBackground(const Command *c)
 
 	current_colorset = -1;
 
-	/* FvwmBacker bg preperation */
+	/* FvwmBacker bg preparation */
 	switch (c->type)
 	{
 	case 1: /* solid colors */

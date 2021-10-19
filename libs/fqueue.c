@@ -131,7 +131,7 @@ static void fqueue_unlock_queue(
 	return;
 }
 
-/* Chack and possibly execute the action associated with a queue object.
+/* Check and possibly execute the action associated with a queue object.
  * Schedule the object for deletion if it was executed. */
 static void fqueue_operate(
 	fqueue *fq, fqueue_record *rec,

@@ -443,7 +443,7 @@ static void add_to_envlist(char *var, char *env)
  * If a variable is written again, the old memory is freed.  This function
  * should be called instead of putenv().
  *
- *   var - environement variable name
+ *   var - environment variable name
  *   env - environment string ("variable=value")
  *
  * Both arguments are copied internally and should be freed after calling this

@@ -1641,7 +1641,7 @@ static void Loop (int NbArg,long *TabArg)
   {
     for (i=limit[0]; i<=limit[1]; i++)
     {
-      /* Refeshing the variable */
+      /* Refreshing the variable */
       sprintf(TabVVar[TabArg[0]],"%d",i);
       ExecBloc((Bloc*)TabArg[NbArg-1]);
     }

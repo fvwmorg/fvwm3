@@ -81,7 +81,7 @@ extern int yylex(void);
 /* Structure that groups command and conditional loop */
 typedef struct
 {
- int Type;              /* comman type */
+ int Type;              /* common type */
  long *TabArg;          /* array of arguments: id var,fnc,const,adr block... */
  int NbArg;
 } Instr;
@@ -111,7 +111,7 @@ typedef struct                  /* X management type */
   Bool usegettext;              /* Is gettext used? */
   char *localepath;             /* path for gettext */
   Bloc *periodictasks;          /* Periodic tasks array */
-  Bloc *initbloc;               /* Initalization block */
+  Bloc *initbloc;               /* Initialization block */
   Bloc *quitfunc;               /* Block executed at exit */
 } ScriptProp;
 

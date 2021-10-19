@@ -475,7 +475,7 @@ void AddBufArg(long *TabLong,int NbLong)
  NbArg[SPileArg]=NbArg[SPileArg]+NbLong;
 }
 
-/* Search for a variable name in TabVar, create it if nonexistant */
+/* Search for a variable name in TabVar, create it if nonexistent */
 /* Returns an Id */
 void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande pointee */
 {
@@ -624,7 +624,7 @@ void EmpilerBloc(void)
 
 }
 
-/* Unstack the script intitialization block and put it into its special location */
+/* Unstack the script initialization block and put it into its special location */
 void DepilerBloc(int IdBloc)
 {
  Bloc *Bloc1;

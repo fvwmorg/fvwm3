@@ -32,7 +32,7 @@
 #include <unistd.h>
 
 #include <event2/event.h>
-/* FIXME: including event_struct.h won't be binary comaptible with future
+/* FIXME: including event_struct.h won't be binary compatible with future
  * versions of libevent.
  */
 #include <event2/event_struct.h>

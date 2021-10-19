@@ -214,7 +214,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	 * FlocaleEncodeString() converting the encoding.
 	 *
 	 * 2. FcUtf8toUcs4() is fast because it avoids a memory allocation. It's
-	 * also a common path for other softwares, so it's likely to be well
+	 * also a common path for other software, so it's likely to be well
 	 * optimized.
 	 *
 	 */

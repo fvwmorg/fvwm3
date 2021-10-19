@@ -34,7 +34,7 @@ void PFreeFvwmPictureData(FvwmPicture *p);
 /* <pubfunc>PCacheFvwmPicture
  * <description>
  * Return the FvwmPicture loaded from the file pictureName found in the
- * ImagePath. Fisrt the picture is searched in the FvwmPicture cache (so
+ * ImagePath. First the picture is searched in the FvwmPicture cache (so
  * if this picture has been already loaded it is not loaded again and a
  * weight is added to the found picture). If the picture is not in the cache
  * it is loaded from the file and added to the FvwmPicture cache.
@@ -70,7 +70,7 @@ FvwmPicture *PCacheFvwmPictureFromPixmap(
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
  * Remove a weight to the FvwmPicture p from the FvwmPicture cache.
- * If the weight is zero the allocated datas from p are freed
+ * If the weight is zero the allocated data from p are freed
  * </description>
  */
 void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p);

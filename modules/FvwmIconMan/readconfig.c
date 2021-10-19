@@ -83,7 +83,7 @@ FunctionType builtin_functions[] = {
 static int num_builtins = sizeof(builtin_functions) / sizeof(FunctionType);
 
 /* This is only used for printing out the .fvwmrc line if an error
-   occured */
+   occurred */
 
 #define PRINT_LINE_LENGTH 80
 static char current_line[PRINT_LINE_LENGTH];
@@ -518,7 +518,7 @@ static Function *parse_function(char **line, char *pstop_char)
 	 * is recorded as the argument type in the argument array
 	 * for a command, it means it is a string; the code for
 	 * 'IntArg' is used instead for numbers. Note also that
-	 * if the C function recieves a 'JmpArg' argument it means something
+	 * if the C function receives a 'JmpArg' argument it means something
 	 * went wrong, since they should all be translated to integer
 	 * jump offsets at compile time.
 	 */
@@ -629,7 +629,7 @@ static Function *parse_function_list(char *line)
     for (f=tail; f; f=f->prev) {
       for (j=0; j<(f->numargs); ++j) {
 	if (f->args[j].type==JmpArg) {
-	  ConsoleMessage("Attempt to jump to non-existant label %s; "
+	  ConsoleMessage("Attempt to jump to non-existent label %s; "
 			  "aborting function list.\n",
 			  f->args[j].value.string_value);
 	  --JmpArgs;

@@ -2581,7 +2581,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		 * window for each desk.  If the active desk changes, the
 		 * pager destroys sticky mini windows and creates new ones in
 		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.  So we have to tell it ecplicitly where they
+		 * stack them.  So we have to tell it explicitly where they
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't the stacking order. */
 		BroadcastRestackAllWindows();
@@ -2961,7 +2961,7 @@ apply_desktops_monitor(struct monitor *m)
 		}
 		else
 		{
-			/* new deskops entries: add it in order */
+			/* new desktops entries: add it in order */
 			d = m->Desktops->next;
 			t = m->Desktops;
 			prev = &(m->Desktops->next);
@@ -2981,7 +2981,7 @@ apply_desktops_monitor(struct monitor *m)
 			}
 			else
 			{
-				/* instert it */
+				/* insert it */
 				new = fxcalloc(1, sizeof(DesktopsInfo));
 				new->desk = dc->desk;
 				CopyString(&(new->name), dc->name);

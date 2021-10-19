@@ -134,7 +134,7 @@ static char *CopyToken(
 
 /* ---------------------------- interface functions ------------------------ */
 
-/* This function escapes all occurences of the characters in the string qchars
+/* This function escapes all occurrences of the characters in the string qchars
  * in the string as with a preceding echar character.  The resulting string is
  * returned in a malloced memory area. */
 char *EscapeString(char *s, const char *qchars, char echar)
@@ -165,7 +165,7 @@ char *EscapeString(char *s, const char *qchars, char echar)
 	return ret;
 }
 
-/* If the string s begins with a quote chracter SkipQuote returns a pointer
+/* If the string s begins with a quote character SkipQuote returns a pointer
  * to the first unquoted character or to the final '\0'. If it does not, a
  * pointer to the next character in the string is returned.
  * There are three possible types of quoting: a backslash quotes the next
@@ -450,7 +450,7 @@ int XCmpToken(const char *s, const char **t)
 /*
  *
  * Gets the next "word" of input from string indata.
- * "word" is a string with no spaces, or a qouted string.
+ * "word" is a string with no spaces, or a quoted string.
  * Return value is ptr to indata,updated to point to text after the word
  * which is extracted.
  * token is the extracted word, which is copied into a malloced

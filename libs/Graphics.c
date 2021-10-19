@@ -814,7 +814,7 @@ int ParseGradient(
 	return npixels;
 }
 
-/* Calculate the prefered dimensions of a gradient, based on the number of
+/* Calculate the preferred dimensions of a gradient, based on the number of
  * colors and the gradient type. Returns False if the gradient type is not
  * supported. */
 Bool CalculateGradientDimensions(
@@ -892,7 +892,7 @@ Bool CalculateGradientDimensions(
 /* Does the actual drawing of the pixmap. If the in_drawable argument is None,
  * a new pixmap of the given depth, width and height is created. If it is not
  * None the gradient is drawn into it. The d_width, d_height, d_x and d_y
- * describe the traget rectangle within the drawable. */
+ * describe the target rectangle within the drawable. */
 Drawable CreateGradientPixmap(
 	Display *dpy, Drawable d, GC gc, int type, int g_width,
 	int g_height, int ncolors, XColor *xcs, int dither, Pixel **d_pixels,
