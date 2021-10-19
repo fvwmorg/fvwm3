@@ -216,7 +216,7 @@ typedef struct
  * modifier: "" or NULL if NULL XSetLocaleModifiers is not called
  * module: the name of the fvwm module that call the function for reporting
  * errors message
- * The locale and the modifiers is sotred in Flocale and Fmodifiers.
+ * The locale and the modifiers is stored in Flocale and Fmodifiers.
  * Flocale is set to NULL if the locale is not supported by the Xlib.
  * In this case the Flocale* functions below does not use the Xmb* functions
  *
@@ -240,7 +240,7 @@ void FlocaleInit(
  * If fontname is NULL the "default font" is loaded (2,3,4).
  * The following logic is used:
  * 0) If fontname has been has been already loaded the cache is used
- * 1) We try to load each element "fn" of the ";" seprated list until success
+ * 1) We try to load each element "fn" of the ";" separated list until success
  *    as follows:
  *    a - if fn begin with "xft:", then if FftSupport fn is loaded as an xft
  *        font; if !FftSupport fn is skipped (ignored)
@@ -254,7 +254,7 @@ void FlocaleInit(
  *    - If this fail try to load FALLBACK_FONT with XLoadQueryFont
  * 3) If everything fail the function return NULL.
  *
- * If font loading succed. Only one of the font, fontset, fftfont member of the
+ * If font loading succeed. Only one of the font, fontset, fftfont member of the
  * FlocaleFont structure is not NULL/None. The caller should use this to
  * set appropriately the gc member of the FlocaleWinString struct (the fid
  * gc member should be set only if font is not NULL).
@@ -277,7 +277,7 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf);
  * If flags & FWS_HAVE_LENGTH, the fstring->len first characters of the
  * string is drawn. If !(flags & FWS_HAVE_LENGTH), the function draw the
  * the all string (fstring->len is ignored). Note that if ff->font is NULL
- * the gc should not conatins a GCFont, as if ff->font != NULL the GCFont
+ * the gc should not contains a GCFont, as if ff->font != NULL the GCFont
  * value should be ff->font->fid
  */
 void FlocaleDrawString(
@@ -314,7 +314,7 @@ int FlocaleTextWidth(FlocaleFont *ff, char *str, int sl);
 int FlocaleGetMinOffset(FlocaleFont *flf, rotation_t rotation);
 
 /*
- * Allocate memory for a FlocaleWinString intialized to 0
+ * Allocate memory for a FlocaleWinString initialized to 0
  */
 void FlocaleAllocateWinString(FlocaleWinString **pfws);
 
@@ -367,7 +367,7 @@ int FlocaleStringByteToCharOffset(FlocaleFont *flf, const char *str,
 				  int offset);
 
 /* like above but reversed, ie. return byte offset corresponding to given
-   charater offset */
+   character offset */
 int FlocaleStringCharToByteOffset(FlocaleFont *flf, const char *str,
 				  int coffset);
 

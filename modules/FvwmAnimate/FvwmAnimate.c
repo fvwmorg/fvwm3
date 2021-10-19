@@ -583,7 +583,7 @@ static void AnimateResizeLines(int x, int y, int w, int h,
   if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
     return;
 
-  /* define the array occurances */
+  /* define the array occurences */
 #define UR seg[0]
 #define UL seg[1]
 #define LR seg[2]

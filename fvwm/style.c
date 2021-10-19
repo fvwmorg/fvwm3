@@ -902,7 +902,7 @@ static void free_style_mask(window_style *style, style_flags *mask)
 	{
 		remove_icon_boxes_from_style(style);
 	}
-	/* remove styles from definitiion */
+	/* remove styles from definition */
 	blockunmask((char *)&style->flag_mask, (char *)&style->flag_mask,
 		    (char *)pmask, sizeof(style_flags));
 	blockunmask((char *)&style->flag_default, (char *)&style->flag_default,
@@ -4034,7 +4034,7 @@ static Bool style_parse_one_style_option(
 			s = (rest != NULL) ? strdup(rest) : NULL;
 			rest = NULL; /* consume the entire string */
 
-			/* TA:  2020-04-29:  retain backwards compatability
+			/* TA:  2020-04-29:  retain backwards compatibility
 			 * with fvwm2 for now, and convert 'c' (which meant
 			 * *current* screen), to using "$$[pointer]" which
 			 * does the same thing, but uses expansion instead.

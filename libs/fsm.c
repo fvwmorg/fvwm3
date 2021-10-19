@@ -490,7 +490,7 @@ InteractRequestProc(FSmsConn smsConn, FSmPointer managerData, int dialogType)
 	{
 		return;
 	}
-	/* no intercation! */
+	/* no interaction! */
 #if 0
 	FSmsInteract (client->smsConn);
 #endif
@@ -500,7 +500,7 @@ InteractRequestProc(FSmsConn smsConn, FSmPointer managerData, int dialogType)
 static void
 InteractDoneProc(FSmsConn smsConn, FSmPointer managerData, Bool cancelShutdown)
 {
-	/* no intercation! */
+	/* no interaction! */
 }
 
 static void

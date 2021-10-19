@@ -768,7 +768,7 @@ Bool FScreenGetScrRect(fscreen_scr_arg *arg, fscreen_scr_t screen,
 		(strcmp(m->si->name, GLOBAL_SCREEN_NAME) == 0));
 }
 
-/* Translates the coodinates *x *y from the screen specified by arg_src and
+/* Translates the coordinates *x *y from the screen specified by arg_src and
  * screen_src to coordinates on the screen specified by arg_dest and
  * screen_dest. (see FScreenGetScrRect for more details). */
 void FScreenTranslateCoordinates(
@@ -1016,7 +1016,7 @@ int FScreenParseGeometry(
  *      if width/height isn't specified in the geometry itself.
  *
  *  Note2:
- *      This function's behaviour is crafted to sutisfy/emulate the
+ *      This function's behaviour is crafted to satisfy/emulate the
  *      FvwmWinList::MakeMeWindow()'s behaviour.
  *
  *  Note3:

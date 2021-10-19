@@ -40,7 +40,7 @@
 
 #include "externs.h"
 
-/* for module syncronous */
+/* for module synchronous */
 #include "libs/ftime.h"
 #include "libs/System.c"
 #include "libs/envvar.h"
@@ -358,7 +358,7 @@ static fmodule *do_execute_module(
 		/* close appropriate descriptors from each pipe so
 		 * that fvwm will be able to tell when the app dies */
 		close(app_to_fvwm[1]);
-		/* dont't care that this may be -1 */
+		/* don't care that this may be -1 */
 		close(fvwm_to_app[0]);
 
 		/* add these pipes to fvwm's active pipe list */
@@ -409,7 +409,7 @@ static fmodule *do_execute_module(
 		/* this is the child */
 		/* this fork execs the module */
 #ifdef FORK_CREATES_CHILD
-		/* dont't care that this may be -1 */
+		/* don't care that this may be -1 */
 		close(fvwm_to_app[1]);
 		close(app_to_fvwm[0]);
 #endif
@@ -439,7 +439,7 @@ static fmodule *do_execute_module(
 			   arg1);
 		perror("");
 		close(app_to_fvwm[1]);
-		/* dont't care that this may be -1 */
+		/* don't care that this may be -1 */
 		close(fvwm_to_app[0]);
 #ifdef FORK_CREATES_CHILD
 		exit(1);
@@ -478,7 +478,7 @@ static fmodule *do_execute_module(
 	{
 		free(args);
 	}
-	/* dont't care that these may be -1 */
+	/* don't care that these may be -1 */
 	close(fvwm_to_app[0]);
 	close(fvwm_to_app[1]);
 	close(app_to_fvwm[0]);

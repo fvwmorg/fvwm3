@@ -739,7 +739,7 @@ converting event type to event name, listing the event argument names/types,
 constructing event argument values from the plain packet data.
 
 Usually you do not need to work with this class directly, but, instead, with
-B<FVWM::Event> objects. Hovewer, you may need this class source as a
+B<FVWM::Event> objects. However, you may need this class source as a
 reference for the names of the event arguments and their types.
 
 =head1 PUBLIC FUNCTIONS

@@ -871,7 +871,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 
 /*
  *
- *  DestroyFvwmDecor -- frees all memory assocated with an FvwmDecor
+ *  DestroyFvwmDecor -- frees all memory associated with an FvwmDecor
  *      structure, but does not free the FvwmDecor itself
  *
  */
@@ -1318,7 +1318,7 @@ static Bool __parse_vector_line_one_coord(
 		return False;
 	}
 	action += offset;
-	/* check for offest */
+	/* check for offset */
 	if (*action == '+' || *action == '-')
 	{
 		n = sscanf(action, "%dp%n", poff, &offset);

@@ -14,7 +14,7 @@ enum
 	GRAB_ALL      = 0,       /* sum of all grabs */
 	GRAB_STARTUP  = 1,       /* Startup busy cursor */
 	GRAB_NORMAL   = 2,       /* DeferExecution, Move, Resize, ... */
-	GRAB_MENU     = 3,       /* a menus.c grabing */
+	GRAB_MENU     = 3,       /* a menus.c grabbing */
 	GRAB_BUSY     = 4,       /* BusyCursor stuff */
 	GRAB_BUSYMENU = 5,       /* Allows menus.c to regrab the cursor */
 	GRAB_PASSIVE  = 6,       /* Override of passive grab, only prevents grab

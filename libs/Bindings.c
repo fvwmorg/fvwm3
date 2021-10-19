@@ -452,7 +452,7 @@ static Bool __compare_binding(
 /* is_pass_through_action() - returns true if the action indicates that the
  * binding should be ignored by fvwm & passed through to the underlying
  * window.
- * Note: it is only meaningful to check for pass-thru actions on
+ * Note: it is only meaningful to check for pass-through actions on
  * window-specific bindings. */
 Bool is_pass_through_action(const char *action)
 {

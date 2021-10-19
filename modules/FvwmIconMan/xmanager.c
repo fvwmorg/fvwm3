@@ -392,7 +392,7 @@ static void release_manager_size(WinManager *man)
   XSetWMNormalHints(theDisplay, man->theWindow, &size);
 }
 
-/* Like XMoveResizeWindow(), but can move in arbitary directions */
+/* Like XMoveResizeWindow(), but can move in arbitrary directions */
 static void resize_window(WinManager *man)
 {
   XWindowAttributes attribs;
@@ -806,7 +806,7 @@ void set_win_iconified(WinData *win, int iconified)
 		/* we check the win->button width and height because they
 		 * will only be == zero on init, and if we didn't check we
 		 * would get animations of all iconified windows to the far
-		 * left of whereever thae manager would eventually be. */
+		 * left of wherever thae manager would eventually be. */
 		if (do_animate && win->manager->AnimCommand &&
 		    (win->manager->AnimCommand[0] != 0)
 		    && IS_ICON_SUPPRESSED(win) && (win->button->w != 0)

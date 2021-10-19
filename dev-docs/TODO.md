@@ -58,7 +58,7 @@ Items
       "behave".  One problem that comes up all the time is "why does my window
       appear at position X Y with size WIDTHxHEIGHT".  Although there is some
       output, when a window first pops up, there is none after the initial
-      mapping when the really interesing things happen (messages from the client
+      mapping when the really interesting things happen (messages from the client
       application).
 
 * String handling:
@@ -156,7 +156,7 @@ Items
 
 * Decors:
         dv: I think decorations should be dropped in favour of styles.  The
-            whole concept was invented because stlyes were unable to do it.
+            whole concept was invented because styles were unable to do it.
 	* Think carefully about the syntax of the decor replacement!
 	* [ ] Remove {Border,Title,Button}Style and decors, just one simple look.
 	* [ ] New style `DecoratedByFvwm`/`DecoratedByModule`.

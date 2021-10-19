@@ -258,7 +258,7 @@ int FlocaleStringByteToCharOffset(FlocaleFont *flf, const char *str,
 }
 
 /* like above but reversed, ie. return byte offset corresponding to given
-   charater offset */
+   character offset */
 int FlocaleStringCharToByteOffset(FlocaleFont *flf, const char *str,
 				  int coffset)
 {
@@ -397,7 +397,7 @@ XChar2b *FlocaleStringToString2b(
 				str2b[j].byte1 = 0xa2; /* magic number! */
 				str2b[j].byte2 = str[i++];
 #endif
-				/* a blanck char ... */
+				/* a blank char ... */
 				str2b[j].byte1 = 0x21;
 				str2b[j].byte2 = 0x21;
 			}
@@ -2358,7 +2358,7 @@ void FlocaleFreeNameProperty(FlocaleNameString *ptext)
                     in fvwm/events.c we have:
                     FlocaleNameString new_name = { NoName, NULL };
                     NoName is a global extern I don't want to add to
-                    to this libary module.
+                    to this library module.
                     So, this check comes close enough: */
                  && strcmp("Untitled",ptext->name) != 0)
 	{

@@ -327,7 +327,7 @@ int main(int argc, char **argv)
 			isTerminated = 1;
 			continue;
 		}
-		/* if this read is interrrupted EINTR, the wrong event is
+		/* if this read is interrupted EINTR, the wrong event is
 		 * triggered! */
 
 		if (header[0] != START_FLAG)

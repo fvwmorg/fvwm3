@@ -122,7 +122,7 @@ char *charmap_table_to_string(int mask, charmap_t *table)
 
 		/* Don't explicitly match "A" for any context as doing so
 		 * means we never see the individual bindings.  Incremental
-		 * matching here for AnyContext is disasterous.*/
+		 * matching here for AnyContext is disastrous.*/
 		if ((modmask & table->value) &&
 			(table->value != C_ALL))
 		{

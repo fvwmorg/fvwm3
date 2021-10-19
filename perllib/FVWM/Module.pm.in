@@ -814,7 +814,7 @@ B<search_dirs>
 Creates a module object. Only one module instance may be created in the
 program, since this object gets exclusive rights on communication with I<fvwm>.
 
-The following parameters may be given in the constractor:
+The following parameters may be given in the constructor:
 
     Name          - used in module configuration and debugging
     Mask          - events a module is interested to receive
@@ -909,7 +909,7 @@ the module exits, define an I<ON_EXIT> event handler.
 
 This is automatically called (if needed) when a module enters B<event_loop>,
 but sometimes you may want to tell I<fvwm> that the module is fully ready
-earlier. This only makes sence if the module was run using
+earlier. This only makes sense if the module was run using
 B<ModuleSynchronous> command, in this case I<fvwm> gets locked until the module
 sends the "ready" notification.
 
@@ -1002,7 +1002,7 @@ Apparently this output is only seen if I<Debug> is set to 2 or greater.
 =item B<show_error> I<msg>
 
 Writes I<msg> to the error stream (stderr). It is supposed that the argument
-has no traling end of line. May be used to signal non fatal error.
+has no trailing end of line. May be used to signal non fatal error.
 
 Subclasses may overwrite this method and, for example, show all error
 messages in separate windows or in the common error window.
@@ -1010,7 +1010,7 @@ messages in separate windows or in the common error window.
 =item B<show_message> I<msg>
 
 Writes I<msg> to the message stream (stderr). It is supposed that the argument
-has no traling end of line. May be used to show a named output.
+has no trailing end of line. May be used to show a named output.
 
 Subclasses may overwrite this method and, for example, show all
 messages in separate windows or in the common message window.
@@ -1018,7 +1018,7 @@ messages in separate windows or in the common message window.
 =item B<show_debug> I<msg>
 
 Unconditionally writes I<msg> to the debug stream (stderr). It is supposed
-that the argument has no traling end of line. Used in B<debug> to actually
+that the argument has no trailing end of line. Used in B<debug> to actually
 show the message when the level is matched.
 
 Subclasses may overwrite this method and, for example, show all debugging

@@ -89,7 +89,7 @@ sub format_output
 			my $is_urgent  = $desk_name->{'is_urgent'} ||= 0;
 			my $is_active  = $desk_name->{'is_active'} ||= 0;
 
-			# If the window is active, give it a differnet colour.
+			# If the window is active, give it a different colour.
 			if ($is_current) {
 					$msg .= "|%{B#39c488} $sym_name %{B-}";
 

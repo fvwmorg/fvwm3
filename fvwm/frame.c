@@ -481,7 +481,7 @@ static Bool frame_is_parent_hidden(
 	return False;
 }
 
-/* Returns the number of pixels that the title bar is too short to accomodate
+/* Returns the number of pixels that the title bar is too short to accommodate
  * all the title buttons and a title window that has at least a length of one
  * pixel. */
 static int frame_get_titlebar_compression(
@@ -1803,7 +1803,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	fvwmrect_subtract_rectangles(
 		&mra->delta_g, &mra->end_g, &mra->start_g);
 
-	/* calcuate the number of animation steps */
+	/* calculate the number of animation steps */
 	switch (mra->mode)
 	{
 	case FRAME_MR_SHRINK:
@@ -1898,7 +1898,7 @@ frame_move_resize_args frame_create_move_resize_args(
  * useful during opaque resize operations to avoid creating and destroying the
  * args for each animation step.
  *
- * If FRAME_MR_SHRINK or  FRAME_MR_SCROLL was used to greate the mr_args, the
+ * If FRAME_MR_SHRINK or  FRAME_MR_SCROLL was used to create the mr_args, the
  * function does nothing.
  */
 void frame_update_move_resize_args(

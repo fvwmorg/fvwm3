@@ -60,7 +60,7 @@ Include your configuration with this issue.
 ## Does Fvwm3 crash?
 
 If fvwm3 crashes then check your system for a corefile.  This is platform
-dependant, however, check if:
+dependent, however, check if:
 
   - corefiles are enabled (`ulimit -c`)
   - A corefile might be in `$HOME` or `/tmp/`.

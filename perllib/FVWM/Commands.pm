@@ -228,7 +228,7 @@ $TIME = 1410306754;
 		name => 'Deschedule',
 		cursor => '',
 		window => 0,
-		descr => q{Remove commands sheduled earlier using Schedule},
+		descr => q{Remove commands scheduled earlier using Schedule},
 	},
 	{
 		name => 'Desk',

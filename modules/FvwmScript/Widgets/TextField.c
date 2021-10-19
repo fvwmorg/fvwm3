@@ -615,7 +615,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 			if (NewPos >= strlen(xobj->title))
 				NewPos = strlen(xobj->title);
 			/* otherwise step forward as many bytes as the
-			   next charcter at the insertion point is wide */
+			   next character at the insertion point is wide */
 			else
 				NewPos +=
 					FlocaleStringNumberOfBytes(
@@ -671,7 +671,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 		{
 			/* a normal character: insertion in the title */
 			/* here "i" is the number of bytes returned
-			   need not be 1 incase of MB locale */
+			   need not be 1 in case of MB locale */
 			Size=strlen(xobj->title);
 			fvwm_debug(__func__, "Current size: %d\n", Size);
 			/* make room for more the new text */

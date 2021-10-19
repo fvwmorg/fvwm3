@@ -25,5 +25,5 @@ The version lives on the `ta/keep-output-monitor` see:
 
 https://github.com/ThomasAdam/bar/tree/ta/keep-output-monitor
 
-Compiling this should replace any othe version of `lemonbar` which might be in
+Compiling this should replace any other version of `lemonbar` which might be in
 use.

@@ -349,7 +349,7 @@ and the set of input delimiter characters is empty
   3. If *src is a space character or an input delimiter,
       *GOTO stp 3*
   4. If *src is a quote character (either a double quote
-      chararcter, a single quote or a backtick),
+      character, a single quote or a backtick),
       *GOTO step 2A*
   5. Otherwise,
       *GOTO step 2B*
@@ -450,7 +450,7 @@ called but instead used as a bogus local variable.]
   2. Determine the name of the extended variable.  The name
       starts after the initial `[` character and ends before the
       final `]` character.  The final `]` character is the first
-      occurence of the character `]` after the `$`, where the
+      occurrence of the character `]` after the `$`, where the
       number of `[` minus the number of `]` is zero (i.e., square
       brackets can be nested).  If the end of string is
       encountered, just copy everything to the output and

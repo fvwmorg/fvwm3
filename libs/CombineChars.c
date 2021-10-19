@@ -1724,7 +1724,7 @@ static const char_comb_t comb_table[] =
 /* -------------------------- local functions ------------------------------ */
 
 
-/* look-up functions, maybe theese should use binary search?
+/* look-up functions, maybe these should use binary search?
    would require a duplicate of comb_table to reverse map... */
 static int
 get_combining_class(unsigned short ch)
@@ -1904,7 +1904,7 @@ CombineChars(
 	int comp_str_len = 0;
   	Bool has_changed;
 
-	/* if input has zero length, return immediatly */
+	/* if input has zero length, return immediately */
 	if (len == 0)
 	{
 		return 0;
@@ -1920,7 +1920,7 @@ CombineChars(
 
 	/* be pessimistic, assume all characters are decomposed */
 	dest = fxmalloc((str_len + 1) * 2 * sizeof(unsigned short));
-	/* use theese to keep track of the mapping of characters from
+	/* use these to keep track of the mapping of characters from
 	   logical to visual */
 	source_v_to_l = fxmalloc(str_len * sizeof(int));
 	dest_v_to_l = fxmalloc(str_len * 2 * sizeof(int));
@@ -2086,7 +2086,7 @@ CombineChars(
 			if (comb_chars != NULL)
 			{
 				/* store composing character as associated
-				   with last base charcter */
+				   with last base character */
 				(*comb_chars)[k].position = j == 0 ? 0 : j-1;
 				(*comb_chars)[k].c.byte1 = source[i] >> 8;
 				(*comb_chars)[k].c.byte2 = source[i] & 0xff;
@@ -2136,7 +2136,7 @@ CombineChars(
 			}
 		}
 		/* terminated it with -1, to avoid have to send around
-		   lenghts */
+		   lengths */
 		(*l_to_v)[in_str_len] = -1;
 	}
 

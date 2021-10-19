@@ -190,7 +190,7 @@ void AddBufArg(long *TabLong,int NbLong)
  NbArg[SPileArg]=NbArg[SPileArg]+NbLong;
 }
 
-/* Search for a variable name in TabVar, create it if nonexistant */
+/* Search for a variable name in TabVar, create it if nonexistent */
 /* Returns an ID */
 void AddVar(char *Name)		/* add a variable at the end of last pointed command */
 {
@@ -273,7 +273,7 @@ void AddConstNum(long num)
  AddBufArg(&l,1);
 }
 
-/* Add a functon as argument */
+/* Add a function as argument */
 /* Remove function arguments from stack, */
 /* concatene them, and put them into stack */
 void AddFunct(int code,int NbLevelArg)
@@ -490,7 +490,7 @@ quitfunc:		/* case where there are no QuitFunc */
 	    ;
 
 
-/* Object Desciption */
+/* Object Description */
 object :			/* Empty */
     | object OBJECT id PROP init verify mainloop
     ;

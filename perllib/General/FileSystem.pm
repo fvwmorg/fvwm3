@@ -951,7 +951,7 @@ sub default_dir_perm (;$) {
 This functions changes behavior of C<copy_file> and C<copy_dir> functions.
 If 0 is given as a parameter stats will not be preserved.
 
-TODO: specify values for diferent preserves:
+TODO: specify values for different preserves:
 
   0 nothing
   1 mode   file mode  (type and permissions)

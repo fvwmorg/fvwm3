@@ -753,12 +753,12 @@ void list_end(void)
 		exit(1);
 	}
 
-	/* chose the rendering methode */
+	/* chose the rendering method */
 	if (FftSupport && Ffont->fftf.fftfont != NULL)
 	{
 		UsePixmapDrawing = True;
 	}
-	/* make window infomation list */
+	/* make window information list */
 	MakeList();
 
 	/* size and create the window */

@@ -180,7 +180,7 @@
 #define TBMP_TITLE_PADDING            5
 /* minimal left and right area vs left/right of text/end (MultiPixmap) */
 #define TBMP_MIN_RL_TITLE_LENGTH      7
-/* maximum number of segemnts in a vector button */
+/* maximum number of segmnts in a vector button */
 #define MAX_TITLE_BUTTON_VECTOR_LINES 10000
 
 /*** window placement ***/
