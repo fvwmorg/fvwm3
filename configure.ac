@@ -292,17 +292,24 @@ AC_CANONICAL_HOST
 AC_MSG_CHECKING(platform)
 case "$host_os" in
 freebsd*)
+	PLATFORM=freebsd
 	AC_MSG_RESULT(FreeBSD)
 	AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"])
 	;;
 *openbsd*)
+	PLATFORM=openbsd
 	AC_MSG_RESULT(OpenBSD)
 	CFLAGS="$CFLAGS -I/usr/local/include"
 	LDFLAGS="$LDFLAGS -L/usr/local/lib"
 	;;
+*linux*)
+	AC_MSG_RESULT(Linux)
+	PLATFORM=linux
+	;;
 *)
 	;;
 esac
+AC_SUBST(PLATFORM)
 
 PKG_PROG_PKG_CONFIG
 
@@ -455,6 +462,22 @@ AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
 # TAILQ and friends
 AH_TEMPLATE([HAVE_TAILQ],[Check if tailq is present.])
 AC_CHECK_HEADER(queue.h, AC_DEFINE(HAVE_TAILQ))
+
+AH_TEMPLATE([HAVE_LIBBSD],[Check if libbsd is present.])
+if test "$PLATFORM" = "linux"; then
+	PKG_CHECK_MODULES(
+		LIBBSD,
+		libbsd-overlay,
+		[
+			AC_DEFINE(HAVE_LIBBSD)
+		 	libbsd_LIBS=`pkg-config --libs libbsd`
+			libbsd_CFLAGS=`pkg-config --cflags libbsd`
+		],
+		[]
+	)
+fi
+AC_SUBST(libbsd_LIBS)
+AC_SUBST(libbsd_CFLAGS)
 
 # libevent
 AH_TEMPLATE([HAVE_LIBEVENT],[Define if libevent is used.])

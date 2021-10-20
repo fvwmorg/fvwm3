@@ -19,6 +19,7 @@ FVWM3 has the following dependencies.
 
 ## Core dependencies
 
+* libbsd-dev
 * libevent-dev (>= 2.0)
 * libx11-dev
 * libxrandr-dev (>= 1.5)
@@ -61,8 +62,11 @@ Run the following command chain to generate the `configure` script and build
 the project:
 
 ```
-./autogen.sh && ./configure && make
+./autogen.sh && ./configure && make && sudo make install
 ```
+
+Here, `sudo` is used to indicate running `make install` as user `root1`.
+Other programs such as `doas` or `su` can be used as well, where appropriate.
 
 Installing From Release Tarball
 ===============================
@@ -70,8 +74,11 @@ Installing From Release Tarball
 Release tarballs will come bundled with `./configure` already, hence:
 
 ```
-./configure && make
+./configure && make && sudo make install
 ```
+
+Here, `sudo` is used to indicate running `make install` as user `root1`.
+Other programs such as `doas` or `su` can be used as well, where appropriate.
 
 As with most things, if the default options `./configure` chooses isn't
 appropriate for your needs, see `./configure --help` for appropriate options.

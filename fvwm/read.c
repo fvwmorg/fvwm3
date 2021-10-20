@@ -24,6 +24,20 @@
 #include <fcntl.h>
 #endif
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <error.h>
+#include <errno.h>
+#include <err.h>
+#include <ctype.h>
+
+#ifdef HAVE_LIBBSD
+#include <bsd/libutil.h>
+#include <bsd/string.h>
+#include <bsd/sys/queue.h>
+#endif
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "fvwm.h"
@@ -39,6 +53,227 @@ static char *curr_read_file = NULL;
 static char *curr_read_dir = NULL;
 static int curr_read_depth = 0;
 static char *prev_read_files[MAX_READ_DEPTH];
+
+struct str_parse_state {
+	char		*buf;
+	size_t 		 len, off;
+	int 		 esc;
+};
+static struct str_parse_state sps;
+
+static void str_append(char **, size_t *, const char *);
+static char str_getc(void);
+static char *str_tokenise(size_t);
+static int str_to_argv(char *, size_t, int *, char ***);
+static void argv_free(int, char **);
+
+#define str_unappend(ch) if (sps.off > 0 && (ch) != EOF) { sps.off--; }
+
+static void
+str_append(char **buf, size_t *len, const char *add)
+{
+	size_t 	al = 1;
+
+	if (al > SIZE_MAX - 1 || *len > SIZE_MAX - 1 - al) {
+		fprintf(stderr, "buffer is too big");
+		exit (1);
+	}
+	*buf = realloc(*buf, (*len) + 1 + al);
+	memcpy((*buf) + *len, add, al);
+	(*len) += al;
+}
+
+static char
+str_getc(void)
+{
+	char 	ch;
+
+	if (sps.esc != 0) {
+		sps.esc--;
+		return ('\\');
+	}
+	for (;;) {
+		ch = EOF;
+		if (sps.off < sps.len)
+			ch = sps.buf[sps.off++];
+
+		if (ch == '\\') {
+			sps.esc++;
+			continue;
+		}
+		if (ch == '\n' && (sps.esc % 2) == 1) {
+			sps.esc--;
+			continue;
+		}
+
+		if (sps.esc != 0) {
+			str_unappend(ch);
+			sps.esc--;
+			return ('\\');
+		}
+		return (ch);
+	}
+}
+
+static char *
+str_tokenise(size_t lineno)
+{
+	char 			 ch;
+	char			*buf;
+	size_t			 len;
+	enum { APPEND,
+	       DOUBLE_QUOTES,
+	       SINGLE_QUOTES,
+	       BACKTICK_QUOTES,
+	} 			 state = APPEND;
+
+	len = 0;
+	buf = malloc(1);
+
+	for (;;) {
+		ch = str_getc();
+		/* EOF or \n are always the end of the token. */
+		if (ch == EOF || (state == APPEND && ch == '\n'))
+			break;
+
+		/* Whitespace ends a token unless inside quotes.  But if we've
+		 * also been given:
+		 *
+		 * + foo "" bar
+		 *
+		 * don't lsoe that.
+		 */
+		if (((ch == ' ' || ch == '\t') && state == APPEND) &&
+		    buf[0] != '\0') {
+			break;
+		}
+
+		if (ch == '\\' && state != SINGLE_QUOTES) {
+			ch = str_getc();
+			str_append(&buf, &len, &ch);
+			continue;
+		}
+		switch (ch) {
+		case '\'':
+			if (state == APPEND) {
+				state = SINGLE_QUOTES;
+				continue;
+			}
+			if (state == SINGLE_QUOTES) {
+				state = APPEND;
+				continue;
+			}
+			break;
+		case '`':
+			if (state == APPEND) {
+				state = BACKTICK_QUOTES;
+				continue;
+			}
+			if (state == BACKTICK_QUOTES) {
+				state = APPEND;
+				continue;
+			}
+			break;
+		case '"':
+			if (state == APPEND) {
+				state = DOUBLE_QUOTES;
+				continue;
+			}
+			if (state == DOUBLE_QUOTES) {
+				state = APPEND;
+				continue;
+			}
+			break;
+		default:
+			/* Otherwise add the character to the buffer. */
+			str_append(&buf, &len, &ch);
+			break;
+
+		}
+	}
+	str_unappend(ch);
+	buf[len] = '\0';
+
+	if (*buf == '\0' || state == SINGLE_QUOTES ||
+	    state == DOUBLE_QUOTES || state == BACKTICK_QUOTES) {
+		fprintf(stderr, "%ld: Unterminated string: <%s>, missing: %c\n",
+			lineno, buf, state == SINGLE_QUOTES ? '\'' :
+			state == DOUBLE_QUOTES ? '"' :
+			state == BACKTICK_QUOTES ? '`' : ' ');
+		goto error;
+	}
+	return (buf);
+
+error:
+	free(buf);
+	return (NULL);
+}
+
+int str_to_argv(char *str, size_t lineno, int *ret_argc, char ***ret_argv)
+{
+	char			*token;
+	char			 ch, next;
+	char 			**argv = NULL;
+	int 			 argc = 0;
+
+	if (str == NULL) {
+		fprintf(stderr, "str is NULL, skipping...\n");
+		return -1;
+	}
+	free(sps.buf);
+	sps.buf = strdup(str);
+	sps.len = strlen(sps.buf);
+
+	for (;;) {
+		if (str[0] == '#') {
+			/* Skip comment. */
+			next = str_getc();
+			while (((next = str_getc()) != EOF))
+				; /* Nothing. */
+		}
+
+		ch = str_getc();
+
+		if (ch == '\n' || ch == EOF)
+			goto out;
+		if (ch == ' ' || ch == '\t')
+			continue;
+
+		/* Tokenise the string according to quoting rules.  Note that
+		 * the string is stepped-back by one character to make the
+		 * tokenisation easier, and not to kick-off the state of the
+		 * parsing from this point.
+		 */
+		str_unappend(ch);
+		token = str_tokenise(lineno);
+		if (token == NULL) {
+			argv_free(argc, argv);
+			return -1;
+		}
+
+		/* Add to argv. */
+		argv = reallocarray(argv, argc + 1, sizeof *argv);
+		argv[argc++] = strdup(token);
+	}
+out:
+	*ret_argv = argv;
+	*ret_argc = argc;
+
+	return 0;
+}
+
+void
+argv_free(int argc, char **argv)
+{
+	int 	i;
+
+	if (argc == 0)
+		return;
+
+	for (i = 0; i < argc; i++)
+		free(argv[i]);
+	free(argv);
+}
 
 static int push_read_file(const char *file)
 {
@@ -114,8 +349,12 @@ const char *get_current_read_dir(void)
 void run_command_stream(
 	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc)
 {
-	char *tline;
-	char line[1024];
+	const char	delims[3] = {'\\', '\\', '\0'};
+	char 		*buf, *copy;
+	char 		**argv;
+	int 		 argc = 0;
+	size_t 	 	 line = 0;
+	int 		 ret;
 
 	/* Set close-on-exec flag */
 	fcntl(fileno(f), F_SETFD, 1);
@@ -124,30 +363,24 @@ void run_command_stream(
 	 * has now popped down. */
 	handle_all_expose();
 
-	tline = fgets(line, (sizeof line) - 1, f);
-	while (tline)
-	{
-		int l;
-		while (tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
-		      line[l-2]=='\\' && line[l-1]=='\n')
-		{
-			tline = fgets(line+l-2,sizeof(line)-l+1,f);
-		}
-		tline=line;
-		while (isspace((unsigned char)*tline))
-		{
-			tline++;
-		}
-		l = strlen(tline);
-		if (l > 0 && tline[l - 1] == '\n')
-		{
-			tline[l - 1] = '\0';
-		}
-		execute_function(cond_rc, exc, tline, 0);
-		tline = fgets(line, (sizeof line) - 1, f);
-	}
+	while ((buf = fparseln(f, NULL, &line, delims, 0))) {
+		memset(&sps, 0, sizeof sps);
 
-	return;
+		copy = buf;
+		copy += strspn(copy, " \t\n");
+		if (*copy == '\0') {
+			free(buf);
+			continue;
+		}
+		ret = str_to_argv(copy, line, &argc, &argv);
+
+		if (ret != 0 || argv == NULL) {
+			free(buf);
+			continue;
+		}
+		execute_function(cond_rc, exc, buf, 0);
+		free(buf);
+	}
 }
 
 
