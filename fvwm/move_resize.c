@@ -4860,7 +4860,8 @@ static void grow_to_closest_type(
 	/* Use other windows to shrink boundary to get closest */
 	for (twin = Scr.FvwmRoot.next; twin; twin = twin->next)
 	{
-		if (twin == fw || !IS_PARTIALLY_VISIBLE(twin) ||
+		if (twin == fw || IS_TRANSIENT(fw) ||
+			!IS_PARTIALLY_VISIBLE(twin) ||
 			(twin->Desk != fw->Desk &&
 			!is_window_sticky_across_desks(twin)))
 		{
