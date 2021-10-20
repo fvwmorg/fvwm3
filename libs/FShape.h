@@ -93,7 +93,7 @@ typedef struct
 		dpy, w, bounding_shaped, xb, yb, wb, hb, clip_shaped, \
 		xclip, yclip, wclip, hclip) ((Status)0)
 #define FShapeSelectInput(dpy, w, mask)
-#define FShapeInputSelected(dpy, w) ((unsinged long)0)
+#define FShapeInputSelected(dpy, w) ((unsigned long)0)
 #define FShapeGetRectangles(dpy, w, kind, count, ordering) ((XRectangle *)0)
 /* define empty dummies */
 #define FShapeEventBase          0
