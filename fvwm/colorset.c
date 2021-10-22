@@ -50,6 +50,7 @@
 #include "module_interface.h"
 #include "execcontext.h"
 #include "builtins.h"
+#include "cmd_defs.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -165,6 +166,14 @@ static char *csetopts[] =
 	NULL
 };
 
+static enum cmd_success colorset_exec(struct cmd_definition *self);
+
+struct cmd_definition cmd_def_colorset = {
+	.name = "colorset",
+	.getopt = "n:",
+	.exec = colorset_exec
+};
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
@@ -192,6 +201,15 @@ Pixmap get_root_pixmap(Atom prop)
 		XFree(reteval);
 	}
 	return pix;
+}
+
+enum cmd_success
+colorset_exec(struct cmd_definition *self)
+{
+	if (cmd_args_has(self->args, 'n')) {
+		fprintf(stderr, "I got 'n': %s\n", cmd_args_get(self->args, 'n'));
+	}
+	return (CMD_RET_UNIMPLEMENTED);
 }
 
 void update_root_pixmap(Atom prop)

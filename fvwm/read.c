@@ -34,9 +34,9 @@
 #include <ctype.h>
 
 #ifdef HAVE_LIBBSD
-#include <bsd/libutil.h>
-#include <bsd/string.h>
-#include <bsd/sys/queue.h>
+#include <libutil.h>
+#include <string.h>
+#include <sys/queue.h>
 #endif
 #include "libs/Parse.h"
 #include "libs/Strings.h"
@@ -47,6 +47,7 @@
 #include "events.h"
 #include "misc.h"
 #include "screen.h"
+#include "cmd_defs.h"
 
 #define MAX_READ_DEPTH 40
 static char *curr_read_file = NULL;
@@ -349,12 +350,13 @@ const char *get_current_read_dir(void)
 void run_command_stream(
 	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc)
 {
-	const char	delims[3] = {'\\', '\\', '\0'};
-	char 		*buf, *copy;
-	char 		**argv;
-	int 		 argc = 0;
-	size_t 	 	 line = 0;
-	int 		 ret;
+	const char		 delims[3] = {'\\', '\\', '\0'};
+	struct cmd_definition	*cmd;
+	char			*buf, *copy;
+	char			**argv;
+	int			 argc = 0;
+	size_t			 line = 0;
+	int			 ret;
 
 	/* Set close-on-exec flag */
 	fcntl(fileno(f), F_SETFD, 1);
@@ -378,7 +380,19 @@ void run_command_stream(
 			free(buf);
 			continue;
 		}
-		execute_function(cond_rc, exc, buf, 0);
+
+		if ((cmd = cmd_generate(argc, argv))!= NULL) {
+			/* XXX - for now, stub out would-be commands and run
+			 * them, but if the command returns
+			 * CMD_RET_UNIMPLEMENTED, call the old method.
+			 */
+			if (cmd->exec(cmd) == CMD_RET_UNIMPLEMENTED) {
+				fvwm_debug(__func__, "cmd '%s' unimplemented",
+					argv[0]);
+				execute_function(cond_rc, exc, buf, 0);
+			}
+		} else
+			execute_function(cond_rc, exc, buf, 0);
 		free(buf);
 	}
 }

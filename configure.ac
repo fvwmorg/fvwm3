@@ -463,6 +463,9 @@ AC_CHECK_HEADER(X11/XKBlib.h, AC_DEFINE(HAVE_X11_XKBLIB_H))
 AH_TEMPLATE([HAVE_TAILQ],[Check if tailq is present.])
 AC_CHECK_HEADER(queue.h, AC_DEFINE(HAVE_TAILQ))
 
+AH_TEMPLATE([HAVE_SYS_TREE],[Check if sys/tree is present.])
+AC_CHECK_HEADER(tree.h, AC_DEFINE(HAVE_SYS_TREE))
+
 AH_TEMPLATE([HAVE_LIBBSD],[Check if libbsd is present.])
 if test "$PLATFORM" = "linux"; then
 	PKG_CHECK_MODULES(
@@ -470,8 +473,8 @@ if test "$PLATFORM" = "linux"; then
 		libbsd-overlay,
 		[
 			AC_DEFINE(HAVE_LIBBSD)
-		 	libbsd_LIBS=`pkg-config --libs libbsd`
-			libbsd_CFLAGS=`pkg-config --cflags libbsd`
+		 	libbsd_LIBS=`pkg-config --libs libbsd-overlay`
+			libbsd_CFLAGS=`pkg-config --cflags libbsd-overlay`
 		],
 		[]
 	)
@@ -1406,6 +1409,10 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 
 #ifndef HAVE_TAILQ
 #	include <sys/queue.h>
+#endif
+
+#ifndef HAVE_SYS_TREE
+# 	include <bsd/sys/tree.h>
 #endif
 
 #if HAVE_UNISTD_H
