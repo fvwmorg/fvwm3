@@ -248,20 +248,19 @@ HandleTerminate(int fd, short what, void *arg)
 static void
 setup_signal_handlers(struct event_base *base)
 {
-	struct event	*hup, *term, *intrp, *quit, *pipe, *child;
+	struct event	*hup, *term, *intrp, *quit, *child;
 
+	signal(SIGPIPE, SIG_IGN);
 
 	hup   =  evsignal_new(base, SIGHUP,  HandleTerminate, NULL);
 	term  =  evsignal_new(base, SIGTERM, HandleTerminate, NULL);
 	quit  =  evsignal_new(base, SIGQUIT, HandleTerminate, NULL);
-	pipe  =  evsignal_new(base, SIGPIPE, HandleTerminate, NULL);
 	child =  evsignal_new(base, SIGCHLD, HandleTerminate, NULL);
 	intrp =  evsignal_new(base, SIGINT,  HandleTerminate, NULL);
 
 	evsignal_add(hup, NULL);
 	evsignal_add(term, NULL);
 	evsignal_add(quit, NULL);
-	evsignal_add(pipe, NULL);
 	evsignal_add(child, NULL);
 	evsignal_add(intrp, NULL);
 }
