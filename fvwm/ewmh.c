@@ -53,6 +53,8 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdarg.h>
+#include <sys/times.h>
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
@@ -70,6 +72,8 @@
 #include "ewmh_intern.h"
 #include "geometry.h"
 #include "window_flags.h"
+
+#define EWMH_DEBUG 0
 
 typedef struct kst_item
 {
@@ -252,6 +256,47 @@ ewmh_atom_list atom_list[] =
 	L_ENTRY(EWMH_ATOM_LIST_FVWM_WIN,          ewmh_atom_fvwm_win),
 	L_ENTRY(EWMH_ATOM_LIST_END,               NULL)
 };
+
+static void EWMH_DLOG(char *msg, ...)
+{
+	if (EWMH_DEBUG)
+	{
+		va_list args;
+		clock_t time_val, time_taken;
+		static clock_t start_time = 0;
+		static clock_t prev_time = 0;
+		struct tms not_used_tms;
+		char buffer[200]; /* oversized */
+		time_t mytime;
+		struct tm *t_ptr;
+
+		time(&mytime);
+		t_ptr = localtime(&mytime);
+		if (start_time == 0)
+		{
+			/* get clock ticks */
+			prev_time = start_time =
+				(unsigned int)times(&not_used_tms);
+		}
+		/* get clock ticks */
+		time_val = (unsigned int)times(&not_used_tms);
+		time_taken = time_val - prev_time;
+		prev_time = time_val;
+		sprintf(
+			buffer, "%.2d:%.2d:%.2d %6ld",
+			t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec,
+			time_taken);
+
+		fvwm_debug(__func__, "EWMH DEBUG: ");
+		va_start(args,msg);
+		vfprintf(stderr, msg, args);
+		va_end(args);
+		fvwm_debug(__func__, "\n");
+		fvwm_debug(__func__, "            [time]: %s\n",buffer);
+	}
+
+	return;
+}
 
 /*
  * Atoms utilities
@@ -647,7 +692,7 @@ void EWMH_SetWMState(FvwmWindow *fw, Bool do_restore)
  */
 
 /*** kde system tray ***/
-/* #define DEBUG_KST */
+#define DEBUG_KST 0
 static
 void add_kst_item(Window w)
 {
@@ -713,20 +758,23 @@ void set_kde_sys_tray(void)
 	}
 
 	t = ewmh_KstWinList;
-#ifdef DEBUG_KST
-	fvwm_debug(__func__, "ADD_TO_KST: ");
-#endif
+	if (DEBUG_KST)
+	{
+		fvwm_debug(__func__, "ADD_TO_KST: ");
+	}
 	while (t != NULL)
 	{
-#ifdef DEBUG_KST
-		fvwm_debug(__func__, "0x%lx ",t->w);
-#endif
+		if (DEBUG_KST)
+		{
+			fvwm_debug(__func__, "0x%lx ",t->w);
+		}
 		wins[i++] = t->w;
 		t = t->next;
 	}
-#ifdef DEBUG_KST
-	fvwm_debug(__func__, "\n");
-#endif
+	if (DEBUG_KST)
+	{
+		fvwm_debug(__func__, "\n");
+	}
 
 	ewmh_ChangeProperty(Scr.Root,"_KDE_NET_SYSTEM_TRAY_WINDOWS",
 			    EWMH_ATOM_LIST_FVWM_ROOT,
@@ -802,9 +850,10 @@ int EWMH_IsKdeSysTrayWindow(Window w)
 	{
 		return 0;
 	}
-#ifdef DEBUG_KST
-	fvwm_debug(__func__, "IsKdeSysTrayWindow: 0x%lx\n", w);
-#endif
+	if (DEBUG_KST)
+	{
+		fvwm_debug(__func__, "IsKdeSysTrayWindow: 0x%lx\n", w);
+	}
 
 	return 1;
 }
@@ -825,32 +874,36 @@ void EWMH_ManageKdeSysTray(Window w, int type)
 	switch(type)
 	{
 	case UnmapNotify:
-#ifdef DEBUG_KST
-		fvwm_debug(__func__, "KST_UNMAP: 0x%lx\n", w);
-#endif
+		if (DEBUG_KST)
+		{
+			fvwm_debug(__func__, "KST_UNMAP: 0x%lx\n", w);
+		}
 		XSelectInput(dpy, w, StructureNotifyMask);
 		XFlush(dpy);
 		break;
 	case DestroyNotify:
-#ifdef DEBUG_KST
-		fvwm_debug(__func__, "KST_DESTROY: 0x%lx\n", w);
-#endif
+		if (DEBUG_KST)
+		{
+			fvwm_debug(__func__, "KST_DESTROY: 0x%lx\n", w);
+		}
 		XSelectInput(dpy, t->w, NoEventMask);
 		XFlush(dpy);
 		delete_kst_item(w);
 		set_kde_sys_tray();
 		break;
 	case ReparentNotify:
-#ifdef DEBUG_KST
-		fvwm_debug(__func__, "KST_Reparent: 0x%lx\n", w);
-#endif
+		if (DEBUG_KST)
+		{
+			fvwm_debug(__func__, "KST_Reparent: 0x%lx\n", w);
+		}
 		XSelectInput(dpy, w, StructureNotifyMask);
 		XFlush(dpy);
 		break;
 	default:
-#ifdef DEBUG_KST
-		fvwm_debug(__func__, "KST_NO: 0x%lx\n", w);
-#endif
+		if (DEBUG_KST)
+		{
+			fvwm_debug(__func__, "KST_NO: 0x%lx\n", w);
+		}
 		break;
 	}
 
@@ -1728,7 +1781,7 @@ static void ewmh_check_wm_pid(FvwmWindow *fw)
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
 void EWMH_WindowInit(FvwmWindow *fw)
 {
-	/*EWMH_DLOG("Init window 0x%lx",FW_W(fw));*/
+	EWMH_DLOG("Init window 0x%lx", FW_W(fw));
 	EWMH_SetWMState(fw, False);
 	EWMH_SetWMDesktop(fw);
 	EWMH_SetAllowedActions(fw);
@@ -1746,7 +1799,7 @@ void EWMH_WindowInit(FvwmWindow *fw)
 	}
 	ewmh_WMIcon(fw, NULL, NULL, 0);
 	ewmh_check_wm_pid(fw);
-	/*EWMH_DLOG("window 0x%lx initialised",FW_W(fw));*/
+	EWMH_DLOG("window 0x%lx initialised", FW_W(fw));
 
 	return;
 }
@@ -1948,44 +2001,6 @@ void EWMH_ExitStuff(void)
 
 	return;
 }
-
-#ifdef EWMH_DEBUG
-void EWMH_DLOG(char *msg, ...)
-{
-	va_list args;
-	clock_t time_val, time_taken;
-	static clock_t start_time = 0;
-	static clock_t prev_time = 0;
-	struct tms not_used_tms;
-	char buffer[200]; /* oversized */
-	time_t mytime;
-	struct tm *t_ptr;
-
-	time(&mytime);
-	t_ptr = localtime(&mytime);
-	if (start_time == 0)
-	{
-		/* get clock ticks */
-		prev_time = start_time = (unsigned int)times(&not_used_tms);
-	}
-	/* get clock ticks */
-	time_val = (unsigned int)times(&not_used_tms);
-	time_taken = time_val - prev_time;
-	prev_time = time_val;
-	sprintf(
-		buffer, "%.2d:%.2d:%.2d %6ld",
-		t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec, time_taken);
-
-	fvwm_debug(__func__, "EWMH DEBUG: ");
-	va_start(args,msg);
-	vfprintf(stderr, msg, args);
-	va_end(args);
-	fvwm_debug(__func__, "\n");
-	fvwm_debug(__func__, "            [time]: %s\n",buffer);
-
-	return;
-}
-#endif
 
 void EWMH_fullscreen(FvwmWindow *fw)
 {

@@ -40,11 +40,9 @@
 
 /* ---------------------------- local variables ---------------------------- */
 
-#undef DEBUG_EXECCONTEXT
-#ifdef DEBUG_EXECCONTEXT
+#define DEBUG_EXECCONTEXT 0
 static exec_context_t *x[256];
 static int nx = 0;
-#endif
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -95,17 +93,21 @@ static void __exc_change_context(
 const exec_context_t *exc_create_null_context(void)
 {
 	exec_context_t *exc;
-#ifdef DEBUG_EXECCONTEXT
-	int i;
-#endif
 
 	exc = fxcalloc(1, sizeof(exec_context_t));
-#ifdef DEBUG_EXECCONTEXT
-fvwm_debug(__func__, "xxx+0 ");
-for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
-x[nx]=exc;nx++;
-fvwm_debug(__func__, "0x%08x\n", (int)exc);
-#endif
+	if (DEBUG_EXECCONTEXT)
+	{
+		int i;
+
+		fvwm_debug(__func__, "xxx+0 ");
+		for (i=0; i < nx; i++)
+		{
+			fvwm_debug(__func__, "  ");
+		}
+		x[nx] = exc;
+		nx++;
+		fvwm_debug(__func__, "%p\n", exc);
+	}
 	exc->type = EXCT_NULL;
 	fev_make_null_event(&exc->private_data.te, dpy);
 	exc->x.etrigger = &exc->private_data.te;
@@ -120,9 +122,13 @@ const exec_context_t *exc_create_context(
 {
 	exec_context_t *exc;
 
-#ifdef DEBUG_EXECCONTEXT
-if (!(mask & ECC_TYPE)) abort();
-#endif
+	if (DEBUG_EXECCONTEXT)
+	{
+		if (!(mask & ECC_TYPE))
+		{
+			abort();
+		}
+	}
 	exc = (exec_context_t *)exc_create_null_context();
 	__exc_change_context(exc, ecc, mask);
 
@@ -134,17 +140,21 @@ const exec_context_t *exc_clone_context(
 	exec_context_change_mask_t mask)
 {
 	exec_context_t *exc;
-#ifdef DEBUG_EXECCONTEXT
-int i;
-#endif
 
 	exc = fxmalloc(sizeof(exec_context_t));
-#ifdef DEBUG_EXECCONTEXT
-fvwm_debug(__func__, "xxx+= ");
-for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
-x[nx]=exc;nx++;
-fvwm_debug(__func__, "0x%08x\n", (int)exc);
-#endif
+	if (DEBUG_EXECCONTEXT)
+	{
+		int i;
+
+		fvwm_debug(__func__, "xxx+= ");
+		for (i=0; i < nx; i++)
+		{
+			fvwm_debug(__func__, "  ");
+		}
+		x[nx] = exc;
+		nx++;
+		fvwm_debug(__func__, "%p\n", exc);
+	}
 	memcpy(exc, excin, sizeof(*exc));
 	__exc_change_context(exc, ecc, mask);
 
@@ -154,14 +164,16 @@ fvwm_debug(__func__, "0x%08x\n", (int)exc);
 void exc_destroy_context(
 	const exec_context_t *exc)
 {
-#ifdef DEBUG_EXECCONTEXT
-int i;
-if (nx == 0||x[nx-1] != exc)abort();
-nx--;
-fvwm_debug(__func__, "xxx-- ");
-for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
-fvwm_debug(__func__, "0x%08x\n", (int)exc);
-#endif
+	if (DEBUG_EXECCONTEXT)
+	{
+		int i;
+
+		if (nx == 0||x[nx-1] != exc)abort();
+		nx--;
+		fvwm_debug(__func__, "xxx-- ");
+		for(i=0;i<nx;i++) fvwm_debug(__func__, "  ");
+		fvwm_debug(__func__, "%p\n", exc);
+	}
 	free((exec_context_t *)exc);
 
 	return;

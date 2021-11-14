@@ -87,3 +87,7 @@
 #endif
 
 #endif /* FVWMLIB_FSVG_H */
+
+#ifndef Frsvg_init
+#define Frsvg_init() do { } while (0)
+#endif

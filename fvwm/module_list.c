@@ -64,6 +64,13 @@
 #  define O_NONBLOCK  O_NDELAY
 #endif
 
+#ifndef FORK_CREATES_CHILD
+#define FORK_CREATES_CHILD 0
+#endif
+#ifndef REMOVE_EXECUTABLE_EXTENSION
+#define REMOVE_EXECUTABLE_EXTENSION 0
+#endif
+
 #define MOD_NOGRABMASK(m) ((m)->xNoGrabMask)
 #define MOD_SYNCMASK(m) ((m)->xSyncMask)
 
@@ -272,17 +279,17 @@ static fmodule *do_execute_module(
 		}
 		goto err_exit;
 	}
-#ifdef REMOVE_EXECUTABLE_EXTENSION
+	if (REMOVE_EXECUTABLE_EXTENSION && EXECUTABLE_EXTENSION != NULL)
 	{
 		char *p;
+		char *ext = EXECUTABLE_EXTENSION;
 
-		p = arg1 + strlen(arg1) - strlen(EXECUTABLE_EXTENSION);
-		if (strcmp(p, EXECUTABLE_EXTENSION) == 0)
+		p = arg1 + strlen(arg1) - strlen(ext);
+		if (strcmp(p, ext) == 0)
 		{
 			*p = 0;
 		}
 	}
-#endif
 
 	/* I want one-ended pipes, so I open two two-ended pipes,
 	 * and close one end of each. I need one ended pipes so that
@@ -408,11 +415,12 @@ static fmodule *do_execute_module(
 	{
 		/* this is the child */
 		/* this fork execs the module */
-#ifdef FORK_CREATES_CHILD
-		/* dont't care that this may be -1 */
-		close(fvwm_to_app[1]);
-		close(app_to_fvwm[0]);
-#endif
+		if (FORK_CREATES_CHILD)
+		{
+			/* dont't care that this may be -1 */
+			close(fvwm_to_app[1]);
+			close(app_to_fvwm[0]);
+		}
 		fvmm_deinstall_signals();
 		if (!Pdefault)
 		{
@@ -441,9 +449,10 @@ static fmodule *do_execute_module(
 		close(app_to_fvwm[1]);
 		/* dont't care that this may be -1 */
 		close(fvwm_to_app[0]);
-#ifdef FORK_CREATES_CHILD
-		exit(1);
-#endif
+		if (FORK_CREATES_CHILD)
+		{
+			exit(1);
+		}
 	}
 	else
 	{

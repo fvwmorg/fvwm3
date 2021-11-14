@@ -97,7 +97,7 @@ static int collect_transients_recursive(
 /* ---------------------------- local functions ---------------------------- */
 
 #define DEBUG_STACK_RING 1
-#ifdef DEBUG_STACK_RING
+#if DEBUG_STACK_RING
 /* debugging function */
 static void dump_stack_ring(void)
 {
@@ -150,8 +150,8 @@ void verify_stack_ring_consistency(void)
 		if (t1->layer > last_layer)
 		{
 			fvwm_debug(__func__,
-				   "vsrc: stack ring is corrupt! '%s' (layer %d)"
-				   " is above '%s' (layer %d/%d)\n",
+				   "vsrc: stack ring is corrupt! '%s'"
+				   " (layer %d) is above '%s' (layer %d/%d)\n",
 				   t1->name.name, t1->layer, t2->name.name,
 				   t2->layer, last_layer);
 			dump_stack_ring();
@@ -240,6 +240,8 @@ void verify_stack_ring_consistency(void)
 
 	return;
 }
+#else
+#define verify_stack_ring_consistency() do { } while (0)
 #endif
 
 /* Add a whole ring of windows. The list_head itself will not be added. */
@@ -1382,9 +1384,10 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 		}
 		free(body);
 	}
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
 
 	return;
 }
@@ -1551,15 +1554,18 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 	return ontop;
 }
 
+#define EXPERIMENTAL_ROU_HANDLING 0
+#define ROUDEBUG 0
 static Bool __is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 {
 	Window	junk;
 	Bool  ontop	= False;
-	if (Scr.bo.do_raise_over_unmanaged)
+	if (!Scr.bo.do_raise_over_unmanaged)
 	{
-
-#define EXPERIMENTAL_ROU_HANDLING
-#ifdef EXPERIMENTAL_ROU_HANDLING
+		return is_on_top_of_layer_ignore_rom(fw);
+	}
+	if (EXPERIMENTAL_ROU_HANDLING)
+	{
 		/*
 		  RBW - 2002/08/15 -
 		  RaiseOverUnmanaged adds some overhead. The only way to let our
@@ -1580,23 +1586,28 @@ static Bool __is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 			if (client_entered)
 				/* FIXME! - perhaps we should only do if MFCR */
 			{
-#ifdef ROUDEBUG
-				printf("RBW-iotol  - %8.8lx is on top,"
-				       " checking server tree.  ***\n",
-				       FW_W_CLIENT(fw));
-#endif
+				if (ROUDEBUG)
+				{
+					printf("RBW-iotol  - %8.8lx is on top,"
+					       " checking server tree.  ***\n",
+					       FW_W_CLIENT(fw));
+				}
 				ontop = is_above_unmanaged(fw, &junk);
-#ifdef ROUDEBUG
-				printf("	 returning %d\n", (int) ontop);
-#endif
+				if (ROUDEBUG)
+				{
+					printf(
+						"	 returning %d\n",
+						(int) ontop);
+				}
 			}
 			else
 			{
-#ifdef ROUDEBUG
-				printf("RBW-iotol  - %8.8lx is on top,"
-				       " *** NOT checking server tree.\n",
-				       FW_W_CLIENT(fw));
-#endif
+				if (ROUDEBUG)
+				{
+					printf("RBW-iotol  - %8.8lx is on top,"
+					       " *** NOT checking server"
+					       " tree.\n", FW_W_CLIENT(fw));
+				}
 				ontop = True;
 			}
 			return ontop;
@@ -1605,13 +1616,10 @@ static Bool __is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 		{
 			return False;
 		}
-#else
-		return False;	/*  Old pre-2002/08/22 handling.  */
-#endif
 	}
 	else
 	{
-		return is_on_top_of_layer_ignore_rom(fw);
+		return False;	/*  Old pre-2002/08/22 handling.  */
 	}
 }
 
@@ -1715,9 +1723,11 @@ void RaiseWindow(FvwmWindow *t, Bool is_client_request)
 		(unsigned long)t);
 	raise_or_lower_window(t, SM_RAISE, True, False, is_client_request);
 	focus_grab_buttons_on_layer(t->layer);
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
+
 	return;
 }
 
@@ -1728,9 +1738,11 @@ void LowerWindow(FvwmWindow *t, Bool is_client_request)
 		(unsigned long)t);
 	raise_or_lower_window(t, SM_LOWER, True, False, is_client_request);
 	focus_grab_buttons_on_layer(t->layer);
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
+
 	return;
 }
 
@@ -1738,9 +1750,11 @@ void RestackWindow(FvwmWindow *t, Bool is_client_request)
 {
 	raise_or_lower_window(t, SM_RESTACK, True, False, is_client_request);
 	focus_grab_buttons_on_layer(t->layer);
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
+
 	return;
 }
 
@@ -1797,9 +1811,11 @@ Bool HandleUnusualStackmodes(
 		break;
 	}
 	/*  DBUG("HandleUnusualStackmodes", "\t---> %d\n", do_restack);*/
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
+
 	return do_restack;
 }
 
@@ -2122,9 +2138,10 @@ void CMD_Layer(F_CMD_ARGS)
 		layer = 0;
 	}
 	new_layer(fw, layer);
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
 
 	return;
 }
@@ -2178,9 +2195,10 @@ void CMD_DefaultLayers(F_CMD_ARGS)
 			Scr.TopLayer = i;
 		}
 	}
-#ifdef DEBUG_STACK_RING
-	verify_stack_ring_consistency();
-#endif
+	if (DEBUG_STACK_RING)
+	{
+		verify_stack_ring_consistency();
+	}
 
 	return;
 }

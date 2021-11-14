@@ -60,6 +60,8 @@
 #include "style.h"
 #include "externs.h"
 
+#define DEBUG_CONFIGURENOTIFY 0
+
 /* ----- move globals ----- */
 
 #define MOVE_NORMAL  0x00
@@ -1741,12 +1743,15 @@ static void AnimatedMoveAnyWindow(
 				fw, currentX, currentY,
 				fw->g.frame.width,
 				fw->g.frame.height, 0, False);
-#ifdef FVWM_DEBUG_MSGS
-			fvwm_debug(__func__,
-				   "Sent ConfigureNotify (w == %d, h == %d)",
-				   fw->g.frame.width,
-				   fw->g.frame.height);
-#endif
+			if (DEBUG_CONFIGURENOTIFY)
+			{
+				fvwm_debug(
+					__func__,
+					"Sent ConfigureNotify"
+					" (w == %d, h == %d)",
+					fw->g.frame.width,
+					fw->g.frame.height);
+			}
 		}
 		XFlush(dpy);
 		if (fw)
@@ -3140,17 +3145,20 @@ Bool __move_loop(
 				SendConfigureNotify(
 					fw, xl, yt, Width, Height, 0,
 					False);
-#ifdef FVWM_DEBUG_MSGS
-				fvwm_debug(__func__,
-					   "Sent ConfigureNotify (w %d, h %d)",
-					   Width, Height);
-#endif
+				if (DEBUG_CONFIGURENOTIFY)
+				{
+					fvwm_debug(
+						__func__,
+						"Sent ConfigureNotify"
+						" (w %d, h %d)",
+						Width, Height);
+				}
 			}
 		}
 		if (do_move_opaque)
 		{
 			if (!IS_ICONIFIED(fw))
-			{
+			      {
 				fw_copy.g.frame.x = xl;
 				fw_copy.g.frame.y = yt;
 			}

@@ -438,10 +438,11 @@ static void unmap_window(FvwmWindow *t)
 	{
 		XUnmapWindow(dpy,FW_W_FRAME(t));
 		border_undraw_decorations(t);
-#ifdef ICCCM2_UNMAP_WINDOW_PATCH
-		/* this is required by the ICCCM2 */
-		XUnmapWindow(dpy, FW_W(t));
-#endif
+		if (ICCCM2_UNMAP_WINDOW_PATCH)
+		{
+			/* this is required by the ICCCM2 */
+			XUnmapWindow(dpy, FW_W(t));
+		}
 		if (!Scr.bo.do_enable_ewmh_iconic_state_workaround)
 		{
 			SetMapStateProp(t, IconicState);
@@ -501,10 +502,11 @@ static void map_window(FvwmWindow *t)
 		XMapWindow(dpy, FW_W_FRAME(t));
 		XMapWindow(dpy, FW_W_PARENT(t));
 		XMapSubwindows(dpy, FW_W_FRAME(t));
-#ifdef ICCCM2_UNMAP_WINDOW_PATCH
-		/* this is required by the ICCCM2 */
-		XMapWindow(dpy, FW_W(t));
-#endif
+		if (ICCCM2_UNMAP_WINDOW_PATCH)
+		{
+			/* this is required by the ICCCM2 */
+			XMapWindow(dpy, FW_W(t));
+		}
 		if (!Scr.bo.do_enable_ewmh_iconic_state_workaround)
 		{
 			SetMapStateProp(t, NormalState);

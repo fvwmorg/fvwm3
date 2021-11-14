@@ -105,6 +105,11 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
+#ifndef C_ALLOCA
+#undef alloca
+#define alloca(x) do { } while (0)
+#endif
+
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
 #endif
@@ -114,6 +119,10 @@
 #define DEBUG_GLOBALLY_ACTIVE 1
 
 #define MAX_NUM_WEED_EVENT_TYPES 40
+
+#define DEBUG_CRE 0
+#define DEBUG_SEND_CN 0
+#define DEBUG_ENTERNOTIFY 0
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -953,13 +962,12 @@ static inline int _merge_cr_moveresize(
 	args.last_cr_event = ev;
 	FWeedIfEvents(dpy, _pred_merge_cr, (XPointer)&args);
 
-#if 1 /*!!!*/
 	if (args.count > 0)
 	{
-		fvwm_debug(__func__, "%s: merged %d cr events\n", __func__,
-			   args.count);
+		fvwm_debug(
+			__func__, "%s: merged %d cr events\n", __func__,
+			args.count);
 	}
-#endif
 	/* use the count from the structure, not the return value of
 	 * FWeedIfEvents() because the predicate has a different way of weeding
 	 * and the return value is always zero. */
@@ -1010,17 +1018,18 @@ static inline int _handle_cr_on_client(
 			return 0;
 		}
 	}
-#if 0
-	fprintf(stderr,
-		"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
-		"ew 0x%08x  '%s'\n",
-		cre->x, (int)(cre->value_mask & CWX),
-		cre->y, (int)(cre->value_mask & CWY),
-		cre->width, (int)(cre->value_mask & CWWidth),
-		cre->height, (int)(cre->value_mask & CWHeight),
-		(int)FW_W_FRAME(fw), (int)FW_W(fw), (int)cre->window,
-		(fw->name.name) ? fw->name.name : "");
-#endif
+	if (DEBUG_CRE)
+	{
+		fvwm_debug(__func__,
+			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
+			"ew 0x%08x  '%s'\n",
+			cre->x, (int)(cre->value_mask & CWX),
+			cre->y, (int)(cre->value_mask & CWY),
+			cre->width, (int)(cre->value_mask & CWWidth),
+			cre->height, (int)(cre->value_mask & CWHeight),
+			(int)FW_W_FRAME(fw), (int)FW_W(fw), (int)cre->window,
+			(fw->name.name) ? fw->name.name : "");
+	}
 	/* Don't modify frame_g fields before calling SetupWindow! */
 	memset(&d_g, 0, sizeof(d_g));
 
@@ -1963,12 +1972,11 @@ void HandleDestroyNotify(const evh_args_t *ea)
 	return;
 }
 
-#define DEBUG_ENTERNOTIFY 0
 #if DEBUG_ENTERNOTIFY
 static int ecount=0;
 #define ENTER_DBG(x) fprintf x;
 #else
-#define ENTER_DBG(x)
+#define ENTER_DBG(x) do { } while (0)
 #endif
 void HandleEnterNotify(const evh_args_t *ea)
 {
@@ -1981,8 +1989,13 @@ void HandleEnterNotify(const evh_args_t *ea)
 	FvwmWindow * const fw = ea->exc->w.fw;
 
 	ewp = &te->xcrossing;
-ENTER_DBG((stderr, "++++++++ en (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, fw, (int)ewp->window, (int)ewp->subwindow, ewp->mode, ewp->detail, fw?fw->visible_name:"(none)"));
-
+	ENTER_DBG(
+		(
+			stderr,
+			"++++++++ en (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x"
+			" detail 0x%x '%s'\n", ++ecount, fw, (int)ewp->window,
+			(int)ewp->subwindow, ewp->mode, ewp->detail,
+			fw?fw->visible_name:"(none)"));
 	if (
 		ewp->window == Scr.Root &&
 		ewp->detail == NotifyInferior && ewp->mode == NotifyNormal)
@@ -2020,7 +2033,7 @@ ENTER_DBG((stderr, "++++++++ en (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 
 	}
 	if (Scr.flags.is_wire_frame_displayed)
 	{
-ENTER_DBG((stderr, "en: exit: iwfd\n"));
+		ENTER_DBG((stderr, "en: exit: iwfd\n"));
 		/* Ignore EnterNotify events while a window is resized or moved
 		 * as a wire frame; otherwise the window list may be screwed
 		 * up. */
@@ -2038,13 +2051,13 @@ ENTER_DBG((stderr, "en: exit: iwfd\n"));
 			 * windows that don't handle this event.  unclutter
 			 * triggers these events sometimes, re focusing an
 			 * unfocused window under the pointer */
-ENTER_DBG((stderr, "en: exit: funny window\n"));
+			ENTER_DBG((stderr, "en: exit: funny window\n"));
 			return;
 		}
 	}
 	if (Scr.focus_in_pending_window != NULL)
 	{
-ENTER_DBG((stderr, "en: exit: fipw\n"));
+		ENTER_DBG((stderr, "en: exit: fipw\n"));
 		/* Ignore EnterNotify event while we are waiting for a window to
 		 * receive focus via Focus or FlipFocus commands. */
 		focus_grab_buttons(fw);
@@ -2052,12 +2065,12 @@ ENTER_DBG((stderr, "en: exit: fipw\n"));
 	}
 	if (ewp->mode == NotifyGrab)
 	{
-ENTER_DBG((stderr, "en: exit: NotifyGrab\n"));
+		ENTER_DBG((stderr, "en: exit: NotifyGrab\n"));
 		return;
 	}
 	else if (ewp->mode == NotifyNormal)
 	{
-ENTER_DBG((stderr, "en: NotifyNormal\n"));
+		ENTER_DBG((stderr, "en: NotifyNormal\n"));
 		if (ewp->detail == NotifyNonlinearVirtual &&
 		    ewp->focus == False && ewp->subwindow != None)
 		{
@@ -2066,13 +2079,13 @@ ENTER_DBG((stderr, "en: NotifyNormal\n"));
 			 * popping up a selection list several times (ddd,
 			 * netscape). I'm not convinced that this does not
 			 * break something else. */
-ENTER_DBG((stderr, "en: NN: refreshing focus\n"));
+			ENTER_DBG((stderr, "en: NN: refreshing focus\n"));
 			refresh_focus(fw);
 		}
 	}
 	else if (ewp->mode == NotifyUngrab)
 	{
-ENTER_DBG((stderr, "en: NotifyUngrab\n"));
+		ENTER_DBG((stderr, "en: NotifyUngrab\n"));
 		/* Ignore events generated by grabbing or ungrabbing the
 		 * pointer.  However, there is no way to prevent the client
 		 * application from handling this event and, for example,
@@ -2080,7 +2093,10 @@ ENTER_DBG((stderr, "en: NotifyUngrab\n"));
 		 * transferred the focus to a different window. */
 		if (is_initial_ungrab_pending)
 		{
-ENTER_DBG((stderr, "en: NU: initial ungrab pending (lgw = NULL)\n"));
+			ENTER_DBG(
+				(
+					stderr, "en: NU: initial ungrab"
+					" pending (lgw = NULL)\n"));
 			is_initial_ungrab_pending = False;
 			xcrossing_last_grab_window = NULL;
 		}
@@ -2090,17 +2106,27 @@ ENTER_DBG((stderr, "en: NU: initial ungrab pending (lgw = NULL)\n"));
 			    ewp->focus == False && ewp->subwindow != None)
 			{
 				/* see comment above */
-ENTER_DBG((stderr, "en: NU: refreshing focus\n"));
+				ENTER_DBG(
+					(
+						stderr,
+						"en: NU: refreshing focus\n"));
 				refresh_focus(fw);
 			}
 			if (fw && fw == xcrossing_last_grab_window)
 			{
-ENTER_DBG((stderr, "en: exit: NU: is last grab window\n"));
+				ENTER_DBG(
+					(
+						stderr, "en: exit: NU: is last"
+						" grab window\n"));
 				if (ewp->window == FW_W_FRAME(fw) ||
 				    ewp->window == FW_W_ICON_TITLE(fw) ||
 				    ewp->window == FW_W_ICON_PIXMAP(fw))
 				{
-ENTER_DBG((stderr, "en: exit: NU: last grab window = NULL\n"));
+					ENTER_DBG(
+						(
+							stderr, "en: exit: NU:"
+							" last grab window ="
+							" NULL\n"));
 					xcrossing_last_grab_window = NULL;
 				}
 				focus_grab_buttons(fw);
@@ -2113,7 +2139,10 @@ ENTER_DBG((stderr, "en: exit: NU: last grab window = NULL\n"));
 				    ewp->window != FW_W_ICON_TITLE(fw) &&
 				    ewp->window != FW_W_ICON_PIXMAP(fw))
 				{
-ENTER_DBG((stderr, "en: exit: NU: not frame window\n"));
+					ENTER_DBG(
+						(
+							stderr, "en: exit: NU:"
+							" not frame window\n"));
 					focus_grab_buttons(fw);
 					return;
 				}
@@ -2141,7 +2170,7 @@ ENTER_DBG((stderr, "en: exit: NU: not frame window\n"));
 		if (d.xcrossing.mode == NotifyNormal &&
 		    d.xcrossing.detail != NotifyInferior)
 		{
-ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
+			ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			return;
 		}
 	}
@@ -2279,13 +2308,13 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	sf = get_focus_window();
 	if (sf && fw != sf && FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 	{
-ENTER_DBG((stderr, "en: delete focus\n"));
+		ENTER_DBG((stderr, "en: delete focus\n"));
 		DeleteFocus(True);
 	}
 	focus_grab_buttons(fw);
 	if (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))
 	{
-ENTER_DBG((stderr, "en: set mousey focus\n"));
+		ENTER_DBG((stderr, "en: set mousey focus\n"));
                 if (ewp->window == FW_W(fw))
                 {
 			/*  Event is for the client window...*/
@@ -2701,7 +2730,13 @@ void HandleLeaveNotify(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
-ENTER_DBG((stderr, "-------- ln (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, fw, (int)te->xcrossing.window, (int)te->xcrossing.subwindow, te->xcrossing.mode, te->xcrossing.detail, fw?fw->visible_name:"(none)"));
+	ENTER_DBG(
+		(
+			stderr, "-------- ln (%d): fw %p w 0x%08x sw 0x%08x"
+			" mode 0x%x detail 0x%x '%s'\n", ++ecount, fw,
+			(int)te->xcrossing.window, (int)te->xcrossing.subwindow,
+			te->xcrossing.mode, te->xcrossing.detail,
+			fw?fw->visible_name:"(none)"));
 	lwp = &te->xcrossing;
 	if (
 		lwp->window == Scr.Root &&
@@ -2742,7 +2777,7 @@ ENTER_DBG((stderr, "-------- ln (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 
 		     lwp->window == FW_W_ICON_TITLE(fw) ||
 		     lwp->window == FW_W_ICON_PIXMAP(fw)))
 		{
-ENTER_DBG((stderr, "ln: *** lgw = %p\n", fw));
+			ENTER_DBG((stderr, "ln: *** lgw = %p\n", fw));
 			xcrossing_last_grab_window = fw;
 		}
 		return;
@@ -3117,22 +3152,26 @@ void HandleMapRequestKeepRaised(
 			}
 			else
 			{
-#ifndef ICCCM2_UNMAP_WINDOW_PATCH
-				/* nope, this is forbidden by the ICCCM2 */
-				XMapWindow(dpy, FW_W(fw));
-				SetMapStateProp(fw, NormalState);
-#else
-				/* Since we will not get a MapNotify, set the
-				 * IS_MAPPED flag manually. */
-				SET_MAPPED(fw, 1);
-				SetMapStateProp(fw, IconicState);
-				/* fake that the window was mapped to allow
-				 * modules to swallow it */
-				BroadcastPacket(
-					M_MAP, 3, (long)FW_W(fw),
-					(long)FW_W_FRAME(fw),
-					(unsigned long)fw);
-#endif
+				if (!ICCCM2_UNMAP_WINDOW_PATCH)
+				{
+					/* nope, this is forbidden by the
+					 * ICCCM2 */
+					XMapWindow(dpy, FW_W(fw));
+					SetMapStateProp(fw, NormalState);
+				}
+				else
+				{
+					/* Since we will not get a MapNotify,
+					 * set the IS_MAPPED flag manually. */
+					SET_MAPPED(fw, 1);
+					SetMapStateProp(fw, IconicState);
+					/* fake that the window was mapped to
+					 * allow modules to swallow it */
+					BroadcastPacket(
+						M_MAP, 3, (long)FW_W(fw),
+						(long)FW_W_FRAME(fw),
+						(unsigned long)fw);
+				}
 			}
 			/* TA:  20090125:  We *have* to handle
 			 * InitialMapCommand here and not in AddWindow() to
@@ -3924,15 +3963,19 @@ void SendConfigureNotify(
 	client_event.xconfigure.border_width = bw;
 	client_event.xconfigure.above = FW_W_FRAME(fw);
 	client_event.xconfigure.override_redirect = False;
-#if 0
-	fprintf(stderr,
-		"send cn: %d %d %dx%d fw 0x%08x w 0x%08x ew 0x%08x  '%s'\n",
-		client_event.xconfigure.x, client_event.xconfigure.y,
-		client_event.xconfigure.width, client_event.xconfigure.height,
-		(int)FW_W_FRAME(fw), (int)FW_W(fw),
-		(int)client_event.xconfigure.window,
-		(fw->name.name) ? fw->name.name : "");
-#endif
+	if (DEBUG_SEND_CN)
+	{
+		fprintf(
+			stderr,
+			"send cn: %d %d %dx%d fw 0x%08x w 0x%08x ew 0x%08x"
+			"  '%s'\n",
+			client_event.xconfigure.x, client_event.xconfigure.y,
+			client_event.xconfigure.width,
+			client_event.xconfigure.height,
+			(int)FW_W_FRAME(fw), (int)FW_W(fw),
+			(int)client_event.xconfigure.window,
+			(fw->name.name) ? fw->name.name : "");
+	}
 	fev_sanitise_configure_notify(&client_event.xconfigure);
 	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
@@ -4136,12 +4179,10 @@ void dispatch_event(XEvent *e)
 		exc_destroy_context(ea.exc);
 	}
 
-#ifdef C_ALLOCA
 	/* If we're using the C version of alloca, see if anything needs to be
 	 * freed up.
 	 */
 	alloca(0);
-#endif
 
 	return;
 }

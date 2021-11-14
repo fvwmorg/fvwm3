@@ -55,7 +55,7 @@ extern int nColorsets;  /* in libs/Colorset.c */
 
 /* do not send ColorLimit, it is not used anymore but maybe by non
  * "official" modules */
-#define DISABLE_COLORLIMIT_CONFIG_INFO
+#define DISABLE_COLORLIMIT_CONFIG_INFO 1
 
 #define MODULE_CONFIG_DELIM ':'
 
@@ -308,12 +308,14 @@ static void send_image_path(fmodule *module)
 
 static void send_color_limit(fmodule *module)
 {
-#ifndef DISABLE_COLORLIMIT_CONFIG_INFO
-	char msg[64];
+	if (DISABLE_COLORLIMIT_CONFIG_INFO)
+	{
+		char msg[64];
 
-	sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
-	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
-#endif
+		sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
+		SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
+	}
+
 	return;
 }
 
