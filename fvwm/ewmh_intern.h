@@ -7,13 +7,6 @@
 
 /* Extended window manager hints support */
 
-/* #define EWMH_DEBUG */
-#ifdef EWMH_DEBUG
-#include <stdarg.h>
-#include <sys/times.h>
-#include "ftime.h"
-#endif
-
 typedef struct ewmh_atom
 {
 	char *name;
@@ -188,12 +181,5 @@ int ewmh_WMIcon(
 CARD32 *ewmh_SetWmIconFromPixmap(
 	FvwmWindow *fw, CARD32 *orig_icon, int *orig_size,
 	Bool is_mini_icon);
-
-/* debugging */
-#ifdef EWMH_DEBUG
-void  EWMH_DLOG(char *msg, ...);
-#else
-
-#endif
 
 #endif /* FVWM_EWMH_INTERN_H */

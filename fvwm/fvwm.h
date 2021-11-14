@@ -47,6 +47,7 @@
 #ifndef WithdrawnState
 #define WithdrawnState 0
 #endif
+#define ICCCM2_UNMAP_WINDOW_PATCH 0
 
 /* ---------------------------- global macros ------------------------------ */
 

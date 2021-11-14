@@ -51,8 +51,8 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-/*#define FVWM_SM_DEBUG_PROTO*/
-/*#define FVWM_SM_DEBUG_WINMATCH*/
+#define FVWM_SM_DEBUG_PROTO 0
+#define FVWM_SM_DEBUG_WINMATCH 0
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -663,45 +663,46 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 		} /* else no window roles */
 	} /* if client_id's agree */
 
-#ifdef FVWM_SM_DEBUG_WINMATCH
-	fvwm_debug(__func__,
-		   "\twin(%s, %s, %s, %s, %s,",
-		   w->class.res_name, w->class.res_class, w->name.name,
-		   (client_id)? client_id:"(null)",
-		   (window_role)? window_role:"(null)");
-	if (wm_command)
+	if (FVWM_SM_DEBUG_WINMATCH)
 	{
-		for (i = 0; i < wm_command_count; i++)
+		fvwm_debug(__func__,
+			   "\twin(%s, %s, %s, %s, %s,",
+			   w->class.res_name, w->class.res_class, w->name.name,
+			   (client_id)? client_id:"(null)",
+			   (window_role)? window_role:"(null)");
+		if (wm_command)
 		{
-			fvwm_debug(__func__, " %s", wm_command[i]);
+			for (i = 0; i < wm_command_count; i++)
+			{
+				fvwm_debug(__func__, " %s", wm_command[i]);
+			}
+			fvwm_debug(__func__, ",");
 		}
-		fvwm_debug(__func__, ",");
-	}
-	else
-	{
-		fvwm_debug(__func__, " no_wmc,");
-	}
-	fvwm_debug(__func__, " %d)", IS_NAME_CHANGED(w));
-	fvwm_debug(__func__, "\n[%d]", found);
-	fvwm_debug(__func__,
-		   "\tmat(%s, %s, %s, %s, %s,",
-		   m->res_name, m->res_class, m->wm_name,
-		   (m->client_id)?m->client_id:"(null)",
-		   (m->window_role)?m->window_role:"(null)");
-	if (m->wm_command)
-	{
-		for (i = 0; i < m->wm_command_count; i++)
+		else
 		{
-			fvwm_debug(__func__, " %s", m->wm_command[i]);
+			fvwm_debug(__func__, " no_wmc,");
 		}
-		fvwm_debug(__func__, ",");
+		fvwm_debug(__func__, " %d)", IS_NAME_CHANGED(w));
+		fvwm_debug(__func__, "\n[%d]", found);
+		fvwm_debug(__func__,
+			   "\tmat(%s, %s, %s, %s, %s,",
+			   m->res_name, m->res_class, m->wm_name,
+			   (m->client_id)?m->client_id:"(null)",
+			   (m->window_role)?m->window_role:"(null)");
+		if (m->wm_command)
+		{
+			for (i = 0; i < m->wm_command_count; i++)
+			{
+				fvwm_debug(__func__, " %s", m->wm_command[i]);
+			}
+			fvwm_debug(__func__, ",");
+		}
+		else
+		{
+			fvwm_debug(__func__, " no_wmc,");
+		}
+		fvwm_debug(__func__, " %d)\n\n", IS_NAME_CHANGED(m));
 	}
-	else
-	{
-		fvwm_debug(__func__, " no_wmc,");
-	}
-	fvwm_debug(__func__, " %d)\n\n", IS_NAME_CHANGED(m));
-#endif
 
 	if (client_id)
 	{
@@ -770,12 +771,14 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 		return;
 	}
 
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__,
-		   "[FVWM_SMDEBUG][set_sm_properties] state filename: %s%s\n",
-		   filename ? filename : "(null)",
-		   sm_conn ? "" : " - not connected");
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__,
+			"[FVWM_SMDEBUG][set_sm_properties] state filename:"
+			" %s%s\n", filename ? filename : "(null)",
+			sm_conn ? "" : " - not connected");
+	}
 
 	if (!sm_conn)
 	{
@@ -967,9 +970,11 @@ callback_save_yourself2(FSmcConn sm_conn, FSmPointer client_data)
 	}
 
 	filename = get_unique_state_filename();
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
+	}
 
 	success = save_state_file(filename);
 	if (success)
@@ -994,42 +999,51 @@ callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 		return;
 	}
 
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
-		   "(save=%d, shut=%d, intr=%d, fast=%d)\n",
-		   save_style, shutdown, interact_style, fast);
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
+			"(save=%d, shut=%d, intr=%d, fast=%d)\n",
+			save_style, shutdown, interact_style, fast);
+	}
 
 	if (save_style == FSmSaveGlobal)
 	{
 		/* nothing to do */
-#ifdef FVWM_SM_DEBUG_PROTO
-		fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
-			   "Global Save type ... do nothing\n");
-#endif
+		if (FVWM_SM_DEBUG_PROTO)
+		{
+			fvwm_debug(
+				__func__,
+				"[FVWM_SMDEBUG][callback_save_yourself] "
+				"Global Save type ... do nothing\n");
+		}
 		FSmcSaveYourselfDone (sm_conn, True);
 		sent_save_done = 1;
 		return;
 
 	}
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
-		   "Both or Local save type, going to phase 2 ...");
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__, "[FVWM_SMDEBUG][callback_save_yourself] "
+			"Both or Local save type, going to phase 2 ...");
+	}
 	if (!FSmcRequestSaveYourselfPhase2(
 		    sm_conn, callback_save_yourself2, NULL))
 	{
 		FSmcSaveYourselfDone (sm_conn, False);
 		sent_save_done = 1;
-#ifdef FVWM_SM_DEBUG_PROTO
-		fvwm_debug(__func__, " failed!\n");
-#endif
+		if (FVWM_SM_DEBUG_PROTO)
+		{
+			fvwm_debug(__func__, " failed!\n");
+		}
 	}
 	else
 	{
-#ifdef FVWM_SM_DEBUG_PROTO
-		fvwm_debug(__func__, " OK\n");
-#endif
+		if (FVWM_SM_DEBUG_PROTO)
+		{
+			fvwm_debug(__func__, " OK\n");
+		}
 		sent_save_done = 0;
 	}
 
@@ -1045,9 +1059,10 @@ callback_die(FSmcConn sm_conn, FSmPointer client_data)
 		return;
 	}
 
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_die]\n");
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_die]\n");
+	}
 
 	if (FSmcCloseConnection(sm_conn, 0, NULL) != FSmcClosedNow)
 	{
@@ -1069,9 +1084,11 @@ callback_save_complete(FSmcConn sm_conn, FSmPointer client_data)
 	{
 		return;
 	}
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_save_complete]\n");
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__, "[FVWM_SMDEBUG][callback_save_complete]\n");
+	}
 
 	return;
 }
@@ -1084,9 +1101,12 @@ callback_shutdown_cancelled(FSmcConn sm_conn, FSmPointer client_data)
 		return;
 	}
 
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][callback_shutdown_cancelled]\n");
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__,
+			"[FVWM_SMDEBUG][callback_shutdown_cancelled]\n");
+	}
 
 	if (!sent_save_done)
 	{
@@ -1681,10 +1701,12 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 			/* go a head any way ? */
 		}
 
-#ifdef  FVWM_SM_DEBUG_PROTO
-		fvwm_debug(__func__, "[FVWM_SMDEBUG]: Exiting, now SM must "
-			   "restart us.\n");
-#endif
+		if (FVWM_SM_DEBUG_PROTO)
+		{
+			fvwm_debug(
+				__func__, "[FVWM_SMDEBUG]: Exiting, now SM"
+				" must restart us.\n");
+		}
 		/* Close all my pipes */
 		module_kill_all();
 
@@ -1752,16 +1774,21 @@ SessionInit(void)
 				   error_string_ret);
 		}
 		sm_fd = -1;
-#ifdef FVWM_SM_DEBUG_PROTO
-		fvwm_debug(__func__, "[FVWM_SMDEBUG] No SM connection\n");
-#endif
+		if (FVWM_SM_DEBUG_PROTO)
+		{
+			fvwm_debug(
+				__func__, "[FVWM_SMDEBUG] No SM connection\n");
+		}
 	}
 	else
 	{
 		sm_fd = FIceConnectionNumber(FSmcGetIceConnection(sm_conn));
-#ifdef FVWM_SM_DEBUG_PROTO
-		fvwm_debug(__func__, "[FVWM_SMDEBUG] Connectecd to a SM\n");
-#endif
+		if (FVWM_SM_DEBUG_PROTO)
+		{
+			fvwm_debug(
+				__func__,
+				"[FVWM_SMDEBUG] Connectecd to a SM\n");
+		}
 		set_init_function_name(0, "SessionInitFunction");
 		set_init_function_name(1, "SessionRestartFunction");
 		set_init_function_name(2, "SessionExitFunction");
@@ -1783,10 +1810,12 @@ ProcessICEMsgs(void)
 		return;
 	}
 
-#ifdef FVWM_SM_DEBUG_PROTO
-	fvwm_debug(__func__, "[FVWM_SMDEBUG][ProcessICEMsgs] %i\n",
-		   (int)sm_fd);
-#endif
+	if (FVWM_SM_DEBUG_PROTO)
+	{
+		fvwm_debug(
+			__func__, "[FVWM_SMDEBUG][ProcessICEMsgs] %i\n",
+			(int)sm_fd);
+	}
 	if (sm_fd < 0)
 	{
 		return;
