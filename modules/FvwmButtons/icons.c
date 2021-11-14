@@ -53,9 +53,6 @@
 Bool GetIconPosition(button_info *b,
 	FvwmPicture *pic, int *r_x, int *r_y, int *r_w, int *r_h)
 {
-#ifdef NO_ICONS
-	return False;
-#else
 	int x, y, width, height;
 	int xoff, yoff;
 	int framew, xpad, ypad;
@@ -131,12 +128,10 @@ Bool GetIconPosition(button_info *b,
 	*r_h = height;
 
 	return True;
-#endif
 }
 
 void DrawForegroundIcon(button_info *b, XEvent *pev)
 {
-#ifndef NO_ICONS
 	int x, y, w, h;
 	int cset;
 	XRectangle clip;
@@ -190,5 +185,4 @@ void DrawForegroundIcon(button_info *b, XEvent *pev)
 		NormalGC, None, None,
 		clip.x - x, clip.y - y, clip.width, clip.height,
 		clip.x, clip.y, clip.width, clip.height, False);
-#endif
 }
