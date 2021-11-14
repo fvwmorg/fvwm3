@@ -6193,15 +6193,15 @@ during an interactive move the window or icon comes within _proximity_
 pixels of another the window or icon, it is moved to make the borders
 adjoin. The default of 0 means that no snapping happens. Calling this
 command without arguments turns off snap attraction and restores the
-default behavior. Please refer also to the *SnapGrid* command.
+default behavior. Please refer also to the _SnapGrid_ option.
 +
-The second argument determined is optional and may be set to one of
+The second argument optional and may be set to one of
 the five following values: With _All_ both icons and windows snap to
 other windows and other icons. _SameType_ lets windows snap only to
 windows, and icons snap only to icons. With _Windows_ windows snap
 only to other windows. Similarly with _Icons_ icons snap only to other
 icons. With _None_ no snapping takes place. This option can be useful
-in conjunction with the following argument if you only want to snap
+in conjunction with the thirs argument if you only want to snap
 against the screen edges. The default behavior is _All_.
 +
 The third and last optional argument may be set to one of the four
@@ -6223,10 +6223,10 @@ location (top left corner) is coincident with the nearest grid point.
 The default _x-grid-size_ and _y-grid-size_ setting are both 1, which
 is effectively no grid all.
 
-An interactive move with both *SnapGrid* and _SnapAttraction_ results
+An interactive move with both _SnapGrid_ and _SnapAttraction_ results
 in the window being moved to be adjacent to the nearest window border
 (if within snap proximity) or grid position. The window moves the
-shortest distance possible to satisfy both *SnapGrid* and
+shortest distance possible to satisfy both _SnapGrid_ and
 _SnapAttraction_. Note that the x and y coordinates are not coupled.
 For example, a window may snap to another window on the x axis while
 snapping to a grid point on the y axis. Using this style without
