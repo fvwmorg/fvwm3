@@ -687,7 +687,6 @@ typedef struct window_style
 	bool max_window_width_is_c;
 	bool max_window_height_is_c;
 	int shade_anim_steps;
-#if 1 /*!!!*/
 	snap_attraction_t snap_attraction;
 	/* snap grid size */
 	int snap_grid_x;
@@ -696,7 +695,6 @@ typedef struct window_style
 	int edge_delay_ms_resize;
 	int edge_resistance_move;
 	int edge_resistance_xinerama_move;
-#endif
 	icon_boxes *icon_boxes;
 	float norm_placement_penalty;
 	pl_penalty_struct pl_penalty;
@@ -919,7 +917,6 @@ typedef struct FvwmWindow
 	int max_window_height;
 	int shade_anim_steps;
 	unsigned char grabbed_buttons;
-#if 1 /*!!!*/
 	snap_attraction_t snap_attraction;
 	/* snap grid size */
 	int snap_grid_x;
@@ -928,7 +925,6 @@ typedef struct FvwmWindow
 	int edge_delay_ms_resize;
 	int edge_resistance_move;
 	int edge_resistance_xinerama_move;
-#endif
 
 #define FM_NO_INPUT        0
 #define FM_PASSIVE         1
