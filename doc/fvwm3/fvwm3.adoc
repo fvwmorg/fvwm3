@@ -3094,6 +3094,8 @@ AddToMenu RootMenu
 	turn the option on or off, or "toggle" to switch is back and forth. If
 	_bool_ is omitted, the default setting is restored.
 +
+_DebugRandR_ activates monitor layout debug messages.
++
 _FlickeringMoveWorkaround_ disables ConfigureNotify events that are
 usually sent to an application while it is moved. If some windows
 flicker annoyingly while being moved, this option may help you. Note

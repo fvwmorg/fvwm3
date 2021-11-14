@@ -1770,7 +1770,10 @@ void monitor_update_ewmh(void)
 	struct monitor	*m, *mref;
 
 	fvwm_debug(__func__, "monitor debug...\n");
-	monitor_dump_state(NULL);
+	if (Scr.bo.do_debug_randr)
+	{
+		monitor_dump_state(NULL);
+	}
 
 	mref = TAILQ_FIRST(&monitor_q);
 
