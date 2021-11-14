@@ -782,7 +782,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		if (tmp && *tmp)
 		{
 			fvwm_debug( __func__,
-			    "Use comma instead of whiespace to separate "
+			    "Use comma instead of whitespace to separate "
 			    "conditions");
 		} else {
 			if (allocated_condition != NULL)
