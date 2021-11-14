@@ -1608,16 +1608,6 @@ static void destroy_mini_icon(FvwmWindow *fw)
 
 static void setup_key_and_button_grabs(FvwmWindow *fw)
 {
-#ifdef BUGS_ARE_COOL
-	/* dv (29-May-2001): If keys are grabbed separately for C_WINDOW and
-	 * the other contexts, new windows have problems when bindings are
-	 * removed.  Therefore, grab all keys in a single pass through the
-	 * list. */
-	GrabAllWindowKeys(
-		dpy, FW_W_FRAME(fw), Scr.AllBindings,
-		C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR, GetUnusedModifiers(),
-		True);
-#endif
 	GrabAllWindowKeys(
 		dpy, FW_W_FRAME(fw), Scr.AllBindings,
 		C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_WINDOW, GetUnusedModifiers(),
