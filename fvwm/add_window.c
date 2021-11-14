@@ -3481,9 +3481,7 @@ void destroy_window(FvwmWindow *fw)
 
 	/****** destroy mini icon ******/
 
-#ifdef MINI_ICON
 	destroy_mini_icon(fw);
-#endif
 
 	/****** free strings ******/
 
