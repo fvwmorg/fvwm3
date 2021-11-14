@@ -1416,14 +1416,10 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 		if (SHAS_ICON(&pstyle->flags) &&
 		    S_ICON_OVERRIDE(SCF(*pstyle)) == ICON_OVERRIDE)
 		{
-			ICON_DBG((stderr,"si: iwh ignored '%s'\n",
-				  fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 		}
 		else
 		{
-			ICON_DBG((stderr,"si: using iwh '%s'\n",
-				  fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
 	}
@@ -1432,27 +1428,21 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 		if (SHAS_ICON(&pstyle->flags) &&
 		    S_ICON_OVERRIDE(SCF(*pstyle)) != NO_ICON_OVERRIDE)
 		{
-			ICON_DBG((stderr,"si: iph ignored '%s'\n",
-				  fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 		}
 		else
 		{
-			ICON_DBG((stderr,"si: using iph '%s'\n",
-				  fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
 	}
 	else if (SHAS_ICON(&pstyle->flags))
 	{
 		/* an icon was specified */
-		ICON_DBG((stderr,"si: using style '%s'\n", fw->name.name));
 		fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 	}
 	else
 	{
 		/* use default icon */
-		ICON_DBG((stderr,"si: using default '%s'\n", fw->name.name));
 		fw->icon_bitmap_file = Scr.DefaultIcon;
 	}
 
@@ -2228,8 +2218,6 @@ void increase_icon_hint_count(FvwmWindow *fw)
 		default:
 			break;
 		}
-		ICON_DBG((stderr,"icon hint count++ (%d) '%s'\n",
-			  (int)WAS_ICON_HINT_PROVIDED(fw), fw->name.name));
 	}
 
 	return;

@@ -26,12 +26,6 @@ enum
 
 /* ---------------------------- global macros ------------------------------ */
 
-#ifdef ICON_DEBUG
-#define ICON_DBG(X) fprintf X;
-#else
-#define ICON_DBG(X)
-#endif
-
 /* ---------------------------- type definitions --------------------------- */
 
 typedef enum
