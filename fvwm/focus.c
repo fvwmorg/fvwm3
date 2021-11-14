@@ -671,7 +671,10 @@ static void __activate_window_by_command(
 	}
 
 	m = fw->m;
-	monitor_dump_state(m);
+	if (Scr.bo.do_debug_randr)
+	{
+		monitor_dump_state(m);
+	}
 	do_not_warp = StrEquals(PeekToken(action, NULL), "NoWarp");
 	if (!do_not_warp)
 	{
