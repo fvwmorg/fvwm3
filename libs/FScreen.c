@@ -332,7 +332,9 @@ monitor_assign_virtual(struct monitor *ref)
 		if (m == ref)
 			continue;
 
-		memcpy(&m->virtual_scr, &ref->virtual_scr, sizeof(m->virtual_scr));
+		memcpy(
+			&m->virtual_scr, &ref->virtual_scr,
+			sizeof(m->virtual_scr));
 	}
 }
 
@@ -443,7 +445,10 @@ scan_screens(Display *dpy)
 		char *name = XGetAtomName(dpy, rrm[i].name);
 
 		if (name == NULL) {
-			fprintf(stderr, "%s: couldn't detect monitor with empty name\n", __func__);
+			fprintf(
+				stderr,
+				"%s: couldn't detect monitor with empty name\n",
+				__func__);
 			exit (101);
 		}
 
@@ -570,40 +575,41 @@ monitor_dump_state(struct monitor *m)
 		}
 		if (m != NULL && m2 != m)
 			continue;
-		fvwm_debug(__func__,
-			   "\tName:\t%s\n"
-			   "\tDisabled:\t%s\n"
-			   "\tIs Primary:\t%s\n"
-			   "\tIs Current:\t%s\n"
-			   "\tOutput:\t%d\n"
-			   "\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
-			   "\tVirtScr: {\n"
-			   "\t\tVxMax: %d, VyMax: %d, Vx: %d, Vy: %d\n"
-			   "\t\tEdgeScrollX: %d, EdgeScrollY: %d\n"
-			   "\t\tCurrentDesk: %d\n"
-			   "\t\tCurrentPage: {x: %d, y: %d}\n"
-			   "\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
-			   "\tDesktops:\t%s\n"
-			   "\tFlags:%s\n\n",
-			   m2->si->name,
-			   (m2->flags & MONITOR_DISABLED) ? "true" : "false",
-			   (m2->flags & MONITOR_PRIMARY) ? "yes" : "no",
-			   (mcur && m2 == mcur) ? "yes" : "no",
-			   (int)m2->si->rr_output,
-			   m2->si->x, m2->si->y, m2->si->w, m2->si->h,
-			   m2->virtual_scr.VxMax, m2->virtual_scr.VyMax,
-			   m2->virtual_scr.Vx, m2->virtual_scr.Vy,
-			   m2->virtual_scr.EdgeScrollX,
-			   m2->virtual_scr.EdgeScrollY,
-			   m2->virtual_scr.CurrentDesk,
-			   (int)(m2->virtual_scr.Vx / monitor_get_all_widths()),
-			   (int)(m2->virtual_scr.Vy / monitor_get_all_heights()),
-			   monitor_get_all_widths(),
-			   monitor_get_all_heights(),
-			   m2->Desktops ? "yes" : "no",
-			   monitor_mode == MONITOR_TRACKING_G ? "global" :
-			   monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
-			   "Unknown"
+		fvwm_debug(
+			__func__,
+			"\tName:\t%s\n"
+			"\tDisabled:\t%s\n"
+			"\tIs Primary:\t%s\n"
+			"\tIs Current:\t%s\n"
+			"\tOutput:\t%d\n"
+			"\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
+			"\tVirtScr: {\n"
+			"\t\tVxMax: %d, VyMax: %d, Vx: %d, Vy: %d\n"
+			"\t\tEdgeScrollX: %d, EdgeScrollY: %d\n"
+			"\t\tCurrentDesk: %d\n"
+			"\t\tCurrentPage: {x: %d, y: %d}\n"
+			"\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
+			"\tDesktops:\t%s\n"
+			"\tFlags:%s\n\n",
+			m2->si->name,
+			(m2->flags & MONITOR_DISABLED) ? "true" : "false",
+			(m2->flags & MONITOR_PRIMARY) ? "yes" : "no",
+			(mcur && m2 == mcur) ? "yes" : "no",
+			(int)m2->si->rr_output,
+			m2->si->x, m2->si->y, m2->si->w, m2->si->h,
+			m2->virtual_scr.VxMax, m2->virtual_scr.VyMax,
+			m2->virtual_scr.Vx, m2->virtual_scr.Vy,
+			m2->virtual_scr.EdgeScrollX,
+			m2->virtual_scr.EdgeScrollY,
+			m2->virtual_scr.CurrentDesk,
+			(int)(m2->virtual_scr.Vx / monitor_get_all_widths()),
+			(int)(m2->virtual_scr.Vy / monitor_get_all_heights()),
+			monitor_get_all_widths(),
+			monitor_get_all_heights(),
+			m2->Desktops ? "yes" : "no",
+			monitor_mode == MONITOR_TRACKING_G ? "global" :
+			monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
+			"Unknown"
 		);
 	}
 }
@@ -973,7 +979,9 @@ int FScreenParseGeometry(
 
 	if (scr != NULL) {
 		m = monitor_resolve_name(scr);
-		fprintf(stderr, "Found monitor with name of: %s (%s)\n", scr, m->si->name);
+		fprintf(
+			stderr, "Found monitor with name of: %s (%s)\n", scr,
+			m->si->name);
 		x = m->si->x;
 		y = m->si->y;
 		w = m->si->w;
@@ -1055,7 +1063,8 @@ int FScreenGetGeometry(
 
 	arg.mouse_ev = NULL;
 	arg.name = scr;
-	FScreenGetScrRect(&arg, FSCREEN_BY_NAME, &scr_x, &scr_y, &scr_w, &scr_h);
+	FScreenGetScrRect(
+		&arg, FSCREEN_BY_NAME, &scr_x, &scr_y, &scr_w, &scr_h);
 
 	/* II. Interpret and fill in the values */
 
