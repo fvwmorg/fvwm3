@@ -4131,16 +4131,15 @@ AddToFunc lower-to-bottom
 	window.	Move can be called with various options to either start
 	an interactive move, specify the position to move, or a direction.
 +
-Calling *Move* by itself with no options starts an interactive move.
-When moving a window interactively, the window may snap to other windows
-and screen boundaries, configurable via the *SnapAttraction* style. Holding
-down _Alt_ whilst moving the window will disable snap attraction during
-the move. Moving a window to the edge of the screen can be used to drag the
-window to other pages, see *EdgeScroll*, and the *EdgeMoveDelay* style
-for more information.
+*Move* without options starts an interactive move.  The window may snap to
+other windows and screen boundaries, configurable with the *SnapAttraction*
+style.  Moving a window to the edge of the screen can be used to drag the
+window to other pages.  (See *EdgeScroll*, and the _EdgeMoveDelay_ style for
+more information.)
 +
-The interactive move operation can be aborted with Escape
-or any mouse button not set to place the window. By default mouse
+Holding down _Alt_ disables snapping and allows to switch pages
+without any delay.  Interactive movement can be aborted with the
+_Escape_ key or any mouse button not set to place the window. By default mouse
 button 2 is set to cancel the move operation. To change this you may
 use the *Mouse* command with special context 'P' for Placement.
 +
@@ -4397,9 +4396,13 @@ where ontop is the highest layer used in your setup.
 	its border, then that window is resized. If called from the root
 	window then the user is allowed to select the target window.
 +
-The operation can be aborted with
+*Resize* without options starts an interactive resize.
 +
-or by pressing any mouse button (except button 1 which confirms it).
+If the _EdgeResizeDelay_ style is set or the _Alt_ key is held down,
+the window can be resized across the edge of the screen.
++
+The operation can be aborted with the _Escape_ key or by pressing
+any mouse button (except button 1 which confirms it).
 +
 If the optional arguments _width_ and _height_ are provided, then the
 window is resized so that its dimensions are _width_ by _height_. The
