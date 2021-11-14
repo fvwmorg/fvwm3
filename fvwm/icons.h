@@ -5,12 +5,7 @@
 
 #include "fvwm.h"
 
-#ifdef NO_ICONS
-#define ICON_HEIGHT(t) 1
-#else
-#define ICON_HEIGHT(t) \
-	((t)->icon_font->height + 2*abs((t)->icon_title_relief))
-#endif
+#define ICON_HEIGHT(t) ((t)->icon_font->height + 2*abs((t)->icon_title_relief))
 
 int get_visible_icon_window_count(FvwmWindow *fw);
 void clear_icon(FvwmWindow *fw);
