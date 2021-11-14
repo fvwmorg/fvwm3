@@ -2758,14 +2758,6 @@ ENTER_DBG((stderr, "-------- ln (%d): fw %p w 0x%08x sw 0x%08x mode 0x%x detail 
 ENTER_DBG((stderr, "ln: *** lgw = %p\n", fw));
 			xcrossing_last_grab_window = fw;
 		}
-#ifdef FOCUS_EXPANDS_TITLE
-		if (fw && IS_ICONIFIED(fw))
-		{
-			SET_ICON_ENTERED(fw, 0);
-			DrawIconWindow(
-				fw, True, False, False, False, NULL);
-		}
-#endif
 		return;
 	}
 	/* CDE-like behaviour of raising the icon title if the icon
