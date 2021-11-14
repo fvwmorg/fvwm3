@@ -2603,12 +2603,12 @@ Bool __move_loop(
 	Window move_w = None;
 	int orig_icon_x = 0;
 	int orig_icon_y = 0;
-	Bool do_snap = True;
 	Bool was_snapped = False;
-	/* if Alt is initially pressed don't enable no-snap until Alt is
-	 * released */
-	Bool nosnap_enabled = False;
+	/* if Alt is initially pressed don't enable "Alt" mode until the key is
+	 * released once. */
+	Bool was_alt_key_not_pressed = False;
 	/* Must not set placed by button if the event is a modified KeyEvent */
+	Bool is_alt_mode_enabled = False;
 	Bool is_fake_event;
 	FvwmWindow *fw = exc->w.fw;
 	unsigned int draw_parts = PART_NONE;
@@ -2727,6 +2727,7 @@ Bool __move_loop(
 			XEvent le;
 			int x;
 			int y;
+			int delay;
 
 			UPDATE_FVWM_SCREEN(fw);
 
@@ -2734,10 +2735,11 @@ Bool __move_loop(
 
 			xl -= XOffset;
 			yt -= YOffset;
-
+			delay = (is_alt_mode_enabled) ?
+				0 : fw->edge_delay_ms_move;
 			rc = HandlePaging(
 				&le, dx, dy, &xl, &yt, &delta_x, &delta_y,
-				False, False, True, fw->edge_delay_ms_move);
+				False, False, True, delay);
 
 			/* Fake an event to force window reposition */
 			if (delta_x)
@@ -2750,7 +2752,7 @@ Bool __move_loop(
 				y_virtual_offset = 0;
 			}
 			yt += YOffset;
-			if (do_snap)
+			if (!is_alt_mode_enabled)
 			{
 				DoSnapAttract(fw, Width, Height, &xl, &yt);
 				was_snapped = True;
@@ -2851,12 +2853,15 @@ Bool __move_loop(
 		switch (e.type)
 		{
 		case KeyPress:
-			if (!(e.xkey.state & Mod1Mask))
+			if (e.xmotion.state & Mod1Mask)
 			{
-				nosnap_enabled = True;
+				is_alt_mode_enabled = was_alt_key_not_pressed;
 			}
-			do_snap = nosnap_enabled &&
-				(e.xkey.state & Mod1Mask) ? False : True;
+			else
+			{
+				was_alt_key_not_pressed = True;
+				is_alt_mode_enabled = False;
+			}
 
 			/* simple code to bag out of move - CKH */
 			if (XLookupKeysym(&(e.xkey), 0) == XK_Escape)
@@ -2980,7 +2985,7 @@ Bool __move_loop(
 			    vy != m->virtual_scr.Vy || was_snapped)
 			{
 				/* only snap if the window actually moved! */
-				if (do_snap)
+				if (!is_alt_mode_enabled)
 				{
 					DoSnapAttract(
 						fw, Width, Height, &xl, &yt);
@@ -2995,16 +3000,21 @@ Bool __move_loop(
 			break;
 
 		case MotionNotify:
+			if (e.xmotion.state & Mod1Mask)
+			{
+				is_alt_mode_enabled = was_alt_key_not_pressed;
+			}
+			else
+			{
+				was_alt_key_not_pressed = True;
+				is_alt_mode_enabled = False;
+			}
+
 			if (e.xmotion.same_screen == False)
 			{
 				continue;
 			}
-			if (!(e.xmotion.state & Mod1Mask))
-			{
-				nosnap_enabled = True;
-			}
-			do_snap = nosnap_enabled &&
-				(e.xmotion.state & Mod1Mask) ? False : True;
+
 			xl = e.xmotion.x_root;
 			yt = e.xmotion.y_root;
 			if (xl > 0 && xl < monitor_get_all_widths() - 1)
@@ -3024,7 +3034,7 @@ Bool __move_loop(
 			xl += XOffset + x_virtual_offset;
 			yt += YOffset + y_virtual_offset;
 
-			if (do_snap)
+			if (!is_alt_mode_enabled)
 			{
 				DoSnapAttract(fw, Width, Height, &xl, &yt);
 				was_snapped = True;
@@ -3063,15 +3073,17 @@ Bool __move_loop(
 				if (paged == 0)
 				{
 					XEvent le;
+					int delay;
 
+					delay = (is_alt_mode_enabled) ?
+						0 : fw->edge_delay_ms_move;
 					xl = e.xmotion.x_root;
 					yt = e.xmotion.y_root;
 					fev_get_last_event(&le);
 					HandlePaging(
 						&le, dx, dy, &xl, &yt,
 						&delta_x, &delta_y, False,
-						False, False,
-						fw->edge_delay_ms_move);
+						False, False, delay);
 					if (delta_x)
 					{
 						x_virtual_offset = 0;
@@ -3082,7 +3094,7 @@ Bool __move_loop(
 						y_virtual_offset = 0;
 					}
 					yt += YOffset;
-					if (do_snap)
+					if (!is_alt_mode_enabled)
 					{
 						DoSnapAttract(
 							fw, Width, Height,
@@ -4005,6 +4017,10 @@ static Bool __resize_window(F_CMD_ARGS)
 	direction_t dir;
 	int warp_x = 0;
 	int warp_y = 0;
+	/* if Alt is initially pressed don't enable "Alt" mode until the key is
+	 * released once. */
+	Bool was_alt_key_not_pressed = False;
+	Bool is_alt_mode_enabled = False;
 
 	dx = mon->virtual_scr.EdgeScrollX ? mon->virtual_scr.EdgeScrollX : monitor_get_all_widths();
 	dy = mon->virtual_scr.EdgeScrollY ? mon->virtual_scr.EdgeScrollY : monitor_get_all_heights();
@@ -4368,9 +4384,13 @@ static Bool __resize_window(F_CMD_ARGS)
 		while (rc != -1 &&
 		       (!FPending(dpy) || !FCheckMaskEvent(dpy, evmask, &ev)))
 		{
+			int delay;
+
+			delay = (is_alt_mode_enabled) ?
+				0 : fw->edge_delay_ms_resize;
 			rc = HandlePaging(
 				&ev, dx, dy, &x, &y, &delta_x, &delta_y, False,
-				False, True, fw->edge_delay_ms_resize);
+				False, True, delay);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -4482,6 +4502,15 @@ static Bool __resize_window(F_CMD_ARGS)
 				break;
 			}
 		case KeyPress:
+			if (ev.xkey.state & Mod1Mask)
+			{
+				is_alt_mode_enabled = was_alt_key_not_pressed;
+			}
+			else
+			{
+				was_alt_key_not_pressed = True;
+				is_alt_mode_enabled = False;
+			}
 			/* simple code to bag out of move - CKH */
 			if (fButtonAbort ||
 			    XLookupKeysym(&ev.xkey, 0) == XK_Escape)
@@ -4499,12 +4528,25 @@ static Bool __resize_window(F_CMD_ARGS)
 			break;
 
 		case MotionNotify:
+			if (ev.xmotion.state & Mod1Mask)
+			{
+				is_alt_mode_enabled = was_alt_key_not_pressed;
+			}
+			else
+			{
+				was_alt_key_not_pressed = True;
+				is_alt_mode_enabled = False;
+			}
 			if (ev.xmotion.same_screen == False)
 			{
 				continue;
 			}
 			if (!fForceRedraw)
 			{
+				int delay;
+
+				delay = (is_alt_mode_enabled) ?
+					0 : fw->edge_delay_ms_resize;
 				x = ev.xmotion.x_root;
 				y = ev.xmotion.y_root;
 				/* resize before paging request to prevent
@@ -4517,8 +4559,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				/* need to move the viewport */
 				HandlePaging(
 					&ev, dx, dy, &x, &y, &delta_x,
-					&delta_y, False, False, False,
-					fw->edge_delay_ms_resize);
+					&delta_y, False, False, False, delay);
 			}
 			/* redraw outline if we paged - mab */
 			if (delta_x != 0 || delta_y != 0)
