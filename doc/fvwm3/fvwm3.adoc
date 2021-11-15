@@ -14,45 +14,30 @@ _config-file_] [*-r*] [*-s* [_screen_num_]] [*-V*] [*-C* _visual-class_
 
 == DESCRIPTION
 
-Fvwm is a window manager for X11. It is designed to minimize memory
-consumption, provide a 3D look to window frames, and a virtual desktop.
+Fvwm is a window manager for X11 optimised for speed.
 
 Note that there are several window managers around that have "fvwm" in
 their name. Fvwm3 is the successor to fvwm2, which preceded the 1.x
 versions of fvwm. This version is simply called fvwm throughout this
 document, while the main executable is named fvwm3.
 
-Fvwm is intended to have a small memory footprint but a rich feature
-set, be extremely customizable and extendible, and have a high degree of
-Motif mwm compatibility. Fvwm provides both a large _virtual desktop_
-and _multiple disjoint desktops_ which can be used separately or
-together. The virtual desktop allows you to pretend that your video
-screen is really quite large, and you can scroll around within the
-desktop. The multiple disjoint desktops allow you to pretend that you
-really have several screens to work at, but each screen is completely
-unrelated to the others.
+Fvwm is intended to have a small memory footprint and is extremely
+customizable and extendible.  A large _virtual desktop_ and
+_multiple disjoint desktops_ can be used separately or together.
+The virtual desktop pretends that the video screen is really quite
+large, and you can scroll around within the desktop.  The multiple
+disjoint desktops pretend there are really several screens to work
+at, but each screen is completely unrelated to the others.
 
-Fvwm provides _keyboard accelerators_ that allow you to perform most
-window manager functions, including moving and resizing windows and
+Fvwm provides _keyboard accelerators_ that allow to perform practically
+all window manager functions, including moving and resizing windows and
 operating the menus, using keyboard shortcuts.
 
-Fvwm has also overcome the distinction between configuration commands
-and action commands that most window managers make. Configuration
-commands typically set fonts, colors, menu contents, and key and mouse
-function bindings, while action commands do things like raise and lower
-windows. Fvwm makes no such distinction and allows anything to be
-changed at any time.
-
-Other noteworthy differences between fvwm and other X11 window managers
-are the introduction of the _SloppyFocus_ and _NeverFocus_ focus
-methods. Focus policy can be separately specified for different window
-groups. Windows using _SloppyFocus_ acquire focus when the pointer moves
-into them and retain focus until some other window acquires it. Such
-windows do not lose focus when the pointer moves into the root window.
-The _NeverFocus_ policy is provided for use with windows into which one
-never types (e.g. xclock, oclock, xbiff, xeyes, tuxeyes) - for example,
-if a SloppyFocus terminal window has focus, moving the pointer over a
-NeverFocus decoration window does not deprive the terminal of focus.
+Fvwm does not distinguish between configuration and action commands.
+Configuration commands typically set fonts, colors, menu contents, and
+key and mouse function bindings, while action commands do things like
+raising and lowering windows. Fvwm makes no such distinction and allows
+anything to be changed at any time.
 
 == OPTIONS
 
