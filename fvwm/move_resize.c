@@ -494,7 +494,7 @@ static void shuffle_win_to_closest(
 	*pFinalY = cwin.y;
 }
 
-static int __get_shift(int val, float factor)
+static int get_shift(int val, float factor)
 {
 	int shift;
 
@@ -516,6 +516,7 @@ static int GetOnePositionArgument(
 	float sfactor, int screen_size, int screen_pos, Bool is_x)
 {
 	int final_pos;
+	int pos_change = 0;
 	float wfactor;
 
 	if (s1 == 0 || *s1 == 0)
@@ -584,7 +585,7 @@ static int GetOnePositionArgument(
 			n = ParsePositionArgumentSuffix(
 				&f, s1, wfactor, sfactor);
 			s1 += n;
-			final_pos += __get_shift(val, f);
+			pos_change += get_shift(val, f);
 		}
 		break;
 	}
@@ -616,7 +617,16 @@ static int GetOnePositionArgument(
 		/* parse suffix */
 		n = ParsePositionArgumentSuffix(&f, s1, wfactor, sfactor);
 		s1 += n;
-		final_pos += __get_shift(val, f);
+		pos_change += get_shift(val, f);
+	}
+	final_pos += pos_change;
+	if (final_pos > 32767 || final_pos < -32768)
+	{
+		fvwm_debug(
+			__func__, "new position is out of range: %d",
+			final_pos);
+
+		return 0;
 	}
 	*pFinalPos = final_pos;
 
@@ -792,7 +802,8 @@ static int ParseOneResizeArgument(
 	int val;
 	int add_base_size = 0;
 	int cch = strlen(arg);
-	int tmp_size;
+	int size_change;
+	int new_size;
 
 	if (cch == 0)
 	{
@@ -833,59 +844,40 @@ static int ParseOneResizeArgument(
 	if (strcmp(arg,"w") == 0)
 	{
 		/* do not change size */
+		size_change = 0;
 	}
 	else if (sscanf(arg,"w-%d",&val) == 1)
 	{
-		tmp_size = (int)(val * factor + 0.5);
-		if (tmp_size < *ret_size)
-		{
-			*ret_size -= tmp_size;
-		}
-		else
-		{
-			*ret_size = 0;
-		}
+		size_change = -(int)(val * factor + 0.5);
 	}
 	else if (sscanf(arg,"w+%d",&val) == 1 || sscanf(arg,"w%d",&val) == 1)
 	{
-		tmp_size = (int)(val * factor + 0.5);
-		if (-tmp_size < *ret_size)
-		{
-			*ret_size += tmp_size;
-		}
-		else
-		{
-			*ret_size = 0;
-		}
+		size_change = (int)(val * factor + 0.5);
 	}
 	else if (sscanf(arg,"-%d",&val) == 1)
 	{
-		tmp_size = (int)(val * factor + 0.5);
-		if (tmp_size < scr_size + add_size)
-		{
-			*ret_size = scr_size - tmp_size + add_size;
-		}
-		else
-		{
-			*ret_size = 0;
-		}
+		size_change = scr_size - (int)(val * factor + 0.5) + add_size;
 	}
 	else if (sscanf(arg,"+%d",&val) == 1 || sscanf(arg,"%d",&val) == 1)
 	{
-		tmp_size = (int)(val * factor + 0.5);
-		if (-tmp_size < add_size + add_base_size)
-		{
-			*ret_size = tmp_size + add_size + add_base_size;
-		}
-		else
-		{
-			*ret_size = 0;
-		}
+		size_change =
+			(int)(val * factor + 0.5) + add_size + add_base_size;
 	}
 	else
 	{
 		return 0;
 	}
+	new_size = *ret_size + size_change;
+	if (new_size < 0)
+	{
+		new_size = 0;
+	}
+	else if (new_size > 65535)
+	{
+		fvwm_debug(__func__, "new size is too big: %d", new_size);
+		return 0;
+	}
+	*ret_size = new_size;
 
 	return 1;
 }
@@ -958,8 +950,9 @@ static int GetResizeArguments(FvwmWindow *fw,
 			else if (*ret_dir == DIR_NONE)
 			{
 				tmp_token = PeekToken(naction, &naction);
-				if (tmp_token != NULL &&
-						StrEquals(tmp_token, "automatic"))
+				if (
+					tmp_token != NULL && StrEquals(
+						tmp_token, "automatic"))
 				{
 					*detect_automatic_direction = True;
 					*is_direction_fixed = True;
