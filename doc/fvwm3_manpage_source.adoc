@@ -1,9 +1,3 @@
-= FVWM3(1)
-
-== NAME
-
-fvwm3 - F? Virtual Window Manager for X11
-
 == SYNOPSIS
 
 *fvwm3* [*-c* _config-command_] [*-d* _displayname_] [*-f*
@@ -1757,29 +1751,14 @@ confuse some programs. For example, the xwd program refuses to make
 screen shots when run from a complex function. To achieve the same
 functionality you can use the *Read* or *PipeRead* command instead.
 
-== LIST OF FVWM COMMANDS
+ifdef::fvwm3[]
+== MENU CONCEPTS AND COMMANDS
 
-The command descriptions below are grouped together in the following
-sections. The sections are hopefully sorted in order of usefulness to
-the newcomer.
-
-* *Menu commands*
-* *Miscellaneous commands*
-* *Commands affecting window movement and placement*
-* *Commands for focus and mouse movement*
-* *Commands controlling window state*
-* *Commands for mouse and key bindings*
-* *The Style command (controlling window styles)*
-* *Other commands controlling window styles*
-* *Commands controlling the virtual desktop*
-* *Commands for user functions and shell commands*
-* *Conditional commands*
-* *Module commands*
-* *Quit, restart and session management commands*
-* *Colorsets*
-* *Color gradients*
-
-=== Menus
+Please refer to the fvwm3menus man page.
+endif::[]
+ifdef::fvwm3all[]
+// BEGIN 'menus'
+== MENUS
 
 Before a menu can be opened, it has to be populated with menu items
 using the *AddToMenu* command and bound to a key or mouse button with
@@ -1793,29 +1772,28 @@ generating menus dynamically and many other features. Please refer to
 the *MenuStyle* command to learn more.
 
 *Types of Menus*::
-In fvwm there are four slightly different types of menus:
+There are four slightly different types of menus:
 +
-*Popup* menus can appear everywhere on the screen on their own or
+Popup menus can appear everywhere on the screen on their own or
 attached to a part of a window. The *Popup* command opens popup menus.
 If the popup menu was invoked with a mouse button held down, it is
 closed when the button is released. The item under the pointer is then
 activated and the associated action is executed.
 +
-*Menu* is a very similar command, but the menus it opens are slightly
-less transient. When invoked by clicking a mouse button, it stays open
-and can be navigated with no button held. But if it is invoked by a
+Normal menus are very similar command, but slightly transient.
+When invoked by clicking a mouse button, they stay open
+and can be navigated with no button held. But if invoked by a
 button press followed by mouse motion, it behaves exactly like a popup
-menu.
+menu. The *Menu* command creates normal menus.
 +
-_Tear off menus_ or _Pin up menus_ are menus from either of the above
-two commands that have been "torn off" their original context and
-pinned on the desktop like a normal window. They are created from
+"Sub menus" are menus inside other menus. When a menu item that has the
+*Popup* command as its action is selected, the named menu is opened as
+a sub menu to the parent. Any type of menu can have sub menus.
++
+"Tear off menus" are menus that have been "torn off" their original
+context on the desktop like a normal window. They are created from
 other menus by certain key presses or mouse sequences or with the
 *TearMenuOff* command from inside a menu.
-+
-_Sub menus_ are menus inside menus. When a menu item that has the
-*Popup* command as its action is selected, the named menu is opened as
-an inferior menu to the parent. Any type of menu can have sub menus.
 
 *Menu Anatomy*::
 Menus consist of any number of titles which are inactive menu items
@@ -1835,9 +1813,9 @@ Finally, there may be a picture running up either side of the menu (a
 "side bar").
 
 *Menu Navigation*::
-Menus can be navigated either with the keyboard or with the mouse.
-Many people prefer to use the mouse, but it can be rather tedious.
-Once you get the hang of it, keyboard navigation can be much faster.
+Menus are navigated with the keyboard and the mouse.
+Many people prefer to use the mouse, but it can be tedious.
+Keyboard navigation can be much faster.
 While fvwm displays a menu, it can do nothing else. For example, new
 windows do not appear before the menu is closed. However, this is not
 exactly true for tear off menus. See the *Tear Off Menus* section for
@@ -2057,6 +2035,7 @@ To create a tear off menu without opening the normal menu first, the
 option _TearOffImmediately_ can be added to the *Menu* or *Popup*
 command.
 
+=== Building menu contents
 *AddToMenu* _menu-name_ [_menu-label_ _action_]::
 Begins or adds to a menu definition. Typically a menu definition looks
 like this:
@@ -2273,15 +2252,6 @@ with blue the region of the menu containing the picture.
 In all the above cases, the name of the resulting menu is name
 specified, stripped of the substrings between the various delimiters.
 
-*ChangeMenuStyle* _menustyle_ _menu_ ...::
-Changes the menu style of _menu_ to _menustyle_. You may specify more
-than one menu in each call of *ChangeMenuStyle*.
-
-*CopyMenuStyle* _orig-menustyle_ _dest-menustyle_::
-Copy _orig-menustyle_ to _dest-menustyle_, where _orig-menustyle_ is
-an existing menu style. If the menu style _dest_menustyle_ does not
-exist, then it is created.
-
 *DestroyMenu* [recreate] _menu_::
 Deletes a menu, so that subsequent references to it are no longer
 valid. You can use this to change the contents of a menu during an
@@ -2293,14 +2263,10 @@ but to throw away all the menu items (including the title).
 DestroyMenu Utilities
 ....
 
-*DestroyMenuStyle* _menustyle_::
-Deletes the menu style named _menustyle_ and changes all menus using
-this style to the default style, you cannot destroy the default menu
-style.
-+
-....
-DestroyMenuStyle pixmap1
-....
+*Title*::
+	Does nothing. It is used to insert a title line in a popup or menu.
+
+=== Commands that open menus
 
 *Menu* _menu-name_ [_position_] [_double-click-action_]::
 Causes a previously defined menu to be popped up in a sticky manner.
@@ -2324,7 +2290,7 @@ and an offset to this rectangle by which the upper left corner of the
 menu is moved from the upper left corner of the rectangle. The
 _position_ arguments consist of several parts:
 +
-{empty}[_context-rectangle_] _x_ _y_ [_special-options_]
+{empty}[_context-rectangle_] _x_ _y_ [_special options_]
 +
 The _context-rectangle_ can be one of:
 +
@@ -2343,7 +2309,8 @@ _Interior_:::
 _Title_:::
 	the title of the context window or icon.
 +
-__Button__<n>:::
+_Button<n>_:::
+        button <n> of the context window.
 +
 _Icon_:::
 	the icon of the context window.
@@ -2361,8 +2328,8 @@ _This_:::
 	whatever widget the pointer is on (e.g. a corner of a window or the
 	root window).
 +
-_Rectangle_ <__geometry__>:::
-	the rectangle defined by <__geometry__> in X geometry format. Width
+_Rectangle_ <_geometry_>:::
+	the rectangle defined by <_geometry_> in X geometry format. Width
 	and height default to 1 if omitted.
 
 If the context-rectangle is omitted or illegal (e.g. "item" on a
@@ -2375,11 +2342,11 @@ interpreted as a percentage of the context rectangle's width (height),
 but with a trailing '_m_' the menu's width (height) is used instead.
 Furthermore a trailing '_p_' changes the interpretation to mean
 pixels.
-
++
 Instead of a single value you can use a list of values. All additional
 numbers after the first one are separated from their predecessor by
 their sign. Do not use any other separators.
-
++
 If _x_ or _y_ are prefixed with "'__o__<number>" where <number> is an
 integer, the menu and the rectangle are moved to overlap at the
 specified position before any other offsets are applied. The menu and
@@ -2391,9 +2358,9 @@ borders and if you use "o50" they are centered upon each other (try it
 and you will see it is much simpler than this description). The
 default is "o0". The prefix "o<number>" is an abbreviation for
 "+<number>-<number>m".
-
++
 A prefix of '_c_' is equivalent to "o50". Examples:
-
++
 ....
 # window list in the middle of the screen
 WindowList Root c c
@@ -2417,556 +2384,46 @@ AddToMenu foobar-menu
 AddToMenu foobar-menu
  + "first item" Popup "another menu" item +0 -100m
 ....
-
-
++
 Note that you can put a sub menu far off the current menu so you could
 not reach it with the mouse without leaving the menu. If the pointer
 leaves the current menu in the general direction of the sub menu the
 menu stays up.
-
-The _special-options_:
-
++
+_Special options_:::
++
 To create a tear off menu without opening the normal menu, add the
 option _TearOffImmediately_. Normally the menu opens in normal state
 for a split second before being torn off. As tearing off places the
 menu like any other window, a position should be specified explicitly:
-
++
 ....
 # Forbid fvwm to place the menu window
 Style <name of menu> UsePPosition
 # Menu at top left corner of screen
 Menu Root 0p 0p TearOffImmediately
 ....
-
-
++
 The _Animated_ and _Mwm_ or _Win_ menu styles may move a menu
 somewhere else on the screen. If you do not want this you can add
 _Fixed_ as an option. This might happen for example if you want the
 menu always in the top right corner of the screen.
-
++
 Where do you want a menu to appear when you click on its menu item?
 The default is to place the title under the cursor, but if you want it
 where the position arguments say, use the _SelectInPlace_ option. If
 you want the pointer on the title of the menu, use _SelectWarp_ too.
 Note that these options apply only if the _PopupAsRootMenu_
 *MenuStyle* option is used.
-
++
 The pointer is warped to the title of a sub menu whenever the pointer
 would be on an item when the sub menu is popped up (_fvwm_ menu style)
 or never warped to the title at all (_Mwm_ or _Win_ menu styles). You
 can force (forbid) warping whenever the sub menu is opened with the
 _WarpTitle_ (_NoWarp_) option.
-
++
 Note that the _special-options_ do work with a normal menu that has no
 other position arguments.
-*MenuStyle* _stylename_ [_options_]::
-Sets a new menu style or changes a previously defined style. The
-_stylename_ is the style name; if it contains spaces or tabs it has to
-be quoted. The name "*" is reserved for the default menu style. The
-default menu style is used for every menu-like object (e.g. the window
-created by the *WindowList* command) that had not be assigned a style
-using the *ChangeMenuStyle*. See also *DestroyMenuStyle*. When using
-monochrome color options are ignored.
-
-_options_ is a comma separated list containing some of the keywords
-Fvwm / Mwm / Win, BorderWidth, Foreground, Background, Greyed,
-HilightBack / !HilightBack, HilightTitleBack, ActiveFore /
-!ActiveFore, MenuColorset, ActiveColorset, GreyedColorset,
-TitleColorset, Hilight3DThick / Hilight3DThin / Hilight3DOff,
-Hilight3DThickness, Animation / !Animation, Font, TitleFont, MenuFace,
-PopupDelay, PopupOffset, TitleWarp / !TitleWarp, TitleUnderlines0 /
-TitleUnderlines1 / TitleUnderlines2, SeparatorsLong / SeparatorsShort,
-TrianglesSolid / TrianglesRelief, PopupImmediately / PopupDelayed,
-PopdownImmediately / PopdownDelayed, PopupActiveArea, DoubleClickTime,
-SidePic, SideColor, PopupAsRootMenu / PopupAsSubmenu / PopupIgnore /
-PopupClose, RemoveSubmenus / HoldSubmenus, SubmenusRight /
-SubmenusLeft, SelectOnRelease, ItemFormat, VerticalItemSpacing,
-VerticalMargins, VerticalTitleSpacing, AutomaticHotkeys /
-!AutomaticHotkeys, UniqueHotkeyActivatesImmediate /
-!UniqueHotkeyActivatesImmediate, MouseWheel, ScrollOffPage /
-!ScrollOffPage, TrianglesUseFore / !TrianglesUseFore.
-
-In the above list some options are listed as option pairs or triples
-with a '/' in between. These options exclude each other. All paired
-options can be negated to have the effect of the counterpart option by
-prefixing ! to the option.
-
-Some options are now negated by prefixing ! to the option. This is the
-preferred form for all such options. The other negative forms are now
-deprecated and will be removed in the future.
-
-This is a list of MenuStyle deprecated negative options:
-ActiveForeOff, AnimationOff, AutomaticHotkeysOff, HilightBackOff,
-TitleWarpOff
-
-_Fvwm_, _Mwm_, _Win_ reset all options to the style with the same name
-in former versions of fvwm. The default for new menu styles is _Fvwm_
-style. These options override all others except _Foreground_,
-_Background_, _Greyed_, _HilightBack_, _ActiveFore_ and _PopupDelay_,
-so they should be used only as the first option specified for a menu
-style or to reset the style to defined behavior. The same effect can
-be created by setting all the other options one by one.
-
-_Mwm_ and _Win_ style menus popup sub menus automatically. _Win_ menus
-indicate the current menu item by changing the background to dark.
-_Fvwm_ sub menus overlap the parent menu, _Mwm_ and _Win_ style menus
-never overlap the parent menu.
-
-_Fvwm_ style is equivalent to !HilightBack, Hilight3DThin,
-!ActiveFore, !Animation, Font, MenuFace, PopupOffset 0 67, TitleWarp,
-TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
-PopdownDelayed, PopupDelay 150, PopdownDelay 150, PopupAsSubmenu,
-HoldSubmenus, SubmenusRight, BorderWidth 2, !AutomaticHotkeys,
-UniqueHotkeyActivatesImmediate, PopupActiveArea 75.
-
-_Mwm_ style is equivalent to !HilightBack, Hilight3DThick,
-!ActiveFore, !Animation, Font, MenuFace, PopupOffset -3 100,
-!TitleWarp, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
-PopupImmediately, PopdownDelayed, PopdownDelay 150, PopupAsSubmenu,
-HoldSubmenus, SubmenusRight, BorderWidth 2,
-UniqueHotkeyActivatesImmediate, !AutomaticHotkeys, PopupActiveArea 75.
-
-_Win_ style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
-!Animation, Font, MenuFace, PopupOffset -5 100, !TitleWarp,
-TitleUnderlines1, SeparatorsShort, TrianglesSolid, PopupImmediately,
-PopdownDelayed, PopdownDelay 150, PopupAsSubmenu, RemoveSubmenus,
-SubmenusRight, BorderWidth 2, UniqueHotkeyActivatesImmediate,
-!AutomaticHotkeys, PopupActiveArea 75.
-
-_BorderWidth_ takes the thickness of the border around the menus in
-pixels. It may be zero to 50 pixels. The default is 2. Using an
-illegal value reverts the border width to the default.
-
-_Foreground_ and _Background_ may have a color name as an argument.
-This color is used for menu text or the menu's background. You can
-omit the color name to reset these colors to the built-in default.
-
-_Greyed_ may have a color name as an argument. This color is the one
-used to draw a menu-selection which is prohibited (or not recommended)
-by the Mwm hints which an application has specified. If the color is
-omitted the color of greyed menu entries is based on the background
-color of the menu.
-
-_HilightBack_ and _!HilightBack_ switch hilighting the background of
-the selected menu item on and off. A specific background color may be
-used by providing the color name as an argument to _HilightBack_. If
-you use this option without an argument the color is based on the
-menu's background color. The _ActiveColorset_ option overrides the
-specified color. If the colorset has a non solid background it is used
-for the hilighting.
-
-_HilightTitleBack_ switches hilighting the background of menu titles
-on. If a _TitleColorset_ was used, the background colour is taken from
-there. Otherwise the color is based on the menu's background color. If
-the colorset has a non solid background it is used for the hilighting.
-
-_ActiveFore_ and _!ActiveFore_ switch hilighting the foreground of the
-selected menu item on and off. A specific foreground color may be used
-by providing the color name as an argument to _ActiveFore_. Omitting
-the color turns hilighting on when an _ActiveColorset_ is used.
-_ActiveFore_ turns off hilighting the foreground completely. The
-_ActiveColorset_ option overrides the specified color.
-
-_MenuColorset_ controls if a colorset is used instead of the
-_Foreground_, _Background_ and _MenuFace_ menu styles. If the
-_MenuColorset_ keyword is followed by a number equal to zero or
-greater, this number is taken as the number of the colorset to use. If
-the number is omitted, the colorset is switched off and the regular
-menu styles are used again. The foreground and background colors of
-the menu items are replaced by the colors from the colorset. If the
-colorset has a pixmap defined, this pixmap is used as the background
-of the menu. Note that the _MenuFace_ menu style has been optimized
-for memory consumption and may use less memory than the background
-from a colorset. The shape mask from the colorset is used to shape the
-menu. Please refer to the *Colorsets* section for details about
-colorsets.
-
-_ActiveColorset_ works exactly like _MenuColorset_, but the foreground
-from the colorset replaces the color given with the _ActiveFore_ menu
-style and the colorset's background color replaces the color given
-with the _HilightBack_ command (to turn on background hilighting you
-have to use the _HilightBack_ menu style too). If specified, the
-hilight and shadow colors from the colorset are used too. The pixmap
-and shape mask from the colorset are not used. Hilighting the
-background or foreground can be turned off individually with the
-_!ActiveFore_ or _!HilightBack_ menu styles.
-
-_GreyedColorset_ works exactly like _MenuColorset_, but the foreground
-from the colorset replaces the color given with the _Greyed_ menu
-style. No other parts of the colorset are used.
-
-_TitleColorset_ works exactly like _MenuColorset_, but is used only
-for menu titles.
-
-_Hilight3DThick_, _Hilight3DThin_ and _Hilight3DOff_ determine if the
-selected menu item is hilighted with a 3D relief. Thick reliefs are
-two pixels wide, thin reliefs are one pixel wide.
-
-_Hilight3DThickness_ takes one numeric argument that may be between
--50 and +50 pixels. With negative values the menu item gets a pressed
-in look. The above three commands are equivalent to a thickness of 2,
-1 and 0.
-
-_Animation_ and _!Animation_ turn menu animation on or off. When
-animation is on, sub menus that do not fit on the screen cause the
-parent menu to be shifted to the left so the sub menu can be seen.
-
-_Font_ and _TitleFont_ take a font name as an argument. If a font by
-this name exists it is used for the text of all menu items. If it does
-not exist or if the name is left blank the built-in default is used.
-If a _TitleFont_ is given, it is used for all menu titles instead of
-the normal font.
-
-_MenuFace_ enforces a fancy background upon the menus. You can use the
-same options for _MenuFace_ as for the *ButtonStyle*. See description
-of *ButtonStyle* command and the *Color Gradients* sections for more
-information. If you use _MenuFace_ without arguments the style is
-reverted back to normal.
-
-Some examples of MenuFaces are:
-
-....
-MenuFace DGradient 128 2 lightgrey 50 blue 50 white
-MenuFace TiledPixmap texture10.xpm
-MenuFace HGradient 128 2 Red 40 Maroon 60 White
-MenuFace Solid Maroon
-....
-
-Note: The gradient styles H, V, B and D are optimized for high speed
-and low memory consumption in menus. This is not the case for all the
-other gradient styles. They may be slow and consume huge amounts of
-memory, so if you encounter performance problems with them you may be
-better off by not using them. To improve performance you can try one
-or all of the following:
-
-Turn hilighting of the active menu item other than foreground color
-off:
-
-....
-MenuStyle <style> Hilight3DOff, !HilightBack
-MenuStyle <style> ActiveFore <preferred color>
-....
-
-Make sure sub menus do not overlap the parent menu. This can prevent
-menus being redrawn every time a sub menu pops up or down.
-
-....
-MenuStyle <style> PopupOffset 1 100
-....
-
-Run your X server with backing storage. If your X Server is started
-with the -bs option, turn it off. If not try the -wm and +bs options:
-
-....
-startx -- -wm +bs
-....
-
-You may have to adapt this example to your system (e.g. if you use
-xinit to start X).
-
-_PopupDelay_ requires one numeric argument. This value is the delay in
-milliseconds before a sub menu is popped up when the pointer moves
-over a menu item that has a sub menu. If the value is zero no
-automatic pop up is done. If the argument is omitted the built-in
-default is used. Note that the popup delay has no effect if the
-_PopupImmediately_ option is used since sub menus pop up immediately
-then.
-
-_PopupImmediately_ makes menu items with sub menus pop up it up as
-soon as the pointer enters the item. The _PopupDelay option_ is
-ignored then. If _PopupDelayed_ is used fvwm looks at the _PopupDelay_
-option if or when this automatic popup happens.
-
-_PopdownDelay_ works exactly like _PopupDelay_ but determines the
-timeout of the _PopupDelayed_ style.
-
-_PopdownImmediately_ makes sub menus vanish as soon as the pointer
-leaves the sub menu and the correspondent item in the parent menu.
-With the opposite option _PopdownDelayed_ the sub menu only pops down
-after the time specified with the _PopdownDelay_ option. This comes
-handy when the pointer often strays off the menu item when trying to
-move into the sub menu. Whenever there is a conflict between the
-_PopupImmediately_, _PopupDelayed_, _PopupDelay_ styles and the
-_PopdownImmediately_, _PopdownDelayed_, _PopdownDelay_ styles, the
-_Popup..._ styles win when using mouse navigation and the _Popdown..._
-styles win when navigating with the keyboard.
-
-_PopupOffset_ requires two integer arguments. Both values affect where
-sub menus are placed relative to the parent menu. If both values are
-zero, the left edge of the sub menu overlaps the left edge of the
-parent menu. If the first value is non-zero the sub menu is shifted
-that many pixels to the right (or left if negative). If the second
-value is non-zero the menu is moved by that many percent of the parent
-menu's width to the right or left.
-
-_PopupActiveArea_ requires an integer value between 51 and 100.
-Normally, when the pointer is over a menu item with a sub menu and the
-pointer enters the area that starts at 75% of the menu width, the sub
-menu is shown immediately. This percentage can be changed with
-_PopupActiveArea_. Setting this value to 100 disables this kind of
-automatic popups altogether. The default value is restored if no or an
-illegal value is given.
-
-_TitleWarp_ and _!TitleWarp_ affect if the pointer warps to the menu
-title when a sub menu is opened or not. Note that regardless of this
-setting the pointer is not warped if the menu does not pop up under
-the pointer.
-
-_TitleUnderlines0_, _TitleUnderlines1_ and _TitleUnderlines2_ specify
-how many lines are drawn below a menu title.
-
-_SeparatorsLong_ and _SeparatorsShort_ set the length of menu
-separators. Long separators run from the left edge all the way to the
-right edge. Short separators leave a few pixels to the edges of the
-menu.
-
-_TrianglesSolid_ and _TrianglesRelief_ affect how the small triangles
-for sub menus is drawn. Solid triangles are filled with a color while
-relief triangles are hollow.
-
-_DoubleClickTime_ requires one numeric argument. This value is the
-time in milliseconds between two mouse clicks in a menu to be
-considered as a double click. The default is 450 milliseconds. If the
-argument is omitted the double click time is reset to this default.
-
-_SidePic_ takes the name of an image file as an argument. The picture
-is drawn along the left side of the menu. The _SidePic_ option can be
-overridden by a menu specific side pixmap (see *AddToMenu*). If the
-file name is omitted an existing side pixmap is removed from the menu
-style.
-
-_SideColor_ takes the name of an X11 color as an argument. This color
-is used to color the column containing the side picture (see above).
-The SideColor option can be overridden by a menu specific side color
-(see *AddToMenu*). If the color name is omitted the side color option
-is switched off.
-
-_PopupAsRootMenu_, _PopupAsSubmenu_, _PopupIgnore_ and _PopupClose_
-change the behavior when you click on a menu item that opens a sub
-menu. With _PopupAsRootMenu_ the original menu is closed before the
-sub menu appears, with _PopupAsSubmenu_ it is not, so you can navigate
-back into the parent menu. Furthermore, with _PopupAsSubmenu_ the sub
-menu is held open (posted) regardless of where you move the mouse.
-Depending on your menu style this may simplify navigating through the
-menu. *Any* keystroke while a menu is posted reverts the menu back to
-the normal behavior. With _PopupClose_ the menu is closed when a sub
-menu item is activated, and the menu stays open if _PopupIgnore_ is
-used (even if the menu was invoked with the *Popup* command).
-_PopupAsSubmenu_ is the default.
-
-_RemoveSubmenus_ instructs fvwm to remove sub menu when you move back
-into the parent menu. With _HoldSubmenus_ the sub menu remains
-visible. You probably want to use _HoldSubmenus_ if you are using the
-_PopupDelayed_ style. _RemoveSubmenus_ affects menu navigation with
-the keyboard.
-
-_SelectOnRelease_ takes an optional key name as an argument. If the
-given key is released in a menu using this style, the current menu
-item is selected. This is intended for
-
-*WindowList* navigation. The key name is a standard X11 key name as
-defined in _/usr/include/X11/keysymdef.h_, (without the _XK__ prefix),
-or the keysym database _/usr/X11R6/lib/X11/XKeysymDB_. To disable this
-behavior, omit the key name.
-
-Note: Some X servers do not support KeyRelease events.
-_SelectOnRelease_ does not work on such a machine.
-
-_ItemFormat_ takes a special string as its argument that determines
-the layout of the menu items. Think of the format string as if it were
-a menu item. All you have to do is tell fvwm where to place the
-different parts of the menu item (i.e. the labels, the triangle
-denoting a sub menu, the mini icons and the side pic) in the blank
-area. The string consists of spaces,
-
-characters and formatting directives beginning with '%'. Any illegal
-characters and formatting directives are silently ignored:
-
-*%l*, *%c* and *%r*::
-	Insert the next item label. Up to three labels can be used. The item
-	column is left-aligned (*%l*), centered (*%c*) or right-aligned
-	(*%r*).
-+
-*%i*::
-	Inserts the mini icon.
-+
-*%>* and *%<*::
-	Insert the sub menu triangle pointing either to the right (*%>*) or to
-	the left (*%<*).
-+
-*%|*::
-	The first *%|* denotes the beginning of the area that is highlighted
-	either with a background color or a relief (or both). The second *%|*
-	marks the end of this area. *%|* can be used up to twice in the
-	string. If you do not add one or both of them, fvwm sets the margins
-	to the margins of the whole item (not counting the side picture).
-+
-*%s*::
-	Places the side picture either at the beginning or the end of the
-	menu. This directive may be used only once and only as the first or
-	last in the format string. If the *%s* is not at the beginning of the
-	string, menus are not drawn properly.
-
-+
-*Space*, *Tab*, *%Space* and *%Tab*::
-	Add gap of one space, or a tab, using the width of the menu font. When
-	using a tab, the size of the gap can be one to 8 spaces since the tab
-	position is a multiple of 8 from the edge of the menu. The whole
-	string must be quoted if spaces or tabs are used.
-+
-*%p*::
-	Like Space and Tab *%p* inserts an empty area into the item, but with
-	better control of its size (see below).
-
-You can define an additional space before and after each of the
-objects like this:
-
-....
-%left.rightp
-....
-
-This means: if the object is defined in the menu (e.g. if it is *%s*
-and you use a side picture, or it is *%l* for the third column and
-there are items defined that actually have a third column), then add
-_left_ pixels before the object and _right_ pixels after it. You may
-leave out the _left_ or the _.right_ parts if you do not need them.
-All values up to the screen width are allowed. Even negative values
-can be used with care. The *p* may be replaced with any other
-formatting directives described above.
-
-Note: Only items defined in the format string are visible in the
-menus. So if you do not put a *%s* in there you do not see a side
-picture, even if one is specified.
-
-Note: The _SubmenusLeft_ style changes the default _ItemFormat_
-string, but if it was set manually it is not modified.
-
-Note: If any unformatted title of the menu is wider than the widest
-menu item, the spaces between the different parts of the menu items
-are enlarged to match the width of the title. Leading left aligned
-objects in the format string (*%l*, *%i*, *%<*, first *%|*) stick to
-the left edge of the menu and trailing right aligned objects (*%r*,
-*%i*, *%>*, second *%|*) stick to the right edge. The gaps between the
-remaining items are enlarged equally.
-
-Examples:
-
-....
-MenuStyle * ItemFormat "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
-....
-
-
-Is the default string used by fvwm: (side picture + 4 pixels gap)
-(beginning of the hilighted area + 1 pixel gap) (mini icon + 5p)
-(first column left aligned + 5p) (second column left aligned + 5p)
-(third column right aligned + 5p) (second mini icon + 5p) (2p + sub
-menu triangle + 3p) (1p + end of hilighted area).
-
-....
-MenuStyle * ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
-....
-
-
-Is used by fvwm with the _SubmenusLeft_ option below.
-
-_VerticalItemSpacing_ and _VerticalTitleSpacing_ control the vertical
-spacing of menu items and titles like _ItemFormat_ controls the
-horizontal spacing. Both take two numeric arguments that may range
-from -100 to +100. The first is the gap in pixels above a normal menu
-item (or a menu title), the second is the gap in pixels below it.
-Negative numbers do not make much sense and may screw up the menu
-completely. If no arguments are given or the given arguments are
-invalid, the built-in defaults are used: one pixel above the item or
-title and two below.
-
-_VerticalMargins_ can be used to add some padding at the top and
-bottom of menus. It takes two numeric arguments that must be positive
-integers (or zero). If the number of arguments or its values are
-incorrect, fvwm defaults both to 0, which means no padding at all. If
-the values are correct, the first one is used for the top margin, and
-the second one is used for the bottom margin.
-
-_SubmenusLeft_ mirrors the menu layout and behavior. Sub menus pop up
-to the left, the sub menu triangle is drawn left and the mini icon and
-side picture are drawn at the right side of the menu. The default is
-_SubmenusRight_. The position hints of a menu are also affected by
-this setting, i.e. position hints using _item_ or _menu_ as context
-rectangle and position hints using _m_ offsets.
-
-_AutomaticHotkeys_ and _!AutomaticHotkeys_ control the menu's ability
-to automatically provide hot-keys on the first character of each menu
-item's label. This behavior is always overridden if an explicit
-hot-key is assigned in the *AddToMenu* command.
-
-_UniqueHotkeyActivatesImmediate_ and _!UniqueHotkeyActivatesImmediate_
-controls how menu items are invoked when used with hotkeys. By
-default, if a given menu entry only has one completeable match for a
-given hotkey, the action for that menu entry is invoked and the menu
-is closed. This is due to the _UniqueHotkeyActivatesImmediate_ option.
-However, the menu can be told to remain open, waiting for the user to
-invoke the selected item instead when there is only one matched item
-for a given hotkey, by using the _!UniqueHotkeyActivatesImmediate_
-option.
-
-_MouseWheel_ controls the ability to scroll the menu using a mouse
-wheel. It takes one argument, that can be one of ScrollsPointer,
-ScrollsMenu, ScrollsMenuBackwards or ActivatesItem. ScrollsPointer
-makes the mouse wheel scroll the pointer over a menu. This is the
-default. ScrollsMenu and ScrollsMenuBackwards scroll the menu beneath
-the pointer. ActivatesItem disables scrolling by mouse wheel and makes
-the use of a mouse wheel act as if the menu was clicked. If no
-argument is supplied the default setting is restored.
-
-_ScrollOffPage_ allows a menu to be scrolled out of the visible area
-if _MouseWheel_ is set to ScrollsMenu or ScrollsMenuBackwards. This is
-the default. The opposite, _!ScrollOffPage_ disables this behaviour.
-
-_TrianglesUseFore_ draws sub menu triangles with the foreground color
-of the menu colorset (normally drawn with the hilight color).
-_!TrianglesUseFore_ disables this behaviour.
-
-Examples:
-
-....
-MenuStyle * Mwm
-MenuStyle * Foreground Black, Background gray40
-MenuStyle * Greyed gray70, ActiveFore White
-MenuStyle * !HilightBack, Hilight3DOff
-MenuStyle * Font lucidasanstypewriter-14
-MenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
-
-MenuStyle red Mwm
-MenuStyle red Foreground Yellow
-MenuStyle red Background Maroon
-MenuStyle red Greyed Red, ActiveFore Red
-MenuStyle red !HilightBack, Hilight3DOff
-MenuStyle red Font lucidasanstypewriter-12
-MenuStyle red MenuFace DGradient 64 Red Black
-....
-
-
-Note that all style options could be placed on a single line for each
-style name.
-
-*MenuStyle* _forecolor_ _backcolor_ _shadecolor_ _font_ _style_ [_anim_]::
-	This is the old syntax of the *MenuStyle* command. It is obsolete and
-	may be removed in the future. Please use the new syntax as described
-	above.
-+
-Sets the menu style. When using monochrome the colors are ignored. The
-_shadecolor_ is the one used to draw a menu-selection which is
-prohibited (or not recommended) by the Mwm hints which an application
-has specified. The style option is either _Fvwm_, _Mwm_ or _Win_,
-which changes the appearance and operation of the menus.
-+
-_Mwm_ and _Win_ style menus popup sub menus automatically. _Win_ menus
-indicate the current menu item by changing the background to black.
-_Fvwm_ sub menus overlap the parent menu, _Mwm_ and _Win_ style menus
-never overlap the parent menu.
-+
-When the _anim_ option is given, sub menus that do not fit on the
-screen cause the parent menu to be shifted to the left so the sub menu
-can be seen. See also *SetAnimation* command.
 
 *Popup* _PopupName_ [_position_] [_default-action_]::
 	This command has two purposes: to bind a menu to a key or mouse
@@ -3045,13 +2502,13 @@ wrist. *Menu* menus stay up on a click action. See the *Menu* command
 for an explanation of the interactive behavior of menus. A menu can be
 open up to ten times at once, so a menu may even use itself or any of
 its predecessors as a sub menu.
+
 *TearMenuOff*::
 When assigned to a menu item, it inserts a tear off bar into the menu
 (a horizontal broken line). Activating that item tears off the menu.
 If the menu item has a label, it is shown instead of the broken line.
 If used outside menus, this command does nothing. Examples:
 +
-
 ....
 AddToMenu WindowMenu
 + I "" TearMenuOff
@@ -3060,8 +2517,562 @@ AddToMenu RootMenu
 + I "click here to tear me off" TearMenuOff
 ....
 
-*Title*::
-	Does nothing This is used to insert a title line in a popup or menu.
+=== Menu style commands
+
+Menu styles describe the looks and behaviour like normal styles do
+for windows. Menu styles are assigned to individual or all menus,
+and changing the menu style immediately affects all menus taht use
+it.  (If a menu style is used from within a menu, the changes are
+applied the next time an affected menu is opened.)
+
+*ChangeMenuStyle* _menustyle_ _menu_ ...::
+Changes the menu style of _menu_ to _menustyle_. You may specify more
+than one menu in each call of *ChangeMenuStyle*.
+
+*CopyMenuStyle* _orig-menustyle_ _dest-menustyle_::
+Copy _orig-menustyle_ to _dest-menustyle_, where _orig-menustyle_ is
+an existing menu style. If the menu style _dest_menustyle_ does not
+exist, then it is created.
+
+*DestroyMenuStyle* _menustyle_::
+Deletes the menu style named _menustyle_ and changes all menus using
+this style to the default style, you cannot destroy the default menu
+style.
++
+....
+DestroyMenuStyle pixmap1
+....
+
+*MenuStyle* _stylename_ [_options_]::
+Sets a new menu style or changes a previously defined style. The
+_stylename_ is the style name; if it contains spaces or tabs it has to
+be quoted. The name "*" is reserved for the default menu style. The
+default menu style is used for every menu-like object (e.g. the window
+created by the *WindowList* command) that had not be assigned a style
+using the *ChangeMenuStyle*. See also *DestroyMenuStyle*. When using
+monochrome color options are ignored.
++
+_options_ is a comma separated list containing some of the keywords
+Fvwm / Mwm / Win, BorderWidth, Foreground, Background, Greyed,
+HilightBack / !HilightBack, HilightTitleBack, ActiveFore /
+!ActiveFore, MenuColorset, ActiveColorset, GreyedColorset,
+TitleColorset, Hilight3DThick / Hilight3DThin / Hilight3DOff,
+Hilight3DThickness, Animation / !Animation, Font, TitleFont, MenuFace,
+PopupDelay, PopupOffset, TitleWarp / !TitleWarp, TitleUnderlines0 /
+TitleUnderlines1 / TitleUnderlines2, SeparatorsLong / SeparatorsShort,
+TrianglesSolid / TrianglesRelief, PopupImmediately / PopupDelayed,
+PopdownImmediately / PopdownDelayed, PopupActiveArea, DoubleClickTime,
+SidePic, SideColor, PopupAsRootMenu / PopupAsSubmenu / PopupIgnore /
+PopupClose, RemoveSubmenus / HoldSubmenus, SubmenusRight /
+SubmenusLeft, SelectOnRelease, ItemFormat, VerticalItemSpacing,
+VerticalMargins, VerticalTitleSpacing, AutomaticHotkeys /
+!AutomaticHotkeys, UniqueHotkeyActivatesImmediate /
+!UniqueHotkeyActivatesImmediate, MouseWheel, ScrollOffPage /
+!ScrollOffPage, TrianglesUseFore / !TrianglesUseFore.
++
+In the above list some options are listed as option pairs or triples
+with a '/' in between. These options exclude each other. All paired
+options can be negated to have the effect of the counterpart option by
+prefixing ! to the option.
++
+Some options are now negated by prefixing ! to the option. This is the
+preferred form for all such options. The other negative forms are now
+deprecated and will be removed in the future.
++
+This is a list of MenuStyle deprecated negative options:
+ActiveForeOff, AnimationOff, AutomaticHotkeysOff, HilightBackOff,
+TitleWarpOff
++
+_Fvwm_, _Mwm_, _Win_ reset all options to the style with the same name
+in former versions of fvwm. The default for new menu styles is _Fvwm_
+style. These options override all others except _Foreground_,
+_Background_, _Greyed_, _HilightBack_, _ActiveFore_ and _PopupDelay_,
+so they should be used only as the first option specified for a menu
+style or to reset the style to defined behavior. The same effect can
+be created by setting all the other options one by one.
++
+_Mwm_ and _Win_ style menus popup sub menus automatically. _Win_ menus
+indicate the current menu item by changing the background to dark.
+_Fvwm_ sub menus overlap the parent menu, _Mwm_ and _Win_ style menus
+never overlap the parent menu.
++
+_Fvwm_ style is equivalent to !HilightBack, Hilight3DThin,
+!ActiveFore, !Animation, Font, MenuFace, PopupOffset 0 67, TitleWarp,
+TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
+PopdownDelayed, PopupDelay 150, PopdownDelay 150, PopupAsSubmenu,
+HoldSubmenus, SubmenusRight, BorderWidth 2, !AutomaticHotkeys,
+UniqueHotkeyActivatesImmediate, PopupActiveArea 75.
++
+_Mwm_ style is equivalent to !HilightBack, Hilight3DThick,
+!ActiveFore, !Animation, Font, MenuFace, PopupOffset -3 100,
+!TitleWarp, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
+PopupImmediately, PopdownDelayed, PopdownDelay 150, PopupAsSubmenu,
+HoldSubmenus, SubmenusRight, BorderWidth 2,
+UniqueHotkeyActivatesImmediate, !AutomaticHotkeys, PopupActiveArea 75.
++
+_Win_ style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
+!Animation, Font, MenuFace, PopupOffset -5 100, !TitleWarp,
+TitleUnderlines1, SeparatorsShort, TrianglesSolid, PopupImmediately,
+PopdownDelayed, PopdownDelay 150, PopupAsSubmenu, RemoveSubmenus,
+SubmenusRight, BorderWidth 2, UniqueHotkeyActivatesImmediate,
+!AutomaticHotkeys, PopupActiveArea 75.
++
+_BorderWidth_ takes the thickness of the border around the menus in
+pixels. It may be zero to 50 pixels. The default is 2. Using an
+illegal value reverts the border width to the default.
+
+_Foreground_ and _Background_ may have a color name as an argument.
+This color is used for menu text or the menu's background. You can
+omit the color name to reset these colors to the built-in default.
++
+_Greyed_ may have a color name as an argument. This color is the one
+used to draw a menu-selection which is prohibited (or not recommended)
+by the Mwm hints which an application has specified. If the color is
+omitted the color of greyed menu entries is based on the background
+color of the menu.
++
+_HilightBack_ and _!HilightBack_ switch hilighting the background of
+the selected menu item on and off. A specific background color may be
+used by providing the color name as an argument to _HilightBack_. If
+you use this option without an argument the color is based on the
+menu's background color. The _ActiveColorset_ option overrides the
+specified color. If the colorset has a non solid background it is used
+for the hilighting.
++
+_HilightTitleBack_ switches hilighting the background of menu titles
+on. If a _TitleColorset_ was used, the background colour is taken from
+there. Otherwise the color is based on the menu's background color. If
+the colorset has a non solid background it is used for the hilighting.
++
+_ActiveFore_ and _!ActiveFore_ switch hilighting the foreground of the
+selected menu item on and off. A specific foreground color may be used
+by providing the color name as an argument to _ActiveFore_. Omitting
+the color turns hilighting on when an _ActiveColorset_ is used.
+_ActiveFore_ turns off hilighting the foreground completely. The
+_ActiveColorset_ option overrides the specified color.
++
+_MenuColorset_ controls if a colorset is used instead of the
+_Foreground_, _Background_ and _MenuFace_ menu styles. If the
+_MenuColorset_ keyword is followed by a number equal to zero or
+greater, this number is taken as the number of the colorset to use. If
+the number is omitted, the colorset is switched off and the regular
+menu styles are used again. The foreground and background colors of
+the menu items are replaced by the colors from the colorset. If the
+colorset has a pixmap defined, this pixmap is used as the background
+of the menu. Note that the _MenuFace_ menu style has been optimized
+for memory consumption and may use less memory than the background
+from a colorset. The shape mask from the colorset is used to shape the
+menu. Please refer to the *Colorsets* section for details about
+colorsets.
++
+_ActiveColorset_ works exactly like _MenuColorset_, but the foreground
+from the colorset replaces the color given with the _ActiveFore_ menu
+style and the colorset's background color replaces the color given
+with the _HilightBack_ command (to turn on background hilighting you
+have to use the _HilightBack_ menu style too). If specified, the
+hilight and shadow colors from the colorset are used too. The pixmap
+and shape mask from the colorset are not used. Hilighting the
+background or foreground can be turned off individually with the
+_!ActiveFore_ or _!HilightBack_ menu styles.
++
+_GreyedColorset_ works exactly like _MenuColorset_, but the foreground
+from the colorset replaces the color given with the _Greyed_ menu
+style. No other parts of the colorset are used.
++
+_TitleColorset_ works exactly like _MenuColorset_, but is used only
+for menu titles.
++
+_Hilight3DThick_, _Hilight3DThin_ and _Hilight3DOff_ determine if the
+selected menu item is hilighted with a 3D relief. Thick reliefs are
+two pixels wide, thin reliefs are one pixel wide.
++
+_Hilight3DThickness_ takes one numeric argument that may be between
+-50 and +50 pixels. With negative values the menu item gets a pressed
+in look. The above three commands are equivalent to a thickness of 2,
+1 and 0.
++
+_Animation_ and _!Animation_ turn menu animation on or off. When
+animation is on, sub menus that do not fit on the screen cause the
+parent menu to be shifted to the left so the sub menu can be seen.
++
+_Font_ and _TitleFont_ take a font name as an argument. If a font by
+this name exists it is used for the text of all menu items. If it does
+not exist or if the name is left blank the built-in default is used.
+If a _TitleFont_ is given, it is used for all menu titles instead of
+the normal font.
++
+_MenuFace_ enforces a fancy background upon the menus. You can use the
+same options for _MenuFace_ as for the *ButtonStyle*. See description
+of *ButtonStyle* command and the *Color Gradients* sections for more
+information. If you use _MenuFace_ without arguments the style is
+reverted back to normal.
++
+Some examples of MenuFaces are:
++
+....
+MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+MenuFace TiledPixmap texture10.xpm
+MenuFace HGradient 128 2 Red 40 Maroon 60 White
+MenuFace Solid Maroon
+....
++
+Note: The gradient styles H, V, B and D are optimized for high speed
+and low memory consumption in menus. This is not the case for all the
+other gradient styles. They may be slow and consume huge amounts of
+memory, so if you encounter performance problems with them you may be
+better off by not using them. To improve performance you can try one
+or all of the following:
++
+Turn hilighting of the active menu item other than foreground color
+off:
++
+....
+MenuStyle <style> Hilight3DOff, !HilightBack
+MenuStyle <style> ActiveFore <preferred color>
+....
++
+Make sure sub menus do not overlap the parent menu. This can prevent
+menus being redrawn every time a sub menu pops up or down.
++
+....
+MenuStyle <style> PopupOffset 1 100
+....
++
+Run your X server with backing storage. If your X Server is started
+with the -bs option, turn it off. If not try the -wm and +bs options:
++
+....
+startx -- -wm +bs
+....
+
+You may have to adapt this example to your system (e.g. if you use
+xinit to start X).
++
+_PopupDelay_ requires one numeric argument. This value is the delay in
+milliseconds before a sub menu is popped up when the pointer moves
+over a menu item that has a sub menu. If the value is zero no
+automatic pop up is done. If the argument is omitted the built-in
+default is used. Note that the popup delay has no effect if the
+_PopupImmediately_ option is used since sub menus pop up immediately
+then.
++
+_PopupImmediately_ makes menu items with sub menus pop up it up as
+soon as the pointer enters the item. The _PopupDelay option_ is
+ignored then. If _PopupDelayed_ is used fvwm looks at the _PopupDelay_
+option if or when this automatic popup happens.
++
+_PopdownDelay_ works exactly like _PopupDelay_ but determines the
+timeout of the _PopupDelayed_ style.
++
+_PopdownImmediately_ makes sub menus vanish as soon as the pointer
+leaves the sub menu and the correspondent item in the parent menu.
+With the opposite option _PopdownDelayed_ the sub menu only pops down
+after the time specified with the _PopdownDelay_ option. This comes
+handy when the pointer often strays off the menu item when trying to
+move into the sub menu. Whenever there is a conflict between the
+_PopupImmediately_, _PopupDelayed_, _PopupDelay_ styles and the
+_PopdownImmediately_, _PopdownDelayed_, _PopdownDelay_ styles, the
+_Popup..._ styles win when using mouse navigation and the _Popdown..._
+styles win when navigating with the keyboard.
++
+_PopupOffset_ requires two integer arguments. Both values affect where
+sub menus are placed relative to the parent menu. If both values are
+zero, the left edge of the sub menu overlaps the left edge of the
+parent menu. If the first value is non-zero the sub menu is shifted
+that many pixels to the right (or left if negative). If the second
+value is non-zero the menu is moved by that many percent of the parent
+menu's width to the right or left.
++
+_PopupActiveArea_ requires an integer value between 51 and 100.
+Normally, when the pointer is over a menu item with a sub menu and the
+pointer enters the area that starts at 75% of the menu width, the sub
+menu is shown immediately. This percentage can be changed with
+_PopupActiveArea_. Setting this value to 100 disables this kind of
+automatic popups altogether. The default value is restored if no or an
+illegal value is given.
+
+_TitleWarp_ and _!TitleWarp_ affect if the pointer warps to the menu
+title when a sub menu is opened or not. Note that regardless of this
+setting the pointer is not warped if the menu does not pop up under
+the pointer.
++
+_TitleUnderlines0_, _TitleUnderlines1_ and _TitleUnderlines2_ specify
+how many lines are drawn below a menu title.
++
+_SeparatorsLong_ and _SeparatorsShort_ set the length of menu
+separators. Long separators run from the left edge all the way to the
+right edge. Short separators leave a few pixels to the edges of the
+menu.
++
+_TrianglesSolid_ and _TrianglesRelief_ affect how the small triangles
+for sub menus is drawn. Solid triangles are filled with a color while
+relief triangles are hollow.
++
+_DoubleClickTime_ requires one numeric argument. This value is the
+time in milliseconds between two mouse clicks in a menu to be
+considered as a double click. The default is 450 milliseconds. If the
+argument is omitted the double click time is reset to this default.
++
+_SidePic_ takes the name of an image file as an argument. The picture
+is drawn along the left side of the menu. The _SidePic_ option can be
+overridden by a menu specific side pixmap (see *AddToMenu*). If the
+file name is omitted an existing side pixmap is removed from the menu
+style.
++
+_SideColor_ takes the name of an X11 color as an argument. This color
+is used to color the column containing the side picture (see above).
+The SideColor option can be overridden by a menu specific side color
+(see *AddToMenu*). If the color name is omitted the side color option
+is switched off.
++
+_PopupAsRootMenu_, _PopupAsSubmenu_, _PopupIgnore_ and _PopupClose_
+change the behavior when you click on a menu item that opens a sub
+menu. With _PopupAsRootMenu_ the original menu is closed before the
+sub menu appears, with _PopupAsSubmenu_ it is not, so you can navigate
+back into the parent menu. Furthermore, with _PopupAsSubmenu_ the sub
+menu is held open (posted) regardless of where you move the mouse.
+Depending on your menu style this may simplify navigating through the
+menu. *Any* keystroke while a menu is posted reverts the menu back to
+the normal behavior. With _PopupClose_ the menu is closed when a sub
+menu item is activated, and the menu stays open if _PopupIgnore_ is
+used (even if the menu was invoked with the *Popup* command).
+_PopupAsSubmenu_ is the default.
++
+_RemoveSubmenus_ instructs fvwm to remove sub menu when you move back
+into the parent menu. With _HoldSubmenus_ the sub menu remains
+visible. You probably want to use _HoldSubmenus_ if you are using the
+_PopupDelayed_ style. _RemoveSubmenus_ affects menu navigation with
+the keyboard.
++
+_SelectOnRelease_ takes an optional key name as an argument. If the
+given key is released in a menu using this style, the current menu
+item is selected. This is intended for
+*WindowList* navigation. The key name is a standard X11 key name as
+defined in _/usr/include/X11/keysymdef.h_, (without the _XK__ prefix),
+or the keysym database _/usr/X11R6/lib/X11/XKeysymDB_. To disable this
+behavior, omit the key name.
++
+Note: Some X servers do not support KeyRelease events.
+_SelectOnRelease_ does not work on such a machine.
++
+_ItemFormat_ takes a special string as its argument that determines
+the layout of the menu items. Think of the format string as if it were
+a menu item. All you have to do is tell fvwm where to place the
+different parts of the menu item (i.e. the labels, the triangle
+denoting a sub menu, the mini icons and the side pic) in the blank
+area. The string consists of spaces,
+
+characters and formatting directives beginning with '%'. Any illegal
+characters and formatting directives are silently ignored:
++
+--
+*%l*, *%c* and *%r*:::
+	Insert the next item label. Up to three labels can be used. The item
+	column is left-aligned (*%l*), centered (*%c*) or right-aligned
+	(*%r*).
+*%i*:::
+	Inserts the mini icon.
+*%>* and *%<*:::
+	Insert the sub menu triangle pointing either to the right (*%>*) or to
+	the left (*%<*).
+*%|*:::
+	The first *%|* denotes the beginning of the area that is highlighted
+	either with a background color or a relief (or both). The second *%|*
+	marks the end of this area. *%|* can be used up to twice in the
+	string. If you do not add one or both of them, fvwm sets the margins
+	to the margins of the whole item (not counting the side picture).
+*%s*:::
+	Places the side picture either at the beginning or the end of the
+	menu. This directive may be used only once and only as the first or
+	last in the format string. If the *%s* is not at the beginning of the
+	string, menus are not drawn properly.
+*Space*, *Tab*, *%Space* and *%Tab*:::
+	Add gap of one space, or a tab, using the width of the menu font. When
+	using a tab, the size of the gap can be one to 8 spaces since the tab
+	position is a multiple of 8 from the edge of the menu. The whole
+	string must be quoted if spaces or tabs are used.
+*%p*:::
+	Like Space and Tab *%p* inserts an empty area into the item, but with
+	better control of its size (see below).
+--
++
+You can define an additional space before and after each of the
+objects like this
++
+....
+%left.rightp
+....
+
+This means: if the object is defined in the menu (e.g. if it is *%s*
+and you use a side picture, or it is *%l* for the third column and
+there are items defined that actually have a third column), then add
+_left_ pixels before the object and _right_ pixels after it. You may
+leave out the _left_ or the _.right_ parts if you do not need them.
+All values up to the screen width are allowed. Even negative values
+can be used with care. The *p* may be replaced with any other
+formatting directives described above.
++
+Note: Only items defined in the format string are visible in the
+menus. So if you do not put a *%s* in there you do not see a side
+picture, even if one is specified.
++
+Note: The _SubmenusLeft_ style changes the default _ItemFormat_
+string, but if it was set manually it is not modified.
++
+Note: If any unformatted title of the menu is wider than the widest
+menu item, the spaces between the different parts of the menu items
+are enlarged to match the width of the title. Leading left aligned
+objects in the format string (*%l*, *%i*, *%<*, first *%|*) stick to
+the left edge of the menu and trailing right aligned objects (*%r*,
+*%i*, *%>*, second *%|*) stick to the right edge. The gaps between the
+remaining items are enlarged equally.
++
+Examples:
++
+....
+MenuStyle * ItemFormat "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
+....
++
+Is the default string used by fvwm: (side picture + 4 pixels gap)
+(beginning of the hilighted area + 1 pixel gap) (mini icon + 5p)
+(first column left aligned + 5p) (second column left aligned + 5p)
+(third column right aligned + 5p) (second mini icon + 5p) (2p + sub
+menu triangle + 3p) (1p + end of hilighted area).
++
+....
+MenuStyle * ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
+....
++
+Is used by fvwm with the _SubmenusLeft_ option below.
++
+_VerticalItemSpacing_ and _VerticalTitleSpacing_ control the vertical
+spacing of menu items and titles like _ItemFormat_ controls the
+horizontal spacing. Both take two numeric arguments that may range
+from -100 to +100. The first is the gap in pixels above a normal menu
+item (or a menu title), the second is the gap in pixels below it.
+Negative numbers do not make much sense and may screw up the menu
+completely. If no arguments are given or the given arguments are
+invalid, the built-in defaults are used: one pixel above the item or
+title and two below.
++
+_VerticalMargins_ can be used to add some padding at the top and
+bottom of menus. It takes two numeric arguments that must be positive
+integers (or zero). If the number of arguments or its values are
+incorrect, fvwm defaults both to 0, which means no padding at all. If
+the values are correct, the first one is used for the top margin, and
+the second one is used for the bottom margin.
++
+_SubmenusLeft_ mirrors the menu layout and behavior. Sub menus pop up
+to the left, the sub menu triangle is drawn left and the mini icon and
+side picture are drawn at the right side of the menu. The default is
+_SubmenusRight_. The position hints of a menu are also affected by
+this setting, i.e. position hints using _item_ or _menu_ as context
+rectangle and position hints using _m_ offsets.
++
+_AutomaticHotkeys_ and _!AutomaticHotkeys_ control the menu's ability
+to automatically provide hot-keys on the first character of each menu
+item's label. This behavior is always overridden if an explicit
+hot-key is assigned in the *AddToMenu* command.
++
+_UniqueHotkeyActivatesImmediate_ and _!UniqueHotkeyActivatesImmediate_
+controls how menu items are invoked when used with hotkeys. By
+default, if a given menu entry only has one completeable match for a
+given hotkey, the action for that menu entry is invoked and the menu
+is closed. This is due to the _UniqueHotkeyActivatesImmediate_ option.
+However, the menu can be told to remain open, waiting for the user to
+invoke the selected item instead when there is only one matched item
+for a given hotkey, by using the _!UniqueHotkeyActivatesImmediate_
+option.
++
+_MouseWheel_ controls the ability to scroll the menu using a mouse
+wheel. It takes one argument, that can be one of ScrollsPointer,
+ScrollsMenu, ScrollsMenuBackwards or ActivatesItem. ScrollsPointer
+makes the mouse wheel scroll the pointer over a menu. This is the
+default. ScrollsMenu and ScrollsMenuBackwards scroll the menu beneath
+the pointer. ActivatesItem disables scrolling by mouse wheel and makes
+the use of a mouse wheel act as if the menu was clicked. If no
+argument is supplied the default setting is restored.
++
+_ScrollOffPage_ allows a menu to be scrolled out of the visible area
+if _MouseWheel_ is set to ScrollsMenu or ScrollsMenuBackwards. This is
+the default. The opposite, _!ScrollOffPage_ disables this behaviour.
++
+_TrianglesUseFore_ draws sub menu triangles with the foreground color
+of the menu colorset (normally drawn with the hilight color).
+_!TrianglesUseFore_ disables this behaviour.
++
+Examples:
++
+....
+MenuStyle * Mwm
+MenuStyle * Foreground Black, Background gray40
+MenuStyle * Greyed gray70, ActiveFore White
+MenuStyle * !HilightBack, Hilight3DOff
+MenuStyle * Font lucidasanstypewriter-14
+MenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
+
+MenuStyle red Mwm
+MenuStyle red Foreground Yellow
+MenuStyle red Background Maroon
+MenuStyle red Greyed Red, ActiveFore Red
+MenuStyle red !HilightBack, Hilight3DOff
+MenuStyle red Font lucidasanstypewriter-12
+MenuStyle red MenuFace DGradient 64 Red Black
+....
++
+Note that all style options could be placed on a single line for each
+style name.
+
+*MenuStyle* _forecolor_ _backcolor_ _shadecolor_ _font_ _style_ [_anim_]::
+	This is the old syntax of the *MenuStyle* command. It is obsolete and
+	may be removed in the future. Please use the new syntax as described
+	above.
++
+Sets the menu style. When using monochrome the colors are ignored. The
+_shadecolor_ is the one used to draw a menu-selection which is
+prohibited (or not recommended) by the Mwm hints which an application
+has specified. The style option is either _Fvwm_, _Mwm_ or _Win_,
+which changes the appearance and operation of the menus.
++
+_Mwm_ and _Win_ style menus popup sub menus automatically. _Win_ menus
+indicate the current menu item by changing the background to black.
+_Fvwm_ sub menus overlap the parent menu, _Mwm_ and _Win_ style menus
+never overlap the parent menu.
++
+When the _anim_ option is given, sub menus that do not fit on the
+screen cause the parent menu to be shifted to the left so the sub menu
+can be seen. See also *SetAnimation* command.
+// END 'menus'
+endif::[]
+
+ifdef::fvwm3[]
+== LIST OF FVWM COMMANDS
+
+Please refer to the fvwm3commands and fvwm3styles man pages.
+endif::[]
+ifdef::fvwm3all[]
+// BEGIN 'commands'
+== LIST OF FVWM COMMANDS
+
+The command descriptions below are grouped together in the following
+sections. The sections are hopefully sorted in order of usefulness to
+the newcomer.
+
+* *Menu commands*
+* *Miscellaneous commands*
+* *Commands affecting window movement and placement*
+* *Commands for focus and mouse movement*
+* *Commands controlling window state*
+* *Commands for mouse and key bindings*
+* *The Style command (controlling window styles)*
+* *Other commands controlling window styles*
+* *Commands controlling the virtual desktop*
+* *Commands for user functions and shell commands*
+* *Conditional commands*
+* *Module commands*
+* *Quit, restart and session management commands*
+* *Colorsets*
+* *Color gradients*
 
 === Miscellaneous Commands
 
@@ -5175,6 +5186,13 @@ PointerKey f1 a m Menu MainMenu
 ....
 
 
+ifdef::fvwm3[]
+== WINDOW STYLES
+
+Please refer to the fvwm3styles man page.
+endif::[]
+ifdef::fvwm3all[]
+// BEGIN 'styles'
 === Controlling Window Styles
 
 For readability, the commands in this section are not sorted
@@ -7585,6 +7603,8 @@ assigned to that particular _decor_ are updated. This command is
 useful, for instance, after a *ButtonStyle*, *TitleStyle* or
 *BorderStyle* (possibly used in conjunction with *AddToDecor*).
 Specifying an invalid decor results in all windows being updated.
+// END 'styles'
+endif::[]
 
 === Controlling the Virtual Desktop
 
@@ -9575,7 +9595,8 @@ MenuFace DGradient 100 3 Red 20 Blue 30 Black 50 Grey
 # 50% from yellow to red
 Colorset 0 HGradient 128 3 Blue 1000 Green 1 Yellow 1000 Red
 ....
-
+// END 'commands'
+endif::[]
 
 == ENVIRONMENT
 
