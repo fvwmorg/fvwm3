@@ -616,7 +616,7 @@ might look something like this:
 
 By default, SVG images are rendered as the image creator intended them
 to. But since SVG is a vector graphics format, the images can be
-rendered at any chosen size and rotation, e.g. making it possible to use
+rendered at any chosen size and rotation, e.g. making it possible to use
 the same icon file rendered at different sizes for the _Icon_ and
 _MiniIcon_ styles.
 
@@ -1281,7 +1281,7 @@ desk, stickiness, shadiness, maximizedness, iconifiedness for all
 windows. Furthermore, some global state is saved.
 
 Fvwm doesn't save any information regarding styles, decors, functions or
-menus. If you change any of these resources during a session (e.g. by
+menus. If you change any of these resources during a session (e.g. by
 issuing *Style* commands or by using various modules), these changes are
 lost after saving and restarting the session. To become permanent, such
 changes have to be added to the configuration file.
@@ -1554,7 +1554,7 @@ $[page.nx] $[page.ny]::
 	equivalent to _area_ in the GNOME terminology.
 
 $[w.id]::
-	The window-id (expressed in hex, e.g. 0x10023c) of the window the
+	The window-id (expressed in hex, e.g. 0x10023c) of the window the
 	command was called for or "$[w.id]" if no window is associated with the
 	command.
 
@@ -1729,7 +1729,7 @@ $[infostore._key_]::
 $[...]::
 	If the string within the braces is neither of the above, fvwm tries to
 	find an environment variable with this name and replaces its value if
-	one is found (e.g. "$[PAGER]" could be replaced by "more"). Otherwise
+	one is found (e.g. "$[PAGER]" could be replaced by "more"). Otherwise
 	the string is left as is.
 +
 Some examples can be found in the description of the *AddToFunc*
@@ -2325,17 +2325,17 @@ _Context_:::
 	the current window, menu or icon.
 +
 _This_:::
-	whatever widget the pointer is on (e.g. a corner of a window or the
+	whatever widget the pointer is on (e.g. a corner of a window or the
 	root window).
 +
 _Rectangle_ <_geometry_>:::
 	the rectangle defined by <_geometry_> in X geometry format. Width
 	and height default to 1 if omitted.
-
-If the context-rectangle is omitted or illegal (e.g. "item" on a
++
+If the context-rectangle is omitted or invalid (e.g. "item" on a
 window), "Mouse" is the default. Note that not all of these make sense
-under all circumstances (e.g. "Icon" if the pointer is on a menu).
-
+under all circumstances (e.g. "Icon" if the pointer is on a menu).
++
 The offset values _x_ and _y_ specify how far the menu is moved from
 its default position. By default, the numeric value given is
 interpreted as a percentage of the context rectangle's width (height),
@@ -2547,7 +2547,7 @@ DestroyMenuStyle pixmap1
 Sets a new menu style or changes a previously defined style. The
 _stylename_ is the style name; if it contains spaces or tabs it has to
 be quoted. The name "*" is reserved for the default menu style. The
-default menu style is used for every menu-like object (e.g. the window
+default menu style is used for every menu-like object (e.g. the window
 created by the *WindowList* command) that had not be assigned a style
 using the *ChangeMenuStyle*. See also *DestroyMenuStyle*. When using
 monochrome color options are ignored.
@@ -2619,8 +2619,8 @@ SubmenusRight, BorderWidth 2, UniqueHotkeyActivatesImmediate,
 +
 _BorderWidth_ takes the thickness of the border around the menus in
 pixels. It may be zero to 50 pixels. The default is 2. Using an
-illegal value reverts the border width to the default.
-
+invalid value reverts the border width to the default.
++
 _Foreground_ and _Background_ may have a color name as an argument.
 This color is used for menu text or the menu's background. You can
 omit the color name to reset these colors to the built-in default.
@@ -2744,8 +2744,8 @@ with the -bs option, turn it off. If not try the -wm and +bs options:
 ....
 startx -- -wm +bs
 ....
-
-You may have to adapt this example to your system (e.g. if you use
++
+You may have to adapt this example to your system (e.g. if you use
 xinit to start X).
 +
 _PopupDelay_ requires one numeric argument. This value is the delay in
@@ -2789,8 +2789,8 @@ pointer enters the area that starts at 75% of the menu width, the sub
 menu is shown immediately. This percentage can be changed with
 _PopupActiveArea_. Setting this value to 100 disables this kind of
 automatic popups altogether. The default value is restored if no or an
-illegal value is given.
-
+invalid value is given.
++
 _TitleWarp_ and _!TitleWarp_ affect if the pointer warps to the menu
 title when a sub menu is opened or not. Note that regardless of this
 setting the pointer is not warped if the menu does not pop up under
@@ -2861,8 +2861,8 @@ a menu item. All you have to do is tell fvwm where to place the
 different parts of the menu item (i.e. the labels, the triangle
 denoting a sub menu, the mini icons and the side pic) in the blank
 area. The string consists of spaces,
-
-characters and formatting directives beginning with '%'. Any illegal
++
+characters and formatting directives beginning with '%'. Any invalid
 characters and formatting directives are silently ignored:
 +
 --
@@ -2902,8 +2902,8 @@ objects like this
 ....
 %left.rightp
 ....
-
-This means: if the object is defined in the menu (e.g. if it is *%s*
++
+This means: if the object is defined in the menu (e.g. if it is *%s*
 and you use a side picture, or it is *%l* for the third column and
 there are items defined that actually have a third column), then add
 _left_ pixels before the object and _right_ pixels after it. You may
@@ -3095,7 +3095,7 @@ the application.
 _MixedVisualWorkaround_ makes fvwm install the root colormap before it
 does some operations using the root window visuals. This is only
 useful when the *-visual* option is used to start fvwm and then only
-with some configurations of some servers (e.g. Exceed 6.0 with an 8
+with some configurations of some servers (e.g. Exceed 6.0 with an 8
 bit PseudoColor root and fvwm using a 24 bit TrueColor visual).
 +
 The _ModalityIsEvil_ option controls whether Motif applications have
@@ -4703,7 +4703,7 @@ WindowId root 1 WarpToWindow 50 50
 	iconified and de-iconified states.
 +
 There are a number of *Style* options which influence the appearance
-and behavior of icons (e.g. _StickyIcon_, _NoIcon_).
+and behavior of icons (e.g. _StickyIcon_, _NoIcon_).
 +
 For backward compatibility, the optional argument may also be a
 positive number instead of "True", or a negative number instead of
@@ -4879,7 +4879,7 @@ obsolete, and will be removed in the future.
 	command belongs into your _config_. If you issue it when your fvwm
 	session is already up and running the results are unpredictable. The
 	should appear before any applications or modules are started in your
-	_config_ file (e.g. with the *Exec* command).
+	_config_ file (e.g. with the *Exec* command).
 +
 _Modifiers_ has the same syntax as in the *Mouse* or *Key* bindings, with the
 addition of 'L' meaning the caps lock key. The default is "L".  _Modifiers_
@@ -6043,7 +6043,7 @@ the application to redraw frequently it can be quite slow and make the
 window flicker excessively, depending on the amount of graphics the
 application redraws. The _ResizeOutline_ style (default) negates the
 _ResizeOpaque_ style. Many applications do not like their windows
-being resized opaque, e.g. XEmacs, Netscape or terminals with a pixmap
+being resized opaque, e.g. XEmacs, Netscape or terminals with a pixmap
 background. If you do not like the result, do not use the
 _ResizeOpaque_ style for these windows. To exempt certain windows from
 opaque resizing you could use these lines in your configuration file:
@@ -6514,7 +6514,7 @@ _!IconPosition_
 +
 _StartsOnDesk_ takes a numeric argument which is the desktop number on
 which the window should be initially placed. Note that standard Xt
-programs can also specify this via a resource (e.g. "-xrm '*Desk:
+programs can also specify this via a resource (e.g. "-xrm '*Desk:
 1'").
 +
 _StartsOnPage_ takes 1, 2, or 3 numeric arguments. If one or three
@@ -6716,7 +6716,7 @@ _SaveUnder_ enables the corresponding window attribute in the X
 server. For a window using this style, the X server tries to store the
 graphics below it in memory which is usually slower if the client runs
 on the same machine as the X server. _SaveUnder_ may speed up fvwm if
-the connection to the X server is slow (e.g. over a modem link). To
+the connection to the X server is slow (e.g. over a modem link). To
 disable save under, use the _SaveUnderOff_ style. This is the default.
 See also _BackingStore_ above.
 +
@@ -6811,7 +6811,7 @@ _Prev_ or _All_. Windows with _CirculateSkip_, are never selected by
 conditional commands. However, the styles can be overridden explicitly
 in the condition with the _CirculateHit_, _CirculateHitIcon_ or
 _CirculateHitShaded_ conditions, and some conditional commands,
-e.g. *Current* and _All_, do this by default. The styles
+e.g. *Current* and _All_, do this by default. The styles
 _CirculateSkipIcon_, _CirculateHitIcon_, _CirculateSkipShaded_ and
 _CirculateHitShaded_ work like _CirculateSkip_ and _CirculateHit_ but
 apply only to iconic or shaded windows. Note: if multiple ...Skip...
@@ -6834,21 +6834,21 @@ of these styles as condition names. Take care not to confuse them.
 # Change default fvwm behavior to no title-
 # bars on windows! Also define a default icon.
 
-Style *       !Title,                	   \
-              Icon unknown1.xpm,     	   \
-              BorderWidth 4,         	   \
+Style *       !Title,                      \
+              Icon unknown1.xpm,           \
+              BorderWidth 4,               \
               HandleWidth 5
 
 # now, window specific changes:
-Style Fvwm* !Handles, Sticky,        	   \
-            WindowListSkip,          	   \
+Style Fvwm* !Handles, Sticky,              \
+            WindowListSkip,                \
             BorderWidth 0
 Style FvwmPager   StaysOnTop, BorderWidth 0
 Style *lock       !Handles, Sticky,        \
-            	  StaysOnTop, WindowListSkip
+                  StaysOnTop, WindowListSkip
 Style xbiff       Sticky, WindowListSkip
 Style FvwmButtons !Handles, Sticky,        \
-            	  WindowListSkip
+                  WindowListSkip
 Style sxpm        !Handles
 
 # Put title-bars back on xterms only!
@@ -7087,7 +7087,7 @@ _UseBorderStyle_ flag (see *ButtonStyle*).
 	("False"). The _bool_ flag is the same as other commands, and not
 	limited to just "True" or "False"; "Yes" and "No" may also be used.
 	The "ActiveUp" state cannot be deactivated. If no arguments are
-	provided or the given arguments are illegal, the default is restored.
+	provided or the given arguments are invalid, the default is restored.
 +
 If _ActiveDown_ argument is "False", no different button style for the
 pressed down buttons used, instead "ActiveUp" state is used even when
@@ -7308,7 +7308,7 @@ ButtonStyle 0 Vector 10 45x65@2 45x75@0 \
 ....
 
 +
-The _?Gradient_ styles denote color gradients. Fill in the question
+The _Gradient_ styles denote color gradients. Fill in the question
 mark with any one of the defined gradient types. Please refer to the
 *Color Gradients* section for a description of the gradient syntax.
 The gradient styles are fully destructive.
