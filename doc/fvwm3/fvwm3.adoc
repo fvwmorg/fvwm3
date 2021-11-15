@@ -1762,7 +1762,7 @@ $[...]::
 Some examples can be found in the description of the *AddToFunc*
 command.
 
-== SCRIPTING & COMPLEX FUNCTIONS
+== SCRIPTING AND COMPLEX FUNCTIONS
 
 To achieve the more complex effects, fvwm has a number of commands that
 improve its scripting abilities. Scripts can be read from a file with
