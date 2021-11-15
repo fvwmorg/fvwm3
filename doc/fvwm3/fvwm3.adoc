@@ -903,12 +903,6 @@ type "xprop | grep _NET_WM_STRUT" in a terminal and select the
 application. If four numbers appear then these numbers define the
 reserved space as explained in the *EwmhBaseStruts* command.
 
-== MWM COMPATIBILITY
-
-Fvwm provides options to emulate Motif Window Manager (Mwm) as well as
-possible. Please refer to the *Emulate* command as well as to the Mwm
-specific options of the *Style* and *MenuStyle* commands for details.
-
 == OPEN LOOK AND XVIEW COMPATIBILITY
 
 Fvwm supports all the Open Look decoration hints (except pushpins).
