@@ -6232,8 +6232,8 @@ For example, a window may snap to another window on the x axis while
 snapping to a grid point on the y axis. Using this style without
 arguments reinstates the default settings.
 
-The styles _EdgeMoveDelay_ and _EdgeResizeDelay_ tells how hard it
-should be to change the desktop viewport by moving or resizing a
+The styles _EdgeMoveDelay_ and _EdgeResizeDelay_ define how hard it
+is to change the desktop viewport by moving or resizing a
 window over the edge of the screen. The parameter tells how many
 milliseconds the pointer must spend on the screen edge before fvwm
 moves the viewport. The command *EdgeScroll* determines how far the
