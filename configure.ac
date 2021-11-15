@@ -166,18 +166,6 @@ AC_DEFINE(FVWM2RC, ".fvwm2rc")
 
 # Various configure-time options
 
-AC_ARG_ENABLE(dmalloc,
-  AS_HELP_STRING([--enable-dmalloc],
-    [enable support for the dmalloc debugging library]),
-  [ac_cv_dmalloc="$enableval"],
-  [ac_cv_dmalloc="no"])
-
-AC_ARG_ENABLE(efence,
-  AS_HELP_STRING([--enable-efence],
-    [enable support for the efence debugging library]),
-  [ac_cv_efence="$enableval"],
-  [ac_cv_efence="no"])
-
 dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
 
 # Need to know where X is, for finding some libraries (e.g. xpm)
@@ -1278,19 +1266,6 @@ AH_VERBATIM([_COMPAT_OLD_KEYSYMDEF],
 #  define XK_Page_Down XK_Next
 #endif])
 
-# Allow building with dmalloc.  Do this last to avoid screwing up any
-# other checks above.
-case "$ac_cv_dmalloc" in
-  yes) AC_CHECK_HEADERS(dmalloc.h)
-       AC_CHECK_LIB(dmalloc, dmalloc_shutdown)
-       CPPFLAGS="$CPPFLAGS -DDMALLOC_FUNC_CHECK" ;;
-esac
-
-
-# Allow building with efence.
-case "$ac_cv_efence" in
-  yes) AC_CHECK_LIB(efence, malloc) ;;
-esac
 
 # some explicit definitions for config.h file
 AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
@@ -1562,9 +1537,3 @@ Fvwm3 Configuration:
   Build man pages?                    $with_mandoc$problem_mandoc
 
 "
-case "$ac_cv_dmalloc" in
-  yes) echo "  DMALLOC heap debugging library enabled." ;;
-esac
-case "$ac_cv_efence" in
-  yes) echo "  EFENCE debugging library enabled." ;;
-esac
