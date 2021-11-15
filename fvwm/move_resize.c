@@ -856,12 +856,15 @@ static int ParseOneResizeArgument(
 	}
 	else if (sscanf(arg,"-%d",&val) == 1)
 	{
-		size_change = scr_size - (int)(val * factor + 0.5) + add_size;
+		size_change =
+			scr_size - (int)(val * factor + 0.5) + add_size -
+			*ret_size;
 	}
 	else if (sscanf(arg,"+%d",&val) == 1 || sscanf(arg,"%d",&val) == 1)
 	{
 		size_change =
-			(int)(val * factor + 0.5) + add_size + add_base_size;
+			(int)(val * factor + 0.5) + add_size + add_base_size -
+			*ret_size;
 	}
 	else
 	{
