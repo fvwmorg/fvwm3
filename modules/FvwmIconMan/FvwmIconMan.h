@@ -43,10 +43,6 @@ struct malloc_header {
 
 #endif
 
-#ifdef HAVE_DMALLOC_H
-#include <dmalloc.h>
-#endif
-
 extern void PrintMemuse(void);
 
 typedef unsigned long Ulong;

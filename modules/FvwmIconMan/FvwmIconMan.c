@@ -206,13 +206,6 @@ main(int argc, char **argv)
 {
 	int i;
 
-#ifdef HAVE_LIBEFENCE
-	extern int EF_PROTECT_BELOW, EF_PROTECT_FREE;
-
-	EF_PROTECT_BELOW = 1;
-	EF_PROTECT_FREE = 1;
-#endif
-
 	FlocaleInit(LC_CTYPE, "", "", "FvwmIconMan");
 
 	OpenConsole(OUTPUT_FILE);
