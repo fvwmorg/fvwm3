@@ -65,7 +65,6 @@ typedef struct Resolution {
 		NO_SHOW_PAGE = 0x20,
 		NO_SHOW_SCREEN = 0x40,
 	} type;
-		
 } Resolution;
 
 typedef enum {
