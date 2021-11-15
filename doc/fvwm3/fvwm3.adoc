@@ -9189,27 +9189,6 @@ color (often based on the background color), background face (this
 includes images and all kinds of gradients). There is a way to render
 background face and specify other color operations.
 
-In the 2.4.x versions a special module *FvwmTheme* was introduced to
-manage colorsets. Starting with the 2.5.x beta version, the *FvwmTheme*
-functionality was moved to the core fvwm, so this module became
-obsolete. In 2.6.7 the *FvwmTheme* module was removed.
-
-The old syntax:
-
-....
-DestroyModuleConfig FvwmTheme: *
-*FvwmTheme: Colorset 0 fg black, bg rgb:b4/aa/94
-*FvwmTheme: Colorset 1 fg black, bg rgb:a1/b2/c8
-....
-
-corresponds to the new syntax:
-
-....
-CleanupColorsets
-Colorset 0 fg black, bg rgb:b4/aa/94
-Colorset 1 fg black, bg rgb:a1/b2/c8
-....
-
 *Colorset* _num_ [_options_]::
 	Creates or modifies colorset _num_. Colorsets are identified by this
 	number. The number can start at zero and can be a very large number.
