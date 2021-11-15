@@ -7,7 +7,7 @@ fvwm3 - F? Virtual Window Manager for X11
 == SYNOPSIS
 
 *fvwm3* [*-c* _config-command_] [*-d* _displayname_] [*-f*
-_config-file_] [*-r*] [*-s* [_screen_num_]] [*-V*] [*-C* _visual-class_
+_config-file_] [*-r*] [*-V*] [*-C* _visual-class_
 | *-I* _visual-id_] [*-l* _colors_ [*-L*] [*-A*] [*-S*] [*-P*]] [*-D*]
 [*-h*] [*-i* _client-id_] [*-F* _state-file_] [*--debug-stack-ring*]
 [*-blackout*]
@@ -98,14 +98,6 @@ the other wm is ICCCM2 2.0 compliant.
 
 This option is used when fvwm is started by a session manager. Should
 not be used by a user.
-
-*-s* | *--single-screen* [_screen_num_]::
-
-On a multi-screen display, run fvwm only on the screen named in the
-_$DISPLAY_ environment variable or provided through the *-d* option. The
-optional argument _screen_num_ should be positive or null and override
-the screen number. Normally, fvwm attempts to start up on all screens of
-a multi-screen display.
 
 *-V* | *--version*::
 

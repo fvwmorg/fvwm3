@@ -2825,39 +2825,7 @@ void HandleLeaveNotify(const evh_args_t *ea)
 		}
 	}
 
-
-	/* If we leave the root window, then we're really moving
-	 * another screen on a multiple screen display, and we
-	 * need to de-focus and unhighlight to make sure that we
-	 * don't end up with more than one highlighted window at a time */
-	if (lwp->window == Scr.Root &&
-	   /* domivogt (16-May-2000): added this test because somehow fvwm
-	    * sometimes gets a LeaveNotify on the root window although it is
-	    * single screen. */
-	    Scr.NumberOfScreens > 1)
-	{
-		if (lwp->mode == NotifyNormal)
-		{
-			if (lwp->detail != NotifyInferior)
-			{
-				FvwmWindow *sf = get_focus_window();
-
-				Scr.flags.is_pointer_on_this_screen = 0;
-				set_last_screen_focus_window(sf);
-				if (sf != NULL)
-				{
-					DeleteFocus(True);
-				}
-				if (Scr.Hilite != NULL)
-				{
-					border_draw_decorations(
-						Scr.Hilite, PART_ALL, False,
-						True, CLEAR_ALL, NULL, NULL);
-				}
-			}
-		}
-	}
-	else
+	if (lwp->window != Scr.Root)
 	{
 		/* handle a subwindow cmap */
 		LeaveSubWindowColormap(te->xany.window);
