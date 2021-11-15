@@ -2620,8 +2620,10 @@ Bool __move_loop(
 	m = fw->m;
 	vx = m->virtual_scr.Vx;
 	vy = m->virtual_scr.Vy;
-	dx = m->virtual_scr.EdgeScrollX ? m->virtual_scr.EdgeScrollX : monitor_get_all_widths();
-	dy = m->virtual_scr.EdgeScrollY ? m->virtual_scr.EdgeScrollY : monitor_get_all_heights();
+	dx = m->virtual_scr.EdgeScrollX ?
+		m->virtual_scr.EdgeScrollX : monitor_get_all_widths();
+	dy = m->virtual_scr.EdgeScrollY ?
+		m->virtual_scr.EdgeScrollY : monitor_get_all_heights();
 
 	if (!GrabEm(cursor, GRAB_NORMAL))
 	{
@@ -2981,8 +2983,10 @@ Bool __move_loop(
 				xl = xl2;
 				yt = yt2;
 			}
-			if (xl != xl_orig || yt != yt_orig || vx != m->virtual_scr.Vx ||
-			    vy != m->virtual_scr.Vy || was_snapped)
+			if (
+				xl != xl_orig || yt != yt_orig ||
+				vx != m->virtual_scr.Vx ||
+				vy != m->virtual_scr.Vy || was_snapped)
 			{
 				/* only snap if the window actually moved! */
 				if (!is_alt_mode_enabled)
@@ -4022,8 +4026,10 @@ static Bool __resize_window(F_CMD_ARGS)
 	Bool was_alt_key_not_pressed = False;
 	Bool is_alt_mode_enabled = False;
 
-	dx = mon->virtual_scr.EdgeScrollX ? mon->virtual_scr.EdgeScrollX : monitor_get_all_widths();
-	dy = mon->virtual_scr.EdgeScrollY ? mon->virtual_scr.EdgeScrollY : monitor_get_all_heights();
+	dx = mon->virtual_scr.EdgeScrollX ?
+		mon->virtual_scr.EdgeScrollX : monitor_get_all_widths();
+	dy = mon->virtual_scr.EdgeScrollY ?
+		mon->virtual_scr.EdgeScrollY : monitor_get_all_heights();
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
