@@ -5532,9 +5532,9 @@ _FPGrabFocusTransient_ + _FPReleaseFocusTransient_.
 _Lenience_ is equivalent to the new style _FPLenient_.
 
 *Window title*::
-	The _Title_ and !Title options determine if the window has a
-	title-bar or not. By default all windows have a title-bar. _NoTitle_
-	is equivalent to _!Title_ but is deprecated.
+	The _Title_ and !Title options determine whether the window is
+        decorated with a title-bar. By default all windows have a title-bar.
+        _NoTitle_ is equivalent to _!Title_ but is deprecated.
 +
 Windows with the _TitleAtBottom_, _TitleAtLeft_ or _TitleAtRight_
 style have a title-bar below, to the left or to the right of the
