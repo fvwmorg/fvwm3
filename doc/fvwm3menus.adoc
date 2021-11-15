@@ -1,0 +1,7 @@
+= FVWM3MENUS(1)
+
+== NAME
+
+fvwm3menus - fvwm menus
+
+include::fvwm3_menus.ad[]

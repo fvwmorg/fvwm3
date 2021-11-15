@@ -1,40 +1,41 @@
 docdir = @FVWM_DOCDIR@
-MODULE_ADOCS = $(wildcard fvwm3/fvwm3.adoc bin/*.adoc modules/*.adoc)
+MODULE_ADOC = \
+	fvwm3.adoc \
+	fvwm3all.adoc \
+	fvwm3commands.adoc \
+	fvwm3menus.adoc \
+	fvwm3styles.adoc \
+	$(wildcard Fvwm*.adoc) \
+	$(wildcard fvwm-*.adoc)
 
-EXTRA_DIST = $(MODULE_ADOCS)
+EXTRA_DIST = $(MODULE_ADOC)
 
-if FVWM_BUILD_MANDOC
-BUILD_MANS = $(patsubst %.adoc,%, $(MODULE_ADOCS))
-else
-BUILD_MANS =
-endif
-
-all: docs
-docs: $(BUILD_MANS)
+nothing:
 
 clean:
-	rm -fr man1/
+	rm -f *.1 *.ad
 
 distclean-local: clean
 
 if FVWM_BUILD_MANDOC
-QUIET_ASCIIDOC = @echo '  ' DOC '    ' $@'.1';
+man1_MANS = $(patsubst %.adoc,%.1, $(MODULE_ADOC))
+EXTRACT_SECTIONS = \
+	commands \
+	menus \
+	styles
+SECTION_FILES = $(patsubst %,fvwm3_%.ad, $(EXTRACT_SECTIONS))
 
-%: %.adoc
-	$(QUIET_ASCIIDOC) \
-	NAME=`basename "$@" | "$(SED)" -e "${transform}"`; \
-	$(ASCIIDOC) -b manpage $< -o "man1/$$NAME.1"
+all: docs
+docs: $(man1_MANS)
+$(man1_MANS): $(SECTION_FILES)
 
-install-data-local:
-	install -d -m 755 $(DESTDIR)$(mandir)/man1/
-	@for i in $(notdir $(BUILD_MANS)); do \
-		NAME=`basename "$$i" | "$(SED)" -e "${transform}"`; \
-		install -m 644 "man1/$$NAME.1" $(DESTDIR)$(mandir)/man1/; \
-	done
+%.ad: fvwm3_manpage_source.adoc
+	SECTION=$(patsubst fvwm3_%.ad,%,$@); \
+	cat "$<" | \
+	"$(GREP)" -A 1000000 -- "^// BEGIN '$$SECTION'" | \
+	"$(GREP)" -B 1000000 -- "^// END '$$SECTION'" | \
+	"$(GREP)" -v "^// .* '$$SECTION'" > "$@"
 
-uninstall-local:
-	@for i in $(notdir $(BUILD_MANS)); do \
-		NAME=`basename "$$i" | "$(SED)" -e "${transform}"`; \
-		rm -f "$(DESTDIR)$(mandir)/man1/$$NAME.1"; \
-	done
+%.1: %.adoc
+	"$(ASCIIDOC)" -b manpage -a "$(patsubst %.1,%,$@)" "$<" -o "$@"
 endif

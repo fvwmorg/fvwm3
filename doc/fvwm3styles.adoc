@@ -1,0 +1,7 @@
+= FVWM3STYLES(1)
+
+== NAME
+
+fvwm3styles - fvwm styles
+
+include::fvwm3_styles.ad[leveloffset=-1]

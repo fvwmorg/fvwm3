@@ -10,11 +10,3 @@ For more information about the specific markup available, see:
 
 * https://asciidoctor.org/docs/asciidoc-writers-guide/
 * https://asciidoctor.org/docs/user-manual/
-
-To add additional documents, see:
-
-	doc/fvwm3/*.adoc
-	doc/modules/*.adoc
-
-Documentation for modules now resides under `doc/`, rather than its own
-module.

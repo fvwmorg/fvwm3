@@ -1,0 +1,7 @@
+= FVWM3COMMANDS(1)
+
+== NAME
+
+fvwm3commands - fvwm built-in commands
+
+include::fvwm3_commands.ad[]

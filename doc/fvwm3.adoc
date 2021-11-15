@@ -1,0 +1,7 @@
+= FVWM3(1)
+
+== NAME
+
+fvwm3 - F? Virtual Window Manager for X11
+
+include::fvwm3_manpage_source.adoc[]
