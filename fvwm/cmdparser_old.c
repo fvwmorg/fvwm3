@@ -274,12 +274,21 @@ static const char *ocp_parse_command_name(
 	cmdparser_context_t *c, void *func_rc, const void *exc)
 {
 	GetNextToken(c->cline, &c->command);
+#if 1 /*!!!*/
+fprintf(stderr, "%s: c->command '%s'\n", __func__, (c->command) ? c->command : "(nil)");
+#endif
 	if (c->command != NULL)
 	{
 		char *tmp = c->command;
 
+#if 1 /*!!!*/
+fprintf(stderr, "%s: expand c->command\n", __func__);
+#endif
 		c->command = expand_vars(
 			c->command, c, False, False, func_rc, exc);
+#if 1 /*!!!*/
+fprintf(stderr, "%s: c->command '%s'\n", __func__, (c->command) ? c->command : "(nil)");
+#endif
 		free(tmp);
 	}
 	if (c->command && !ocp_is_module_config(c))
@@ -292,11 +301,17 @@ static const char *ocp_parse_command_name(
 		 * fail */
 		char *tmp = c->command;
 
+#if 1 /*!!!*/
+fprintf(stderr, "%s: remove trailing spaces\n", __func__);
+#endif
 		while (*tmp && !isspace(*tmp))
 		{
 			tmp++;
 		}
 		*tmp = 0;
+#if 1 /*!!!*/
+fprintf(stderr, "%s: c->command '%s'\n", __func__, (c->command) ? c->command : "(nil)");
+#endif
 #endif
 		return c->command;
 	}
@@ -330,6 +345,9 @@ static cmdparser_execute_type_t ocp_find_something_to_execute(
 {
 	int is_function_builtin;
 
+#if 1 /*!!!*/
+fprintf(stderr, "%s: c->command '%s'\n", __func__, (c->command) ? c->command : "(nil)");
+#endif
 	*ret_complex_function = NULL;
 	/* Note: the module config command, "*" can not be handled by the
 	 * regular command table because there is no required white space after
@@ -380,8 +398,14 @@ static cmdparser_execute_type_t ocp_find_something_to_execute(
 		{
 			break;
 		}
+#if 1 /*!!!*/
+fprintf(stderr, "%s: lookup cf '%s'\n", __func__, complex_function_name);
+#endif
 		*ret_complex_function =
 			find_complex_function(complex_function_name);
+#if 1 /*!!!*/
+fprintf(stderr, "%s: lookup cf '%s' -> %p\n", __func__, complex_function_name, *ret_complex_function);
+#endif
 		if (*ret_complex_function != NULL)
 		{
 			c->cline = rest_of_line;

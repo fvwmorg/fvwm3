@@ -125,21 +125,36 @@ static Bool DeferExecution(
 	original_w = w;
 	wcontext = ret_ecc->w.wcontext;
 	FinishEvent = ((fw != NULL) ? ButtonRelease : ButtonPress);
+#if 1 /*!!!*/
+	fprintf(stderr, "!!!%s: A wc 0x%x\n", __func__, wcontext);
+#endif
 	if (wcontext == C_UNMANAGED && do_allow_unmanaged)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Bf\n", __func__);
+#endif
 		return False;
 	}
 	if (wcontext != C_ROOT && wcontext != C_NO_CONTEXT && fw != NULL &&
 	    wcontext != C_EWMH_DESKTOP)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: C\n", __func__);
+#endif
 		if (FinishEvent == ButtonPress ||
 		    (FinishEvent == ButtonRelease &&
 		     trigger_evtype != ButtonPress))
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Df\n", __func__);
+#endif
 			return False;
 		}
 		else if (FinishEvent == ButtonRelease)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: E\n", __func__);
+#endif
 			/* We are only waiting until the user releases the
 			 * button. Do not change the cursor. */
 			cursor = CRS_NONE;
@@ -148,16 +163,25 @@ static Bool DeferExecution(
 	}
 	if (Scr.flags.are_functions_silent)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Ft\n", __func__);
+#endif
 		return True;
 	}
 	if (!GrabEm(cursor, GRAB_NORMAL))
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Gt\n", __func__);
+#endif
 		XBell(dpy, 0);
 		return True;
 	}
 	MyXGrabKeyboard(dpy);
 	while (!finished)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: H\n", __func__);
+#endif
 		done = 0;
 		/* block until there is an event */
 		FMaskEvent(
@@ -168,9 +192,15 @@ static Bool DeferExecution(
 
 		if (e.type == KeyPress)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: I\n", __func__);
+#endif
 			KeySym keysym = XLookupKeysym(&e.xkey, 0);
 			if (keysym == XK_Escape)
 			{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Jt\n", __func__);
+#endif
 				ret_ecc->x.etrigger = &e;
 				*ret_mask |= ECC_ETRIGGER;
 				UngrabEm(GRAB_NORMAL);
@@ -181,33 +211,57 @@ static Bool DeferExecution(
 		}
 		if (e.type == FinishEvent)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: K\n", __func__);
+#endif
 			finished = 1;
 		}
 		switch (e.type)
 		{
 		case KeyPress:
 		case ButtonPress:
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: L\n", __func__);
+#endif
 			if (e.type != FinishEvent)
 			{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: M\n", __func__);
+#endif
 				original_w = e.xany.window;
 			}
 			done = 1;
 			break;
 		case ButtonRelease:
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: N\n", __func__);
+#endif
 			done = 1;
 			break;
 		default:
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: O\n", __func__);
+#endif
 			break;
 		}
 		if (!done)
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: P\n", __func__);
+#endif
 			dispatch_event(&e);
 		}
 	}
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Q\n", __func__);
+#endif
 	MyXUngrabKeyboard(dpy);
 	UngrabEm(GRAB_NORMAL);
 	if (just_waiting_for_finish)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Rf\n", __func__);
+#endif
 		return False;
 	}
 	w = e.xany.window;
@@ -216,11 +270,17 @@ static Bool DeferExecution(
 	if ((w == Scr.Root || w == Scr.NoFocusWin) &&
 	    e.xbutton.subwindow != None)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: S\n", __func__);
+#endif
 		w = e.xbutton.subwindow;
 		e.xany.window = w;
 	}
 	if (w == Scr.Root || IS_EWMH_DESKTOP(w))
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Tt\n", __func__);
+#endif
 		ret_ecc->w.w = w;
 		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
@@ -229,6 +289,9 @@ static Bool DeferExecution(
 	*ret_mask |= ECC_FW;
 	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&fw) == XCNOENT)
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Ut\n", __func__);
+#endif
 		ret_ecc->w.fw = NULL;
 		ret_ecc->w.w = w;
 		ret_ecc->w.wcontext = C_ROOT;
@@ -237,10 +300,16 @@ static Bool DeferExecution(
 	}
 	if (w == FW_W_PARENT(fw))
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: V\n", __func__);
+#endif
 		w = FW_W(fw);
 	}
 	if (original_w == FW_W_PARENT(fw))
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: W\n", __func__);
+#endif
 		original_w = FW_W(fw);
 	}
 	/* this ugly mess attempts to ensure that the release and press
@@ -249,8 +318,14 @@ static Bool DeferExecution(
 	    original_w != None && original_w != Scr.NoFocusWin &&
 	    !IS_EWMH_DESKTOP(original_w))
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: X\n", __func__);
+#endif
 		if (w != FW_W_FRAME(fw) || original_w != FW_W(fw))
 		{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Yt\n", __func__);
+#endif
 			ret_ecc->w.fw = fw;
 			ret_ecc->w.w = w;
 			ret_ecc->w.wcontext = C_ROOT;
@@ -261,12 +336,18 @@ static Bool DeferExecution(
 
 	if (IS_EWMH_DESKTOP(FW_W(fw)))
 	{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: Zt\n", __func__);
+#endif
 		ret_ecc->w.fw = fw;
 		ret_ecc->w.w = w;
 		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return True;
 	}
+#if 1 /*!!!*/
+fprintf(stderr, "!!!%s: @f\n", __func__);
+#endif
 	wcontext = GetContext(NULL, fw, &e, &dummy);
 	ret_ecc->w.fw = fw;
 	ret_ecc->w.w = w;
@@ -297,9 +378,6 @@ static void __execute_command_line(
 	Window dummy_w;
 	int rc;
 
-#if 1 /*!!!*/
-	fprintf(stderr, "%s: cpc %p, xaction '%s'\n", __func__, caller_pc, xaction);
-#endif
 	set_silent = 0;
 	/* generate a parsing context; this *must* be destroyed before
 	 * returning */
@@ -359,10 +437,12 @@ cmdparser_hooks->debug(&pc, "!!!C");
 	{
 		if (exec_flags & FUNC_IS_UNMANAGED)
 		{
+fprintf(stderr, "!!!AAA unmanaged\n");
 			w = exc->w.w;
 		}
 		else
 		{
+fprintf(stderr, "!!!BBB root\n");
 			w = Scr.Root;
 		}
 	}
@@ -407,11 +487,12 @@ cmdparser_hooks->debug(&pc, "!!!C");
 		{
 cmdparser_hooks->debug(&pc, "!!!D");
 			bif = find_builtin_function(func);
+fprintf(stderr, "!!! --> find bif '%s' -> %p\n", func, bif);
 			err_func = func;
 		}
 		else
 		{
-cmdparser_hooks->debug(&pc, "!!!E");
+cmdparser_hooks->debug(&pc, "!!!E no command name");
 			bif = NULL;
 			err_func = "";
 		}
@@ -466,6 +547,7 @@ cmdparser_hooks->debug(&pc, "!!!J");
 #endif
 #if 1 /*!!!*/
 fprintf(stderr, "!!!pc.cline: '%s'\n", pc.cline);
+fprintf(stderr, "!!!bif: '%s' 0x%x\n", bif->keyword, bif->flags);
 #endif
 		mask = (w != exc->w.w) ? ECC_W : 0;
 		ecc.w.fw = exc->w.fw;
@@ -482,6 +564,9 @@ fprintf(stderr, "!!!pc.cline: '%s'\n", pc.cline);
 				(bif->flags & FUNC_ALLOW_UNMANAGED));
 			if (rc == True)
 			{
+#if 1 /*!!!*/
+fprintf(stderr, "!!!not deferred: %d\n", rc);
+#endif
 				break;
 			}
 #if 1 /*!!!*/
@@ -512,7 +597,7 @@ fprintf(stderr, "!!!erase PressedW\n");
 			PressedW = None;
 		}
 #if 1 /*!!!*/
-fprintf(stderr, "!!!execute '%s'\n", bif->keyword);
+fprintf(stderr, "!!!execute '%s' (fw %p)\n", bif->keyword, exc2->w.fw);
 #endif
 		bif->action(func_rc, exc2, pc.cline, &pc);
 		PressedW = dummy_w;
