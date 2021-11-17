@@ -3465,93 +3465,6 @@ WindowId 0x3800002 FakeKeypress press A
 +
 Note: all command names can be abbreviated with their first letter.
 
-*GlobalOpts* [_options_]::
-	This command is obsolete. Please replace the global options in your
-	configuration file according to the following table:
-+
-
-....
-GlobalOpts WindowShadeShrinks
--->
-Style * WindowShadeShrinks
-
-GlobalOpts WindowShadeScrolls
--->
-Style * WindowShadeScrolls
-
-GlobalOpts SmartPlacementIsReallySmart
--->
-Style * MinOverlapPlacement
-
-GlobalOpts SmartPlacementIsNormal
--->
-Style * TileCascadePlacement
-
-GlobalOpts ClickToFocusDoesntPassClick
--->
-Style * ClickToFocusPassesClickOff
-
-GlobalOpts ClickToFocusPassesClick
--->
-Style * ClickToFocusPassesClick
-
-GlobalOpts ClickToFocusDoesntRaise
--->
-Style * ClickToFocusRaisesOff
-
-GlobalOpts ClickToFocusRaises
--->
-Style * ClickToFocusRaises
-
-GlobalOpts MouseFocusClickDoesntRaise
--->
-Style * MouseFocusClickRaisesOff
-
-GlobalOpts MouseFocusClickRaises
--->
-Style * MouseFocusClickRaises
-
-GlobalOpts NoStipledTitles
--->
-Style * !StippledTitle
-
-GlobalOpts StipledTitles
--->
-Style * StippledTitle
-
-GlobalOpts CaptureHonorsStartsOnPage
--->
-Style * CaptureHonorsStartsOnPage
-
-GlobalOpts CaptureIgnoresStartsOnPage
--->
-Style * CaptureIgnoresStartsOnPage
-
-GlobalOpts RecaptureHonorsStartsOnPage
--->
-Style * RecaptureHonorsStartsOnPage
-
-GlobalOpts RecaptureIgnoresStartsOnPage
--->
-Style * RecaptureIgnoresStartsOnPage
-
-GlobalOpts ActivePlacementHonorsStartsOnPage
--->
-Style * ManualPlacementHonorsStartsOnPage
-
-GlobalOpts ActivePlacementIgnoresStartsOnPage
--->
-Style * ManualPlacementIgnoresStartsOnPage
-
-GlobalOpts RaiseOverNativeWindows
--->
-BugOpts RaiseOverNativeWindows on
-
-GlobalOpts IgnoreNativeWindows
--->
-BugOpts RaiseOverNativeWindows off
-....
-
 *HilightColor* _textcolor_ _backgroundcolor_::
 	This command is obsoleted by the *Style* options _HilightFore_ and
 	_HilightBack_. Please use
@@ -6404,23 +6317,12 @@ it hits the bottom screen border.
 _Old placement styles_ DumbPlacement / SmartPlacement /
 SmartPlacementOff, CleverPlacement / CleverPlacementOff,
 ActivePlacement / RandomPlacement, ActivePlacementsHonorsStartsOnPage
-/ ActivePlacementsHonorsStartsOnPageOff, GlobalOpts
-SmartPlacementIsReallySmart / GlobalOpts SmartPlacementIsNormal are
+/ ActivePlacementsHonorsStartsOnPageOff are
 still supported but will be removed in the future. The old and new
 styles can be translated according to the following table:
 +
 
 ....
-GlobalOpts SmartPlacementIsReallySmart
-Style * SmartPlacement
--->
-Style * SmartPlacement, CleverPlacement
-
-GlobalOpts SmartPlacementIsNormal
-Style * SmartPlacement
--->
-Style * SmartPlacement, CleverPlacementOff
-
 Style * DumbPlacement, RandomPlacement
 -->
 Style * CascadePlacement

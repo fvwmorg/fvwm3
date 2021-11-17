@@ -276,7 +276,6 @@ void CMD_Focus(F_CMD_ARGS);
 void CMD_FocusStyle(F_CMD_ARGS);
 void CMD_Function(F_CMD_ARGS);
 void CMD_GeometryWindow(F_CMD_ARGS);
-void CMD_GlobalOpts(F_CMD_ARGS);
 void CMD_GotoDesk(F_CMD_ARGS);
 void CMD_GotoDeskAndPage(F_CMD_ARGS);
 void CMD_GotoPage(F_CMD_ARGS);

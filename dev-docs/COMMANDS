@@ -68,7 +68,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   Focus                 - Give focus to a window
   FocusStyle            - Configure focus and raise policy for windows
   Function              - Execute a user defined function, see AddToFunc
-  GlobalOpts            - (obsolete, use corresponding Style * instead)
   GnomeButton           - Pass mouse button presses on root to GNOME program
   GnomeShowDesks        - Limit GNOME pager to the number of desks
   GotoDesk              - Switch viewport to another desk same page
