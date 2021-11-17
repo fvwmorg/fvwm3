@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef CMDPARSER_HOOKS_H
-#define CMDPARSER_HOOKS_H
+#ifndef FVWM_CMDPARSER_HOOKS_H
+#define FVWM_CMDPARSER_HOOKS_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -46,7 +46,7 @@ typedef struct
 	/* returns 1 if the stored command is a module configuration command
 	 * and 0 otherwise */
 	int (*is_module_config)(cmdparser_context_t *context);
-	/* expandeds the command line */
+	/* expands the command line */
 	void (*expand_command_line)(
 		cmdparser_context_t *context, int is_addto, void *func_rc,
 		const void *exc);
@@ -55,10 +55,10 @@ typedef struct
 	void (*release_expanded_line)(cmdparser_context_t *context);
 	/* Tries to find a builtin function, a complex function or a module
 	 * config line to execute and returns the type found or
-	 * CP_EXECTYPE_UNKNOWN if none of the above was identified.  For a
-	 * builtin or a complex funtion the pointer to the description is
+	 * CP_EXECTYPE_UNKNOWN if none of the above were identified.  For a
+	 * builtin or a complex function, the pointer to the description is
 	 * returned in *ret_builtin or *ret_complex_function.  Consumes the
-	 * the "Module" or the "Function" command form the input.  Dos not
+	 * the "Module" or the "Function" command from the input.  Does not
 	 * consider builtin functions if *ret_builtin is != NULL when the
 	 * function is called.  */
 	cmdparser_execute_type_t (*find_something_to_execute)(
@@ -71,4 +71,4 @@ typedef struct
 	void (*debug)(cmdparser_context_t *context, const char *msg);
 } cmdparser_hooks_t;
 
-#endif /* CMDPARSER_HOOKS_H */
+#endif /* FVWM_CMDPARSER_HOOKS_H */

@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef CMDPARSER_H
-#define CMDPARSER_H
+#ifndef FVWM_CMDPARSER_H
+#define FVWM_CMDPARSER_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -62,4 +62,4 @@ typedef struct
 	char *pos_arg_tokens[CMDPARSER_NUM_POS_ARGS];
 } cmdparser_context_t;
 
-#endif /* CMDPARSER_H */
+#endif /* FVWM_CMDPARSER_H */
