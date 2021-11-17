@@ -417,12 +417,6 @@ $TIME = 1410306754;
 		descr => q{Execute a user defined function, see AddToFunc},
 	},
 	{
-		name => 'GlobalOpts',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use corresponding Style * instead)},
-	},
-	{
 		name => 'GnomeButton',
 		cursor => '',
 		window => 0,

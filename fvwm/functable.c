@@ -285,9 +285,6 @@ const func_t func_table[] =
 	CMD_ENT("geometrywindow", CMD_GeometryWindow, F_GEOMWINDOW, 0, 0),
 	/* - Configuration settings for position/size window */
 
-	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0),
-	/* - (obsolete, use corresponding Style * instead) */
-
 	CMD_ENT("gotodesk", CMD_GotoDesk, F_GOTO_DESK, 0, 0),
 	/* - Switch viewport to another desk same page */
 

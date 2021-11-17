@@ -1819,7 +1819,6 @@ CMD_WINDOWSHADEANIMATE = "WindowShadeAnimate" ; Style * WindowShadeSteps
 CMD_WINDOWSDESK = "WindowsDesk" ; See 'MoveToDesk'
 CMD_DESK = "Desk" ; See 'Gotodesk'
 CMD_EDGERESISTANCE = "EdgeResistance" ; Style * EdgeMoveDelay, EdgeMoveResistance
-CMD_GLOBALOPTS = "GlobalOpts" ; Various Style options
 CMD_HIDEGEOMETRYWINDOW = "HideGeometryWindow" ; GeometryWindow Hide
 CMD_HILIGHTCOLOR = "HilightColor" ; Style
 CMD_ICONFONT = "IconFont" FONTNAME ; Style
