@@ -27,7 +27,7 @@
 #include "libs/Strings.h"
 #include "fvwm.h"
 #include "functions.h"
-#include "repeat.h"
+#include "cmdparser.h"
 #include "misc.h"
 #include "move_resize.h"
 #include "screen.h"
@@ -90,11 +90,10 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 		}
 		return;
 	}
-	if (menu_name &&
-	    set_repeat_data(
-		    menu_name, (fStaysUp) ? REPEAT_MENU : REPEAT_POPUP,NULL))
+	if (menu_name)
 	{
 		free(menu_name);
+		menu_name = NULL;
 	}
 
 	memset(&mp, 0, sizeof(mp));
@@ -113,7 +112,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	do_menu(&mp, &mret);
 	if (mret.rc == MENU_DOUBLE_CLICKED && action)
 	{
-		execute_function(cond_rc, exc2, action, 0);
+		execute_function(cond_rc, exc2, action, NULL, 0);
 	}
 	if (ret_action != NULL)
 	{

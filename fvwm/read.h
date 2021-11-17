@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "condrc.h"
 #include "execcontext.h"
+#include "cmdparser.h"
 
 /**
  * Full pathname of file read in progress, or NULL.
@@ -30,6 +31,7 @@ void run_command_stream(
  * fvwm_userdir (set in main()) or in FVWM_DATADIR.  Return 1
  * if the file was found and executed.
  **/
-int run_command_file(char *filename, const exec_context_t *exc);
+int run_command_file(
+	char *filename, const exec_context_t *exc, cmdparser_context_t *pc);
 
 #endif

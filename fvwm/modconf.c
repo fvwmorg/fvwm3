@@ -90,6 +90,9 @@ void ModuleConfig(char *action)
 	fmodule *module;
 	struct moduleInfoList *new_entry;
 
+#if 1 /*!!!*/
+fprintf(stderr, "%s: action '%s'\n", __func__, (action) ? action : "(nil)");
+#endif
 	end = strlen(action) - 1;
 	if (action[end] == '\n')
 		action[end] = '\0';
@@ -143,8 +146,16 @@ static struct moduleInfoList *AddToModList(char *tline)
 	{
 		/* migo (01-Sep-2000): construct an old-style config line */
 		char *conf_start = alias_end + 1;
+#if 1 /*!!!*/
+fprintf(stderr, "%s: conf_start '%s'\n", __func__, conf_start);
+#endif
 		while (isspace(*conf_start)) conf_start++;
 		*alias_end = '\0';
+#if 1 /*!!!*/
+fprintf(stderr, "%s: alias '%s'\n", __func__, tline ? tline : "(nil)");
+fprintf(stderr, "%s: conf_start '%s'\n", __func__, conf_start);
+#endif
+
 		xasprintf(&rline, "%s%s", tline, conf_start);
 		*alias_end = MODULE_CONFIG_DELIM;
 		this->alias_len = alias_end - tline;
@@ -152,9 +163,13 @@ static struct moduleInfoList *AddToModList(char *tline)
 
 	exc = exc_create_null_context();
 	this->data = expand_vars(rline, NULL, False, True, NULL, exc);
+#if 1 /*!!!*/
+fprintf(stderr, "%s: mldata '%s', mlaliaslen %d\n", __func__, this->data, this->alias_len);
+#endif
 	exc_destroy_context(exc);
 	/* Free rline only if it is xasprintf'd memory (not pointing at tline
-	 * anymore). If we free our tline argument it causes a crash in __execute_function. */
+	 * anymore). If we free our tline argument it causes a crash in
+	 * __execute_function. */
 	if (rline != tline)
 		free(rline);
 

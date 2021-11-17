@@ -250,7 +250,7 @@ static void add_to_junk(Pixmap pixmap)
 		const exec_context_t *exc;
 
 		exc = exc_create_null_context();
-		CMD_Schedule(NULL, exc, "3000 CleanupColorsets");
+		CMD_Schedule(NULL, exc, "3000 CleanupColorsets", NULL);
 		exc_destroy_context(exc);
 		cleanup_scheduled = True;
 	}

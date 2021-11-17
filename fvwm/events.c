@@ -70,6 +70,7 @@
 #include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "cursor.h"
 #include "functions.h"
 #include "commands.h"
@@ -1622,7 +1623,7 @@ static Bool __handle_bpress_action(
 		/* release the pointer since it can't do harm over an icon */
 		XAllowEvents(dpy, AsyncPointer, CurrentTime);
 	}
-	execute_function(NULL, exc, action, 0);
+	execute_function(NULL, exc, action, NULL, 0);
 	if (exc->w.wcontext != C_WINDOW && exc->w.wcontext != C_NO_CONTEXT)
 	{
 		WaitForButtonsUp(True);
@@ -1660,7 +1661,7 @@ static void __handle_bpress_on_root(const exec_context_t *exc)
 
 		ecc.w.wcontext = C_ROOT;
 		exc2 = exc_clone_context(exc, &ecc, ECC_WCONTEXT);
-		execute_function(NULL, exc2, action, 0);
+		execute_function(NULL, exc2, action, NULL, 0);
 		exc_destroy_context(exc2);
 		WaitForButtonsUp(True);
 	}
@@ -1824,27 +1825,30 @@ monitor_emit_broadcast(void)
 
 	TAILQ_FOREACH (m, &monitor_q, entry) {
 		if (m->emit & MONITOR_CHANGED) {
-			BroadcastName(MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
+			BroadcastName(
+				MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
 			m->emit &= ~MONITOR_ALL;
 			m->flags &= ~MONITOR_CHANGED;
 
 			/* Run the RandRFunc in case a user has set it. */
-			execute_function_override_window(NULL, NULL, randrfunc,
-			    0, NULL);
+			execute_function_override_window(
+				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 		if (m->emit & MONITOR_ENABLED) {
-			BroadcastName(MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
+			BroadcastName(
+				MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
 
 			/* Run the RandRFunc in case a user has set it. */
-			execute_function_override_window(NULL, NULL, randrfunc,
-			    0, NULL);
+			execute_function_override_window(
+				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 		if (m->emit & MONITOR_DISABLED) {
-			BroadcastName(MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
+			BroadcastName(
+				MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
 
 			/* Run the RandRFunc in case a user has set it. */
-			execute_function_override_window(NULL, NULL, randrfunc,
-			    0, NULL);
+			execute_function_override_window(
+				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 	}
 }
@@ -1895,7 +1899,7 @@ void HandleClientMessage(const evh_args_t *ea)
 
 		ecc.w.wcontext = C_WINDOW;
 		exc = exc_clone_context(ea->exc, &ecc, ECC_WCONTEXT);
-		execute_function(NULL, exc, "Iconify", 0);
+		execute_function(NULL, exc, "Iconify", NULL, 0);
 		exc_destroy_context(exc);
 		return;
 	}
@@ -2260,7 +2264,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 		else if (edge_command)
 		{
 			fvwm_debug(__func__, "EC is: %s", edge_command);
-			execute_function(NULL, ea->exc, edge_command, 0);
+			execute_function(NULL, ea->exc, edge_command, NULL, 0);
 		}
 		else
 		{
@@ -2677,7 +2681,7 @@ void __handle_key(const evh_args_t *ea, Bool is_press)
 			exc = exc_clone_context(
 				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
 		}
-		execute_function(NULL, exc, action, 0);
+		execute_function(NULL, exc, action, NULL, 0);
 		if (is_second_binding == False)
 		{
 			exc_destroy_context(exc);
@@ -2821,7 +2825,8 @@ void HandleLeaveNotify(const evh_args_t *ea)
 		}
 		else if (edge_command_leave)
 		{
-			execute_function(NULL, ea->exc, edge_command_leave, 0);
+			execute_function(
+				NULL, ea->exc, edge_command_leave, NULL, 0);
 		}
 	}
 
@@ -3192,7 +3197,8 @@ void HandleMapRequestKeepRaised(
 			{
 				execute_function_override_window(
 					NULL, ea->exc,
-					(char *)initial_map_command, 0, fw);
+					(char *)initial_map_command, NULL, 0,
+					fw);
 			}
 			MyXUngrabServer(dpy);
 
@@ -3635,7 +3641,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			ecc.w.wcontext = C_WINDOW;
 			exc = exc_clone_context(
 				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
-			execute_function(NULL, exc, urgency_action, 0);
+			execute_function(NULL, exc, urgency_action, NULL, 0);
 			exc_destroy_context(exc);
 		}
 		break;

@@ -24,6 +24,7 @@
 #include "libs/ftime.h"
 #include "libs/Parse.h"
 #include "libs/Target.h"
+#include "libs/fvwmrect.h"
 #include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
