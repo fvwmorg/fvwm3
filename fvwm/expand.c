@@ -28,7 +28,9 @@
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
+#include "cmdparser.h"
 #include "functions.h"
+#include "expand.h"
 #include "misc.h"
 #include "move_resize.h"
 #include "screen.h"
@@ -1206,7 +1208,7 @@ GOT_STRING:
 /* ---------------------------- interface functions ------------------------ */
 
 char *expand_vars(
-	char *input, char *arguments[], Bool addto, Bool ismod,
+	char *input, cmdparser_context_t *pc, Bool addto, Bool ismod,
 	cond_rc_t *cond_rc, const exec_context_t *exc)
 {
 	int l, i, l2, n, k, j, m;
@@ -1280,12 +1282,12 @@ char *expand_vars(
 					if (name_has_dollar)
 					{
 						var = expand_vars(
-							var, arguments, addto,
-							ismod, cond_rc, exc);
+							var, pc, addto, ismod,
+							cond_rc, exc);
 					}
 					xlen = expand_args_extended(
-						var, arguments ? arguments[0] :
-						NULL, NULL);
+						var, pc->all_pos_args_string,
+						NULL);
 					if (xlen < 0)
 					{
 						xlen = expand_vars_extended(
@@ -1315,20 +1317,26 @@ char *expand_vars(
 			case '8':
 			case '9':
 			case '*':
+			{
+				char *s;
+
 				if (input[i + 1] == '*')
 				{
-					n = 0;
+					s = pc->all_pos_args_string;
 				}
 				else
 				{
-					n = input[i + 1] - '0' + 1;
+					n = input[i + 1] - '0';
+					s = pc->pos_arg_tokens[n];
 				}
-				if (arguments[n] != NULL)
+				n = input[i + 1] - '0';
+				if (s != NULL)
 				{
-					l2 += strlen(arguments[n]) - 2;
+					l2 += strlen(s) - 2;
 					i++;
 				}
 				break;
+			}
 			case '.':
 				string = get_current_read_dir();
 				break;
@@ -1459,12 +1467,11 @@ char *expand_vars(
 					if (name_has_dollar)
 					{
 						var = expand_vars(
-							var, arguments,	addto,
-							ismod, cond_rc,	exc);
+							var, pc, addto, ismod,
+							cond_rc, exc);
 					}
 					xlen = expand_args_extended(
-						var, arguments ?
-						arguments[0] : NULL,
+						var, pc->all_pos_args_string,
 						&out[j]);
 					if (xlen < 0)
 					{
@@ -1509,19 +1516,23 @@ char *expand_vars(
 			case '8':
 			case '9':
 			case '*':
+			{
+				char *s;
+
 				if (input[i + 1] == '*')
 				{
-					n = 0;
+					s = pc->all_pos_args_string;
 				}
 				else
 				{
-					n = input[i + 1] - '0' + 1;
+					n = input[i + 1] - '0';
+					s = pc->pos_arg_tokens[n];
 				}
-				if (arguments[n] != NULL)
+				if (s != NULL)
 				{
-					for (k = 0; arguments[n][k]; k++)
+					for (k = 0; s[k]; k++)
 					{
-						out[j++] = arguments[n][k];
+						out[j++] = s[k];
 					}
 					i++;
 				}
@@ -1534,6 +1545,7 @@ char *expand_vars(
 					i++;
 				}
 				break;
+			}
 			case '.':
 				string = get_current_read_dir();
 				is_string = True;

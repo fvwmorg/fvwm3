@@ -28,6 +28,7 @@
 #include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "execcontext.h"
 #include "expand.h"
 #include "cursor.h"
@@ -64,7 +65,8 @@
 	do {								    \
 		char	*cmd;						    \
 		xasprintf(&cmd, "GotoDesk %s 0 %d", (m)->si->name, (d));    \
-		execute_function_override_window(NULL, NULL, cmd, 0, NULL); \
+		execute_function_override_window(			    \
+			NULL, NULL, cmd, NULL, 0, NULL);		    \
 		free(cmd);						    \
 	} while (0)
 
@@ -74,7 +76,8 @@
 		xasprintf(&cmd, "All (!Screen %s, Desk %d, !CirculateHit) " \
 		    "MoveToPage %s $[w.pagex] $[w.pagey]",		    \
 		    (m)->si->name, (d), (m)->si->name);			    \
-		execute_function_override_window(NULL, NULL, cmd, 0, NULL); \
+		execute_function_override_window(			    \
+			NULL, NULL, cmd, NULL, 0, NULL);		    \
 		free(cmd);                                                  \
 	} while (0)
 
@@ -628,8 +631,8 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 					/* execute_function_override_window()
 					 * will expand cmd's variables.
 					 */
-					execute_function_override_window(NULL,
-					    NULL, cmd, 0, t);
+					execute_function_override_window(
+						NULL, NULL, cmd, NULL, 0, t);
 					free(cmd);
 
 					/* No need to map the window as it's
@@ -2204,14 +2207,11 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 			   " instead:\n%s\n%s\n%s\n", cmd, stylecmd,
 			   stylecmd2);
 		execute_function(
-			cond_rc, exc, cmd,
-			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+			cond_rc, exc, cmd, pc, FUNC_DONT_EXPAND_COMMAND);
 		execute_function(
-			cond_rc, exc, stylecmd,
-			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+			cond_rc, exc, stylecmd, pc, FUNC_DONT_EXPAND_COMMAND);
 		execute_function(
-			cond_rc, exc, stylecmd2,
-			FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
+			cond_rc, exc, stylecmd2, pc, FUNC_DONT_EXPAND_COMMAND);
 	}
 	else
 	{
@@ -2249,7 +2249,8 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 				m->virtual_scr.Vx / monitor_get_all_widths(),
 				m->virtual_scr.Vy / monitor_get_all_heights());
 
-			execute_function_override_window(NULL, NULL, cmd, 0, NULL);
+			execute_function_override_window(
+				NULL, NULL, cmd, NULL, 0, NULL);
 			free(cmd);
 		}
 		monitor_mode = MONITOR_TRACKING_G;
@@ -2660,8 +2661,8 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 				xasprintf(&cmd,
 				    "MoveToPage %s $[w.pagex] $[w.pagey]",
 				    m->si->name);
-				execute_function_override_window(NULL, NULL,
-				    cmd, 0, fw);
+				execute_function_override_window(
+					NULL, NULL, cmd, NULL, 0, fw);
 				free(cmd);
 
 				return;

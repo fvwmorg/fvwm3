@@ -37,6 +37,7 @@
 #include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "execcontext.h"
 #include "events.h"
 #include "eventhandler.h"
@@ -242,7 +243,7 @@ static void __menu_execute_function(const exec_context_t **pexc, char *action)
 	exc = exc_clone_context(*pexc, &ecc, ECC_W);
 	old_emf = Scr.flags.is_executing_menu_function;
 	Scr.flags.is_executing_menu_function = 1;
-	execute_function(NULL, exc, action, FUNC_DONT_EXPAND_COMMAND);
+	execute_function(NULL, exc, action, NULL, FUNC_DONT_EXPAND_COMMAND);
 	Scr.flags.is_executing_menu_function = old_emf;
 	exc_destroy_context(exc);
 	/* See if the window has been deleted */
@@ -5610,6 +5611,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	char *action;
 	cond_rc_t *cond_rc = NULL;
 	const exec_context_t *exc = NULL;
+	cmdparser_context_t *pc = NULL;
 
 	/* keep the menu open */
 	if (MR_WINDOW(mr_to_copy) != None)

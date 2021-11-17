@@ -84,7 +84,7 @@ const func_t func_table[] =
 	/* - Operate on all windows matching the given condition */
 
 	CMD_ENT("animatedmove", CMD_AnimatedMove, F_ANIMATED_MOVE,
-		FUNC_NEEDS_WINDOW, CRS_MOVE),
+		FUNC_NEEDS_WINDOW | FUNC_IS_MOVE_TYPE, CRS_MOVE),
 	/* - Like Move, but uses animation to move windows */
 
 	CMD_ENT("any", CMD_Any, F_ANY, 0, 0),
@@ -381,7 +381,7 @@ const func_t func_table[] =
 	/* - Bind or unbind a mouse button press to an fvwm action */
 
 	CMD_ENT("move", CMD_Move, F_MOVE,
-		FUNC_NEEDS_WINDOW, CRS_MOVE),
+		FUNC_NEEDS_WINDOW | FUNC_IS_MOVE_TYPE, CRS_MOVE),
 	/* - Move a window */
 
 	CMD_ENT("movethreshold", CMD_MoveThreshold, F_MOVE_THRESHOLD, 0, 0),
@@ -405,7 +405,7 @@ const func_t func_table[] =
 	CMD_ENT("none", CMD_None, F_NONE, 0, 0),
 	/* - Perform command if no window matches conditions */
 
-	CMD_ENT("nop", CMD_Nop, F_NOP, FUNC_DONT_REPEAT, 0),
+	CMD_ENT("nop", CMD_Nop, F_NOP, 0, 0),
 	/* - Do nothing (used internally) */
 
 	CMD_ENT("nowindow", CMD_NoWindow, F_NOP, 0, 0),
@@ -475,23 +475,21 @@ const func_t func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Cause one window to redraw itself */
 
-	CMD_ENT(PRE_REPEAT, CMD_Repeat, F_REPEAT, FUNC_DONT_REPEAT, 0),
-	/* - Repeat (very unreliably) the last command, don't use */
-
 	CMD_ENT("resize", CMD_Resize, F_RESIZE,
-		FUNC_NEEDS_WINDOW, CRS_RESIZE),
+		FUNC_NEEDS_WINDOW | FUNC_IS_MOVE_TYPE, CRS_RESIZE),
 	/* - Cause a window to be resized */
 
 	CMD_ENT("resizemaximize", CMD_ResizeMaximize, F_RESIZE_MAXIMIZE,
-		FUNC_NEEDS_WINDOW, CRS_RESIZE),
+		FUNC_NEEDS_WINDOW | FUNC_IS_MOVE_TYPE, CRS_RESIZE),
 	/* - Resize a window and mark window as maximized */
 
 	CMD_ENT("resizemove", CMD_ResizeMove, F_RESIZEMOVE,
-		FUNC_NEEDS_WINDOW, CRS_RESIZE),
+		FUNC_NEEDS_WINDOW | FUNC_IS_MOVE_TYPE, CRS_RESIZE),
 	/* - Resize and move in one operation */
 
 	CMD_ENT("resizemovemaximize", CMD_ResizeMoveMaximize,
-		F_RESIZEMOVE_MAXIMIZE, FUNC_NEEDS_WINDOW, CRS_RESIZE),
+		F_RESIZEMOVE_MAXIMIZE, FUNC_NEEDS_WINDOW | FUNC_IS_MOVE_TYPE,
+		CRS_RESIZE),
 	/* - Resize and move in one operation and mark maximized */
 
 	CMD_ENT("restacktransients", CMD_RestackTransients, F_RESTACKTRANSIENTS,
@@ -517,31 +515,27 @@ const func_t func_table[] =
 	CMD_ENT("scroll", CMD_Scroll, F_SCROLL, 0, 0),
 	/* - Scroll the desktop viewport */
 
-	CMD_ENT("send_configinfo", CMD_Send_ConfigInfo, F_CONFIG_LIST,
-		FUNC_DONT_REPEAT, 0),
+	CMD_ENT("send_configinfo", CMD_Send_ConfigInfo, F_CONFIG_LIST, 0, 0),
 	/* - Internal, used for module communication */
 
-	CMD_ENT("send_reply", CMD_Send_Reply, F_SEND_REPLY,
-		FUNC_DONT_REPEAT, 0),
+	CMD_ENT("send_reply", CMD_Send_Reply, F_SEND_REPLY, 0, 0),
 	/* - Internal, used for module communication */
 
 	CMD_ENT("send_windowlist", CMD_Send_WindowList, F_SEND_WINDOW_LIST,
-		FUNC_DONT_REPEAT, 0),
+		0, 0),
 	/* - Internal, used for module communication */
 
-	CMD_ENT("sendtomodule", CMD_SendToModule, F_SEND_STRING,
-		FUNC_DONT_REPEAT, 0),
+	CMD_ENT("sendtomodule", CMD_SendToModule, F_SEND_STRING, 0, 0),
 	/* - Send a string (action) to a module */
 
-	CMD_ENT("set_mask", CMD_set_mask, F_SET_MASK, FUNC_DONT_REPEAT, 0),
+	CMD_ENT("set_mask", CMD_set_mask, F_SET_MASK, 0, 0),
 	/* - Internal, used for module communication */
 
 	CMD_ENT("set_nograb_mask", CMD_set_nograb_mask, F_SET_NOGRAB_MASK,
-		FUNC_DONT_REPEAT, 0),
+		0, 0),
 	/* - Internal, used for module communication */
 
-	CMD_ENT("set_sync_mask", CMD_set_sync_mask, F_SET_SYNC_MASK,
-		FUNC_DONT_REPEAT, 0),
+	CMD_ENT("set_sync_mask", CMD_set_sync_mask, F_SET_SYNC_MASK, 0, 0),
 	/* - Internal, used for module communication */
 
 	CMD_ENT("setanimation", CMD_SetAnimation, F_SET_ANIMATION, 0, 0),
@@ -651,3 +645,56 @@ const func_t func_table[] =
 
 	{ "", 0, 0, 0, 0 }
 };
+
+/* ---------------------------- local functions ---------------------------- */
+
+/*
+ * do binary search on func list
+ */
+static int func_comp(const void *a, const void *b)
+{
+	return (strcmp((char *)a, ((func_t *)b)->keyword));
+}
+
+/* ---------------------------- interface functions ------------------------ */
+
+const func_t *find_builtin_function(const char *func)
+{
+	static int nfuncs = 0;
+	func_t *ret_func;
+	char *temp;
+	char *s;
+
+	if (!func || func[0] == 0)
+	{
+		return NULL;
+	}
+
+	/* since a lot of lines in a typical rc are probably menu/func
+	 * continues: */
+	if (func[0]=='+' || (func[0] == ' ' && func[1] == '+'))
+	{
+		return &(func_table[0]);
+	}
+
+	temp = fxstrdup(func);
+	for (s = temp; *s != 0; s++)
+	{
+		if (isupper(*s))
+		{
+			*s = tolower(*s);
+		}
+	}
+	if (nfuncs == 0)
+	{
+		for ( ; (func_table[nfuncs]).action != NULL; nfuncs++)
+		{
+			/* nothing to do here */
+		}
+	}
+	ret_func = (func_t *)bsearch(
+		temp, func_table, nfuncs, sizeof(func_t), func_comp);
+	free(temp);
+
+	return ret_func;
+}

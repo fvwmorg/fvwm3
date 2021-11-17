@@ -3655,15 +3655,6 @@ _infostore_ which prints information on all entries in the infostore,
 listing the key and its value. _verbose_ has no effect with this
 option.
 
-*Repeat*::
-	When the *Repeat* command is invoked, the last command that was
-	executed by fvwm is executed again. This happens regardless of whether
-	it was triggered by user interaction, a module or by an X event.
-	Commands that are executed from a function defined with the *Function*
-	command, from the *Read* or *PipeRead* commands or by a menu are not
-	repeated. Instead, the function, menu or the *Read* or *PipeRead*
-	command is executed again.
-
 *Schedule* [Periodic] _delay_ms_ [_command_id_] _command_::
 	The _command_ is executed after about _delay_ms_ milliseconds. This
 	may be useful in some tricky setups. The _command_ is executed in the

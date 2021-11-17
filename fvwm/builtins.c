@@ -544,7 +544,7 @@ static void __remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
 			exc2 = exc_clone_context(
 				exc, &ecc, ECC_FW | ECC_WCONTEXT);
 			execute_function(
-				cond_rc, exc2, "ChangeDecor Default", 0);
+				cond_rc, exc2, "ChangeDecor Default", pc, 0);
 			exc_destroy_context(exc2);
 		}
 	}
@@ -2166,7 +2166,7 @@ void AddToDecor(F_CMD_ARGS, FvwmDecor *decor)
 		return;
 	}
 	Scr.cur_decor = decor;
-	execute_function(cond_rc, exc, action, 0);
+	execute_function(F_PASS_ARGS, 0);
 	Scr.cur_decor = NULL;
 
 	return;
