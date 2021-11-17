@@ -4,4 +4,14 @@
 
 fvwm3all - F? Virtual Window Manager for X11 - meta-man page
 
+== OVERVIEW
+
+fvwm3 contains many features.  Because of this, the documentation is split
+into a number of different sections.  This man page contains all those
+sections which can also be found in these separate manpages:
+
+*fvwm3commands*		builtin fvwm3commands. +
+*fvwm3menus*		commands/options relating to fvwm3menus. +
+*fvwm3styles*		style options for handling windows, menus, etc.
+
 include::fvwm3_manpage_source.adoc[]
