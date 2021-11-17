@@ -33,6 +33,7 @@
 #include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "cursor.h"
 #include "execcontext.h"
 #include "commands.h"
@@ -2193,7 +2194,8 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		if (fWarp & !do_animate)
 		{
 			char *cmd = "WarpToWindow 50 50";
-			execute_function_override_window(NULL, exc, cmd, 0, fw);
+			execute_function_override_window(
+				NULL, exc, cmd, NULL, 0, fw);
 		}
 		if (IS_MAXIMIZED(fw))
 		{
@@ -3397,7 +3399,7 @@ void CMD_HideGeometryWindow(F_CMD_ARGS)
 	    "Converting to use: GeometryWindow hide %s", action);
 
 	xasprintf(&cmd, "GeometryWindow hide %s", action);
-	execute_function_override_window(NULL, NULL, cmd, 0, NULL);
+	execute_function_override_window(NULL, NULL, cmd, NULL, 0, NULL);
 	free(cmd);
 }
 
@@ -3415,7 +3417,7 @@ void CMD_SnapAttraction(F_CMD_ARGS)
 		   "The command SnapAttraction is obsolete. Please use the"
 		   " following command instead:\n\n%s", cmd);
 	execute_function(
-		cond_rc, exc, cmd,
+		cond_rc, exc, cmd, pc,
 		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
 	free(cmd);
 
@@ -3436,7 +3438,7 @@ void CMD_SnapGrid(F_CMD_ARGS)
 		   "The command SnapGrid is obsolete. Please use the following"
 		   " command instead:\n\n%s", cmd);
 	execute_function(
-		cond_rc, exc, cmd,
+		cond_rc, exc, cmd, pc,
 		FUNC_DONT_REPEAT | FUNC_DONT_EXPAND_COMMAND);
 	free(cmd);
 
@@ -4997,7 +4999,7 @@ static void grow_to_closest_type(
 }
 
 static void unmaximize_fvwm_window(
-	FvwmWindow *fw)
+	FvwmWindow *fw, cmdparser_context_t *pc)
 {
 	char	*cmd;
 	rectangle new_g;
@@ -5016,8 +5018,9 @@ static void unmaximize_fvwm_window(
 	 * If the window was not maximized, then we use the window's normal
 	 * geometry.
 	 */
-	get_relative_geometry(fw, &new_g, fw->fullscreen.was_maximized ?
-			&fw->fullscreen.g.max : &fw->g.normal);
+	get_relative_geometry(
+		fw, &new_g, fw->fullscreen.was_maximized ?
+		&fw->fullscreen.g.max : &fw->g.normal);
 
 	if (fw->fullscreen.was_maximized)
 	{
@@ -5049,7 +5052,7 @@ static void unmaximize_fvwm_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
 
 	xasprintf(&cmd, "MoveToScreen %s", fw->m->si->name);
-	execute_function_override_window(NULL, NULL, cmd, 0, fw);
+	execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
 	free(cmd);
 
 	border_draw_decorations(
@@ -5058,14 +5061,14 @@ static void unmaximize_fvwm_window(
 	if (fw->fullscreen.is_shaded)
 	{
 		execute_function_override_window(
-			NULL, NULL, "WindowShade on", 0, fw);
+			NULL, NULL, "WindowShade on", NULL, 0, fw);
 
 		fw->fullscreen.is_shaded = 0;
 	}
 
 	if (fw->fullscreen.is_iconified) {
 		execute_function_override_window(
-			NULL, NULL, "Iconify on", 0, fw);
+			NULL, NULL, "Iconify on", NULL, 0, fw);
 		fw->fullscreen.is_iconified = 0;
 	}
 
@@ -5216,7 +5219,7 @@ void CMD_Maximize(F_CMD_ARGS)
 		}
 
 		if (toggle == 0 && IS_EWMH_FULLSCREEN(fw)) {
-			unmaximize_fvwm_window(fw);
+			unmaximize_fvwm_window(fw, pc);
 			return;
 		}
 		return;
@@ -5368,11 +5371,11 @@ void CMD_Maximize(F_CMD_ARGS)
 	if (do_forget == True)
 	{
 		fw->g.normal = fw->g.max;
-		unmaximize_fvwm_window(fw);
+		unmaximize_fvwm_window(fw, pc);
 	}
 	else if (IS_MAXIMIZED(fw) && !do_force_maximize)
 	{
-		unmaximize_fvwm_window(fw);
+		unmaximize_fvwm_window(fw, pc);
 	}
 	else /* maximize */
 	{

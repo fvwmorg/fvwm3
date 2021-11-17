@@ -33,6 +33,7 @@
 #include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "functions.h"
 #include "bindings.h"
 #include "misc.h"
@@ -727,7 +728,7 @@ void module_input_execute(struct fmodule_input *input)
 	exc = exc_create_context(
 		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT |
 		ECC_MODULE);
-	execute_function(NULL, exc, input->command, flags);
+	execute_function(NULL, exc, input->command, NULL, flags);
 	exc_destroy_context(exc);
 	module_input_discard(input);
 

@@ -147,17 +147,18 @@ static void apply_window_updates(
 			/* stick and unstick the window to force the icon on
 			 * the current page */
 			handle_stick(
-				NULL, exc, "",
+				NULL, exc, "", NULL,
 				S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
 				S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 1, 1);
-			handle_stick(NULL, exc, "", 0, 0, 1, 0);
+			handle_stick(NULL, exc, "", NULL, 0, 0, 1, 0);
 		}
 		flags->do_update_icon_title = True;
 	}
 	else if (flags->do_update_stick)
 	{
 		handle_stick(
-			NULL, exc, "", S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
+			NULL, exc, "", NULL,
+			S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
 			S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 0, 0);
 	}
 	exc_destroy_context(exc);

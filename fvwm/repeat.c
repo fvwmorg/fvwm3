@@ -21,6 +21,7 @@
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "cursor.h"
 #include "functions.h"
 #include "repeat.h"
@@ -84,6 +85,9 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  * pointer (i.e. the first function call has a depth of one, functions called
  * from within this function have depth 2 and higher, this may be applicable
  * to future enhancements like menus).
+ *
+ * Returns True if the caller needs to free the string himself and False if
+ * the repeat module will take care of freeing the string.
  *
  * TODO: [finish and update description]
  */
@@ -157,7 +161,7 @@ void CMD_Repeat(F_CMD_ARGS)
 	default:
 		action = last.command_line;
 		execute_function(
-			cond_rc, exc, action, FUNC_DONT_EXPAND_COMMAND);
+			cond_rc, exc, action, pc, FUNC_DONT_EXPAND_COMMAND);
 		break;
 	}
 	repeat_depth--;

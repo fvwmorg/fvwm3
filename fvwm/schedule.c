@@ -25,6 +25,7 @@
 #include "libs/FEvent.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "cmdparser.h"
 #include "colorset.h"
 #include "bindings.h"
 #include "misc.h"
@@ -189,7 +190,7 @@ static void execute_obj_func(void *object, void *args)
 			mask |= ECC_FW;
 		}
 		exc = exc_create_context(&ecc, mask);
-		execute_function(NULL, exc, obj->command, 0);
+		execute_function(NULL, exc, obj->command, NULL, 0);
 		exc_destroy_context(exc);
 	}
 	if (obj->period > 0)

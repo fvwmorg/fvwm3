@@ -41,6 +41,7 @@
 #include "libs/FScreen.h"
 #include "window_flags.h"
 #include "condrc.h"
+#include "cmdparser.h"
 
 /* ---------------------------- global definitions ------------------------- */
 
@@ -59,9 +60,9 @@
 
 /* Macro for args passed to fvwm commands... */
 #define F_CMD_ARGS \
-	cond_rc_t *cond_rc, const exec_context_t *exc, char *action
-#define F_PASS_ARGS cond_rc, exc, action
-#define FUNC_FLAGS_TYPE unsigned char
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action, cmdparser_context_t *pc
+#define F_PASS_ARGS cond_rc, exc, action, pc
+#define F_PASS_ARGS_WITH_EXC(new_exc) cond_rc, (new_exc), action, pc
 
 /* access macros */
 #define FW_W_FRAME(fw)        ((fw)->wins.frame)
@@ -425,48 +426,6 @@ struct name_condition		/* matches to namelists in this list are
 	struct namelist *namelist;
 	struct name_condition *next;
 };
-
-/* Window mask for Circulate and Direction functions */
-typedef struct WindowConditionMask
-{
-	struct
-	{
-		unsigned do_accept_focus : 1;
-		unsigned do_check_desk : 1;
-		unsigned do_check_screen : 1;
-		unsigned do_check_cond_desk : 1;
-		unsigned do_check_desk_and_global_page : 1;
-		unsigned do_check_desk_and_page : 1;
-		unsigned do_check_global_page : 1;
-		unsigned do_check_overlapped : 1;
-		unsigned do_check_page : 1;
-		unsigned do_not_check_screen : 1;
-		unsigned needs_current_desk : 1;
-		unsigned needs_current_desk_and_global_page : 1;
-		unsigned needs_current_desk_and_page : 1;
-		unsigned needs_current_global_page : 1;
-		unsigned needs_current_page : 1;
-#define NEEDS_ANY   0
-#define NEEDS_TRUE  1
-#define NEEDS_FALSE 2
-		unsigned needs_focus : 2;
-		unsigned needs_overlapped : 2;
-		unsigned needs_pointer : 2;
-		unsigned needs_same_layer : 1;
-		unsigned use_circulate_hit : 1;
-		unsigned use_circulate_hit_icon : 1;
-		unsigned use_circulate_hit_shaded : 1;
-		unsigned use_do_accept_focus : 1;
-	} my_flags;
-	window_flags flags;
-	window_flags flag_mask;
-	struct name_condition *name_condition;
-	int layer;
-	int desk;
-	struct monitor *screen;
-	int placed_by_button_mask;
-	int placed_by_button_set_mask;
-} WindowConditionMask;
 
 typedef struct pl_penalty_struct
 {
