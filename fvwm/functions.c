@@ -26,34 +26,34 @@
 #include <assert.h>
 #endif
 
-#include "libs/fvwm_x11.h"
-#include "libs/fvwmlib.h"
-#include "libs/charmap.h"
-#include "libs/wcontext.h"
-#include "libs/Grab.h"
-#include "libs/Parse.h"
-#include "libs/Strings.h"
-#include "libs/FEvent.h"
-#include "libs/Event.h"
-#include "fvwm.h"
-#include "externs.h"
-#include "cursor.h"
-#include "execcontext.h"
-#include "functable.h"
-#include "functable_complex.h"
 #include "cmdparser.h"
 #include "cmdparser_hooks.h"
 #include "cmdparser_old.h"
-#include "functions.h"
 #include "commands.h"
+#include "cursor.h"
 #include "events.h"
+#include "execcontext.h"
+#include "expand.h"
+#include "externs.h"
+#include "functable.h"
+#include "functable_complex.h"
+#include "functions.h"
+#include "fvwm.h"
+#include "libs/Event.h"
+#include "libs/FEvent.h"
+#include "libs/Grab.h"
+#include "libs/Parse.h"
+#include "libs/Strings.h"
+#include "libs/charmap.h"
+#include "libs/fvwm_x11.h"
+#include "libs/fvwmlib.h"
+#include "libs/wcontext.h"
+#include "menus.h"
+#include "misc.h"
 #include "modconf.h"
 #include "module_list.h"
-#include "misc.h"
-#include "screen.h"
 #include "repeat.h"
-#include "expand.h"
-#include "menus.h"
+#include "screen.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -67,11 +67,11 @@
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static void execute_complex_function(
-	cond_rc_t *cond_rc, const exec_context_t *exc, cmdparser_context_t *pc,
-	FvwmFunction *func, Bool has_ref_window_moved);
+static void
+execute_complex_function(cond_rc_t *cond_rc, const exec_context_t *exc,
+    cmdparser_context_t *pc, FvwmFunction *func, Bool has_ref_window_moved);
 
- /* ---------------------------- local variables ---------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 /* Temporary instance of the hooks functions used in this file.  The goal is
  * to remove all parsing and expansion from functions.c and move it into a
@@ -83,15 +83,12 @@ static const cmdparser_hooks_t *cmdparser_hooks = NULL;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static int __context_has_window(
-	const exec_context_t *exc, execute_flags_t flags)
+static int
+__context_has_window(const exec_context_t *exc, execute_flags_t flags)
 {
-	if (exc->w.fw != NULL)
-	{
+	if (exc->w.fw != NULL) {
 		return 1;
-	}
-	else if ((flags & FUNC_ALLOW_UNMANAGED) && exc->w.w != None)
-	{
+	} else if ((flags & FUNC_ALLOW_UNMANAGED) && exc->w.w != None) {
 		return 1;
 	}
 
@@ -105,101 +102,93 @@ static int __context_has_window(
  *  Inputs:
  *      cursor  - the cursor to display while waiting
  */
-static Bool DeferExecution(
-	exec_context_changes_t *ret_ecc, exec_context_change_mask_t *ret_mask,
-	cursor_t cursor, int trigger_evtype, int do_allow_unmanaged)
+static Bool
+DeferExecution(exec_context_changes_t *ret_ecc,
+    exec_context_change_mask_t *ret_mask, cursor_t cursor, int trigger_evtype,
+    int do_allow_unmanaged)
 {
-	int done;
-	int finished = 0;
-	int just_waiting_for_finish = 0;
-	Window dummy;
-	Window original_w;
+	int	      done;
+	int	      finished		      = 0;
+	int	      just_waiting_for_finish = 0;
+	Window	      dummy;
+	Window	      original_w;
 	static XEvent e;
-	Window w;
-	int wcontext;
-	FvwmWindow *fw;
-	int FinishEvent;
+	Window	      w;
+	int	      wcontext;
+	FvwmWindow   *fw;
+	int	      FinishEvent;
 
-	fw = ret_ecc->w.fw;
-	w = ret_ecc->w.w;
-	original_w = w;
-	wcontext = ret_ecc->w.wcontext;
+	fw	    = ret_ecc->w.fw;
+	w	    = ret_ecc->w.w;
+	original_w  = w;
+	wcontext    = ret_ecc->w.wcontext;
 	FinishEvent = ((fw != NULL) ? ButtonRelease : ButtonPress);
 #if 1 /*!!!*/
 	fprintf(stderr, "!!!%s: A wc 0x%x\n", __func__, wcontext);
 #endif
-	if (wcontext == C_UNMANAGED && do_allow_unmanaged)
-	{
+	if (wcontext == C_UNMANAGED && do_allow_unmanaged) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Bf\n", __func__);
+		fprintf(stderr, "!!!%s: Bf\n", __func__);
 #endif
 		return False;
 	}
-	if (wcontext != C_ROOT && wcontext != C_NO_CONTEXT && fw != NULL &&
-	    wcontext != C_EWMH_DESKTOP)
-	{
+	if (wcontext != C_ROOT && wcontext != C_NO_CONTEXT && fw != NULL
+	    && wcontext != C_EWMH_DESKTOP) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: C\n", __func__);
+		fprintf(stderr, "!!!%s: C\n", __func__);
 #endif
-		if (FinishEvent == ButtonPress ||
-		    (FinishEvent == ButtonRelease &&
-		     trigger_evtype != ButtonPress))
-		{
+		if (FinishEvent == ButtonPress
+		    || (FinishEvent == ButtonRelease
+			&& trigger_evtype != ButtonPress)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Df\n", __func__);
+			fprintf(stderr, "!!!%s: Df\n", __func__);
 #endif
 			return False;
-		}
-		else if (FinishEvent == ButtonRelease)
-		{
+		} else if (FinishEvent == ButtonRelease) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: E\n", __func__);
+			fprintf(stderr, "!!!%s: E\n", __func__);
 #endif
 			/* We are only waiting until the user releases the
 			 * button. Do not change the cursor. */
-			cursor = CRS_NONE;
+			cursor			= CRS_NONE;
 			just_waiting_for_finish = 1;
 		}
 	}
-	if (Scr.flags.are_functions_silent)
-	{
+	if (Scr.flags.are_functions_silent) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Ft\n", __func__);
+		fprintf(stderr, "!!!%s: Ft\n", __func__);
 #endif
 		return True;
 	}
-	if (!GrabEm(cursor, GRAB_NORMAL))
-	{
+	if (!GrabEm(cursor, GRAB_NORMAL)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Gt\n", __func__);
+		fprintf(stderr, "!!!%s: Gt\n", __func__);
 #endif
 		XBell(dpy, 0);
 		return True;
 	}
 	MyXGrabKeyboard(dpy);
-	while (!finished)
-	{
+	while (!finished) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: H\n", __func__);
+		fprintf(stderr, "!!!%s: H\n", __func__);
 #endif
 		done = 0;
 		/* block until there is an event */
-		FMaskEvent(
-			dpy, ButtonPressMask | ButtonReleaseMask |
-			ExposureMask | KeyPressMask | VisibilityChangeMask |
-			ButtonMotionMask | PointerMotionMask
-			/* | EnterWindowMask | LeaveWindowMask*/, &e);
+		FMaskEvent(dpy,
+		    ButtonPressMask | ButtonReleaseMask | ExposureMask
+			| KeyPressMask | VisibilityChangeMask | ButtonMotionMask
+			| PointerMotionMask
+		    /* | EnterWindowMask | LeaveWindowMask*/,
+		    &e);
 
-		if (e.type == KeyPress)
-		{
+		if (e.type == KeyPress) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: I\n", __func__);
+			fprintf(stderr, "!!!%s: I\n", __func__);
 #endif
 			KeySym keysym = XLookupKeysym(&e.xkey, 0);
-			if (keysym == XK_Escape)
-			{
+			if (keysym == XK_Escape) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Jt\n", __func__);
+				fprintf(stderr, "!!!%s: Jt\n", __func__);
 #endif
 				ret_ecc->x.etrigger = &e;
 				*ret_mask |= ECC_ETRIGGER;
@@ -209,24 +198,21 @@ fprintf(stderr, "!!!%s: Jt\n", __func__);
 			}
 			Keyboard_shortcuts(&e, NULL, NULL, NULL, FinishEvent);
 		}
-		if (e.type == FinishEvent)
-		{
+		if (e.type == FinishEvent) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: K\n", __func__);
+			fprintf(stderr, "!!!%s: K\n", __func__);
 #endif
 			finished = 1;
 		}
-		switch (e.type)
-		{
+		switch (e.type) {
 		case KeyPress:
 		case ButtonPress:
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: L\n", __func__);
+			fprintf(stderr, "!!!%s: L\n", __func__);
 #endif
-			if (e.type != FinishEvent)
-			{
+			if (e.type != FinishEvent) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: M\n", __func__);
+				fprintf(stderr, "!!!%s: M\n", __func__);
 #endif
 				original_w = e.xany.window;
 			}
@@ -234,415 +220,364 @@ fprintf(stderr, "!!!%s: M\n", __func__);
 			break;
 		case ButtonRelease:
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: N\n", __func__);
+			fprintf(stderr, "!!!%s: N\n", __func__);
 #endif
 			done = 1;
 			break;
 		default:
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: O\n", __func__);
+			fprintf(stderr, "!!!%s: O\n", __func__);
 #endif
 			break;
 		}
-		if (!done)
-		{
+		if (!done) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: P\n", __func__);
+			fprintf(stderr, "!!!%s: P\n", __func__);
 #endif
 			dispatch_event(&e);
 		}
 	}
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Q\n", __func__);
+	fprintf(stderr, "!!!%s: Q\n", __func__);
 #endif
 	MyXUngrabKeyboard(dpy);
 	UngrabEm(GRAB_NORMAL);
-	if (just_waiting_for_finish)
-	{
+	if (just_waiting_for_finish) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Rf\n", __func__);
+		fprintf(stderr, "!!!%s: Rf\n", __func__);
 #endif
 		return False;
 	}
-	w = e.xany.window;
+	w		    = e.xany.window;
 	ret_ecc->x.etrigger = &e;
 	*ret_mask |= ECC_ETRIGGER | ECC_W | ECC_WCONTEXT;
-	if ((w == Scr.Root || w == Scr.NoFocusWin) &&
-	    e.xbutton.subwindow != None)
-	{
+	if ((w == Scr.Root || w == Scr.NoFocusWin)
+	    && e.xbutton.subwindow != None) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: S\n", __func__);
+		fprintf(stderr, "!!!%s: S\n", __func__);
 #endif
-		w = e.xbutton.subwindow;
+		w	      = e.xbutton.subwindow;
 		e.xany.window = w;
 	}
-	if (w == Scr.Root || IS_EWMH_DESKTOP(w))
-	{
+	if (w == Scr.Root || IS_EWMH_DESKTOP(w)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Tt\n", __func__);
+		fprintf(stderr, "!!!%s: Tt\n", __func__);
 #endif
-		ret_ecc->w.w = w;
+		ret_ecc->w.w	    = w;
 		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return True;
 	}
 	*ret_mask |= ECC_FW;
-	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&fw) == XCNOENT)
-	{
+	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&fw) == XCNOENT) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Ut\n", __func__);
+		fprintf(stderr, "!!!%s: Ut\n", __func__);
 #endif
-		ret_ecc->w.fw = NULL;
-		ret_ecc->w.w = w;
+		ret_ecc->w.fw	    = NULL;
+		ret_ecc->w.w	    = w;
 		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return (True);
 	}
-	if (w == FW_W_PARENT(fw))
-	{
+	if (w == FW_W_PARENT(fw)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: V\n", __func__);
+		fprintf(stderr, "!!!%s: V\n", __func__);
 #endif
 		w = FW_W(fw);
 	}
-	if (original_w == FW_W_PARENT(fw))
-	{
+	if (original_w == FW_W_PARENT(fw)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: W\n", __func__);
+		fprintf(stderr, "!!!%s: W\n", __func__);
 #endif
 		original_w = FW_W(fw);
 	}
 	/* this ugly mess attempts to ensure that the release and press
 	 * are in the same window. */
-	if (w != original_w && original_w != Scr.Root &&
-	    original_w != None && original_w != Scr.NoFocusWin &&
-	    !IS_EWMH_DESKTOP(original_w))
-	{
+	if (w != original_w && original_w != Scr.Root && original_w != None
+	    && original_w != Scr.NoFocusWin && !IS_EWMH_DESKTOP(original_w)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: X\n", __func__);
+		fprintf(stderr, "!!!%s: X\n", __func__);
 #endif
-		if (w != FW_W_FRAME(fw) || original_w != FW_W(fw))
-		{
+		if (w != FW_W_FRAME(fw) || original_w != FW_W(fw)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Yt\n", __func__);
+			fprintf(stderr, "!!!%s: Yt\n", __func__);
 #endif
-			ret_ecc->w.fw = fw;
-			ret_ecc->w.w = w;
+			ret_ecc->w.fw	    = fw;
+			ret_ecc->w.w	    = w;
 			ret_ecc->w.wcontext = C_ROOT;
 			XBell(dpy, 0);
 			return True;
 		}
 	}
 
-	if (IS_EWMH_DESKTOP(FW_W(fw)))
-	{
+	if (IS_EWMH_DESKTOP(FW_W(fw))) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: Zt\n", __func__);
+		fprintf(stderr, "!!!%s: Zt\n", __func__);
 #endif
-		ret_ecc->w.fw = fw;
-		ret_ecc->w.w = w;
+		ret_ecc->w.fw	    = fw;
+		ret_ecc->w.w	    = w;
 		ret_ecc->w.wcontext = C_ROOT;
 		XBell(dpy, 0);
 		return True;
 	}
 #if 1 /*!!!*/
-fprintf(stderr, "!!!%s: @f\n", __func__);
+	fprintf(stderr, "!!!%s: @f\n", __func__);
 #endif
-	wcontext = GetContext(NULL, fw, &e, &dummy);
-	ret_ecc->w.fw = fw;
-	ret_ecc->w.w = w;
+	wcontext	    = GetContext(NULL, fw, &e, &dummy);
+	ret_ecc->w.fw	    = fw;
+	ret_ecc->w.w	    = w;
 	ret_ecc->w.wcontext = C_ROOT;
 
 	return False;
 }
 
-static void __execute_command_line(
-	cond_rc_t *cond_rc, const exec_context_t *exc, char *xaction,
-	cmdparser_context_t *caller_pc,
-	func_flags_t exec_flags, char *all_pos_args_string,
-	char *pos_arg_tokens[], Bool has_ref_window_moved)
+static void
+__execute_command_line(cond_rc_t *cond_rc, const exec_context_t *exc,
+    char *xaction, cmdparser_context_t *caller_pc, func_flags_t exec_flags,
+    char *all_pos_args_string, char *pos_arg_tokens[],
+    Bool has_ref_window_moved)
 {
-	cmdparser_context_t pc;
-	cond_rc_t *func_rc = NULL;
-	cond_rc_t dummy_rc;
-	Window w;
-	char *err_cline;
-	const char *err_func;
+	cmdparser_context_t	 pc;
+	cond_rc_t		  *func_rc = NULL;
+	cond_rc_t		 dummy_rc;
+	Window			 w;
+	char		     *err_cline;
+	const char		   *err_func;
 	cmdparser_execute_type_t exec_type;
-	const func_t *bif;
-	FvwmFunction *complex_function;
-	int set_silent;
-	int do_keep_rc = 0;
+	const func_t	     *bif;
+	FvwmFunction	     *complex_function;
+	int			 set_silent;
+	int			 do_keep_rc = 0;
 	/* needed to be able to avoid resize to use moved windows for base */
 	extern Window PressedW;
-	Window dummy_w;
-	int rc;
+	Window	      dummy_w;
+	int	      rc;
 
 	set_silent = 0;
 	/* generate a parsing context; this *must* be destroyed before
 	 * returning */
 	rc = cmdparser_hooks->create_context(
-		&pc, caller_pc, xaction, all_pos_args_string, pos_arg_tokens);
-	if (rc != 0)
-	{
+	    &pc, caller_pc, xaction, all_pos_args_string, pos_arg_tokens);
+	if (rc != 0) {
 		goto fn_exit;
 	}
-cmdparser_hooks->debug(&pc, "!!!A");
+	cmdparser_hooks->debug(&pc, "!!!A");
 	rc = cmdparser_hooks->handle_line_start(&pc);
-	if (rc != 0)
-	{
+	if (rc != 0) {
 		goto fn_exit;
 	}
-cmdparser_hooks->debug(&pc, "!!!B");
+	cmdparser_hooks->debug(&pc, "!!!B");
 
 	{
 		cmdparser_prefix_flags_t flags;
 
 		flags = cmdparser_hooks->handle_line_prefix(&pc);
-cmdparser_hooks->debug(&pc, "!!!BA");
-		if (flags & CP_PREFIX_MINUS)
-		{
+		cmdparser_hooks->debug(&pc, "!!!BA");
+		if (flags & CP_PREFIX_MINUS) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!do not expand\n");
+			fprintf(stderr, "!!!do not expand\n");
 #endif
 			exec_flags |= FUNC_DONT_EXPAND_COMMAND;
 		}
-		if (flags & CP_PREFIX_SILENT)
-		{
+		if (flags & CP_PREFIX_SILENT) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!is silent\n");
+			fprintf(stderr, "!!!is silent\n");
 #endif
-			if (Scr.flags.are_functions_silent == 0)
-			{
-				set_silent = 1;
+			if (Scr.flags.are_functions_silent == 0) {
+				set_silent		       = 1;
 				Scr.flags.are_functions_silent = 1;
 			}
 		}
-		if (flags & CP_PREFIX_KEEPRC)
-		{
+		if (flags & CP_PREFIX_KEEPRC) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!do keeprc\n");
+			fprintf(stderr, "!!!do keeprc\n");
 #endif
 			do_keep_rc = 1;
 		}
-		if (pc.cline == NULL)
-		{
+		if (pc.cline == NULL) {
 			goto fn_exit;
 		}
 		err_cline = pc.cline;
 	}
-cmdparser_hooks->debug(&pc, "!!!C");
+	cmdparser_hooks->debug(&pc, "!!!C");
 
-	if (exc->w.fw == NULL || IS_EWMH_DESKTOP(FW_W(exc->w.fw)))
-	{
-		if (exec_flags & FUNC_IS_UNMANAGED)
-		{
-fprintf(stderr, "!!!AAA unmanaged\n");
+	if (exc->w.fw == NULL || IS_EWMH_DESKTOP(FW_W(exc->w.fw))) {
+		if (exec_flags & FUNC_IS_UNMANAGED) {
+			fprintf(stderr, "!!!AAA unmanaged\n");
 			w = exc->w.w;
-		}
-		else
-		{
-fprintf(stderr, "!!!BBB root\n");
+		} else {
+			fprintf(stderr, "!!!BBB root\n");
 			w = Scr.Root;
 		}
-	}
-	else
-	{
+	} else {
 		FvwmWindow *tw;
 
 		w = GetSubwindowFromEvent(dpy, exc->x.elast);
-		if (w == None)
-		{
+		if (w == None) {
 			w = exc->x.elast->xany.window;
 		}
 		tw = NULL;
-		if (w != None)
-		{
-			if (XFindContext(
-				 dpy, w, FvwmContext, (caddr_t *)&tw) ==
-			    XCNOENT)
-			{
+		if (w != None) {
+			if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&tw)
+			    == XCNOENT) {
 				tw = NULL;
 			}
 		}
-		if (w == None || tw != exc->w.fw)
-		{
+		if (w == None || tw != exc->w.fw) {
 			w = FW_W(exc->w.fw);
 		}
 	}
-	if (cond_rc == NULL || do_keep_rc)
-	{
+	if (cond_rc == NULL || do_keep_rc) {
 		condrc_init(&dummy_rc);
 		func_rc = &dummy_rc;
-	}
-	else
-	{
+	} else {
 		func_rc = cond_rc;
 	}
 	{
 		const char *func;
 
 		func = cmdparser_hooks->parse_command_name(&pc, func_rc, exc);
-		if (func != NULL)
-		{
-cmdparser_hooks->debug(&pc, "!!!D");
+		if (func != NULL) {
+			cmdparser_hooks->debug(&pc, "!!!D");
 			bif = find_builtin_function(func);
-fprintf(stderr, "!!! --> find bif '%s' -> %p\n", func, bif);
+			fprintf(
+			    stderr, "!!! --> find bif '%s' -> %p\n", func, bif);
 			err_func = func;
-		}
-		else
-		{
-cmdparser_hooks->debug(&pc, "!!!E no command name");
-			bif = NULL;
+		} else {
+			cmdparser_hooks->debug(&pc, "!!!E no command name");
+			bif	 = NULL;
 			err_func = "";
 		}
 	}
 
-	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor &&
-	    (!bif || !(bif->flags & FUNC_DECOR)))
-	{
+	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor
+	    && (!bif || !(bif->flags & FUNC_DECOR))) {
 		fvwm_debug(__func__,
-			   "Command can not be added to a decor; executing"
-			   " command now: '%s'", err_cline);
+		    "Command can not be added to a decor; executing"
+		    " command now: '%s'",
+		    err_cline);
 	}
 
-	if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
-	{
-		cmdparser_hooks->expand_command_line(
-			&pc, (bif) ? !!(bif->flags & FUNC_ADD_TO) : False,
-			func_rc, exc);
-cmdparser_hooks->debug(&pc, "!!!F");
-		if (pc.call_depth <= 1)
-		{
+	if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND)) {
+		cmdparser_hooks->expand_command_line(&pc,
+		    (bif) ? !!(bif->flags & FUNC_ADD_TO) : False, func_rc, exc);
+		cmdparser_hooks->debug(&pc, "!!!F");
+		if (pc.call_depth <= 1) {
 			Bool do_free_string_ourselves;
 
-			do_free_string_ourselves = set_repeat_data(
-				pc.expline, REPEAT_COMMAND, bif);
-			if (do_free_string_ourselves == False)
-			{
+			do_free_string_ourselves =
+			    set_repeat_data(pc.expline, REPEAT_COMMAND, bif);
+			if (do_free_string_ourselves == False) {
 				cmdparser_hooks->release_expanded_line(&pc);
-cmdparser_hooks->debug(&pc, "!!!F");
+				cmdparser_hooks->debug(&pc, "!!!F");
 			}
 		}
 	}
 #if 1 /*!!!*/
-fprintf(stderr, "!!!pc.cline: '%s'\n", pc.cline);
+	fprintf(stderr, "!!!pc.cline: '%s'\n", pc.cline);
 #endif
 
 	exec_type = cmdparser_hooks->find_something_to_execute(
-		&pc, &bif, &complex_function);
-cmdparser_hooks->debug(&pc, "!!!H");
-fprintf(stderr, "!!!exec_type %d\n", exec_type);
-	switch (exec_type)
-	{
-	case CP_EXECTYPE_BUILTIN_FUNCTION:
-	{
-		const exec_context_t *exc2;
-		exec_context_changes_t ecc;
+	    &pc, &bif, &complex_function);
+	cmdparser_hooks->debug(&pc, "!!!H");
+	fprintf(stderr, "!!!exec_type %d\n", exec_type);
+	switch (exec_type) {
+	case CP_EXECTYPE_BUILTIN_FUNCTION: {
+		const exec_context_t	     *exc2;
+		exec_context_changes_t	   ecc;
 		exec_context_change_mask_t mask;
 
-cmdparser_hooks->debug(&pc, "!!!J");
+		cmdparser_hooks->debug(&pc, "!!!J");
 #if 1 /*!!!*/
 		assert(bif && bif->func_c != F_FUNCTION);
 #endif
 #if 1 /*!!!*/
-fprintf(stderr, "!!!pc.cline: '%s'\n", pc.cline);
-fprintf(stderr, "!!!bif: '%s' 0x%x\n", bif->keyword, bif->flags);
+		fprintf(stderr, "!!!pc.cline: '%s'\n", pc.cline);
+		fprintf(
+		    stderr, "!!!bif: '%s' 0x%x\n", bif->keyword, bif->flags);
 #endif
-		mask = (w != exc->w.w) ? ECC_W : 0;
-		ecc.w.fw = exc->w.fw;
-		ecc.w.w = w;
+		mask	       = (w != exc->w.w) ? ECC_W : 0;
+		ecc.w.fw       = exc->w.fw;
+		ecc.w.w	       = w;
 		ecc.w.wcontext = exc->w.wcontext;
-		if (
-			(bif->flags & FUNC_NEEDS_WINDOW) &&
-			!(exec_flags & FUNC_DONT_DEFER))
-		{
+		if ((bif->flags & FUNC_NEEDS_WINDOW)
+		    && !(exec_flags & FUNC_DONT_DEFER)) {
 			Bool rc;
 
-			rc = DeferExecution(
-				&ecc, &mask, bif->cursor, exc->x.elast->type,
-				(bif->flags & FUNC_ALLOW_UNMANAGED));
-			if (rc == True)
-			{
+			rc = DeferExecution(&ecc, &mask, bif->cursor,
+			    exc->x.elast->type,
+			    (bif->flags & FUNC_ALLOW_UNMANAGED));
+			if (rc == True) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!not deferred: %d\n", rc);
+				fprintf(stderr, "!!!not deferred: %d\n", rc);
 #endif
 				break;
 			}
 #if 1 /*!!!*/
-fprintf(stderr, "!!!deferred: %d\n", rc);
+			fprintf(stderr, "!!!deferred: %d\n", rc);
 #endif
-		}
-		else if (
-			(bif->flags & FUNC_NEEDS_WINDOW) &&
-			!__context_has_window(
-				exc, bif->flags & FUNC_ALLOW_UNMANAGED))
-		{
+		} else if ((bif->flags & FUNC_NEEDS_WINDOW)
+			   && !__context_has_window(
+			       exc, bif->flags & FUNC_ALLOW_UNMANAGED)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!skip no-defer\n");
+			fprintf(stderr, "!!!skip no-defer\n");
 #endif
 			/* no context window and not allowed to defer,
 			 * skip command */
 			break;
 		}
-		exc2 = exc_clone_context(exc, &ecc, mask);
+		exc2	= exc_clone_context(exc, &ecc, mask);
 		dummy_w = PressedW;
-		if (
-			has_ref_window_moved &&
-			(bif->flags & FUNC_IS_MOVE_TYPE))
-		{
+		if (has_ref_window_moved && (bif->flags & FUNC_IS_MOVE_TYPE)) {
 #if 1 /*!!!*/
-fprintf(stderr, "!!!erase PressedW\n");
+			fprintf(stderr, "!!!erase PressedW\n");
 #endif
 			PressedW = None;
 		}
 #if 1 /*!!!*/
-fprintf(stderr, "!!!execute '%s' (fw %p)\n", bif->keyword, exc2->w.fw);
+		fprintf(stderr, "!!!execute '%s' (fw %p)\n", bif->keyword,
+		    exc2->w.fw);
 #endif
 		bif->action(func_rc, exc2, pc.cline, &pc);
 		PressedW = dummy_w;
 		exc_destroy_context(exc2);
 		break;
 	}
-	case CP_EXECTYPE_COMPLEX_FUNCTION:
-	{
-		const exec_context_t *exc2;
-		exec_context_changes_t ecc;
+	case CP_EXECTYPE_COMPLEX_FUNCTION: {
+		const exec_context_t	     *exc2;
+		exec_context_changes_t	   ecc;
 		exec_context_change_mask_t mask;
 
-		mask = (w != exc->w.w) ? ECC_W : 0;
-		ecc.w.fw = exc->w.fw;
-		ecc.w.w = w;
+		mask	       = (w != exc->w.w) ? ECC_W : 0;
+		ecc.w.fw       = exc->w.fw;
+		ecc.w.w	       = w;
 		ecc.w.wcontext = exc->w.wcontext;
-		exc2 = exc_clone_context(exc, &ecc, mask);
+		exc2	       = exc_clone_context(exc, &ecc, mask);
 		execute_complex_function(
-			func_rc, exc2, &pc, complex_function,
-			has_ref_window_moved);
+		    func_rc, exc2, &pc, complex_function, has_ref_window_moved);
 		exc_destroy_context(exc2);
 		break;
 	}
 	case CP_EXECTYPE_COMPLEX_FUNCTION_DOES_NOT_EXIST:
 		fvwm_debug(
-			__func__, "No such function %s",
-			pc.complex_function_name);
+		    __func__, "No such function %s", pc.complex_function_name);
 		break;
 	case CP_EXECTYPE_MODULECONFIG:
 		/* Note: the module config command, "*" can not be handled by
 		 * the regular command table because there is no required
 		 * white space after the asterisk. */
-		if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
-		{
-			fvwm_debug(
-				__func__, "Command can not be added to a decor;"
-				" executing command now: '%s'", pc.expline);
+		if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor) {
+			fvwm_debug(__func__,
+			    "Command can not be added to a decor;"
+			    " executing command now: '%s'",
+			    pc.expline);
 		}
 		/* process a module config command */
 		ModuleConfig(pc.expline);
 		goto fn_exit;
 	case CP_EXECTYPE_UNKNOWN:
-		if (executeModuleDesperate(func_rc, exc, pc.cline, &pc) ==
-		    NULL && *err_func != 0 && !set_silent)
-		{
+		if (executeModuleDesperate(func_rc, exc, pc.cline, &pc) == NULL
+		    && *err_func != 0 && !set_silent) {
 			fvwm_debug(__func__, "No such command '%s'", err_func);
 		}
 		break;
@@ -652,13 +587,11 @@ fprintf(stderr, "!!!execute '%s' (fw %p)\n", bif->keyword, exc2->w.fw);
 #endif
 	}
 
-  fn_exit:
-	if (func_rc != NULL && cond_rc != NULL)
-	{
+fn_exit:
+	if (func_rc != NULL && cond_rc != NULL) {
 		cond_rc->break_levels = func_rc->break_levels;
 	}
-	if (set_silent)
-	{
+	if (set_silent) {
 		Scr.flags.are_functions_silent = 0;
 	}
 	cmdparser_hooks->destroy_context(&pc);
@@ -671,70 +604,59 @@ fprintf(stderr, "!!!execute '%s' (fw %p)\n", bif->keyword, exc2->w.fw);
  * Waits Scr.ClickTime, or until it is evident that the user is not
  * clicking, but is moving the cursor
  */
-static cfunc_action_t CheckActionType(
-	int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed,
-	int *ret_button)
+static cfunc_action_t
+CheckActionType(int x, int y, XEvent *d, Bool may_time_out,
+    Bool is_button_pressed, int *ret_button)
 {
-	int xcurrent,ycurrent,total = 0;
+	int  xcurrent, ycurrent, total = 0;
 	Time t0;
-	int dist;
+	int  dist;
 	Bool do_sleep = False;
 
 	xcurrent = x;
 	ycurrent = y;
-	t0 = fev_get_evtime();
-	dist = Scr.MoveThreshold;
+	t0	 = fev_get_evtime();
+	dist	 = Scr.MoveThreshold;
 
-	while ((total < Scr.ClickTime &&
-		fev_get_evtime() - t0 < Scr.ClickTime) || !may_time_out)
-	{
-		if (!(x - xcurrent <= dist && xcurrent - x <= dist &&
-		      y - ycurrent <= dist && ycurrent - y <= dist))
-		{
+	while ((total < Scr.ClickTime && fev_get_evtime() - t0 < Scr.ClickTime)
+	       || !may_time_out) {
+		if (!(x - xcurrent <= dist && xcurrent - x <= dist
+			&& y - ycurrent <= dist && ycurrent - y <= dist)) {
 			return (is_button_pressed) ? CF_MOTION : CF_TIMEOUT;
 		}
 
-		if (do_sleep)
-		{
+		if (do_sleep) {
 			usleep(20000);
-		}
-		else
-		{
+		} else {
 			usleep(1);
 			do_sleep = 1;
 		}
 		total += 20;
-		if (FCheckMaskEvent(
-			    dpy, ButtonReleaseMask|ButtonMotionMask|
-			    PointerMotionMask|ButtonPressMask|ExposureMask, d))
-		{
+		if (FCheckMaskEvent(dpy,
+			ButtonReleaseMask | ButtonMotionMask | PointerMotionMask
+			    | ButtonPressMask | ExposureMask,
+			d)) {
 			do_sleep = 0;
-			switch (d->xany.type)
-			{
+			switch (d->xany.type) {
 			case ButtonRelease:
 				*ret_button = d->xbutton.button;
 				return CF_CLICK;
 			case MotionNotify:
-				if (d->xmotion.same_screen == False)
-				{
+				if (d->xmotion.same_screen == False) {
 					break;
 				}
-				if ((d->xmotion.state &
-				     DEFAULT_ALL_BUTTONS_MASK) ||
-				    !is_button_pressed)
-				{
+				if ((d->xmotion.state
+					& DEFAULT_ALL_BUTTONS_MASK)
+				    || !is_button_pressed) {
 					xcurrent = d->xmotion.x_root;
 					ycurrent = d->xmotion.y_root;
-				}
-				else
-				{
+				} else {
 					return CF_CLICK;
 				}
 				break;
 			case ButtonPress:
 				*ret_button = d->xbutton.button;
-				if (may_time_out)
-				{
+				if (may_time_out) {
 					is_button_pressed = True;
 				}
 				break;
@@ -753,44 +675,37 @@ static cfunc_action_t CheckActionType(
 	return (is_button_pressed) ? CF_HOLD : CF_TIMEOUT;
 }
 
-static void __run_complex_function_items(
-	cond_rc_t *cond_rc, char cond, FvwmFunction *func,
-	const exec_context_t *exc, cmdparser_context_t *caller_pc,
-	char *all_pos_args_string, char *pos_arg_tokens[],
-	Bool has_ref_window_moved)
+static void
+__run_complex_function_items(cond_rc_t *cond_rc, char cond, FvwmFunction *func,
+    const exec_context_t *exc, cmdparser_context_t *caller_pc,
+    char *all_pos_args_string, char *pos_arg_tokens[],
+    Bool has_ref_window_moved)
 {
-	char c;
+	char	      c;
 	FunctionItem *fi;
-	int x0, y0, x, y;
+	int	      x0, y0, x, y;
 	extern Window PressedW;
 
-	if (!(!has_ref_window_moved && PressedW && XTranslateCoordinates(
-				  dpy, PressedW , Scr.Root, 0, 0, &x0, &y0,
-				  &JunkChild)))
-	{
+	if (!(!has_ref_window_moved && PressedW
+		&& XTranslateCoordinates(
+		    dpy, PressedW, Scr.Root, 0, 0, &x0, &y0, &JunkChild))) {
 		x0 = y0 = 0;
 	}
 
-	for (fi = func->first_item; fi != NULL && cond_rc->break_levels == 0; )
-	{
+	for (fi = func->first_item; fi != NULL && cond_rc->break_levels == 0;) {
 		/* make lower case */
 		c = fi->condition;
-		if (isupper(c))
-		{
+		if (isupper(c)) {
 			c = tolower(c);
 		}
-		if (c == cond)
-		{
-			__execute_command_line(
-				cond_rc, exc, fi->action, caller_pc,
-				FUNC_DONT_DEFER, all_pos_args_string,
-				pos_arg_tokens, has_ref_window_moved);
-			if (!has_ref_window_moved && PressedW &&
-			    XTranslateCoordinates(
-				  dpy, PressedW , Scr.Root, 0, 0, &x, &y,
-				  &JunkChild))
-			{
-				has_ref_window_moved =(x != x0 || y != y0);
+		if (c == cond) {
+			__execute_command_line(cond_rc, exc, fi->action,
+			    caller_pc, FUNC_DONT_DEFER, all_pos_args_string,
+			    pos_arg_tokens, has_ref_window_moved);
+			if (!has_ref_window_moved && PressedW
+			    && XTranslateCoordinates(dpy, PressedW, Scr.Root, 0,
+				0, &x, &y, &JunkChild)) {
+				has_ref_window_moved = (x != x0 || y != y0);
 			}
 		}
 		fi = fi->next_item;
@@ -799,158 +714,133 @@ static void __run_complex_function_items(
 	return;
 }
 
-static void __cf_cleanup(
-	int *depth, char *all_pos_args_string, char **pos_arg_tokens,
-	cond_rc_t *cond_rc)
+static void
+__cf_cleanup(int *depth, char *all_pos_args_string, char **pos_arg_tokens,
+    cond_rc_t *cond_rc)
 {
 	int i;
 
 	(*depth)--;
-	if (!(*depth))
-	{
+	if (!(*depth)) {
 		Scr.flags.is_executing_complex_function = 0;
 	}
-	if (all_pos_args_string != NULL)
-	{
+	if (all_pos_args_string != NULL) {
 		free(all_pos_args_string);
 	}
-	for (i = 0; i < CMDPARSER_NUM_POS_ARGS; i++)
-	{
-		if (pos_arg_tokens[i] != NULL)
-		{
+	for (i = 0; i < CMDPARSER_NUM_POS_ARGS; i++) {
+		if (pos_arg_tokens[i] != NULL) {
 			free(pos_arg_tokens[i]);
 		}
 	}
-	if (cond_rc->break_levels > 0)
-	{
+	if (cond_rc->break_levels > 0) {
 		cond_rc->break_levels--;
 	}
 
 	return;
 }
 
-static void execute_complex_function(
-	cond_rc_t *cond_rc, const exec_context_t *exc, cmdparser_context_t *pc,
-	FvwmFunction *func, Bool has_ref_window_moved)
+static void
+execute_complex_function(cond_rc_t *cond_rc, const exec_context_t *exc,
+    cmdparser_context_t *pc, FvwmFunction *func, Bool has_ref_window_moved)
 {
-	cond_rc_t tmp_rc;
+	cond_rc_t      tmp_rc;
 	cfunc_action_t type = CF_MOTION;
-	char c;
-	FunctionItem *fi;
-	Bool Persist = False;
-	Bool HaveDoubleClick = False;
-	Bool HaveHold = False;
-	Bool NeedsTarget = False;
-	Bool ImmediateNeedsTarget = False;
-	int has_immediate = 0;
-	int do_run_late_immediate = 0;
-	int do_allow_unmanaged = FUNC_ALLOW_UNMANAGED;
-	int do_allow_unmanaged_immediate = FUNC_ALLOW_UNMANAGED;
-	char *all_pos_args_string;
-	char *pos_arg_tokens[CMDPARSER_NUM_POS_ARGS];
-	char *taction;
-	int x, y ,i;
-	XEvent d;
-	static int depth = 0;
-	const exec_context_t *exc2;
-	exec_context_changes_t ecc;
+	char	       c;
+	FunctionItem  *fi;
+	Bool	       Persist			    = False;
+	Bool	       HaveDoubleClick		    = False;
+	Bool	       HaveHold			    = False;
+	Bool	       NeedsTarget		    = False;
+	Bool	       ImmediateNeedsTarget	    = False;
+	int	       has_immediate		    = 0;
+	int	       do_run_late_immediate	    = 0;
+	int	       do_allow_unmanaged	    = FUNC_ALLOW_UNMANAGED;
+	int	       do_allow_unmanaged_immediate = FUNC_ALLOW_UNMANAGED;
+	char	     *all_pos_args_string;
+	char	     *pos_arg_tokens[CMDPARSER_NUM_POS_ARGS];
+	char	     *taction;
+	int	       x, y, i;
+	XEvent	       d;
+	static int     depth = 0;
+	const exec_context_t	     *exc2;
+	exec_context_changes_t	   ecc;
 	exec_context_change_mask_t mask;
-	int trigger_evtype;
-	int button;
-	XEvent *te;
+	int			   trigger_evtype;
+	int			   button;
+	XEvent		       *te;
 
 #if 1 /*!!!*/
 	assert(func != NULL);
 #endif
-	if (cond_rc == NULL)
-	{
+	if (cond_rc == NULL) {
 		condrc_init(&tmp_rc);
 		cond_rc = &tmp_rc;
 	}
-	cond_rc->rc = COND_RC_OK;
-	mask = 0;
-	d.type = 0;
-	ecc.w.fw = exc->w.fw;
-	ecc.w.w = exc->w.w;
+	cond_rc->rc    = COND_RC_OK;
+	mask	       = 0;
+	d.type	       = 0;
+	ecc.w.fw       = exc->w.fw;
+	ecc.w.w	       = exc->w.w;
 	ecc.w.wcontext = exc->w.wcontext;
-	if (!depth)
-	{
+	if (!depth) {
 		Scr.flags.is_executing_complex_function = 1;
 	}
 	depth++;
 	/* duplicate the whole argument list for use as '$*' */
 	taction = pc->cline;
-	if (taction)
-	{
+	if (taction) {
 		all_pos_args_string = fxstrdup(taction);
 		/* strip trailing newline */
-		if (all_pos_args_string[0])
-		{
+		if (all_pos_args_string[0]) {
 			int l = strlen(all_pos_args_string);
 
-			if (all_pos_args_string[l - 1] == '\n')
-			{
+			if (all_pos_args_string[l - 1] == '\n') {
 				all_pos_args_string[l - 1] = 0;
 			}
 		}
 		/* Get the argument list */
-		for (i = 0; i < CMDPARSER_NUM_POS_ARGS; i++)
-		{
+		for (i = 0; i < CMDPARSER_NUM_POS_ARGS; i++) {
 			taction = GetNextToken(taction, &pos_arg_tokens[i]);
 		}
-	}
-	else
-	{
+	} else {
 		all_pos_args_string = 0;
 		memset(pos_arg_tokens, 0, sizeof(pos_arg_tokens));
 	}
 	/* In case we want to perform an action on a button press, we
 	 * need to fool other routines */
 	te = exc->x.elast;
-	if (te->type == ButtonPress)
-	{
+	if (te->type == ButtonPress) {
 		trigger_evtype = ButtonRelease;
-	}
-	else
-	{
+	} else {
 		trigger_evtype = te->type;
 	}
 	func->use_depth++;
 
-	for (fi = func->first_item; fi != NULL; fi = fi->next_item)
-	{
-		if (fi->condition == CF_IMMEDIATE)
-		{
+	for (fi = func->first_item; fi != NULL; fi = fi->next_item) {
+		if (fi->condition == CF_IMMEDIATE) {
 			has_immediate = 1;
 		}
-		if (fi->flags & FUNC_NEEDS_WINDOW)
-		{
+		if (fi->flags & FUNC_NEEDS_WINDOW) {
 			NeedsTarget = True;
 			do_allow_unmanaged &= fi->flags;
-			if (fi->condition == CF_IMMEDIATE)
-			{
+			if (fi->condition == CF_IMMEDIATE) {
 				do_allow_unmanaged_immediate &= fi->flags;
 				ImmediateNeedsTarget = True;
 			}
 		}
 	}
 
-	if (ImmediateNeedsTarget)
-	{
-		if (DeferExecution(
-			    &ecc, &mask, CRS_SELECT, trigger_evtype,
-			    do_allow_unmanaged_immediate) == True)
-		{
+	if (ImmediateNeedsTarget) {
+		if (DeferExecution(&ecc, &mask, CRS_SELECT, trigger_evtype,
+			do_allow_unmanaged_immediate)
+		    == True) {
 			func->use_depth--;
-			__cf_cleanup(
-				&depth, all_pos_args_string, pos_arg_tokens,
-				cond_rc);
+			__cf_cleanup(&depth, all_pos_args_string,
+			    pos_arg_tokens, cond_rc);
 			return;
 		}
 		NeedsTarget = False;
-	}
-	else
-	{
+	} else {
 		ecc.w.w = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
 		mask |= ECC_W;
 	}
@@ -958,33 +848,26 @@ static void execute_complex_function(
 	/* we have to grab buttons before executing immediate actions because
 	 * these actions can move the window away from the pointer so that a
 	 * button release would go to the application below. */
-	if (!GrabEm(CRS_NONE, GRAB_NORMAL))
-	{
+	if (!GrabEm(CRS_NONE, GRAB_NORMAL)) {
 		func->use_depth--;
-		fvwm_debug(
-			__func__,
-			"Grab failed, unable to execute immediate action");
+		fvwm_debug(__func__,
+		    "Grab failed, unable to execute immediate action");
 		__cf_cleanup(
-			&depth, all_pos_args_string, pos_arg_tokens, cond_rc);
+		    &depth, all_pos_args_string, pos_arg_tokens, cond_rc);
 		return;
 	}
-	if (has_immediate)
-	{
+	if (has_immediate) {
 		exc2 = exc_clone_context(exc, &ecc, mask);
-		__run_complex_function_items(
-			cond_rc, CF_IMMEDIATE, func, exc2, pc,
-			all_pos_args_string, pos_arg_tokens,
-			has_ref_window_moved);
+		__run_complex_function_items(cond_rc, CF_IMMEDIATE, func, exc2,
+		    pc, all_pos_args_string, pos_arg_tokens,
+		    has_ref_window_moved);
 		exc_destroy_context(exc2);
 	}
-	for (fi = func->first_item;
-	     fi != NULL && cond_rc->break_levels == 0;
-	     fi = fi->next_item)
-	{
+	for (fi = func->first_item; fi != NULL && cond_rc->break_levels == 0;
+	     fi = fi->next_item) {
 		/* c is already lowercase here */
 		c = fi->condition;
-		switch (c)
-		{
+		switch (c) {
 		case CF_IMMEDIATE:
 			break;
 		case CF_LATE_IMMEDIATE:
@@ -992,11 +875,11 @@ static void execute_complex_function(
 			break;
 		case CF_DOUBLE_CLICK:
 			HaveDoubleClick = True;
-			Persist = True;
+			Persist		= True;
 			break;
 		case CF_HOLD:
 			HaveHold = True;
-			Persist = True;
+			Persist	 = True;
 			break;
 		default:
 			Persist = True;
@@ -1004,49 +887,43 @@ static void execute_complex_function(
 		}
 	}
 
-	if (!Persist || cond_rc->break_levels != 0)
-	{
+	if (!Persist || cond_rc->break_levels != 0) {
 		func->use_depth--;
 		__cf_cleanup(
-			&depth, all_pos_args_string, pos_arg_tokens, cond_rc);
+		    &depth, all_pos_args_string, pos_arg_tokens, cond_rc);
 		UngrabEm(GRAB_NORMAL);
 		return;
 	}
 
 	/* Only defer execution if there is a possibility of needing
 	 * a window to operate on */
-	if (NeedsTarget)
-	{
-		if (DeferExecution(
-			    &ecc, &mask, CRS_SELECT, trigger_evtype,
-			    do_allow_unmanaged) == True)
-		{
+	if (NeedsTarget) {
+		if (DeferExecution(&ecc, &mask, CRS_SELECT, trigger_evtype,
+			do_allow_unmanaged)
+		    == True) {
 			func->use_depth--;
-			__cf_cleanup(
-				&depth, all_pos_args_string, pos_arg_tokens,
-				cond_rc);
+			__cf_cleanup(&depth, all_pos_args_string,
+			    pos_arg_tokens, cond_rc);
 			UngrabEm(GRAB_NORMAL);
 			return;
 		}
 	}
 
 	te = (mask & ECC_ETRIGGER) ? ecc.x.etrigger : exc->x.elast;
-	switch (te->xany.type)
-	{
+	switch (te->xany.type) {
 	case ButtonPress:
 	case ButtonRelease:
-		x = te->xbutton.x_root;
-		y = te->xbutton.y_root;
+		x      = te->xbutton.x_root;
+		y      = te->xbutton.y_root;
 		button = te->xbutton.button;
 		/* Take the click which started this fuction off the
 		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
 		FCheckMaskEvent(dpy, ButtonPressMask, &d);
 		break;
 	default:
-		if (FQueryPointer(
-			    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y,
-			    &JunkX, &JunkY, &JunkMask) == False)
-		{
+		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y,
+			&JunkX, &JunkY, &JunkMask)
+		    == False) {
 			/* pointer is on a different screen */
 			x = 0;
 			y = 0;
@@ -1058,36 +935,27 @@ static void execute_complex_function(
 	/* Wait and see if we have a click, or a move */
 	/* wait forever, see if the user releases the button */
 	type = CheckActionType(x, y, &d, HaveHold, True, &button);
-	if (do_run_late_immediate)
-	{
+	if (do_run_late_immediate) {
 		exc2 = exc_clone_context(exc, &ecc, mask);
-		__run_complex_function_items(
-			cond_rc, CF_LATE_IMMEDIATE, func, exc2, pc,
-			all_pos_args_string, pos_arg_tokens,
-			has_ref_window_moved);
+		__run_complex_function_items(cond_rc, CF_LATE_IMMEDIATE, func,
+		    exc2, pc, all_pos_args_string, pos_arg_tokens,
+		    has_ref_window_moved);
 		exc_destroy_context(exc2);
 		do_run_late_immediate = 0;
 	}
-	if (type == CF_CLICK)
-	{
+	if (type == CF_CLICK) {
 		int button2;
 
 		/* If it was a click, wait to see if its a double click */
-		if (HaveDoubleClick)
-		{
-			type = CheckActionType(
-				x, y, &d, True, False, &button2);
-			switch (type)
-			{
+		if (HaveDoubleClick) {
+			type = CheckActionType(x, y, &d, True, False, &button2);
+			switch (type) {
 			case CF_HOLD:
 			case CF_MOTION:
 			case CF_CLICK:
-				if (button == button2)
-				{
+				if (button == button2) {
 					type = CF_DOUBLE_CLICK;
-				}
-				else
-				{
+				} else {
 					type = CF_CLICK;
 				}
 				break;
@@ -1099,22 +967,18 @@ static void execute_complex_function(
 				break;
 			}
 		}
-	}
-	else if (type == CF_TIMEOUT)
-	{
+	} else if (type == CF_TIMEOUT) {
 		type = CF_HOLD;
 	}
 
 	/* some functions operate on button release instead of presses. These
 	 * gets really weird for complex functions ... */
-	if (d.type == ButtonPress)
-	{
+	if (d.type == ButtonPress) {
 		d.type = ButtonRelease;
-		if (d.xbutton.button > 0 &&
-		    d.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
-		{
+		if (d.xbutton.button > 0
+		    && d.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS) {
 			d.xbutton.state &=
-				(~(Button1Mask >> (d.xbutton.button - 1)));
+			    (~(Button1Mask >> (d.xbutton.button - 1)));
 		}
 	}
 
@@ -1129,19 +993,16 @@ static void execute_complex_function(
 	fev_set_evpos(&d, x, y);
 	fev_fake_event(&d);
 	ecc.x.etrigger = &d;
-	ecc.w.w = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
+	ecc.w.w	       = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
 	mask |= ECC_ETRIGGER | ECC_W;
 	exc2 = exc_clone_context(exc, &ecc, mask);
-	if (do_run_late_immediate)
-	{
-		__run_complex_function_items(
-			cond_rc, CF_LATE_IMMEDIATE, func, exc2, pc,
-			all_pos_args_string, pos_arg_tokens,
-			has_ref_window_moved);
+	if (do_run_late_immediate) {
+		__run_complex_function_items(cond_rc, CF_LATE_IMMEDIATE, func,
+		    exc2, pc, all_pos_args_string, pos_arg_tokens,
+		    has_ref_window_moved);
 	}
-	__run_complex_function_items(
-		cond_rc, type, func, exc2, pc, all_pos_args_string,
-		pos_arg_tokens, has_ref_window_moved);
+	__run_complex_function_items(cond_rc, type, func, exc2, pc,
+	    all_pos_args_string, pos_arg_tokens, has_ref_window_moved);
 	exc_destroy_context(exc2);
 	/* This is the right place to ungrab the pointer (see comment above).
 	 */
@@ -1154,61 +1015,59 @@ static void execute_complex_function(
 
 /* ---------------------------- interface functions ------------------------ */
 
-void functions_init(void)
+void
+functions_init(void)
 {
 	cmdparser_hooks = cmdparser_old_get_hooks();
 
 	return;
 }
 
-void execute_function(F_CMD_ARGS, func_flags_t exec_flags)
+void
+execute_function(F_CMD_ARGS, func_flags_t exec_flags)
 {
 	__execute_command_line(F_PASS_ARGS, exec_flags, NULL, NULL, False);
 
 	return;
 }
 
-void execute_function_override_wcontext(
-	F_CMD_ARGS, func_flags_t exec_flags, int wcontext)
+void
+execute_function_override_wcontext(
+    F_CMD_ARGS, func_flags_t exec_flags, int wcontext)
 {
-	const exec_context_t *exc2;
+	const exec_context_t  *exc2;
 	exec_context_changes_t ecc;
 
 	ecc.w.wcontext = wcontext;
-	exc2 = exc_clone_context(exc, &ecc, ECC_WCONTEXT);
+	exc2	       = exc_clone_context(exc, &ecc, ECC_WCONTEXT);
 	execute_function(F_PASS_ARGS_WITH_EXC(exc2), exec_flags);
 	exc_destroy_context(exc2);
 
 	return;
 }
 
-void execute_function_override_window(
-	F_CMD_ARGS, func_flags_t exec_flags, FvwmWindow *fw)
+void
+execute_function_override_window(
+    F_CMD_ARGS, func_flags_t exec_flags, FvwmWindow *fw)
 {
-	const exec_context_t *exc2;
+	const exec_context_t  *exc2;
 	exec_context_changes_t ecc;
 
 	ecc.w.fw = fw;
-	if (fw != NULL)
-	{
-		ecc.w.w = FW_W(fw);
+	if (fw != NULL) {
+		ecc.w.w	       = FW_W(fw);
 		ecc.w.wcontext = C_WINDOW;
 		exec_flags |= FUNC_DONT_DEFER;
-	}
-	else
-	{
-		ecc.w.w = None;
+	} else {
+		ecc.w.w	       = None;
 		ecc.w.wcontext = C_ROOT;
 	}
-	if (exc != NULL)
-	{
-		exc2 = exc_clone_context(
-			exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-	}
-	else
-	{
+	if (exc != NULL) {
+		exc2 =
+		    exc_clone_context(exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+	} else {
 		ecc.type = EXCT_NULL;
-		exc2 = exc_create_context(
+		exc2	 = exc_create_context(
 			&ecc, ECC_TYPE | ECC_FW | ECC_W | ECC_WCONTEXT);
 	}
 	execute_function(F_PASS_ARGS_WITH_EXC(exc2), exec_flags);
@@ -1217,59 +1076,49 @@ void execute_function_override_window(
 	return;
 }
 
-void find_func_t(char *action, short *ret_func_c, func_flags_t *flags)
+void
+find_func_t(char *action, short *ret_func_c, func_flags_t *flags)
 {
-	int j, len = 0;
+	int   j, len = 0;
 	char *endtok = action;
-	Bool matched;
-	int mlen;
+	Bool  matched;
+	int   mlen;
 
-	if (action)
-	{
-		while (*endtok && !isspace((unsigned char)*endtok))
-		{
+	if (action) {
+		while (*endtok && !isspace((unsigned char)*endtok)) {
 			++endtok;
 		}
-		len = endtok - action;
-		j=0;
+		len	= endtok - action;
+		j	= 0;
 		matched = False;
-		while (!matched && (mlen = strlen(func_table[j].keyword)) > 0)
-		{
-			if (mlen == len &&
-			    strncasecmp(action,func_table[j].keyword,mlen) ==
-			    0)
-			{
-				matched=True;
+		while (!matched && (mlen = strlen(func_table[j].keyword)) > 0) {
+			if (mlen == len
+			    && strncasecmp(action, func_table[j].keyword, mlen)
+				   == 0) {
+				matched = True;
 				/* found key word */
-				if (ret_func_c)
-				{
+				if (ret_func_c) {
 					*ret_func_c = func_table[j].func_c;
 				}
-				if (flags)
-				{
+				if (flags) {
 					*flags = func_table[j].flags;
 				}
 				return;
-			}
-			else
-			{
+			} else {
 				j++;
 			}
 		}
 		/* No clue what the function is. Just return "BEEP" */
 	}
-	if (ret_func_c)
-	{
+	if (ret_func_c) {
 		*ret_func_c = F_BEEP;
 	}
-	if (flags)
-	{
+	if (flags) {
 		*flags = 0;
 	}
 
 	return;
 }
-
 
 /*
  *  add an item to a FvwmFunction
@@ -1278,11 +1127,12 @@ void find_func_t(char *action, short *ret_func_c, func_flags_t *flags)
  *      func      - pointer to the FvwmFunction to add the item
  *      action    - the definition string from the config line
  */
-void AddToFunction(FvwmFunction *func, char *action)
+void
+AddToFunction(FvwmFunction *func, char *action)
 {
 	FunctionItem *tmp;
-	char *token = NULL;
-	char condition;
+	char	     *token = NULL;
+	char	      condition;
 
 	token = PeekToken(action, &action);
 	if (!token)
@@ -1290,56 +1140,45 @@ void AddToFunction(FvwmFunction *func, char *action)
 	condition = token[0];
 	if (isupper(condition))
 		condition = tolower(condition);
-	if (condition != CF_IMMEDIATE &&
-	    condition != CF_LATE_IMMEDIATE &&
-	    condition != CF_MOTION &&
-	    condition != CF_HOLD &&
-	    condition != CF_CLICK &&
-	    condition != CF_DOUBLE_CLICK)
-	{
+	if (condition != CF_IMMEDIATE && condition != CF_LATE_IMMEDIATE
+	    && condition != CF_MOTION && condition != CF_HOLD
+	    && condition != CF_CLICK && condition != CF_DOUBLE_CLICK) {
 		fvwm_debug(__func__,
-			   "Got '%s' instead of a valid function specifier",
-			   token);
+		    "Got '%s' instead of a valid function specifier", token);
 		return;
 	}
-	if (token[0] != 0 && token[1] != 0 &&
-	    (find_builtin_function(token) || find_complex_function(token)))
-	{
+	if (token[0] != 0 && token[1] != 0
+	    && (find_builtin_function(token) || find_complex_function(token))) {
 		fvwm_debug(__func__,
-			   "Got the command or function name '%s' instead of a"
-			   " function specifier. This may indicate a syntax"
-			   " error in the configuration file. Using %c as the"
-			   " specifier.", token, token[0]);
+		    "Got the command or function name '%s' instead of a"
+		    " function specifier. This may indicate a syntax"
+		    " error in the configuration file. Using %c as the"
+		    " specifier.",
+		    token, token[0]);
 	}
-	if (!action)
-	{
+	if (!action) {
 		return;
 	}
-	while (isspace(*action))
-	{
+	while (isspace(*action)) {
 		action++;
 	}
-	if (*action == 0)
-	{
+	if (*action == 0) {
 		return;
 	}
 
-	tmp = fxmalloc(sizeof *tmp);
+	tmp	       = fxmalloc(sizeof *tmp);
 	tmp->next_item = NULL;
-	tmp->func = func;
-	if (func->first_item == NULL)
-	{
+	tmp->func      = func;
+	if (func->first_item == NULL) {
 		func->first_item = tmp;
-		func->last_item = tmp;
-	}
-	else
-	{
+		func->last_item	 = tmp;
+	} else {
 		func->last_item->next_item = tmp;
-		func->last_item = tmp;
+		func->last_item		   = tmp;
 	}
 
 	tmp->condition = condition;
-	tmp->action = stripcpy(action);
+	tmp->action    = stripcpy(action);
 
 	find_func_t(tmp->action, NULL, &(tmp->flags));
 
@@ -1348,23 +1187,21 @@ void AddToFunction(FvwmFunction *func, char *action)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_DestroyFunc(F_CMD_ARGS)
+void
+CMD_DestroyFunc(F_CMD_ARGS)
 {
 	FvwmFunction *func;
-	char *token;
+	char	     *token;
 
 	token = PeekToken(action, NULL);
-	if (!token)
-	{
+	if (!token) {
 		return;
 	}
 	func = find_complex_function(token);
-	if (!func)
-	{
+	if (!func) {
 		return;
 	}
-	if (Scr.last_added_item.type == ADDED_FUNCTION)
-	{
+	if (Scr.last_added_item.type == ADDED_FUNCTION) {
 		set_last_added_item(ADDED_NONE, NULL);
 	}
 	DestroyFunction(func);
@@ -1372,19 +1209,18 @@ void CMD_DestroyFunc(F_CMD_ARGS)
 	return;
 }
 
-void CMD_AddToFunc(F_CMD_ARGS)
+void
+CMD_AddToFunc(F_CMD_ARGS)
 {
 	FvwmFunction *func;
-	char *token;
+	char	     *token;
 
-	action = GetNextToken(action,&token);
-	if (!token)
-	{
+	action = GetNextToken(action, &token);
+	if (!token) {
 		return;
 	}
 	func = find_complex_function(token);
-	if (func == NULL)
-	{
+	if (func == NULL) {
 		func = NewFvwmFunction(token);
 	}
 
@@ -1397,25 +1233,20 @@ void CMD_AddToFunc(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Plus(F_CMD_ARGS)
+void
+CMD_Plus(F_CMD_ARGS)
 {
-	if (Scr.last_added_item.type == ADDED_MENU)
-	{
+	if (Scr.last_added_item.type == ADDED_MENU) {
 		add_another_menu_item(action);
-	}
-	else if (Scr.last_added_item.type == ADDED_FUNCTION)
-	{
+	} else if (Scr.last_added_item.type == ADDED_FUNCTION) {
 		AddToFunction(Scr.last_added_item.item, action);
-	}
-	else if (Scr.last_added_item.type == ADDED_DECOR)
-	{
+	} else if (Scr.last_added_item.type == ADDED_DECOR) {
 		FvwmDecor *tmp = &Scr.DefaultDecor;
-		for ( ; tmp && tmp != Scr.last_added_item.item; tmp = tmp->next)
-		{
+		for (; tmp && tmp != Scr.last_added_item.item;
+		     tmp = tmp->next) {
 			/* nothing to do here */
 		}
-		if (!tmp)
-		{
+		if (!tmp) {
 			return;
 		}
 		AddToDecor(F_PASS_ARGS, tmp);
@@ -1424,44 +1255,39 @@ void CMD_Plus(F_CMD_ARGS)
 	return;
 }
 
-void CMD_EchoFuncDefinition(F_CMD_ARGS)
+void
+CMD_EchoFuncDefinition(F_CMD_ARGS)
 {
 	FvwmFunction *func;
 	const func_t *bif;
 	FunctionItem *fi;
-	char *token;
+	char	     *token;
 
 	GetNextToken(action, &token);
-	if (!token)
-	{
+	if (!token) {
 		fvwm_debug(__func__, "Missing argument");
 
 		return;
 	}
 	bif = find_builtin_function(token);
-	if (bif != NULL)
-	{
-		fvwm_debug(__func__,
-			   "function '%s' is a built in command", token);
+	if (bif != NULL) {
+		fvwm_debug(
+		    __func__, "function '%s' is a built in command", token);
 		free(token);
 
 		return;
 	}
 	func = find_complex_function(token);
-	if (!func)
-	{
-		fvwm_debug(__func__,
-			   "function '%s' not defined", token);
+	if (!func) {
+		fvwm_debug(__func__, "function '%s' not defined", token);
 		free(token);
 
 		return;
 	}
-	fvwm_debug(__func__, "definition of function '%s':",
-		   token);
-	for (fi = func->first_item; fi != NULL; fi = fi->next_item)
-	{
+	fvwm_debug(__func__, "definition of function '%s':", token);
+	for (fi = func->first_item; fi != NULL; fi = fi->next_item) {
 		fvwm_debug(__func__, "  %c %s", fi->condition,
-			   (fi->action == 0) ? "(null)" : fi->action);
+		    (fi->action == 0) ? "(null)" : fi->action);
 	}
 	fvwm_debug(__func__, "end of definition");
 	free(token);
@@ -1470,8 +1296,18 @@ void CMD_EchoFuncDefinition(F_CMD_ARGS)
 }
 
 /* dummy commands */
-void CMD_Title(F_CMD_ARGS) { }
-void CMD_TearMenuOff(F_CMD_ARGS) { }
-void CMD_KeepRc(F_CMD_ARGS) { }
-void CMD_Silent(F_CMD_ARGS) { }
-void CMD_Function(F_CMD_ARGS) { }
+void
+CMD_Title(F_CMD_ARGS)
+{}
+void
+CMD_TearMenuOff(F_CMD_ARGS)
+{}
+void
+CMD_KeepRc(F_CMD_ARGS)
+{}
+void
+CMD_Silent(F_CMD_ARGS)
+{}
+void
+CMD_Function(F_CMD_ARGS)
+{}
