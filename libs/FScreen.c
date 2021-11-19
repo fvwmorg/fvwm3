@@ -806,10 +806,10 @@ void FScreenTranslateCoordinates(
 int FScreenClipToScreen(fscreen_scr_arg *arg, fscreen_scr_t screen,
 			int *x, int *y, int w, int h)
 {
-	int sx;
-	int sy;
-	int sw;
-	int sh;
+	int sx = 0;
+	int sy = 0;
+	int sw = 0;
+	int sh = 0;
 	int lx = (x) ? *x : 0;
 	int ly = (y) ? *y : 0;
 	int x_grav = GRAV_POS;
@@ -852,10 +852,10 @@ int FScreenClipToScreen(fscreen_scr_arg *arg, fscreen_scr_t screen,
 void FScreenCenterOnScreen(fscreen_scr_arg *arg, fscreen_scr_t screen,
 			   int *x, int *y, int w, int h)
 {
-	int sx;
-	int sy;
-	int sw;
-	int sh;
+	int sx = 0;
+	int sy = 0;
+	int sw = 0;
+	int sh = 0;
 	int lx;
 	int ly;
 
@@ -895,10 +895,10 @@ void FScreenGetResistanceRect(
 Bool FScreenIsRectangleOnScreen(fscreen_scr_arg *arg, fscreen_scr_t screen,
 				rectangle *rec)
 {
-	int sx;
-	int sy;
-	int sw;
-	int sh;
+	int sx = 0;
+	int sy = 0;
+	int sw = 0;
+	int sh = 0;
 
 	FScreenGetScrRect(arg, screen, &sx, &sy, &sw, &sh);
 
