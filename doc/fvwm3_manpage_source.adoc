@@ -4,7 +4,6 @@
 _config-file_] [*-r*] [*-s* [_screen_num_]] [*-V*] [*-C* _visual-class_
 | *-I* _visual-id_] [*-l* _colors_ [*-L*] [*-A*] [*-S*] [*-P*]] [*-D*]
 [*-h*] [*-i* _client-id_] [*-F* _state-file_] [*--debug-stack-ring*]
-[*-blackout*]
 
 == DESCRIPTION
 
@@ -233,12 +232,6 @@ this option causes fvwm to never free the colors in its palette. By
 default, when fvwm does not need a color any more it frees this color so
 that a new color can be used. This option may speed up image loading and
 save a few bits of memory.
-
-*-blackout*::
-
-This option is provided for backward compatibility only. Blacking out
-the screen during startup is not necessary (and doesn't work) anymore.
-This option will be removed in the future.
 
 *--debug-stack-ring*::
 
