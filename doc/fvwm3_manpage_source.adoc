@@ -1,9 +1,12 @@
 == SYNOPSIS
 
-*fvwm3* [*-c* _config-command_] [*-d* _displayname_] [*-f*
-_config-file_] [*-r*] [*-s* [_screen_num_]] [*-V*] [*-C* _visual-class_
-| *-I* _visual-id_] [*-l* _colors_ [*-L*] [*-A*] [*-S*] [*-P*]] [*-D*]
-[*-h*] [*-i* _client-id_] [*-F* _state-file_] [*--debug-stack-ring*]
+*fvwm3*
+[*-c* _config-command_]
+[*-d* _displayname_]
+[*-f* _config-file_]
+[*-s* [_screen_num_]]
+[*-v*]
+[other options]
 
 == DESCRIPTION
 
