@@ -2494,7 +2494,7 @@ int main(int argc, char **argv)
 		xasprintf(&cfg_loc[++nl], "%s/default-config/config", FVWM_DATADIR);
 
 		for (nl = 0; nl < upper; nl++) {
-			if (!run_command_file(cfg_loc[nl], exc)) {
+			if (!run_command_file(cfg_loc[nl], exc, NULL)) {
 				fvwm_debug(__func__,
 				    "couldn't find/load [%d]: %s\n", nl, cfg_loc[nl]);
 				tries++;

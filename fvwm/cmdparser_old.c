@@ -115,16 +115,17 @@ static int ocp_create_context(
 	/*!!!should this be in handle_line_start instead???*/
 	if (caller_c != NULL)
 	{
-		if (dest_c->call_depth > MAX_FUNCTION_DEPTH)
+		if (caller_c->call_depth >= MAX_FUNCTION_DEPTH)
 		{
 			fvwm_debug(
 				__func__,
 				"called with a depth of %i, "
 				"stopping function execution!",
-				dest_c->call_depth);
+				caller_c->call_depth);
 
 			return -1;
 		}
+		dest_c->call_depth = caller_c->call_depth + 1;
 	}
 	else
 	{
