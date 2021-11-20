@@ -3,7 +3,6 @@
 #ifndef FVWMLIB_VPACKET_H
 #define FVWMLIB_VPACKET_H
 #include "fvwm_x11.h"
-#include "fvwm/fvwm.h"
 
 /*
   All new-style module packets (i.e., those that are not simply arrays
@@ -70,7 +69,7 @@ typedef struct MiniIconPacket
 {
 	Window         w;
 	Window         frame;
-	FvwmWindow    *fvwmwin;
+	void          *fvwmwin;
 	unsigned long  width;
 	unsigned long  height;
 	unsigned long  depth;
