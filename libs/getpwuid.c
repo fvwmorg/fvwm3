@@ -39,7 +39,7 @@ const char
 	return (home);
 }
 
-const char *
+char *
 expand_path(const char *path)
 {
 	char			*expanded, *name;
