@@ -620,11 +620,11 @@ static void merge_styles(
 		SSET_EDGE_RESISTANCE_MOVE(
 			*merged_style, SGET_EDGE_RESISTANCE_MOVE(*add_style));
 	}
-	if (add_style->flags.has_edge_resistance_xinerama_move)
+	if (add_style->flags.has_edge_resistance_screen_move)
 	{
-		SSET_EDGE_RESISTANCE_XINERAMA_MOVE(
+		SSET_EDGE_RESISTANCE_SCREEN_MOVE(
 			*merged_style,
-			SGET_EDGE_RESISTANCE_XINERAMA_MOVE(*add_style));
+			SGET_EDGE_RESISTANCE_SCREEN_MOVE(*add_style));
 	}
 
 	/* Note:  Only one style cmd can define a window's iconboxes, the last
@@ -2576,25 +2576,25 @@ static Bool style_parse_one_style_option(
 		{
 			int num;
 			unsigned has_move;
-			unsigned has_xinerama_move;
+			unsigned has_screen_move;
 
 			num = GetIntegerArguments(rest, &rest, val, 2);
 			if (num == 1)
 			{
 				has_move = 1;
-				has_xinerama_move = 0;
+				has_screen_move = 0;
 			}
 			else if (num == 2)
 			{
 				has_move = 1;
-				has_xinerama_move = 1;
+				has_screen_move = 1;
 			}
 			else
 			{
 				val[0] = 0;
 				val[1] = 0;
 				has_move = 0;
-				has_xinerama_move = 0;
+				has_screen_move = 0;
 			}
 			if (val[0] < 0)
 			{
@@ -2608,11 +2608,11 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.has_edge_resistance_move = 1;
 			ps->change_mask.has_edge_resistance_move = 1;
 			SSET_EDGE_RESISTANCE_MOVE(*ps, val[0]);
-			ps->flags.has_edge_resistance_xinerama_move =
-				has_xinerama_move;
-			ps->flag_mask.has_edge_resistance_xinerama_move = 1;
-			ps->change_mask.has_edge_resistance_xinerama_move = 1;
-			SSET_EDGE_RESISTANCE_XINERAMA_MOVE(*ps, val[1]);
+			ps->flags.has_edge_resistance_screen_move =
+				has_screen_move;
+			ps->flag_mask.has_edge_resistance_screen_move = 1;
+			ps->change_mask.has_edge_resistance_screen_move = 1;
+			SSET_EDGE_RESISTANCE_SCREEN_MOVE(*ps, val[1]);
 		}
 		else if (StrEquals(token, "EdgeMoveDelay"))
 		{

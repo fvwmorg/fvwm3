@@ -608,10 +608,10 @@
 	((s).edge_resistance_move)
 #define SSET_EDGE_RESISTANCE_MOVE(s,x) \
 	((s).edge_resistance_move = (x))
-#define SGET_EDGE_RESISTANCE_XINERAMA_MOVE(s) \
-	((s).edge_resistance_xinerama_move)
-#define SSET_EDGE_RESISTANCE_XINERAMA_MOVE(s,x) \
-	((s).edge_resistance_xinerama_move = (x))
+#define SGET_EDGE_RESISTANCE_SCREEN_MOVE(s) \
+	((s).edge_resistance_screen_move)
+#define SSET_EDGE_RESISTANCE_SCREEN_MOVE(s,x) \
+	((s).edge_resistance_screen_move = (x))
 #define SGET_ICON_BOXES(s) \
 	((s).icon_boxes)
 #define SSET_ICON_BOXES(s,x) \

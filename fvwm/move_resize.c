@@ -1185,8 +1185,7 @@ static void DisplayPosition(
 		return;
 	}
 	position_geometry_window(eventp);
-	/* Translate x,y into local screen coordinates,
-	 * in case Xinerama is used. */
+	/* Translate x,y into local screen coordinates. */
 	fscr.xypos.x = x;
 	fscr.xypos.y = y;
 	FScreenTranslateCoordinates(NULL, FSCREEN_GLOBAL, &fscr,
@@ -2276,7 +2275,7 @@ static void DoSnapGrid(FvwmWindow *fw, rectangle self, int *nxl, int *nyt)
 	if (fw->snap_grid_x > 1 && self.x != grid_x)
 		*nxl = (self.x - grid_x <= fw->snap_grid_x / 2) ? grid_x :
 			grid_x + fw->snap_grid_x;
-	
+
 	if (fw->snap_grid_y > 1 && self.y != grid_y)
 		*nyt = (self.y - grid_y <= fw->snap_grid_y / 2) ? grid_y :
 			grid_y + fw->snap_grid_y;
@@ -2445,7 +2444,7 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, int *nxl, int *nyt)
 			*nyt = NOSNAP;
 		}
 	}
-		
+
 }
 static void DoSnapAttract(
 	FvwmWindow *fw, int Width, int Height, int *px, int *py)
@@ -2524,12 +2523,12 @@ static void DoSnapAttract(
 	}
 
 	/* Resist moving windows beyond all edges of the monitor. */
-	if (fw->edge_resistance_xinerama_move > 0)
+	if (fw->edge_resistance_screen_move > 0)
 	{
 		nxl = NOSNAP;
 		nyt = NOSNAP;
 		DoSnapMonitor(fw, self, &nxl, &nyt,
-			fw->edge_resistance_xinerama_move, true, true);
+			fw->edge_resistance_screen_move, true, true);
 		if (nxl != NOSNAP)
 			*px = nxl;
 		if (nyt != NOSNAP)

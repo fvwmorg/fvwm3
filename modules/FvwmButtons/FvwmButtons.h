@@ -240,7 +240,6 @@ struct button_info_struct
 void AddButtonAction(button_info*, int, char*);
 void MakeContainer(button_info*);
 void change_swallowed_window_colorset(button_info *b, Bool do_clear);
-void handle_xinerama_string(char *args);
 int LoadIconFile(const char *s, FvwmPicture **p, int cset);
 void SetTransparentBackground(button_info *ub, int w, int h);
 void exec_swallow(char *action, button_info *b);

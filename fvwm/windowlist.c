@@ -252,7 +252,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
 	/* parse postitioning args - must call this even if no action is given
-	 * because it sets the xinerama screen origin */
+	 * because it sets the screen origin */
 	if (action && *action)
 	{
 		/* Look for condition - CreateFlagString returns NULL if no '('

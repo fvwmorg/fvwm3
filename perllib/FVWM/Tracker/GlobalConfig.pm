@@ -68,7 +68,7 @@ sub calculate_internals ($$) {
 	return $name;
 }
 
-sub data ($;$) { 
+sub data ($;$) {
 	my $self = shift;
 	my $name = shift;
 	my $data = $self->{data};
@@ -76,7 +76,7 @@ sub data ($;$) {
 	return $data->{$name};
 }
 
-sub dump ($;$) { 
+sub dump ($;$) {
 	my $self = shift;
 	my $name = shift;
 	my $data = $self->{data};
@@ -102,7 +102,7 @@ FVWM configuration.
     "value changed"
 
 =head1 SYNOPSYS
- 
+
 Using B<FVWM::Module> $module object:
 
     my $config_tracker = $module->track("GlobalConfig");
@@ -112,7 +112,6 @@ Using B<FVWM::Module> $module object:
 or:
 
     my $config_tracker = $module->track("GlobalConfig");
-    my $xinerama_info = $config_tracker->data('XineramaConfig');
     my $desktop2_name = $config_tracker->data('DesktopName 2');
 
 =head1 OVERRIDDEN METHODS

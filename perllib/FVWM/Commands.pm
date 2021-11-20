@@ -624,7 +624,7 @@ $TIME = 1410306754;
 		name => 'MoveToScreen',
 		cursor => 'SELECT',
 		window => 1,
-		descr => q{Move a window to another Xinerama screen},
+		descr => q{Move a window to another screen},
 	},
 	{
 		name => 'Next',
@@ -1057,36 +1057,6 @@ $TIME = 1410306754;
 		cursor => 'SELECT',
 		window => 1,
 		descr => q{Set styles on the selected window},
-	},
-	{
-		name => 'Xinerama',
-		cursor => '',
-		window => 0,
-		descr => q{Control Xinerama support},
-	},
-	{
-		name => 'XineramaPrimaryScreen',
-		cursor => '',
-		window => 0,
-		descr => q{Identify Xinerama primary screen},
-	},
-	{
-		name => 'XineramaSls',
-		cursor => '',
-		window => 0,
-		descr => q{Control single logical screen support},
-	},
-	{
-		name => 'XineramaSlsScreens',
-		cursor => '',
-		window => 0,
-		descr => q{Configure layout for single logical screen},
-	},
-	{
-		name => 'XineramaSlsSize',
-		cursor => '',
-		window => 0,
-		descr => q{Configure layout for single logical screen sizes},
 	},
 	{
 		name => 'XorPixmap',

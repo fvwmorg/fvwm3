@@ -207,7 +207,7 @@ void __map_window(Display *dpy)
 	rectangle new_g;
 	rectangle screen_g;
 	Window dummy;
-	fscreen_scr_arg *fsarg = NULL; /* for now no xinerama support */
+	fscreen_scr_arg *fsarg = NULL;
 	ftips_placement_t placement;
 	int x,y;
 	static int border_width = 1;

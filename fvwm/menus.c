@@ -7063,7 +7063,7 @@ char *get_menu_options(
 	float dummy_float;
 	Bool dummy_flag;
 	Window context_window = None;
-	Bool fHasContext, fUseItemOffset, fRectangleContext, fXineramaRoot;
+	Bool fHasContext, fUseItemOffset, fRectangleContext, fMonitorContext;
 	Bool fValidPosHints =
 		last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
 	Bool is_action_empty = False;
@@ -7075,7 +7075,7 @@ char *get_menu_options(
 	 * sum up the totals right now. This is useful for the SubmenusLeft
 	 * style. */
 
-	fXineramaRoot = False;
+	fMonitorContext = False;
 	last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
 	if (pops == NULL)
 	{
@@ -7212,11 +7212,13 @@ char *get_menu_options(
 			context_window = Scr.Root;
 			pops->pos_hints.is_relative = False;
 		}
-		else if (StrEquals(tok,"xineramaroot"))
+		else if (
+			StrEquals(tok,"monitor") ||
+			StrEquals(tok,"xineramaroot"))
 		{
 			context_window = Scr.Root;
 			pops->pos_hints.is_relative = False;
-			fXineramaRoot = True;
+			fMonitorContext = True;
 		}
 		else if (StrEquals(tok,"mouse"))
 		{
@@ -7241,7 +7243,7 @@ char *get_menu_options(
 					   "missing rectangle geometry");
 				if (!pops->pos_hints.has_screen_origin)
 				{
-					/* xinerama: emergency fallback */
+					/* emergency fallback */
 					pops->pos_hints.has_screen_origin = 1;
 					pops->pos_hints.screen_origin_x = 0;
 					pops->pos_hints.screen_origin_y = 0;
@@ -7259,7 +7261,7 @@ char *get_menu_options(
 					   "invalid rectangle geometry");
 				if (!pops->pos_hints.has_screen_origin)
 				{
-					/* xinerama: emergency fallback */
+					/* emergency fallback */
 					pops->pos_hints.has_screen_origin = 1;
 					pops->pos_hints.screen_origin_x = 0;
 					pops->pos_hints.screen_origin_y = 0;
@@ -7338,7 +7340,7 @@ char *get_menu_options(
 		{
 			if (!pops->pos_hints.has_screen_origin)
 			{
-				/* xinerama: use global screen as reference */
+				/* use global screen as reference */
 				pops->pos_hints.has_screen_origin = 1;
 				pops->pos_hints.screen_origin_x = -1;
 				pops->pos_hints.screen_origin_y = -1;
@@ -7370,8 +7372,7 @@ char *get_menu_options(
 			width = height = 1;
 			if (!pops->pos_hints.has_screen_origin)
 			{
-				/* xinerama: use screen with pinter as
-				 * reference */
+				/* use screen with pointer as reference */
 				pops->pos_hints.has_screen_origin = 1;
 				pops->pos_hints.screen_origin_x = x;
 				pops->pos_hints.screen_origin_y = y;
@@ -7395,7 +7396,7 @@ char *get_menu_options(
 			if (!pops->pos_hints.has_screen_origin)
 			{
 				pops->pos_hints.has_screen_origin = 1;
-				if (fXineramaRoot)
+				if (fMonitorContext)
 				{
 					/* use whole screen */
 					pops->pos_hints.screen_origin_x = -1;
@@ -7403,8 +7404,8 @@ char *get_menu_options(
 				}
 				else if (context_window == Scr.Root)
 				{
-					/* xinerama: use screen that contains
-					 * the window center as reference */
+					/* use screen that contains the window
+					 * center as reference */
 					if (!fev_get_evpos_or_query(
 						    dpy, context_window, e,
 						    &pops->pos_hints.
@@ -7433,8 +7434,8 @@ char *get_menu_options(
 				}
 				else
 				{
-					/* xinerama: use screen that contains
-					 * the window center as reference */
+					/* use screen that contains the window
+					 * center as reference */
 					pops->pos_hints.screen_origin_x =
 						JunkX + width / 2;
 					pops->pos_hints.screen_origin_y =

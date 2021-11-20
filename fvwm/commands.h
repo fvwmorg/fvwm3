@@ -142,11 +142,6 @@ enum
 	F_WAIT,
 	F_WINDOWFONT,
 	F_WINDOWLIST,
-	F_XINERAMA,
-	F_XINERAMAPRIMARYSCREEN,
-	F_XINERAMASLS,
-	F_XINERAMASLSSCREENS,
-	F_XINERAMASLSSIZE,
 	F_XOR,
 	F_XSYNC,
 	F_XSYNCHRONIZE,
@@ -383,11 +378,6 @@ void CMD_WindowList(F_CMD_ARGS);
 void CMD_WindowShade(F_CMD_ARGS);
 void CMD_WindowShadeAnimate(F_CMD_ARGS);
 void CMD_WindowStyle(F_CMD_ARGS);
-void CMD_Xinerama(F_CMD_ARGS);
-void CMD_XineramaPrimaryScreen(F_CMD_ARGS);
-void CMD_XineramaSls(F_CMD_ARGS);
-void CMD_XineramaSlsScreens(F_CMD_ARGS);
-void CMD_XineramaSlsSize(F_CMD_ARGS);
 void CMD_XorPixmap(F_CMD_ARGS);
 void CMD_XorValue(F_CMD_ARGS);
 void CMD_XSync(F_CMD_ARGS);
