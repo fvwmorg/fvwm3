@@ -149,7 +149,6 @@ Window JunkRoot, JunkChild;             /* junk window */
 int JunkWidth, JunkHeight, JunkBW, JunkDepth;
 unsigned int JunkMask;
 
-Bool debugging = False;
 Bool debugging_stack_ring = False;
 
 Window bad_window = None;
@@ -1812,12 +1811,6 @@ int main(int argc, char **argv)
 		{
 			debugging_stack_ring = True;
 		}
-		else if (strcmp(argv[i], "-D") == 0 ||
-			 strcmp(argv[i], "-debug") == 0 ||
-			 strcmp(argv[i], "--debug") == 0)
-		{
-			debugging = True;
-		}
 		else if (strcmp(argv[i], "-i") == 0 ||
 			 strcmp(argv[i], "-clientid") == 0 ||
 			 strcmp(argv[i], "--clientid") == 0 ||
@@ -2378,10 +2371,6 @@ int main(int argc, char **argv)
 
 	frame_init();
 	XFlush(dpy);
-	if (debugging)
-	{
-		sync_server(1);
-	}
 
 	SetupICCCM2(replace_wm);
 	XSetIOErrorHandler(CatchFatal);

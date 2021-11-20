@@ -71,11 +71,6 @@ fvwm -c "AddToFunc StartFunction I Module FvwmPager"
 Manage the display called _displayname_ instead of the name obtained
 from the environment variable _$DISPLAY_.
 
-*-D* | *--debug*::
-
-Puts X transactions in synchronous mode, which dramatically slows things
-down, but guarantees that fvwm's internal error messages are correct.
-
 *-f* _config-file_::
 
 Causes fvwm to read _config-file_ instead of _~/.fvwm/config_ as its
