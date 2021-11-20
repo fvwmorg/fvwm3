@@ -20,6 +20,6 @@
 #endif
 
 const char	*find_home_dir(void);
-const char	*expand_path(const char *);
+char	*expand_path(const char *);
 
 #endif
