@@ -16,7 +16,6 @@
   This is the same packet as the M_ADD_WINDOW packet, the
   only difference being the type.
 */
-/*  RBW- typedef struct config_win_packet  */
 typedef struct ConfigWinPacket
 {
 	/*** Alignment notes ***/
@@ -33,14 +32,7 @@ typedef struct ConfigWinPacket
 	unsigned long  desk;
 	unsigned long  monitor_id;
 	unsigned long  monitor_name;
-	/*
-	  Temp word for alignment - old flags used to be here.
-	  - remove before next release.
-	  RBW - 05/01/2000 - layer has usurped this slot.
-	  unsigned long  dummy;
-	*/
 	unsigned long  layer;
-
 	unsigned long  hints_base_width;
 	unsigned long  hints_base_height;
 	unsigned long  hints_width_inc;
@@ -56,8 +48,6 @@ typedef struct ConfigWinPacket
 	unsigned long  hints_win_gravity;
 	unsigned long  TextPixel;
 	unsigned long  BackPixel;
-
-	/*  Everything below this is post-GSFR  */
 	unsigned long  ewmh_hint_layer;
 	unsigned long  ewmh_hint_desktop;
 	unsigned long  ewmh_window_type;
