@@ -1498,10 +1498,10 @@ static int __place_get_nowm_pos(
 		 * place does not intersect the target screen, we assume the
 		 * window position must be adjusted to the screen origin. So
 		 * there are two ways to get a window to pop up on a particular
-		 * Xinerama screen.  1: The intuitive way giving a geometry
+		 * screen.  1: The intuitive way giving a geometry
 		 * hint relative to the desired screen's 0,0 along with the
 		 * appropriate StartsOnScreen style (or *wmscreen resource), or
-		 * 2: Do NOT specify a Xinerama screen (or specify it to be
+		 * 2: Do NOT specify a screen (or specify it to be
 		 * 'g') and give the geometry hint in terms of the global
 		 * screen. */
 #if 0

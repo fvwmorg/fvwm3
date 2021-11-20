@@ -84,8 +84,7 @@ typedef struct MenuPosHints
 typedef struct MenuOptions
 {
 	struct MenuPosHints pos_hints;
-	/* A position on the Xinerama screen on which the menu should be
-	 * started. */
+	/* A position on the screen on which the menu should be started. */
 	struct
 	{
 		unsigned do_not_warp : 1;
@@ -108,8 +107,7 @@ typedef struct MenuParameters
 	char **ret_paction;
 	XEvent *event_propagate_to_submenu;
 	struct MenuOptions *pops;
-	/* A position on the Xinerama screen on which the menu should be
-	 * started. */
+	/* A position on the screen on which the menu should be started. */
 	int screen_origin_x;
 	int screen_origin_y;
 	struct

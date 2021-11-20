@@ -326,14 +326,6 @@ static void ParseConfigLine(char *buf)
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
 
-#if 0
-  if (strncasecmp(buf, XINERAMA_CONFIG_STRING,
-		  sizeof(XINERAMA_CONFIG_STRING)-1) == 0)
-  {
-    FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
-    return;
-  }
-#endif
   if (strncasecmp(buf, "Colorset", 8) == 0) {
     LoadColorset(&buf[8]);
     return;
@@ -2500,15 +2492,6 @@ static void ParseActiveMessage(char *buf)
 		}
 		return;
 	} /* end colorset command */
-#if 0
-	if (strncasecmp(
-		buf, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING)-1)
-	    == 0)
-	{
-		FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
-		return;
-	}
-#endif
 	if (strncasecmp(buf, mname, module->namelen+1) != 0)
 	{
 		/* If its not for me */

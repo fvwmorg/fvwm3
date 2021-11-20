@@ -916,8 +916,7 @@ void setup_numeric_vals(FvwmWindow *fw, window_style *pstyle)
 		fw->edge_delay_ms_resize = DEFAULT_RESIZE_DELAY;
 	}
 	fw->edge_resistance_move = pstyle->edge_resistance_move;
-	fw->edge_resistance_xinerama_move =
-		pstyle->edge_resistance_xinerama_move;
+	fw->edge_resistance_screen_move = pstyle->edge_resistance_screen_move;
 
 	return;
 }

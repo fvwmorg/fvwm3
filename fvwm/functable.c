@@ -397,7 +397,7 @@ const func_t func_table[] =
 
 	CMD_ENT("movetoscreen", CMD_MoveToScreen, F_MOVE_TO_SCREEN,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
-	/* - Move a window to another Xinerama screen */
+	/* - Move a window to another screen */
 
 	CMD_ENT("next", CMD_Next, F_NEXT, 0, 0),
 	/* - Operate on the next window matching conditions */

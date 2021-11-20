@@ -302,12 +302,6 @@
 #define MAX_GRADIENT_SEGMENTS           1000
 #define MAX_GRADIENT_COLORS            10000
 
-/*** Xinerama ***/
-#define DEFAULT_XINERAMA_ENABLED        True /* Xinerama on by default */
-#define XINERAMA_CONFIG_STRING             "XineramaConfig"
-/* Replace with -1 to switch off "primary screen" concept by default */
-#define DEFAULT_PRIMARY_SCREEN             0
-
 /*** Very long window names (600000 characters or more) seem to hang the X
  *** server. ***/
 #define MAX_WINDOW_NAME_LEN              200 /* characters */

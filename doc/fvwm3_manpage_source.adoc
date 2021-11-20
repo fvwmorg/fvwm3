@@ -2264,6 +2264,9 @@ The _context-rectangle_ can be one of:
 _Root_:::
 	the root window of the current screen.
 +
+_Monitor_:::
+	the area of the current RandR screen.
++
 _Mouse_:::
 	a 1x1 rectangle at the mouse position.
 +

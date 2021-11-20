@@ -154,7 +154,7 @@ typedef struct icon_boxes_struct
 	struct icon_boxes_struct *next;       /* next icon_boxes or zero */
 	unsigned int use_count;
 	int IconBox[4];                       /* x/y x/y for iconbox */
-	char	*IconScreen;                       /* Xinerama screen */
+	char	*IconScreen;                       /* screen */
 	short IconGrid[2];                    /* x incr, y incr */
 	char IconSign[4];                     /* because of -0, need to save */
 	unsigned is_orphan : 1;
@@ -501,7 +501,7 @@ typedef struct style_flags
 	unsigned has_edge_delay_ms_move : 1;
 	unsigned has_edge_delay_ms_resize : 1;
 	unsigned has_edge_resistance_move : 1;
-	unsigned has_edge_resistance_xinerama_move : 1;
+	unsigned has_edge_resistance_screen_move : 1;
 	unsigned has_handle_width : 1;
 	unsigned has_icon : 1;
 	unsigned has_icon_boxes : 1;
@@ -653,7 +653,7 @@ typedef struct window_style
 	int edge_delay_ms_move;
 	int edge_delay_ms_resize;
 	int edge_resistance_move;
-	int edge_resistance_xinerama_move;
+	int edge_resistance_screen_move;
 	icon_boxes *icon_boxes;
 	float norm_placement_penalty;
 	pl_penalty_struct pl_penalty;
@@ -883,7 +883,7 @@ typedef struct FvwmWindow
 	int edge_delay_ms_move;
 	int edge_delay_ms_resize;
 	int edge_resistance_move;
-	int edge_resistance_xinerama_move;
+	int edge_resistance_screen_move;
 
 #define FM_NO_INPUT        0
 #define FM_PASSIVE         1
