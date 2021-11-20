@@ -106,6 +106,10 @@ static void grow_to_closest_type(FvwmWindow *, rectangle *, rectangle, int *,
     int, bool);
 static void set_geom_win_visible_val(char *, bool);
 static bool set_geom_win_position_val(char *, int *, bool *, bool *);
+static void DoSnapGrid(FvwmWindow *, rectangle, int *, int *);
+static void DoSnapMonitor(FvwmWindow *, rectangle, int *, int *, int, bool,
+    bool);
+static void DoSnapWindow(FvwmWindow *, rectangle, int *, int *);
 
 /* ----- end of resize globals ----- */
 
@@ -2258,319 +2262,282 @@ static void update_pos(
 	return;
 }
 
-/* This function does the SnapAttraction stuff. It takes x and y coordinates
+/* These functions do the SnapAttraction stuff. It takes x and y coordinates
  * (*px and *py) and returns the snapped values. */
+#define NOSNAP -99999
+#define MAXSCORE 99999999
+static void DoSnapGrid(FvwmWindow *fw, rectangle self, int *nxl, int *nyt)
+{
+	int grid_x = self.x / fw->snap_grid_x * fw->snap_grid_x;
+	int grid_y = self.y / fw->snap_grid_y * fw->snap_grid_y;
+
+	if (fw->snap_grid_x > 1 && self.x != grid_x)
+		*nxl = (self.x - grid_x <= fw->snap_grid_x / 2) ? grid_x :
+			grid_x + fw->snap_grid_x;
+	
+	if (fw->snap_grid_y > 1 && self.y != grid_y)
+		*nyt = (self.y - grid_y <= fw->snap_grid_y / 2) ? grid_y :
+			grid_y + fw->snap_grid_y;
+}
+static void DoSnapMonitor(
+	FvwmWindow *fw, rectangle self, int *nxl, int *nyt,
+	int snapd, bool resist, bool all_edges)
+{
+	int mon_x, mon_y, mon_r, mon_b, tmp;
+	int bottom = self.y + self.height;
+	int right = self.x + self.width;
+	int score_x = MAXSCORE, score_y = MAXSCORE;
+	struct monitor *m;
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+	{
+		mon_x = m->si->x;
+		mon_y = m->si->y;
+		mon_r = mon_x + m->si->w;
+		mon_b = mon_y + m->si->h;
+
+		/* vertically */
+		if (!(right < mon_x || self.x > mon_r) &&
+		    (all_edges || m->edge.bottom == MONITOR_OUTSIDE_EDGE))
+		{
+			tmp = resist ? mon_b : mon_b - snapd;
+			if (bottom <= mon_b + snapd && bottom >= tmp)
+				update_pos(&score_y, nyt, self.y,
+					mon_b - self.height);
+		}
+		if (!(right < mon_x || self.x > mon_r) &&
+		    (all_edges || m->edge.top == MONITOR_OUTSIDE_EDGE))
+		{
+			tmp = resist ? mon_y : mon_y + snapd;
+			if (self.y <= tmp && self.y >= mon_y - snapd)
+				update_pos(&score_y, nyt, self.y, mon_y);
+		}
+
+		/* horizontally */
+		if (!(bottom < mon_y || self.y > mon_b) &&
+		    (all_edges || m->edge.right == MONITOR_OUTSIDE_EDGE))
+		{
+			tmp = resist ? mon_r : mon_r - snapd;
+			if (right <= mon_r + snapd && right >= tmp)
+				update_pos(&score_x, nxl, self.x,
+					mon_r - self.width);
+		}
+		if (!(bottom < mon_y || self.y > mon_b) &&
+		    (all_edges || m->edge.left == MONITOR_OUTSIDE_EDGE))
+		{
+			tmp = resist ? mon_x : mon_x + snapd;
+			if (self.x <= tmp && self.x >= mon_x - snapd)
+				update_pos(&score_x, nxl, self.x, mon_x);
+		}
+	}
+}
+static void DoSnapWindow(FvwmWindow *fw, rectangle self, int *nxl, int *nyt)
+{
+	int score_x = MAXSCORE, score_y = MAXSCORE;
+	FvwmWindow *tmp;
+	int maskout = (SNAP_SCREEN | SNAP_SCREEN_WINDOWS |
+			SNAP_SCREEN_ICONS | SNAP_SCREEN_ALL);
+
+	int scr_w, scr_h;
+	scr_w = monitor_get_all_widths();
+	scr_h = monitor_get_all_heights();
+
+	for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
+	{
+		rectangle other;
+
+		if (fw->Desk != tmp->Desk || fw == tmp)
+				continue;
+
+		/* check snapping type */
+		switch (fw->snap_attraction.mode & ~(maskout))
+		{
+		case SNAP_WINDOWS:  /* we only snap windows */
+			if (IS_ICONIFIED(tmp) || IS_ICONIFIED(fw))
+				continue;
+			break;
+		case SNAP_ICONS:  /* we only snap icons */
+			if (!IS_ICONIFIED(tmp) || !IS_ICONIFIED(fw))
+				continue;
+		case SNAP_SAME:  /* we don't snap unequal */
+			if (IS_ICONIFIED(tmp) != IS_ICONIFIED(fw))
+				continue;
+			break;
+		default:  /* All */
+			/* NOOP */
+			break;
+		}
+
+		/* get other window dimensions */
+		get_visible_window_or_icon_geometry(tmp, &other);
+		if (other.x >= scr_w ||
+		    other.x + other.width <= 0 ||
+		    other.y >= scr_h ||
+		    other.y + other.height <= 0)
+		{
+			/* do not snap to windows that are not currently
+			 * visible */
+			continue;
+		}
+
+		/* snap horizontally */
+		if (other.y + other.height > self.y &&
+			other.y < self.y + self.height)
+		{
+			if (self.x + self.width >= other.x -
+			    fw->snap_attraction.proximity &&
+			    self.x + self.width <= other.x +
+			    fw->snap_attraction.proximity)
+			{
+				update_pos(&score_x, nxl, self.x,
+					other.x - self.width);
+			}
+			if (self.x <= other.x + other.width +
+			    fw->snap_attraction.proximity &&
+			    self.x >= other.x + other.width -
+			    fw->snap_attraction.proximity)
+			{
+				update_pos(&score_x, nxl, self.x,
+					other.x + other.width);
+			}
+		}
+
+		/* snap vertically */
+		if (other.x + other.width > self.x &&
+			other.x < self.x + self.width)
+		{
+			if (self.y + self.height >= other.y -
+			    fw->snap_attraction.proximity &&
+			    self.y + self.height <= other.y +
+			    fw->snap_attraction.proximity)
+			{
+				update_pos(&score_y, nyt, self.y,
+					other.y - self.height);
+			}
+			if (self.y <= other.y + other.height +
+			    fw->snap_attraction.proximity &&
+			    self.y >= other.y + other.height -
+			    fw->snap_attraction.proximity)
+			{
+				update_pos(&score_y, nyt, self.y,
+					other.y + other.height);
+			}
+		}
+	}
+
+	/* Ignore snapping to window sides on monitor edges */
+	struct monitor *m;
+
+	TAILQ_FOREACH(m, &monitor_q, entry)
+	{
+		if ((*nxl == m->si->x || *nxl == m->si->x + m->si->w) &&
+			(self.y >= m->si->y &&
+			self.y + self.height <= m->si->y + m->si->h))
+		{
+			*nxl = NOSNAP;
+		}
+		if ((*nyt == m->si->y || *nyt == m->si->y + m->si->h) &&
+			(self.x >= m->si->y &&
+			self.x + self.width <= m->si->x + m->si->w))
+		{
+			*nyt = NOSNAP;
+		}
+	}
+		
+}
 static void DoSnapAttract(
 	FvwmWindow *fw, int Width, int Height, int *px, int *py)
 {
-	int nyt,nxl;
-	rectangle self;
-	int score_x;
-	int score_y;
-	int scr_w, scr_h;
-	int mon_w, mon_h, mon_x, mon_y;
-	struct monitor *m;
+	int nyt = NOSNAP, nxl = NOSNAP;
+	int win_yt = NOSNAP, win_xl = NOSNAP;
+	int mon_yt = NOSNAP, mon_xl = NOSNAP;
+	rectangle self, g;
 
-	nxl = -99999;
-	nyt = -99999;
-	score_x = 99999999;
-	score_y = 99999999;
 	self.x = *px;
 	self.y = *py;
 	self.width = Width;
 	self.height = Height;
-	{
-		rectangle g;
-		Bool rc;
+	if (get_visible_icon_title_geometry(fw, &g))
+		self.height += g.height;
 
-		rc = get_visible_icon_title_geometry(fw, &g);
-		if (rc == True)
-		{
-			self.height += g.height;
-		}
-	}
-
-	scr_w = monitor_get_all_widths();
-	scr_h = monitor_get_all_heights();
-
-	/*
-	 * Snap grid handling
-	 */
-	if (fw->snap_grid_x > 1 && nxl == -99999)
-	{
-		if (*px != *px / fw->snap_grid_x * fw->snap_grid_x)
-		{
-			nxl = (*px + ((*px >= 0) ?
-				      fw->snap_grid_x : -fw->snap_grid_x) /
-			       2) / fw->snap_grid_x * fw->snap_grid_x;
-		}
-	}
-	if (fw->snap_grid_y > 1 && nyt == -99999)
-	{
-		if (*py != *py / fw->snap_grid_y * fw->snap_grid_y)
-		{
-			nyt = (*py + ((*py >= 0) ?
-				      fw->snap_grid_y : -fw->snap_grid_y) /
-			       2) / fw->snap_grid_y * fw->snap_grid_y;
-		}
-	}
+	int icon_mask = IS_ICONIFIED(fw) ? SNAP_SCREEN_ICONS :
+		SNAP_SCREEN_WINDOWS;
+	bool snap_mon = (fw->snap_attraction.mode & SNAP_SCREEN_ALL ||
+		fw->snap_attraction.mode & (SNAP_SCREEN & icon_mask)) ?
+		true : false;
+	bool snap_win = (fw->snap_attraction.mode &
+		(SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) ? true : false;
+	bool snap_grid = (fw->snap_grid_x > 1 || fw->snap_grid_y > 1) ? true :
+		false;
 
 	/*
-	 * snap attraction
+	 * Checks both monitor edges and windows. Snaps to closer of the two.
+         * If no monitor edge or window are found, snap to SnapGrid.
 	 */
-	/* snap to other windows or icons*/
-	if (fw->snap_attraction.proximity > 0 &&
-		(fw->snap_attraction.mode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)))
+	if (fw->snap_attraction.proximity > 0)
 	{
-		FvwmWindow *tmp;
-		int maskout = (SNAP_SCREEN | SNAP_SCREEN_WINDOWS |
-				SNAP_SCREEN_ICONS | SNAP_SCREEN_ALL);
+		if (snap_mon)
+			DoSnapMonitor(fw, self, &mon_xl, &mon_yt,
+				fw->snap_attraction.proximity, false, true);
 
-		for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
+		if (snap_win)
+			DoSnapWindow(fw, self, &win_xl, &win_yt);
+
+		if (mon_xl != NOSNAP || win_xl != NOSNAP)
+			nxl = (abs(self.x - mon_xl) < abs(self.x - win_xl)) ?
+				mon_xl : win_xl;
+
+		if (mon_yt != NOSNAP || win_yt != NOSNAP)
+			nyt = (abs(self.y - mon_yt) < abs(self.y - win_yt)) ?
+				mon_yt : win_yt;
+
+		if ((nxl == NOSNAP || nyt == NOSNAP) && snap_grid)
 		{
-			rectangle other;
+			win_xl = NOSNAP;
+			win_yt = NOSNAP;
+			DoSnapGrid(fw, self, &win_xl, &win_yt);
+			if (nxl == NOSNAP && win_xl != NOSNAP)
+				nxl = win_xl;
+			if (nyt == NOSNAP && win_yt != NOSNAP)
+				nyt = win_yt;
+		}
+	}
 
-			if (fw->Desk != tmp->Desk || fw == tmp)
-			{
-				continue;
-			}
-			/* check snapping type */
-			switch (fw->snap_attraction.mode & ~(maskout))
-			{
-			case SNAP_WINDOWS:  /* we only snap windows */
-				if (IS_ICONIFIED(tmp) || IS_ICONIFIED(fw))
-				{
-					continue;
-				}
-				break;
-			case SNAP_ICONS:  /* we only snap icons */
-				if (!IS_ICONIFIED(tmp) || !IS_ICONIFIED(fw))
-				{
-					continue;
-				}
-				break;
-			case SNAP_SAME:  /* we don't snap unequal */
-				if (IS_ICONIFIED(tmp) != IS_ICONIFIED(fw))
-				{
-					continue;
-				}
-				break;
-			default:  /* All */
-				/* NOOP */
-				break;
-			}
-			/* get other window dimensions */
-			get_visible_window_or_icon_geometry(tmp, &other);
-			if (other.x >= scr_w ||
-			    other.x + other.width <= 0 ||
-			    other.y >= scr_h ||
-			    other.y + other.height <= 0)
-			{
-				/* do not snap to windows that are not currently
-				 * visible */
-				continue;
-			}
-			/* snap horizontally */
-			if (other.y + other.height > *py &&
-			    other.y < *py + self.height)
-			{
-				if (*px + self.width >= other.x -
-				    fw->snap_attraction.proximity &&
-				    *px + self.width <= other.x +
-				    fw->snap_attraction.proximity)
-				{
-					update_pos(&score_x, &nxl, *px,
-						other.x - self.width);
-				}
-				if (*px <= other.x + other.width +
-				    fw->snap_attraction.proximity &&
-				    *px >= other.x + other.width -
-				    fw->snap_attraction.proximity)
-				{
-					update_pos(&score_x, &nxl, *px,
-						other.x + other.width);
-				}
-			}
-			/* snap vertically */
-			if (other.x + other.width > *px &&
-			    other.x < *px + self.width)
-			{
-				if (*py + self.height >= other.y -
-				    fw->snap_attraction.proximity &&
-				    *py + self.height <= other.y +
-				    fw->snap_attraction.proximity)
-				{
-					update_pos(&score_y, &nyt, *py,
-						other.y - self.height);
-				}
-				if (*py <= other.y + other.height +
-				    fw->snap_attraction.proximity &&
-				    *py >= other.y + other.height -
-				    fw->snap_attraction.proximity)
-				{
-					update_pos(&score_y, &nyt, *py,
-						other.y + other.height);
-				}
-			}
-		} /* for */
-	} /* snap to other windows */
-
-	/* snap to monitor edges */
-	if (fw->snap_attraction.proximity > 0 && (
-			( fw->snap_attraction.mode & SNAP_SCREEN && (
-				fw->snap_attraction.mode & SNAP_SAME ||
-			( IS_ICONIFIED(fw) &&
-				fw->snap_attraction.mode & SNAP_ICONS ) ||
-			( !IS_ICONIFIED(fw) &&
-				fw->snap_attraction.mode & SNAP_WINDOWS ))) ||
-			( !IS_ICONIFIED(fw) &&
-				fw->snap_attraction.mode & SNAP_SCREEN_WINDOWS ) ||
-			( IS_ICONIFIED(fw) &&
-				fw->snap_attraction.mode & SNAP_SCREEN_ICONS ) ||
-			fw->snap_attraction.mode & SNAP_SCREEN_ALL ))
-	{
-		/* Loop over each monitor */
-		TAILQ_FOREACH(m, &monitor_q, entry)
-		{
-			mon_x = m->si->x;
-			mon_y = m->si->y;
-			mon_w = m->si->w;
-			mon_h = m->si->h;
-
-			/* vertically */
-			if (!(*px + self.width < mon_x || *px > mon_x + mon_w))
-			{
-				if (*py + self.height >=
-					mon_h + mon_y - fw->snap_attraction.proximity &&
-					*py + self.height <=
-				 	mon_h + mon_y + fw->snap_attraction.proximity)
-				{
-					update_pos(&score_y, &nyt, *py,
-						mon_h + mon_y - self.height);
-				}
-				if (*py <= mon_y + fw->snap_attraction.proximity &&
-					*py > mon_y - fw->snap_attraction.proximity)
-				{
-					update_pos(&score_y, &nyt, *py, mon_y);
-				}
-			}
-			/* horizontally */
-			if (!(*py + self.height < mon_y || *py > mon_y + mon_h))
-			{
-				if (*px + self.width >=
-					mon_w + mon_x - fw->snap_attraction.proximity &&
-					*px + self.width <=
-					mon_w + mon_x + fw->snap_attraction.proximity)
-				{
-					update_pos(&score_x, &nxl, *px,
-						mon_w + mon_x - self.width);
-				}
-				if ((*px <= mon_x + fw->snap_attraction.proximity) &&
-					(*px >= mon_x - fw->snap_attraction.proximity))
-				{
-					update_pos(&score_x, &nxl, *px, mon_x);
-				}
-			}
-		} /* monitor loop */
-	} /* snap to monitor edges */
-
-	if (nxl != -99999)
-	{
+	if (nxl != NOSNAP)
 		*px = nxl;
-	}
-	if (nyt != -99999)
-	{
+	if (nyt != NOSNAP)
 		*py = nyt;
-	}
 
-	/*
-	 * Resist moving windows beyond the edge of the screen
-	 */
+	/* Resist moving windows beyond outside edges of the monitor */
 	if (fw->edge_resistance_move > 0)
 	{
-		/* snap to right edge */
-		if (
-			*px + Width > scr_w &&
-			*px + Width < scr_w +
-			fw->edge_resistance_move)
-		{
-			*px = scr_w - Width;
-		}
-		/* snap to left edge */
-		else if ((*px < 0) && (*px > -fw->edge_resistance_move))
-		{
-			*px = 0;
-		}
-		/* snap to bottom edge */
-		if (
-			*py + Height > scr_h &&
-			*py + Height < scr_h +
-			fw->edge_resistance_move)
-		{
-			*py = scr_h - Height;
-		}
-		/* snap to top edge */
-		else if (*py < 0 && *py > -fw->edge_resistance_move)
-		{
-			*py = 0;
-		}
+		nxl = NOSNAP;
+		nyt = NOSNAP;
+		DoSnapMonitor(fw, self, &nxl, &nyt,
+			fw->edge_resistance_move, true, false);
+		if (nxl != NOSNAP)
+			*px = nxl;
+		if (nyt != NOSNAP)
+			*py = nyt;
 	}
-	/* Resist moving windows between xineramascreens */
-	if (fw->edge_resistance_xinerama_move)
+
+	/* Resist moving windows beyond all edges of the monitor. */
+	if (fw->edge_resistance_xinerama_move > 0)
 	{
-		int scr_x0, scr_y0;
-		int scr_x1, scr_y1;
-		Bool do_recalc_rectangle = False;
-
-		FScreenGetResistanceRect(
-			*px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1,
-			&scr_y1);
-
-		/* snap to right edge */
-		if (scr_x1 < scr_w &&
-		    *px + Width >= scr_x1 && *px + Width <
-		    scr_x1 + fw->edge_resistance_xinerama_move)
-		{
-			*px = scr_x1 - Width;
-			do_recalc_rectangle = True;
-		}
-		/* snap to left edge */
-		else if (
-			scr_x0 > 0 &&
-			*px <= scr_x0 && scr_x0 - *px <
-			fw->edge_resistance_xinerama_move)
-		{
-			*px = scr_x0;
-			do_recalc_rectangle = True;
-		}
-		if (do_recalc_rectangle)
-		{
-			/* Snapping in X direction can move the window off a
-			 * screen.  Thus, it may no longer be necessary to snap
-			 * in Y direction. */
-			FScreenGetResistanceRect(
-				*px, *py, Width, Height, &scr_x0, &scr_y0,
-				&scr_x1, &scr_y1);
-		}
-		/* snap to bottom edge */
-		if (scr_y1 < scr_h &&
-		    *py + Height >= scr_y1 && *py + Height <
-		    scr_y1 + fw->edge_resistance_xinerama_move)
-		{
-			*py = scr_y1 - Height;
-		}
-		/* snap to top edge */
-		else if (
-			scr_y0 > 0 &&
-			*py <= scr_y0 && scr_y0 - *py <
-			fw->edge_resistance_xinerama_move)
-		{
-			*py = scr_y0;
-		}
+		nxl = NOSNAP;
+		nyt = NOSNAP;
+		DoSnapMonitor(fw, self, &nxl, &nyt,
+			fw->edge_resistance_xinerama_move, true, true);
+		if (nxl != NOSNAP)
+			*px = nxl;
+		if (nyt != NOSNAP)
+			*py = nyt;
 	}
 
 	return;
 }
+#undef NOSNAP
+#undef MAXSCORE
 
 /*
  *
