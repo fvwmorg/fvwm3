@@ -55,35 +55,36 @@ void
 log_open(const char *fvwm_userdir)
 {
 	char *path, *file_name;
+	char *expanded_path;
 
 	if (lib_log_level == 0)
 		return;
-	if (log_file_name != NULL &&
-	    log_file_name[0] == '-' && log_file_name[1] == 0) {
+	/* determine file name or file path to use */
+	file_name = log_file_name;
+	if (file_name == NULL)
+	{
+		file_name = getenv("FVWM3_LOGFILE");
+	}
+	if (file_name == NULL)
+	{
+		file_name = FVWM3_LOGFILE_DEFAULT;
+	}
+	/* handle stderr logging */
+	if (log_file_name[0] == '-' && log_file_name[1] == 0)
+	{
 		log_file = stderr;
 		return;
 	}
-	if ((file_name = log_file_name) == NULL)
-		file_name = getenv("FVWM3_LOGFILE");
-
-	if (file_name != NULL)
+	/* handle file logging */
+	expanded_path = expand_path(file_name);
+	if (expanded_path[0] == '/')
 	{
-		char	*expanded_path;
-
-		expanded_path = expand_path(file_name);
-		if (expanded_path[0] == '/')
-		{
-			path = expanded_path;
-		}
-		else
-		{
-			xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
-			free((char *)expanded_path);
-		}
+		path = expanded_path;
 	}
 	else
 	{
-		xasprintf(&path, "%s/%s", fvwm_userdir, FVWM3_LOGFILE_DEFAULT);
+		xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
+		free((char *)expanded_path);
 	}
 
 	log_close();
