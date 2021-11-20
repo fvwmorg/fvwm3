@@ -4,6 +4,7 @@
 [*-c* _config-command_]
 [*-d* _displayname_]
 [*-f* _config-file_]
+[*-o* _logfile_]
 [*-s* [_screen_num_]]
 [*-v*]
 [other options]
@@ -80,6 +81,11 @@ down, but guarantees that fvwm's internal error messages are correct.
 Causes fvwm to read _config-file_ instead of _~/.fvwm/config_ as its
 initialization file. _$FVWM_USERDIR_ can also be used to change location
 of default user directory _~/.fvwm_.
+
+*-o* _logfile_::
+
+Write log messages to _logfile_.  If _logfile_ is '-', log to the
+console.  (Does not turn on logging, see the *-v* option.)
 
 *-h* | *--help*::
 
@@ -241,7 +247,7 @@ save a few bits of memory.
 Enables stack ring debugging. This option is only intended for internal
 debugging and should only be used by developers.
 
-*-v*::
+*-v* | *--verbose*::
 
 Enables debug logging. Writes in append mode to fvwm log file, which is
 ~/.fvwm/fvwm3-output.log by default. See ENVIRONMENT section on how to

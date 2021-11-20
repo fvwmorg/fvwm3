@@ -10,6 +10,9 @@
 #ifndef FVWMLIB_DEFAULTS_H
 #define FVWMLIB_DEFAULTS_H
 
+/*** logging ***/
+#define FVWM3_LOGFILE_DEFAULT "fvwm3-output.log"
+
 /*** event handling ***/
 #define CLOCK_SKEW_MS                  30000 /* ms */
 

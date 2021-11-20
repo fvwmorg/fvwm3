@@ -1140,7 +1140,7 @@ static signed int expand_vars_extended(
 		break;
 	case VAR_DEBUG_LOG_STATE:
 		is_numeric = True;
-		val = log_get_level();
+		val = lib_log_level;
 		break;
 	default:
 		/* unknown variable - try to find it in the environment */

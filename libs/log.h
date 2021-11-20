@@ -2,10 +2,10 @@
 #define FVWMLIB_LOG_H
 
 #define printflike(a, b) __attribute__ ((format (printf, a, b)))
-#define FVWM3_LOGFILE_DEFAULT "fvwm3-output.log"
 
-void	log_set_level(int);
-int	log_get_level(void);
+extern int	lib_log_level;
+
+void	set_log_file(char *name);
 void	log_open(const char *);
 void	log_toggle(const char *);
 void	log_close(void);
