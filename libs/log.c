@@ -31,51 +31,64 @@
 #include "getpwuid.h"
 #include "log.h"
 
+static char	*log_file_name;
 static FILE	*log_file;
-static int	 log_level;
+int	lib_log_level = 0;
 
-static void	 log_vwrite(const char *, const char *, va_list);
-
-/* Set log level. */
 void
-log_set_level(int ll)
+set_log_file(char *name)
 {
-	log_level = ll;
-}
+	if (log_file_name != NULL)
+	{
+		free(log_file_name);
+		log_file_name = NULL;
+	}
+	if (name != NULL)
+	{
+		log_file_name = fxstrdup(name);
+	}
 
-/* Get log level. */
-int log_get_level(void)
-{
-	return log_level;
 }
 
 /* Open logging to file. */
 void
 log_open(const char *fvwm_userdir)
 {
-	char *path, *logfile_env;
+	char *path, *file_name;
 
-	xasprintf(&path, "%s/%s", fvwm_userdir, FVWM3_LOGFILE_DEFAULT);
+	if (lib_log_level == 0)
+		return;
+	if (log_file_name != NULL &&
+	    log_file_name[0] == '-' && log_file_name[1] == 0) {
+		log_file = stderr;
+		return;
+	}
+	if ((file_name = log_file_name) == NULL)
+		file_name = getenv("FVWM3_LOGFILE");
 
-	logfile_env = getenv("FVWM3_LOGFILE");
-	if (logfile_env != NULL) {
-		const char	*expanded_path;
+	if (file_name != NULL)
+	{
+		char	*expanded_path;
 
-		expanded_path = expand_path(logfile_env);
-
+		expanded_path = expand_path(file_name);
 		if (expanded_path[0] == '/')
-			path = fxstrdup(expanded_path);
+		{
+			path = expanded_path;
+		}
 		else
+		{
 			xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
-		free((char *)expanded_path);
+			free((char *)expanded_path);
+		}
+	}
+	else
+	{
+		xasprintf(&path, "%s/%s", fvwm_userdir, FVWM3_LOGFILE_DEFAULT);
 	}
 
-	if (log_level == 0)
-		return;
 	log_close();
 
-	log_file = fopen(path, "a");
-	if (log_file == NULL) {
+	if ((log_file = fopen(path, "a")) == NULL) {
 		free(path);
 		return;
 	}
@@ -89,13 +102,13 @@ log_open(const char *fvwm_userdir)
 void
 log_toggle(const char *fvwm_userdir)
 {
-	if (log_level == 0) {
-		log_level = 1;
+	if (lib_log_level == 0) {
+		lib_log_level = 1;
 		log_open(fvwm_userdir);
 		fvwm_debug(NULL, "log opened (because of SIGUSR2)");
 	} else {
 		fvwm_debug(NULL, "log closed (because of SIGUSR2)");
-		log_level = 0;
+		lib_log_level = 0;
 		log_close();
 	}
 }
@@ -104,7 +117,7 @@ log_toggle(const char *fvwm_userdir)
 void
 log_close(void)
 {
-	if (log_file != NULL)
+	if (log_file != NULL && log_file != stderr)
 		fclose(log_file);
 	log_file = NULL;
 }

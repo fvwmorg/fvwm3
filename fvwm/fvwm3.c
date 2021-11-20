@@ -1242,10 +1242,12 @@ static void usage(int is_verbose)
 		   " -I vis-id:    use visual <vis-id>\n"
 		   " -l colors:    try to use no more than <colors> colors\n"
 		   " -L:           strict color limit\n"
+                   " -o logfile:   output file or '-' for stderr\n"
 		   " -P:           visual palette\n"
 		   " -r:           replace running window manager\n"
 		   " -s [screen]:  manage a single screen\n"
 		   " -S:           static palette\n"
+		   " -v:           verbose log output\n"
 		   " -V:           print version information\n"
 		);
 	fprintf(stderr, "Try 'man %s' for more information.\n",
@@ -1802,6 +1804,7 @@ int main(int argc, char **argv)
 			   fvwm_userdir);
 	}
 
+	set_log_file(NULL);
 	for (i = 1; i < argc; i++)
 	{
 		if (strcmp(argv[i], "-debug_stack_ring") == 0 ||
@@ -2043,10 +2046,21 @@ int main(int argc, char **argv)
 			free(Fvwm_SupportInfo);
 			exit(0);
 		}
-		else if (strcmp(argv[i], "-v") == 0)
+		else if (
+			strcmp(argv[i], "-v") == 0 ||
+			strcmp(argv[i], "--verbose") == 0)
 		{
-			log_set_level(1);
-			log_open(fvwm_userdir);
+			lib_log_level = 1;
+		}
+		else if (strcmp(argv[i], "-o") == 0 ||
+			 strcmp(argv[i], "--output-file") == 0)
+		{
+			if (++i >= argc)
+			{
+				usage(0);
+				exit(1);
+			}
+			set_log_file(argv[i]);
 		}
 		else
 		{
@@ -2056,6 +2070,7 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 	}
+	log_open(fvwm_userdir);
 
 	InstallSignals();
 
