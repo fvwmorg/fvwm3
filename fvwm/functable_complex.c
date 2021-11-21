@@ -51,12 +51,9 @@ FvwmFunction *NewFvwmFunction(const char *name)
 {
 	FvwmFunction *tmp;
 
-	tmp = fxmalloc(sizeof *tmp);
+	tmp = fxcalloc(1, sizeof *tmp);
 	tmp->next_func = Scr.functions;
-	tmp->first_item = NULL;
-	tmp->last_item = NULL;
 	tmp->name = stripcpy(name);
-	tmp->use_depth = 0;
 	Scr.functions = tmp;
 
 	return tmp;
@@ -74,8 +71,8 @@ void DestroyFunction(FvwmFunction *func)
 	if (func->use_depth != 0)
 	{
 		fvwm_debug(
-			"Function %s is in use (depth %d)", func->name,
-			func->use_depth);
+			__func__, "Function is in use (depth %d): '%s'",
+			func->use_depth, func->name);
 		return;
 	}
 

@@ -361,8 +361,13 @@
 #define DEF_FP_OVERRIDE_RELEASE_FOCUS           0
 #define DEF_FP_SORT_WINDOWLIST_BY               0
 
-/* Function execution */
-#define MAX_FUNCTION_DEPTH    512
+/* Function execution failsafe limits */
+#define MAX_FUNCTION_DEPTH        100
+#define MAX_FUNCTION_ITEMS       1000
+/* The maximum number of function items that can be run by a top level function
+* call. */
+#define MAX_FUNCTION_ITEMS_RUN  10000
+
 
 /* Tips */
 #define FTIPS_DEFAULT_PLACEMENT FTIPS_PLACEMENT_AUTO_UPDOWN

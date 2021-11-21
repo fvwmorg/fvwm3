@@ -29,6 +29,7 @@ typedef struct FvwmFunction
 	FunctionItem *last_item;         /* last item in function */
 	char *name;                      /* function name */
 	int use_depth;
+	int num_items;
 } FvwmFunction;
 
 /* Types of events for the FUNCTION builtin */

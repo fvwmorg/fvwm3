@@ -33,7 +33,6 @@ typedef enum
 	FUNC_OBSOLETE            = 0,
 	FUNC_DEPRECATED          = 0,
 	/* command grouping (used only for building the documentation) */
-	/*!!!*/
 	FG_BINDING               = 0,
 	FG_MODULE                = 0,
 	FG_MENU                  = 0,

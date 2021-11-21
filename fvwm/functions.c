@@ -826,13 +826,17 @@ static void __run_complex_function_items(
 	cond_rc_t *cond_rc, char cond, FvwmFunction *func,
 	const exec_context_t *exc, cmdparser_context_t *caller_pc,
 	char *all_pos_args_string, char *pos_arg_tokens[],
-	Bool has_ref_window_moved)
+	int *run_item_count, Bool has_ref_window_moved)
 {
 	char c;
 	FunctionItem *fi;
 	int x0, y0, x, y;
 	extern Window PressedW;
 
+	if (*run_item_count >= MAX_FUNCTION_ITEMS_RUN)
+	{
+		return;
+	}
 	if (!(!has_ref_window_moved && PressedW && XTranslateCoordinates(
 				  dpy, PressedW , Scr.Root, 0, 0, &x0, &y0,
 				  &JunkChild)))
@@ -850,6 +854,11 @@ static void __run_complex_function_items(
 		}
 		if (c == cond)
 		{
+			if (*run_item_count >= MAX_FUNCTION_ITEMS_RUN)
+			{
+				return;
+			}
+			(*run_item_count)++;
 			__execute_command_line(
 				cond_rc, exc, fi->action, caller_pc,
 				FUNC_DONT_DEFER, all_pos_args_string,
@@ -869,8 +878,8 @@ static void __run_complex_function_items(
 }
 
 static void __cf_cleanup(
-	FvwmFunction *func, int *depth, char *all_pos_args_string,
-	char **pos_arg_tokens, cond_rc_t *cond_rc)
+	FvwmFunction *func, int *depth, int *run_item_count,
+	char *all_pos_args_string, char **pos_arg_tokens, cond_rc_t *cond_rc)
 {
 	int i;
 
@@ -879,9 +888,10 @@ static void __cf_cleanup(
 		assert(*depth > 0);
 	}
 	(*depth)--;
-	if (!(*depth))
+	if (*depth == 0)
 	{
 		Scr.flags.is_executing_complex_function = 0;
+		*run_item_count = 0;
 	}
 	if (all_pos_args_string != NULL)
 	{
@@ -926,6 +936,7 @@ static void execute_complex_function(
 	int x, y ,i;
 	XEvent d;
 	static int depth = 0;
+	static int run_item_count = 0;
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
 	exec_context_change_mask_t mask;
@@ -936,6 +947,10 @@ static void execute_complex_function(
 	if (PARSER_DEBUG)
 	{
 		assert(func != NULL);
+	}
+	if (run_item_count >= MAX_FUNCTION_ITEMS_RUN)
+	{
+		return;
 	}
 	if (cond_rc == NULL)
 	{
@@ -1039,7 +1054,7 @@ static void execute_complex_function(
 		exc2 = exc_clone_context(exc, &ecc, mask);
 		__run_complex_function_items(
 			cond_rc, CF_IMMEDIATE, func, exc2, pc,
-			all_pos_args_string, pos_arg_tokens,
+			all_pos_args_string, pos_arg_tokens, &run_item_count,
 			has_ref_window_moved);
 		exc_destroy_context(exc2);
 	}
@@ -1120,7 +1135,7 @@ static void execute_complex_function(
 		exc2 = exc_clone_context(exc, &ecc, mask);
 		__run_complex_function_items(
 			cond_rc, CF_LATE_IMMEDIATE, func, exc2, pc,
-			all_pos_args_string, pos_arg_tokens,
+			all_pos_args_string, pos_arg_tokens, &run_item_count,
 			has_ref_window_moved);
 		exc_destroy_context(exc2);
 		do_run_late_immediate = 0;
@@ -1190,17 +1205,19 @@ static void execute_complex_function(
 	{
 		__run_complex_function_items(
 			cond_rc, CF_LATE_IMMEDIATE, func, exc2, pc,
-			all_pos_args_string, pos_arg_tokens,
+			all_pos_args_string, pos_arg_tokens, &run_item_count,
 			has_ref_window_moved);
 	}
 	__run_complex_function_items(
 		cond_rc, type, func, exc2, pc, all_pos_args_string,
-		pos_arg_tokens, has_ref_window_moved);
+		pos_arg_tokens, &run_item_count, has_ref_window_moved);
 	exc_destroy_context(exc2);
 
   ungrab_exit:
+	func->use_depth--;
 	__cf_cleanup(
-		func, &depth, all_pos_args_string, pos_arg_tokens, cond_rc);
+		func, &depth, &run_item_count, all_pos_args_string,
+		pos_arg_tokens, cond_rc);
 	if (do_ungrab)
 	{
 		UngrabEm(GRAB_NORMAL);
@@ -1341,9 +1358,18 @@ void AddToFunction(FvwmFunction *func, char *action)
 	char *token = NULL;
 	char condition;
 
-	token = PeekToken(action, &action);
-	if (!token)
+	if (func->num_items >= MAX_FUNCTION_ITEMS)
+	{
+		fvwm_debug(
+			__func__, "Function too big: '%s' (%d)", func->name,
+			func->num_items);
 		return;
+	}
+	token = PeekToken(action, &action);
+	if (!token || ! action)
+	{
+		return;
+	}
 	condition = token[0];
 	if (isupper(condition))
 		condition = tolower(condition);
@@ -1354,9 +1380,7 @@ void AddToFunction(FvwmFunction *func, char *action)
 	    condition != CF_CLICK &&
 	    condition != CF_DOUBLE_CLICK)
 	{
-		fvwm_debug(__func__,
-			   "Got '%s' instead of a valid function specifier",
-			   token);
+		fvwm_debug(__func__, "Invalid function specifier: '%s'", token);
 		return;
 	}
 	if (token[0] != 0 && token[1] != 0 &&
@@ -1368,10 +1392,6 @@ void AddToFunction(FvwmFunction *func, char *action)
 			   " error in the configuration file. Using %c as the"
 			   " specifier.", token, token[0]);
 	}
-	if (!action)
-	{
-		return;
-	}
 	while (isspace(*action))
 	{
 		action++;
@@ -1381,6 +1401,7 @@ void AddToFunction(FvwmFunction *func, char *action)
 		return;
 	}
 
+	/* create the new item */
 	tmp = fxmalloc(sizeof *tmp);
 	tmp->next_item = NULL;
 	tmp->func = func;
@@ -1394,11 +1415,11 @@ void AddToFunction(FvwmFunction *func, char *action)
 		func->last_item->next_item = tmp;
 		func->last_item = tmp;
 	}
-
 	tmp->condition = condition;
 	tmp->action = stripcpy(action);
 
 	find_func_t(tmp->action, NULL, &(tmp->flags));
+	func->num_items++;
 
 	return;
 }
