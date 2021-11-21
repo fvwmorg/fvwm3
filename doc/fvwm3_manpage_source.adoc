@@ -26,7 +26,7 @@ large, and you can scroll around within the desktop.  The multiple
 disjoint desktops pretend there are really several screens to work
 at, but each screen is completely unrelated to the others.
 
-Fvwm provides _keyboard accelerators_ that allow to perform practically
+Fvwm provides _keyboard accelerators_ that allow one to perform practically
 all window manager functions, including moving and resizing windows and
 operating the menus, using keyboard shortcuts.
 
@@ -2493,7 +2493,7 @@ AddToMenu RootMenu
 
 Menu styles describe the looks and behaviour like normal styles do
 for windows. Menu styles are assigned to individual or all menus,
-and changing the menu style immediately affects all menus taht use
+and changing the menu style immediately affects all menus that use
 it.  (If a menu style is used from within a menu, the changes are
 applied the next time an affected menu is opened.)
 
@@ -4012,7 +4012,7 @@ style.  Moving a window to the edge of the screen can be used to drag the
 window to other pages.  (See *EdgeScroll*, and the _EdgeMoveDelay_ style for
 more information.)
 +
-Holding down _Alt_ disables snapping and allows to switch pages
+Holding down _Alt_ disables snapping and allows one to switch pages
 without any delay.  Interactive movement can be aborted with the
 _Escape_ key or any mouse button not set to place the window. By default mouse
 button 2 is set to cancel the move operation. To change this you may
