@@ -1392,14 +1392,182 @@ Bool is_pan_frame(Window w)
  *  Moves the viewport within the virtual desktop
  *
  */
+static void move_viewport_delta(
+	struct monitor *m, position delta, position page_tl, position page_br,
+	int do_broadcast)
+{
+	struct monitor	*mloop;
+	FvwmWindow *t, *t1;
+	int txl, txr, tyt, tyb;
+
+	if (do_broadcast)
+	{
+		TAILQ_FOREACH(mloop, &monitor_q, entry)
+		{
+			BroadcastPacket(
+				M_NEW_PAGE, 8,
+				(long)mloop->virtual_scr.Vx,
+				(long)mloop->virtual_scr.Vy,
+				(long)mloop->virtual_scr.CurrentDesk,
+				(long) monitor_get_all_widths(),
+				(long) monitor_get_all_heights(),
+				(long)((mloop->virtual_scr.VxMax /
+					monitor_get_all_widths()) + 1),
+				(long)((mloop->virtual_scr.VyMax /
+					monitor_get_all_heights()) + 1),
+				(long)mloop->si->rr_output);
+		}
+	}
+	/*
+	 * RBW - 11/13/1998      - new:  chase the chain
+	 * bidirectionally, all at once! The idea is to move the
+	 * windows that are moving out of the viewport from the bottom
+	 * of the stacking order up, to minimize the expose-redraw
+	 * overhead. Windows that will be moving into view will be
+	 * moved top down, for the same reason. Use the new
+	 * stacking-order chain, rather than the old last-focused
+	 * chain.
+	 *
+	 * domivogt (29-Nov-1999): It's faster to first map windows
+	 * top to bottom and then unmap windows bottom up.
+	 */
+	/* TA: 2020-01-21:  This change of skipping monitors will
+	 * break using 'Scroll' and __drag_viewport().  We need to
+	 * ensure we handle this case properly.
+	 */
+	t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
+	while (t != &Scr.FvwmRoot)
+	{
+		if (NOT_GLOBALLY_ACTIVE(t->m, m)) {
+			/*  Bump to next win...  */
+			t = get_next_window_in_stack_ring(t);
+			continue;
+		}
+		/*
+		 * If the window is moving into the viewport...
+		 */
+		txl = t->g.frame.x;
+		tyt = t->g.frame.y;
+		txr = t->g.frame.x + t->g.frame.width - 1;
+		tyb = t->g.frame.y + t->g.frame.height - 1;
+		if (is_window_sticky_across_pages(t) &&
+		    !IS_VIEWPORT_MOVED(t))
+		{
+			/* the absolute position has changed */
+			t->g.normal.x -= delta.x;
+			t->g.normal.y -= delta.y;
+			t->g.max.x -= delta.x;
+			t->g.max.y -= delta.y;
+			/*  Block double move.  */
+			SET_VIEWPORT_MOVED(t, 1);
+		}
+		if ((txr >= page_tl.x && txl <= page_br.x
+		     && tyb >= page_tl.y && tyt <= page_br.y)
+		    && !IS_VIEWPORT_MOVED(t)
+		    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
+		{
+			/*  Block double move.  */
+			SET_VIEWPORT_MOVED(t, 1);
+			/* If the window is iconified, and sticky Icons is set,
+			 * then the window should essentially be sticky */
+			if (!is_window_sticky_across_pages(t))
+			{
+				if (IS_ICONIFIED(t))
+				{
+					modify_icon_position(
+						t, delta.x, delta.y);
+					move_icon_to_position(t);
+					if (do_broadcast)
+					{
+						broadcast_icon_geometry(
+							t, False);
+					}
+				}
+				frame_setup_window(
+					t, t->g.frame.x + delta.x,
+					t->g.frame.y + delta.y,
+					t->g.frame.width,
+					t->g.frame.height, False);
+			}
+		}
+		/*  Bump to next win...  */
+		t = get_next_window_in_stack_ring(t);
+	}
+	t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
+	while (t1 != &Scr.FvwmRoot)
+	{
+		if (NOT_GLOBALLY_ACTIVE(t1->m, m)) {
+			/*  Bump to next win...  */
+			t1 = get_prev_window_in_stack_ring(t1);
+			continue;
+		}
+		/*
+		 *If the window is not moving into the viewport...
+		 */
+		SET_VIEWPORT_MOVED(t, 1);
+		txl = t1->g.frame.x;
+		tyt = t1->g.frame.y;
+		txr = t1->g.frame.x + t1->g.frame.width - 1;
+		tyb = t1->g.frame.y + t1->g.frame.height - 1;
+		if (! (txr >= page_tl.x && txl <= page_br.x
+		       && tyb >= page_tl.y && tyt <= page_br.y)
+		    && !IS_VIEWPORT_MOVED(t1)
+		    && !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
+		{
+			/* If the window is iconified, and sticky Icons is set,
+			 * then the window should essentially be sticky */
+			if (!is_window_sticky_across_pages(t1))
+			{
+				if (IS_ICONIFIED(t1))
+				{
+					modify_icon_position(
+						t1, delta.x, delta.y);
+					move_icon_to_position(t1);
+					if (do_broadcast)
+					{
+						broadcast_icon_geometry(
+							t1, False);
+					}
+				}
+				frame_setup_window(
+					t1, t1->g.frame.x + delta.x,
+					t1->g.frame.y + delta.y,
+					t1->g.frame.width,
+					t1->g.frame.height, False);
+			}
+		}
+		/*  Bump to next win...  */
+		t1 = get_prev_window_in_stack_ring(t1);
+	}
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if (NOT_GLOBALLY_ACTIVE(t->m, m))
+			continue;
+
+		if (IS_VIEWPORT_MOVED(t))
+		{
+			/* Clear double move blocker. */
+			SET_VIEWPORT_MOVED(t, 0);
+		}
+		/* If its an icon, and its sticking, autoplace it so that it
+		 * doesn't wind up on top of a stationary icon */
+		if (is_window_sticky_across_pages(t) &&
+		    IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+		    !IS_ICON_UNMAPPED(t))
+		{
+			AutoPlaceIcon(t, NULL, True);
+		}
+	}
+
+	return;
+}
+
 void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 {
 	struct monitor *m_loop;
-	FvwmWindow *t, *t1;
-	int deltax,deltay;
-	int PageTop, PageLeft;
-	int PageBottom, PageRight;
-	int txl, txr, tyt, tyb;
+	position delta;
+	position page_tl;
+	position page_br;
 	bool global = (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared);
 
 	if (grab)
@@ -1422,18 +1590,18 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	{
 		newy = 0;
 	}
-	deltay = m->virtual_scr.Vy - newy;
-	deltax = m->virtual_scr.Vx - newx;
+	delta.y = m->virtual_scr.Vy - newy;
+	delta.x = m->virtual_scr.Vx - newx;
 	/*
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =  monitor_get_all_heights() - deltay - 1;
-	PageRight     =  monitor_get_all_widths()  - deltax - 1;
-	PageTop       =  0 - deltay;
-	PageLeft      =  0 - deltax;
+	page_br.y =  monitor_get_all_heights() - delta.y - 1;
+	page_br.x =  monitor_get_all_widths()  - delta.x - 1;
+	page_tl.y =  -delta.y;
+	page_tl.x =  -delta.x;
 
-	if (deltax || deltay)
+	if (delta.x || delta.y)
 	{
 		m->virtual_scr.prev_page_x = m->virtual_scr.Vx;
 		m->virtual_scr.prev_page_y = m->virtual_scr.Vy;
@@ -1450,159 +1618,9 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	 */
 	monitor_assign_virtual(m);
 
-	if (deltax || deltay)
+	if (delta.x || delta.y)
 	{
-		struct monitor	*mloop;
-
-		TAILQ_FOREACH(mloop, &monitor_q, entry) {
-			BroadcastPacket(
-				M_NEW_PAGE, 8,
-				(long)mloop->virtual_scr.Vx,
-				(long)mloop->virtual_scr.Vy,
-				(long)mloop->virtual_scr.CurrentDesk,
-				(long) monitor_get_all_widths(),
-				(long) monitor_get_all_heights(),
-				(long)((mloop->virtual_scr.VxMax / monitor_get_all_widths()) + 1),
-				(long)((mloop->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
-				(long)mloop->si->rr_output);
-		}
-		/*
-		 * RBW - 11/13/1998      - new:  chase the chain
-		 * bidirectionally, all at once! The idea is to move the
-		 * windows that are moving out of the viewport from the bottom
-		 * of the stacking order up, to minimize the expose-redraw
-		 * overhead. Windows that will be moving into view will be
-		 * moved top down, for the same reason. Use the new
-		 * stacking-order chain, rather than the old last-focused
-		 * chain.
-		 *
-		 * domivogt (29-Nov-1999): It's faster to first map windows
-		 * top to bottom and then unmap windows bottom up.
-		 */
-		/* TA: 2020-01-21:  This change of skipping monitors will
-		 * break using 'Scroll' and __drag_viewport().  We need to
-		 * ensure we handle this case properly.
-		 */
-		t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
-		while (t != &Scr.FvwmRoot)
-		{
-			if (NOT_GLOBALLY_ACTIVE(t->m, m)) {
-				/*  Bump to next win...  */
-				t = get_next_window_in_stack_ring(t);
-				continue;
-			}
-			/*
-			 * If the window is moving into the viewport...
-			 */
-			txl = t->g.frame.x;
-			tyt = t->g.frame.y;
-			txr = t->g.frame.x + t->g.frame.width - 1;
-			tyb = t->g.frame.y + t->g.frame.height - 1;
-			if (is_window_sticky_across_pages(t) &&
-			    !IS_VIEWPORT_MOVED(t))
-			{
-				/* the absolute position has changed */
-				t->g.normal.x -= deltax;
-				t->g.normal.y -= deltay;
-				t->g.max.x -= deltax;
-				t->g.max.y -= deltay;
-				/*  Block double move.  */
-				SET_VIEWPORT_MOVED(t, 1);
-			}
-			if ((txr >= PageLeft && txl <= PageRight
-			     && tyb >= PageTop && tyt <= PageBottom)
-			    && !IS_VIEWPORT_MOVED(t)
-			    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
-			{
-				/*  Block double move.  */
-				SET_VIEWPORT_MOVED(t, 1);
-				/* If the window is iconified, and sticky
-				 * Icons is set, then the window should
-				 * essentially be sticky */
-				if (!is_window_sticky_across_pages(t))
-				{
-					if (IS_ICONIFIED(t))
-					{
-						modify_icon_position(
-							t, deltax, deltay);
-						move_icon_to_position(t);
-						broadcast_icon_geometry(
-							t, False);
-					}
-					frame_setup_window(
-						t, t->g.frame.x + deltax,
-						t->g.frame.y + deltay,
-						t->g.frame.width,
-						t->g.frame.height, False);
-				}
-			}
-			/*  Bump to next win...  */
-			t = get_next_window_in_stack_ring(t);
-		}
-		t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
-		while (t1 != &Scr.FvwmRoot)
-		{
-			if (NOT_GLOBALLY_ACTIVE(t1->m, m)) {
-				/*  Bump to next win...  */
-				t1 = get_prev_window_in_stack_ring(t1);
-				continue;
-			}
-			/*
-			 *If the window is not moving into the viewport...
-			 */
-			SET_VIEWPORT_MOVED(t, 1);
-			txl = t1->g.frame.x;
-			tyt = t1->g.frame.y;
-			txr = t1->g.frame.x + t1->g.frame.width - 1;
-			tyb = t1->g.frame.y + t1->g.frame.height - 1;
-			if (! (txr >= PageLeft && txl <= PageRight
-			       && tyb >= PageTop && tyt <= PageBottom)
-			    && !IS_VIEWPORT_MOVED(t1)
-			    && !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
-			{
-				/* If the window is iconified, and sticky
-				 * Icons is set, then the window should
-				 * essentially be sticky */
-				if (!is_window_sticky_across_pages(t1))
-				{
-					if (IS_ICONIFIED(t1))
-					{
-						modify_icon_position(
-							t1, deltax, deltay);
-						move_icon_to_position(t1);
-						broadcast_icon_geometry(
-							t1, False);
-					}
-					frame_setup_window(
-						t1, t1->g.frame.x + deltax,
-						t1->g.frame.y + deltay,
-						t1->g.frame.width,
-						t1->g.frame.height, False);
-				}
-			}
-			/*  Bump to next win...  */
-			t1 = get_prev_window_in_stack_ring(t1);
-		}
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-		{
-			if (NOT_GLOBALLY_ACTIVE(t->m, m))
-				continue;
-
-			if (IS_VIEWPORT_MOVED(t))
-			{
-				/* Clear double move blocker. */
-				SET_VIEWPORT_MOVED(t, 0);
-			}
-			/* If its an icon, and its sticking, autoplace it so
-			 * that it doesn't wind up on top a a stationary
-			 * icon */
-			if (is_window_sticky_across_pages(t) &&
-			    IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
-			    !IS_ICON_UNMAPPED(t))
-			{
-				AutoPlaceIcon(t, NULL, True);
-			}
-		}
+		move_viewport_delta(m, delta, page_tl, page_br, 1);
 	}
 	checkPanFrames(m);
 
