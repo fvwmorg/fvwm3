@@ -6130,17 +6130,15 @@ it is still possible to move or resize windows across the edge of the
 current screen. See also *EdgeThickness*.
 
 The option _EdgeMoveResistance_ makes it easier to place a window
-directly adjacent to the screen's or xinerama screen's border. It
-takes one or two parameters. The first parameter tells how many pixels
-over the edge of the screen a window's edge must move before it
-actually moves partially off the screen. The optional second parameter
-does the same as the first, but for individual RandR screens. If
-omitted, the value of the first parameter is assumed for this type of
-movement. Set the second parameter to 0 to zero to ignore individual
-RandR screen edges. Note that the center of the window being moved
-determines the screen on which the window should be kept. Both values
-are 0 by default. To restore the defaults, the option
-_EdgeMoveResistance_ can be used without any parameters.
+directly adjacent to a RandR screen's edge. It takes one or two parameters.
+The first parameter tells how many pixels over an outside edge of the
+screen a window's edge must move before it actually moves partially off
+the screen. The optional second parameter does the same as the first, but
+for inside edges (shared edge between two RandR monitors). If omitted,
+there is no resistance between inside edges. Note that the center of the
+window being moved determines the screen on which the window should be
+kept. Both values are 0 (no resistance) by default. To restore the defaults,
+the option _EdgeMoveResistance_ can be used without any parameters.
 
 The option _InitialMapCommand_ allows for any valid fvwm command or
 function to run when the window is initially mapped by fvwm. Example:
