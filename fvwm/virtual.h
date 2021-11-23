@@ -8,9 +8,8 @@
 
 void calculate_page_sizes(struct monitor *, int, int);
 int HandlePaging(
-	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
-	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
-	Bool do_continue_previous, int delay);
+	XEvent *pev, position warp_size, position *p, position *delta,
+	Bool Grab, Bool fLoop,	Bool do_continue_previous, int delay);
 void raisePanFrames(void);
 void initPanFrames(void);
 Bool is_pan_frame(Window w);

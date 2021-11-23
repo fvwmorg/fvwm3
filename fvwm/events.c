@@ -2270,8 +2270,12 @@ void HandleEnterNotify(const evh_args_t *ea)
 		{
 			/* no edge command for this pan frame - so we do
 			 * HandlePaging */
-			int delta_x = 0;
-			int delta_y = 0;
+			position edge_scroll = {
+				m->virtual_scr.EdgeScrollX,
+				m->virtual_scr.EdgeScrollY
+			};
+			position junk;
+			position delta = { 0, 0 };
 			XEvent e;
 
 			if (fw != NULL)
@@ -2281,10 +2285,8 @@ void HandleEnterNotify(const evh_args_t *ea)
 			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
 			int p = HandlePaging(
-				&e, m->virtual_scr.EdgeScrollX,
-				m->virtual_scr.EdgeScrollY, &JunkX,
-				&JunkY, &delta_x, &delta_y, True, True, False,
-				Scr.ScrollDelay);
+				&e, edge_scroll, &junk, &delta,
+				True, True, False, Scr.ScrollDelay);
 			fvwm_debug(__func__, "handled paging for %s (%d)",
 				m->si->name, p);
 			return;

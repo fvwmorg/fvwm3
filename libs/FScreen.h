@@ -12,11 +12,7 @@ typedef struct
 {
 	XEvent *mouse_ev;
 	const char *name;
-	struct
-	{
-		int x;
-		int y;
-	} xypos;
+	position xypos;
 } fscreen_scr_arg;
 
 typedef enum
@@ -32,22 +28,8 @@ typedef struct DesktopsInfo
 {
 	int desk;
 	char *name;
-
-	struct
-	{
-		int x;
-		int y;
-		int width;
-		int height;
-	} ewmh_working_area;
-	struct
-	{
-		int x;
-		int y;
-		int width;
-		int height;
-	} ewmh_dyn_working_area;
-
+	rectangle ewmh_working_area;
+	rectangle ewmh_dyn_working_area;
 	struct DesktopsInfo *next;
 } DesktopsInfo;
 

@@ -417,12 +417,13 @@ static pl_penalty_t __pl_position_get_pos_simple(
 	arg->reason->pos.pl_position_string = spos;
 	for (n = -1; i < 2 && n < 2; i++)
 	{
+		size_rect sz = { arg->place_g.width, arg->place_g.height };
+
 		fPointer = False;
 		ret_p->x = 0;
 		ret_p->y = 0;
 		n = GetMoveArguments(arg->place_fw,
-			&spos, arg->place_g.width, arg->place_g.height,
-			&ret_p->x, &ret_p->y, NULL, &fPointer, False);
+			&spos, sz, ret_p, NULL, &fPointer, False);
 		spos = DEFAULT_PLACEMENT_POSITION_STRING;
 		if (n < 2)
 		{
@@ -585,18 +586,16 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 	ret_p->y = 0;
 	if (GrabEm(CRS_POSITION, GRAB_NORMAL))
 	{
-		int DragWidth;
-		int DragHeight;
-		int mx;
-		int my;
+		position m;
+		size_rect drag;
 
 		/* Grabbed the pointer - continue */
 		MyXGrabServer(dpy);
 		if (
 			XGetGeometry(
 				dpy, FW_W(arg->place_fw), &JunkRoot, &JunkX,
-				&JunkY, (unsigned int*)&DragWidth,
-				(unsigned int*)&DragHeight,
+				&JunkY, (unsigned int*)&drag.width,
+				(unsigned int*)&drag.height,
 				(unsigned int*)&JunkBW,
 				(unsigned int*)&JunkDepth) == 0)
 		{
@@ -607,17 +606,15 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 		}
 		SET_PLACED_BY_FVWM(arg->place_fw, 0);
 		MyXGrabKeyboard(dpy);
-		DragWidth = arg->place_g.width;
-		DragHeight = arg->place_g.height;
+		drag.width = arg->place_g.width;
+		drag.height = arg->place_g.height;
 
 		if (Scr.SizeWindow.win != None)
 		{
 			XMapRaised(dpy, Scr.SizeWindow.win);
 		}
-		FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
-		if (__move_loop(
-			    arg->exc, mx, my, DragWidth, DragHeight, &ret_p->x,
-			    &ret_p->y, False, CRS_POSITION))
+		FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &m.x, &m.y, NULL, NULL);
+		if (__move_loop(arg->exc, m, drag, ret_p, False, CRS_POSITION))
 		{
 			ret->flags.do_resize_too = 1;
 		}
@@ -659,8 +656,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 	FvwmWindow *other_fw;
 	int xnew;
 	int xtest;
-	int stickyx;
-	int stickyy;
+	position sticky;
 	int start,i;
 	int win_left;
 	rectangle g;
@@ -718,21 +714,21 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 		}
 		if (IS_STICKY_ACROSS_PAGES(other_fw))
 		{
-			stickyx = arg->pdelta_p.x;
-			stickyy = arg->pdelta_p.y;
+			sticky.x = arg->pdelta_p.x;
+			sticky.y = arg->pdelta_p.y;
 		}
 		else
 		{
-			stickyx = 0;
-			stickyy = 0;
+			sticky.x = 0;
+			sticky.y = 0;
 		}
 		if (IS_ICONIFIED(other_fw))
 		{
 			rc = get_visible_icon_geometry(other_fw, &g);
-			if (rc == True && y < g.y + g.height - stickyy &&
-			    g.y - stickyy < arg->place_g.height + y)
+			if (rc == True && y < g.y + g.height - sticky.y &&
+			    g.y - sticky.y < arg->place_g.height + y)
 			{
-				win_left = arg->page_p1.x + g.x - stickyx -
+				win_left = arg->page_p1.x + g.x - sticky.x -
 					arg->place_g.width;
 				for (i = start; i <= CP_GET_NEXT_STEP; i++)
 				{
@@ -744,7 +740,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 						xnew = MIN(xnew, xtest);
 					}
 				}
-				win_left = arg->page_p1.x + g.x - stickyx;
+				win_left = arg->page_p1.x + g.x - sticky.x;
 				for (i = start; i <= CP_GET_NEXT_STEP; i++)
 				{
 					xtest = (win_left) + g.width * i /
@@ -758,15 +754,15 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 		}
 		else if (
 			y < other_fw->g.frame.height + other_fw->g.frame.y -
-			stickyy &&
-			other_fw->g.frame.y - stickyy <
+			sticky.y &&
+			other_fw->g.frame.y - sticky.y <
 			arg->place_g.height + y &&
 			arg->page_p1.x < other_fw->g.frame.width +
-			other_fw->g.frame.x - stickyx &&
-			other_fw->g.frame.x - stickyx < arg->page_p2.x)
+			other_fw->g.frame.x - sticky.x &&
+			other_fw->g.frame.x - sticky.x < arg->page_p2.x)
 		{
 			win_left =
-				other_fw->g.frame.x - stickyx -
+				other_fw->g.frame.x - sticky.x -
 				arg->place_g.width;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
@@ -778,7 +774,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 					xnew = MIN(xnew, xtest);
 				}
 			}
-			win_left = other_fw->g.frame.x - stickyx;
+			win_left = other_fw->g.frame.x - sticky.x;
 			for (i = start; i <= CP_GET_NEXT_STEP; i++)
 			{
 				xtest = win_left + other_fw->g.frame.width *
@@ -2474,14 +2470,19 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		SET_ICON_MOVED(fw, 0);
 		AutoPlaceIcon(fw, NULL, False);
 		get_icon_geometry(fw, &new_g);
-		__move_icon(
-			fw, new_g.x, new_g.y, old_g.x, old_g.y,
-			do_move_animated, False);
+		{
+			position new_p = { new_g.x, new_g.y };
+			position old_p = { old_g.x, old_g.y };
+
+			__move_icon(fw, new_p, old_p, do_move_animated, False);
+		}
 	}
 	else
 	{
 		window_style style;
 		initial_window_options_t win_opts;
+		position start = { -1, -1 };
+		position end;
 
 		memset(&win_opts, 0, sizeof(win_opts));
 		lookup_style(fw, &style);
@@ -2489,11 +2490,13 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		attr_g.y = attr.y;
 		attr_g.width = attr.width;
 		attr_g.height = attr.height;
+		end.x = attr_g.x;
+		end.y = attr_g.y;
 
 		setup_window_placement(
 			exc->w.fw, &style, &attr_g, &win_opts, PLACE_AGAIN);
 		AnimatedMoveFvwmWindow(
-			fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False,
+			fw, FW_W_FRAME(fw), start, end, False,
 			-1, ppctMovement);
 	}
 	if (fw->Desk != old_desk)

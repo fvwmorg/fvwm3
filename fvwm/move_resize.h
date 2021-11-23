@@ -10,15 +10,15 @@ struct MenuRepaintTransparentParameters;
 
 void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
-	Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
+	Window w, position start, position end, Bool fWarpPointerToo,
 	int cusDelay, float *ppctMovement,
 	struct MenuRepaintTransparentParameters *pmrtp);
 void AnimatedMoveFvwmWindow(
-	FvwmWindow *fw, Window w, int startX, int startY, int endX, int endY,
+	FvwmWindow *fw, Window w, position start, position end,
 	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
 Bool __move_loop(
-	const exec_context_t *exc, int XOffset, int YOffset, int Width,
-	int Height, int *FinalX, int *FinalY, Bool do_move_opaque, int cursor);
+	const exec_context_t *exc, position offset, size_rect sz,
+	position *pFinal, Bool do_move_opaque, int cursor);
 int is_window_sticky_across_pages(FvwmWindow *fw);
 int is_window_sticky_across_desks(FvwmWindow *fw);
 void handle_stick(
@@ -26,11 +26,11 @@ void handle_stick(
 	int do_silently);
 void resize_geometry_window(void);
 void __move_icon(
-	FvwmWindow *fw, int x, int y, int old_x, int old_y,
+	FvwmWindow *fw, position new, position old,
 	Bool do_move_animated, Bool do_warp_pointer);
 int placement_binding(int button,KeySym keysym,int modifier,char *action);
 int GetMoveArguments(FvwmWindow *fw,
-	char **paction, int w, int h, int *pFinalX, int *pFinalY,
+	char **paction, size_rect s, position *pFinal,
 	Bool *fWarp, Bool *fPointer, Bool fKeep);
 
 #endif /* FVWM_MOVE_RESIZE_H */

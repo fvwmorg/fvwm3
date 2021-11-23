@@ -366,15 +366,15 @@ static void animated_move_back(
 	MenuRoot *mr, Bool do_warp_pointer, FvwmWindow *fw)
 {
 	MenuRepaintTransparentParameters mrtp;
-	int act_x;
-	int act_y;
+	position start;
+	position end;
 
 	if (MR_XANIMATION(mr) == 0)
 	{
 		return;
 	}
 	if (menu_get_geometry(
-		    mr, &JunkRoot, &act_x, &act_y, &JunkWidth, &JunkHeight,
+		    mr, &JunkRoot, &start.x, &start.y, &JunkWidth, &JunkHeight,
 		    &JunkBW, &JunkDepth))
 	{
 		Bool transparent_bg = False;
@@ -387,9 +387,10 @@ static void animated_move_back(
 			get_menu_repaint_transparent_parameters(
 				&mrtp, mr, fw);
 		}
+		end.x = start.x - MR_XANIMATION(mr);
+		end.y = start.y;
 		AnimatedMoveOfWindow(
-			MR_WINDOW(mr), act_x, act_y, act_x - MR_XANIMATION(mr),
-			act_y, do_warp_pointer, -1, NULL,
+			MR_WINDOW(mr), start, end, do_warp_pointer, -1, NULL,
 			(transparent_bg)? &mrtp:NULL);
 		MR_XANIMATION(mr) = 0;
 	}
@@ -405,6 +406,8 @@ static void move_any_menu(
 	if (MR_IS_TEAR_OFF_MENU(mr))
 	{
 		float fFull = 1.0;
+		position start = { -1, -1 };
+		position end = { endX, endY };
 
 		/* this moves the tearoff menu, updating of transparency
 		 * will not be as good as if menu repaint parameters
@@ -412,7 +415,7 @@ static void move_any_menu(
 		AnimatedMoveFvwmWindow(
 			pmp->tear_off_root_menu_window,
 			FW_W_FRAME(pmp->tear_off_root_menu_window),
-			-1, -1, endX, endY, False, 0, &fFull);
+			start, end, False, 0, &fFull);
 	}
 	else
 	{
@@ -3559,10 +3562,14 @@ static int pop_menu_up(
 				{
 					w = MR_WINDOW(parent_menu);
 				}
-				AnimatedMoveOfWindow(
-					w, prev_x, prev_y, end_x, prev_y, True,
-					-1, NULL,
-					(transparent_bg)? &mrtp:NULL);
+				{
+					position start = { prev_x, prev_y };
+					position end = { end_x, prev_y };
+
+					AnimatedMoveOfWindow(
+						w, start, end, True, -1, NULL,
+						(transparent_bg)? &mrtp:NULL);
+				}
 			} /* if (MST_IS_ANIMATED(mr)) */
 
 			/*

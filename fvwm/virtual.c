@@ -716,9 +716,8 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
  * -1: no need to call the function again before a new event arrives
  */
 int HandlePaging(
-	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
-	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
-	Bool do_continue_previous, int delay)
+	XEvent *pev, position warp_size, position *p, position *delta,
+	Bool Grab, Bool fLoop, Bool do_continue_previous, int delay)
 {
 	static int add_time = 0;
 	int x,y;
@@ -736,8 +735,8 @@ int HandlePaging(
 	mheight = monitor_get_all_heights();
 
 
-	*delta_x = 0;
-	*delta_y = 0;
+	delta->x = 0;
+	delta->y = 0;
 	if (!is_timestamp_valid && do_continue_previous)
 	{
 		/* don't call me again until something has happened */
@@ -757,7 +756,7 @@ int HandlePaging(
 			return -1;
 		}
 	}
-	if (delay < 0 || (HorWarpSize == 0 && VertWarpSize==0))
+	if (delay < 0 || (warp_size.x == 0 && warp_size.y==0))
 	{
 		is_timestamp_valid = False;
 		add_time = 0;
@@ -867,104 +866,104 @@ int HandlePaging(
 
 	if (x <= (m->si->x + edge_thickness))
 	{
-		*delta_x = -HorWarpSize;
+		delta->x = -warp_size.x;
 	}
 	else if (x >= (m->si->x + m->si->w) - edge_thickness)
 	{
-		*delta_x = HorWarpSize;
+		delta->x = warp_size.x;
 	}
 	else
 	{
-		*delta_x = 0;
+		delta->x = 0;
 	}
 	if (m->virtual_scr.VxMax == 0)
 	{
-		*delta_x = 0;
+		delta->x = 0;
 	}
 	if (y <= (m->si->y + edge_thickness))
 	{
-		*delta_y = -VertWarpSize;
+		delta->y = -warp_size.y;
 	}
 	else if (y >= (m->si->y + m->si->h) - edge_thickness)
 	{
-		*delta_y = VertWarpSize;
+		delta->y = warp_size.y;
 	}
 	else
 	{
-		*delta_y = 0;
+		delta->y = 0;
 	}
 	if (m->virtual_scr.VyMax == 0)
 	{
-		*delta_y = 0;
+		delta->y = 0;
 	}
 
 	/* Ouch! lots of bounds checking */
-	if (m->virtual_scr.Vx + *delta_x < 0)
+	if (m->virtual_scr.Vx + delta->x < 0)
 	{
 		if (!(Scr.flags.do_edge_wrap_x))
 		{
-			*delta_x = -m->virtual_scr.Vx;
-			*xl = x - *delta_x;
+			delta->x = -m->virtual_scr.Vx;
+			p->x = x - delta->x;
 		}
 		else
 		{
-			*delta_x += m->virtual_scr.VxMax + mwidth;
-			*xl = x + *delta_x % mwidth + HorWarpSize;
+			delta->x += m->virtual_scr.VxMax + mwidth;
+			p->x = x + delta->x % mwidth + warp_size.x;
 		}
 	}
-	else if (m->virtual_scr.Vx + *delta_x > m->virtual_scr.VxMax)
+	else if (m->virtual_scr.Vx + delta->x > m->virtual_scr.VxMax)
 	{
 		if (!(Scr.flags.do_edge_wrap_x))
 		{
-			*delta_x = m->virtual_scr.VxMax - m->virtual_scr.Vx;
-			*xl = x - *delta_x;
+			delta->x = m->virtual_scr.VxMax - m->virtual_scr.Vx;
+			p->x = x - delta->x;
 		}
 		else
 		{
-			*delta_x -= m->virtual_scr.VxMax + mwidth;
-			*xl = x + *delta_x % mwidth - HorWarpSize;
+			delta->x -= m->virtual_scr.VxMax + mwidth;
+			p->x = x + delta->x % mwidth - warp_size.x;
 		}
 	}
 	else
 	{
-		*xl = x - *delta_x;
+		p->x = x - delta->x;
 	}
 
-	if (m->virtual_scr.Vy + *delta_y < 0)
+	if (m->virtual_scr.Vy + delta->y < 0)
 	{
 		if (!(Scr.flags.do_edge_wrap_y))
 		{
-			*delta_y = -m->virtual_scr.Vy;
-			*yt = y - *delta_y;
+			delta->y = -m->virtual_scr.Vy;
+			p->y = y - delta->y;
 		}
 		else
 		{
-			*delta_y += m->virtual_scr.VyMax + mheight;
-			*yt = y + *delta_y % mheight + VertWarpSize;
+			delta->y += m->virtual_scr.VyMax + mheight;
+			p->y = y + delta->y % mheight + warp_size.y;
 		}
 	}
-	else if (m->virtual_scr.Vy + *delta_y > m->virtual_scr.VyMax)
+	else if (m->virtual_scr.Vy + delta->y > m->virtual_scr.VyMax)
 	{
 		if (!(Scr.flags.do_edge_wrap_y))
 		{
-			*delta_y = m->virtual_scr.VyMax - m->virtual_scr.Vy;
-			*yt = y - *delta_y;
+			delta->y = m->virtual_scr.VyMax - m->virtual_scr.Vy;
+			p->y = y - delta->y;
 		}
 		else
 		{
-			*delta_y -= m->virtual_scr.VyMax + mheight;
-			*yt = y + *delta_y % mheight - VertWarpSize;
+			delta->y -= m->virtual_scr.VyMax + mheight;
+			p->y = y + delta->y % mheight - warp_size.y;
 		}
 	}
 	else
 	{
-		*yt = y - *delta_y;
+		p->y = y - delta->y;
 	}
 
 	/* Check for paging -- and don't warp the pointer. */
 	is_timestamp_valid = False;
 	add_time = 0;
-	if (*delta_x == 0 && *delta_y == 0)
+	if (delta->x == 0 && delta->y == 0)
 	{
 		return 0;
 	}
@@ -973,24 +972,24 @@ int HandlePaging(
 	/* make sure the pointer isn't warped into the panframes */
 	/* Handle global/per-monitor separately.*/
 	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
-		if (*xl < edge_thickness)
-			*xl = edge_thickness;
-		if (*yt < edge_thickness)
-			*yt = edge_thickness;
-		if (*xl >= mwidth - edge_thickness)
-			*xl = mwidth - edge_thickness -1;
-		if (*yt >= mheight - edge_thickness)
-			*yt = mheight - edge_thickness -1;
+		if (p->x < edge_thickness)
+			p->x = edge_thickness;
+		if (p->y < edge_thickness)
+			p->y = edge_thickness;
+		if (p->x >= mwidth - edge_thickness)
+			p->x = mwidth - edge_thickness -1;
+		if (p->y >= mheight - edge_thickness)
+			p->y = mheight - edge_thickness -1;
 	} else {
 		/* Per-monitor warping of the cursor. */
-		if (*xl <= (m->si->x + edge_thickness))
-			*xl = m->si->x + edge_thickness;
-		if (*yt <= (m->si->y + edge_thickness))
-			*yt = m->si->y + edge_thickness;
-		if (*xl >= (m->si->x + m->si->w) - edge_thickness)
-			*xl = (m->si->x + m->si->w) - edge_thickness -1;
-		if (*yt >= (m->si->y + m->si->h) - edge_thickness)
-			*yt = (m->si->y + m->si->h) - edge_thickness -1;
+		if (p->x <= (m->si->x + edge_thickness))
+			p->x = m->si->x + edge_thickness;
+		if (p->y <= (m->si->y + edge_thickness))
+			p->y = m->si->y + edge_thickness;
+		if (p->x >= (m->si->x + m->si->w) - edge_thickness)
+			p->x = (m->si->x + m->si->w) - edge_thickness -1;
+		if (p->y >= (m->si->y + m->si->h) - edge_thickness)
+			p->y = (m->si->y + m->si->h) - edge_thickness -1;
 	}
 	if (Grab)
 	{
@@ -998,16 +997,16 @@ int HandlePaging(
 	}
 	/* Turn off the rubberband if its on */
 	switch_move_resize_grid(False);
-	FWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
-	MoveViewport(m, m->virtual_scr.Vx + *delta_x,
-			m->virtual_scr.Vy + *delta_y,False);
+	FWarpPointer(dpy,None,Scr.Root,0,0,0,0,p->x,p->y);
+	MoveViewport(m, m->virtual_scr.Vx + delta->x,
+			m->virtual_scr.Vy + delta->y,False);
 	if (FQueryPointer(
-		    dpy, Scr.Root, &JunkRoot, &JunkChild, xl, yt, &JunkX,
-		    &JunkY, &JunkMask) == False)
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &(p->x), &(p->y),
+		    &JunkX, &JunkY, &JunkMask) == False)
 	{
 		/* pointer is on a different screen */
-		*xl = 0;
-		*yt = 0;
+		p->x = 0;
+		p->y = 0;
 	}
 	if (Grab)
 	{
