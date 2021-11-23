@@ -18,6 +18,17 @@ typedef struct
 	 *  > 0: unsuccessful but not an error condition
 	 *  < 0: unsuccessful, error
 	 */
+
+	/* Initialises the cmdparser_context_t dest_context structure.  If
+	 * creation is successful, the context must be later destroyed with
+	 * destroy_context.  If not, the context must not be used.
+	 *
+	 * If the caller_context is not NULL, that information is used to
+	 * calculate the nesting depth of called functions.  Otherwise it is
+	 * consideres a top level command.
+	 *
+	 * All other hooks need a properly initialised, nun-NULL context.
+	 */
 	int (*create_context)(
 		/* context structure to initialise */
 		cmdparser_context_t *dest_context,
@@ -34,6 +45,10 @@ typedef struct
 		 * (not) all be NULL if all_pos_args_string is (not) NULL. */
 		char *pos_arg_tokens[]
 		);
+
+	/* Must be called first after create_context to prepare the command line
+	 * for further processing.  What it does depends on the implementation,
+	 * but it could strip leading whitespace and handle comments. */
 	int (*handle_line_start)(cmdparser_context_t *context);
 	/* Returns a set of or'ed flags of which prefixes are present on the
 	 * command line.  The prefixes are stripped.  */
@@ -50,7 +65,7 @@ typedef struct
 	void (*expand_command_line)(
 		cmdparser_context_t *context, int is_addto, void *func_rc,
 		const void *exc);
-	/* Release the expline field from the context structure and return it.
+	/* Release the expline field from the context structure.
 	 * It is then the responsibility of the caller to free() it. */
 	void (*release_expanded_line)(cmdparser_context_t *context);
 	/* Tries to find a builtin function, a complex function or a module
