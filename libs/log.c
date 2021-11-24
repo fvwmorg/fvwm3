@@ -70,7 +70,7 @@ log_open(const char *fvwm_userdir)
 		file_name = FVWM3_LOGFILE_DEFAULT;
 	}
 	/* handle stderr logging */
-	if (log_file_name[0] == '-' && log_file_name[1] == 0)
+	if (file_name[0] == '-' && file_name[1] == 0)
 	{
 		log_file = stderr;
 		return;
