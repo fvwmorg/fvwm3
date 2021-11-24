@@ -109,8 +109,6 @@ enum
 	F_QUIT_SESSION,
 	F_QUIT_SCREEN,
 	F_READ,
-	F_RECAPTURE,
-	F_RECAPTURE_WINDOW,
 	F_REFRESH,
 	F_RESTART,
 	F_SAVE_SESSION,
@@ -326,8 +324,6 @@ void CMD_Raise(F_CMD_ARGS);
 void CMD_RaiseLower(F_CMD_ARGS);
 void CMD_Read(F_CMD_ARGS);
 void CMD_ReadWriteColors(F_CMD_ARGS);
-void CMD_Recapture(F_CMD_ARGS);
-void CMD_RecaptureWindow(F_CMD_ARGS);
 void CMD_Refresh(F_CMD_ARGS);
 void CMD_RefreshWindow(F_CMD_ARGS);
 void CMD_Repeat(F_CMD_ARGS);

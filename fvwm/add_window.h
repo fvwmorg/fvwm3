@@ -73,8 +73,8 @@ void free_window_names(
 void destroy_window(
 	FvwmWindow *);
 void RestoreWithdrawnLocation(
-	FvwmWindow *tmp, Bool is_restart_or_recapture, Window parent);
+	FvwmWindow *tmp, Bool is_restart_or_exit, Window parent);
 void Reborder(void);
-void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture);
+void CaptureAllWindows(const exec_context_t *exc);
 
 #endif /* FVWM_ADD_WINDOW_H */

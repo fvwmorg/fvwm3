@@ -834,7 +834,7 @@ int main(int argc, char **argv) {
   running = True;                       /* out of initialization phase */
   SendFinishedStartupNotification(Channel); /* tell fvwm we're running */
   SetSyncMask(Channel,M_ICONIFY|M_DEICONIFY|M_STRING); /* lock on send mask */
-  SetNoGrabMask(Channel,M_ICONIFY|M_DEICONIFY|M_STRING); /* ignore during recapture */
+  SetNoGrabMask(Channel,M_ICONIFY|M_DEICONIFY|M_STRING);
   Loop();                               /* start running */
   return 0;
 }
