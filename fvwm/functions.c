@@ -690,7 +690,7 @@ static void __execute_command_line(
 	}
 	case CP_EXECTYPE_COMPLEX_FUNCTION_DOES_NOT_EXIST:
 		fvwm_debug(
-			__func__, "No such function %s",
+			__func__, "No such function '%s'",
 			pc.complex_function_name);
 		break;
 	case CP_EXECTYPE_MODULECONFIG:

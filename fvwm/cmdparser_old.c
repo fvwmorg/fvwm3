@@ -401,7 +401,6 @@ static cmdparser_execute_type_t ocp_find_something_to_execute(
 	{
 		assert(*ret_builtin == NULL);
 	}
-	do
 	{
 		char *complex_function_name;
 		char *rest_of_line;
@@ -411,7 +410,9 @@ static cmdparser_execute_type_t ocp_find_something_to_execute(
 		complex_function_name = PeekToken(c->cline, &rest_of_line);
 		if (complex_function_name == NULL)
 		{
-			break;
+			c->cline = rest_of_line;
+			c->complex_function_name = "";
+			return CP_EXECTYPE_COMPLEX_FUNCTION_DOES_NOT_EXIST;
 		}
 		if (OCP_DEBUG)
 		{
@@ -439,7 +440,7 @@ static cmdparser_execute_type_t ocp_find_something_to_execute(
 			c->complex_function_name = complex_function_name;
 			return CP_EXECTYPE_COMPLEX_FUNCTION_DOES_NOT_EXIST;
 		}
-	} while (0);
+	}
 
 	return CP_EXECTYPE_UNKNOWN;
 }
