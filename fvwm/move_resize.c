@@ -1158,9 +1158,12 @@ void resize_geometry_window(void)
 static void DisplayPosition(
 	const FvwmWindow *tmp_win, const XEvent *eventp, position p, int Init)
 {
+	static GC our_relief_gc = None;
+	static GC our_shadow_gc = None;
+	GC reliefGC;
+	GC shadowGC;
 	char str[100];
 	int offset;
-	GC reliefGC, shadowGC;
 	FlocaleWinString fstr;
 	fscreen_scr_arg fscr;
 
@@ -1199,22 +1202,32 @@ static void DisplayPosition(
 		fstr.colorset = &Colorset[Scr.DefaultColorset];
 		fstr.flags.has_colorset = True;
 	}
-	if (fstr.flags.has_colorset)
+	if (Init)
 	{
-		XGCValues gcv;
+		if (our_relief_gc != None)
+		{
+			XFreeGC(dpy, our_relief_gc);
+			our_relief_gc = None;
+		}
+		if (our_shadow_gc != None)
+		{
+			XFreeGC(dpy, our_shadow_gc);
+			our_shadow_gc = None;
+		}
+		if (fstr.flags.has_colorset)
+		{
+			XGCValues gcv;
 
-		gcv.foreground = fstr.colorset->hilite;
-		reliefGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
-			GCForeground, &gcv);
-		gcv.foreground = fstr.colorset->shadow;
-		shadowGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
-			GCForeground, &gcv);
+			gcv.foreground = fstr.colorset->hilite;
+			our_relief_gc = fvwmlib_XCreateGC(
+				dpy, Scr.NoFocusWin, GCForeground, &gcv);
+			gcv.foreground = fstr.colorset->shadow;
+			our_shadow_gc = fvwmlib_XCreateGC(
+				dpy, Scr.NoFocusWin, GCForeground, &gcv);
+		}
 	}
-	else
-	{
-		reliefGC = Scr.StdReliefGC;
-		shadowGC = Scr.StdShadowGC;
-	}
+	reliefGC = (our_relief_gc != None) ? our_relief_gc : Scr.StdReliefGC;
+	shadowGC = (our_shadow_gc != None) ? our_shadow_gc : Scr.StdShadowGC;
 
 	if (Pdepth >= 2)
 	{
