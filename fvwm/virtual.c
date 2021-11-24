@@ -1618,9 +1618,30 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	 */
 	monitor_assign_virtual(m);
 
+#define ANIMATION_STEPS 100
 	if (delta.x || delta.y)
 	{
-		move_viewport_delta(m, delta, page_tl, page_br, 1);
+		position d_begin = { 0, 0 };
+		position d_step;
+		int i;
+
+		for (i = 1; i <= ANIMATION_STEPS; i++)
+		{
+			position d;
+
+			d_step.x = (delta.x * i) / ANIMATION_STEPS;
+			d_step.y = (delta.y * i) / ANIMATION_STEPS;
+			d.x = d_step.x - d_begin.x;
+			d.y = d_step.y - d_begin.y;
+			move_viewport_delta(
+				m, d, page_tl, page_br, i == ANIMATION_STEPS);
+			usleep(1000);
+			d_begin = d_step;
+		}
+		if (ANIMATION_STEPS == 0)
+		{
+			move_viewport_delta(m, delta, page_tl, page_br, 1);
+		}
 	}
 	checkPanFrames(m);
 
