@@ -97,6 +97,7 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 	unsigned long *bp = (unsigned long *)body;
 	unsigned long *bp1 = bp;
 	unsigned long plen = 0;
+	unsigned long dlen;
 
 	*(bp++) = START_FLAG;
 	*(bp++) = event_type;
@@ -170,10 +171,16 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 
 	/*
 	  Round up to a long word boundary. Most of the module interface
-	  still thinks in terms of an array of longss, so let's humor it.
+	  still thinks in terms of an array of longs, so let's humor it.
 	*/
-	plen = (unsigned long) ((char *)bp - (char *)bp1);
-	plen = ((plen + (sizeof(long) - 1)) / sizeof(long)) * sizeof(long);
+
+	dlen = (unsigned long) ((unsigned char *)bp - body);
+	plen = ((dlen + (sizeof(long) - 1)) / sizeof(long)) * sizeof(long);
+	if (plen > dlen)
+	{
+		/* initialise padding */
+		memset(body + dlen, 0, plen - dlen);
+	}
 	*(((unsigned long*)bp1)+2) = (plen / (sizeof(unsigned long)));
 
 	return plen;
