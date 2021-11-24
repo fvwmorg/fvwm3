@@ -1144,54 +1144,15 @@ void resize_geometry_window(void)
 	return;
 }
 
-/*
- *
- *  Procedure:
- *      DisplayPosition - display the position in the dimensions window
- *
- *  Inputs:
- *      tmp_win - the current fvwm window
- *      x, y    - position of the window
- *
- */
-
-static void DisplayPosition(
-	const FvwmWindow *tmp_win, const XEvent *eventp, position p, int Init)
+static void display_string(Bool Init, char *str)
 {
 	static GC our_relief_gc = None;
 	static GC our_shadow_gc = None;
 	GC reliefGC;
 	GC shadowGC;
-	char str[100];
 	int offset;
 	FlocaleWinString fstr;
-	fscreen_scr_arg fscr;
 
-	if (Scr.gs.do_hide_position_window)
-	{
-		return;
-	}
-	position_geometry_window(eventp);
-	/* Translate x,y into local screen coordinates. */
-	fscr.xypos.x = p.x;
-	fscr.xypos.y = p.y;
-	FScreenTranslateCoordinates(NULL, FSCREEN_GLOBAL, &fscr,
-			FSCREEN_XYPOS, &p.x, &p.y);
-	(void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, p.x, p.y);
-	if (Init)
-	{
-		XClearWindow(dpy, Scr.SizeWindow.win);
-	}
-	else
-	{
-		/* just clear indside the relief lines to reduce flicker */
-		XClearArea(dpy, Scr.SizeWindow.win,
-			   GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
-			   Scr.SizeWindow.StringWidth,
-			   Scr.DefaultFont->height, False);
-	}
-
-	memset(&fstr, 0, sizeof(fstr));
 	if (Scr.SizeWindow.cset >= 0)
 	{
 		fstr.colorset = &Colorset[Scr.SizeWindow.cset];
@@ -1202,8 +1163,10 @@ static void DisplayPosition(
 		fstr.colorset = &Colorset[Scr.DefaultColorset];
 		fstr.flags.has_colorset = True;
 	}
+
 	if (Init)
 	{
+		XClearWindow(dpy,Scr.SizeWindow.win);
 		if (our_relief_gc != None)
 		{
 			XFreeGC(dpy, our_relief_gc);
@@ -1226,6 +1189,14 @@ static void DisplayPosition(
 				dpy, Scr.NoFocusWin, GCForeground, &gcv);
 		}
 	}
+	else
+	{
+		/* just clear indside the relief lines to reduce flicker */
+		XClearArea(
+			dpy, Scr.SizeWindow.win, GEOMETRY_WINDOW_BW,
+			GEOMETRY_WINDOW_BW, Scr.SizeWindow.StringWidth,
+			Scr.DefaultFont->height, False);
+	}
 	reliefGC = (our_relief_gc != None) ? our_relief_gc : Scr.StdReliefGC;
 	shadowGC = (our_shadow_gc != None) ? our_shadow_gc : Scr.StdShadowGC;
 
@@ -1234,13 +1205,14 @@ static void DisplayPosition(
 		RelieveRectangle(
 			dpy, Scr.SizeWindow.win, 0, 0,
 			Scr.SizeWindow.StringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
-			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW * 2 - 1,
+			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW*2 - 1,
 			reliefGC, shadowGC, GEOMETRY_WINDOW_BW);
 	}
 	offset = (Scr.SizeWindow.StringWidth -
 		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
 	offset += GEOMETRY_WINDOW_BW;
 
+	memset(&fstr, 0, sizeof(fstr));
 	fstr.str = str;
 	fstr.win = Scr.SizeWindow.win;
 	fstr.gc = Scr.StdGC;
@@ -1248,31 +1220,49 @@ static void DisplayPosition(
 	fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
 	FlocaleDrawString(dpy, Scr.DefaultFont, &fstr, 0);
 
-	return;
 }
-
 
 /*
  *
  *  Procedure:
- *      DisplaySize - display the size in the dimensions window
+ *      DisplayPosition - display the position in the dimensions window
  *
  *  Inputs:
  *      tmp_win - the current fvwm window
- *      size    - the width and height of the rubber band
+ *      p       - position of the window
  *
  */
+
+static void DisplayPosition(
+	const FvwmWindow *tmp_win, const XEvent *eventp, position p, int Init)
+{
+	char str[100];
+	fscreen_scr_arg fscr;
+
+	if (Scr.gs.do_hide_position_window)
+	{
+		return;
+	}
+	position_geometry_window(eventp);
+	/* Translate x,y into local screen coordinates. */
+	fscr.xypos.x = p.x;
+	fscr.xypos.y = p.y;
+	FScreenTranslateCoordinates(NULL, FSCREEN_GLOBAL, &fscr,
+			FSCREEN_XYPOS, &p.x, &p.y);
+	(void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, p.x, p.y);
+	display_string(Init, str);
+
+	return;
+}
+
 static void DisplaySize(
 	const FvwmWindow *tmp_win, const XEvent *eventp, size_rect size,
 	Bool Init, Bool resetLast)
 {
 	char str[100];
 	size_rect d;
-	int offset;
 	size_borders b;
 	static size_rect last_size = { 0, 0 };
-	GC reliefGC, shadowGC;
-	FlocaleWinString fstr;
 
 	if (Scr.gs.do_hide_resize_window)
 	{
@@ -1300,66 +1290,7 @@ static void DisplaySize(
 	d.height /= tmp_win->hints.height_inc;
 
 	(void)sprintf(str, GEOMETRY_WINDOW_SIZE_STRING, d.width, d.height);
-	if (Init)
-	{
-		XClearWindow(dpy,Scr.SizeWindow.win);
-	}
-	else
-	{
-		/* just clear indside the relief lines to reduce flicker */
-		XClearArea(
-			dpy, Scr.SizeWindow.win, GEOMETRY_WINDOW_BW,
-			GEOMETRY_WINDOW_BW, Scr.SizeWindow.StringWidth,
-			Scr.DefaultFont->height, False);
-	}
-
-	memset(&fstr, 0, sizeof(fstr));
-	if (Scr.SizeWindow.cset >= 0)
-	{
-		fstr.colorset = &Colorset[Scr.SizeWindow.cset];
-		fstr.flags.has_colorset = True;
-	}
-	else if (Scr.DefaultColorset >= 0)
-	{
-		fstr.colorset = &Colorset[Scr.DefaultColorset];
-		fstr.flags.has_colorset = True;
-	}
-	if (fstr.flags.has_colorset)
-	{
-		XGCValues gcv;
-
-
-		gcv.foreground = fstr.colorset->hilite;
-		reliefGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
-			GCForeground, &gcv);
-		gcv.foreground = fstr.colorset->shadow;
-		shadowGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin,
-			GCForeground, &gcv);
-	}
-	else
-	{
-		reliefGC = Scr.StdReliefGC;
-		shadowGC = Scr.StdShadowGC;
-	}
-
-	if (Pdepth >= 2)
-	{
-		RelieveRectangle(
-			dpy, Scr.SizeWindow.win, 0, 0,
-			Scr.SizeWindow.StringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
-			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW*2 - 1,
-			reliefGC, shadowGC, GEOMETRY_WINDOW_BW);
-	}
-	offset = (Scr.SizeWindow.StringWidth -
-		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
-	offset += GEOMETRY_WINDOW_BW;
-
-	fstr.str = str;
-	fstr.win = Scr.SizeWindow.win;
-	fstr.gc = Scr.StdGC;
-	fstr.x = offset;
-	fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
-	FlocaleDrawString(dpy, Scr.DefaultFont, &fstr, 0);
+	display_string(Init, str);
 
 	return;
 }
