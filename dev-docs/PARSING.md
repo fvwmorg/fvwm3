@@ -1805,11 +1805,6 @@ CMD_GNOMESHOWDESKS = "GnomeShowDesks"
 CMD_SAVESESSION = "SaveSession"
 CMD_SAVEQUITSESSION = "SaveQuitSession"
 CMD_QUITSESSION = "QuitSession"
-CMD_XINERAMA = "Xinerama"
-CMD_XINERAMAPRIMARYSCREEN = "XineramaPrimaryScreen"
-CMD_XINERAMASLS = "XineramaSls"
-CMD_XINERAMASLSSCREENS = "XineramaSlsScreens"
-CMD_XINERAMASLSSIZE = "XineramaSlsSize"
 
 ;; !!! obsolete commands in fvwm2
 

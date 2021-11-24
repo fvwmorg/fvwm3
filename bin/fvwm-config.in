@@ -92,7 +92,7 @@ with_sm=@with_sm@
 with_xcursor=@with_xcursor@
 with_xft=@with_xft@
 with_xpm=@with_xpm@
-with_xrandr=@with_xinerama@
+with_xrandr=@with_xrandr@
 with_xrender=@with_xrender@
 
 while test $# -gt 0; do
