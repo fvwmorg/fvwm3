@@ -2126,7 +2126,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	{
 		rectangle r;
 		rectangle s;
-		rectangle p;
+		rectangle t;
 		struct monitor	*m = monitor_get_current();
 		char		*token;
 
@@ -2145,12 +2145,12 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		r.y = p.y;
 		r.width = sz.width;
 		r.height = sz.height;
-		p.x = page.x - m->virtual_scr.Vx;
-		p.y = page.y - m->virtual_scr.Vy;
-		p.width = monitor_get_all_widths();
-		p.height = monitor_get_all_heights();
+		t.x = page.x - m->virtual_scr.Vx;
+		t.y = page.y - m->virtual_scr.Vy;
+		t.width = monitor_get_all_widths();
+		t.height = monitor_get_all_heights();
 		/* move to page first */
-		fvwmrect_move_into_rectangle(&r, &p);
+		fvwmrect_move_into_rectangle(&r, &t);
 		/* then move to screen */
 		fvwmrect_move_into_rectangle(&r, &s);
 		final.x = r.x;
