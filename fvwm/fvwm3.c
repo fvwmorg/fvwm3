@@ -597,7 +597,7 @@ void Done(int restart, char *command)
 			do_preserve_state);
 
 		/* RBW - 06/08/1999 - without this, windows will wander to
-		 * other pages on a Restart/Recapture because Restart gets the
+		 * other pages on a Restart because Restart gets the
 		 * window position information out of sync. There may be a
 		 * better way to do this (i.e., adjust the Restart code), but
 		 * this works for now. */
@@ -1485,7 +1485,7 @@ void StartupStuff(void)
 	ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
-	CaptureAllWindows(exc, False);
+	CaptureAllWindows(exc);
 	/* Turn off the SM stuff after the initial capture so that new windows
 	 * will not be matched by accident. */
 	if (Restarting)

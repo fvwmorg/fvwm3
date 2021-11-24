@@ -46,6 +46,7 @@
 
 #include "config.h"
 
+#include <assert.h>
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
@@ -134,206 +135,6 @@ static void delete_client_context(FvwmWindow *fw)
 /*
  *
  *  Procedure:
- *	CaptureOneWindow
- *	CaptureAllWindows
- *
- *   Decorates windows at start-up and during recaptures
- *
- */
-
-static void CaptureOneWindow(
-	const exec_context_t *exc, FvwmWindow *fw, Window window,
-	Window keep_on_top_win, Window parent_win, Bool is_recapture)
-{
-	Window w;
-	unsigned long data[1];
-	initial_window_options_t win_opts;
-	evh_args_t ea;
-	exec_context_changes_t ecc;
-	XEvent e;
-
-	if (fw == NULL)
-	{
-		return;
-	}
-	if (IS_SCHEDULED_FOR_DESTROY(fw))
-	{
-		/* Fvwm might crash in complex functions if we really try to
-		 * the dying window here because AddWindow() may fail and leave
-		 * a destroyed window in some structures.  By the way, it is
-		 * pretty useless to recapture a window that will vanish in a
-		 * moment. */
-		return;
-	}
-	/* Grab the server to make sure the window does not die during the
-	 * recapture. */
-	MyXGrabServer(dpy);
-	if (
-		!XGetGeometry(
-			dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
-	{
-		/* The window has already died, do not recapture it! */
-		MyXUngrabServer(dpy);
-		return;
-	}
-	if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
-	{
-		Bool is_mapped = IS_MAPPED(fw);
-
-		memset(&win_opts, 0, sizeof(win_opts));
-		win_opts.initial_state = DontCareState;
-		win_opts.flags.do_override_ppos = 1;
-		win_opts.flags.is_recapture = 1;
-		if (IS_ICONIFIED(fw))
-		{
-			win_opts.initial_state = IconicState;
-			win_opts.flags.is_iconified_by_parent =
-				IS_ICONIFIED_BY_PARENT(fw);
-		}
-		else
-		{
-			win_opts.initial_state = NormalState;
-			win_opts.flags.is_iconified_by_parent = 0;
-			SetMapStateProp(fw, NormalState);
-		}
-		data[0] = (unsigned long) fw->Desk;
-		XChangeProperty(
-			dpy, FW_W(fw), _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-			PropModeReplace, (unsigned char *) data, 1);
-
-		XSelectInput(dpy, FW_W(fw), NoEventMask);
-		w = FW_W(fw);
-		XUnmapWindow(dpy, FW_W_FRAME(fw));
-		border_undraw_decorations(fw);
-		RestoreWithdrawnLocation(fw, is_recapture, parent_win);
-		SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
-		destroy_window(fw);
-		win_opts.flags.is_menu =
-			(is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw));
-
-
-		fev_make_null_event(&e, dpy);
-		e.xmaprequest.window = w;
-		e.xmaprequest.parent = Scr.Root;
-		ecc.x.etrigger = &e;
-		ecc.w.fw = NULL;
-		ecc.w.w = w;
-		ecc.w.wcontext = C_ROOT;
-		ea.exc = exc_clone_context(
-			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_W |
-			ECC_WCONTEXT);
-		HandleMapRequestKeepRaised(&ea, keep_on_top_win, fw, &win_opts);
-		exc_destroy_context(ea.exc);
-
-		/* HandleMapRequestKeepRaised may have destroyed the fw if the
-		 * window vanished while in AddWindow(), so don't access fw
-		 * anymore before checking if it is a valid window. */
-		if (check_if_fvwm_window_exists(fw))
-		{
-			if (!fFvwmInStartup)
-			{
-				SET_MAP_PENDING(fw, 0);
-				SET_MAPPED(fw, is_mapped);
-			}
-		}
-	}
-	MyXUngrabServer(dpy);
-
-	return;
-}
-
-/* Put a transparent window all over the screen to hide what happens below. */
-static void hide_screen(
-	Bool do_hide, Window *ret_hide_win, Window *ret_parent_win)
-{
-	static Bool is_hidden = False;
-	static Window hide_win = None;
-	static Window parent_win = None;
-	XSetWindowAttributes xswa;
-	unsigned long valuemask;
-
-	if (do_hide == is_hidden)
-	{
-		/* nothing to do */
-		if (ret_hide_win)
-		{
-			*ret_hide_win = hide_win;
-		}
-		if (ret_parent_win)
-		{
-			*ret_parent_win = parent_win;
-		}
-
-		return;
-	}
-	is_hidden = do_hide;
-	if (do_hide)
-	{
-		xswa.override_redirect = True;
-		xswa.cursor = Scr.FvwmCursors[CRS_WAIT];
-		xswa.backing_store = NotUseful;
-		xswa.save_under = False;
-		xswa.background_pixmap = None;
-		valuemask = CWOverrideRedirect | CWCursor | CWSaveUnder |
-			CWBackingStore | CWBackPixmap;
-		hide_win = XCreateWindow(
-			dpy, Scr.Root, 0, 0, monitor_get_all_widths(),
-			monitor_get_all_heights(), 0, Pdepth, InputOutput,
-			Pvisual, valuemask, &xswa);
-		if (hide_win)
-		{
-			/* When recapturing, all windows are reparented to this
-			 * window. If they are reparented to the root window,
-			 * they will flash over the hide_win with XFree.  So
-			 * reparent them to an unmapped window that looks like
-			 * the root window. */
-			parent_win = XCreateWindow(
-				dpy, Scr.Root, 0, 0, monitor_get_all_widths(),
-				monitor_get_all_heights(), 0, CopyFromParent,
-				InputOutput, CopyFromParent, valuemask, &xswa);
-			if (!parent_win)
-			{
-				XDestroyWindow(dpy, hide_win);
-				hide_win = None;
-			}
-			else
-			{
-				XMapWindow(dpy, hide_win);
-				XFlush(dpy);
-			}
-		}
-	}
-	else
-	{
-		if (hide_win != None)
-		{
-			XDestroyWindow(dpy, hide_win);
-		}
-		if (parent_win != None)
-		{
-			XDestroyWindow(dpy, parent_win);
-		}
-		XFlush(dpy);
-		hide_win = None;
-		parent_win = None;
-	}
-	if (ret_hide_win)
-	{
-		*ret_hide_win = hide_win;
-	}
-	if (ret_parent_win)
-	{
-		*ret_parent_win = parent_win;
-	}
-
-	return;
-}
-
-/*
- *
- *  Procedure:
  *	MappedNotOverride - checks to see if we should really
  *		put a fvwm frame on the window
  *
@@ -387,10 +188,7 @@ static void setup_window_structure(
 	FvwmWindow save_state;
 	FvwmWindow *savewin = NULL;
 
-	/*
-	  Allocate space for the FvwmWindow struct, or reuse an
-	  old one (on Recapture).
-	*/
+	/* Allocate space for the FvwmWindow struct, or reuse an old one. */
 	if (ReuseWin == NULL)
 	{
 		*pfw = fxmalloc(sizeof(FvwmWindow));
@@ -402,12 +200,6 @@ static void setup_window_structure(
 		memcpy(savewin, ReuseWin, sizeof(FvwmWindow));
 	}
 
-	/*
-	  RBW - 1999/05/28 - modify this when we implement the preserving of
-	  various states across a Recapture. The Destroy function in misc.c may
-	  also need tweaking, depending on what you want to preserve.
-	  For now, just zap any old information, except the desk.
-	*/
 	memset(*pfw, 0, sizeof(FvwmWindow));
 	FW_W(*pfw) = w;
 	if (savewin != NULL)
@@ -3577,7 +3369,7 @@ void destroy_window(FvwmWindow *fw)
  *
  */
 void RestoreWithdrawnLocation(
-	FvwmWindow *fw, Bool is_restart_or_recapture, Window parent)
+	FvwmWindow *fw, Bool is_restart_or_exit, Window parent)
 {
 	int w2,h2;
 	unsigned int mask;
@@ -3629,7 +3421,7 @@ void RestoreWithdrawnLocation(
 	 * half off the screen. (RN)
 	 */
 
-	if (!is_restart_or_recapture)
+	if (!is_restart_or_exit)
 	{
 		/* Don't mess with it if its partially on the screen now */
 		if (unshaded_g.x < 0 || unshaded_g.y < 0 ||
@@ -3678,7 +3470,7 @@ void RestoreWithdrawnLocation(
 	}
 
 	XConfigureWindow(dpy, FW_W(fw), mask, &xwc);
-	if (!is_restart_or_recapture)
+	if (!is_restart_or_exit)
 	{
 		/* must be initial capture */
 		XFlush(dpy);
@@ -3727,13 +3519,12 @@ void Reborder(void)
 	return;
 }
 
-void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
+void CaptureAllWindows(const exec_context_t *exc)
 {
 	int i,j;
 	unsigned int nchildren;
 	Window root, parent, *children;
 	initial_window_options_t win_opts;
-	FvwmWindow *fw;
 
 	MyXGrabServer(dpy);
 	if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
@@ -3743,8 +3534,7 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 	}
 	memset(&win_opts, 0, sizeof(win_opts));
 	win_opts.flags.do_override_ppos = 1;
-	win_opts.flags.is_recapture = 1;
-	if (!(Scr.flags.are_windows_captured)) /* initial capture? */
+	assert(!(Scr.flags.are_windows_captured));
 	{
 		evh_args_t ea;
 		exec_context_changes_t ecc;
@@ -3800,50 +3590,8 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 				exc_destroy_context(ea.exc);
 			}
 		}
-		Scr.flags.are_windows_captured = 1;
 	}
-	else /* must be recapture */
-	{
-		Window keep_on_top_win;
-		Window parent_win;
-		Window focus_w;
-		FvwmWindow *t;
-		struct monitor *mon = monitor_get_current();
-
-		t = get_focus_window();
-		focus_w = (t) ? FW_W(t) : None;
-		hide_screen(True, &keep_on_top_win, &parent_win);
-		/* reborder all windows */
-		for (i=0;i<nchildren;i++)
-		{
-			if (XFindContext(
-				    dpy, children[i], FvwmContext,
-				    (caddr_t *)&fw) != XCNOENT)
-			{
-				if ((fw != NULL && fw->m != NULL)) {
-					if (fw->m != mon)
-						continue;
-				}
-				CaptureOneWindow(
-					exc, fw, children[i], keep_on_top_win,
-					parent_win, is_recapture);
-			}
-		}
-		hide_screen(False, NULL, NULL);
-		/* find the window that had the focus and focus it again */
-		if (focus_w)
-		{
-			for (t = Scr.FvwmRoot.next; t && FW_W(t) != focus_w;
-			     t = t->next)
-			{
-				;
-			}
-			if (t)
-			{
-				SetFocusWindow(t, True, FOCUS_SET_FORCE);
-			}
-		}
-	}
+	Scr.flags.are_windows_captured = 1;
 	if (nchildren > 0)
 	{
 		XFree((char *)children);

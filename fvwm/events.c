@@ -3061,7 +3061,7 @@ void HandleMapRequestKeepRaised(
 	}
 
 	/* If the window has never been mapped before ... */
-	if (!fw || (fw && DO_REUSE_DESTROYED(fw)))
+	if (!fw)
 	{
 		/* Add decorations. */
 		fw = AddWindow(
