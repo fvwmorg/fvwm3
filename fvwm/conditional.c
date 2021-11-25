@@ -2137,6 +2137,7 @@ void CMD_Test(F_CMD_ARGS)
 					value = getenv(var_name);
 
 				match = (value != NULL) ? 1 : 0;
+				free(var_name);
 			}
 			else
 			{
@@ -2184,6 +2185,7 @@ void CMD_Test(F_CMD_ARGS)
 				{
 					error = 1;
 				}
+				free(var_name);
 			}
 			else
 			{
