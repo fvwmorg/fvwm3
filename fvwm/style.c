@@ -264,6 +264,10 @@ static void copy_icon_boxes(icon_boxes **pdest, icon_boxes *src)
 	{
 		temp = fxmalloc(sizeof(icon_boxes));
 		memcpy(temp, src, sizeof(icon_boxes));
+		if (temp->do_free_screen)
+		{
+			temp->IconScreen = fxstrdup(temp->IconScreen);
+		}
 		temp->next = NULL;
 		if (last != NULL)
 			last->next = temp;
@@ -1893,16 +1897,15 @@ static char *style_parse_icon_box_style(
 		l = strlen(option);
 		if (l > 0 && l < 24)
 		{
+			char *scr;
+
 			/* advance */
 			option = PeekToken(rest, &rest);
 			/* if word found, not too long */
 			geom_flags = FScreenParseGeometryWithScreen(
 				option, &IconBoxes->IconBox[0],
 				&IconBoxes->IconBox[1],	(unsigned int*)&width,
-				(unsigned int*)&height,
-				/*!!!possible access to free()'d memory if the
-				 * screen ever changes name!!!*/
-				&IconBoxes->IconScreen);
+				(unsigned int*)&height, &scr);
 			if (width == 0 || !(geom_flags & WidthValue))
 			{
 				/* zero width is invalid */
@@ -1945,6 +1948,11 @@ static char *style_parse_icon_box_style(
 				IconBoxes->IconBox[3] =
 					height + IconBoxes->IconBox[1];
 			} /* end icon geom worked */
+			if (scr != NULL)
+			{
+				IconBoxes->IconScreen = fxstrdup(scr);
+				IconBoxes->do_free_screen = 1;
+			}
 		}
 		else
 		{
@@ -4796,6 +4804,12 @@ void free_icon_boxes(icon_boxes *ib)
 		temp = ib->next;
 		if (ib->use_count == 0)
 		{
+			if (ib->do_free_screen)
+			{
+				free(ib->IconScreen);
+				ib->IconScreen = NULL;
+				ib->do_free_screen = 0;
+			}
 			free(ib);
 		}
 		else
