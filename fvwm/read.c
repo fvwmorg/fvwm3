@@ -118,6 +118,7 @@ void run_command_stream(
 {
 	char *tline;
 	char line[1024];
+	int count;
 
 	/* Set close-on-exec flag */
 	fcntl(fileno(f), F_SETFD, 1);
@@ -127,7 +128,7 @@ void run_command_stream(
 	handle_all_expose();
 
 	tline = fgets(line, (sizeof line) - 1, f);
-	while (tline)
+	for (count = 0; tline && count < MAX_READ_ITEMS; count++)
 	{
 		int l;
 		while (tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
@@ -147,6 +148,12 @@ void run_command_stream(
 		}
 		execute_function(cond_rc, exc, tline, pc, 0);
 		tline = fgets(line, (sizeof line) - 1, f);
+	}
+	if (tline)
+	{
+		fvwm_debug(
+			__func__, "Too many lines in inpup (> %d).",
+			MAX_READ_ITEMS);
 	}
 
 	return;

@@ -361,6 +361,8 @@
 /* The maximum number of function items that can be run by a top level function
 * call. */
 #define MAX_FUNCTION_ITEMS_RUN  10000
+/* Maximum number of lines for Read and PipeRead. */
+#define MAX_READ_ITEMS          50000
 
 
 /* Tips */
