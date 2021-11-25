@@ -1813,7 +1813,7 @@ void monitor_update_ewmh(void)
 	BroadcastMonitorList(NULL);
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
-		UPDATE_FVWM_SCREEN(t);
+		update_fvwm_monitor(t);
 	}
 }
 

@@ -609,7 +609,7 @@ void update_absolute_geometry(FvwmWindow *fw)
 	 * outdated.
 	 */
 	if (IS_SHADED(fw))
-		UPDATE_FVWM_SCREEN(fw);
+		update_fvwm_monitor(fw);
 	m = (fw && fw->m) ? fw->m : monitor_get_current();
 
 	/* store orig values in absolute coords */

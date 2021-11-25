@@ -2054,7 +2054,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 
 			/* then move to screen */
 			fvwmrect_move_into_rectangle(&r, &ms);
-			UPDATE_FVWM_SCREEN(fw);
+			update_fvwm_monitor(fw);
 		}
 
 		s.x = page.x - m->virtual_scr.Vx;
@@ -2167,25 +2167,25 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 void CMD_Move(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_NORMAL);
-	UPDATE_FVWM_SCREEN(exc->w.fw);
+	update_fvwm_monitor(exc->w.fw);
 }
 
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, True, MOVE_NORMAL);
-	UPDATE_FVWM_SCREEN(exc->w.fw);
+	update_fvwm_monitor(exc->w.fw);
 }
 
 void CMD_MoveToPage(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_PAGE);
-	UPDATE_FVWM_SCREEN(exc->w.fw);
+	update_fvwm_monitor(exc->w.fw);
 }
 
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
 	__move_window(F_PASS_ARGS, False, MOVE_SCREEN);
-	UPDATE_FVWM_SCREEN(exc->w.fw);
+	update_fvwm_monitor(exc->w.fw);
 }
 
 static void update_pos(
@@ -2533,7 +2533,7 @@ Bool __move_loop(
 	struct monitor	*m = NULL;
 
 	if (fw->m == NULL)
-		UPDATE_FVWM_SCREEN(fw);
+		update_fvwm_monitor(fw);
 	m = fw->m;
 	v.x = m->virtual_scr.Vx;
 	v.y = m->virtual_scr.Vy;
@@ -2651,7 +2651,7 @@ Bool __move_loop(
 			int py;
 			int delay;
 
-			UPDATE_FVWM_SCREEN(fw);
+			update_fvwm_monitor(fw);
 
 			fev_get_last_event(&le);
 
@@ -4724,7 +4724,7 @@ void CMD_Resize(F_CMD_ARGS)
 	}
 
 	__resize_window(F_PASS_ARGS);
-	UPDATE_FVWM_SCREEN(fw);
+	update_fvwm_monitor(fw);
 
 	return;
 }
@@ -5398,7 +5398,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 		maximize_fvwm_window(fw, &max_g);
 	}
 	EWMH_SetWMState(fw, False);
-	UPDATE_FVWM_SCREEN(fw);
+	update_fvwm_monitor(fw);
 
 	return;
 }
@@ -5427,7 +5427,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 		maximize_fvwm_window(fw, &max_g);
 	}
 	EWMH_SetWMState(fw, False);
-	UPDATE_FVWM_SCREEN(fw);
+	update_fvwm_monitor(fw);
 
 	return;
 }
@@ -5454,7 +5454,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 		{
 			action = "";
 			__move_window(F_PASS_ARGS, False, MOVE_PAGE);
-			UPDATE_FVWM_SCREEN(fw);
+			update_fvwm_monitor(fw);
 		}
 		SET_STICKY_ACROSS_PAGES(fw, 1);
 	}

@@ -43,6 +43,7 @@
 #include "focus.h"
 #include "stack.h"
 #include "icons.h"
+#include "virtual.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -658,6 +659,26 @@ void apply_decor_change(FvwmWindow *fw)
 	apply_window_updates(fw, &flags, &style, get_focus_window());
 
 	return;
+}
+
+/* Update which monitor a window is on. */
+void update_fvwm_monitor(FvwmWindow *fw)
+{
+	rectangle g;
+	struct monitor *mnew;
+
+	get_unshaded_geometry((fw), &g);
+	mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);
+
+	/* Avoid unnecessary updates. */
+	if (mnew == (fw)->m)
+		return;
+	(fw)->m_prev = (fw)->m;
+	(fw)->m = mnew;
+	(fw)->Desk = mnew->virtual_scr.CurrentDesk;
+	EWMH_SetCurrentDesktop((fw)->m);
+	desk_add_fw((fw));
+	BroadcastConfig(M_CONFIGURE_WINDOW, (fw));
 }
 
 /* Check and apply new style to each window if the style has changed. */
