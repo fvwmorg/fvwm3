@@ -487,24 +487,6 @@ typedef struct ScreenInfo
 	} last_added_item;
 } ScreenInfo;
 
-#define UPDATE_FVWM_SCREEN(fw)						   \
-	do {								   \
-		rectangle g;						   \
-		struct monitor *mnew;					   \
-									   \
-		get_unshaded_geometry((fw), &g);			   \
-		mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);   \
-		/* Avoid unnecessary updates. */			   \
-		if (mnew == (fw)->m)					   \
-			break;						   \
-		(fw)->m_prev = (fw)->m;					   \
-		(fw)->m = mnew;						   \
-		(fw)->Desk = mnew->virtual_scr.CurrentDesk;		   \
-		EWMH_SetCurrentDesktop((fw)->m);			   \
-		desk_add_fw((fw));					   \
-		BroadcastConfig(M_CONFIGURE_WINDOW, (fw));		   \
-	} while(0)
-
 /* A macro to to simplify he "ewmh desktop code" */
 #define IS_EWMH_DESKTOP(win) \
 	(Scr.EwmhDesktop && win == Scr.EwmhDesktop->wins.client)
@@ -519,6 +501,7 @@ typedef struct ScreenInfo
 void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *decor);
 void DestroyAllButtons(FvwmDecor *decor);
+void update_fvwm_monitor(FvwmWindow *);
 
 void simplify_style_list(void);
 

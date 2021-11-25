@@ -2403,7 +2403,7 @@ update:
 	raisePanFrames();
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
-		UPDATE_FVWM_SCREEN(t);
+		update_fvwm_monitor(t);
 
 	BroadcastMonitorList(NULL);
 }
