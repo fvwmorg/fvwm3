@@ -1900,6 +1900,8 @@ static char *style_parse_icon_box_style(
 				option, &IconBoxes->IconBox[0],
 				&IconBoxes->IconBox[1],	(unsigned int*)&width,
 				(unsigned int*)&height,
+				/*!!!possible access to free()'d memory if the
+				 * screen ever changes name!!!*/
 				&IconBoxes->IconScreen);
 			if (width == 0 || !(geom_flags & WidthValue))
 			{

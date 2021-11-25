@@ -664,6 +664,7 @@ FindScreenOfXY(int x, int y)
 	return (NULL);
 }
 
+/* Returns the primary screen if arg.name is NULL. */
 static struct monitor *
 FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 {
@@ -704,11 +705,14 @@ FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 		m = FindScreenOfXY(arg->xypos.x, arg->xypos.y);
 		break;
 	case FSCREEN_BY_NAME:
-		if (arg == NULL || arg->name == NULL) {
-			/* XXX: Work out what to do. */
-			break;
+		if (arg == NULL || arg->name == NULL)
+		{
+			m = monitor_by_primary();
 		}
-		m = monitor_resolve_name(arg->name);
+		else
+		{
+			m = monitor_resolve_name(arg->name);
+		}
 		break;
 	default:
 		/* XXX: Possible error condition here? */
@@ -748,6 +752,7 @@ FScreenOfPointerXY(int x, int y)
  * FSCREEN_PRIMARY: return the primary screen dimensions
  * FSCREEN_XYPOS:   return dimensions of the screen with the given coordinates
  * FSCREEN_BY_NAME: return dimensions of the screen with the given name
+ *                  of of the primary screen if arg.name is NULL.
  *
  * The function returns False if the global screen was returned and more than
  * one screen is configured.  Otherwise it returns True.
@@ -911,8 +916,8 @@ Bool FScreenIsRectangleOnScreen(fscreen_scr_arg *arg, fscreen_scr_t screen,
  *     Does the same as XParseGeometry, but handles additional "@scr".
  *     Since it isn't safe to define "ScreenValue" constant (actual values
  *     of other "XXXValue" are specified in Xutil.h, not by us, so there can
- *     be a clash), the screen value is always returned, even if it wasn't
- *     present in `parse_string' (set to default in that case).
+ *     be a clash).  *_screen_return is set to the screen's name or NULL if no
+ *     present in parse_string.
  *
  */
 int FScreenParseGeometryWithScreen(
@@ -920,40 +925,51 @@ int FScreenParseGeometryWithScreen(
 	unsigned int *width_return, unsigned int *height_return,
 	char **screen_return)
 {
-	char *copy, *geom_str = NULL;
+	char *geom_str;
 	int   ret;
+	char *at;
 
-	/* Safety net */
-	if (parsestring == NULL || *parsestring == '\0') {
+	if (screen_return != NULL)
+	{
 		*screen_return = NULL;
+	}
+	/* Safety net */
+	if (parsestring == NULL || *parsestring == '\0')
+	{
 		return 0;
 	}
 
 	/* No screen specified; parse geometry as standard. */
-	if (strchr(parsestring, '@') == NULL) {
-		*screen_return = NULL;
-		copy = fxstrdup(parsestring);
-		goto parse_geometry;
+	at = strchr(parsestring, '@');
+	if (at == NULL)
+	{
+		geom_str = parsestring;
+	}
+	else
+	{
+		/* If the geometry specification contains an '@' symbol, assume
+		 * the screen is specified.  This must be the name of the
+		 * monitor in question.
+		 */
+		int atpos;
+
+		if (screen_return != NULL)
+		{
+			*screen_return = at + 1;
+		}
+		atpos = (int)(at - parsestring);
+		geom_str = fxstrdup(parsestring);
+		geom_str[atpos] = 0;
 	}
 
-	/* If the geometry specification contains an '@' symbol, assume the
-	 * screen is specified.  This must be the name of the monitor in
-	 * question!
-	 */
-	copy = fxstrdup(parsestring);
-	copy = strsep(&parsestring, "@");
-
-	*screen_return = fxstrdup(parsestring);
-	geom_str = strsep(&copy, "@");
-	copy = geom_str;
-
-parse_geometry:
 	/* Do the parsing */
 	ret = XParseGeometry(
-		copy, x_return, y_return, width_return, height_return);
+		geom_str, x_return, y_return, width_return, height_return);
 
-	if (*screen_return == NULL)
-		*screen_return = fxstrdup(monitor_by_primary()->si->name);
+	if (geom_str != parsestring)
+	{
+		free(geom_str);
+	}
 
 	return ret;
 }
@@ -965,7 +981,6 @@ int FScreenParseGeometry(
 	unsigned int *width_return, unsigned int *height_return)
 {
 	struct monitor	*m = monitor_get_current();
-	char		*scr = NULL;
 	int		 rc, x, y, w, h;
 
 	x = 0;
@@ -973,21 +988,25 @@ int FScreenParseGeometry(
 	w = monitor_get_all_widths();
 	h = monitor_get_all_heights();
 
-	rc = FScreenParseGeometryWithScreen(
-		parsestring, x_return, y_return, width_return, height_return,
-		&scr);
+	{
+		char *scr;
 
-	if (scr != NULL) {
-		m = monitor_resolve_name(scr);
-		fprintf(
-			stderr, "Found monitor with name of: %s (%s)\n", scr,
-			m->si->name);
-		x = m->si->x;
-		y = m->si->y;
-		w = m->si->w;
-		h = m->si->h;
+		rc = FScreenParseGeometryWithScreen(
+			parsestring, x_return, y_return, width_return,
+			height_return, &scr);
+
+		if (scr != NULL) {
+			m = monitor_resolve_name(scr);
+			fprintf(
+				stderr,
+				"Found monitor with name of: %s (%s)\n", scr,
+				m->si->name);
+			x = m->si->x;
+			y = m->si->y;
+			w = m->si->w;
+			h = m->si->h;
+		}
 	}
-	free(scr);
 
 	/* adapt geometry to selected screen */
 	if (rc & XValue)
@@ -1047,7 +1066,6 @@ int FScreenGetGeometry(
 	int *width_return, int *height_return, XSizeHints *hints, int flags)
 {
 	fscreen_scr_arg	 arg;
-	char		*scr = NULL;
 	int		 ret;
 	int		 saved;
 	int		 x, y;
@@ -1057,14 +1075,19 @@ int FScreenGetGeometry(
 	int		 scr_w, scr_h;
 
 	/* I. Do the parsing and strip off extra bits */
-	ret = FScreenParseGeometryWithScreen(parsestring, &x, &y, &w, &h, &scr);
-	saved = ret & (XNegative | YNegative);
-	ret  &= flags;
+	{
+		char *scr;
 
-	arg.mouse_ev = NULL;
-	arg.name = scr;
-	FScreenGetScrRect(
-		&arg, FSCREEN_BY_NAME, &scr_x, &scr_y, &scr_w, &scr_h);
+		ret = FScreenParseGeometryWithScreen(
+			parsestring, &x, &y, &w, &h, &scr);
+		saved = ret & (XNegative | YNegative);
+		ret  &= flags;
+
+		arg.mouse_ev = NULL;
+		arg.name = scr;
+		FScreenGetScrRect(
+			&arg, FSCREEN_BY_NAME, &scr_x, &scr_y, &scr_w, &scr_h);
+	}
 
 	/* II. Interpret and fill in the values */
 
