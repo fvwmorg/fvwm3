@@ -704,7 +704,10 @@ static void __execute_command_line(
 				" executing command now: '%s'", pc.expline);
 		}
 		/* process a module config command */
-		ModuleConfig(pc.expline);
+		if (pc.expline)
+		{
+			ModuleConfig(pc.expline);
+		}
 		goto fn_exit;
 	case CP_EXECTYPE_UNKNOWN:
 		if (executeModuleDesperate(func_rc, exc, pc.cline, &pc) ==

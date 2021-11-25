@@ -90,6 +90,10 @@ void ModuleConfig(char *action)
 	fmodule *module;
 	struct moduleInfoList *new_entry;
 
+	if (action[0] == '*' && action[1] == 0)
+	{
+		return;
+	}
 #if 1 /*!!!*/
 fprintf(stderr, "%s: action '%s'\n", __func__, (action) ? action : "(nil)");
 #endif
