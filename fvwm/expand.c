@@ -1220,6 +1220,7 @@ char *expand_vars(
 	Bool is_string = False;
 	FvwmWindow *fw = exc->w.fw;
 	struct monitor	*mon = fw ? fw->m : monitor_get_current();
+	char *args_string = (pc) ? pc->all_pos_args_string : NULL;
 
 	l = strlen(input);
 	l2 = l;
@@ -1286,8 +1287,7 @@ char *expand_vars(
 							cond_rc, exc);
 					}
 					xlen = expand_args_extended(
-						var, pc->all_pos_args_string,
-						NULL);
+						var, args_string, NULL);
 					if (xlen < 0)
 					{
 						xlen = expand_vars_extended(
@@ -1322,12 +1322,12 @@ char *expand_vars(
 
 				if (input[i + 1] == '*')
 				{
-					s = pc->all_pos_args_string;
+					s = args_string;
 				}
 				else
 				{
 					n = input[i + 1] - '0';
-					s = pc->pos_arg_tokens[n];
+					s = (pc) ? pc->pos_arg_tokens[n] : 0;
 				}
 				n = input[i + 1] - '0';
 				if (s != NULL)
@@ -1471,8 +1471,7 @@ char *expand_vars(
 							cond_rc, exc);
 					}
 					xlen = expand_args_extended(
-						var, pc->all_pos_args_string,
-						&out[j]);
+						var, args_string, &out[j]);
 					if (xlen < 0)
 					{
 						xlen = expand_vars_extended(
@@ -1521,12 +1520,12 @@ char *expand_vars(
 
 				if (input[i + 1] == '*')
 				{
-					s = pc->all_pos_args_string;
+					s = args_string;
 				}
 				else
 				{
 					n = input[i + 1] - '0';
-					s = pc->pos_arg_tokens[n];
+					s = (pc) ? pc->pos_arg_tokens[n] : NULL;
 				}
 				if (s != NULL)
 				{
