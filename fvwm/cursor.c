@@ -97,14 +97,14 @@ static void SafeDefineCursor(Window w, Cursor cursor)
 /* ---------------------------- interface functions ------------------------ */
 
 /* CreateCursors - Loads fvwm cursors */
-Cursor *CreateCursors(Display *dpy)
+Cursor *CreateCursors(Display *disp)
 {
 	int i;
 	/* define cursors */
 	cursors[0] = None;
 	for (i = 1; i < CRS_MAX; i++)
 	{
-		cursors[i] = XCreateFontCursor(dpy, default_cursors[i]);
+		cursors[i] = XCreateFontCursor(disp, default_cursors[i]);
 	}
 
 	return cursors;

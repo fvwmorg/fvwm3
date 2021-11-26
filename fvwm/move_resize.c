@@ -4134,9 +4134,9 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	if (dir == DIR_NONE && detect_automatic_direction == True)
 	{
-		position off = { orig->width, orig->height };
+		position toff = { orig->width, orig->height };
 
-		dir = __resize_get_dir_from_resize_quadrant(off, p2);
+		dir = __resize_get_dir_from_resize_quadrant(toff, p2);
 	}
 
 	if (dir != DIR_NONE)
@@ -4176,10 +4176,10 @@ static Bool __resize_window(F_CMD_ARGS)
 	if (PressedW != Scr.Root && motion.x == 0 && motion.y == 0 &&
 	    !called_from_title)
 	{
-		position off = { orig->width, orig->height };
+		position toff = { orig->width, orig->height };
 
 		__resize_get_dir_proximity(
-			&motion, fw, off, p2, &warp,
+			&motion, fw, toff, p2, &warp,
 			automatic_border_direction);
 		if (motion.x != 0 || motion.y != 0)
 		{
@@ -4248,23 +4248,22 @@ static Bool __resize_window(F_CMD_ARGS)
 	off.y = 0;
 	if (do_warp_to_border == True)
 	{
-		position d;
+		position dd;
 
-		d.x = (motion.x == 0) ? p2.x : ref.x;
-		d.y = (motion.y == 0) ? p2.y : ref.y;
+		dd.x = (motion.x == 0) ? p2.x : ref.x;
+		dd.y = (motion.y == 0) ? p2.y : ref.y;
 
 		/* Warp the pointer to the closest border automatically? */
 		if (automatic_border_direction == True &&
 			(warp.x >=0 && warp.y >=0) &&
 			!IS_SHADED(fw))
 		{
-			d.x = warp.x;
-			d.y = warp.y;
+			dd.x = warp.x;
+			dd.y = warp.y;
 		}
 
 		/* warp the pointer to the border */
-		FWarpPointer(
-			dpy, None, ResizeWindow, 0, 0, 1, 1, d.x, d.y);
+		FWarpPointer(dpy, None, ResizeWindow, 0, 0, 1, 1, dd.x, dd.y);
 		XFlush(dpy);
 	}
 	else if (motion.x != 0 || motion.y != 0)
@@ -4293,7 +4292,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	 * press */
 	if (exc->x.elast->type == KeyPress)
 	{
-		position off = { 0, 0 };
+		position toff = { 0, 0 };
 
 		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed.x,
@@ -4304,7 +4303,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			stashed.y = 0;
 		}
 		__resize_step(
-			exc, stashed, &off, drag, orig,
+			exc, stashed, &toff, drag, orig,
 			&motion, do_resize_opaque, True);
 	}
 	else
@@ -4599,14 +4598,14 @@ static Bool __resize_window(F_CMD_ARGS)
 		}
 		if (do_resize_opaque)
 		{
-			position off = { 0, 0 };
+			position toff = { 0, 0 };
 			rectangle g = sorig;
 			position psorig = { sorig.x, sorig.y };
 
 			motion.x = 1;
 			motion.y = 1;
 			__resize_step(
-				exc, psorig, &off, &g, orig,
+				exc, psorig, &toff, &g, orig,
 				&motion, do_resize_opaque, True);
 		}
 		if (v.x != mon->virtual_scr.Vx || v.y != mon->virtual_scr.Vy)

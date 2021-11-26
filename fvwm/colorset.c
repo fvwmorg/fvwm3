@@ -293,7 +293,7 @@ static char *get_simple_color(
 	return rest;
 }
 
-static void SafeDestroyPicture(Display *dpy, FvwmPicture *picture)
+static void SafeDestroyPicture(Display *disp, FvwmPicture *picture)
 {
 	/* have to subvert destroy picture so that it doesn't free pixmaps,
 	 * these are added to the junk list to be cleaned up after a timeout */
@@ -316,7 +316,7 @@ static void SafeDestroyPicture(Display *dpy, FvwmPicture *picture)
 		}
 	}
 	/* all that this will now do is free the colors and the name */
-	PDestroyFvwmPicture(dpy, picture);
+	PDestroyFvwmPicture(disp, picture);
 
 	return;
 }
@@ -1091,8 +1091,8 @@ void parse_colorset(int n, char *line)
 
 			if (average_pix == root_pic.pixmap)
 			{
-				int w;
-				int h;
+				int w2;
+				int h2;
 				XID dummy;
 
 				MyXGrabServer(dpy);
@@ -1100,7 +1100,7 @@ void parse_colorset(int n, char *line)
 				if (!XGetGeometry(
 				    dpy, average_pix, &dummy,
 				    (int *)&dummy, (int *)&dummy,
-				    (unsigned int *)&w, (unsigned int *)&h,
+				    (unsigned int *)&w2, (unsigned int *)&h2,
 				    (unsigned int *)&dummy,
 				    (unsigned int *)&dummy))
 				{
@@ -1108,7 +1108,7 @@ void parse_colorset(int n, char *line)
 				}
 				else
 				{
-					if (w != cs->width || h != cs->height)
+					if (w2 != cs->width || h2 != cs->height)
 					{
 						average_pix = None;
 					}
@@ -1128,7 +1128,7 @@ void parse_colorset(int n, char *line)
 			XColor *colors;
 			XImage *image;
 			XImage *mask_image = None;
-			unsigned int i, j, k = 0;
+			unsigned int i2, j, k = 0;
 			unsigned long red = 0, blue = 0, green = 0;
 			unsigned long tred, tblue, tgreen;
 			double dred = 0.0, dblue = 0.0, dgreen = 0.0;
@@ -1158,20 +1158,20 @@ void parse_colorset(int n, char *line)
 			{
 				/* only fetch the pixels that are not masked
 				 * out */
-				for (i = 0; i < cs->width; i++)
+				for (i2 = 0; i2 < cs->width; i2++)
 				{
 					for (j = 0; j < cs->height; j++)
 					{
 						if (
 							cs->mask == None ||
 							XGetPixel(
-								mask_image, i,
+								mask_image, i2,
 								j) == 0)
 						{
 							colors[k++].pixel =
 								XGetPixel(
 									image,
-									i, j);
+									i2, j);
 						}
 					}
 				}

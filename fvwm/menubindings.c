@@ -396,7 +396,7 @@ Binding *menu_binding_is_key(XEvent* event, int context)
 }
 
 int menu_binding(
-	Display *dpy, binding_t type, int button, KeySym keysym,
+	Display *disp, binding_t type, int button, KeySym keysym,
 	int context, int modifier, char *action, char *menu_style)
 {
 	Binding *rmlist;
@@ -428,7 +428,7 @@ int menu_binding(
 	 */
 	/* BEGIN remove */
 	CollectBindingList(
-		dpy, menu_bindings, &rmlist, &dummy, type,
+		disp, menu_bindings, &rmlist, &dummy, type,
 		button, keysym, modifier, context, menu_style);
 	if (rmlist != NULL)
 	{
@@ -467,7 +467,7 @@ int menu_binding(
 			   "in menu bindings.");
 	}
 	rc = AddBinding(
-		dpy, menu_bindings, type, button, keysym,
+		disp, menu_bindings, type, button, keysym,
 		NULL, modifier, context, (void *)action, NULL, menu_style);
 
 	return rc;

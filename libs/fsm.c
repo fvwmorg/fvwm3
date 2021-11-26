@@ -61,9 +61,9 @@ typedef struct
 
 /* ---------------------------- local variables ---------------------------- */
 
-static FIceAuthDataEntry *authDataEntries = NULL;
+static FIceAuthDataEntry *sauthDataEntries = NULL;
 static FIceIOErrorHandler prev_handler;
-static FIceListenObj *listenObjs;
+static FIceListenObj *slistenObjs;
 
 static char *addAuthFile = NULL;
 static char *remAuthFile = NULL;
@@ -389,7 +389,7 @@ CloseListeners(void)
 		return;
 	}
 
-	FIceFreeListenObjs(numTransports, listenObjs);
+	FIceFreeListenObjs(numTransports, slistenObjs);
 }
 
 static
@@ -782,7 +782,7 @@ void NewConnectionMsg(int i)
 	}
 
 	SUPPRESS_UNUSED_VAR_WARNING(status);
-	ice_conn = FIceAcceptConnection(listenObjs[i], &status);
+	ice_conn = FIceAcceptConnection(slistenObjs[i], &status);
 #ifdef FVWM_DEBUG_FSM
 	fvwm_debug(__func__, "[%s][NewConnection] %i\n", module_name, i);
 #endif
@@ -1046,7 +1046,7 @@ int fsm_init(char *module)
 	}
 
 	if (!FIceListenForConnections (
-		    &numTransports, &listenObjs, 256, errormsg))
+		    &numTransports, &slistenObjs, 256, errormsg))
 	{
 		fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
 			   "FIceListenForConnections failed:\n"
@@ -1056,7 +1056,7 @@ int fsm_init(char *module)
 
 	atexit(CloseListeners);
 
-	if (!SetAuthentication(numTransports, listenObjs, &authDataEntries))
+	if (!SetAuthentication(numTransports, slistenObjs, &sauthDataEntries))
 	{
 	    fvwm_debug(__func__, "[%s][fsm_init] <<ERROR>> -- "
 		       "Could not set authorization\n", module_name);
@@ -1074,10 +1074,10 @@ int fsm_init(char *module)
 	ice_fd = fxmalloc(sizeof(int) * numTransports + 1);
 	for (i = 0; i < numTransports; i++)
 	{
-		ice_fd[i] = FIceGetListenConnectionNumber(listenObjs[i]);
+		ice_fd[i] = FIceGetListenConnectionNumber(slistenObjs[i]);
 	}
 
-	networkIds = FIceComposeNetworkIdList(numTransports, listenObjs);
+	networkIds = FIceComposeNetworkIdList(numTransports, slistenObjs);
 	/* TA:  FIXME!  xasprintf() */
 	p = fxmalloc(16 + strlen(networkIds) + 1);
 	sprintf(p, "SESSION_MANAGER=%s", networkIds);
@@ -1199,6 +1199,5 @@ void fsm_close(void)
 	{
 		return;
 	}
-	FreeAuthenticationData(numTransports, authDataEntries);
+	FreeAuthenticationData(numTransports, sauthDataEntries);
 }
-

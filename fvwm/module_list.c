@@ -180,24 +180,22 @@ static inline void module_list_insert(fmodule *module, fmodule_list *list)
 
 static inline fmodule *module_list_remove(fmodule *module, fmodule_list *list)
 {
-	fmodule_store **position;
+	fmodule_store **pos;
 
 	if (module == NULL)
 	{
 		return NULL;
 	}
 
-	for (
-		position = list; *position != NULL;
-		position = &((*position)->next))
+	for (pos = list; *pos != NULL; pos = &((*pos)->next))
 	{
-		if ((*position)->module == module)
+		if ((*pos)->module == module)
 		{
 			/* found it */
 			fmodule_store *current;
 
-			current = *position;
-			*position = (*position)->next;
+			current = *pos;
+			*pos = (*pos)->next;
 			free(current);
 
 			return module;

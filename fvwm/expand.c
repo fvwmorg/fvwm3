@@ -507,26 +507,26 @@ static signed int expand_vars_extended(
 		}
 
 		if (strcmp(rest, "primary") == 0) {
-			struct monitor *m = monitor_by_primary();
+			struct monitor *m2 = monitor_by_primary();
 
-			if (m != NULL)
-				string = m->si->name;
+			if (m2 != NULL)
+				string = m2->si->name;
 			should_quote = False;
 			goto GOT_STRING;
 		}
 
 		if (strcmp(rest, "current") == 0) {
-			struct monitor *m = monitor_get_current();
+			struct monitor *m2 = monitor_get_current();
 
 			should_quote = False;
-			string = m->si->name;
+			string = m2->si->name;
 
 			goto GOT_STRING;
 		}
 
 		/* We could be left with "<NAME>.?" */
 		char		*m_name = NULL;
-		struct monitor  *mon;
+		struct monitor  *mon2;
 		char		*rest_s;
 
 		/* The first word is the monitor name:
@@ -537,10 +537,10 @@ static signed int expand_vars_extended(
 		 */
 		rest_s = fxstrdup(rest);
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
-			mon = monitor_resolve_name(m_name);
+			mon2 = monitor_resolve_name(m_name);
 			if (m_name == NULL)
 				return -1;
-			if (strcmp(mon->si->name, m_name) == 1)
+			if (strcmp(mon2->si->name, m_name) == 1)
 				return -1;
 
 			/* Skip over the monitor name. */
@@ -549,50 +549,50 @@ static signed int expand_vars_extended(
 			/* Match remainder to valid fields. */
 			if (strcmp(rest, "x") == 0) {
 				is_numeric = True;
-				val = mon->si->x;
+				val = mon2->si->x;
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "y") == 0) {
 				is_numeric = True;
-				val = mon->si->y;
+				val = mon2->si->y;
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "width") == 0) {
 				is_numeric = True;
-				val = mon->si->w;
+				val = mon2->si->w;
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "height") == 0) {
 				is_numeric = True;
-				val = mon->si->h;
+				val = mon2->si->h;
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "output") == 0) {
 				is_numeric = True;
-				val = (int)mon->si->rr_output;
+				val = (int)mon2->si->rr_output;
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "desk") == 0) {
 				is_numeric = True;
-				val = mon->virtual_scr.CurrentDesk;
+				val = mon2->virtual_scr.CurrentDesk;
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "pagex") == 0) {
 				is_numeric = True;
-				val = (int)(mon->virtual_scr.Vx /
+				val = (int)(mon2->virtual_scr.Vx /
 					monitor_get_all_widths());
 				goto GOT_STRING;
 			}
 
 			if (strcmp(rest, "pagey") == 0) {
 				is_numeric = True;
-				val = (int)(mon->virtual_scr.Vy /
+				val = (int)(mon2->virtual_scr.Vy /
 					monitor_get_all_heights());
 				goto GOT_STRING;
 			}

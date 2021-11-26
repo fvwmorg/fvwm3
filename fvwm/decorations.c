@@ -546,12 +546,12 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		/*      title-bar menu button omitted
 		 * window gets 1 pixel wide black border */
 		/* disable any buttons with the MWMDecorMenu flag */
-		int i;
-		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
+		int j;
+		for (j = 0; j < NUMBER_OF_TITLE_BUTTONS; ++j)
 		{
-			if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[i])))
+			if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[j])))
 			{
-				*buttons &= ~(1 << i);
+				*buttons &= ~(1 << j);
 			}
 		}
 	}
@@ -561,12 +561,12 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		 * window gets 1 pixel wide black border */
 		/* disable any buttons with the MWMDecorMinimize/MWMDecorShaded
 		 * flag */
-		int i;
-		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
+		int j;
+		for (j = 0; j < NUMBER_OF_TITLE_BUTTONS; ++j)
 		{
-			if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])))
+			if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[j])))
 			{
-				*buttons &= ~(1 << i);
+				*buttons &= ~(1 << j);
 			}
 		}
 	}
@@ -575,12 +575,12 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		/* title-bar + maximize button, no menu button, no iconify.
 		 * window has 1 pixel wide black border */
 		/* disable any buttons with the MWMDecorMaximize flag */
-		int i;
-		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
+		int j;
+		for (j = 0; j < NUMBER_OF_TITLE_BUTTONS; ++j)
 		{
-			if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[i])))
+			if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[j])))
 			{
-				*buttons &= ~(1 << i);
+				*buttons &= ~(1 << j);
 			}
 		}
 	}

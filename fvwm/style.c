@@ -2102,8 +2102,6 @@ static Bool style_parse_one_style_option(
 {
 	window_style *add_style;
 	/* work area for button number */
-	int num;
-	int i;
 	int tmpno[3] = { -1, -1, -1 };
 	int val[4] = {0, 0, 0, 0};
 	int spargs = 0;
@@ -3258,6 +3256,8 @@ static Bool style_parse_one_style_option(
 		{
 			float f[6] = {-1, -1, -1, -1, -1, -1};
 			Bool bad = False;
+			int num;
+			int i;
 
 			num = 0;
 			if (on != 0 && rest != NULL)
@@ -3319,6 +3319,8 @@ static Bool style_parse_one_style_option(
 				 token, "MinOverlapPercentPlacementPenalties"))
 		{
 			Bool bad = False;
+			int num;
+			int i;
 
 			num = 0;
 			if (on != 0)
@@ -3447,6 +3449,8 @@ static Bool style_parse_one_style_option(
 			int units[2] = {100, 100};
 			int mondim[2];
 			bool use_client[2] = {false, false};
+			int num;
+			int i;
 
 			mondim[0] = monitor_get_all_widths();
 			mondim[1] = monitor_get_all_heights();
@@ -3499,6 +3503,8 @@ static Bool style_parse_one_style_option(
 			bool use_client[2] = {false, false};
 			int maxsize[2] = {DEFAULT_MAX_MAX_WINDOW_WIDTH,
 				DEFAULT_MAX_MAX_WINDOW_HEIGHT};
+			int num;
+			int i;
 
 			mondim[0] = monitor_get_all_widths();
 			mondim[1] = monitor_get_all_heights();
@@ -3976,8 +3982,8 @@ static Bool style_parse_one_style_option(
 		/* StartsOnPage is like StartsOnDesk-Plus */
 		else if (StrEquals(token, "STARTSONPAGE"))
 		{
-			char *ret_rest;
-			spargs = GetIntegerArguments(rest, &ret_rest,
+			char *rest2;
+			spargs = GetIntegerArguments(rest, &rest2,
 						     tmpno, 3);
 			if (spargs == 1 || spargs == 3)
 			{
@@ -4023,7 +4029,7 @@ static Bool style_parse_one_style_option(
 				ps->flag_mask.use_start_on_desk = 1;
 				ps->change_mask.use_start_on_desk = 1;
 			}
-			rest = ret_rest;
+			rest = rest2;
 		}
 		else if (StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
 		{
@@ -4187,8 +4193,8 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "SnapAttraction"))
 		{
-			int val;
-			char *token;
+			int ival;
+			char *ltoken;
 			int snap_proximity;
 			int snap_mode;
 
@@ -4198,65 +4204,65 @@ static Bool style_parse_one_style_option(
 				snap_mode = DEFAULT_SNAP_ATTRACTION_MODE;
 				if (
 					GetIntegerArguments(
-						rest, &rest, &val, 1) != 1)
+						rest, &rest, &ival, 1) != 1)
 				{
 					break;
 				}
-				if (val >= 0)
+				if (ival >= 0)
 				{
-					snap_proximity = val;
+					snap_proximity = ival;
 				}
-				if (val == 0)
-				{
-					break;
-				}
-				token = PeekToken(rest, &rest);
-				if (token == NULL)
+				if (ival == 0)
 				{
 					break;
 				}
-				if (StrEquals(token, "All"))
+				ltoken = PeekToken(rest, &rest);
+				if (ltoken == NULL)
+				{
+					break;
+				}
+				if (StrEquals(ltoken, "All"))
 				{
 					snap_mode = SNAP_ICONS | SNAP_WINDOWS;
-					token = PeekToken(rest, &rest);
+					ltoken = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(token, "None"))
+				else if (StrEquals(ltoken, "None"))
 				{
 					snap_mode = SNAP_NONE;
-					token = PeekToken(rest, &rest);
+					ltoken = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(token, "SameType"))
+				else if (StrEquals(ltoken, "SameType"))
 				{
 					snap_mode = SNAP_SAME;
-					token = PeekToken(rest, &rest);
+					ltoken = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(token, "Icons"))
+				else if (StrEquals(ltoken, "Icons"))
 				{
 					snap_mode = SNAP_ICONS;
-					token = PeekToken(rest, &rest);
+					ltoken = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(token, "Windows"))
+				else if (StrEquals(ltoken, "Windows"))
 				{
 					snap_mode = SNAP_WINDOWS;
-					token = PeekToken(rest, &rest);
+					ltoken = PeekToken(rest, &rest);
 				}
-				if (token == NULL)
+				if (ltoken == NULL)
 				{
 					break;
 				}
-				if (StrEquals(token, "Screen"))
+				if (StrEquals(ltoken, "Screen"))
 				{
 					snap_mode |= SNAP_SCREEN;
 				}
-				else if (StrEquals(token, "ScreenWindows"))
+				else if (StrEquals(ltoken, "ScreenWindows"))
 				{
 					snap_mode |= SNAP_SCREEN_WINDOWS;
 				}
-				else if (StrEquals(token, "ScreenIcons"))
+				else if (StrEquals(ltoken, "ScreenIcons"))
 				{
 					snap_mode |= SNAP_SCREEN_ICONS;
 				}
-				else if (StrEquals(token, "ScreenAll"))
+				else if (StrEquals(ltoken, "ScreenAll"))
 				{
 					snap_mode |= SNAP_SCREEN_ALL;
 				}
@@ -4522,13 +4528,13 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "WindowShadeSteps"))
 		{
 			int n = 0;
-			int val = 0;
+			int ival = 0;
 			int unit = 0;
 
-			n = GetOnePercentArgument(rest, &val, &unit);
+			n = GetOnePercentArgument(rest, &ival, &unit);
 			if (n != 1)
 			{
-				val = 0;
+				ival = 0;
 			}
 			else
 			{
@@ -4536,11 +4542,11 @@ static Bool style_parse_one_style_option(
 			}
 			/* we have a 'pixel' suffix if unit != 0; negative
 			 * values mean pixels */
-			val = (unit != 0) ? -val : val;
+			ival = (unit != 0) ? -ival : ival;
 			ps->flags.has_window_shade_steps = 1;
 			ps->flag_mask.has_window_shade_steps = 1;
 			ps->change_mask.has_window_shade_steps = 1;
-			SSET_WINDOW_SHADE_STEPS(*ps, val);
+			SSET_WINDOW_SHADE_STEPS(*ps, ival);
 		}
 		else if (StrEquals(token, "WindowShadeScrolls"))
 		{

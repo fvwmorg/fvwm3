@@ -618,24 +618,24 @@ static void __execute_command_line(
 			(bif->flags & FUNC_NEEDS_WINDOW) &&
 			!(exec_flags & FUNC_DONT_DEFER))
 		{
-			Bool rc;
+			Bool b;
 
-			rc = DeferExecution(
+			b = DeferExecution(
 				&ecc, &mask, bif->cursor, exc->x.elast->type,
 				(bif->flags & FUNC_ALLOW_UNMANAGED));
-			if (rc == True)
+			if (b == True)
 			{
 				if (PARSER_DEBUG)
 				{
 					fvwm_debug(
 						__func__,
-						"!!!not deferred: %d", rc);
+						"!!!not deferred: %d", b);
 				}
 				break;
 			}
 			if (PARSER_DEBUG)
 			{
-				fvwm_debug(__func__, "!!!deferred: %d", rc);
+				fvwm_debug(__func__, "!!!deferred: %d", b);
 			}
 		}
 		else if (

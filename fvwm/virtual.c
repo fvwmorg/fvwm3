@@ -2243,7 +2243,7 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 void CMD_DesktopConfiguration(F_CMD_ARGS)
 {
 	FvwmWindow	*t;
-	struct monitor	*m_loop, *m = monitor_get_current();
+	struct monitor	*m = monitor_get_current();
 
 	if (action == NULL) {
 		fvwm_debug(__func__, "action is required");
@@ -2251,6 +2251,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	}
 
 	if (strcasecmp(action, "global") == 0) {
+		struct monitor	*m_loop;
 		/* If we're switching to global mode after coming out of per-monitor
 		 * mode, the desks won't be the same.  Fix this by switching
 		 * other monitor desks to be the same as the current monitor.

@@ -4876,12 +4876,12 @@ unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
 		}
 		else if (DFS_FACE_TYPE(tdf->style) == MultiPixmap)
 		{
-			int i;
+			int j;
 
-			for (i = 0; i < TBMP_NUM_PIXMAPS; i++)
+			for (j = 0; j < TBMP_NUM_PIXMAPS; j++)
 			{
 				if (CSET_IS_TRANSPARENT_ROOT(
-					tdf->u.mp.acs[i].cs))
+					tdf->u.mp.acs[j].cs))
 				{
 					draw_parts |= PART_TITLE;
 					break;

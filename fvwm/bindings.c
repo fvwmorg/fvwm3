@@ -233,7 +233,7 @@ static void __rebind_global_key(Binding **pblist, int Button_Key)
 
 /* Parses a mouse or key binding */
 static int ParseBinding(
-	Display *dpy, Binding **pblist, char *tline, binding_t type,
+	Display *disp, Binding **pblist, char *tline, binding_t type,
 	int *nr_left_buttons, int *nr_right_buttons,
 	unsigned short *buttons_grabbed, Bool is_silent)
 {
@@ -376,7 +376,7 @@ static int ParseBinding(
 
 	if (BIND_IS_KEY_BINDING(type))
 	{
-		keysym = FvwmStringToKeysym(dpy, key_string);
+		keysym = FvwmStringToKeysym(disp, key_string);
 		/* Don't let a 0 keycode go through, since that means AnyKey
 		 * to the XGrabKey call. */
 		if (keysym == 0)
@@ -425,7 +425,7 @@ static int ParseBinding(
 	if ((context & C_MENU) == C_MENU)
 	{
 		menu_binding(
-			dpy, type, button, keysym, context, modifier, action,
+			disp, type, button, keysym, context, modifier, action,
 			window_name);
 		/* ParseBinding returns the number of new bindings in pblist
 		 * menu bindings does not add to pblist, and should return 0 */
@@ -447,7 +447,7 @@ static int ParseBinding(
 	*/
 	/* BEGIN remove */
 	CollectBindingList(
-		dpy, pblist, &rmlist, &are_similar_bindings_left, type,
+		disp, pblist, &rmlist, &are_similar_bindings_left, type,
 		button, keysym, modifier, context, window_name);
 	if (rmlist != NULL)
 	{
@@ -455,14 +455,14 @@ static int ParseBinding(
 
 		if (is_unbind_request && are_similar_bindings_left == False)
 		{
-			int rc = 0;
+			int ret = 0;
 
 			for (b = rmlist; b != NULL; b = b->NextBinding)
 			{
 				/* release the grab */
-				rc |= activate_binding(b, type, False);
+				ret |= activate_binding(b, type, False);
 			}
-			if (rc)
+			if (ret)
 			{
 				__rebind_global_key(
 					pblist, rmlist->Button_Key);
@@ -507,7 +507,7 @@ static int ParseBinding(
 		}
 	}
 	rc = AddBinding(
-		dpy, pblist, type,
+		disp, pblist, type,
 		button, keysym, key_string, modifier, context, (void *)action,
 		NULL, window_name);
 
