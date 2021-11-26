@@ -3157,7 +3157,9 @@ void CMD_DefaultFont(F_CMD_ARGS)
 	{
 		/* Try 'fixed', pass NULL font name */
 	}
+fprintf(stderr, "!!!!!!!!!!!!!!!G calling FlocaleLoadFont\n");
 	if (!(new_font = FlocaleLoadFont(dpy, font, "fvwm")))
+
 	{
 		if (Scr.DefaultFont == NULL)
 		{
@@ -3165,10 +3167,14 @@ void CMD_DefaultFont(F_CMD_ARGS)
 		}
 		else
 		{
+fprintf(stderr, "!!!!!!!!!!!!!!!H1 done FlocaleLoadFont\n");
 			return;
 		}
 	}
+fprintf(stderr, "!!!!!!!!!!!!!!!H2 done FlocaleLoadFont\n");
+fprintf(stderr, "!!!!!!!!!!!!!!!I calling FlocaleUnloadFont flf %p\n", Scr.DefaultFont);
 	FlocaleUnloadFont(dpy, Scr.DefaultFont);
+fprintf(stderr, "!!!!!!!!!!!!!!!I done FlocaleUnloadFont\n");
 	Scr.DefaultFont = new_font;
 	/* we should do that here because a redraw can happen before
 	   flush_window_updates is called ... */
