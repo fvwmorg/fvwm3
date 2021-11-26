@@ -2803,16 +2803,37 @@ FvwmWindow *AddWindow(
 	{
 		EWMH_fullscreen(fw);
 	}
-	if (!XGetGeometry(
-		    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-		    (unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
-		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
-		/* The window has disappeared somehow.	For some reason we do
-		 * not always get a DestroyNotify on the window, so make sure
-		 * it is destroyed. */
-		destroy_window(fw);
-		fw = NULL;
+		unsigned int nchildren;
+		Window parent, *children;
+		Status rc;
+
+		rc = XQueryTree(
+			dpy, w, &JunkRoot, &parent, &children, &nchildren);
+		if (nchildren > 0)
+		{
+			XFree(children);
+		}
+		/* Verify that (a) the window exists and (b) has really been
+		 * reparented to the FW_W_PARENT(fw) window.
+		 *
+		 * Only after reparenting fvwm is guaranteed to receive a
+		 * possible DestroyNotify event on the window. */
+		if (!rc || parent != FW_W_PARENT(fw))
+		{
+			/* No, the window has disappeared.  In case (b) some
+			 * window exists with the same id that has not been
+			 * reparented (either the same window or a new one).
+			 */
+			if (Scr.bo.do_display_new_window_names)
+			{
+				fvwm_debug(
+					__func__, "new window disappeared"
+					" before it could be reparented");
+			}
+			destroy_window(fw);
+			fw = NULL;
+		}
 	}
 
 	if (is_tracking_shared && fw != NULL) {
