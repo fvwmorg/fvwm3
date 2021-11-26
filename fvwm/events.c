@@ -4007,17 +4007,17 @@ int register_event_group(int event_base, int event_count, PFEH *jump_table)
 {
 	/* insert into the list */
 	event_group_t *group;
-	event_group_t *position = base_event_group;
+	event_group_t *eposition = base_event_group;
 	event_group_t *prev_position = NULL;
 
 	while (
-		position != NULL &&
-		position->base + position->count < event_base)
+		eposition != NULL &&
+		eposition->base + eposition->count < event_base)
 	{
-		prev_position = position;
-		position = position->next;
+		prev_position = eposition;
+		eposition = eposition->next;
 	}
-	if ((position != NULL && position->base < event_base + event_count))
+	if ((eposition != NULL && eposition->base < event_base + event_count))
 	{
 		/* there is already an event group registered at the specified
 		 * event range, or the base is before the base X events */
@@ -4029,7 +4029,7 @@ int register_event_group(int event_base, int event_count, PFEH *jump_table)
 	group->base = event_base;
 	group->count = event_count;
 	group->jump_table = jump_table;
-	group->next = position;
+	group->next = eposition;
 	if (prev_position != NULL)
 	{
 		prev_position->next = group;
@@ -4246,7 +4246,7 @@ void HandleEvents(void)
  * command line module that doesn't quit or gets stuck.
  *
  */
-int My_XNextEvent(Display *dpy, XEvent *event)
+int My_XNextEvent(Display *disp, XEvent *event)
 {
 	fd_set in_fdset, out_fdset;
 	int num_fd;
@@ -4261,9 +4261,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	 * Make sure nothing between here and the select causes further
 	 * X requests to be sent or the select may block even though
 	 * there are events in the queue */
-	if (FPending(dpy))
+	if (FPending(disp))
 	{
-		FNextEvent(dpy, event);
+		FNextEvent(disp, event);
 		return 1;
 	}
 
@@ -4424,9 +4424,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 	/* check for X events again, rather than return 0 and get called again
 	 */
-	if (FPending(dpy))
+	if (FPending(disp))
 	{
-		FNextEvent(dpy,event);
+		FNextEvent(disp,event);
 		return 1;
 	}
 

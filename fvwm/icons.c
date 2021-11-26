@@ -1954,18 +1954,18 @@ void AutoPlaceIcon(
 	    /* test overlap */
 	    if (test_fw->Desk == t->Desk)
 	    {
-	      rectangle g;
+	      rectangle g2;
 
 	      if ((IS_ICONIFIED(test_fw)) &&
 		 (!IS_TRANSIENT(test_fw) ||
 		  !IS_ICONIFIED_BY_PARENT(test_fw)) &&
 		 (FW_W_ICON_TITLE(test_fw)||FW_W_ICON_PIXMAP(test_fw)) &&
 		 (test_fw != t)) {
-		get_icon_geometry(test_fw, &g);
-		if ((g.x<(real_x+width+MIN_ICON_BOX_DIST))&&
-		   ((g.x+g.width+MIN_ICON_BOX_DIST) > real_x)&&
-		   (g.y<(real_y+height+MIN_ICON_BOX_DIST))&&
-		   ((g.y+g.height + MIN_ICON_BOX_DIST)>real_y))
+		get_icon_geometry(test_fw, &g2);
+		if ((g2.x<(real_x+width+MIN_ICON_BOX_DIST))&&
+		   ((g2.x+g2.width+MIN_ICON_BOX_DIST) > real_x)&&
+		   (g2.y<(real_y+height+MIN_ICON_BOX_DIST))&&
+		   ((g2.y+g2.height + MIN_ICON_BOX_DIST)>real_y))
 		{
 		  /* don't accept this location */
 		  loc_ok = False;

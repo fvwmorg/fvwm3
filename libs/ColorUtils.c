@@ -65,7 +65,7 @@
 #define XmDEFAULT_DARK_THRESHOLD        15
 #define XmDEFAULT_LIGHT_THRESHOLD       85
 
-static XColor color;
+static XColor scolor;
 
 /**** This part is the old fvwm way to calculate colours. Still used for
  **** 'medium' brigness colours. */
@@ -220,32 +220,32 @@ static XColor *GetShadowOrHiliteColor(
 	long brightness;
 	unsigned int red, green, blue;
 
-	memset(&color, 0, sizeof(color));
-	color.pixel = background;
-	XQueryColor(Pdpy, Pcmap, &color);
-	red = color.red;
-	green = color.green;
-	blue = color.blue;
+	memset(&scolor, 0, sizeof(scolor));
+	scolor.pixel = background;
+	XQueryColor(Pdpy, Pcmap, &scolor);
+	red = scolor.red;
+	green = scolor.green;
+	blue = scolor.blue;
 
 	brightness = BRIGHTNESS(red, green, blue);
 	/* For "dark" backgrounds, make everything a fixed %age lighter */
 	if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
 	{
-		color.red = (unsigned short)
+		scolor.red = (unsigned short)
 			(0xffff - ((0xffff - red) * dark + 50) / 100);
-		color.green = (unsigned short)
+		scolor.green = (unsigned short)
 			(0xffff - ((0xffff - green) * dark + 50) / 100);
-		color.blue = (unsigned short)
+		scolor.blue = (unsigned short)
 			(0xffff - ((0xffff - blue) * dark + 50) / 100);
 	}
 	/* For "light" background, make everything a fixed %age darker */
 	else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
 	{
-		color.red =
+		scolor.red =
 			(unsigned short)((red * light + 50) / 100);
-		color.green =
+		scolor.green =
 			(unsigned short)((green * light + 50) / 100);
-		color.blue =
+		scolor.blue =
 			(unsigned short)((blue * light + 50) / 100);
 	}
 	/* For "medium" background, select is a fixed %age darker;
@@ -254,9 +254,9 @@ static XColor *GetShadowOrHiliteColor(
 	 */
 	else
 	{
-		color_mult(&color.red, &color.green, &color.blue, factor);
+		color_mult(&scolor.red, &scolor.green, &scolor.blue, factor);
 	}
-	return &color;
+	return &scolor;
 }
 
 
@@ -305,15 +305,15 @@ XColor *GetForeShadowColor(Pixel foreground, Pixel background)
 	int result[3];
 	int i;
 
-	memset(&color, 0, sizeof(color));
+	memset(&scolor, 0, sizeof(scolor));
 	memset(&bg_color, 0, sizeof(bg_color));
-	color.pixel = foreground;
+	scolor.pixel = foreground;
 	bg_color.pixel = background;
-	XQueryColor(Pdpy, Pcmap, &color);
+	XQueryColor(Pdpy, Pcmap, &scolor);
 	XQueryColor(Pdpy, Pcmap, &bg_color);
-	fg[0] = color.red;
-	fg[1] = color.green;
-	fg[2] = color.blue;
+	fg[0] = scolor.red;
+	fg[1] = scolor.green;
+	fg[2] = scolor.blue;
 	bg[0] = bg_color.red;
 	bg[1]=  bg_color.green;
 	bg[2] = bg_color.blue;
@@ -333,11 +333,11 @@ XColor *GetForeShadowColor(Pixel foreground, Pixel background)
 			}
 		}
 	}
-	color.red = result[0];
-	color.green = result[1];
-	color.blue = result[2];
+	scolor.red = result[0];
+	scolor.green = result[1];
+	scolor.blue = result[2];
 
-	return &color;
+	return &scolor;
 }
 
 Pixel GetForeShadow(Pixel foreground, Pixel background)
@@ -357,21 +357,21 @@ XColor *GetTintedColor(Pixel in, Pixel tint, int percent)
 {
 	XColor tint_color;
 
-	memset(&color, 0, sizeof(color));
+	memset(&scolor, 0, sizeof(scolor));
 	memset(&tint_color, 0, sizeof(tint_color));
-	color.pixel = in;
-	XQueryColor(Pdpy, Pcmap, &color);
+	scolor.pixel = in;
+	XQueryColor(Pdpy, Pcmap, &scolor);
 	tint_color.pixel = tint;
 	XQueryColor(Pdpy, Pcmap, &tint_color);
 
-	color.red = (unsigned short)
-		(((100-percent)*color.red + tint_color.red * percent) / 100);
-	color.green = (unsigned short)
-		(((100-percent)*color.green + tint_color.green * percent) /
+	scolor.red = (unsigned short)
+		(((100-percent)*scolor.red + tint_color.red * percent) / 100);
+	scolor.green = (unsigned short)
+		(((100-percent)*scolor.green + tint_color.green * percent) /
 		 100);
-	color.blue = (unsigned short)
-		(((100-percent)*color.blue + tint_color.blue * percent) / 100);
-	return &color;
+	scolor.blue = (unsigned short)
+		(((100-percent)*scolor.blue + tint_color.blue * percent) / 100);
+	return &scolor;
 }
 
 Pixel GetTintedPixel(Pixel in, Pixel tint, int percent)

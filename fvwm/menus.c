@@ -6962,28 +6962,28 @@ void UpdateMenuColorset(int cset)
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		MenuRoot *mr = NULL;
-		MenuStyle *ms = NULL;
+		MenuStyle *ms2 = NULL;
 
 		if (IS_TEAR_OFF_MENU(t) &&
 		    XFindContext(dpy, FW_W(t), MenuContext, (caddr_t *)&mr) !=
 		    XCNOENT &&
-		    (ms = MR_STYLE(mr)))
+		    (ms2 = MR_STYLE(mr)))
 		{
-			if   (ST_HAS_MENU_CSET(ms) &&
-			      ST_CSET_MENU(ms) == cset)
+			if   (ST_HAS_MENU_CSET(ms2) &&
+			      ST_CSET_MENU(ms2) == cset)
 			{
 				SetWindowBackground(
 					dpy, MR_WINDOW(mr), MR_WIDTH(mr),
 					MR_HEIGHT(mr),
-					&Colorset[ST_CSET_MENU(ms)],
+					&Colorset[ST_CSET_MENU(ms2)],
 					Pdepth,
 					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
 					True);
 			}
-			else if ((ST_HAS_ACTIVE_CSET(ms) &&
-				  ST_CSET_ACTIVE(ms) == cset) ||
-				 (ST_HAS_GREYED_CSET(ms) &&
-				  ST_CSET_GREYED(ms) == cset))
+			else if ((ST_HAS_ACTIVE_CSET(ms2) &&
+				  ST_CSET_ACTIVE(ms2) == cset) ||
+				 (ST_HAS_GREYED_CSET(ms2) &&
+				  ST_CSET_GREYED(ms2) == cset))
 			{
 				paint_menu(mr, NULL, NULL);
 			}

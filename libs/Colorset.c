@@ -563,7 +563,7 @@ Pixmap CreateOffsetBackgroundPixmap(
 		Bool trim_side;
 		int big_width, big_height;
 		Pixmap big_pixmap;
-		int x, y;
+		int px, py;
 
 		/* make a pixmap big enough to cover the destination but with
 		 * the aspect ratio of the cs_pixmap */
@@ -575,14 +575,14 @@ Pixmap CreateOffsetBackgroundPixmap(
 			big_height, gc);
 
 		/* work out where to trim */
-		x = trim_side ? (big_width - width) / 2 : 0;
-		y = trim_side ? 0 : (big_height - height) / 2;
+		px = trim_side ? (big_width - width) / 2 : 0;
+		py = trim_side ? 0 : (big_height - height) / 2;
 
 		pixmap = XCreatePixmap(dpy, cs_pixmap, width, height, depth);
 		if (pixmap && big_pixmap)
 		{
 			XCopyArea(
-				dpy, big_pixmap, pixmap, gc, x, y, width,
+				dpy, big_pixmap, pixmap, gc, px, py, width,
 				height, 0, 0);
 		}
 		if (big_pixmap)

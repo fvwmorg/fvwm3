@@ -1493,17 +1493,15 @@ void ApplyDefaultFontAndColors(void)
 	return;
 }
 
-void FreeDecorFace(Display *dpy, DecorFace *df)
+void FreeDecorFace(Display *disp, DecorFace *df)
 {
-	int i;
-
 	switch (DFS_FACE_TYPE(df->style))
 	{
 	case GradientButton:
 		if (df->u.grad.d_pixels != NULL && df->u.grad.d_npixels)
 		{
 			PictureFreeColors(
-				dpy, Pcmap, df->u.grad.d_pixels,
+				disp, Pcmap, df->u.grad.d_pixels,
 				df->u.grad.d_npixels, 0, False);
 			free(df->u.grad.d_pixels);
 		}
@@ -1519,7 +1517,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 				p[i] = df->u.grad.xcs[i].pixel;
 			}
 			PictureFreeColors(
-				dpy, Pcmap, p, df->u.grad.npixels, 0, False);
+				disp, Pcmap, p, df->u.grad.npixels, 0, False);
 			free(p);
 		}
 		if (df->u.grad.xcs != NULL)
@@ -1535,24 +1533,26 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	case ShrunkPixmapButton:
 		if (df->u.p)
 		{
-			PDestroyFvwmPicture(dpy, df->u.p);
+			PDestroyFvwmPicture(disp, df->u.p);
 		}
 		break;
 
 	case MultiPixmap:
 		if (df->u.mp.pixmaps)
 		{
+			int i;
+
 			for (i = 0; i < TBMP_NUM_PIXMAPS; i++)
 			{
 				if (df->u.mp.pixmaps[i])
 				{
 					PDestroyFvwmPicture(
-						dpy, df->u.mp.pixmaps[i]);
+						disp, df->u.mp.pixmaps[i]);
 				}
 				else if (!!(df->u.mp.solid_flags & i))
 				{
 					PictureFreeColors(
-						dpy, Pcmap, &df->u.mp.pixels[i],
+						disp, Pcmap, &df->u.mp.pixels[i],
 						1, 0, False);
 				}
 			}
@@ -1598,7 +1598,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	/* delete any compound styles */
 	if (df->next)
 	{
-		FreeDecorFace(dpy, df->next);
+		FreeDecorFace(disp, df->next);
 		free(df->next);
 	}
 	df->next = NULL;
@@ -3845,17 +3845,17 @@ void CMD_SetAnimation(F_CMD_ARGS)
 }
 
 /* Determine which modifiers are required with a keycode to make <keysym>. */
-static Bool FKeysymToKeycode (Display *dpy, KeySym keysym,
+static Bool FKeysymToKeycode (Display *disp, KeySym keysym,
 	unsigned int *keycode, unsigned int *modifiers)
 {
 	int m;
 
-	*keycode = XKeysymToKeycode(dpy, keysym);
+	*keycode = XKeysymToKeycode(disp, keysym);
 	*modifiers = 0;
 
 	for (m = 0; m <= 8; ++m)
 	{
-		KeySym ks = fvwm_KeycodeToKeysym(dpy, *keycode, m, 0);
+		KeySym ks = fvwm_KeycodeToKeysym(disp, *keycode, m, 0);
 		if (ks == keysym)
 		{
 			switch (m)

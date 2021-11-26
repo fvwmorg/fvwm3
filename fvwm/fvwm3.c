@@ -496,14 +496,14 @@ static int parse_command_args(
  *
  */
 static
-char *get_display_name(char *display_name, int screen_num)
+char *get_display_name(char *disp_name, int screen_num)
 {
 	char *msg;
 	char *new_dn;
 	char *cp;
 	char string_screen_num[32];
 
-	CopyString(&msg, display_name);
+	CopyString(&msg, disp_name);
 	cp = strchr(msg, ':');
 	if (cp != NULL)
 	{
@@ -1411,7 +1411,7 @@ static void SetRCDefaults(void)
 	return;
 }
 
-static int CatchRedirectError(Display *dpy, XErrorEvent *event)
+static int CatchRedirectError(Display *disp, XErrorEvent *event)
 {
 	fvwm_debug(__func__, "another WM is running");
 	exit(1);
@@ -1421,7 +1421,7 @@ static int CatchRedirectError(Display *dpy, XErrorEvent *event)
 }
 
 /* CatchFatal - Shuts down if the server connection is lost */
-static int CatchFatal(Display *dpy)
+static int CatchFatal(Display *disp)
 {
 	/* No action is taken because usually this action is caused by someone
 	   using "xlogout" to be able to switch between multiple window managers
@@ -1434,7 +1434,7 @@ static int CatchFatal(Display *dpy)
 }
 
 /* FvwmErrorHandler - displays info on internal errors */
-static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
+static int FvwmErrorHandler(Display *disp, XErrorEvent *event)
 {
 	char errtext[512];
 
@@ -1459,7 +1459,7 @@ static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 		return 0;
 	}
 
-	XGetErrorText(dpy, event->error_code, errtext, 512);
+	XGetErrorText(disp, event->error_code, errtext, 512);
 
 	fvwm_debug(__func__, "*** internal error ***");
 	fvwm_debug(__func__, "Request %d, Error %d, Text %s, "
@@ -2228,7 +2228,7 @@ int main(int argc, char **argv)
 
 	{
 		XVisualInfo template, *vinfo = NULL;
-		int total, i;
+		int total, j;
 
 		Pdepth = 0;
 		Pdefault = False;
@@ -2263,12 +2263,12 @@ int main(int argc, char **argv)
 
 		/* visualID's are unique so there will only be one.
 		   Select the visualClass with the biggest depth */
-		for (i = 0; i < total; i++)
+		for (j = 0; j < total; j++)
 		{
-			if (vinfo[i].depth > Pdepth)
+			if (vinfo[j].depth > Pdepth)
 			{
-				Pvisual = vinfo[i].visual;
-				Pdepth = vinfo[i].depth;
+				Pvisual = vinfo[j].visual;
+				Pdepth = vinfo[j].depth;
 			}
 		}
 		if (vinfo)
@@ -2286,13 +2286,13 @@ int main(int argc, char **argv)
 				dpy, VisualScreenMask|VisualClassMask,
 				&template, &total);
 
-			for(i = 0; i<total; i++)
+			for(j = 0; j<total; j++)
 			{
-				if (Pdepth < vinfo[i].depth &&
-				    vinfo[i].depth > 8)
+				if (Pdepth < vinfo[j].depth &&
+				    vinfo[j].depth > 8)
 				{
-					Pvisual = vinfo[i].visual;
-					Pdepth = vinfo[i].depth;
+					Pvisual = vinfo[j].visual;
+					Pdepth = vinfo[j].depth;
 				}
 			}
 			if (vinfo)
@@ -2454,13 +2454,13 @@ int main(int argc, char **argv)
 	exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
 	if (num_config_commands > 0)
 	{
-		int i;
-		for (i = 0; i < num_config_commands; i++)
+		int j;
+		for (j = 0; j < num_config_commands; j++)
 		{
 			DoingCommandLine = True;
 			execute_function(
-				NULL, exc, config_commands[i], NULL, 0);
-			free(config_commands[i]);
+				NULL, exc, config_commands[j], NULL, 0);
+			free(config_commands[j]);
 		}
 		DoingCommandLine = False;
 	}

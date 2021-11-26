@@ -103,7 +103,7 @@ static Bool sent_save_done = 0;
 static char *real_state_filename = NULL;
 static Bool going_to_restart = False;
 static FIceIOErrorHandler prev_handler;
-static FSmcConn sm_conn = NULL;
+static FSmcConn ssm_conn = NULL;
 
 static int num_match = 0;
 static Match *matches = NULL;
@@ -1344,7 +1344,7 @@ LoadWindowStates(char *filename)
 		    !strcmp(s1, "[REAL_STATE_FILENAME]"))
 		{
 			sscanf(s, "%*s %s", s1);
-			set_sm_properties(sm_conn, s1, FSmRestartIfRunning);
+			set_sm_properties(ssm_conn, s1, FSmRestartIfRunning);
 			set_real_state_filename(s1);
 		}
 		else if (!strcmp(s1, "[CLIENT]"))
@@ -1448,10 +1448,10 @@ LoadWindowStates(char *filename)
 
 			for (i = 0; i < sizeof(window_flags); i++)
 			{
-				unsigned int f;
-				sscanf(ts, "%02x ", &f);
+				unsigned int fl;
+				sscanf(ts, "%02x ", &fl);
 				((unsigned char *)&
-				 (matches[num_match-1].flags))[i] = f;
+				 (matches[num_match-1].flags))[i] = fl;
 				ts += 3;
 			}
 		}
@@ -1682,12 +1682,12 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 {
 	do_preserve_state = _do_preserve_state;
 
-	if (SessionSupport && sm_conn && is_native)
+	if (SessionSupport && ssm_conn && is_native)
 	{
 		going_to_restart = True;
 
 		save_state_file(filename);
-		set_sm_properties(sm_conn, filename, FSmRestartImmediately);
+		set_sm_properties(ssm_conn, filename, FSmRestartImmediately);
 
 		MoveViewport(monitor_get_current(), 0, 0, False);
 		Reborder();
@@ -1695,7 +1695,7 @@ RestartInSession (char *filename, Bool is_native, Bool _do_preserve_state)
 		CloseICCCM2();
 		XCloseDisplay(dpy);
 
-		if ((!FSmcCloseConnection(sm_conn, 0, NULL)) != FSmcClosedNow)
+		if ((!FSmcCloseConnection(ssm_conn, 0, NULL)) != FSmcClosedNow)
 		{
 			/* go a head any way ? */
 		}
@@ -1755,13 +1755,13 @@ SessionInit(void)
 		callbacks.save_complete.client_data =
 		callbacks.shutdown_cancelled.client_data = (FSmPointer) NULL;
 	SUPPRESS_UNUSED_VAR_WARNING(context);
-	sm_conn = FSmcOpenConnection(
+	ssm_conn = FSmcOpenConnection(
 		NULL, &context, FSmProtoMajor, FSmProtoMinor,
 		FSmcSaveYourselfProcMask | FSmcDieProcMask |
 		FSmcSaveCompleteProcMask | FSmcShutdownCancelledProcMask,
 		&callbacks, previous_sm_client_id, &sm_client_id, 4096,
 		error_string_ret);
-	if (!sm_conn)
+	if (!ssm_conn)
 	{
 		/*
 		  Don't annoy users which don't use a session manager
@@ -1781,7 +1781,7 @@ SessionInit(void)
 	}
 	else
 	{
-		sm_fd = FIceConnectionNumber(FSmcGetIceConnection(sm_conn));
+		sm_fd = FIceConnectionNumber(FSmcGetIceConnection(ssm_conn));
 		if (FVWM_SM_DEBUG_PROTO)
 		{
 			fvwm_debug(
@@ -1793,7 +1793,7 @@ SessionInit(void)
 		set_init_function_name(2, "SessionExitFunction");
 		/* basically to restet our restart style hint after a
 		 * restart */
-		set_sm_properties(sm_conn, NULL, FSmRestartIfRunning);
+		set_sm_properties(ssm_conn, NULL, FSmRestartIfRunning);
 	}
 
 	return;
@@ -1819,12 +1819,13 @@ ProcessICEMsgs(void)
 	{
 		return;
 	}
-	status = FIceProcessMessages(FSmcGetIceConnection(sm_conn), NULL, NULL);
+	status = FIceProcessMessages(
+		FSmcGetIceConnection(ssm_conn), NULL, NULL);
 	if (status == FIceProcessMessagesIOError)
 	{
 		fvwm_debug(__func__,
 			   "Connection to session manager lost\n");
-		sm_conn = NULL;
+		ssm_conn = NULL;
 		sm_fd = -1;
 	}
 
@@ -1879,14 +1880,14 @@ Bool quit_session(void)
 	{
 		return False;
 	}
-	if (!sm_conn)
+	if (!ssm_conn)
 	{
 		return False;
 	}
 
 	FSmcRequestSaveYourself(
-		sm_conn, FSmSaveLocal, True /* shutdown */, FSmInteractStyleAny,
-		False /* fast */, True /* global */);
+		ssm_conn, FSmSaveLocal, True /* shutdown */,
+		FSmInteractStyleAny, False /* fast */, True /* global */);
 	return True;
 
 	/* migo: xsm does not support RequestSaveYourself, but supports
@@ -1907,14 +1908,14 @@ Bool save_session(void)
 	{
 		return False;
 	}
-	if (!sm_conn)
+	if (!ssm_conn)
 	{
 		return False;
 	}
 
 	FSmcRequestSaveYourself(
-		sm_conn, FSmSaveBoth, False /* shutdown */, FSmInteractStyleAny,
-		False /* fast */, True /* global */);
+		ssm_conn, FSmSaveBoth, False /* shutdown */,
+		FSmInteractStyleAny, False /* fast */, True /* global */);
 	return True;
 
 	/* migo: xsm does not support RequestSaveYourself, but supports
@@ -1936,13 +1937,13 @@ Bool save_quit_session(void)
 		return False;
 	}
 
-	if (!sm_conn)
+	if (!ssm_conn)
 	{
 		return False;
 	}
 
 	FSmcRequestSaveYourself(
-		sm_conn, FSmSaveBoth, True /* shutdown */, FSmInteractStyleAny,
+		ssm_conn, FSmSaveBoth, True /* shutdown */, FSmInteractStyleAny,
 		False /* fast */, True /* global */);
 	return True;
 

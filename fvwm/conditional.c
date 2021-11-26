@@ -1311,15 +1311,15 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 
 		if (dir > DIR_MAJOR_MASK && dir <= DIR_MINOR_MASK)
 		{
-			int tx;
+			int tix;
 			/* Rotate the diagonals 45 degrees counterclockwise. To
 			 * do this, multiply the matrix /+h +h\ with the vector
 			 * (x y).                       \-h +h/
 			 * h = sqrt(0.5). We can set h := 1 since absolute
 			 * distance doesn't * matter here. */
-			tx = his_cx + his_cy;
+			tix = his_cx + his_cy;
 			his_cy = -his_cx + his_cy;
-			his_cx = tx;
+			his_cx = tix;
 		}
 		/* Arrange so that distance and offset are positive in desired
 		 * direction. */

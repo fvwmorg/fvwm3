@@ -2742,7 +2742,7 @@ FvwmWindow *AddWindow(
 	{
 		rectangle big_g;
 		rectangle new_g;
-		frame_move_resize_args mr_args;
+		frame_move_resize_args mr_args2;
 
 		if (state_args.used_title_dir_for_shading)
 		{
@@ -2759,13 +2759,13 @@ FvwmWindow *AddWindow(
 		new_g = big_g;
 		get_shaded_geometry_with_dir(
 			fw, &new_g, &new_g, state_args.shade_dir);
-		mr_args = frame_create_move_resize_args(
+		mr_args2 = frame_create_move_resize_args(
 			fw, FRAME_MR_SHRINK | FRAME_MR_DONT_DRAW, &big_g,
 			&new_g, 0, state_args.shade_dir);
-		frame_move_resize(fw, mr_args);
+		frame_move_resize(fw, mr_args2);
 		SET_SHADED(fw, 1);
 		SET_SHADED_DIR(fw, state_args.shade_dir);
-		frame_free_move_resize_args(fw, mr_args);
+		frame_free_move_resize_args(fw, mr_args2);
 	}
 	if (!IS_SHADED(fw) && !IS_ICONIFIED(fw))
 	{

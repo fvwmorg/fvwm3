@@ -971,13 +971,13 @@ Drawable CreateGradientPixmap(
 	{
 		for (i = 0; i < t_width; i++)
 		{
-			int d = i * ncolors / t_width;
-			c = xcs[d];
+			int dd = i * ncolors / t_width;
+			c = xcs[dd];
 			for (j = 0; j < t_height; j++)
 			{
 				if (dither)
 				{
-					c = xcs[d];
+					c = xcs[dd];
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
@@ -990,13 +990,13 @@ Drawable CreateGradientPixmap(
 	{
 		for (j = 0; j < t_height; j++)
 		{
-			int d = j * ncolors / t_height;
-			c = xcs[d];
+			int dd = j * ncolors / t_height;
+			c = xcs[dd];
 			for (i = 0; i < t_width; i++)
 			{
 				if (dither)
 				{
-					c = xcs[d];
+					c = xcs[dd];
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
