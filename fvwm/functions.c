@@ -26,6 +26,8 @@
 #include <stdio.h>
 #if PARSER_DEBUG
 #include <assert.h>
+#else
+#define assert(x) do { } while (0)
 #endif
 
 #include "libs/fvwm_x11.h"
