@@ -60,6 +60,4 @@ void repaint_transparent_menu(
 	struct MenuRepaintTransparentParameters *prtmp,
 	Bool first, int x, int y, int end_x, int end_y, Bool is_bg_set);
 Bool menu_expose(XEvent *event, FvwmWindow *fw);
-int menu_binding(Display *dpy, binding_t type, int button, KeySym keysym,
-	int context, int modifier, char *action, char *menuStyle);
 #endif /* FVWM_MENUS_H */

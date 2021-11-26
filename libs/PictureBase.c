@@ -54,9 +54,6 @@ Pixel PBlackPixel;
 Pixel FvwmWhitePixel;
 Pixel FvwmBlackPixel;
 
-void PictureSetupWhiteAndBlack(void);
-
-
 void PictureInitCMap(Display *dpy) {
 	char *envp;
 
@@ -270,4 +267,3 @@ char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 
 	return full_filename;
 }
-

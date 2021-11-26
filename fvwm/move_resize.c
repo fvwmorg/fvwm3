@@ -2490,6 +2490,8 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 #undef NOSNAP
 #undef MAXSCORE
 
+extern Window bad_window;
+
 /*
  *
  * Move the rubberband around, return with the new window location
@@ -2501,7 +2503,6 @@ Bool __move_loop(
 	const exec_context_t *exc, position offset, size_rect sz,
 	position *pFinal, Bool do_move_opaque, int cursor)
 {
-	extern Window bad_window;
 	Bool is_finished = False;
 	Bool is_aborted = False;
 	position p;
@@ -3891,7 +3892,6 @@ static void __resize_step(
 /* Starts a window resize operation */
 static Bool __resize_window(F_CMD_ARGS)
 {
-	extern Window bad_window;
 	FvwmWindow *fw = exc->w.fw;
 	Bool is_finished = False, is_done = False, is_aborted = False;
 	Bool do_send_cn = False;

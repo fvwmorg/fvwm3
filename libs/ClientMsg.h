@@ -19,6 +19,4 @@
 
 void send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
 
-extern Atom _XA_WM_PROTOCOLS;
-
 #endif /* FVWMLIB_CLIENTMSG_H */

@@ -108,7 +108,6 @@ ShutdownX(void)
   int i;
   static XEvent event;
   fd_set in_fdset;
-  extern int x_fd;
   Atom MyAtom;
   int NbEssai=0;
   struct timeval tv;
@@ -179,10 +178,10 @@ void Debug(void)
 
 }
 
+extern FILE *yyin;
 /* Script file reading */
 void ReadConfig (char *ScriptName)
 {
-  extern FILE *yyin;
   char s[FILENAME_MAX];
 
   /* This is legacy support.  The first try is the command line file name
@@ -218,7 +217,6 @@ void ReadConfig (char *ScriptName)
    The extern "yyin" indicates success or failure.
 */
 static void TryToFind(char *filename) {
-  extern FILE *yyin;
   char path[FILENAME_MAX];
 
   if (filename[0] == '/') {             /* if absolute path */

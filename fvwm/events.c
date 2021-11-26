@@ -1908,7 +1908,6 @@ void HandleClientMessage(const evh_args_t *ea)
 	 * according to ICCCM and send these messages only if they
 	 * grabbed the pointer, it is OK */
 	{
-		extern Atom _XA_WM_COLORMAP_NOTIFY;
 		if (te->xclient.message_type == _XA_WM_COLORMAP_NOTIFY)
 		{
 			set_client_controls_colormaps(te->xclient.data.l[1]);

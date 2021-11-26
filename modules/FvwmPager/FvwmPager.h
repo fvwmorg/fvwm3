@@ -171,7 +171,6 @@ typedef struct pager_string_list
  * Subroutine Prototypes
  *
  */
-char *GetNextToken(char *indata,char **token);
 void Loop(int *fd);
 RETSIGTYPE DeadPipe(int nonsense);
 void process_message(FvwmPacket*);

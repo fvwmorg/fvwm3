@@ -30,7 +30,6 @@
 #include "FvwmButtons.h"
 #include "button.h"
 
-extern char *MyName;
 
 
 int buttonXPos(const button_info *b, int i)

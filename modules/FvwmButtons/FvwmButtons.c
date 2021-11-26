@@ -109,7 +109,6 @@ void CreateUberButtonWindow(button_info *, int, int);
 int My_FNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type, unsigned long *body);
 extern void send_clientmessage(Display *disp, Window w, Atom a, Time timestamp);
-void parse_message_line(char *line);
 void CheckForHangon(unsigned long *);
 static Window GetRealGeometry(
 	Display *, Window, int *, int *, unsigned int *, unsigned int *,
@@ -118,8 +117,6 @@ static void GetPanelGeometry(
 	Bool get_big, button_info *b, int lb, int tb, int rb, int bb,
 	int *x, int *y, int *w, int *h);
 void swallow(unsigned long *);
-void AddButtonAction(button_info *, int, char *);
-char *GetButtonAction(button_info *, int);
 static void update_root_transparency(XEvent *Event);
 static void change_colorset(int colorset, XEvent *Event);
 

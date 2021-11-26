@@ -61,7 +61,6 @@
 /* ---------------------------- imports ------------------------------------ */
 
 extern Bool Restarting;
-extern int master_pid;
 extern char **g_argv;
 extern int g_argc;
 

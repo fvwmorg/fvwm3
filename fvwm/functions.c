@@ -64,6 +64,8 @@
 
 /* ---------------------------- imports ------------------------------------ */
 
+extern Window PressedW;
+
 /* ---------------------------- included code files ------------------------ */
 
 /* ---------------------------- local types -------------------------------- */
@@ -404,7 +406,6 @@ static void __execute_command_line(
 	int set_silent;
 	int do_keep_rc = 0;
 	/* needed to be able to avoid resize to use moved windows for base */
-	extern Window PressedW;
 	Window dummy_w;
 	int rc;
 
@@ -836,7 +837,6 @@ static void __run_complex_function_items(
 	char c;
 	FunctionItem *fi;
 	int x0, y0, x, y;
-	extern Window PressedW;
 
 	if (*run_item_count >= MAX_FUNCTION_ITEMS_RUN)
 	{

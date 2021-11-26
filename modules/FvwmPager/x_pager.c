@@ -100,6 +100,7 @@ extern Bool is_transient;
 extern Bool do_ignore_next_button_release;
 extern Bool use_dashed_separators;
 extern Bool use_no_separators;
+extern int BalloonBorderWidth;
 
 
 /* assorted gray bitmaps for decorative borders */
@@ -415,7 +416,6 @@ void initialize_balloon_window(void)
 	XGCValues xgcv;
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
-	extern int BalloonBorderWidth;
 
 	/* create balloon window
 	   -- ric@giccs.georgetown.edu */
@@ -3138,9 +3138,7 @@ void setup_balloon_gc(int i, PagerWindow *t)
    -- ric@giccs.georgetown.edu */
 void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 {
-	extern char *BalloonBack;
 	extern int BalloonYOffset;
-	extern int BalloonBorderWidth;
 	Window view, dummy;
 	int view_width, view_height;
 	int x, y;

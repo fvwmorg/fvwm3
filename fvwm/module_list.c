@@ -87,6 +87,8 @@ static fmodule_list module_list = NULL;
 /* keep to-be-deleted modules in a deathrow until they are deleted safely. */
 static fmodule_list death_row = NULL;
 
+extern int moduleTimeout;
+
 /*
  * static functions
  */
@@ -529,7 +531,6 @@ extern int myxgrabcount;                /* defined in libs/Grab.c */
 extern char *ModuleUnlock;              /* defined in libs/Module.c */
 void PositiveWrite(fmodule *module, unsigned long *ptr, int size)
 {
-	extern int moduleTimeout;
 	msg_masks_t mask;
 
 	if (ptr == NULL)
@@ -945,7 +946,6 @@ static void DeleteMessageQueueBuff(fmodule *module)
 
 void FlushMessageQueue(fmodule *module)
 {
-	extern int moduleTimeout;
 	mqueue_object_type *obj;
 	char *dptr;
 	int a;

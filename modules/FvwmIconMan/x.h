@@ -4,7 +4,6 @@
 
 #include "FvwmIconMan.h"
 
-extern Display *theDisplay;
 extern Window theRoot;
 extern int theScreen;
 
