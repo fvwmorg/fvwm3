@@ -1106,7 +1106,6 @@ FlocaleFont *FlocaleGetFftFont(
 		return NULL;
 	}
 	flf = fxcalloc(1, sizeof(FlocaleFont));
-	memset(flf, '\0', sizeof(FlocaleFont));
 	flf->count = 1;
 	flf->fftf = *fftf;
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
@@ -1128,7 +1127,7 @@ FlocaleFont *FlocaleGetFontSet(
 {
 	static int mc_errors = 0;
 	FlocaleFont *flf = NULL;
-	XFontSet fontset = NULL;
+	XFontSet fontset;
 	char **ml;
 	int mc,i;
 	char *ds;
