@@ -1148,6 +1148,11 @@ FlocaleFont *FlocaleGetFontSet(
 		}
 		return NULL;
 	}
+	/* dv (26-Nov-2021):  libx11-1.7.2 has a memory leak here.  If a
+	 * non-default locale is used in LC_CTYPE, XCreateFontSet() +
+	 * XFreeFontSet() leaks some memory.  See
+	 * https://gitlab.freedesktop.org/xorg/lib/libx11/-/issues/143
+	 */
 	if (!(fontset = XCreateFontSet(dpy, fn_fixed, &ml, &mc, &ds)))
 	{
 		if (fn_fixed && fn_fixed != fn)
