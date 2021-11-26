@@ -1282,8 +1282,11 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 {
 	FlocaleFont *flf = NULL;
 
-	if (fontname && strlen(fontname) > 3 &&
-	    strncasecmp("xft:", fontname, 4) == 0)
+	if (fontname == NULL)
+	{
+		return NULL;
+	}
+	if (strlen(fontname) > 3 && strncasecmp("xft:", fontname, 4) == 0)
 	{
 		if (FftSupport)
 		{
@@ -1296,31 +1299,31 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 		}
 		return flf;
 	}
-	if (flf == NULL && Flocale != NULL && fontname)
+	if (flf == NULL && Flocale != NULL)
 	{
 		flf = FlocaleGetFontSet(dpy, fontname, encoding, module);
 	}
-	if (flf == NULL && fontname)
+	if (flf == NULL)
 	{
 		flf = FlocaleGetFont(dpy, fontname, encoding, module);
 	}
-	if (flf && fontname)
+	if (flf == NULL)
 	{
-		if (StrEquals(fullname, mb_fallback_font))
-		{
-			flf->name = mb_fallback_font;
-		}
-		else if (StrEquals(fullname, fallback_font))
-		{
-			flf->name = fallback_font;
-		}
-		else
-		{
-			CopyString(&flf->name, fullname);
-		}
-		return flf;
+		return NULL;
 	}
-	return NULL;
+	if (StrEquals(fullname, mb_fallback_font))
+	{
+		flf->name = mb_fallback_font;
+	}
+	else if (StrEquals(fullname, fallback_font))
+	{
+		flf->name = fallback_font;
+	}
+	else
+	{
+		CopyString(&flf->name, fullname);
+	}
+	return flf;
 }
 
 /*
