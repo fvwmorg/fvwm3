@@ -21,7 +21,7 @@
 
 #include "config.h"
 
-#define PARSER_DEBUG 1
+#define PARSER_DEBUG 0
 
 #include <stdio.h>
 #if PARSER_DEBUG
