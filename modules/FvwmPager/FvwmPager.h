@@ -70,7 +70,8 @@ typedef struct ScreenInfo
   char  *Hilite;         /* the fvwm window that is highlighted
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
-  unsigned VScale;       /* Panner scale factor */
+  unsigned Scale;        /* Panner scale factor */
+  int do_autoscale : 1;
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
@@ -202,6 +203,8 @@ int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Stuff in x_pager.c */
 void change_colorset(int colorset);
+void resize_pager_window(
+	struct fpmonitor *mon, rectangle *g, const size_rect *us_size);
 void initialize_pager(void);
 void initialize_viz_pager(void);
 Pixel GetColor(char *name);

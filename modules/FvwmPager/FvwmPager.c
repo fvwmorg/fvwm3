@@ -117,8 +117,9 @@ int BalloonYOffset = 3;
 Window BalloonView = None;
 
 rectangle pwindow = {0, 0, 0, 0};
+size_rect ussize_g = {0, 0};
 rectangle icon = {-10000, -10000, 0, 0};
-int usposition = 0,uselabel = 1;
+int usposition = 0, ussize = 0, uselabel = 1;
 int xneg = 0, yneg = 0;
 int icon_xneg = 0, icon_yneg = 0;
 extern DeskInfo *Desks;
@@ -930,6 +931,7 @@ void list_new_page(unsigned long *body)
 {
 	int mon_num = body[7];
 	struct fpmonitor *m;
+	int do_resize;
 
 	m = fpmonitor_by_output(mon_num);
 	fvwm_debug(__func__, "%s: using monitor: %s\n", __func__, m->name);
@@ -937,27 +939,42 @@ void list_new_page(unsigned long *body)
 	if (monitor_to_track != NULL && strcmp(m->name, monitor_to_track) != 0)
 		return;
 
-  m->virtual_scr.Vx = body[0];
-  m->virtual_scr.Vy = body[1];
-  if (m->virtual_scr.CurrentDesk != body[2])
-  {
-      /* first handle the new desk */
-      body[0] = body[2];
-      list_new_desk(body);
-  }
-  if (m->virtual_scr.VxPages != body[5] || m->virtual_scr.VyPages != body[6])
-  {
-    m->virtual_scr.VxPages = body[5];
-    m->virtual_scr.VyPages = body[6];
-    m->virtual_scr.VWidth = m->virtual_scr.VxPages * m->virtual_scr.MyDisplayWidth;
-    m->virtual_scr.VHeight = m->virtual_scr.VyPages * m->virtual_scr.MyDisplayHeight;
-    m->virtual_scr.VxMax = m->virtual_scr.VWidth - m->virtual_scr.MyDisplayWidth;
-    m->virtual_scr.VyMax = m->virtual_scr.VHeight - m->virtual_scr.MyDisplayHeight;
-    ReConfigure();
-  }
-  MovePage(False);
-  MoveStickyWindow(True, False);
-  Hilight(FocusWin,True);
+	m->virtual_scr.Vx = body[0];
+	m->virtual_scr.Vy = body[1];
+	if (m->virtual_scr.CurrentDesk != body[2])
+	{
+		/* first handle the new desk */
+		body[0] = body[2];
+		list_new_desk(body);
+	}
+	if (m->virtual_scr.VxPages != body[5] || m->virtual_scr.VyPages != body[6])
+	{
+		m->virtual_scr.VxPages = body[5];
+		m->virtual_scr.VyPages = body[6];
+		m->virtual_scr.VWidth = m->virtual_scr.VxPages * m->virtual_scr.MyDisplayWidth;
+		m->virtual_scr.VHeight = m->virtual_scr.VyPages * m->virtual_scr.MyDisplayHeight;
+		m->virtual_scr.VxMax = m->virtual_scr.VWidth - m->virtual_scr.MyDisplayWidth;
+		m->virtual_scr.VyMax = m->virtual_scr.VHeight - m->virtual_scr.MyDisplayHeight;
+		do_resize = 1;
+	}
+	else
+	{
+		do_resize = 0;
+	}
+	MovePage(False);
+	MoveStickyWindow(True, False);
+	Hilight(FocusWin,True);
+	if (do_resize)
+	{
+		struct fpmonitor *mon;
+		rectangle pw;
+
+		pw = pwindow;
+		mon = fpmonitor_this();
+		resize_pager_window(mon, &pw, (ussize) ? &ussize_g : NULL);
+		XResizeWindow(dpy, Scr.Pager_w, pw.width, pw.height);
+		ReConfigure();
+	}
 }
 
 /*
@@ -1792,7 +1809,8 @@ void ParseOptions(void)
   FvwmPictureAttributes fpa;
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
-  Scr.VScale = 32;
+  Scr.Scale = 25;
+  Scr.do_autoscale = 1;
 
   fpa.mask = 0;
   if (Pdepth <= 8)
@@ -1965,14 +1983,19 @@ void ParseOptions(void)
       xneg = 0;
       yneg = 0;
       usposition = 0;
+      ussize = 0;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
       {
-	pwindow.width = width;
+	ussize_g.width = width;
       }
       if (flags & HeightValue)
       {
-	pwindow.height = height;
+	ussize_g.height = height;
+      }
+      if (ussize_g.width > 0 || ussize_g.height > 0)
+      {
+	ussize = 1;
       }
       if (flags & XValue)
       {
@@ -2257,7 +2280,13 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "DeskTopScale"))
     {
-      sscanf(arg1,"%d",&Scr.VScale);
+      sscanf(arg1,"%d",&Scr.Scale);
+      Scr.do_autoscale = 0;
+    }
+    else if (StrEquals(resource, "AutoScale"))
+    {
+      sscanf(arg1,"%d",&Scr.Scale);
+      Scr.do_autoscale = 1;
     }
     else if (StrEquals(resource, "WindowColors"))
     {
