@@ -53,7 +53,7 @@ struct screen_infos	 screen_info_q;
 struct monitors		monitor_q;
 int randr_event;
 const char *prev_focused_monitor;
-static struct monitor	*monitor_global;
+static struct monitor	*monitor_global = NULL;
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -156,6 +156,14 @@ screen_info_by_name(const char *name)
 }
 
 struct monitor *
+monitor_get_global(void)
+{
+	monitor_refresh_global();
+
+	return monitor_global;
+}
+
+struct monitor *
 monitor_get_current(void)
 {
 	int		 JunkX = 0, JunkY = 0, x, y;
@@ -182,32 +190,25 @@ monitor_resolve_name(const char *scr)
 {
 	struct monitor	*m = NULL;
 
-	/* Assume the monitor name is a literal RandR name (such as HDMI2) and
-	 * look it up regardless.
-	 */
-	m = monitor_by_name(scr);
-
-	/* If we've asked for "@g" then use the global screen.  The
-	 * x,y,w,h values are already assigned, so skip that.
-	 */
+	if (scr == NULL)
+	{
+		return NULL;
+	}
+	/* "@g" is for the global screen. */
 	if (strcmp(scr, "g") == 0) {
 		monitor_refresh_global();
 		m = monitor_global;
 	}
-
 	/* "@c" is for the current screen. */
-	if (strcmp(scr, "c") == 0)
+	else if (strcmp(scr, "c") == 0)
 		m = monitor_get_current();
-
 	/* "@p" is for the primary screen. */
-	if (strcmp(scr, "p") == 0)
+	else if (strcmp(scr, "p") == 0)
 		m = monitor_by_primary();
-
-	if (m == NULL) {
-		/* Should not happen. */
-		fvwm_debug(__func__, "no monitor found with name '%s'", scr);
-		return (TAILQ_FIRST(&monitor_q));
-	}
+	else
+		/* Assume the monitor name is a literal RandR name (such as
+		 * HDMI2). */
+		m = monitor_by_name(scr);
 
 	return (m);
 }
@@ -215,7 +216,7 @@ monitor_resolve_name(const char *scr)
 static struct monitor *
 monitor_by_name(const char *name)
 {
-	struct monitor	*m, *mret = NULL;
+	struct monitor	*m, *mret;
 
 	if (name == NULL) {
 		fvwm_debug(__func__, "%s: name is NULL; shouldn't happen.  "
@@ -223,34 +224,12 @@ monitor_by_name(const char *name)
 		return (monitor_get_current());
 	}
 
+	mret = NULL;
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (strcmp(m->si->name, name) == 0) {
 			mret = m;
 			break;
 		}
-	}
-
-	if (mret == NULL && (strcmp(name, GLOBAL_SCREEN_NAME) == 0)) {
-		if (monitor_get_count() == 1) {
-			/* In this case, the global screen was requested, but
-			 * we've only one monitor in use.  Return this monitor
-			 * instead.
-			 */
-		    return (TAILQ_FIRST(&monitor_q));
-		} else {
-			/* Return the current monitor. */
-			mret = monitor_get_current();
-		}
-	}
-
-	/* Then we couldn't find the named monitor at all.  Return the current
-	 * monitor instead.
-	 */
-
-	if (mret == NULL) {
-		mret = monitor_get_current();
-		if (mret == NULL)
-			return (NULL);
 	}
 
 	return (mret);
@@ -758,8 +737,9 @@ Bool FScreenGetScrRect(fscreen_scr_arg *arg, fscreen_scr_t screen,
 {
 	struct monitor	*m = FindScreen(arg, screen);
 	if (m == NULL) {
-		fvwm_debug(__func__, "%s: m is NULL\n", __func__);
-		return (True);
+		fvwm_debug(__func__, "m is NULL, using global screen\n");
+		monitor_refresh_global();
+		m = monitor_global;
 	}
 
 	if (x)
@@ -771,8 +751,7 @@ Bool FScreenGetScrRect(fscreen_scr_arg *arg, fscreen_scr_t screen,
 	if (h)
 		*h = m->si->h;
 
-	return !((monitor_get_count() > 1) &&
-		(strcmp(m->si->name, GLOBAL_SCREEN_NAME) == 0));
+	return !((monitor_get_count() > 1) && m == monitor_global);
 }
 
 /* Translates the coodinates *x *y from the screen specified by arg_src and
@@ -991,17 +970,16 @@ int FScreenParseGeometry(
 			parsestring, x_return, y_return, width_return,
 			height_return, &scr);
 
-		if (scr != NULL) {
-			m = monitor_resolve_name(scr);
-			fprintf(
-				stderr,
-				"Found monitor with name of: %s (%s)\n", scr,
-				m->si->name);
-			x = m->si->x;
-			y = m->si->y;
-			w = m->si->w;
-			h = m->si->h;
+		m = monitor_resolve_name(scr);
+		if (m == NULL)
+		{
+			/* fall back to current screen */
+			m = monitor_get_current();
 		}
+		x = m->si->x;
+		y = m->si->y;
+		w = m->si->w;
+		h = m->si->h;
 	}
 
 	/* adapt geometry to selected screen */

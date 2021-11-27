@@ -1732,6 +1732,8 @@ static int __place_window(
 		if (flags.do_honor_starts_on_screen)
 		{
 			fscreen_scr_arg	 arg;
+			struct monitor *m;
+
 			arg.mouse_ev = NULL;
 
 			/* FIXME:  expand the screen name here.  It's possible
@@ -1762,8 +1764,12 @@ static int __place_window(
 			 * "_global" screen, which is a faked monitor for the
 			 * purposes of an older API.
 			 */
+			m = NULL;
 			if (strcmp(arg.name, "g") != 0)
-				fw->m = monitor_resolve_name(arg.name);
+				m = monitor_resolve_name(arg.name);
+			if (m == NULL)
+				m = monitor_get_current();
+			fw->m = m;
 			free(e);
 		}
 		else
