@@ -1783,41 +1783,38 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	return;
 }
 
-Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, struct monitor **mret)
+Bool get_page_arguments(
+	FvwmWindow *fw, char *action, int *page_x, int *page_y,
+	struct monitor **mret)
 {
 	int val[2];
 	int suffix[2];
 	int mw, mh;
 	char *token;
-	char *taction, *action_cpy, *action_cpy_start;
+	char *taction;
+	char *next;
 	int wrapx;
 	int wrapy;
 	int limitdeskx;
 	int limitdesky;
-	struct monitor	*m, *m_use;
+	struct monitor	*m;
 
 	wrapx = 0;
 	wrapy = 0;
 	limitdeskx = 1;
 	limitdesky = 1;
 
-	m_use = (fw && fw->m) ? fw->m : monitor_get_current();
-	action_cpy = strdup(action);
-	action_cpy_start = action_cpy;
-	token = PeekToken(action_cpy, &action_cpy);
-	free(action_cpy_start);
-
-	if (token == NULL)
-		return (False);
-
+	token = PeekToken(action, &next);
 	m = monitor_resolve_name(token);
-	if (strcmp(m->si->name, token) != 0)
-		m = m_use;
+	if (m != NULL)
+	{
+		action = next;
+	}
 	else
-		PeekToken(action, &action);
-
-	if (mret != NULL)
-		*mret = m;
+	{
+		m = (fw && fw->m) ? fw->m : monitor_get_current();
+	}
+	*mret = m;
 
 	mw = monitor_get_all_widths();
 	mh = monitor_get_all_heights();
@@ -1872,7 +1869,7 @@ Bool get_page_arguments(FvwmWindow *fw, char *action, int *page_x, int *page_y, 
 	if (GetSuffixedIntegerArguments(action, NULL, val, 2, "pw", suffix) !=
 	    2)
 	{
-		return 0;
+		return False;
 	}
 
 	if (suffix[0] == 1)
@@ -2000,7 +1997,8 @@ void parse_edge_leave_command(char *action, int type)
                 option = PeekToken(action, &action);
 
                 m = monitor_resolve_name(option);
-                if (strcmp(m->si->name, option) != 0) {
+                if (m == NULL)
+		{
                         fvwm_debug(__func__,
                                    "Invalid screen: %s", option);
                         return;
@@ -2460,19 +2458,20 @@ void CMD_DesktopSize(F_CMD_ARGS)
  */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
-	struct monitor  *m_use = monitor_get_current(), *m, *m_loop;
-	char		*action_cpy, *action_cpy_start, *token;
+	struct monitor  *m, *m_loop;
+	char		*next, *token;
 	int		 new_desk;
 
-	action_cpy = strdup(action);
-	action_cpy_start = action_cpy;
-	token = PeekToken(action_cpy, &action_cpy);
-
+	token = PeekToken(action, &next);
 	m = monitor_resolve_name(token);
-	if (strcmp(m->si->name, token) != 0)
-		m = m_use;
+	if (m != NULL)
+	{
+		action = next;
+	}
 	else
-		PeekToken(action, &action);
+	{
+		m = monitor_get_current();
+	}
 
 	new_desk = GetDeskNumber(m, action, m->virtual_scr.CurrentDesk);
 
@@ -2503,14 +2502,11 @@ void CMD_GotoDesk(F_CMD_ARGS)
 				m_loop->virtual_scr.is_swapping = false;
 				m->virtual_scr.is_swapping = false;
 
-				goto end;
+				return;
 			}
 		}
 	}
 	goto_desk(new_desk, m);
-end:
-	free(action_cpy_start);
-	return;
 }
 
 void CMD_Desk(F_CMD_ARGS)
@@ -2533,22 +2529,20 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 {
 	int val[3];
 	Bool is_new_desk;
-	char *action_cpy, *action_cpy_start;
+	char *next;
 	char *token;
-	struct monitor  *m_use = monitor_get_current(), *m;
+	struct monitor  *m;
 
-	action_cpy = strdup(action);
-	action_cpy_start = action_cpy;
-	token = PeekToken(action_cpy, &action_cpy);
-
+	token = PeekToken(action, &next);
 	m = monitor_resolve_name(token);
-	if (strcmp(m->si->name, token) != 0)
-		m = m_use;
+	if (m != NULL)
+	{
+		action = next;
+	}
 	else
-		PeekToken(action, &action);
-
-	free(action_cpy_start);
-
+	{
+		m = monitor_get_current();
+	}
 	/* FIXME: monitor needs broadcast when global. */
 
 	if (MatchToken(action, "prev"))
@@ -2696,20 +2690,18 @@ void CMD_Scroll(F_CMD_ARGS)
 	int x,y;
 	int val1, val2, val1_unit, val2_unit;
 	char *option;
+	char *next;
 	struct monitor  *m = monitor_get_current();
 
-	option = PeekToken(action, NULL);
+	option = PeekToken(action, &next);
 	if (StrEquals(option, "screen")) {
-		/* Skip literal 'screen' */
-		option = PeekToken(action, &action);
 		/* Actually get the screen value. */
-		option = PeekToken(action, &action);
-
+		option = PeekToken(next, &action);
 		m = monitor_resolve_name(option);
-		if (strcmp(m->si->name, option) != 0) {
-		fvwm_debug(__func__,
-			"Invalid screen: %s", option);
-		return;
+		if (m == NULL)
+		{
+			fvwm_debug(__func__, "Invalid screen: %s", option);
+			return;
 		}
 	}
 
