@@ -542,10 +542,11 @@ static signed int expand_vars_extended(
 		got_string = 0;
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
 			mon2 = monitor_resolve_name(m_name);
-			if (m_name == NULL)
+			if (mon2 == NULL)
+			{
+				free(rest_s);
 				return -1;
-			if (strcmp(mon2->si->name, m_name) == 1)
-				return -1;
+			}
 
 			/* Skip over the monitor name. */
 			rest += strlen(m_name) + 1;

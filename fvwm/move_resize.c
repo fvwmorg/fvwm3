@@ -2072,11 +2072,15 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle r;
 		rectangle s;
 		rectangle t;
-		struct monitor	*m = monitor_get_current();
+		struct monitor	*m;
 		char		*token;
 
-		if (action != NULL && (token = PeekToken(action, &action)) != NULL)
-			m = monitor_resolve_name(token);
+		token = PeekToken(action, &action);
+		m = monitor_resolve_name(token);
+		if (m == NULL)
+		{
+			m = monitor_get_current();
+		}
 
 		s.x = m->si->x;
 		s.y = m->si->y;
@@ -3302,10 +3306,6 @@ void CMD_GeometryWindow(F_CMD_ARGS)
 			if (token != NULL)
 			{
 				Scr.SizeWindow.m = monitor_resolve_name(token);
-				if (strcasecmp(Scr.SizeWindow.m->si->name, token) != 0) {
-					/* Incorrect RandR screen found. */
-					Scr.SizeWindow.m = NULL;
-				}
 			}
 		}
 	}

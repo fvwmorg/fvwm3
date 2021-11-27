@@ -1203,6 +1203,10 @@ static void handle_resolution_config(int man, char *line)
 				break;
 			}
 			struct monitor *mon = monitor_resolve_name(token);
+			if (mon == NULL)
+			{
+				mon = monitor_get_global();
+			}
 			SET_MANAGER(man, scr, (char *)mon->si->name);
 			line = nline;
 			break;
