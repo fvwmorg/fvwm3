@@ -246,9 +246,6 @@ static fmodule *do_execute_module(
 	app_to_fvwm[1] = -1;
 	app_to_fvwm[0] = -1;
 	args = fxmalloc(7 * sizeof(char *));
-	/* Olivier: Why ? */
-	/*   if (eventp->type != KeyPress) */
-	/*     UngrabEm(); */
 	if (action == NULL)
 	{
 		goto err_exit;
