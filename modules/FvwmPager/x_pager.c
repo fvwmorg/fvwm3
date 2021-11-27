@@ -122,7 +122,7 @@ Window icon_win;	       /* icon window */
 
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 
-static void adjust_for_sizehints(int, int, bool);
+static void adjust_for_sizehints(int, int);
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(void);
 static void fvwmrec_to_pager(rectangle *, bool);
@@ -401,7 +401,7 @@ void draw_desk_background(int i, int page_w, int page_h)
 char *pager_name = "Fvwm Pager";
 XSizeHints sizehints =
 {
-	(PMinSize | PResizeInc | PBaseSize | PWinGravity), /* flags */
+	(PWinGravity),		/* flags */
 	0, 0, 100, 100,		/* x, y, width and height (legacy) */
 	1, 1,			/* Min width and height */
 	0, 0,			/* Max width and height */
@@ -446,33 +446,20 @@ void initialize_balloon_window(void)
  * should get added to a clean up TODO at some point.
  */
 static void
-adjust_for_sizehints(int VxPages, int VyPages, bool check_aspect)
+adjust_for_sizehints(int VxPages, int VyPages)
 {
-	/* Resize increments are one pixel per visible page. */
-	sizehints.width_inc = Columns * VxPages;
-	sizehints.height_inc = Rows * VyPages;
-	/* Set Min size for 1 pixel pages */
-	sizehints.min_width = VxPages * Columns + Columns - 1;
-	sizehints.min_height = (VyPages + label_h + 1) * Rows - 1;
-	sizehints.base_width = sizehints.min_width;
-	sizehints.base_height = sizehints.min_height;
+	int w_mult;
+	int h_mult;
+
+	w_mult = Columns * VxPages;
+	h_mult = Rows * VyPages;
 
 	/* Adjust window size to be even multiples of increment size. */
 	if (pwindow.width > 0) {
-		pwindow.width = (pwindow.width - sizehints.base_width) /
-			sizehints.width_inc;
-		pwindow.width = pwindow.width * sizehints.width_inc +
-			sizehints.base_width;
+		pwindow.width = (pwindow.width / w_mult + 1) * w_mult;
 	}
 	if (pwindow.height > 0) {
-		pwindow.height = (pwindow.height - sizehints.base_height) /
-			sizehints.height_inc;
- 		pwindow.height = pwindow.height * sizehints.height_inc +
-			sizehints.base_height;
-	}
-	if (check_aspect && sizehints.min_aspect.x > 0) {
-		sizehints.min_aspect.x = sizehints.max_aspect.x = pwindow.width;
-		sizehints.min_aspect.y = sizehints.max_aspect.y = pwindow.height;
+		pwindow.height = (pwindow.height / h_mult + 1) * h_mult;
 	}
 
 	desk_w = (pwindow.width - Columns + 1) / Columns;
@@ -721,7 +708,7 @@ void initialize_pager(void)
   /* Adjust the window to handle these new sizehints.  This is also called
    * from ReConfigure().
    */
-  adjust_for_sizehints(VxPages, VyPages, true);
+  adjust_for_sizehints(VxPages, VyPages);
 
   if (is_transient)
   {
@@ -759,8 +746,6 @@ void initialize_pager(void)
     else
       sizehints.win_gravity = SouthWestGravity;
   }
-  sizehints.width = pwindow.width;
-  sizehints.height = pwindow.height;
 
   if(usposition)
     sizehints.flags |= USPosition;
@@ -1462,7 +1447,7 @@ void ReConfigure(void)
   }
   is_size_changed = (old_ww != pwindow.width || old_wh != pwindow.height);
 
-  adjust_for_sizehints(VxPages, VyPages, false);
+  adjust_for_sizehints(VxPages, VyPages);
 
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
