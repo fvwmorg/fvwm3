@@ -375,7 +375,6 @@ static fmodule *do_execute_module(
 		MOD_READFD(module) = app_to_fvwm[0];
 		msg_mask_set(
 			&MOD_PIPEMASK(module), DEFAULT_MASK, DEFAULT_MASK);
-		free(arg1);
 		if (DoingCommandLine)
 		{
 			/* add to the list of command line modules */
@@ -405,15 +404,8 @@ static fmodule *do_execute_module(
 		/* module struct is completed, insert into the list */
 		module_list_insert(module, &module_list);
 
-		for (i = 6; i < nargs; i++)
-		{
-			if (args[i] != 0)
-			{
-				free(args[i]);
-			}
-		}
 	}
-	else if (val ==0)
+	else if (val == 0)
 	{
 		/* this is the child */
 		/* this fork execs the module */
@@ -444,13 +436,14 @@ static fmodule *do_execute_module(
 
 		/* Why is this execvp??  We've already searched the module
 		 * path! */
-		execvp(arg1,args);
-		fvwm_debug(__func__, "Execution of module failed: %s",
-			   arg1);
+		execvp(arg1, args);
+		fvwm_debug(__func__, "Execution of module failed: %s", arg1);
 		perror("");
 		close(app_to_fvwm[1]);
-		/* dont't care that this may be -1 */
-		close(fvwm_to_app[0]);
+		if (fvwm_to_app[0] >= 0)
+		{
+			close(fvwm_to_app[0]);
+		}
 		if (FORK_CREATES_CHILD)
 		{
 			exit(1);
@@ -459,18 +452,16 @@ static fmodule *do_execute_module(
 	else
 	{
 		fvwm_debug(__func__, "Fork failed");
-		free(arg1);
-		for (i = 6; i < nargs; i++)
-		{
-			if (args[i] != 0)
-			{
-				free(args[i]);
-			}
-		}
-		free(args);
 		module_free(module);
-
-		return NULL;
+		module = NULL;
+	}
+	free(arg1);
+	for (i = 6; i < nargs; i++)
+	{
+		if (args[i] != 0)
+		{
+			free(args[i]);
+		}
 	}
 	free(args);
 
@@ -489,11 +480,22 @@ static fmodule *do_execute_module(
 	{
 		free(args);
 	}
-	/* dont't care that these may be -1 */
-	close(fvwm_to_app[0]);
-	close(fvwm_to_app[1]);
-	close(app_to_fvwm[0]);
-	close(app_to_fvwm[1]);
+	if (fvwm_to_app[0] >= 0)
+	{
+		close(fvwm_to_app[0]);
+	}
+	if (fvwm_to_app[1] >= 0)
+	{
+		close(fvwm_to_app[1]);
+	}
+	if (app_to_fvwm[0] >= 0)
+	{
+		close(app_to_fvwm[0]);
+	}
+	if (app_to_fvwm[1] >= 0)
+	{
+		close(app_to_fvwm[1]);
+	}
 
 	return NULL;
 }
