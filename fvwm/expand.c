@@ -528,6 +528,8 @@ static signed int expand_vars_extended(
 		char		*m_name = NULL;
 		struct monitor  *mon2;
 		char		*rest_s;
+		char *p_free;
+		int got_string;
 
 		/* The first word is the monitor name:
 		 *
@@ -536,6 +538,8 @@ static signed int expand_vars_extended(
 		 * so scan for the first full-stop.
 		 */
 		rest_s = fxstrdup(rest);
+		p_free = rest_s;
+		got_string = 0;
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
 			mon2 = monitor_resolve_name(m_name);
 			if (m_name == NULL)
@@ -550,72 +554,88 @@ static signed int expand_vars_extended(
 			if (strcmp(rest, "x") == 0) {
 				is_numeric = True;
 				val = mon2->si->x;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "y") == 0) {
 				is_numeric = True;
 				val = mon2->si->y;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "width") == 0) {
 				is_numeric = True;
 				val = mon2->si->w;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "height") == 0) {
 				is_numeric = True;
 				val = mon2->si->h;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "output") == 0) {
 				is_numeric = True;
 				val = (int)mon2->si->rr_output;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "desk") == 0) {
 				is_numeric = True;
 				val = mon2->virtual_scr.CurrentDesk;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "pagex") == 0) {
 				is_numeric = True;
 				val = (int)(mon2->virtual_scr.Vx /
 					monitor_get_all_widths());
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "pagey") == 0) {
 				is_numeric = True;
 				val = (int)(mon2->virtual_scr.Vy /
 					monitor_get_all_heights());
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "prev_desk") == 0) {
 				is_numeric = True;
 				val = m->virtual_scr.prev_desk_and_page_desk;
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "prev_pagex") == 0) {
 				is_numeric = True;
 				val = (int)(m->virtual_scr.prev_page_x /
 					monitor_get_all_widths());
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
 
 			if (strcmp(rest, "prev_pagey") == 0) {
 				is_numeric = True;
 				val = (int)(m->virtual_scr.prev_page_y /
 					monitor_get_all_heights());
-				goto GOT_STRING;
+				got_string = 1;
+				break;
 			}
+		}
+		free(p_free);
+		if (got_string)
+		{
+			goto GOT_STRING;
 		}
 		break;
 	}
