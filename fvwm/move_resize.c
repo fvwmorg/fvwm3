@@ -1153,6 +1153,8 @@ static void display_string(Bool Init, char *str)
 	int offset;
 	FlocaleWinString fstr;
 
+	memset(&fstr, 0, sizeof(fstr));
+
 	if (Scr.SizeWindow.cset >= 0)
 	{
 		fstr.colorset = &Colorset[Scr.SizeWindow.cset];
