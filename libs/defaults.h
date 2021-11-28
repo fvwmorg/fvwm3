@@ -363,6 +363,8 @@
 #define MAX_FUNCTION_ITEMS_RUN  10000
 /* Maximum number of lines for Read and PipeRead. */
 #define MAX_READ_ITEMS          50000
+/* Maximum nesting depth of "read" command. */
+#define MAX_READ_DEPTH             40
 
 
 /* Tips */

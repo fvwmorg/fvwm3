@@ -35,7 +35,6 @@
 #include "misc.h"
 #include "screen.h"
 
-#define MAX_READ_DEPTH 40
 static char *curr_read_file = NULL;
 static char *curr_read_dir = NULL;
 static int curr_read_depth = 0;
