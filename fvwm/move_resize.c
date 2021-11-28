@@ -1214,7 +1214,6 @@ static void display_string(Bool Init, char *str)
 		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
 	offset += GEOMETRY_WINDOW_BW;
 
-	memset(&fstr, 0, sizeof(fstr));
 	fstr.str = str;
 	fstr.win = Scr.SizeWindow.win;
 	fstr.gc = Scr.StdGC;
