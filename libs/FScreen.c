@@ -44,12 +44,8 @@ static int grav_matrix[3][3] =
 static Display *disp;
 static bool		 is_randr_present;
 
-static struct monitor	*monitor_new(void);
 static void		 scan_screens(Display *);
-static void		 monitor_check_primary(void);
-static void		 monitor_refresh_global(void);
 static struct monitor	*monitor_by_name(const char *);
-static void		 monitor_scan_edges(struct monitor *);
 
 enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
