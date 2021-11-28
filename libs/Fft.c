@@ -522,19 +522,30 @@ void FftPrintPatternInfo(FftFontType *ft)
 
 	for (i = 0; i < 4; i++) {
 		f = ft->fftfont[i];
+		if (f == NULL)
+		{
+			continue;
+		}
 		fvwm_debug("xft", "    Rotation %d\n", i * 90);
-		fvwm_debug("xft", "	   height: %i, ascent: %i, descent: %i, maw: %i\n",
-		       f->height, f->ascent, f->descent, f->max_advance_width);
+		fvwm_debug(
+			"xft",
+			"	   height: %i, ascent: %i,"
+			" descent: %i, maw: %i\n",
+			f->height, f->ascent, f->descent, f->max_advance_width);
 		if (i == 0)
 		{
 			FcPatternPrint(f->pattern);
 		}
 		else
 		{
-			if (FcPatternGetMatrix(f->pattern, FC_MATRIX, 0, &pm) == FcResultMatch && pm)
+			if (FcPatternGetMatrix(
+				    f->pattern, FC_MATRIX, 0, &pm) ==
+			    FcResultMatch && pm)
 			{
-				fvwm_debug("xft", "	   matrix: (%f %f %f %f)\n",
-					   pm->xx, pm->xy, pm->yx, pm->yy);
+				fvwm_debug(
+					"xft",
+					"	   matrix: (%f %f %f %f)\n",
+					pm->xx, pm->xy, pm->yx, pm->yy);
 			}
 		}
 	}
