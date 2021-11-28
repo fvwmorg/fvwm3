@@ -1194,8 +1194,6 @@ FlocaleFont *FlocaleGetFontSet(
 	}
 
 	flf = fxcalloc(1, sizeof(FlocaleFont));
-fprintf(stderr, "!!!!!!!!!!!!!!!B+++ flf %p\n", flf);
-fprintf(stderr, "!!!!!!!!!!!!!!!C+++XCreateFontSet %p, flf %p\n", fontset, flf);
 	flf->count = 1;
 	flf->fontset = fontset;
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
@@ -1260,7 +1258,6 @@ FlocaleFont *FlocaleGetFont(
 	}
 
 	flf = fxcalloc(1, sizeof(FlocaleFont));
-fprintf(stderr, "!!!!!!!!!!!!!!!D+++ flf %p\n", flf);
 	flf->count = 1;
 	flf->fontset = None;
 	memset(&flf->fftf, 0, sizeof(FftFontType));
@@ -1639,7 +1636,6 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	if (flf->fontset != NULL)
 	{
 		XFreeFontSet(dpy, flf->fontset);
-fprintf(stderr, "!!!!!!!!!!!!!!!E---XFreeFontSet %p, flf %p\n", flf->fontset, flf);
 	}
 	if (flf->font != NULL)
 	{
@@ -1682,7 +1678,6 @@ fprintf(stderr, "!!!!!!!!!!!!!!!E---XFreeFontSet %p, flf %p\n", flf->fontset, fl
 			list->next = flf->next;
 		}
 	}
-fprintf(stderr, "!!!!!!!!!!!!!!!F--- flf %p\n", flf);
 	free(flf);
 }
 
