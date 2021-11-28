@@ -2180,6 +2180,7 @@ void CMD_Test(F_CMD_ARGS)
 						/* include empty string case */
 						(!pattern[0] && !value[0]) ||
 						matchWildcards(pattern, value);
+					free(pattern);
 				}
 				else
 				{
