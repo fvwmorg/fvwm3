@@ -246,13 +246,8 @@ Time fev_get_evtime(void)
 	return fev_last_timestamp;
 }
 
-Bool fev_get_evpos_or_query(
-	Display *dpy, Window w, const XEvent *e, int *ret_x, int *ret_y)
+Bool fev_get_evpos(const XEvent *e, int *ret_x, int *ret_y)
 {
-	Window JunkW;
-	int JunkC;
-	unsigned int JunkM;
-	Bool rc;
 	int type;
 
 	type = (e != NULL) ? e->type : -1;
@@ -287,17 +282,32 @@ Bool fev_get_evpos_or_query(
 		}
 		return True;
 	default:
-		rc = FQueryPointer(
-			dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC,
-			&JunkM);
-		if (rc == False)
-		{
-			/* pointer is on a different screen */
-			*ret_x = 0;
-			*ret_y = 0;
-		}
-		return rc;
+		return False;
 	}
+}
+
+Bool fev_get_evpos_or_query(
+	Display *dpy, Window w, const XEvent *e, int *ret_x, int *ret_y)
+{
+	Window JunkW;
+	int JunkC;
+	unsigned int JunkM;
+	Bool rc;
+
+	if (fev_get_evpos(e, ret_x, ret_y))
+	{
+		return True;
+	}
+	rc = FQueryPointer(
+		dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC, &JunkM);
+	if (rc == False)
+	{
+		/* pointer is on a different screen */
+		*ret_x = 0;
+		*ret_y = 0;
+	}
+
+	return rc;
 }
 
 Bool fev_set_evpos(XEvent *e, int x, int y)

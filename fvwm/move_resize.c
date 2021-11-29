@@ -2497,6 +2497,62 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 
 extern Window bad_window;
 
+#define ELASTIC_PAGING 1
+#define ELASTIC_PAGING_SEND_EVENT 0
+#if ELASTIC_PAGING /*!!!*/
+#if ELASTIC_PAGING_SEND_EVENT /*!!!*/
+static int evcount = 0;
+#endif
+static void warp_pointer_adjust_offset(position new, position *offset)
+{
+	position pointer;
+	Bool b;
+
+	MyXGrabServer(dpy);
+	b = FQueryPointer(
+		dpy, Scr.Root, &JunkRoot, &JunkChild, &pointer.x, &pointer.y,
+		&JunkX, &JunkY, &JunkMask);
+	if (b == False)
+	{
+		goto out;
+	}
+#if 1 /*!!!*/
+	offset->x -= new.x - pointer.x;
+	offset->y -= new.y - pointer.y;
+#else
+	/* fake a motion event that informs the loop of the coming pointer
+	 * warp */
+	{
+		XEvent e;
+
+		e.xany.type = MotionNotify;
+		e.xany.send_event = True;
+		e.xmotion.window = Scr.Root;
+		e.xmotion.root = Scr.Root;
+		e.xmotion.subwindow = None;
+		e.xmotion.x = pointer.x;
+		e.xmotion.y = pointer.y;
+		e.xmotion.x_root = new.x;
+		e.xmotion.y_root = new.y;
+		e.xmotion.state = 0;
+		e.xmotion.is_hint = 0;
+		e.xmotion.same_screen = True;
+		fprintf(
+			stderr, "!!!send funny event: %d %d -> %d %d\n",
+			e.xmotion.x, e.xmotion.y, e.xmotion.x_root,
+			e.xmotion.y_root);
+		FSendEvent(dpy, Scr.Root, True, PointerMotionMask, &e);
+	}
+#endif
+	/*!!!handle failure*/
+	FWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, new.x, new.y);
+	XFlush(dpy);
+  out:
+	MyXUngrabServer(dpy);
+
+	return;
+}
+#endif
 /*
  *
  * Move the rubberband around, return with the new window location
@@ -2542,6 +2598,10 @@ Bool __move_loop(
 	unsigned int draw_parts = PART_NONE;
 	XEvent e;
 	struct monitor	*m = NULL;
+#if ELASTIC_PAGING /*!!!*/
+	rectangle scr_g;
+	position scr_center;
+#endif
 
 	if (fw->m == NULL)
 		update_fvwm_monitor(fw);
@@ -2560,6 +2620,16 @@ Bool __move_loop(
 		XBell(dpy, 0);
 		return False;
 	}
+#if ELASTIC_PAGING /*!!!*/
+
+	/* Fetch screen layout for use with elastic paging.*/
+	FScreenGetScrRect(
+		NULL, FSCREEN_CURRENT,
+		&scr_g.x, &scr_g.y, &scr_g.width, &scr_g.height);
+	scr_center.x = scr_g.x + scr_g.width / 2;
+	scr_center.y = scr_g.y + scr_g.height / 2;
+
+#endif
 	if (!IS_MAPPED(fw) && !IS_ICONIFIED(fw))
 	{
 		do_move_opaque = False;
@@ -2644,6 +2714,9 @@ Bool __move_loop(
 	 * If the move is canceled this will remain as zero.
 	 */
 	fw->placed_by_button = 0;
+#if ELASTIC_PAGING /*!!!*/
+	warp_pointer_adjust_offset(scr_center, &offset);
+#endif
 	while (!is_finished && bad_window != FW_W(fw))
 	{
 #if PAGING_ENABLED /*!!!*/
@@ -2715,6 +2788,30 @@ Bool __move_loop(
 		}
 		if (rc == -1)
 #endif
+#if ELASTIC_PAGING /*!!!*/
+		{
+			XEvent le;
+			rectangle last_pos;
+			bool b;
+
+			fev_get_last_event(&le);
+			last_pos.width = 1;
+			last_pos.height = 1;
+			b = fev_get_evpos(&le, &last_pos.x, &last_pos.y);
+			if (
+				b &&
+				(
+					last_pos.x < 100 ||
+					last_pos.x > scr_g.width - 100 ||
+					last_pos.y < 100 ||
+					last_pos.y > scr_g.height - 100))
+			{
+				/* The pointer is too close to the edge; warp
+				 * it back to the center of screen. */
+				warp_pointer_adjust_offset(scr_center, &offset);
+			}
+		}
+#endif
 		{
 			/* block until an event arrives */
 			/* dv (2004-07-01): With XFree 4.1.0.1, some Mouse
@@ -2729,6 +2826,28 @@ Bool __move_loop(
 				EnterWindowMask | LeaveWindowMask, &e);
 		}
 
+#if ELASTIC_PAGING_SEND_EVENT /*!!!*/
+#if ELASTIC_PAGING /*!!!*/
+		evcount++;
+		fprintf(
+			stderr, "!!!event %d: t %d (%d), se %d\n", evcount,
+			e.xany.type, MotionNotify, e.xany.send_event);
+		if (e.type == MotionNotify && e.xany.send_event == True)
+		{
+			/* This is the artificial event that informs us of the
+			 * pointer warp.  Adjust pointer to window offset and
+			 * drop the event. */
+			fprintf(
+				stderr, "!!!got funny event: %d %d -> %d %d\n",
+				e.xmotion.x, e.xmotion.y, e.xmotion.x_root,
+				e.xmotion.y_root);
+			offset.x += e.xmotion.x_root - e.xmotion.x;
+			offset.y += e.xmotion.y_root - e.xmotion.y;
+
+			continue;
+		}
+#endif
+#endif
 		/* discard extra events before a logical release */
 		if (e.type == MotionNotify ||
 		    e.type == EnterNotify || e.type == LeaveNotify)
