@@ -2504,6 +2504,7 @@ extern Window bad_window;
  * Returns True if the window has to be resized after the move.
  *
  */
+#define PAGING_ENABLED 0
 Bool __move_loop(
 	const exec_context_t *exc, position offset, size_rect sz,
 	position *pFinal, Bool do_move_opaque, int cursor)
@@ -2512,11 +2513,15 @@ Bool __move_loop(
 	Bool is_aborted = False;
 	position p;
 	position p2;
+#if PAGING_ENABLED /*!!!*/
 	position delta;
+#endif
 	int paged;
 	unsigned int button_mask = 0;
 	FvwmWindow fw_copy;
+#if PAGING_ENABLED /*!!!*/
 	position d;
+#endif
 	position v;
 	position orig = { 0, 0 };
 	position cn = { 0, 0 };
@@ -2543,10 +2548,12 @@ Bool __move_loop(
 	m = fw->m;
 	v.x = m->virtual_scr.Vx;
 	v.y = m->virtual_scr.Vy;
+#if PAGING_ENABLED /*!!!*/
 	d.x = m->virtual_scr.EdgeScrollX ?
 		m->virtual_scr.EdgeScrollX : monitor_get_all_widths();
 	d.y = m->virtual_scr.EdgeScrollY ?
 		m->virtual_scr.EdgeScrollY : monitor_get_all_heights();
+#endif
 
 	if (!GrabEm(cursor, GRAB_NORMAL))
 	{
@@ -2639,10 +2646,13 @@ Bool __move_loop(
 	fw->placed_by_button = 0;
 	while (!is_finished && bad_window != FW_W(fw))
 	{
+#if PAGING_ENABLED /*!!!*/
 		int rc = 0;
+#endif
 		position old;
 
 		old = p;
+#if PAGING_ENABLED /*!!!*/
 		/* wait until there is an interesting event */
 		while (rc != -1 &&
 		       (!FPending(dpy) ||
@@ -2704,6 +2714,7 @@ Bool __move_loop(
 			break;
 		}
 		if (rc == -1)
+#endif
 		{
 			/* block until an event arrives */
 			/* dv (2004-07-01): With XFree 4.1.0.1, some Mouse
@@ -2999,6 +3010,7 @@ Bool __move_loop(
 				}
 				DisplayPosition(fw, &e, p, False);
 
+#if PAGING_ENABLED /*!!!*/
 				/* prevent window from lagging behind mouse
 				 * when paging - mab */
 				if (paged == 0)
@@ -3036,6 +3048,9 @@ Bool __move_loop(
 						break;
 					}
 				}
+#else
+				break;
+#endif
 			}
 			/* dv (13-Jan-2014): Without this XFlush the modules
 			 * (and probably other windows too) sometimes get their
