@@ -2615,11 +2615,6 @@ Bool __move_loop(
 		m->virtual_scr.EdgeScrollY : monitor_get_all_heights();
 #endif
 
-	if (!GrabEm(cursor, GRAB_NORMAL))
-	{
-		XBell(dpy, 0);
-		return False;
-	}
 #if ELASTIC_PAGING /*!!!*/
 
 	/* Fetch screen layout for use with elastic paging.*/
@@ -2629,6 +2624,17 @@ Bool __move_loop(
 	scr_center.x = scr_g.x + scr_g.width / 2;
 	scr_center.y = scr_g.y + scr_g.height / 2;
 
+	if (!GrabEm(CRS_HIDDEN, GRAB_NORMAL))
+	{
+		XBell(dpy, 0);
+		return False;
+	}
+#else
+	if (!GrabEm(cursor, GRAB_NORMAL))
+	{
+		XBell(dpy, 0);
+		return False;
+	}
 #endif
 	if (!IS_MAPPED(fw) && !IS_ICONIFIED(fw))
 	{
