@@ -2649,8 +2649,7 @@ Bool __move_loop(
 				ButtonMotionMask | ExposureMask, &e)))
 		{
 			XEvent le;
-			int px;
-			int py;
+			position p2;
 			int delay;
 
 			update_fvwm_monitor(fw);
@@ -2685,11 +2684,11 @@ Bool __move_loop(
 			e.type = MotionNotify;
 			e.xmotion.time = fev_get_evtime();
 			if (FQueryPointer(
-				    dpy, Scr.Root, &JunkRoot, &JunkChild, &px,
-				    &py, &JunkX, &JunkY, &JunkMask) == True)
+				    dpy, Scr.Root, &JunkRoot, &JunkChild, &p2.x,
+				    &p2.y, &JunkX, &JunkY, &JunkMask) == True)
 			{
-				e.xmotion.x_root = px;
-				e.xmotion.y_root = py;
+				e.xmotion.x_root = p2.x;
+				e.xmotion.y_root = p2.y;
 			}
 			else
 			{
