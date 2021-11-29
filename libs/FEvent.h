@@ -52,6 +52,11 @@ void fev_init_invalid_event_type(int invalid_event_type);
 Time fev_get_evtime(void);
 
 /* This function determines the location of the mouse pointer from the event
+ * if possible. Returns True if the position could be deternimed and False
+* otherwise. */
+Bool fev_get_evpos(const XEvent *e, int *ret_x, int *ret_y);
+
+/* This function determines the location of the mouse pointer from the event
  * if possible, if not it queries the X server. Returns False if it had to
  * query the server and the call failed because the pointer was on a
  * different screen. */
