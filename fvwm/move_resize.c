@@ -2611,8 +2611,7 @@ Bool __move_loop(
 		p.y += offset.y;
 	}
 	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
-	orig.x = p.x;
-	orig.y = p.y;
+	orig = p;
 
 	/* draw initial outline */
 	if (!IS_ICONIFIED(fw) &&
