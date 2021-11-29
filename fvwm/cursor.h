@@ -40,6 +40,9 @@ typedef enum
 	CRS_LEFT_EDGE,
 	CRS_ROOT,
 	CRS_STROKE,
+	/* must be second last */
+	CRS_HIDDEN,
+	/* must be last */
 	CRS_MAX
 } cursor_t;
 

@@ -77,7 +77,8 @@ static const unsigned int default_cursors[CRS_MAX] =
 	XC_bottom_side,          /* CRS_BOTTOM_EDGE */
 	XC_left_side,            /* CRS_LEFT_EDGE */
 	XC_left_ptr,             /* CRS_ROOT */
-	XC_plus                  /* CRS_STROKE */
+	XC_plus,                 /* CRS_STROKE */
+	None,                    /* CRS_HIDDEN */
 };
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -102,9 +103,20 @@ Cursor *CreateCursors(Display *disp)
 	int i;
 	/* define cursors */
 	cursors[0] = None;
-	for (i = 1; i < CRS_MAX; i++)
+	for (i = 1; i < CRS_HIDDEN; i++)
 	{
 		cursors[i] = XCreateFontCursor(disp, default_cursors[i]);
+	}
+	/* create an invisible cursor */
+	{
+		XColor c = { 0, 0, 0 };
+		char data = 0;
+		Pixmap pm;
+
+		pm = XCreateBitmapFromData(dpy, Scr.Root, &data, 1, 1);
+		cursors[CRS_HIDDEN] = XCreatePixmapCursor(
+			dpy, pm, pm, &c, &c, 0, 0);
+		XFreePixmap(dpy, pm);
 	}
 
 	return cursors;
