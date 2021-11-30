@@ -501,7 +501,6 @@ typedef struct ScreenInfo
 void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *decor);
 void DestroyAllButtons(FvwmDecor *decor);
-void update_fvwm_monitor(FvwmWindow *);
 
 void simplify_style_list(void);
 

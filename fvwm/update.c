@@ -662,23 +662,25 @@ void apply_decor_change(FvwmWindow *fw)
 }
 
 /* Update which monitor a window is on. */
-void update_fvwm_monitor(FvwmWindow *fw)
+Bool update_fvwm_monitor(FvwmWindow *fw)
 {
 	rectangle g;
 	struct monitor *mnew;
 
 	get_unshaded_geometry((fw), &g);
-	mnew = FindScreenOfXY((fw)->g.frame.x, (fw)->g.frame.y);
+	mnew = FindScreenOfXY(g.x, g.y);
 
 	/* Avoid unnecessary updates. */
 	if (mnew == (fw)->m)
-		return;
+		return False;
 	(fw)->m_prev = (fw)->m;
 	(fw)->m = mnew;
 	(fw)->Desk = mnew->virtual_scr.CurrentDesk;
 	EWMH_SetCurrentDesktop((fw)->m);
 	desk_add_fw((fw));
 	BroadcastConfig(M_CONFIGURE_WINDOW, (fw));
+
+	return True;
 }
 
 /* Check and apply new style to each window if the style has changed. */
