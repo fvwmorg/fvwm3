@@ -614,7 +614,7 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 			XMapRaised(dpy, Scr.SizeWindow.win);
 		}
 		FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &m.x, &m.y, NULL, NULL);
-		if (__move_loop(arg->exc, m, drag, ret_p, False, CRS_POSITION))
+		if (move_loop(arg->exc, m, drag, ret_p, False))
 		{
 			ret->flags.do_resize_too = 1;
 		}
