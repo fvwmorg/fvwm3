@@ -2529,7 +2529,6 @@ typedef struct
 	 * Parts that change during loop execution.
 	 */
 	FvwmWindow *fw;
-	FvwmWindow fw_copy;
 	struct monitor *m;
 	rectangle scr_g;
 	position ppos;
@@ -2871,8 +2870,6 @@ fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.
 				}
 			}
 		}
-		ls->fw_copy.g.frame.x = ls->wpos.x;
-		ls->fw_copy.g.frame.y = ls->wpos.y;
 		if (do_handle_movement == True)
 		{
 			/* only do this with opaque moves, (i.e. the
@@ -2890,7 +2887,11 @@ fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.
 				menu_redraw_transparent_tear_off_menu(
 					ls->fw, False);
 			}
-			BroadcastConfig(M_CONFIGURE_WINDOW, &ls->fw_copy);
+			rectangle t = ls->fw->g.frame;
+			ls->fw->g.frame.x = ls->wpos.x;
+			ls->fw->g.frame.y = ls->wpos.y;
+			BroadcastConfig(M_CONFIGURE_WINDOW, ls->fw);
+			ls->fw->g.frame = t;
 			FlushAllMessageQueues();
 		}
 	}
@@ -2922,8 +2923,6 @@ Bool move_loop(
 	}
 	ls.m = fw->m;
 	ls.fw = fw,
-	/* make a copy of the fw structure for sending to the pager */
-	memcpy(&ls.fw_copy, fw, sizeof(FvwmWindow));
 	ls.w_size = _sz;
 	ls.virtual_scr.x = ls.m->virtual_scr.Vx;
 	ls.virtual_scr.y = ls.m->virtual_scr.Vy;
@@ -3058,6 +3057,8 @@ Bool move_loop(
 			SET_ICON_MOVED(fw, 1);
 		}
 	}
+	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
+	FlushAllMessageQueues();
   out:
 	UngrabEm(GRAB_NORMAL);
 	if (!(mli_ret & MLI_DO_RESIZE_TOO))
