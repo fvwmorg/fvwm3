@@ -1418,8 +1418,8 @@ static void InteractiveMove(
 	Window *win, const exec_context_t *exc, position *pFinal,
 	Bool do_start_at_pointer)
 {
-	rectangle drag;
-	position orig_drag;
+	rectangle ppos;
+	position wpos_orig;
 	position offset;
 	Window w;
 	Bool do_move_opaque = False;
@@ -1442,12 +1442,12 @@ static void InteractiveMove(
 	if (do_start_at_pointer)
 	{
 		if (FQueryPointer(
-			    dpy, Scr.Root, &JunkRoot, &JunkChild, &drag.x,
-			    &drag.y, &JunkX, &JunkY, &JunkMask) == False)
+			    dpy, Scr.Root, &JunkRoot, &JunkChild, &ppos.x,
+			    &ppos.y, &JunkX, &JunkY, &JunkMask) == False)
 		{
 			/* pointer is on a different screen */
-			drag.x = 0;
-			drag.y = 0;
+			ppos.x = 0;
+			ppos.y = 0;
 		}
 	}
 	else
@@ -1456,13 +1456,13 @@ static void InteractiveMove(
 		 * have to check for ButtonRelease too since the event may be
 		 * faked. */
 		fev_get_evpos_or_query(
-			dpy, Scr.Root, exc->x.elast, &drag.x, &drag.y);
+			dpy, Scr.Root, exc->x.elast, &ppos.x, &ppos.y);
 	}
 
 	MyXGrabServer(dpy);
 	if (!XGetGeometry(
-		    dpy, w, &JunkRoot, &orig_drag.x, &orig_drag.y,
-		    (unsigned int*)&drag.width, (unsigned int*)&drag.height,
+		    dpy, w, &JunkRoot, &wpos_orig.x, &wpos_orig.y,
+		    (unsigned int*)&ppos.width, (unsigned int*)&ppos.height,
 		    (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
 		MyXUngrabServer(dpy);
@@ -1471,8 +1471,8 @@ static void InteractiveMove(
 	MyXGrabKeyboard(dpy);
 	if (do_start_at_pointer)
 	{
-		orig_drag.x = drag.x;
-		orig_drag.y = drag.y;
+		wpos_orig.x = ppos.x;
+		wpos_orig.y = ppos.y;
 	}
 
 	if (IS_ICONIFIED(exc->w.fw))
@@ -1485,9 +1485,9 @@ static void InteractiveMove(
 
 		areapct = 100.0;
 		areapct *=
-			((float)drag.width / (float) monitor_get_all_widths());
+			((float)ppos.width / (float) monitor_get_all_widths());
 		areapct *=
-			((float)drag.height /
+			((float)ppos.height /
 			 (float) monitor_get_all_heights());
 		/* round up */
 		areapct += 0.1;
@@ -1511,8 +1511,8 @@ static void InteractiveMove(
 		XUnmapWindow(dpy,w);
 	}
 
-	offset.x = orig_drag.x - drag.x;
-	offset.y = orig_drag.y - drag.y;
+	offset.x = wpos_orig.x - ppos.x;
+	offset.y = wpos_orig.y - ppos.y;
 	if (!Scr.gs.do_hide_position_window)
 	{
 		resize_geometry_window();
@@ -1520,7 +1520,7 @@ static void InteractiveMove(
 		XMapRaised(dpy,Scr.SizeWindow.win);
 	}
 	{
-		size_rect sz = { drag.width, drag.height };
+		size_rect sz = { ppos.width, ppos.height };
 
 		move_loop(exc, offset, sz, pFinal, do_move_opaque);
 	}
@@ -2539,7 +2539,7 @@ typedef struct
 	struct monitor *m;
 	rectangle scr_g;
 	position p;
-	position offset;
+	position offset_w_to_p;
 	position *p_final;
 	position scr_center;
 	position virtual_offset;
@@ -2557,8 +2557,7 @@ typedef struct
 	 * Parts that do not change.
 	 */
 	position porig;
-	position orig_icon;
-	position v;
+	position virtual_scr;
 	size_rect w_size;
 	unsigned int draw_parts;
 	Bool do_move_opaque;
@@ -2583,13 +2582,11 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 {
 	unsigned int ret;
 	Bool do_handle_movement;
+	Bool has_moved;
 	XEvent e;
-	position pold;
-	position epos = { 0, 0 };
 
 	ret = MLI_CLEAR;
 	e.type = None;
-	pold = ls->p;
 	if (update_fvwm_monitor(ls->fw))
 	{
 		/*!!!recalculate scr_g*/
@@ -2614,7 +2611,8 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 			last_pos.y > 3 * ls->scr_g.height / 4)
 		{
 			/* Warp the pointer back to the center of screen. */
-			warp_pointer_adjust_offset(ls->scr_center, &ls->offset);
+			warp_pointer_adjust_offset(
+				ls->scr_center, &ls->offset_w_to_p);
 		}
 	} while (0);
 	/* block until an event arrives */
@@ -2647,15 +2645,13 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 	{
 	case KeyPress:
 		mli_update_alt_mode(ls, e.xkey.state);
-		/* Handle a limited number of key press events to allow
-		 * mouseless operation */
 		Keyboard_shortcuts(
 			&e, ls->fw, &ls->virtual_offset.x,
 			&ls->virtual_offset.y, ButtonRelease);
 		if (e.type == ButtonRelease)
 		{
-			epos.x = e.xbutton.x_root;
-			epos.y = e.xbutton.y_root;
+			ls->p.x = e.xbutton.x_root;
+			ls->p.y = e.xbutton.y_root;
 			ret |= MLI_IS_FINISHED;
 		}
 		else if (e.type == MotionNotify)
@@ -2708,11 +2704,10 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 		else
 		{
 			/* Abort the move if
-			 *  - the move started with a pressed button
-			 *    and another button was pressed during the
-			 *    operation
-			 *  - Any button not in the
-			 *    move_finish_button_mask is pressed
+			 *  - the move started with a pressed button another
+			 *    button was pressed during the operation,
+			 *  - any button not in the move_finish_button_mask is
+			 *    pressed.
 			 */
 			ret |= MLI_IS_ABORTED;
 			ret |= MLI_IS_FINISHED;
@@ -2721,8 +2716,8 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 	case ButtonRelease:
 	{
 		ls->fw->placed_by_button = e.xbutton.button;
-		epos.x = e.xbutton.x_root;
-		epos.y = e.xbutton.y_root;
+		ls->p.x = e.xbutton.x_root;
+		ls->p.y = e.xbutton.y_root;
 		ret |= MLI_IS_FINISHED;
 		break;
 	}
@@ -2758,6 +2753,7 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 		/* cannot happen */
 		break;
 	} /* switch */
+	has_moved = False;
 	if (ret & MLI_IS_ABORTED)
 	{
 		switch_move_resize_grid(False);
@@ -2765,41 +2761,26 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 	}
 	else if (ret & MLI_IS_FINISHED)
 	{
-		position tp;
-
 		switch_move_resize_grid(False);
-		tp.x = epos.x + ls->offset.x + ls->virtual_offset.x;
-		tp.y = epos.y + ls->offset.y + ls->virtual_offset.y;
-		/* ignore the position of the button release if it was
-		 * on a different page. */
-		if (!(((ls->p.x <  0 && tp.x >= 0) ||
-		       (ls->p.x >= 0 && tp.x <  0) ||
-		       (ls->p.y <  0 && tp.y >= 0) ||
-		       (ls->p.y >= 0 && tp.y <  0)) &&
-		      (abs(ls->p.x - tp.x) > monitor_get_all_widths() / 2 ||
-		       abs(ls->p.y - tp.y) > monitor_get_all_heights() / 2)))
-		{
-			ls->p.x = tp.x;
-			ls->p.y = tp.y;
-		}
-		if (
-			ls->p.x != ls->porig.x ||
-			ls->p.y != ls->porig.y ||
-			ls->v.x != ls->m->virtual_scr.Vx ||
-			ls->v.y != ls->m->virtual_scr.Vy ||
-			ls->was_snapped)
+		/* When we get here, the event position is stored in ls->p. */
+		ls->p.x += ls->offset_w_to_p.x + ls->virtual_offset.x;
+		ls->p.y += ls->offset_w_to_p.y + ls->virtual_offset.y;
+		if (!ls->is_alt_mode_enabled)
 		{
 			/* only snap if the window actually moved! */
-			if (!ls->is_alt_mode_enabled)
+			if (
+				ls->was_snapped ||
+				ls->p.x != ls->porig.x ||
+				ls->p.y != ls->porig.y ||
+				ls->virtual_scr.x != ls->m->virtual_scr.Vx ||
+				ls->virtual_scr.y != ls->m->virtual_scr.Vy)
 			{
 				DoSnapAttract(ls->fw, ls->w_size, &ls->p);
-				ls->was_snapped = True;
 			}
 		}
-
+		has_moved = True;
 		ls->p_final->x = ls->p.x;
 		ls->p_final->y = ls->p.y;
-		/*!!!unify virtual_offset handling*/
 	}
 	if (do_handle_movement)
 	{
@@ -2818,8 +2799,8 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 			 * offset */
 			ls->virtual_offset.y = 0;
 		}
-		ls->p.x += ls->offset.x + ls->virtual_offset.x;
-		ls->p.y += ls->offset.y + ls->virtual_offset.y;
+		ls->p.x += ls->offset_w_to_p.x + ls->virtual_offset.x;
+		ls->p.y += ls->offset_w_to_p.y + ls->virtual_offset.y;
 
 		if (!ls->is_alt_mode_enabled)
 		{
@@ -2857,14 +2838,14 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 		 * (and probably other windows too) sometimes get their
 		 * expose only after the next motion step.  */
 		XFlush(dpy);
+		has_moved = True;
 	}
 
 	ls->p.x += ls->virtual_offset.x;
 	ls->p.y += ls->virtual_offset.y;
-	if (ls->do_move_opaque)
+	if (ls->do_move_opaque && !IS_ICONIFIED(ls->fw))
 	{
-		if (!IS_ICONIFIED(ls->fw) &&
-		    !IS_SHADED(ls->fw) && !Scr.bo.do_disable_configure_notify)
+		if (!IS_SHADED(ls->fw) && !Scr.bo.do_disable_configure_notify)
 		{
 			/* send configure notify event for windows that care
 			 * about their location; don't send anything if
@@ -2890,12 +2871,9 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 				}
 			}
 		}
-		if (!IS_ICONIFIED(ls->fw))
-		{
-			ls->fw_copy.g.frame.x = ls->p.x;
-			ls->fw_copy.g.frame.y = ls->p.y;
-		}
-		if (ls->p.x != pold.x || ls->p.y != pold.y)
+		ls->fw_copy.g.frame.x = ls->p.x;
+		ls->fw_copy.g.frame.y = ls->p.y;
+		if (has_moved == True)
 		{
 			/* only do this with opaque moves, (i.e. the
 			 * server is not grabbed) */
@@ -2928,11 +2906,10 @@ static unsigned int move_loop_inner(mli_state_t *ls)
  *
  */
 Bool move_loop(
-	const exec_context_t *exc, position _offset, size_rect _sz,
+	const exec_context_t *exc, position _offset_w_to_p, size_rect _sz,
 	position *_pFinal, Bool _do_move_opaque)
 {
 	unsigned int mli_ret = MLI_CLEAR;
-	position bak;
 	Window move_w = None;
 	FvwmWindow *fw = exc->w.fw;
 	mli_state_t ls;
@@ -2947,10 +2924,11 @@ Bool move_loop(
 	/* make a copy of the fw structure for sending to the pager */
 	memcpy(&ls.fw_copy, fw, sizeof(FvwmWindow));
 	ls.w_size = _sz;
-	ls.v.x = ls.m->virtual_scr.Vx;
-	ls.v.y = ls.m->virtual_scr.Vy;
-	ls.offset = _offset;
+	ls.virtual_scr.x = ls.m->virtual_scr.Vx;
+	ls.virtual_scr.y = ls.m->virtual_scr.Vy;
+	ls.offset_w_to_p = _offset_w_to_p;
 	ls.p_final = _pFinal;
+	ls.button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
 	/* Fetch screen layout for use with elastic paging.*/
 	FScreenGetScrRect(
@@ -2990,7 +2968,7 @@ Bool move_loop(
 	}
 	if (
 		!XGetGeometry(
-			dpy, move_w, &JunkRoot, &bak.x, &bak.y,
+			dpy, move_w, &JunkRoot, &ls.porig.x, &ls.porig.y,
 			(unsigned int*)&JunkWidth, (unsigned int*)&JunkHeight,
 			(unsigned int*)&JunkBW, (unsigned int*)&JunkDepth))
 	{
@@ -3003,28 +2981,12 @@ Bool move_loop(
 		rectangle g;
 
 		get_visible_icon_geometry(fw, &g);
-		ls.orig_icon.x = g.x;
-		ls.orig_icon.y = g.y;
+		ls.porig.x = g.x;
+		ls.porig.y = g.y;
 	}
 
 	/* prevent flicker when paging */
 	SET_WINDOW_BEING_MOVED_OPAQUE(fw, ls.do_move_opaque);
-
-	if (FQueryPointer(
-		    dpy, Scr.Root, &JunkRoot, &JunkChild, &ls.p.x, &ls.p.y,
-		    &JunkX, &JunkY, &ls.button_mask) == False)
-	{
-		/* pointer is on a different screen */
-		ls.p.x = 0;
-		ls.p.y = 0;
-	}
-	else
-	{
-		ls.p.x += ls.offset.x;
-		ls.p.y += ls.offset.y;
-	}
-	ls.button_mask &= DEFAULT_ALL_BUTTONS_MASK;
-	ls.porig = ls.p;
 
 	/* draw initial outline */
 	if (!IS_ICONIFIED(fw) &&
@@ -3050,7 +3012,7 @@ Bool move_loop(
 	 * If the move is canceled this will remain as zero.
 	 */
 	fw->placed_by_button = 0;
-	warp_pointer_adjust_offset(ls.scr_center, &ls.offset);
+	warp_pointer_adjust_offset(ls.scr_center, &ls.offset_w_to_p);
 	do
 	{
 		mli_ret = move_loop_inner(&ls);
@@ -3063,14 +3025,16 @@ Bool move_loop(
 	if ((mli_ret & MLI_IS_ABORTED) || bad_window == FW_W(fw))
 	{
 		if (
-			ls.v.x != ls.m->virtual_scr.Vx ||
-			ls.v.y != ls.m->virtual_scr.Vy)
+			ls.virtual_scr.x != ls.m->virtual_scr.Vx ||
+			ls.virtual_scr.y != ls.m->virtual_scr.Vy)
 		{
-			MoveViewport(ls.m, ls.v.x, ls.v.y, False);
+			MoveViewport(
+				ls.m, ls.virtual_scr.x, ls.virtual_scr.y,
+				False);
 		}
 		if ((mli_ret & MLI_IS_ABORTED) && ls.do_move_opaque)
 		{
-			XMoveWindow(dpy, move_w, bak.x, bak.y);
+			XMoveWindow(dpy, move_w, ls.porig.x, ls.porig.y);
 			if (ls.draw_parts != PART_NONE)
 			{
 				border_draw_decorations(

@@ -17,7 +17,7 @@ void AnimatedMoveFvwmWindow(
 	FvwmWindow *fw, Window w, position start, position end,
 	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
 Bool move_loop(
-	const exec_context_t *exc, position offset, size_rect sz,
+	const exec_context_t *exc, position offset_w_to_p, size_rect sz,
 	position *pFinal, Bool do_move_opaque);
 int is_window_sticky_across_pages(FvwmWindow *fw);
 int is_window_sticky_across_desks(FvwmWindow *fw);
