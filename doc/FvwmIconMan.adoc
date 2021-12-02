@@ -37,10 +37,6 @@ received. For example, you could bind the first mouse button to iconify
 the selected window, and make bindings for the arrow keys to navigate
 the manager window without the mouse.
 
-FvwmIconMan can be set to display which window currently has the
-keyboard focus, and by binding the select event (see below) to the fvwm
-Focus function, you can emulate the TWM icon manager's behavior.
-
 == INITIALIZATION
 
 During initialization, FvwmIconMan searches though the fvwm

@@ -946,12 +946,6 @@ CMD_EDGETHICKNESS = "EdgeThickness" EDGETHICKNESSVAL
 EDGETHICKNESSVAL = "0" / "1" / "2"
 ```
 ```
-CMD_EMULATE = "Emulate" EMULATEVAL
-EMULATEVAL = "Mvwm"
-EMULATEVAL =/ "Mwm"
-EMULATEVAL =/ "Win"
-```
-```
 CMD_ESCAPEFUNC = "EscapeFunc"
 ```
 ```

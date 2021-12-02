@@ -345,12 +345,6 @@ $TIME = 1410306754;
 		descr => q{Control how closely to edge to run command/scrolling},
 	},
 	{
-		name => 'Emulate',
-		cursor => '',
-		window => 0,
-		descr => q{Only used to position the position/size window},
-	},
-	{
 		name => 'EscapeFunc',
 		cursor => '',
 		window => 0,

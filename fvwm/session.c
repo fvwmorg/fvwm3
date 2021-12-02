@@ -187,9 +187,6 @@ SaveGlobalState(FILE *f)
 	}
 	fprintf(f, "  [MISC] %i %i %i\n",
 		Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
-	fprintf(
-		f, "  [STYLE] %i %i\n", Scr.gs.do_emulate_mwm,
-		Scr.gs.do_emulate_win);
 
 	if (get_metainfo_length() > 0) {
 		MetaInfo *mi = get_metainfo(), *mi_i;
@@ -1289,12 +1286,6 @@ LoadGlobalState(char *filename)
 				Scr.ClickTime = i1;
 				Scr.ColormapFocus = i2;
 				Scr.ColorLimit = i3;
-			}
-			else if (!strcmp(s1, "[STYLE]"))
-			{
-				sscanf(s, "%*s %i %i", &i1, &i2);
-				Scr.gs.EmulateMWM = i1;
-				Scr.gs.EmulateWIN = i2;
 			}
 		}
 #endif

@@ -1017,7 +1017,7 @@ int FScreenParseGeometry(
  *      if width/height isn't specified in the geometry itself.
  *
  *  Note2:
- *      This function's behaviour is crafted to sutisfy/emulate the
+ *      This function's behaviour is crafted to satisfy/emulate the
  *      FvwmWinList::MakeMeWindow()'s behaviour.
  *
  *  Note3:

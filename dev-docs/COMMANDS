@@ -56,7 +56,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   EdgeResistance        - Control viewport scrolling and window move over edge
   EdgeScroll            - Control how much of the viewport is scrolled if any
   EdgeThickness         - Control how closely to edge to run command/scrolling
-  Emulate               - Only used to position the position/size window
   EscapeFunc            - Abort a wait or ModuleSynchonous command
   EwmhBaseStruts        - Define restricted areas of the screen
   EwmhNumberOfDesktops  - For ewmh pager, define number of desktops

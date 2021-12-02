@@ -3754,44 +3754,6 @@ void CMD_BugOpts(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Emulate(F_CMD_ARGS)
-{
-	char *style;
-
-	style = PeekToken(action, NULL);
-	if (!style || StrEquals(style, "fvwm"))
-	{
-		Scr.gs.do_emulate_mwm = False;
-		Scr.gs.do_emulate_win = False;
-	}
-	else if (StrEquals(style, "mwm"))
-	{
-		Scr.gs.do_emulate_mwm = True;
-		Scr.gs.do_emulate_win = False;
-	}
-	else if (StrEquals(style, "win"))
-	{
-		Scr.gs.do_emulate_mwm = False;
-		Scr.gs.do_emulate_win = True;
-	}
-	else
-	{
-		fvwm_debug(__func__, "Unknown style '%s'", style);
-		return;
-	}
-	/* This command might have been issued after any GeometryWindow
-	 * commands, in which case set those values to their defaults.
-	 */
-	Scr.SizeWindow.is_configured = false;
-	Scr.SizeWindow.m = NULL;
-
-	Scr.flags.do_need_window_update = 1;
-	Scr.flags.has_default_font_changed = 1;
-	Scr.flags.has_default_color_changed = 1;
-
-	return;
-}
-
 void CMD_ColorLimit(F_CMD_ARGS)
 {
 	fvwm_debug(__func__, "ColorLimit is obsolete,\n\tuse the "

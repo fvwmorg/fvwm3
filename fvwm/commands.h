@@ -58,7 +58,6 @@ enum
 	F_EDGE_LEAVE_COMMAND,
 	F_EDGE_RES,
 	F_EDGE_SCROLL,
-	F_EMULATE,
 	F_ESCAPE_FUNC,
 	F_EWMH_BASE_STRUTS,
 	F_EWMH_NUMBER_OF_DESKTOPS,
@@ -255,7 +254,6 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS);
 void CMD_EdgeResistance(F_CMD_ARGS);
 void CMD_EdgeScroll(F_CMD_ARGS);
 void CMD_EdgeThickness(F_CMD_ARGS);
-void CMD_Emulate(F_CMD_ARGS);
 void CMD_EscapeFunc(F_CMD_ARGS);
 void CMD_EwmhBaseStruts(F_CMD_ARGS);
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);

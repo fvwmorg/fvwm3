@@ -3361,15 +3361,6 @@ or any variant of the *DefaultColors* command.
 	they were already executed. If the _command_id_ is omitted, the value
 	of the variable $[schedule.last] is used as the id.
 
-*Emulate* Fvwm | Mwm | Win::
-	This command is a catch all for how miscellaneous things are done by
-	fvwm. Right now this command affects where the move/resize feedback
-	window appears and how window placement is aborted. To have more Mwm-
-	or Win-like behavior you can call *Emulate* with _Mwm_ or _Win_ as its
-	argument. With Mwm resize and move feedback windows are in the center
-	of the screen, instead of the upper left corner. This also affects how
-	manual placement is aborted. See the _ManualPlacement_ description.
-
 *EscapeFunc*::
 	By default the key sequence Ctrl-Alt-Escape allows for escaping from a
 	*Wait* pause and from a locked *ModuleSynchronous* command. The
@@ -4941,7 +4932,7 @@ _PlaceWindow_ makes _Button_ usable for window placement, both for
 interactive and drag move. _CancelPlacement_ does the inverse. That is
 makes _Button_ to cancel move for both interactive and drag move. It
 may however not override how new windows are resized after being
-placed. This is controlled by the *Emulate* command. Also a window
+placed. Also a window
 being dragged can always be placed by releasing the button hold while
 dragging, regardless of if it is set to _PlaceWindow_ or not.
 +
@@ -6271,15 +6262,13 @@ band until a place is selected manually. The window is placed when a
 mouse button or any key except _Escape_ is pressed. Escape aborts
 manual placement which places the window in the top left corner of the
 screen. If mouse button 2 is pressed during the initial placement of a
-window (respectively _Shift_ and mouse button 1 in case Mwm emulation
-has been enabled with the *Emulate* command), the user is asked to
+window or _Shift_ and mouse button 1, the user is asked to
 resize the window too.
 +
 It is possible to define buttons usable to place windows with the
 *Move* command and the special context 'P' for placement (see *Move*
 command). However, you can't redefine the way to also resize the
-window other than the way it is affected by the *Emulate* command. The
-button used for placing the window can be checked with the
+window. The button used for placing the window can be checked with the
 _PlacedByButton_ condition (see *Current* command).
 +
 Example:

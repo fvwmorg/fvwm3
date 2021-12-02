@@ -242,9 +242,6 @@ const func_t func_table[] =
 	CMD_ENT("edgethickness", CMD_EdgeThickness, F_NOP, 0, 0),
 	/* - Control how closely to edge to run command/scrolling */
 
-	CMD_ENT("emulate", CMD_Emulate, F_EMULATE, 0, 0),
-	/* - Only used to position the position/size window */
-
 	CMD_ENT("escapefunc", CMD_EscapeFunc, F_ESCAPE_FUNC, 0, 0),
 	/* - Abort a wait or ModuleSynchonous command */
 

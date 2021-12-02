@@ -1189,8 +1189,6 @@ static void InitVariables(void)
 	Scr.bo.do_enable_qt_drag_n_drop_workaround = 0;
 	Scr.bo.do_enable_ewmh_iconic_state_workaround = 0;
 
-	Scr.gs.do_emulate_mwm = DEFAULT_EMULATE_MWM;
-	Scr.gs.do_emulate_win = DEFAULT_EMULATE_WIN;
 	Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
 	Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
 	Scr.gs.use_inactive_down_buttons = DEFAULT_USE_INACTIVE_DOWN_BUTTONS;

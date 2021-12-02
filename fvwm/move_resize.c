@@ -1093,10 +1093,6 @@ static void position_geometry_window(const XEvent *eventp)
 			p.y = scr_g.y + sgn.height * Scr.SizeWindow.y;
 		if (Scr.SizeWindow.yneg)
 			p.y += scr_g.height - sizew_g.height;
-	} else if (Scr.gs.do_emulate_mwm) {
-		FScreenCenterOnScreen(
-			&fscr, screen, &p.x, &p.y, sizew_g.width,
-			sizew_g.height);
 	} else {
 		FScreenGetScrRect(&fscr, screen, &p.x, &p.y, NULL, NULL);
 	}
@@ -2680,9 +2676,8 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 			break;
 		}
 		if (!IS_MAPPED(ls->fw) &&
-		    ((e.xbutton.button == 2 && !Scr.gs.do_emulate_mwm)
-		     ||
-		     (e.xbutton.button == 1 && Scr.gs.do_emulate_mwm &&
+		    (e.xbutton.button == 2 ||
+		     (e.xbutton.button == 1 &&
 		      (e.xbutton.state & ShiftMask))))
 		{
 			ret |= MLI_DO_RESIZE_TOO;

@@ -448,8 +448,6 @@ typedef struct ScreenInfo
 	} bo; /* bug workaround control options */
 	struct
 	{
-		unsigned do_emulate_mwm : 1;
-		unsigned do_emulate_win : 1;
 		unsigned do_hide_position_window : 1;
 		unsigned do_hide_resize_window : 1;
 		unsigned use_active_down_buttons : 1;
