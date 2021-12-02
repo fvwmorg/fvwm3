@@ -2579,6 +2579,7 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 	Bool do_handle_movement;
 	Bool do_allow_snap;
 	XEvent e;
+	unsigned int mods_state;
 
 	ret = MLI_CLEAR;
 	e.type = None;
@@ -2642,6 +2643,9 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 	case KeyPress:
 		mli_update_alt_mode(ls, e.xkey.state);
 		Keyboard_shortcuts(&e, ls->fw, NULL, NULL, ButtonRelease);
+		/* modifiers have already been handled by Keyboard_shortcuts().
+		 */
+		mods_state = 0;
 		switch (e.type)
 		{
 		case ButtonRelease:
@@ -2668,6 +2672,7 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 		}
 		break;
 	case ButtonPress:
+		mods_state = e.xbutton.state;
 		if (e.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
 		    ((Button1Mask << (e.xbutton.button - 1)) &
 		     ls->button_mask))
@@ -2713,6 +2718,7 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 		}
 	case ButtonRelease:
 	{
+		mods_state = e.xbutton.state;
 		ls->fw->placed_by_button = e.xbutton.button;
 		new_ppos.x = e.xbutton.x_root;
 		new_ppos.y = e.xbutton.y_root;
@@ -2722,6 +2728,7 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 	}
 	case MotionNotify:
 	{
+		mods_state = e.xmotion.state;
 		mli_update_alt_mode(ls, e.xmotion.state);
 		if (e.xmotion.same_screen == False)
 		{
@@ -2770,14 +2777,22 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 
 		dist.x = new_ppos.x - ls->ppos.x;
 		dist.y = new_ppos.y - ls->ppos.y;
-		/*!!!add factor depending on shift and control keys*/
-fprintf(stderr, "new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.y, ls->ppos.x, ls->ppos.y, dist.x, dist.y);
+		if (mods_state & ShiftMask)
+		{
+			dist.x *= 8;
+			dist.y *= 8;
+		}
+		else if (mods_state & ControlMask)
+		{
+			dist.x /= 2;
+			dist.y /= 2;
+		}
 		ls->wpos_raw.x += dist.x;
 		ls->wpos_raw.y += dist.y;
 		ls->ppos = new_ppos;
 
+fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.y, ls->ppos.x, ls->ppos.y, dist.x, dist.y);
 		may_snap = do_allow_snap || ls->was_snapped;
-		/*!!!fix snapping if the mouse moves slowly*/
 		if (!may_snap)
 		{
 			may_snap =
