@@ -2208,7 +2208,9 @@ static void update_pos(
  * (*px and *py) and returns the snapped values. */
 #define NOSNAP -99999
 #define MAXSCORE 99999999
-static void DoSnapGrid(FvwmWindow *fw, rectangle self, position *new)
+static void DoSnapGrid(
+	FvwmWindow *fw, rectangle self, position *new,
+	multi_direction_t snap_dirs)
 {
 	int grid_x = self.x / fw->snap_grid_x * fw->snap_grid_x;
 	int grid_y = self.y / fw->snap_grid_y * fw->snap_grid_y;
@@ -2223,7 +2225,7 @@ static void DoSnapGrid(FvwmWindow *fw, rectangle self, position *new)
 }
 static void DoSnapMonitor(
 	FvwmWindow *fw, rectangle self, position *new,
-	int snapd, bool resist, bool all_edges)
+	int snapd, bool resist, bool all_edges, multi_direction_t snap_dirs)
 {
 	position mon;
 	position mon_br;
@@ -2280,13 +2282,11 @@ static void DoSnapMonitor(
 		}
 	}
 }
-static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
+static void DoSnapWindow(
+	FvwmWindow *fw, rectangle self, position *new,
+	multi_direction_t snap_dirs)
 {
-	struct
-	{
-		int x;
-		int y;
-	} score = { MAXSCORE, MAXSCORE };
+	position score = { MAXSCORE, MAXSCORE };
 	FvwmWindow *tmp;
 	int maskout = (SNAP_SCREEN | SNAP_SCREEN_WINDOWS |
 			SNAP_SCREEN_ICONS | SNAP_SCREEN_ALL);
@@ -2337,7 +2337,8 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
 		if (other.y + other.height > self.y &&
 			other.y < self.y + self.height)
 		{
-			if (self.x + self.width >= other.x -
+			if ((snap_dirs & MULTI_DIR_E) &&
+			    self.x + self.width >= other.x -
 			    fw->snap_attraction.proximity &&
 			    self.x + self.width <= other.x +
 			    fw->snap_attraction.proximity)
@@ -2345,7 +2346,8 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
 				update_pos(&score.x, &(new->x), self.x,
 					other.x - self.width);
 			}
-			if (self.x <= other.x + other.width +
+			if ((snap_dirs & MULTI_DIR_W) &&
+			    self.x <= other.x + other.width +
 			    fw->snap_attraction.proximity &&
 			    self.x >= other.x + other.width -
 			    fw->snap_attraction.proximity)
@@ -2359,7 +2361,8 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
 		if (other.x + other.width > self.x &&
 			other.x < self.x + self.width)
 		{
-			if (self.y + self.height >= other.y -
+			if ((snap_dirs & MULTI_DIR_S) &&
+			    self.y + self.height >= other.y -
 			    fw->snap_attraction.proximity &&
 			    self.y + self.height <= other.y +
 			    fw->snap_attraction.proximity)
@@ -2367,7 +2370,8 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
 				update_pos(&score.y, &(new->y), self.y,
 					other.y - self.height);
 			}
-			if (self.y <= other.y + other.height +
+			if ((snap_dirs & MULTI_DIR_N) &&
+			    self.y <= other.y + other.height +
 			    fw->snap_attraction.proximity &&
 			    self.y >= other.y + other.height -
 			    fw->snap_attraction.proximity)
@@ -2398,7 +2402,8 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
 	}
 
 }
-static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
+static void DoSnapAttract(
+	FvwmWindow *fw, size_rect sz, position *p, multi_direction_t snap_dirs)
 {
 	position new = { NOSNAP, NOSNAP };
 	position win = { NOSNAP, NOSNAP };
@@ -2429,11 +2434,12 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 	if (fw->snap_attraction.proximity > 0)
 	{
 		if (snap_mon)
-			DoSnapMonitor(fw, self, &mon,
-				fw->snap_attraction.proximity, false, true);
+			DoSnapMonitor(
+				fw, self, &mon, fw->snap_attraction.proximity,
+				false, true, snap_dirs);
 
 		if (snap_win)
-			DoSnapWindow(fw, self, &win);
+			DoSnapWindow(fw, self, &win, snap_dirs);
 
 		if (mon.x != NOSNAP || win.x != NOSNAP)
 			new.x = (abs(self.x - mon.x) < abs(self.x - win.x)) ?
@@ -2447,7 +2453,7 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 		{
 			win.x = NOSNAP;
 			win.y = NOSNAP;
-			DoSnapGrid(fw, self, &win);
+			DoSnapGrid(fw, self, &win, snap_dirs);
 			if (new.x == NOSNAP && win.x != NOSNAP)
 				new.x = win.x;
 			if (new.y == NOSNAP && win.y != NOSNAP)
@@ -2465,8 +2471,9 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 	{
 		new.x = NOSNAP;
 		new.y = NOSNAP;
-		DoSnapMonitor(fw, self, &new,
-			fw->edge_resistance_move, true, false);
+		DoSnapMonitor(
+			fw, self, &new, fw->edge_resistance_move, true, false,
+			snap_dirs);
 		if (new.x != NOSNAP)
 			p->x = new.x;
 		if (new.y != NOSNAP)
@@ -2478,8 +2485,9 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 	{
 		new.x = NOSNAP;
 		new.y = NOSNAP;
-		DoSnapMonitor(fw, self, &new,
-			fw->edge_resistance_screen_move, true, true);
+		DoSnapMonitor(
+			fw, self, &new, fw->edge_resistance_screen_move,
+			true, true, snap_dirs);
 		if (new.x != NOSNAP)
 			p->x = new.x;
 		if (new.y != NOSNAP)
@@ -2806,7 +2814,15 @@ fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.
 		ls->wpos = ls->wpos_raw;
 		if (!ls->is_alt_mode_enabled && (may_snap || 1))
 		{
-			DoSnapAttract(ls->fw, ls->w_size, &ls->wpos);
+			multi_direction_t snap_dirs;
+
+			snap_dirs = 0;
+			snap_dirs |= (dist.x < 0) ? MULTI_DIR_W : 0;
+			snap_dirs |= (dist.x > 0) ? MULTI_DIR_E : 0;
+			snap_dirs |= (dist.y < 0) ? MULTI_DIR_N : 0;
+			snap_dirs |= (dist.y > 0) ? MULTI_DIR_S : 0;
+fprintf(stderr, "!!!snap_dirs: %d\n", snap_dirs);
+			DoSnapAttract(ls->fw, ls->w_size, &ls->wpos, snap_dirs);
 			ls->was_snapped = True;
 		}
 
