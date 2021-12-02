@@ -2790,7 +2790,7 @@ static unsigned int move_loop_inner(mli_state_t *ls)
 		ls->wpos_raw.y += dist.y;
 		ls->ppos = new_ppos;
 
-fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.y, ls->ppos.x, ls->ppos.y, dist.x, dist.y);
+fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d, op %d\n", new_ppos.x, new_ppos.y, ls->ppos.x, ls->ppos.y, dist.x, dist.y, ls->do_move_opaque);
 		may_snap = do_allow_snap || ls->was_snapped;
 		if (!may_snap)
 		{
@@ -2816,7 +2816,6 @@ fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.
 				set_icon_position(
 					ls->fw, ls->wpos.x, ls->wpos.y);
 				move_icon_to_position(ls->fw);
-				broadcast_icon_geometry(ls->fw, False);
 			}
 			else
 			{
@@ -2894,6 +2893,11 @@ fprintf(stderr, "!!!new: %d %d, old: %d %d, dist %d %d\n", new_ppos.x, new_ppos.
 			ls->fw->g.frame = t;
 			FlushAllMessageQueues();
 		}
+	}
+	if (ls->do_move_opaque && IS_ICONIFIED(ls->fw))
+	{
+		broadcast_icon_geometry(ls->fw, False);
+		FlushAllMessageQueues();
 	}
 
 	return ret;
