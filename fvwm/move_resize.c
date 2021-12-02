@@ -3129,8 +3129,9 @@ static bool set_geom_win_position_val(char *s, int *coord, bool *neg, bool *rel)
 		*coord = val;
 		*neg = true;
 	}
-	else if (sscanf(s, "+%d%n", &val, &n) >= 1 ||
-			sscanf(s, "%d%n", &val, &n) >= 1)
+	else if (
+		sscanf(s, "+%d%n", &val, &n) >= 1 ||
+		sscanf(s, "%d%n", &val, &n) >= 1)
 	{
 		*coord = val;
 		*neg = false;
@@ -3141,9 +3142,7 @@ static bool set_geom_win_position_val(char *s, int *coord, bool *neg, bool *rel)
 		return false;
 	}
 	s += n;
-	*rel = true;
-	if (*s == 'p')
-		*rel = false;
+	*rel = (*s == 'p') ? false : true;
 
 	return true;
 }
@@ -3151,44 +3150,63 @@ static bool set_geom_win_position_val(char *s, int *coord, bool *neg, bool *rel)
 void CMD_GeometryWindow(F_CMD_ARGS)
 {
 	int val;
-	char *token = NULL, *s = NULL;
+	char *token;
 
-	while ((token = PeekToken(action, &action)) != NULL) {
-		if (StrEquals(token, "hide")) {
-			set_geom_win_visible_val(PeekToken(action, &action), false);
+	while ((token = PeekToken(action, &action)) != NULL)
+	{
+		if (StrEquals(token, "hide"))
+		{
+			token = PeekToken(action, &action);
+			set_geom_win_visible_val(token, false);
 		}
-		if (StrEquals(token, "show")) {
-			set_geom_win_visible_val(PeekToken(action, &action), true);
+		if (StrEquals(token, "show"))
+		{
+			token = PeekToken(action, &action);
+			set_geom_win_visible_val(token, true);
 		}
-		if (StrEquals(token, "colorset")) {
+		if (StrEquals(token, "colorset"))
+		{
 			if (GetIntegerArguments(action, &action, &val, 1) != 1)
 			{
 				val = -1;
 			}
 			Scr.SizeWindow.cset = val;
 		}
-		if (StrEquals(token, "position")) {
+		if (StrEquals(token, "position"))
+		{
 			Scr.SizeWindow.is_configured = false;
-
 			/* x-coordinate */
-			if ((s = PeekToken(action, &action)) != NULL &&
-				!set_geom_win_position_val(s, &Scr.SizeWindow.x,
-				&Scr.SizeWindow.xneg, &Scr.SizeWindow.xrel))
+			token = PeekToken(action, &action);
+			if (!token)
+			{
+				continue;
+			}
+			if (
+				!set_geom_win_position_val(
+					token, &Scr.SizeWindow.x,
+					&Scr.SizeWindow.xneg,
+					&Scr.SizeWindow.xrel))
 			{
 				continue;
 			}
 			/* y-coordinate */
-			if ((s = PeekToken(action, &action)) != NULL &&
-				!set_geom_win_position_val(s, &Scr.SizeWindow.y,
-				&Scr.SizeWindow.yneg, &Scr.SizeWindow.yrel))
+			token = PeekToken(action, &action);
+			if (!token)
 			{
 				continue;
 			}
-
-			if (s != NULL)
-				Scr.SizeWindow.is_configured = true;
+			if (
+				!set_geom_win_position_val(
+					token, &Scr.SizeWindow.y,
+					&Scr.SizeWindow.yneg,
+					&Scr.SizeWindow.yrel))
+			{
+				continue;
+			}
+			Scr.SizeWindow.is_configured = true;
 		}
-		if (StrEquals(token, "screen")) {
+		if (StrEquals(token, "screen"))
+		{
 			token = PeekToken(action, &action);
 			if (token != NULL)
 			{
