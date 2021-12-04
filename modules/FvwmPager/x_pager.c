@@ -701,9 +701,6 @@ void initialize_pager(void)
 		  pwindow.height = (VyPages * vHeight * Rows) / Scr.VScale +
 			  label_h * Rows + Rows;
 	  }
-	  sizehints.flags = (sizehints.flags | PAspect);
-	  sizehints.min_aspect.x = sizehints.max_aspect.x = pwindow.width;
-	  sizehints.min_aspect.y = sizehints.max_aspect.y = pwindow.height;
   }
   /* Adjust the window to handle these new sizehints.  This is also called
    * from ReConfigure().
