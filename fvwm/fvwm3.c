@@ -661,30 +661,6 @@ void Done(int restart, char *command)
 			}
 			else
 			{
-				char *str = NULL;
-
-				/* Warn against an old 'Restart fvwm2' usage */
-				if (n == 1 && strcmp(my_argv[0], "fvwm2") == 0)
-				{
-					str = "fvwm2";
-				}
-				/* If we are at it, warn against a 'Restart
-				 * fvwm' usage as well */
-				else if (n == 1 &&
-					 strcmp(my_argv[0], "fvwm") == 0)
-				{
-					str = "fvwm";
-				}
-				if (str)
-				{
-					fvwm_debug(__func__,
-						   "`Restart %s' might not do"
-						   " what you want, see the man"
-						   " page.\n\tUse Restart without"
-						   " parameters if you mean to"
-						   " restart the same WM.",
-						   str);
-				}
 				execvp(my_argv[0], my_argv);
 				fvwm_debug(__func__, "Call of '%s' failed!"
 					   " (restarting '%s' instead)",

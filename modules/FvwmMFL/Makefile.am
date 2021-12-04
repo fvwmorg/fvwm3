@@ -13,8 +13,8 @@ FvwmMFL_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 ##
 ## 7b8684385 (Deprecation of modules, 2019-04-14)
 ##
-## However, to maintain backwards compatibility with fvwm2, provide a wrapper
-## for FvwmCommandS to point to FvwmMFL so that there's better parity.
+## However, to maintain backwards compatibility with version 2, provide a
+## wrapper for FvwmCommandS to point to FvwmMFL so that there's better parity.
 FvwmCommandS: Makefile
 	echo "#!/bin/sh" > $@
 	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
@@ -28,4 +28,3 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3  \
 	$(libevent_LIBS) $(Xft_LIBS)
 
 AM_CPPFLAGS = -I$(top_srcdir) $(X_CFLAGS) $(Xft_CFLAGS)
-

@@ -13,11 +13,6 @@
 
 Fvwm is a window manager for X11 optimised for speed.
 
-Note that there are several window managers around that have "fvwm" in
-their name. Fvwm3 is the successor to fvwm2, which preceded the 1.x
-versions of fvwm. This version is simply called fvwm throughout this
-document, while the main executable is named fvwm3.
-
 Fvwm is intended to have a small memory footprint and is extremely
 customizable and extendible.  A large _virtual desktop_ and
 _multiple disjoint desktops_ can be used separately or together.
@@ -8971,48 +8966,19 @@ variables _$VAR_ or _$\{VAR}_. Here are several examples:
 ....
 Key F1 R N Restart
 Key F1 R N Restart fvwm -s
-Key F1 R N Restart ~/bin/fvwm -f $HOME/.fvwm/main
 Key F1 R N Restart fvwm1 -s -f .fvwmrc
-Key F1 R N Restart xterm -n '"X console"' \
--T \"X\ console\" -e fvwm1 -s
+Key F1 R N Restart xterm -n '"X console"' -T \"X\ console\" -e fvwm -s
 ....
 
 +
-If you need a native restart, we suggest only to use *Restart* command
-without parameters unless there is a reason not to. If you still use
-an old command 'Restart fvwm2' that was correct in 2.2.x, all current
-command line arguments are lost. On a restart without parameters or
-with --pass-args, they are preserved. Here are some cases when
-'Restart fvwm2' or 'Restart fvwm' cause troubles:
-+
-* running fvwm under a session manager
-* running fvwm with multi headed displays
-* having command line arguments, like +-f+ themes-rc or +-cmd+
-* if the first fvwm2 in the $PATH is a different one
-
-+
-This is why we are issuing a warning on an old usage. If you really
-want to restart to fvwm with no additional arguments, you may get rid
-of this warning by using "Restart fvwm -s" or "Restart
-/full/path/fvwm".
-+
 Note, currently with multi headed displays, restart of fvwms on
 different screens works independently.
++
 *Restart* *--pass-args* _window_manager_::
 The same as *Restart* without parameters but the name for the current
 window manager is replaced with the specified _window_manager_ and
 original arguments are preserved.
 +
-This command is useful if you use initial arguments like
-+
-
-....
--cmd FvwmCpp
-....
-
-+
-and want to switch to another fvwm version without losing the initial
-arguments.
 *Restart* *--dont-preserve-state* [_other-params_]::
 The same as
 +

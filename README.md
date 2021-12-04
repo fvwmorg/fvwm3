@@ -6,17 +6,15 @@ FVWM3
 ![Open issues](https://img.shields.io/github/issues-raw/fvwmorg/fvwm3)
 ![GitHub contributors](https://img.shields.io/github/contributors/fvwmorg/fvwm3)
 
-Welcome to fvwm3.  Fvwm3 is a multiple large virtual desktop window manager,
-originally (a looooong time ago!) derived from twm.
+Welcome to fvwm.  Version 3 is a multiple large virtual desktop window manager.
 
-The successor to [fvwm2](http://github.com/fvwmorg/fvwm).
+The successor to [fvwm-2.6.x](http://github.com/fvwmorg/fvwm).
 
-Fvwm3 is intended to have a small memory footprint but a rich feature set, be
-extremely customizable and extendible, and have a high degree of Motif mwm
-compatibility.
+Fvwm3 is intended to be extremely customizable and extendible while consuming
+a relatively small amount of resources.
 
-**Currently, your existing fvwm2 config will work with fvwm3, but over time
-this will change.**
+**An existing version 2 configuration currently works, but over time this will
+change.**
 
 Releases / Changelog
 --------------------

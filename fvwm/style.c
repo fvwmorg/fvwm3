@@ -4051,7 +4051,7 @@ static Bool style_parse_one_style_option(
 			rest = NULL; /* consume the entire string */
 
 			/* TA:  2020-04-29:  retain backwards compatability
-			 * with fvwm2 for now, and convert 'c' (which meant
+			 * with 2.x for now, and convert 'c' (which meant
 			 * *current* screen), to using "$$[pointer]" which
 			 * does the same thing, but uses expansion instead.
 			 *
