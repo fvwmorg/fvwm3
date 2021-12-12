@@ -15,11 +15,7 @@ both desk numbers are omitted, the current desk is used instead. If you
 use an asterisk '*' in place of _first desk_ the pager will always show
 the current desktop, even when you switch desks.
 
-FvwmPager will compute its initial window size based on your monitor(s)
-configuration. By default it makes a page 1/32 the size of your monitor(s)
-resolution (see _DeskTopScale_) and matches either the global aspect ratio
-or a single monitor if _Monitor_ is set. FvwmPager will preserve this
-aspect ratio when you resize it. See the _Geometry_ option for more info.
+FvwmPager limits the window size to 25% of the page size (see _AutoScale_).
 
 Example lines to put in your .fvwm2rc:
 
@@ -148,17 +144,12 @@ The invocation method was shown in the synopsis section
 == CONFIGURATION OPTIONS
 
 *FvwmPager: Geometry geometry::
-  Completely or partially specifies the pager windows location and
-  geometry, in standard X11 notation. If both width and height are
-  set, FvwmPager will use that size and no longer preserve the
-  aspect ratio when resized. If you wish to maintain an undistorted
-  aspect ratio, you can set one dimension to zero. For example
-  '400x0' will make a 400 pixel wide window whose height matches
-  the aspect ratio and will also preserve aspect ratio when resized.
-+
-*Note*: FvwmPager's dimensions will be slightly adjusted to ensure
-every page shown has the exact same number of pixels. So the actual
-size may be slightly different than the specified size.
+  Completely or partially specifies the pager window's location and
+  geometry, in standard X11 notation.  This option disables the
+  _AutoScale_ and _DesktopScale_ options.  If only one dimension is
+  zero, that is calculated keeping the aspect ratio.  For example,
+  '400x0' makes a 400 pixel wide window whose height matches the
+  aspect ratio.
 *FvwmPager: Rows rows::
   Tells fvwm how many rows of desks to use when laying out the pager
   window.
@@ -243,6 +234,10 @@ desktops and the pager representations.
 FvwmM4) and FvwmBacker to assign identical pixmaps to your various
 desktops and the pager representations.
 
+*FvwmPager: AutoScale pct::
+  If the geometry is not specified, the pager window is automatically
+  sized to use no more than _pct_ percent of the page size in both
+  directions.  The default behaviour is "AutoScale 25".
 *FvwmPager: DeskTopScale number::
   If the geometry is not specified, then a desktop reduction factor is
   used to calculate the pager's size. Things in the pager window are
