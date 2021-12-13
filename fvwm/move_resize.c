@@ -603,13 +603,21 @@ static int GetOnePositionArgument(
 		pos_change += get_shift(val, f);
 	}
 	final_pos += pos_change;
-	if (final_pos > 32767 || final_pos < -32768)
+	if (
+		final_pos > MAX_X_WINDOW_POSITION ||
+		final_pos < MIN_X_WINDOW_POSITION)
 	{
 		fvwm_debug(
 			__func__, "new position is out of range: %d",
 			final_pos);
-
-		return 0;
+		if (final_pos > MAX_X_WINDOW_POSITION)
+		{
+			final_pos = MAX_X_WINDOW_POSITION;
+		}
+		else if (final_pos < MIN_X_WINDOW_POSITION)
+		{
+			final_pos = MIN_X_WINDOW_POSITION;
+		}
 	}
 	*pFinalPos = final_pos;
 
@@ -858,10 +866,10 @@ static int ParseOneResizeArgument(
 	{
 		new_size = 0;
 	}
-	else if (new_size > 65535)
+	else if (new_size > MAX_X_WINDOW_SIZE)
 	{
 		fvwm_debug(__func__, "new size is too big: %d", new_size);
-		return 0;
+		new_size = MAX_X_WINDOW_SIZE;
 	}
 	*ret_size = new_size;
 

@@ -1850,13 +1850,13 @@ static char *style_parse_icon_box_style(
 		for (i = 0; i < 4; i++)
 		{
 			/* make sure the value fits into a short */
-			if (val[i] < -32768)
+			if (val[i] < MIN_X_WINDOW_POSITION)
 			{
-				val[i] = -32768;
+				val[i] = MIN_X_WINDOW_POSITION;
 			}
-			if (val[i] > 32767)
+			if (val[i] > MAX_X_WINDOW_POSITION)
 			{
-				val[i] = 32767;
+				val[i] = MAX_X_WINDOW_POSITION;
 			}
 			IconBoxes->IconBox[i] = val[i];
 			/* If leading minus sign */

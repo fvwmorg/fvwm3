@@ -134,6 +134,11 @@
 
 #define FLOCALE_NUMBER_MISS_CSET_ERR_MSG   5
 
+/*** X limits ***/
+#define MAX_X_WINDOW_SIZE              65535 /* max CARD16 */
+#define MIN_X_WINDOW_POSITION         -32768 /* min INT16 */
+#define MAX_X_WINDOW_POSITION          32767 /* max INT16 */
+
 /*** window geometry ***/
 #define DEFAULT_MIN_MAX_WINDOW_WIDTH     100 /* pixels */
 #define DEFAULT_MIN_MAX_WINDOW_HEIGHT    100 /* pixels */
