@@ -2496,11 +2496,10 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		attr_g.y = attr.y;
 		attr_g.width = attr.width;
 		attr_g.height = attr.height;
-		end.x = attr_g.x;
-		end.y = attr_g.y;
-
 		setup_window_placement(
 			exc->w.fw, &style, &attr_g, &win_opts, PLACE_AGAIN);
+		end.x = attr_g.x;
+		end.y = attr_g.y;
 		AnimatedMoveFvwmWindow(
 			fw, FW_W_FRAME(fw), start, end, False,
 			-1, ppctMovement);
