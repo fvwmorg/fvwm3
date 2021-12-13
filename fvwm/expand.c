@@ -544,7 +544,7 @@ static signed int expand_vars_extended(
 			mon2 = monitor_resolve_name(m_name);
 			if (mon2 == NULL)
 			{
-				free(rest_s);
+				free(p_free);
 				return -1;
 			}
 
