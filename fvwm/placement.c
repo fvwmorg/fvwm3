@@ -387,11 +387,13 @@ static pl_penalty_t __pl_position_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	char *spos;
+	char *string_to_free;
 	Bool fPointer;
 	int n;
 	int i;
 	Bool is_under_mouse;
 
+	string_to_free = NULL;
 	is_under_mouse = False;
 	spos = SGET_PLACEMENT_POSITION_STRING(*arg->style);
 	if (spos == NULL || *spos == 0)
@@ -401,7 +403,10 @@ static pl_penalty_t __pl_position_get_pos_simple(
 	}
 	else if (StrEquals(spos, "Center"))
 	{
-		spos = DEFAULT_PLACEMENT_POS_CENTER_STRING;
+		xasprintf(
+			&spos, DEFAULT_PLACEMENT_POS_CENTER_STRING,
+			arg->place_fw->m->si->name);
+		string_to_free = spos;
 		i = 1;
 	}
 	else if (StrEquals(spos, "UnderMouse"))
@@ -429,6 +434,10 @@ static pl_penalty_t __pl_position_get_pos_simple(
 		{
 			arg->reason->pos.is_pl_position_string_invalid = 1;
 		}
+	}
+	if (string_to_free != NULL)
+	{
+		free(string_to_free);
 	}
 	if (n < 2)
 	{
