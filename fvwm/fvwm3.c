@@ -550,7 +550,7 @@ void Done(int restart, char *command)
 
 		char *action;
 
-		xasprintf(&action, "Function ", exit_func_name);
+		xasprintf(&action, "Function %s", exit_func_name);
 
 		ecc.type = restart ? EXCT_TORESTART : EXCT_QUIT;
 		ecc.w.wcontext = C_ROOT;
