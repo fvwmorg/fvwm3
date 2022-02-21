@@ -497,7 +497,7 @@ char *module_expand_action(
 				return NULL;
 			}
 			/* print the number into the string */
-			sprintf(dest, "%d%n", val, &offset);
+			offset = sprintf(dest, "%d", val);
 			dest += offset;
 		}
 		else if (is_string)
@@ -512,7 +512,7 @@ char *module_expand_action(
 			/* print the colour name into the string */
 			if (string)
 			{
-				sprintf(dest, "%s%n", string, &offset);
+				offset = sprintf(dest, "%s", string);
 				dest += offset;
 			}
 		}
