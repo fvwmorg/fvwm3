@@ -422,15 +422,15 @@ int pixel_to_color_string(
 
 	if (!use_hash)
 	{
-		sprintf(
-			output, "rgb:%04x/%04x/%04x%n", (int)color.red,
-			(int)color.green, (int)color.blue, &n);
+		n = sprintf(
+			output, "rgb:%04x/%04x/%04x", (int)color.red,
+			(int)color.green, (int)color.blue);
 	}
 	else
 	{
-		sprintf(
-			output, "#%02x%02x%02x%n", (int)(color.red/256),
-			(int)(color.green/256), (int)(color.blue/256), &n);
+		n = sprintf(
+			output, "#%02x%02x%02x", (int)(color.red/256),
+			(int)(color.green/256), (int)(color.blue/256));
 	}
 
 	return n;
