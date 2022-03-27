@@ -251,7 +251,7 @@ void CMD_WindowList(F_CMD_ARGS)
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
-	/* parse postitioning args - must call this even if no action is given
+	/* parse positioning args - must call this even if no action is given
 	 * because it sets the screen origin */
 	if (action && *action)
 	{
