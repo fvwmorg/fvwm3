@@ -788,7 +788,7 @@ static Bool is_transient_subtree_straight(
 			s->scratch.p = NULL;
 		}
 	}
-	/* Indicate that no cleening is needed */
+	/* Indicate that no cleaning is needed */
 	Scr.FvwmRoot.scratch.i = 1;
 	/* now loop over the windows and mark the ones we need to move */
 	SET_IN_TRANSIENT_SUBTREE(t, 1);
