@@ -34,7 +34,7 @@ FVWM3 has the following dependencies.
 * libncurses5-dev
 * libpng-dev
 * libreadline-dev
-* librsvg-dev
+* librsvg-dev/librsvg2-dev(Debian)
 * libsm-dev
 * libxcursor-dev
 * libxext-dev
