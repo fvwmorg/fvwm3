@@ -15,7 +15,10 @@ repository.  This is the same Docker image as used by Github Actions.
 Manually
 ========
 
-FVWM3 has the following dependencies.
+FVWM3 has the following dependencies.  Note that across different
+distributions, the development package names will differ.  The names listed
+below are examples to help you find the appropriately named package for the
+system in use.
 
 ## Core dependencies
 
@@ -24,6 +27,7 @@ FVWM3 has the following dependencies.
 * libxrandr-dev (>= 1.5)
 * libxrender-dev
 * libxt-dev
+* libxft-dev
 
 ## Optional dependencies
 
@@ -38,7 +42,6 @@ FVWM3 has the following dependencies.
 * libsm-dev
 * libxcursor-dev
 * libxext-dev
-* libxft-dev
 * libxi-dev
 * libxpm-dev
 * sharutils
