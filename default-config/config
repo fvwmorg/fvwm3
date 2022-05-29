@@ -79,7 +79,7 @@ AddToFunc   StartFunction
 + I Test (Init, f $[FVWM_USERDIR]/.BGdefault) \
     Exec exec fvwm-root $[FVWM_USERDIR]/.BGdefault
 + I TestRc (NoMatch) Exec exec fvwm-root \
-    $[FVWM_DATADIR]/default-config/images/background/bg1.png
+    $[FVWM_DATADIR]/default-config/images/background/bg5.png
 + I Module FvwmButtons RightPanel
 + I Module FvwmEvent EventNewDesk
 
@@ -341,6 +341,10 @@ AddToMenu   BGMenu "$[gt.Wallpapers]" Title
 + "$[gt.Floral]%bgicons/bg1.png%" SetBG bg1.png
 + "$[gt.Circles]%bgicons/bg2.png%" SetBG bg2.png
 + "$[gt.Space]%bgicons/bg3.png%" SetBG bg3.png
++ "$[gt.Flowers]%bgicons/bg4.png%" SetBG bg4.png
++ "$[gt.Desktop]%bgicons/bg5.png%" SetBG bg5.png
++ "$[gt.Glass]%bgicons/bg6.png%" SetBG bg6.png
++ "$[gt.FvwmExt]%bgicons/bg7.png%" SetBG bg7.png
 
 # Window Operations Menus
 DestroyMenu MenuWindowOps
