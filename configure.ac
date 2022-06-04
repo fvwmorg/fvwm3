@@ -537,28 +537,11 @@ fi
 AC_SUBST(Xcursor_CFLAGS)
 AC_SUBST(Xcursor_LIBS)
 
-# ********* xft
-problem_xft=""
-
-AC_ARG_ENABLE(xft,
-  AS_HELP_STRING([--disable-xft],[disable Xft anti-aliased font rendering]),
-  [ if test x"$enableval" = xyes; then
-    with_xft="yes, check"
-  else
-    with_xft="no"
-    problem_xft=": Explicitly disabled"
-  fi ],
-  [
-    with_xft="not specified, check"
-  ]
-)
-
 freetype_CFLAGS=""
 freetype_LIBS=""
 AH_TEMPLATE([HAVE_XFT],[Define if Xft library is used.])
 AH_TEMPLATE([HAVE_XFT2],[Define if Xft 2 library is used.])
 AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
-if test ! x"$with_xft" = xno; then
   AC_MSG_CHECKING([whether pkg-config could find freetype2])
   if "${PKG_CONFIG}" --exists freetype2; then
     AC_MSG_RESULT([yes])
@@ -641,7 +624,6 @@ if test ! x"$with_xft" = xno; then
     fi
   fi
 
-fi
 AC_SUBST(Xft_LIBS)
 AC_SUBST(Xft_CFLAGS)
 
