@@ -55,6 +55,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <sys/times.h>
+#include <time.h>
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
