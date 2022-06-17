@@ -219,7 +219,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 	FlushAllMessageQueues();
 	XFlush(dpy);
 	EWMH_SetWMState(fw, False);
-
+	SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 	return;
 }
 
