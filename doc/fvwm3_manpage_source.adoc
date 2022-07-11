@@ -7122,11 +7122,11 @@ default is 100. So, the destructiveness depends on the _alpha_
 argument.
 +
 The _Vector_ _num_
-__X__**[**__offset__**p]x**__Y__**[**__offset__**p]@***C*** ...**
+__X__**[**__offset__**p]x**__Y__**[**__offset__**p]@C ...**
 style draws a line pattern. Since this is a standard button style, the
 keyword _Vector_ is optional, _num_ is a number of point
 specifications of the form
-__X__**[**__offset__**p]x**__Y__**[**__offset__**p]@***C*** ...** _X_
+__X__**[**__offset__**p]x**__Y__**[**__offset__**p]@C ...** _X_
 and _Y_ are point coordinates inside the button, given in percents
 (from 0 to 100). An optional absolute _offset_ in pixels, can be given
 as "+<offset>p" for a positive or "-<offset>p" for a negative offset.
