@@ -6745,7 +6745,7 @@ specified is used.
 
 === Window Styles
 
-*AddButtonStyle* button [_state_] [_style_] [-- [!]_flag_ ...]::
+*AddButtonStyle* button [_state_] [_style_] [-- +++[!]+++_flag_ ...]::
 	Adds a button style to _button_. _button_ can be a button number, or
 	one of "_All_", "_Left_" or "_Right_". _state_ can be "_ActiveUp_",
 	"_ActiveDown_", "_InactiveUp_" or "_InactiveDown_", or "_Active_" (the
@@ -6795,7 +6795,7 @@ for all buttons, which causes fvwm to draw any styles set with
 used to place additional pixmaps for both "ActiveUp" and "ActiveDown"
 states and a vector button style is drawn on top of all states.
 
-*AddTitleStyle* [_state_] [_style_] [-- [!]_flag_ ...]::
+*AddTitleStyle* [_state_] [_style_] [-- +++[!]+++_flag_ ...]::
 	Adds a title style to the title-bar. _state_ can be "_ActiveUp_",
 	"_ActiveDown_", "_InactiveUp_" or "_InactiveDown_", or "_Active_" (the
 	same as both "ActiveUp" and "ActiveDown") or "_Inactive_" (the same as
@@ -6872,7 +6872,7 @@ and now apply the style again:
 Style xterm UseStyle FlatStyle
 ....
 
-*BorderStyle* _state_ [_style_] [-- [!]_flag_ ...]::
+*BorderStyle* _state_ [_style_] [-- +++[!]+++_flag_ ...]::
 	Defines a border style for windows. _state_ can be either "_Active_"
 	or "_Inactive_". If _state_ is omitted, then the style is set for both
 	states. If the _style_ and _flags_ are enclosed in parentheses, then
@@ -6957,7 +6957,7 @@ If _InactiveDown_ argument is "False" (only applied when _Inactive_ is
 are drawn using "InactiveUp" or "ActiveUp" states depending on the
 values of the other key words.
 
-*ButtonStyle* button [_state_] [_style_] [-- [!]_flag_ ...]::
+*ButtonStyle* button [_state_] [_style_] [-- +++[!]+++_flag_ ...]::
 	Sets the button style for a title-bar button. _button_ is the
 	title-bar button number between 0 and 9, or one of "_All_", "_Left_",
 	"_Right_", or "_Reset_". Button numbering is described in the *Mouse*
@@ -7221,7 +7221,7 @@ Style Emacs MiniIcon mini-doc.xpm
 ButtonStyle 1 MiniIcon
 ....
 
-*ButtonStyle* _button_ - [!]_flag_ ...::
+*ButtonStyle* _button_ - +++[!]+++_flag_ ...::
 	Sets state-independent flags for the specified _button_.
 	State-independent flags affect button behavior. Each _flag_ is
 	separated by a space. If a '!' is prefixed to the flag then the
@@ -7311,7 +7311,7 @@ DestroyDecor CustomDecor1
 TitleStyle LeftJustified Height 24
 ....
 
-*TitleStyle* [_state_] [_style_] [-- [!]_flag_ ...]::
+*TitleStyle* [_state_] [_style_] [-- +++[!]+++_flag_ ...]::
 	Sets the style for the title-bar. See also *AddTitleStyle* and
 	*ButtonStyle* _state_ can be one of "_ActiveUp_", "_ActiveDown_",
 	"_InactiveUp_", or "_InactiveDown_". Shortcuts like "_Active_" and
@@ -8447,7 +8447,7 @@ Test (F $[FVWM_USERDIR]/local-config) Read local-config
 Test (X xterm-utf16) Exec exec xterm-utf16
 ....
 +
-*TestRc* [([!]_returncode_)] _command_:::
+*TestRc* [(+++[!]+++_returncode_)] _command_:::
 	Performs _command_ if the last conditional command returned the
 	value _returncode_. Instead of the numeric values 0 (no match), 1
 	(match), -1 (error), and -2 (break) the symbolic names "_NoMatch_",
