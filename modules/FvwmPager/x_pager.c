@@ -450,16 +450,24 @@ adjust_for_sizehints(int VxPages, int VyPages)
 {
 	int w_mult;
 	int h_mult;
+	int scaled_width;
+	int scaled_height;
 
 	w_mult = Columns * VxPages;
 	h_mult = Rows * VyPages;
 
 	/* Adjust window size to be even multiples of increment size. */
 	if (pwindow.width > 0) {
-		pwindow.width = (pwindow.width / w_mult + 1) * w_mult;
+		scaled_width = pwindow.width / w_mult;
+		if (scaled_width == 0)
+			scaled_width = 1;
+		pwindow.width = scaled_width * w_mult;
 	}
 	if (pwindow.height > 0) {
-		pwindow.height = (pwindow.height / h_mult + 1) * h_mult;
+		scaled_height = pwindow.height / h_mult;
+		if (scaled_height == 0)
+			scaled_height = 1;
+		pwindow.height = scaled_height * h_mult;
 	}
 
 	desk_w = (pwindow.width - Columns + 1) / Columns;
@@ -475,6 +483,8 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 	int m_width = monitor_get_all_widths();
 	int m_height = monitor_get_all_heights();
 	int offset_x = 0, offset_y = 0;
+	int scale_w;
+	int scale_h;
 
 	if (monitor_to_track != NULL) {
 		offset_x = (m_width - mon->w) * (rec->x / m_width) + mon->x;
@@ -483,7 +493,8 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 		m_height = mon->h;
 	}
 
-	int scale_w = desk_w, scale_h = desk_h;
+	scale_w = desk_w;
+	scale_h = desk_h;
 	if ( is_icon ) {
 		scale_w = icon.width;
 		scale_h = icon.height;
@@ -495,8 +506,23 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 	 */
 	m_width = m_width * mon->virtual_scr.VxPages;
 	m_height = m_height * mon->virtual_scr.VyPages;
-	rec->width = (rec->width * scale_w) / m_width + 1;
-	rec->height = (rec->height * scale_h) / m_height + 1;
+	rec->width = (rec->width * scale_w) / m_width;
+	if (rec->width == 0)
+		rec->width = 1;
+	rec->height = (rec->height * scale_h) / m_height;
+	if (rec->height == 0)
+		rec->height = 1;
+
+	/* Adjust dimensions for coordinates. */
+	if (scale_w > 1)
+		scale_w = scale_w - 1;
+	if (scale_h > 1)
+		scale_h = scale_h - 1;
+	if (m_width > 1)
+		m_width = m_width - 1;
+	if (m_height > 1)
+		m_height = m_height - 1;
+
 	rec->x = ((rec->x - offset_x) * scale_w) / m_width;
 	rec->y = ((rec->y - offset_y) * scale_h) / m_height;
 }
