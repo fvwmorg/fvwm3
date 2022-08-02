@@ -450,8 +450,6 @@ adjust_for_sizehints(int VxPages, int VyPages)
 {
 	int w_mult;
 	int h_mult;
-	int scaled_width;
-	int scaled_height;
 
 	w_mult = Columns * VxPages;
 	h_mult = Rows * VyPages;
