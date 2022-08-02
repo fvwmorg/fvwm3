@@ -458,16 +458,10 @@ adjust_for_sizehints(int VxPages, int VyPages)
 
 	/* Adjust window size to be even multiples of increment size. */
 	if (pwindow.width > 0) {
-		scaled_width = pwindow.width / w_mult;
-		if (scaled_width == 0)
-			scaled_width = 1;
-		pwindow.width = scaled_width * w_mult;
+		pwindow.width = (pwindow.width / w_mult + 1) * w_mult;
 	}
 	if (pwindow.height > 0) {
-		scaled_height = pwindow.height / h_mult;
-		if (scaled_height == 0)
-			scaled_height = 1;
-		pwindow.height = scaled_height * h_mult;
+		pwindow.height = (pwindow.height / h_mult + 1) * h_mult;
 	}
 
 	desk_w = (pwindow.width - Columns + 1) / Columns;
