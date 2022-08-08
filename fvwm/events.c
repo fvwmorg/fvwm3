@@ -267,6 +267,12 @@ static int _pred_weed_accumulate_expose(
 	return 1;
 }
 
+static int _pred_weed_is_expose(
+	Display *display, XEvent *event, XPointer arg)
+{
+	return (event->type == Expose);
+}
+
 static int _pred_weed_handle_expose(
 	Display *display, XEvent *event, XPointer arg)
 {
@@ -4546,7 +4552,8 @@ void handle_all_expose(void)
 
 	saved_event = fev_save_event();
 	FPending(dpy);
-	FWeedIfEvents(dpy, _pred_weed_handle_expose, NULL);
+	FWeedAndHandleIfEvents(dpy, _pred_weed_is_expose,
+			       _pred_weed_handle_expose, NULL);
 	fev_restore_event(saved_event);
 
 	return;

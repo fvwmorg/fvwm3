@@ -114,6 +114,14 @@ int FWeedIfEvents(
 		Display *display, XEvent *current_event, XPointer arg),
 	XPointer arg);
 
+/* Same as FWeedIfEvents but with a second callback out of XLockDisplay()
+ * to handle events in a lock-safe manner */
+int FWeedAndHandleIfEvents(
+	Display *display,
+	int (*weed_predicate) (Display *display, XEvent *event, XPointer arg),
+	int (*handler) (Display *display, XEvent *event, XPointer arg),
+	XPointer arg);
+
 /* Same as FWeedIfEvents but weeds only events for the given window.  The
  * weed_predicate is only called for events with a matching window.  */
 int FWeedIfWindowEvents(
