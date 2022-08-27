@@ -2426,7 +2426,8 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 
 	int icon_mask = IS_ICONIFIED(fw) ? SNAP_SCREEN_ICONS :
 		SNAP_SCREEN_WINDOWS;
-	bool snap_mon = (fw->snap_attraction.mode & SNAP_SCREEN_ALL ||
+	bool snap_mon = (fw->snap_attraction.mode &
+			(SNAP_SCREEN | SNAP_SCREEN_WINDOWS| SNAP_SCREEN_ALL) ||
 		fw->snap_attraction.mode & (SNAP_SCREEN & icon_mask)) ?
 		true : false;
 	bool snap_win = (fw->snap_attraction.mode &
