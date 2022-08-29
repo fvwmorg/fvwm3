@@ -1706,6 +1706,13 @@ void goto_desk(int desk, struct monitor *m)
 		}
 
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
+			/* If we're swapping a desktop between monitors for
+			 * shared mode, only do this when the is_swapping flag
+			 * is true, otherwise events would be raised for a
+			 * new_desk for monitors/desks which have not changed.
+			 */
+			if (m != m2 && !m2->virtual_scr.is_swapping)
+				continue;
 			if (m != m2) {
 				m2->Desktops = m->Desktops;
 				if (!is_tracking_shared) {
@@ -2494,12 +2501,11 @@ void CMD_GotoDesk(F_CMD_ARGS)
 				    this_desk_now);
 
 				m_loop->virtual_scr.is_swapping = true;
-				m->virtual_scr.is_swapping = true;
-
 				goto_desk(this_desk_now, m_loop);
-				goto_desk(new_desk, m);
-
 				m_loop->virtual_scr.is_swapping = false;
+
+				m->virtual_scr.is_swapping = true;
+				goto_desk(new_desk, m);
 				m->virtual_scr.is_swapping = false;
 
 				return;
