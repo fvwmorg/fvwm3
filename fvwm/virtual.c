@@ -2897,10 +2897,12 @@ desk_add_fw(FvwmWindow *fw)
 {
 	struct desktop_fw	*df, *df_loop;
 	struct desk_fvwmwin	*dfws;
-	int			 desk = monitor_get_current()->virtual_scr.CurrentDesk;
+	int			 desk;
 
 	if (fw == NULL)
 		return;
+
+	desk = fw->m->virtual_scr.CurrentDesk;
 
 	if (TAILQ_EMPTY(&desktop_fvwm_q))
 		TAILQ_INIT(&desktop_fvwm_q);
