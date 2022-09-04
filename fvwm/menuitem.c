@@ -461,7 +461,8 @@ void menuitem_paint(
 	}
 	else
 	{
-		MI_IS_SELECTABLE(mi) = True;
+		if (!MI_IS_SEPARATOR(mi))
+			MI_IS_SELECTABLE(mi) = True;
 		gcs = ST_MENU_INACTIVE_GCS(ms);
 		off_gcs = ST_MENU_INACTIVE_GCS(ms);
 	}
