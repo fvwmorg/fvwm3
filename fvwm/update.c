@@ -667,18 +667,18 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 	rectangle g;
 	struct monitor *mnew;
 
-	get_unshaded_geometry((fw), &g);
+	get_unshaded_geometry(fw, &g);
 	mnew = FindScreenOfXY(g.x, g.y);
 
 	/* Avoid unnecessary updates. */
-	if (mnew == (fw)->m)
+	if (mnew == fw->m)
 		return False;
-	(fw)->m_prev = (fw)->m;
-	(fw)->m = mnew;
-	(fw)->Desk = mnew->virtual_scr.CurrentDesk;
-	EWMH_SetCurrentDesktop((fw)->m);
-	desk_add_fw((fw));
-	BroadcastConfig(M_CONFIGURE_WINDOW, (fw));
+	fw->m_prev = fw->m;
+	fw->m = mnew;
+	fw->Desk = mnew->virtual_scr.CurrentDesk;
+	EWMH_SetCurrentDesktop(fw->m);
+	desk_add_fw(fw);
+	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 
 	return True;
 }
