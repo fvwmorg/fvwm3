@@ -1663,6 +1663,8 @@ done:
 void goto_desk(int desk, struct monitor *m)
 {
 	struct monitor	*m2 = NULL;
+	bool has_run_globally = false;
+
 	/* RBW - the unmapping operations are now removed to their own
 	 * functions so they can also be used by the new GoToDeskAndPage
 	 * command. */
@@ -1707,23 +1709,45 @@ void goto_desk(int desk, struct monitor *m)
 		}
 
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
+			/* In global mode, only do this once. */
+			if (monitor_mode == MONITOR_TRACKING_G &&
+			    has_run_globally)
+				break;
+
 			/* If we're swapping a desktop between monitors for
 			 * shared mode, only do this when the is_swapping flag
 			 * is true, otherwise events would be raised for a
 			 * new_desk for monitors/desks which have not changed.
 			 */
-			if (m != m2 && !m2->virtual_scr.is_swapping)
-				continue;
+			if (is_tracking_shared) {
+				if (!m->virtual_scr.is_swapping ||
+				    !m2->virtual_scr.is_swapping) {
+					continue;
+				}
+				BroadcastPacket(M_NEW_DESK, 2,
+				    (long)m2->virtual_scr.CurrentDesk,
+				    (long)m2->si->rr_output);
+
+				goto done;
+			}
 			if (m != m2) {
 				m2->Desktops = m->Desktops;
 				if (!is_tracking_shared) {
 					m2->virtual_scr.CurrentDesk =
 						m->virtual_scr.CurrentDesk;
 				}
-			}
 
-			BroadcastPacket(M_NEW_DESK, 2, (long)m2->virtual_scr.CurrentDesk,
+				BroadcastPacket(M_NEW_DESK, 2,
+					(long)m2->virtual_scr.CurrentDesk,
 					(long)m2->si->rr_output);
+
+				if (monitor_mode == MONITOR_TRACKING_G &&
+				    !has_run_globally) {
+					has_run_globally = true;
+					goto done;
+				}
+			}
+done:
 
 			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 			 * window upon desk change.  This is a workaround for a
@@ -2608,6 +2632,13 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		goto_desk(m->virtual_scr.CurrentDesk, m);
 		focus_grab_buttons_all();
 
+		/* If we're sharing desks between monitors, don't send further
+		 * NEW_DESK packets, as we've already handled this in the call
+		 * to goto_desk above.
+		 */
+		if (is_tracking_shared)
+			goto done;
+
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 			(long)m->si->rr_output);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
@@ -2626,6 +2657,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 				(long)m->si->rr_output);
 	}
+done:
 	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);
 
