@@ -524,6 +524,15 @@ static signed int expand_vars_extended(
 			goto GOT_STRING;
 		}
 
+		if (strcmp(rest, "prev") == 0) {
+			struct monitor *m2 = monitor_get_prev();
+
+			should_quote = False;
+			string = (m2 != NULL) ? m2->si->name : "";
+
+			goto GOT_STRING;
+		}
+
 		/* We could be left with "<NAME>.?" */
 		char		*m_name = NULL;
 		struct monitor  *mon2;

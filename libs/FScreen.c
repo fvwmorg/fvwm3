@@ -164,6 +164,22 @@ monitor_get_global(void)
 }
 
 struct monitor *
+monitor_get_prev(void)
+{
+	struct monitor	*m, *mret = NULL;
+
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m->is_prev) {
+			mret = m;
+			break;
+		}
+	}
+
+	/* Can be NULL -- is checked in expand.c */
+	return (mret);
+}
+
+struct monitor *
 monitor_get_current(void)
 {
 	int		 JunkX = 0, JunkY = 0, x, y;
