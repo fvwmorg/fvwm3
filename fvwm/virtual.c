@@ -1713,19 +1713,27 @@ void goto_desk(int desk, struct monitor *m)
 			    has_run_globally)
 				break;
 
+			if (is_tracking_shared && m == m2) {
+			    BroadcastPacket(M_NEW_DESK, 2,
+				(long)m2->virtual_scr.CurrentDesk,
+				(long)m2->si->rr_output);
+
+				goto done;
+			}
+
 			/* If we're swapping a desktop between monitors for
 			 * shared mode, only do this when the is_swapping flag
 			 * is true, otherwise events would be raised for a
 			 * new_desk for monitors/desks which have not changed.
 			 */
 			if (is_tracking_shared) {
-				if (!m->virtual_scr.is_swapping ||
-				    !m2->virtual_scr.is_swapping) {
+			    if ((!m->virtual_scr.is_swapping ||
+			        !m2->virtual_scr.is_swapping) && m2 != m)
 					continue;
-				}
-				BroadcastPacket(M_NEW_DESK, 2,
-				    (long)m2->virtual_scr.CurrentDesk,
-				    (long)m2->si->rr_output);
+
+			    BroadcastPacket(M_NEW_DESK, 2,
+				(long)m2->virtual_scr.CurrentDesk,
+				(long)m2->si->rr_output);
 
 				goto done;
 			}
