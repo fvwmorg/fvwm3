@@ -1404,6 +1404,11 @@ static void move_viewport_delta(
 	{
 		TAILQ_FOREACH(mloop, &monitor_q, entry)
 		{
+			if (is_tracking_shared) {
+			    if ((!m->virtual_scr.is_swapping ||
+			        !mloop->virtual_scr.is_swapping) && mloop != m)
+					continue;
+			}
 			BroadcastPacket(
 				M_NEW_PAGE, 8,
 				(long)mloop->virtual_scr.Vx,
