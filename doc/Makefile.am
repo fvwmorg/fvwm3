@@ -1,5 +1,5 @@
 docdir = @FVWM_DOCDIR@
-MODULE_ADOC = \
+MODULE_ADOC_SRCS = \
 	fvwm3.adoc \
 	fvwm3all.adoc \
 	fvwm3commands.adoc \
@@ -7,6 +7,14 @@ MODULE_ADOC = \
 	fvwm3styles.adoc \
 	$(wildcard Fvwm*.adoc) \
 	$(wildcard fvwm-*.adoc)
+
+# If building FvwmPrompt, don't generate the manpage for FvwmConsole as that
+# won't ever be installed.
+if FVWM_BUILD_GOLANG
+MODULE_ADOC = $(filter-out FvwmConsole.adoc, $(MODULE_ADOC_SRCS))
+else
+MODULE_ADOC = $(MODULE_ADOC_SRCS)
+endif
 
 EXTRA_DIST = $(MODULE_ADOC)
 
