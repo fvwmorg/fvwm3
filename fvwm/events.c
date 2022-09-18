@@ -2579,9 +2579,11 @@ void HandleFocusIn(const evh_args_t *ea)
 			EWMH_SetActiveWindow(focus_w);
 
 			struct monitor *pfm;
-			pfm = monitor_resolve_name( prev_focused_monitor);
+			pfm = monitor_resolve_name(prev_focused_monitor);
 
 			if (fw != NULL && fw->m != pfm) {
+				pfm->is_prev = true;
+				fw->m->is_prev = false;
 				BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
 				    fw->m->si->name /* Name of the monitor. */
 			        );
