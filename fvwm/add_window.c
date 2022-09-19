@@ -2131,6 +2131,7 @@ FvwmWindow *AddWindow(
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
 	struct monitor	*mon;
+	extern Bool Restarting;
 
 	/****** init window structure ******/
 	setup_window_structure(&tmp, w, ReuseWin);
