@@ -328,6 +328,7 @@ adjust_for_shared_placement(FvwmWindow *fw, const exec_context_t *exc)
 	struct monitor	*m;
 	char		*cmd;
 	window_style	 style;
+	extern Bool	 Restarting;
 
 	if (!is_tracking_shared)
 		return;
@@ -371,6 +372,8 @@ adjust_for_shared_placement(FvwmWindow *fw, const exec_context_t *exc)
 		free(cmd);
 	}
 done:
+	if (Restarting)
+		return;
 	TAILQ_FOREACH(m, &monitor_q, entry) {
 		if (m->virtual_scr.CurrentDesk == fw->Desk) {
 			xasprintf(&cmd, "MoveToScreen %s", m->si->name);
