@@ -182,6 +182,8 @@ typedef struct
 } _merge_cr_args;
 
 /* ---------------------------- forward declarations ----------------------- */
+static void toggle_prev_monitor_state(struct monitor *, struct monitor *,
+    FvwmWindow *);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -1981,6 +1983,35 @@ void HandleDestroyNotify(const evh_args_t *ea)
 	return;
 }
 
+static void
+toggle_prev_monitor_state(struct monitor *this, struct monitor *prev,
+    FvwmWindow *fw)
+{
+	if (fw == NULL) {
+		/* Assume root window. */
+		if (this != prev) {
+			BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
+			    this->si->name /* Name of the monitor. */
+			);
+		}
+		/* Toggle the state of the previous monitor. */
+		prev->is_prev = false;
+		this->is_prev = true;
+
+		return;
+	}
+
+	if (fw->m != prev) {
+		BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
+			this->si->name /* Name of the monitor. */
+		);
+
+		/* Toggle the state of the previous monitor. */
+		prev->is_prev = false;
+		this->is_prev = true;
+	}
+}
+
 #if DEBUG_ENTERNOTIFY
 static int ecount=0;
 #define ENTER_DBG(x) fprintf x;
@@ -2223,6 +2254,14 @@ void HandleEnterNotify(const evh_args_t *ea)
 			InstallWindowColormaps(NULL);
 		}
 		focus_grab_buttons(lf);
+
+		struct monitor *pfm, *this_m;
+		pfm = monitor_resolve_name(prev_focused_monitor);
+		this_m = monitor_get_current();
+
+		/* Send MX_MONITOR_FOCUS event. */
+		toggle_prev_monitor_state(this_m, pfm, NULL);
+
 		return;
 	}
 	else
@@ -2312,9 +2351,20 @@ void HandleEnterNotify(const evh_args_t *ea)
 	    ewp->window == FW_W_ICON_TITLE(fw) ||
 	    ewp->window == FW_W_ICON_PIXMAP(fw))
 	{
-		BroadcastPacket(
-			MX_ENTER_WINDOW, 3, (long)FW_W(fw),
-			(long)FW_W_FRAME(fw), (unsigned long)fw);
+		struct monitor *pfm;
+		pfm = monitor_resolve_name(prev_focused_monitor);
+
+		BroadcastPacket(MX_ENTER_WINDOW, 3, (long)FW_W(fw),
+		    (long)FW_W_FRAME(fw), (unsigned long)fw);
+
+		if (fw != NULL) {
+			/* Send MX_MONITOR_FOCUS event. */
+			toggle_prev_monitor_state(fw->m, pfm, fw);
+
+			if (pfm->virtual_scr.CurrentDesk !=
+			    fw->m->virtual_scr.CurrentDesk)
+				EWMH_SetCurrentDesktop(fw->m);
+		}
 	}
 	sf = get_focus_window();
 	if (sf && fw != sf && FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
@@ -2577,20 +2627,6 @@ void HandleFocusIn(const evh_args_t *ea)
 				(unsigned long)IsLastFocusSetByMouse(),
 				(long)fc, (long)bc);
 			EWMH_SetActiveWindow(focus_w);
-
-			struct monitor *pfm;
-			pfm = monitor_resolve_name(prev_focused_monitor);
-
-			if (fw != NULL && fw->m != pfm) {
-				pfm->is_prev = true;
-				fw->m->is_prev = false;
-				BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
-				    fw->m->si->name /* Name of the monitor. */
-			        );
-				if (pfm->virtual_scr.CurrentDesk !=
-				    fw->m->virtual_scr.CurrentDesk)
-					EWMH_SetCurrentDesktop(fw->m);
-			}
 		}
 		last_focus_w = focus_w;
 		last_focus_fw = focus_fw;

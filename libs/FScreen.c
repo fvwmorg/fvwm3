@@ -167,8 +167,11 @@ struct monitor *
 monitor_get_prev(void)
 {
 	struct monitor	*m, *mret = NULL;
+	struct monitor  *this = monitor_get_current();
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (m == this)
+			continue;
 		if (m->is_prev) {
 			mret = m;
 			break;
@@ -537,6 +540,7 @@ void FScreenInit(Display *dpy)
 		m->Desktops->next = NULL;
 		m->Desktops->desk = 0;
 		m->flags |= (MONITOR_NEW|MONITOR_ENABLED);
+		m->is_prev = false;
 		monitor_scan_edges(m);
 	}
 
@@ -572,6 +576,7 @@ monitor_dump_state(struct monitor *m)
 			"\tDisabled:\t%s\n"
 			"\tIs Primary:\t%s\n"
 			"\tIs Current:\t%s\n"
+			"\tIs Previous:\t%s\n"
 			"\tOutput:\t%d\n"
 			"\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
 			"\tVirtScr: {\n"
@@ -586,6 +591,7 @@ monitor_dump_state(struct monitor *m)
 			(m2->flags & MONITOR_DISABLED) ? "true" : "false",
 			(m2->flags & MONITOR_PRIMARY) ? "yes" : "no",
 			(mcur && m2 == mcur) ? "yes" : "no",
+			m2->is_prev ? "yes" : "no",
 			(int)m2->si->rr_output,
 			m2->si->x, m2->si->y, m2->si->w, m2->si->h,
 			m2->virtual_scr.VxMax, m2->virtual_scr.VyMax,
