@@ -95,7 +95,6 @@ static Bool audio_compat = False;
 static char *audio_play_dir = NULL;
 
 #define ARG_NO_WINID 1024  /* just a large number */
-#define ARG_EXPECTS_CHAR 1025
 
 #define EVENT_ENTRY(name,action_arg) { name, action_arg, {NULL} }
 static event_entry message_event_table[] =
@@ -139,11 +138,11 @@ static event_entry extended_message_event_table[] =
 	EVENT_ENTRY( "enter_window", 0 ),
 	EVENT_ENTRY( "leave_window", 0 ),
 	EVENT_ENTRY( "property_change", 0),
-	EVENT_ENTRY( "monitor_enabled", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "monitor_disabled", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "monitor_changed", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "monitor_focus", 0 | ARG_EXPECTS_CHAR),
-	EVENT_ENTRY( "echo", 0 | ARG_EXPECTS_CHAR),
+	EVENT_ENTRY( "monitor_enabled", 0 | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_disabled", 0 | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_changed", 0 | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_focus", 0 | ARG_NO_WINID),
+	EVENT_ENTRY( "echo", 0),
 	EVENT_ENTRY( "reply", 0), /* FvwmEvent will never receive MX_REPLY */
 	EVENT_ENTRY(NULL,0)
 };
@@ -468,11 +467,6 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 					sprintf(buf, "%s %s 0x%lx", cmd_line,
 						action,	body[action_arg]);
 				}
-			}
-			/* monitor_* events. */
-			else if (action_arg != -1 && (action_arg & ARG_EXPECTS_CHAR)) {
-				sprintf(buf, "%s %s %s", cmd_line, action,
-						(char *)(&body[3]));
 			}
 			else
 			{
