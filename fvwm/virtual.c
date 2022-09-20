@@ -2293,16 +2293,13 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		fvwm_debug(__func__, "action is required");
 		return;
 	}
-	 if ((Restarting && !Scr.flags.are_windows_captured) &&
+	if ((Restarting && !Scr.flags.are_windows_captured) &&
 	    strcasecmp(action, "shared") == 0) {
-		fvwm_debug(__func__, "Restarting and in shared mode...");
+		fvwm_debug(__func__, "Restarting and in shared mode.");
 		if (!is_tracking_shared) {
-			fvwm_debug(__func__, "Restarting and setting "
-			    "is_tracking_shared to true...");
 			is_tracking_shared = true;
 			monitor_mode = MONITOR_TRACKING_G;
 		}
-		fvwm_debug(__func__, "All done.");
 		goto update;
 	}
 
