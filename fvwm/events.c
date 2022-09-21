@@ -3221,8 +3221,23 @@ void HandleMapRequestKeepRaised(
 				 * remember exactly why this is necessary, but
 				 * probably something w/ (de)iconify state
 				 * confusion. */
-				fake_map_unmap_notify(fw, MapNotify);
-				fake_map_unmap_notify(fw, UnmapNotify);
+				if (Restarting &&
+				    win_opts->initial_state == IconicState ) {
+					/* TA: 2022-09-21 -- putting this
+					 * inside a restart check and *only*
+					 * doing this for iconified windows
+					 * stops non-iconified windows on
+					 * recapture from being iconified.
+					 */
+					fvwm_debug(__func__,
+					    "Window 0x%x is new "
+					    "and is being recaptured and in an "
+					    "iconic state. Sending fake map/unmap",
+					    (int)FW_W(fw));
+					fake_map_unmap_notify(fw, MapNotify);
+					fake_map_unmap_notify(fw, UnmapNotify);
+				}
+
 			}
 			if (win_opts->flags.is_iconified_by_parent ||
 			    ((tmp = get_transientfor_fvwmwindow(fw)) &&
