@@ -1788,7 +1788,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		bound.height = label_h;
 	}
 
-	if (FftSupport && Ffont->fftf.fftfont != NULL)
+	if (FftSupport)
 	{
 		erase = True;
 	}
@@ -2841,7 +2841,7 @@ static void do_label_window(PagerWindow *t, Window w)
   t->window_label = GetBalloonLabel(t, WindowLabelFormat);
   if (w != None)
   {
-    if (FftSupport && FwindowFont != NULL && FwindowFont->fftf.fftfont != NULL)
+    if (FftSupport)
       XClearWindow(dpy, w);
     FwinString->win = w;
     FwinString->gc = Scr.NormalGC;

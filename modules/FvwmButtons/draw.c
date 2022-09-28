@@ -829,7 +829,7 @@ void DrawTitle(button_info *b,Window win,GC gc, XEvent *pev)
 		XUnionRectWithRegion (&clip, region, region);
 		FwinString.flags.has_clip_region = True;
 		FwinString.clip_region = region;
-		if (0 && Ffont->fftf.fftfont != NULL)
+		if (0)
 		{
 			XClearArea(
 				Dpy, win,

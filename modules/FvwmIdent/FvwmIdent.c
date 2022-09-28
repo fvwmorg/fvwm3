@@ -511,7 +511,7 @@ void list_config_info(unsigned long *body)
 	if (StrEquals(token, "Colorset") && colorset >= 0 &&
 	    LoadColorset(tline) == colorset)
 	{
-		if (FftSupport && Ffont->fftf.fftfont != NULL)
+		if (FftSupport)
 		{
 			UsePixmapDrawing = True;
 		}
@@ -589,7 +589,7 @@ int ProcessXEvent(int x, int y)
 				ey2=max(ey2,
 					Event.xexpose.y + Event.xexpose.height);
 			}
-			if (FftSupport && Ffont->fftf.fftfont != NULL)
+			if (FftSupport)
 			{
 				XClearArea(
 					dpy, main_win,
@@ -754,7 +754,7 @@ void list_end(void)
 	}
 
 	/* chose the rendering methode */
-	if (FftSupport && Ffont->fftf.fftfont != NULL)
+	if (FftSupport)
 	{
 		UsePixmapDrawing = True;
 	}

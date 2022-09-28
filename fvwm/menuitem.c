@@ -482,7 +482,7 @@ void menuitem_paint(
 	/*
 	 * Hilight the item.
 	 */
-	if (FftSupport && ST_PSTDFONT(ms)->fftf.fftfont != NULL)
+	if (FftSupport)
 	{
 		xft_clear = True;
 	}
