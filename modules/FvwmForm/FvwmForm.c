@@ -1482,8 +1482,7 @@ void RedrawFrame(XEvent *pev)
 		item = root_item_ptr;
 		while(item != 0 && !clear)
 		{
-			if ((item->type == I_TEXT || item->type == I_CHOICE) &&
-			    item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
+			if ((item->type == I_TEXT || item->type == I_CHOICE))
 				clear = True;
 			item = item->header.next;
 		}
@@ -1951,7 +1950,6 @@ void RedrawItem (Item *item, int click, XEvent *pev)
     item->header.dt_ptr->dt_Fstr->len = item->button.len;
     if (FftSupport)
     {
-      if (item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
 	XClearArea(dpy, item->header.win,
 		   inter.x, inter.y, inter.width, inter.height, False);
     }
