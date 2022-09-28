@@ -1,5 +1,95 @@
 # Changelog
 
+## [1.0.5](https://github.com/fvwmorg/fvwm3/tree/1.0.5) (2022-09-28)
+
+[Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.4...1.0.5)
+
+**Breaking changes:**
+
+- Function parser rewrite & Repeat command deprecation [\#642](https://github.com/fvwmorg/fvwm3/issues/642)
+- MapRequest: don't fake map/unmap events [\#703](https://github.com/fvwmorg/fvwm3/pull/703) ([ThomasAdam](https://github.com/ThomasAdam))
+- Rewrite function parser and remove the Repeat command [\#643](https://github.com/fvwmorg/fvwm3/pull/643) ([ThomasAdam](https://github.com/ThomasAdam))
+- Update and cleanup SnapAttract code. [\#641](https://github.com/fvwmorg/fvwm3/pull/641) ([somiaj](https://github.com/somiaj))
+- Doc: split manpages into sections [\#637](https://github.com/fvwmorg/fvwm3/pull/637) ([ThomasAdam](https://github.com/ThomasAdam))
+- Remove Efence and Dmalloc support [\#635](https://github.com/fvwmorg/fvwm3/pull/635) ([ThomasAdam](https://github.com/ThomasAdam))
+
+**Implemented enhancements:**
+
+- A better ManualPlacement that allows drawing the geometry of the new window. [\#674](https://github.com/fvwmorg/fvwm3/issues/674)
+- expand: add monitor.prev variable [\#699](https://github.com/fvwmorg/fvwm3/pull/699) ([ThomasAdam](https://github.com/ThomasAdam))
+- Add AnyScreen to conditional in IconManClick [\#696](https://github.com/fvwmorg/fvwm3/pull/696) ([somiaj](https://github.com/somiaj))
+- \_NET\_WM\_NAME: update to fvwm3 [\#609](https://github.com/fvwmorg/fvwm3/pull/609) ([ThomasAdam](https://github.com/ThomasAdam))
+
+**Fixed bugs:**
+
+- Style \* Icon cause Fvwm3 stuck in loading when restart. [\#681](https://github.com/fvwmorg/fvwm3/issues/681)
+- Recaptured windows can have a negative offset away from the page they should be on [\#678](https://github.com/fvwmorg/fvwm3/issues/678)
+- VLC still decorates its transient window even when explicitly given the NakedTransient style [\#673](https://github.com/fvwmorg/fvwm3/issues/673)
+- configuring with `--disable-png` causes builds to fail [\#669](https://github.com/fvwmorg/fvwm3/issues/669)
+- Emoji in window titles make FvwmIconMan stop showing window names. [\#654](https://github.com/fvwmorg/fvwm3/issues/654)
+- Unable to initialize RandR [\#650](https://github.com/fvwmorg/fvwm3/issues/650)
+- PipeRead when called from a function cannot grab pointer [\#610](https://github.com/fvwmorg/fvwm3/issues/610)
+- Man Pages Cleanup [\#554](https://github.com/fvwmorg/fvwm3/issues/554)
+- Windows from various pages are moved to page 0 0 on fvwm3 restart [\#694](https://github.com/fvwmorg/fvwm3/issues/694)
+- Separator in menu gets focus [\#675](https://github.com/fvwmorg/fvwm3/issues/675)
+- Unshading a window with WindowShade function sometimes makes the window lose "true input focus". [\#671](https://github.com/fvwmorg/fvwm3/issues/671)
+- When configured with `--disable-xft` fvwm3 fails to build. [\#667](https://github.com/fvwmorg/fvwm3/issues/667)
+- my fvwm config does not work with recent chromium [\#663](https://github.com/fvwmorg/fvwm3/issues/663)
+- FvwmEvent event new\_desk gets triggered multiple times in multi-monitor shared setup [\#655](https://github.com/fvwmorg/fvwm3/issues/655)
+- Windows with style "PositionPlacement Center" split between monitors [\#648](https://github.com/fvwmorg/fvwm3/issues/648)
+- FVWM branch dv/pager-noaspect crashes with core dump [\#647](https://github.com/fvwmorg/fvwm3/issues/647)
+- SnapAttraction prefers wrong window [\#631](https://github.com/fvwmorg/fvwm3/issues/631)
+- FvwmPrompt is installed unstripped [\#618](https://github.com/fvwmorg/fvwm3/issues/618)
+- DesktopName fails to set desktop name under described circumstances [\#606](https://github.com/fvwmorg/fvwm3/issues/606)
+- FvwmEvent event monitor\_focus broken in FVWM3 1.0.4 [\#604](https://github.com/fvwmorg/fvwm3/issues/604)
+- Building FvwmPrompt disables FvwmConsole, but still installs manual page. [\#597](https://github.com/fvwmorg/fvwm3/issues/597)
+- Wait command in configuration file can cause unexpected issues with GeometryWindow. [\#590](https://github.com/fvwmorg/fvwm3/issues/590)
+- "GeometryWindow Hide" doesn't work [\#589](https://github.com/fvwmorg/fvwm3/issues/589)
+- Special characters \(umlauts\) are sometimes not displayed correctly in the window title [\#482](https://github.com/fvwmorg/fvwm3/issues/482)
+- FvwmEvent: handle previous\_monitor and no longer passthrough ID  [\#701](https://github.com/fvwmorg/fvwm3/pull/701) ([ThomasAdam](https://github.com/ThomasAdam))
+- doc: don't build FvwmConsole.1 if FvwmPrompt enabled [\#700](https://github.com/fvwmorg/fvwm3/pull/700) ([ThomasAdam](https://github.com/ThomasAdam))
+- DesktopConfiguration shared: keep windows in-situ [\#697](https://github.com/fvwmorg/fvwm3/pull/697) ([ThomasAdam](https://github.com/ThomasAdam))
+- desk\_add: fix starting desk/monitor [\#689](https://github.com/fvwmorg/fvwm3/pull/689) ([ThomasAdam](https://github.com/ThomasAdam))
+- shared: fix flagging of new\_desk [\#687](https://github.com/fvwmorg/fvwm3/pull/687) ([ThomasAdam](https://github.com/ThomasAdam))
+- Fix for lock recusion in handle\_all\_expose\(\) [\#683](https://github.com/fvwmorg/fvwm3/pull/683) ([mherrb](https://github.com/mherrb))
+- Asciidoc fixes [\#676](https://github.com/fvwmorg/fvwm3/pull/676) ([topcat001](https://github.com/topcat001))
+- grow: ignore transient windows [\#627](https://github.com/fvwmorg/fvwm3/pull/627) ([ThomasAdam](https://github.com/ThomasAdam))
+- MoveToScreen: fix NULL-dereference [\#605](https://github.com/fvwmorg/fvwm3/pull/605) ([ThomasAdam](https://github.com/ThomasAdam))
+- Bugfix: fvwm-menu-desktop --get-menus [\#593](https://github.com/fvwmorg/fvwm3/pull/593) ([somiaj](https://github.com/somiaj))
+
+**Closed issues:**
+
+- Code Cleanup: Codacy issues list [\#107](https://github.com/fvwmorg/fvwm3/issues/107)
+
+**Merged pull requests:**
+
+- avoid sprintf\(%n\) [\#653](https://github.com/fvwmorg/fvwm3/pull/653) ([omar-polo](https://github.com/omar-polo))
+- FvwmPrompt: add GOFLAGS to build stripped [\#619](https://github.com/fvwmorg/fvwm3/pull/619) ([Zirias](https://github.com/Zirias))
+- Wait: don't run until windows are captured [\#592](https://github.com/fvwmorg/fvwm3/pull/592) ([ThomasAdam](https://github.com/ThomasAdam))
+- CMD\_GeometryWindow: Move NULL check. [\#591](https://github.com/fvwmorg/fvwm3/pull/591) ([somiaj](https://github.com/somiaj))
+- cleanup: address warnings [\#705](https://github.com/fvwmorg/fvwm3/pull/705) ([ThomasAdam](https://github.com/ThomasAdam))
+- modconf: disable debug [\#698](https://github.com/fvwmorg/fvwm3/pull/698) ([ThomasAdam](https://github.com/ThomasAdam))
+- GotoDesk: avoid over-eager matching [\#695](https://github.com/fvwmorg/fvwm3/pull/695) ([ThomasAdam](https://github.com/ThomasAdam))
+- update\_fvwm\_monitor: cosmetic change [\#692](https://github.com/fvwmorg/fvwm3/pull/692) ([ThomasAdam](https://github.com/ThomasAdam))
+- menuitem: set selectable when not a separator [\#690](https://github.com/fvwmorg/fvwm3/pull/690) ([ThomasAdam](https://github.com/ThomasAdam))
+- Windowshade: explicitly set input focus [\#672](https://github.com/fvwmorg/fvwm3/pull/672) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmPrompt: update core modules [\#665](https://github.com/fvwmorg/fvwm3/pull/665) ([ThomasAdam](https://github.com/ThomasAdam))
+- FvwmPrompt: update vendor deps [\#664](https://github.com/fvwmorg/fvwm3/pull/664) ([ThomasAdam](https://github.com/ThomasAdam))
+- Fix selectable flag for the Resize window operation menu item [\#656](https://github.com/fvwmorg/fvwm3/pull/656) ([topcat001](https://github.com/topcat001))
+- Fix ExitFunction [\#651](https://github.com/fvwmorg/fvwm3/pull/651) ([pghvlaans](https://github.com/pghvlaans))
+- DisplayPosition: fix segfault [\#645](https://github.com/fvwmorg/fvwm3/pull/645) ([ThomasAdam](https://github.com/ThomasAdam))
+- convert UPDATE\_FVWM\_SCREEN from macro to function [\#644](https://github.com/fvwmorg/fvwm3/pull/644) ([ThomasAdam](https://github.com/ThomasAdam))
+- ta/dv logfile [\#640](https://github.com/fvwmorg/fvwm3/pull/640) ([ThomasAdam](https://github.com/ThomasAdam))
+- Resize: fix resize bounds [\#638](https://github.com/fvwmorg/fvwm3/pull/638) ([ThomasAdam](https://github.com/ThomasAdam))
+- ta/dv2 [\#636](https://github.com/fvwmorg/fvwm3/pull/636) ([ThomasAdam](https://github.com/ThomasAdam))
+- ta/dv misc [\#634](https://github.com/fvwmorg/fvwm3/pull/634) ([ThomasAdam](https://github.com/ThomasAdam))
+- Reject out of range windows for Move and Resize commands. [\#633](https://github.com/fvwmorg/fvwm3/pull/633) ([ThomasAdam](https://github.com/ThomasAdam))
+- FVWMMFL: ignore SIGPIPE [\#632](https://github.com/fvwmorg/fvwm3/pull/632) ([ThomasAdam](https://github.com/ThomasAdam))
+- ta/dv ifdev [\#630](https://github.com/fvwmorg/fvwm3/pull/630) ([ThomasAdam](https://github.com/ThomasAdam))
+- ta/from dv [\#629](https://github.com/fvwmorg/fvwm3/pull/629) ([ThomasAdam](https://github.com/ThomasAdam))
+- DesktopName: don't duplicate entries with same name [\#607](https://github.com/fvwmorg/fvwm3/pull/607) ([ThomasAdam](https://github.com/ThomasAdam))
+- Patches from Debian [\#599](https://github.com/fvwmorg/fvwm3/pull/599) ([ThomasAdam](https://github.com/ThomasAdam))
+
 ## [1.0.4](https://github.com/fvwmorg/fvwm3/tree/1.0.4) (2021-07-17)
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.3...1.0.4)
@@ -79,7 +169,7 @@
 - Menu: add option to grey entries out [\#563](https://github.com/fvwmorg/fvwm3/pull/563) ([ThomasAdam](https://github.com/ThomasAdam))
 - Remove \*FvwmPager: Label configuration option. [\#562](https://github.com/fvwmorg/fvwm3/pull/562) ([somiaj](https://github.com/somiaj))
 - move: Warp: move pointer to centre of window [\#553](https://github.com/fvwmorg/fvwm3/pull/553) ([ThomasAdam](https://github.com/ThomasAdam))
-- FvwmPager: Improvements with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
+- FvwmPager: Improvments with dealing with tiny windows on tiny pagers. [\#548](https://github.com/fvwmorg/fvwm3/pull/548) ([somiaj](https://github.com/somiaj))
 - PanFrame improvements [\#547](https://github.com/fvwmorg/fvwm3/pull/547) ([ThomasAdam](https://github.com/ThomasAdam))
 - pager: teach Icon view about colorsets [\#538](https://github.com/fvwmorg/fvwm3/pull/538) ([ThomasAdam](https://github.com/ThomasAdam))
 - placement: fix mouse positioning [\#533](https://github.com/fvwmorg/fvwm3/pull/533) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -271,7 +361,7 @@
 - libs: remove CatString2/CatString3 [\#336](https://github.com/fvwmorg/fvwm3/pull/336) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmButtons: Allow Title to contain just "-" [\#314](https://github.com/fvwmorg/fvwm3/pull/314) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmPager: fix geometry string values when using @MONITORNAME [\#309](https://github.com/fvwmorg/fvwm3/pull/309) ([ThomasAdam](https://github.com/ThomasAdam))
-- Increase memory space to avoid overflow [\#306](https://github.com/fvwmorg/fvwm3/pull/306) ([binho1991](https://github.com/binho1991))
+- Increase memory space to avoid overflow [\#306](https://github.com/fvwmorg/fvwm3/pull/306) ([klebertarcisio](https://github.com/klebertarcisio))
 - CI: additional flags [\#304](https://github.com/fvwmorg/fvwm3/pull/304) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: build CHANGELOG on master only [\#302](https://github.com/fvwmorg/fvwm3/pull/302) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: enable CHANGELOG generation on push/PR [\#301](https://github.com/fvwmorg/fvwm3/pull/301) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -471,7 +561,7 @@
 - unmaximize: use window's current screen for positioning [\#69](https://github.com/fvwmorg/fvwm3/pull/69) ([ThomasAdam](https://github.com/ThomasAdam))
 - SnapAttraction: fix coord detection [\#62](https://github.com/fvwmorg/fvwm3/pull/62) ([ThomasAdam](https://github.com/ThomasAdam))
 - fix broken positions when drawing 3d borders [\#48](https://github.com/fvwmorg/fvwm3/pull/48) ([mikeandmore](https://github.com/mikeandmore))
-- Do we need to check the value returned from FCreateFImage? [\#43](https://github.com/fvwmorg/fvwm3/pull/43) ([binho1991](https://github.com/binho1991))
+- Do we need to check the value returned from FCreateFImage? [\#43](https://github.com/fvwmorg/fvwm3/pull/43) ([klebertarcisio](https://github.com/klebertarcisio))
 
 **Closed issues:**
 
@@ -522,7 +612,7 @@
 - Remove support for libstroke [\#166](https://github.com/fvwmorg/fvwm3/pull/166) ([ThomasAdam](https://github.com/ThomasAdam))
 - Additional FVWM3 references [\#159](https://github.com/fvwmorg/fvwm3/pull/159) ([ThomasAdam](https://github.com/ThomasAdam))
 - Update DEVELOPERS.md [\#158](https://github.com/fvwmorg/fvwm3/pull/158) ([ThomasAdam](https://github.com/ThomasAdam))
-- Replace calloc by fxcalloc [\#156](https://github.com/fvwmorg/fvwm3/pull/156) ([binho1991](https://github.com/binho1991))
+- Replace calloc by fxcalloc [\#156](https://github.com/fvwmorg/fvwm3/pull/156) ([klebertarcisio](https://github.com/klebertarcisio))
 - screen\_info\_new: use fxcalloc [\#154](https://github.com/fvwmorg/fvwm3/pull/154) ([ThomasAdam](https://github.com/ThomasAdam))
 - FvwmMFL: Fvwm Module Front Loader [\#153](https://github.com/fvwmorg/fvwm3/pull/153) ([ThomasAdam](https://github.com/ThomasAdam))
 - CI: switch to using image on Docker hub [\#150](https://github.com/fvwmorg/fvwm3/pull/150) ([ThomasAdam](https://github.com/ThomasAdam))
@@ -546,7 +636,7 @@
 - Fix 'dist' target [\#111](https://github.com/fvwmorg/fvwm3/pull/111) ([v1cont](https://github.com/v1cont))
 - Windows cannot be moved to desktop/workspace 0 [\#110](https://github.com/fvwmorg/fvwm3/pull/110) ([v1cont](https://github.com/v1cont))
 - logging: don't send fvwm3's usage output to log file [\#103](https://github.com/fvwmorg/fvwm3/pull/103) ([ThomasAdam](https://github.com/ThomasAdam))
-- Reproducible builds: remove \_\_DATE\_\_/\_\_TIME\_\_ [\#100](https://github.com/fvwmorg/fvwm3/pull/100) ([ThomasAdam](https://github.com/ThomasAdam))
+- Reproducable builds: remove \_\_DATE\_\_/\_\_TIME\_\_ [\#100](https://github.com/fvwmorg/fvwm3/pull/100) ([ThomasAdam](https://github.com/ThomasAdam))
 - Capture: force NormalState despite current desk [\#98](https://github.com/fvwmorg/fvwm3/pull/98) ([ThomasAdam](https://github.com/ThomasAdam))
 - place\_window: don't switch desk for transient windows [\#96](https://github.com/fvwmorg/fvwm3/pull/96) ([ThomasAdam](https://github.com/ThomasAdam))
 - remove dependency on Perl4::CoreLibs::getcwd \(fvwm3\) [\#90](https://github.com/fvwmorg/fvwm3/pull/90) ([slazav](https://github.com/slazav))
@@ -575,3 +665,4 @@
 
 
 
+\* *This Changelog was automatically generated by [github_changelog_generator](https://github.com/github-changelog-generator/github-changelog-generator)*
