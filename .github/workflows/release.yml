@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     - name: Create release branch
-      run: git checkout -b release/v${{ github.event.inputs.versionRelease }}
+      run: git checkout -b release/${{ github.event.inputs.versionRelease }}
     - name: Update CHANGELOG
       run: |
               docker run -v $(pwd):$(pwd) ferrarimarco/github-changelog-generator --exclude-labels "skip:changelog" --breaking-labels "type:breaking" --enhancement-labels "type:enhancement","type:new-feature" --bug-labels "type:bug" -t ${{ secrets.GITHUB_TOKEN }} --user fvwmorg --project fvwm3 -o "$(pwd)/CHANGELOG.md"
@@ -27,14 +27,14 @@ jobs:
               commit_message: '[AUTO]: update CHANGELOG'
               file_pattern: CHANGELOG.md
     - name: Push new branch
-      run: git push origin release/v${{ github.event.inputs.versionName }}
+      run: git push -u origin release/v${{ github.event.inputs.versionName }}
     - name: Create pull request into main
       uses: thomaseizinger/create-pull-request@1.0.0
       with:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       head: release/v${{ github.event.inputs.versionName }}
+       head: release/${{ github.event.inputs.versionName }}
        base: master
-       title: v${{ github.event.inputs.versionRelease }} into master
+       title: ${{ github.event.inputs.versionRelease }} into master
        reviewers: ${{ github.event.issue.user.login }}
        body: |
            Hello,
