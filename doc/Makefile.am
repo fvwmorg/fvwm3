@@ -3,7 +3,6 @@ MODULE_ADOC_SRCS = \
 	fvwm3.adoc \
 	fvwm3all.adoc \
 	fvwm3commands.adoc \
-	fvwm3_manpage_source.adoc \
 	fvwm3menus.adoc \
 	fvwm3styles.adoc \
 	$(wildcard Fvwm*.adoc) \
