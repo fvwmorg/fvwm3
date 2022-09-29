@@ -27,7 +27,8 @@ clean:
 distclean-local: clean
 
 if FVWM_BUILD_MANDOC
-man1_MANS = $(patsubst %.adoc,%.1, $(MODULE_ADOC))
+M1M = $(filter-out fvwm3_manpage_source.adoc, $(MODULE_ADOC))
+man1_MANS = $(patsubst %.adoc,%.1, $(M1M))
 EXTRACT_SECTIONS = \
 	commands \
 	menus \
