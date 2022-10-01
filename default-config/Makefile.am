@@ -3,14 +3,14 @@
 configdir = @FVWM_DATADIR@/default-config
 inst_location = $(DESTDIR)@FVWM_DATADIR@
 config_DATA = config \
-	      .stalonetrayrc \
+	      stalonetrayrc \
 	      FvwmScript-DateTime \
 	      FvwmScript-ConfirmQuit \
 	      FvwmScript-ConfirmCopyConfig
 
 EXTRA_DIST  = images \
 	      config \
-	      .stalonetrayrc \
+	      stalonetrayrc \
 	      FvwmScript-DateTime \
 	      FvwmScript-ConfirmQuit \
 	      FvwmScript-ConfirmCopyConfig
