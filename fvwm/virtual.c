@@ -49,6 +49,7 @@
 #include "icons.h"
 #include "stack.h"
 #include "functions.h"
+#include "builtins.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -2985,6 +2986,9 @@ desk_add_fw(FvwmWindow *fw)
 			dfws = fxcalloc(1, sizeof *dfws);
 			dfws->fw = fw;
 			TAILQ_INSERT_TAIL(&df_loop->desk_fvwmwin_q, dfws, entry);
+
+			status_send();
+
 			return;
 		}
 	}
@@ -2997,6 +3001,8 @@ desk_add_fw(FvwmWindow *fw)
 
 	TAILQ_INSERT_TAIL(&df->desk_fvwmwin_q, dfws, entry);
 	TAILQ_INSERT_TAIL(&desktop_fvwm_q, df, entry);
+
+	status_send();
 }
 
 void
@@ -3010,6 +3016,7 @@ desk_del_fw(FvwmWindow *fw)
 			if (dfws->fw == fw) {
 				TAILQ_REMOVE(&df->desk_fvwmwin_q, dfws, entry);
 				free(dfws);
+				status_send();
 				break;
 			}
 		}
