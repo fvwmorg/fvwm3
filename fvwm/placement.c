@@ -2436,6 +2436,8 @@ Bool setup_window_placement(
 		__explain_placement(fw, &reason);
 	}
 
+	desk_add_fw(fw);
+
 	return (rc == 0) ? False : True;
 }
 
