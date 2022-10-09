@@ -36,6 +36,7 @@
 #include "eventmask.h"
 #include "misc.h"
 #include "screen.h"
+#include "update.h"
 #include "virtual.h"
 #include "module_interface.h"
 #include "module_list.h"
@@ -1825,6 +1826,8 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	focus_grab_buttons_on_layer(fw->layer);
 	EWMH_SetWMDesktop(fw);
 
+	desk_add_fw(fw);
+
 	return;
 }
 
@@ -2964,7 +2967,7 @@ desk_add_fw(FvwmWindow *fw)
 	if (fw == NULL)
 		return;
 
-	desk = fw->m->virtual_scr.CurrentDesk;
+	desk = fw->Desk;
 
 	if (TAILQ_EMPTY(&desktop_fvwm_q))
 		TAILQ_INIT(&desktop_fvwm_q);
