@@ -285,9 +285,9 @@ static void EWMH_DLOG(char *msg, ...)
 		time_taken = time_val - prev_time;
 		prev_time = time_val;
 		sprintf(
-			buffer, "%.2d:%.2d:%.2d %6ld",
+			buffer, "%.2d:%.2d:%.2d %6lld",
 			t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec,
-			time_taken);
+			(long long)time_taken);
 
 		fvwm_debug(__func__, "EWMH DEBUG: ");
 		va_start(args,msg);
