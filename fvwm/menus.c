@@ -1163,7 +1163,6 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	Bool done = False;
 	Bool is_last_object_left = True;
 	unsigned char columns_placed = 0;
-	int relief_gap = 0;
 	int gap_left;
 	int gap_right;
 	int chars;
@@ -1331,7 +1330,6 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 						x;
 					x += relief_thickness +
 						gap_right;
-					relief_gap += gap_right;
 					item_order[used_objects++] =
 						&(MR_HILIGHT_X_OFFSET(
 							  msp->menu));
@@ -1354,7 +1352,6 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 					 * the width in here. */
 					MR_HILIGHT_WIDTH(msp->menu) = x;
 					x += gap_right;
-					relief_gap += gap_left;
 					item_order[used_objects++] =
 						&(MR_HILIGHT_WIDTH(msp->menu));
 					right_objects++;
