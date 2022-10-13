@@ -669,7 +669,7 @@ static char *GetTime (int *NbArg,long *TabArg)
 
   str = fxcalloc(20, sizeof(char));
   t = time(NULL);
-  sprintf(str,"%ld",(long)t-x11base->BeginTime);
+  sprintf(str,"%lld",(long long)t-x11base->BeginTime);
   return str;
 }
 
