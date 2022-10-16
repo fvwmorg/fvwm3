@@ -119,7 +119,7 @@ void do_relieve_rectangle_with_rotation(
 	}
 	max_w = min((w + 1) / 2, line_width);
 	max_h = min((h + 1) / 2, line_width);
-	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
+	seg = fxmalloc(sizeof(XSegment) * line_width * 2);
 	/* from 0 to the lesser of line_width & just over half w */
 
 	/* left */
@@ -146,6 +146,9 @@ void do_relieve_rectangle_with_rotation(
 		seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
 	}
 	XDrawSegments(dpy, d, shadow_gc, seg, cur);
+
+	if (seg)
+		XFree(seg);
 
 	return;
 }
@@ -535,7 +538,7 @@ static XColor *AllocNonlinearGradient(
 	XColor *xcs = fxmalloc(sizeof(XColor) * npixels);
 	int i;
 	int curpixel = 0;
-	int *seg_end_colors;
+	int *seg_end_colors = NULL;
 	int seg_sum = 0;
 	float color_sum = 0.0;
 
@@ -545,7 +548,8 @@ static XColor *AllocNonlinearGradient(
 			   "Gradients must specify at least one segment and"
 			   " two colors\n");
 		free(xcs);
-		return NULL;
+		xcs = NULL;
+		goto done;
 	}
 	for (i = 0; i < npixels; i++)
 	{
@@ -559,7 +563,7 @@ static XColor *AllocNonlinearGradient(
 	}
 
 	/* calculate the index of a segment's las color */
-	seg_end_colors = alloca(nsegs * sizeof(int));
+	seg_end_colors = fxmalloc(nsegs * sizeof(int));
 	if (nsegs == 1)
 	{
 		seg_end_colors[0] = npixels - 1;
@@ -580,7 +584,9 @@ static XColor *AllocNonlinearGradient(
 				   " > npixels - 1 (%d)."
 				   " Gradient drawing aborted\n",
 				   seg_end_colors[nsegs - 1], npixels - 1);
-			return NULL;
+			free(xcs);
+			xcs = NULL;
+			goto done;
 		}
 		/* take care of rounding errors */
 		seg_end_colors[nsegs - 1] = npixels - 1;
@@ -610,7 +616,8 @@ static XColor *AllocNonlinearGradient(
 			if (!c && (n - skip_first_color) != 0)
 			{
 				free(xcs);
-				return NULL;
+				xcs = NULL;
+				goto done;
 			}
 			for (j = skip_first_color; j < n; ++j)
 			{
@@ -632,9 +639,13 @@ static XColor *AllocNonlinearGradient(
 				   " npixels %d, n %d\n",
 				   nsegs, i, curpixel,
 				   seg_end_colors[i],npixels,n);
-			return NULL;
+			free(xcs);
+			xcs = NULL;
+			goto done;
 		}
 	}
+done:
+	free(seg_end_colors);
 	return xcs;
 }
 

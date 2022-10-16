@@ -164,13 +164,6 @@ fvwmSelect(fd_set_size_t nfds,
 {
 	volatile int iRet = -1;  /* This variable MUST NOT be in a register */
 
-#ifdef C_ALLOCA
-	/* If we're using the C version of alloca, see if anything needs to be
-	 * freed up.
-	 */
-	alloca(0);
-#endif
-
 	/*
 	 * Yes, we trash errno here, but you're only supposed to check
 	 * errno immediately after a function fails anyway. If we fail,

@@ -329,7 +329,6 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 	char *buffer, *rest;
 	char *fore, *back, *stipple, *font, *style, *animated;
 	MenuStyle *ms = NULL;
-	size_t len;
 
 	rest = GetNextToken(action,&fore);
 	rest = GetNextToken(rest,&back);
@@ -345,9 +344,7 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 	}
 	else
 	{
-		len = strlen(action) + 100;
-		buffer = alloca(len);
-		snprintf(buffer, len,
+		xasprintf(&buffer,
 			"* \"%s\", Foreground \"%s\", Background \"%s\", "
 			"Greyed \"%s\", Font \"%s\", \"%s\"",
 			style, fore, back, stipple, font,
@@ -357,34 +354,19 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 			   "The old MenuStyle syntax has been deprecated.  "
 			   "Use 'MenuStyle %s' instead of 'MenuStyle %s'\n",
 			   buffer, action);
+
 		action = buffer;
 		ms = menustyle_parse_style(F_PASS_ARGS);
+
+		free(buffer);
 	}
 
-	if (fore)
-	{
-		free(fore);
-	}
-	if (back)
-	{
-		free(back);
-	}
-	if (stipple)
-	{
-		free(stipple);
-	}
-	if (font)
-	{
-		free(font);
-	}
-	if (style)
-	{
-		free(style);
-	}
-	if (animated)
-	{
-		free(animated);
-	}
+	free(fore);
+	free(back);
+	free(stipple);
+	free(font);
+	free(style);
+	free(animated);
 
 	return ms;
 }

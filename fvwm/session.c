@@ -745,6 +745,7 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	FSmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
 	struct passwd *pwd;
 	char *user_id;
+	char *discardCommand;
 	char screen_num[32];
 	int numVals, i, priority = 30;
 	Bool is_xsm_detected = False;
@@ -890,9 +891,7 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 			   should be LISTofARRAY8 on posix systems, but xsm
 			   demands that it be ARRAY8.
 			*/
-			size_t len = 10 + strlen(filename);
-			char *discardCommand = alloca(len);
-			snprintf (discardCommand, len, "rm -f '%s'", filename);
+			xasprintf(&discardCommand, "rm -f '%s'", filename);
 			prop7.type = FSmARRAY8;
 			prop7.num_vals = 1;
 			prop7.vals = &prop7val;
@@ -937,7 +936,8 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	{
 		FSmcSetProperties (sm_conn, 5, props);
 	}
-	free ((char *) prop5.vals);
+	free((char *) prop5.vals);
+	free(discardCommand);
 }
 
 static void
