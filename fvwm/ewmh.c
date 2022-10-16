@@ -284,8 +284,7 @@ static void EWMH_DLOG(char *msg, ...)
 		time_val = (unsigned int)times(&not_used_tms);
 		time_taken = time_val - prev_time;
 		prev_time = time_val;
-		sprintf(
-			buffer, "%.2d:%.2d:%.2d %6lld",
+		snprintf(buffer, sizeof(buffer), "%.2d:%.2d:%.2d %6lld",
 			t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec,
 			(long long)time_taken);
 
@@ -2059,8 +2058,8 @@ void EWMH_fullscreen(FvwmWindow *fw)
 		&scr_g.width, &scr_g.height);
 	get_window_borders(fw, &b);
 	get_page_offset_check_visible(&page_x, &page_y, fw);
-	sprintf(
-		cmd, "ResizeMoveMaximize %dp %dp +%dp +%dp ewmhiwa",
+	snprintf(cmd, sizeof(cmd),
+		"ResizeMoveMaximize %dp %dp +%dp +%dp ewmhiwa",
 		scr_g.width, scr_g.height,
 		scr_g.x - b.top_left.width + page_x,
 		scr_g.y - b.top_left.height + page_y);

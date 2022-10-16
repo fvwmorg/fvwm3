@@ -122,18 +122,18 @@ static struct
    CMD10 - module->name, CatString3("*",module->name,0)
    CMD11 - module->name,module->name */
 #define CMD1X(TEXT) \
-  sprintf(cmd,TEXT,module->name);\
+  snprintf(cmd,sizeof(cmd),TEXT,module->name);\
   SendText(Channel,cmd,0);
 #define CMD10(TEXT) \
   do { \
 	  char *x; \
 	  xasprintf(&x, "*%s", module->name); \
-	  sprintf(cmd,TEXT,module->name, x);\
+	  snprintf(cmd,sizeof(cmd),TEXT,module->name, x);\
 	  SendText(Channel,cmd,0); \
 	  free(x); \
   } while (0);
 #define CMD11(TEXT) \
-  sprintf(cmd,TEXT,module->name,module->name);\
+  snprintf(cmd,sizeof(cmd),TEXT,module->name,module->name);\
   SendText(Channel,cmd,0);
 
 static void Loop(void);
@@ -822,7 +822,7 @@ int main(int argc, char **argv) {
   Scr.root = DefaultRootWindow(dpy);
   Scr.screen = DefaultScreen(dpy);
 
-  sprintf(cmd,"read .%s Quiet",module->name); /* read quiet modules config */
+  snprintf(cmd,sizeof(cmd),"read .%s Quiet",module->name); /* read quiet modules config */
   SendText(Channel,cmd,0);
   ParseOptions();                       /* get cmds fvwm has parsed */
 
@@ -1413,10 +1413,10 @@ static void SaveConfig(void) {
      read.c, right now, this logic only works well if fvwm is started
      from the users home directory.
   */
-  sprintf(filename,"%s/.%s",getenv("FVWM_USERDIR"),module->name);
+  snprintf(filename, sizeof(filename), "%s/.%s",getenv("FVWM_USERDIR"),module->name);
   config_file = fopen(filename,"w");
   if (config_file == NULL) {
-    sprintf(msg,
+    snprintf(msg, sizeof(msg),
 	    "%s: Open config file <%s> for write failed. \
 Save not done! Error\n",
 	    module->name, filename);
@@ -1474,7 +1474,7 @@ static void DefineForm(void) {
   } /* end all buttons */
   /* Macro for a command with one var */
 #define CMD1V(TEXT,VAR) \
-  sprintf(cmd,TEXT,module->name,VAR);\
+  snprintf(cmd,sizeof(cmd),TEXT,module->name,VAR);\
   SendText(Channel,cmd,0);
 
   /* There is a cleaner way (using the array) for this...dje */

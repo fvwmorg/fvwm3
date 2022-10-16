@@ -391,7 +391,7 @@ static char *interpolate_titleformat_name(
 					break;
 				}
 
-				strcat(stringbuf, fw->name.name);
+				strlcat(stringbuf, fw->name.name, sizeof(stringbuf));
 				break;
 			case 'c':
 				if (strlen(stringbuf) +
@@ -404,7 +404,7 @@ static char *interpolate_titleformat_name(
 
 					break;
 				}
-				strcat(stringbuf, fw->class.res_class);
+				strlcat(stringbuf, fw->class.res_class, sizeof(stringbuf));
 				break;
 			case 'i':
 				/* format contains icon name */
@@ -427,7 +427,7 @@ static char *interpolate_titleformat_name(
 					break;
 				}
 
-				strcat(stringbuf, fw->icon_name.name);
+				strlcat(stringbuf, fw->icon_name.name, sizeof(stringbuf));
 				break;
 			case 'r':
 				if (strlen(stringbuf) +
@@ -440,7 +440,7 @@ static char *interpolate_titleformat_name(
 
 					break;
 				}
-				strcat(stringbuf, fw->class.res_name);
+				strlcat(stringbuf, fw->class.res_name, sizeof(stringbuf));
 				break;
 			case 't':
 				setup_name_count(fw, is_icon);
@@ -450,15 +450,15 @@ static char *interpolate_titleformat_name(
 				if (count > (MAX_WINDOW_NAME_NUMBER - 1))
 					count = MAX_WINDOW_NAME_NUMBER - 1;
 
-				sprintf(win_name_len, "%hu", ++count);
-				strcat(stringbuf, win_name_len);
+				snprintf(win_name_len, sizeof(win_name_len), "%hu", ++count);
+				strlcat(stringbuf, win_name_len, sizeof(stringbuf));
 				break;
 			case 'I':
-				sprintf(w_id, "0x%x", (int)FW_W(fw));
-				strcat(stringbuf, w_id);
+				snprintf(w_id, sizeof(w_id), "0x%x", (int)FW_W(fw));
+				strlcat(stringbuf, w_id, sizeof(stringbuf));
 				break;
 			case '%':
-				strcat(stringbuf, "%");
+				strlcat(stringbuf, "%", sizeof(stringbuf));
 				break;
 			default:
 				break;
@@ -2588,7 +2588,7 @@ FvwmWindow *AddWindow(
 			     EWMH_STATE_HAS_HINT) ? 100 : 0;
 			v = (HAS_EWMH_INIT_MAXVERT_STATE(fw) ==
 			     EWMH_STATE_HAS_HINT) ? 100 : 0;
-			sprintf(cmd,"Maximize on %i %i", h, v);
+			snprintf(cmd, sizeof(cmd), "Maximize on %i %i", h, v);
 			execute_function_override_window(
 				NULL, NULL, cmd, NULL, 0, fw);
 		}

@@ -1246,9 +1246,7 @@ static void finish_ct_init(
 			ctt++;
 		}
 		/* TA:  FIXME!  Spelling!!! */
-		/* TA:  FIXME!  Use xasprintf() */
-		env = fxmalloc(PICTURE_TABLETYPE_LENGHT + 1);
-		sprintf(env, "%i", ctt);
+		xasprintf(&env, "%i", ctt);
 		flib_putenv("FVWM_COLORTABLE_TYPE", env);
 		free(env);
 		if (Pdepth <= 8)
@@ -2152,9 +2150,7 @@ void PictureReduceColorName(char **my_color)
 	 * string */
 	free(*my_color);                    /* free old color */
 	/* area for new color */
-	/* TA:  FIXME!  xasprintf() */
-	*my_color = fxmalloc(8);
-	sprintf(*my_color,"#%x%x%x",
+	xasprintf(my_color,"#%x%x%x",
 		Pct[index].color.red >> 8,
 		Pct[index].color.green >> 8,
 		Pct[index].color.blue >> 8); /* put it there */

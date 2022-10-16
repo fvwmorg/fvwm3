@@ -501,7 +501,6 @@ char *get_display_name(char *disp_name, int screen_num)
 	char *msg;
 	char *new_dn;
 	char *cp;
-	char string_screen_num[32];
 
 	CopyString(&msg, disp_name);
 	cp = strchr(msg, ':');
@@ -514,12 +513,7 @@ char *get_display_name(char *disp_name, int screen_num)
 			*cp = '\0';
 		}
 	}
-	sprintf(string_screen_num, ".%d", screen_num);
-	/* TA:  FIXME!  Use asprintF() */
-	new_dn = fxmalloc(strlen(msg) + strlen(string_screen_num) + 1);
-	*new_dn = '\0';
-	strcat(new_dn, msg);
-	strcat(new_dn, string_screen_num);
+	xasprintf(&new_dn, "%s.%d", msg, screen_num);
 	free(msg);
 
 	return new_dn;
@@ -1236,13 +1230,13 @@ static void setVersionInfo(void)
 	char version_str[256];
 	char license_str[512];
 	char support_str[512] = "";
-	int support_len;
+	size_t support_len;
 
 	/* Set version information string */
-	sprintf(version_str, "fvwm3 %s (%s)", VERSION, VERSIONINFO);
+	snprintf(version_str, sizeof(version_str), "fvwm3 %s (%s)", VERSION, VERSIONINFO);
 	Fvwm_VersionInfo = fxstrdup(version_str);
 
-	sprintf(license_str,
+	snprintf(license_str, sizeof(license_str),
 		"fvwm3 comes with NO WARRANTY, to the extent permitted by law. "
 		"You may\nredistribute copies of fvwm under "
 		"the terms of the GNU General Public License.\n"
@@ -1251,40 +1245,40 @@ static void setVersionInfo(void)
 	Fvwm_LicenseInfo = fxstrdup(license_str);
 
 #ifdef HAVE_READLINE
-	strcat(support_str, " ReadLine,");
+	strlcat(support_str, " ReadLine,", sizeof(support_str));
 #endif
 #ifdef XPM
-	strcat(support_str, " XPM,");
+	strlcat(support_str, " XPM,", sizeof(support_str));
 #endif
 #if PngSupport
-	strcat(support_str, " PNG,");
+	strlcat(support_str, " PNG,", sizeof(support_str));
 #endif
 #ifdef HAVE_RSVG
-	strcat(support_str, " SVG,");
+	strlcat(support_str, " SVG,", sizeof(support_str));
 #endif
 	if (FHaveShapeExtension)
-		strcat(support_str, " Shape,");
+		strlcat(support_str, " Shape,", sizeof(support_str));
 #ifdef HAVE_XSHM
-	strcat(support_str, " XShm,");
+	strlcat(support_str, " XShm,", sizeof(support_str));
 #endif
 #ifdef SESSION
-	strcat(support_str, " SM,");
+	strlcat(support_str, " SM,", sizeof(support_str));
 #endif
 #ifdef HAVE_BIDI
-	strcat(support_str, " Bidi text,");
+	strlcat(support_str, " Bidi text,", sizeof(support_str));
 #endif
-	strcat(support_str, " XRandR,");
+	strlcat(support_str, " XRandR,", sizeof(support_str));
 #ifdef HAVE_XRENDER
-	strcat(support_str, " XRender,");
+	strlcat(support_str, " XRender,", sizeof(support_str));
 #endif
 #ifdef HAVE_XCURSOR
-	strcat(support_str, " XCursor,");
+	strlcat(support_str, " XCursor,", sizeof(support_str));
 #endif
 #ifdef HAVE_XFT
-	strcat(support_str, " XFT,");
+	strlcat(support_str, " XFT,", sizeof(support_str));
 #endif
 #ifdef HAVE_NLS
-	strcat(support_str, " NLS,");
+	strlcat(support_str, " NLS,", sizeof(support_str));
 #endif
 
 	support_len = strlen(support_str);

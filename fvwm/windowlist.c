@@ -77,35 +77,25 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 	struct monitor	*m = monitor_get_current();
 
 	desk_name = GetDesktopName(m, desk);
-	if (desk_name != NULL)
-	{
-		tlabel = fxmalloc(strlen(desk_name)+50);
-	}
-	else
-	{
-		tlabel = fxmalloc(50);
-	}
-
-	/* TA:  FIXME! xasprintf() */
 
 	if (desk_name != NULL)
 	{
 		if (flags & NO_NUM_IN_DESK_TITLE)
 		{
-			sprintf(tlabel, "%s%s", desk_name,
+			xasprintf(&tlabel, "%s%s", desk_name,
 				(is_top_title && (flags & SHOW_GEOMETRY)) ?
 				_("\tGeometry") : "");
 		}
 		else
 		{
-			sprintf(tlabel,"%d: %s%s", desk, desk_name,
+			xasprintf(&tlabel,"%d: %s%s", desk, desk_name,
 				(is_top_title && (flags & SHOW_GEOMETRY)) ?
 				_("\tGeometry") : "");
 		}
 	}
 	else
 	{
-		sprintf(tlabel,_("Desk: %d%s"),desk,
+		xasprintf(&tlabel,_("Desk: %d%s"),desk,
 			(is_top_title && (flags & SHOW_GEOMETRY)) ?
 			_("\tGeometry") : "");
 	}
@@ -897,12 +887,12 @@ void CMD_WindowList(F_CMD_ARGS)
 				if (!IS_ICONIFIED(t) &&
 				    !(flags & NO_DESK_NUM))
 				{
-					sprintf(loc,"%d:", t->Desk);
-					strcat(tname,loc);
+					snprintf(loc, sizeof(loc), "%d:", t->Desk);
+					strlcat(tname, loc, sizeof(tname));
 				}
 				if (IS_ICONIFIED(t))
 				{
-					strcat(tname, "(");
+					strlcat(tname, "(", sizeof(tname));
 				}
 				strcat(t_hot,"\t");
 				strcat(t_hot,tname);
@@ -919,41 +909,41 @@ void CMD_WindowList(F_CMD_ARGS)
 				tname[0]=0;
 				if (IS_ICONIFIED(t))
 				{
-					strcpy(tname, "(");
+					strlcpy(tname, "(", sizeof(tname));
 				}
 				if (!(flags & NO_DESK_NUM))
 				{
-					sprintf(loc, "%d", t->Desk);
-					strcat(tname, loc);
+					snprintf(loc, sizeof(loc), "%d", t->Desk);
+					strlcat(tname, loc, sizeof(tname));
 				}
 				if (flags & SHOW_SCREEN)
 				{
-					sprintf(loc, "@%s", t->m->si->name);
-					strcat(tname, loc);
+					snprintf(loc, sizeof(loc), "@%s", t->m->si->name);
+					strlcat(tname, loc, sizeof(tname));
 				}
 				if (flags & SHOW_PAGE_X)
 				{
-					sprintf(loc, "+%d",
+					snprintf(loc, sizeof(loc), "+%d",
 						(mon->virtual_scr.Vx + t->g.frame.x +
 						 t->g.frame.width / 2) /
 						monitor_get_all_widths());
-					strcat(tname, loc);
+					strlcat(tname, loc, sizeof(tname));
 				}
 				if (flags & SHOW_PAGE_Y)
 				{
-					sprintf(loc, "+%d",
+					snprintf(loc, sizeof(loc), "+%d",
 						(mon->virtual_scr.Vy + t->g.frame.y +
 						 t->g.frame.height/2) /
 						monitor_get_all_heights());
-					strcat(tname, loc);
+					strlcat(tname, loc, sizeof(tname));
 				}
 				if (!(flags & NO_LAYER))
 				{
-					sprintf(loc, "(%d)",
+					snprintf(loc, sizeof(loc), "(%d)",
 						(get_layer(t)));
-					strcat(tname, loc);
+					strlcat(tname, loc, sizeof(tname));
 				}
-				strcat(tname, ":");
+				strlcat(tname, ":", sizeof(tname));
 				get_window_borders(t, &b);
 				dheight = t->g.frame.height -
 					b.total_size.height;
@@ -965,48 +955,47 @@ void CMD_WindowList(F_CMD_ARGS)
 				dheight = (dheight - t->hints.base_height)
 					  /t->orig_hints.height_inc;
 
-				sprintf(loc,"%d",dwidth);
-				strcat(tname, loc);
-				sprintf(loc,"x%d",dheight);
-				strcat(tname, loc);
+				snprintf(loc, sizeof(loc), "%d", dwidth);
+				strlcat(tname, loc, sizeof(tname));
+				snprintf(loc, sizeof(loc), "x%d", dheight);
+				strlcat(tname, loc, sizeof(tname));
 				if (t->g.frame.x >=0)
 				{
-					sprintf(loc,"+%d",t->g.frame.x);
+					snprintf(loc, sizeof(loc), "+%d", t->g.frame.x);
 				}
 				else
 				{
-					sprintf(loc,"%d",t->g.frame.x);
+					snprintf(loc, sizeof(loc) ,"%d", t->g.frame.x);
 				}
-				strcat(tname, loc);
+				strlcat(tname, loc, sizeof(tname));
 				if (t->g.frame.y >=0)
 				{
-					sprintf(loc,"+%d",t->g.frame.y);
+					snprintf(loc, sizeof(loc),"+%d",t->g.frame.y);
 				}
 				else
 				{
-					sprintf(loc,"%d",t->g.frame.y);
+					snprintf(loc, sizeof(loc),"%d",t->g.frame.y);
 				}
-				strcat(tname, loc);
+				strlcat(tname, loc, sizeof(tname));
 
 				if (IS_STICKY_ACROSS_PAGES(t) ||
 				    IS_STICKY_ACROSS_DESKS(t))
 				{
-					strcat(tname, " S");
+					strlcat(tname, " S", sizeof(tname));
 				}
 				if (IS_ICONIFIED(t))
 				{
-					strcat(tname, ")");
+					strlcat(tname, ")", sizeof(tname));
 				}
 				strcat(t_hot,"\t");
 				strcat(t_hot,tname);
 			}
 			ffunc = func ? func : "WindowListFunc";
-			tfunc = fxmalloc(strlen(ffunc) + 36);
+
 			/* support two ways for now: window context
 			 * (new) and window id param (old) */
 
-			/* TA:  FIXME!  xasprintf() */
-			sprintf(tfunc, "WindowId %lu %s %lu",
+			xasprintf(&tfunc, "WindowId %lu %s %lu",
 				FW_W(t), ffunc, FW_W(t));
 			AddToMenu(
 				mr, t_hot, tfunc, False, False, False);

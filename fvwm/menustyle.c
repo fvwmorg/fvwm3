@@ -329,6 +329,7 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 	char *buffer, *rest;
 	char *fore, *back, *stipple, *font, *style, *animated;
 	MenuStyle *ms = NULL;
+	size_t len;
 
 	rest = GetNextToken(action,&fore);
 	rest = GetNextToken(rest,&back);
@@ -344,8 +345,9 @@ static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 	}
 	else
 	{
-		buffer = (char *)alloca(strlen(action) + 100);
-		sprintf(buffer,
+		len = strlen(action) + 100;
+		buffer = alloca(len);
+		snprintf(buffer, len,
 			"* \"%s\", Foreground \"%s\", Background \"%s\", "
 			"Greyed \"%s\", Font \"%s\", \"%s\"",
 			style, fore, back, stipple, font,
@@ -1905,9 +1907,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	if (!destms)
 	{
 		/* create destms menu style */
-		/* TA:  FIXME!  xasprintf() */
-		buffer = fxmalloc(strlen(destname) + 3);
-		sprintf(buffer,"\"%s\"",destname);
+		xasprintf(&buffer, "\"%s\"", destname);
 		action = buffer;
 		destms = menustyle_parse_style(F_PASS_ARGS);
 		free(buffer);

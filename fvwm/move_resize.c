@@ -1258,7 +1258,7 @@ static void DisplayPosition(
 	fscr.xypos.y = p.y;
 	FScreenTranslateCoordinates(NULL, FSCREEN_GLOBAL, &fscr,
 			FSCREEN_XYPOS, &p.x, &p.y);
-	(void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, p.x, p.y);
+	(void)snprintf(str, sizeof(str), GEOMETRY_WINDOW_POS_STRING, p.x, p.y);
 	display_string(Init, str);
 
 	return;
@@ -1298,7 +1298,7 @@ static void DisplaySize(
 	d.width /= tmp_win->hints.width_inc;
 	d.height /= tmp_win->hints.height_inc;
 
-	(void)sprintf(str, GEOMETRY_WINDOW_SIZE_STRING, d.width, d.height);
+	(void)snprintf(str, sizeof(str), GEOMETRY_WINDOW_SIZE_STRING, d.width, d.height);
 	display_string(Init, str);
 
 	return;
@@ -3332,13 +3332,8 @@ void CMD_HideGeometryWindow(F_CMD_ARGS)
 void CMD_SnapAttraction(F_CMD_ARGS)
 {
 	char *cmd;
-	size_t len;
 
-	/* TA:  FIXME  xasprintf() */
-	len = strlen(action);
-	len += 99;
-	cmd = fxmalloc(len);
-	sprintf(cmd, "Style * SnapAttraction %s", action);
+	xasprintf(&cmd, "Style * SnapAttraction %s", action);
 	fvwm_debug(__func__,
 		   "The command SnapAttraction is obsolete. Please use the"
 		   " following command instead:\n\n%s", cmd);
@@ -3351,13 +3346,8 @@ void CMD_SnapAttraction(F_CMD_ARGS)
 void CMD_SnapGrid(F_CMD_ARGS)
 {
 	char *cmd;
-	size_t len;
 
-	/* TA:  FIXME xasprintf() */
-	len = strlen(action);
-	len += 99;
-	cmd = fxmalloc(len);
-	sprintf(cmd, "Style * SnapGrid %s", action);
+	xasprintf(&cmd, "Style * SnapGrid %s", action);
 	fvwm_debug(__func__,
 		   "The command SnapGrid is obsolete. Please use the following"
 		   " command instead:\n\n%s", cmd);

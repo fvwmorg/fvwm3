@@ -162,9 +162,7 @@ unique_filename(char *path, char *prefix, int *pFd)
 {
 	char *tempFile;
 
-	/* TA:  FIXME!  xasprintf() */
-	tempFile = fxmalloc(strlen(path) + strlen(prefix) + 8);
-	sprintf(tempFile, "%s/%sXXXXXX", path, prefix);
+	xasprintf(&tempFile, "%s/%sXXXXXX", path, prefix);
 	*pFd =  fvwm_mkstemp(tempFile);
 	if (*pFd == -1)
 	{
@@ -272,7 +270,7 @@ Status SetAuthentication(
 
 	umask (original_umask);
 
-	sprintf (command, "iceauth source %s", addAuthFile);
+	snprintf (command, sizeof(command), "iceauth source %s", addAuthFile);
 	{
 		int n;
 
@@ -331,7 +329,7 @@ void FreeAuthenticationData(int count, FIceAuthDataEntry *authDataEntries)
 
 	free ((char *) authDataEntries);
 
-	sprintf (command, "iceauth source %s", remAuthFile);
+	snprintf (command, sizeof(command), "iceauth source %s", remAuthFile);
 	{
 		int n;
 
@@ -1078,9 +1076,7 @@ int fsm_init(char *module)
 	}
 
 	networkIds = FIceComposeNetworkIdList(numTransports, slistenObjs);
-	/* TA:  FIXME!  xasprintf() */
-	p = fxmalloc(16 + strlen(networkIds) + 1);
-	sprintf(p, "SESSION_MANAGER=%s", networkIds);
+	xasprintf(&p, "SESSION_MANAGER=%s", networkIds);
 	putenv(p);
 
 #ifdef FVWM_DEBUG_FSM

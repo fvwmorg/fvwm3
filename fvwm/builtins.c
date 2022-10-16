@@ -218,7 +218,7 @@ static void status_init_pipe(void)
 	if ((tmpdir = getenv("TMPDIR")) == NULL)
 		tmpdir = "/tmp";
 
-	asprintf(&pipename, "%s/%s", tmpdir, PIPENAME);
+	xasprintf(&pipename, "%s/%s", tmpdir, PIPENAME);
 
 	unlink(pipename);
 	if ((mkfifo(pipename, 0666) == -1)) {
@@ -2958,19 +2958,11 @@ void CMD_HilightColor(F_CMD_ARGS)
 	GetNextToken(action, &back);
 	if (fore && back)
 	{
-		/* TA:  FIXME:  xasprintf() */
-		action = fxmalloc(strlen(fore) + strlen(back) + 29);
-		sprintf(action, "* HilightFore %s, HilightBack %s", fore, back);
+		xasprintf(&action, "* HilightFore %s, HilightBack %s", fore, back);
 		CMD_Style(F_PASS_ARGS);
 	}
-	if (fore)
-	{
-		free(fore);
-	}
-	if (back)
-	{
-		free(back);
-	}
+	free(fore);
+	free(back);
 
 	return;
 }
@@ -2991,9 +2983,7 @@ void CMD_HilightColorset(F_CMD_ARGS)
 
 	if (action)
 	{
-		/* TA:  FIXME!  xasprintf() */
-		newaction = fxmalloc(strlen(action) + 32);
-		sprintf(newaction, "* HilightColorset %s", action);
+		xasprintf(&newaction, "* HilightColorset %s", action);
 		action = newaction;
 		CMD_Style(F_PASS_ARGS);
 		free(newaction);
@@ -3205,9 +3195,7 @@ void CMD_IconFont(F_CMD_ARGS)
 
 	if (action)
 	{
-		/* TA:  FIXME!  xasprintf() */
-		newaction = fxmalloc(strlen(action) + 16);
-		sprintf(newaction, "* IconFont %s", action);
+		xasprintf(&newaction, "* IconFont %s", action);
 		action = newaction;
 		CMD_Style(F_PASS_ARGS);
 		free(newaction);
@@ -3231,9 +3219,7 @@ void CMD_WindowFont(F_CMD_ARGS)
 
 	if (action)
 	{
-		/* TA;  FIXME!  xasprintf() */
-		newaction = fxmalloc(strlen(action) + 16);
-		sprintf(newaction, "* Font %s", action);
+		xasprintf(&newaction, "* Font %s", action);
 		action = newaction;
 		CMD_Style(F_PASS_ARGS);
 		free(newaction);
@@ -3502,8 +3488,7 @@ void CMD_SetEnv(F_CMD_ARGS)
 	{
 		szValue = fxstrdup("");
 	}
-	szPutenv = fxmalloc(strlen(szVar) + strlen(szValue) + 2);
-	sprintf(szPutenv,"%s=%s", szVar, szValue);
+	xasprintf(&szPutenv, "%s=%s", szVar, szValue);
 	flib_putenv(szVar, szPutenv);
 	free(szVar);
 	free(szPutenv);

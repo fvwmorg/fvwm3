@@ -310,7 +310,7 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 
 	fm = fvwm_msg_new();
 
-	sprintf(xwid, "0x%lx", body[0]);
+	snprintf(xwid, sizeof(xwid), "0x%lx", body[0]);
 
 	if (debug)
 		fprintf(stderr, "%s: matched: <<%s>>\n", __func__, type_name);

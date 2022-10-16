@@ -105,7 +105,6 @@ main(int argc, char **argv)
 	char *enter_fn="Silent Raise";        /* default */
 	char *leave_fn=NULL;
 	char *buf;
-	int len;
 	unsigned long m_mask;
 	unsigned long mx_mask;
 	unsigned long last_win = 0;   /* last window handled */
@@ -337,22 +336,6 @@ main(int argc, char **argv)
 	fd_width = fd[1] + 1;
 	FD_ZERO(&in_fdset);
 
-	/* create the command buffer */
-	len = 0;
-	if (enter_fn != 0)
-	{
-		len = strlen(enter_fn);
-	}
-	if (leave_fn != NULL)
-	{
-		len = max(len, strlen(leave_fn));
-	}
-	if (do_pass_id)
-	{
-		len += 32;
-	}
-	buf = fxmalloc(len);
-
 	while (!isTerminated)
 	{
 		char raise_window_now;
@@ -370,7 +353,7 @@ main(int argc, char **argv)
 		{
 			char tmp[32];
 
-			sprintf(tmp, "%d usecs", (delay) ?
+			snprintf(tmp, sizeof(tmp), "%d usecs", (delay) ?
 				(int)delay->tv_usec : -1);
 			myfprintf((stderr, "select: delay = %s\n",
 				   (have_new_window) ? tmp : "infinite" ));
@@ -509,14 +492,16 @@ main(int argc, char **argv)
 				/* if focus_win isn't the root */
 				if (do_pass_id)
 				{
-					sprintf(buf, "%s 0x%x\n", leave_fn,
+					xasprintf(&buf, "%s 0x%x\n", leave_fn,
 						(int)last_win);
 				}
 				else
 				{
-					sprintf(buf, "%s\n", leave_fn);
+					xasprintf(&buf, "%s\n", leave_fn);
 				}
 				SendInfo(fd, buf, last_win);
+				free(buf);
+
 				if (use_enter_mode)
 				{
 					raised_win = 0;
@@ -528,14 +513,16 @@ main(int argc, char **argv)
 				/* if focus_win isn't the root */
 				if (do_pass_id)
 				{
-					sprintf(buf, "%s 0x%x\n", enter_fn,
+					xasprintf(&buf, "%s 0x%x\n", enter_fn,
 						(int)focus_win);
 				}
 				else
 				{
-					sprintf(buf, "%s\n", enter_fn);
+					xasprintf(&buf, "%s\n", enter_fn);
 				}
 				SendInfo(fd, buf, focus_win);
+				free(buf);
+
 				raised_win = focus_win;
 			}
 			else if (focus_win && enter_fn == NULL)

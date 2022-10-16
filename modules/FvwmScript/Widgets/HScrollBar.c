@@ -51,7 +51,7 @@ void DrawThumbH(struct XObj *xobj, XEvent *evp)
   XDrawSegments(dpy, xobj->win, xobj->gc, &segm, 1);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-  sprintf(str, "%d", xobj->value);
+  snprintf(str, sizeof(str), "%d", xobj->value);
   x = x + 15 - (FlocaleTextWidth(xobj->Ffont, str, strlen(str)) / 2);
   y = y - xobj->Ffont->descent - 4;
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
@@ -122,9 +122,9 @@ void InitHScrollBar(struct XObj *xobj)
   if (!((xobj->value >= xobj->value2) && (xobj->value <= xobj->value3)))
     xobj->value = xobj->value2;
   xobj->height = xobj->Ffont->height * 2 + 30;
-  sprintf(str, "%d", xobj->value2);
+  snprintf(str, sizeof(str), "%d", xobj->value2);
   i = FlocaleTextWidth(xobj->Ffont, str, strlen(str));
-  sprintf(str, "%d", xobj->value3);
+  snprintf(str, sizeof(str), "%d", xobj->value3);
   i = FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + i + 20;
   if (xobj->width<i)
     xobj->width = i;
@@ -156,12 +156,12 @@ void DrawHScrollBar(struct XObj *xobj, XEvent *evp)
   DrawThumbH(xobj, evp);
   DrawReliefRect(x, y, w, h, xobj, shad, hili);
   /* Write values */
-  sprintf(str, "%d", xobj->value2);
+  snprintf(str, sizeof(str), "%d", xobj->value2);
   x = 4;
   y = y + xobj->Ffont->ascent + h;
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
 	       !xobj->flags[1], NULL, evp);
-  sprintf(str, "%d", xobj->value3);
+  snprintf(str, sizeof(str), "%d", xobj->value3);
   x = w - FlocaleTextWidth(xobj->Ffont, str, strlen(str)) - 4;
   MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
 	       !xobj->flags[1], NULL, evp);

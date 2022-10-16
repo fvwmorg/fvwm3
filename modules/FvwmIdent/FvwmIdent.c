@@ -654,7 +654,7 @@ int ProcessXEvent(int x, int y)
 		case ReparentNotify:
 			if (minimal_layer >= 0)
 			{
-				sprintf(buf, "Layer 0 %d", my_layer);
+				snprintf(buf, sizeof(buf), "Layer 0 %d", my_layer);
 				SendText(fd, buf, main_win);
 			}
 			SendText(fd, "Raise", main_win);
@@ -1122,14 +1122,14 @@ void MakeList(void)
 		height -= target.title_h;
 	}
 
-	sprintf(desktop, "%ld",  target.desktop);
-	sprintf(layer,   "%ld",  target.layer);
-	sprintf(id,      "0x%x", (unsigned int)target.id);
-	sprintf(swidth,  "%d",   width);
-	sprintf(sheight, "%d",   height);
-	sprintf(borderw, "%ld",  target.border_w);
-	sprintf(xstr,    "%ld",  target.frame_x);
-	sprintf(ystr,    "%ld",  target.frame_y);
+	snprintf(desktop, sizeof(desktop), "%ld",  target.desktop);
+	snprintf(layer, sizeof(layer),     "%ld",  target.layer);
+	snprintf(id, sizeof(id),           "0x%x", (unsigned int)target.id);
+	snprintf(swidth, sizeof(swidth),   "%d",   width);
+	snprintf(sheight, sizeof(sheight), "%d",   height);
+	snprintf(borderw, sizeof(borderw), "%ld",  target.border_w);
+	snprintf(xstr, sizeof(xstr),       "%ld",  target.frame_x);
+	snprintf(ystr, sizeof(ystr),       "%ld",  target.frame_y);
 
 	AddToList("Name:",          target.name);
 	AddToList("Icon Name:",     target.icon_name);
@@ -1218,32 +1218,32 @@ void MakeList(void)
 	width = (width - target.base_w)/target.width_inc;
 	height = (height - target.base_h)/target.height_inc;
 
-	sprintf(loc,"%dx%d",width,height);
-	strcpy(geometry, loc);
+	snprintf(loc,sizeof(loc),"%dx%d",width,height);
+	strlcpy(geometry, loc, sizeof(geometry));
 
 	if ((target.gravity == EastGravity) ||
 	    (target.gravity == NorthEastGravity)||
 	    (target.gravity == SouthEastGravity))
 	{
-		sprintf(loc,"-%d",x2);
+		snprintf(loc,sizeof(loc),"-%d",x2);
 	}
 	else
 	{
-		sprintf(loc,"+%d",x1);
+		snprintf(loc,sizeof(loc),"+%d",x1);
 	}
-	strcat(geometry, loc);
+	strlcat(geometry, loc, sizeof(geometry));
 
 	if((target.gravity == SouthGravity)||
 	   (target.gravity == SouthEastGravity)||
 	   (target.gravity == SouthWestGravity))
 	{
-		sprintf(loc,"-%d",y2);
+		snprintf(loc,sizeof(loc),"-%d",y2);
 	}
 	else
 	{
-		sprintf(loc,"+%d",y1);
+		snprintf(loc,sizeof(loc),"+%d",y1);
 	}
-	strcat(geometry, loc);
+	strlcat(geometry, loc, sizeof(geometry));
 	AddToList("Geometry:", geometry);
 
 	{
@@ -1318,15 +1318,15 @@ void MakeList(void)
 			{
 				if (supplied_return & PAspect)
 				{ /* if window has a aspect ratio */
-					sprintf(
-						mymin_aspect, "%d/%d",
+					snprintf(mymin_aspect, sizeof(mymin_aspect),
+						"%d/%d",
 						size_hints->min_aspect.x,
 						size_hints->min_aspect.y);
 					AddToList(
 						"Minimum aspect ratio:",
 						mymin_aspect);
-					sprintf(
-						max_aspect, "%d/%d",
+					snprintf(max_aspect, sizeof(max_aspect),
+						"%d/%d",
 						size_hints->max_aspect.x,
 						size_hints->max_aspect.y);
 					AddToList(

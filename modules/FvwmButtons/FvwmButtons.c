@@ -292,8 +292,7 @@ static void DeadPipeCleanup(void)
 					{
 						char cmd[256];
 
-						sprintf(
-						  cmd,
+						snprintf(cmd, sizeof(cmd),
 						  "PropertyChange %u %u %lu",
 						  MX_PROPERTY_CHANGE_SWALLOW,
 						  0, swin);
@@ -2070,7 +2069,7 @@ static void HandlePanelPress(button_info *b)
   b->newflags.panel_mapped = !is_mapped;
 
   /* make sure the window maps on the current desk */
-  sprintf(cmd, "Silent WindowId 0x%08x (!Sticky) MoveToDesk 0",
+  snprintf(cmd, sizeof(cmd), "Silent WindowId 0x%08x (!Sticky) MoveToDesk 0",
 	  (int)b->PanelWin);
   SendInfo(fd, cmd, b->PanelWin);
   SlideWindow(Dpy, b->PanelWin,
@@ -2517,7 +2516,7 @@ static void send_bg_change_to_module(button_info *b, XEvent *Event)
 	else
 	{
 		char cmd[256];
-		sprintf(cmd, "PropertyChange %u %u %lu",
+		snprintf(cmd, sizeof(cmd), "PropertyChange %u %u %lu",
 			MX_PROPERTY_CHANGE_BACKGROUND, 0, SwallowedWindow(b));
 		SendText(fd, cmd, 0);
 	}
@@ -2805,7 +2804,7 @@ void process_message(unsigned long type, unsigned long *body)
 				swin = SwallowedWindow(b);
 				if ((buttonSwallowCount(b) == 3) && swin)
 				{
-					sprintf(cmd,
+					snprintf(cmd, sizeof(cmd),
 						"PropertyChange %u %u %lu %lu",
 						MX_PROPERTY_CHANGE_SWALLOW, 1,
 						swin, s);
@@ -3313,7 +3312,7 @@ void swallow(unsigned long *body)
 					/* if we swallow a module we send an avertisment */
 					char cmd[256];
 
-					sprintf(cmd,
+					snprintf(cmd, sizeof(cmd),
 						"PropertyChange %u %u %lu %lu",
 						MX_PROPERTY_CHANGE_SWALLOW, 1,
 						SwallowedWindow(b),
@@ -3374,7 +3373,6 @@ void exec_swallow(char *action, button_info *b)
 {
 	static char *my_sm_env = NULL;
 	static char *orig_sm_env = NULL;
-	static int len = 0;
 	static Bool sm_initialized = False;
 	static Bool session_manager = False;
 	char *cmd;
@@ -3405,14 +3403,10 @@ void exec_swallow(char *action, button_info *b)
 	if (my_sm_env == NULL)
 	{
 		my_sm_env = getenv("SESSION_MANAGER");
-		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
 	}
 
 	/* TA:  FIXME!  xasprintf() */
-	cmd = fxmalloc(len + strlen(action));
-	sprintf(
-		cmd,
-		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
+	xasprintf(&cmd, "FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
 		my_sm_env, action, orig_sm_env);
 	SendText(fd, cmd, 0);
 	free(cmd);

@@ -77,7 +77,6 @@ void InitSwallow(struct XObj *xobj)
 	XSetWindowAttributes Attr;
 	static char *my_sm_env = NULL;
 	static char *orig_sm_env = NULL;
-	static int len = 0;
 	static Bool sm_initialized = False;
 	static Bool session_manager = False;
 	char *cmd;
@@ -134,12 +133,9 @@ void InitSwallow(struct XObj *xobj)
 	if (my_sm_env == NULL)
 	{
 		my_sm_env = getenv("SESSION_MANAGER");
-		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
 	}
 
-	cmd = fxmalloc(len + strlen(xobj->swallow));
-	sprintf(
-		cmd,
+	xasprintf(&cmd,
 		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
 		my_sm_env, xobj->swallow, orig_sm_env);
 	SendText(fd, cmd, 0);
@@ -172,14 +168,12 @@ void CheckForHangon(struct XObj *xobj,unsigned long *body)
 {
 	char *cbody;
 
-	cbody=(char*)calloc(strlen((char *)&body[3]) + 1,sizeof(char));
-	sprintf(cbody,"%s",(char *)&body[3]);
+	cbody=fxstrdup((char *)&body[3]);
 	if(strcmp(cbody,xobj->title)==0)
 	{
 		xobj->win = (Window)body[0];
 		free(xobj->title);
-		xobj->title=(char*)calloc(sizeof(char),20);
-		sprintf(xobj->title,"No window");
+		xobj->title=fxstrdup("No window");
 		XUnmapWindow(dpy,xobj->win);
 		XSetWindowBorderWidth(dpy,xobj->win,0);
 	}
@@ -196,8 +190,8 @@ void swallow(struct XObj *xobj,unsigned long *body)
 			dpy,xobj->win,*xobj->ParentWin,xobj->x,xobj->y);
 		XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
 		XMapWindow(dpy,xobj->win);
-		sprintf(
-			cmd,"PropertyChange %u %u %lu %lu",
+		snprintf(cmd, sizeof(cmd),
+			"PropertyChange %u %u %lu %lu",
 			MX_PROPERTY_CHANGE_SWALLOW, 1, xobj->win,
 			(x11base->swallower_win)?
 			x11base->swallower_win:x11base->win);
