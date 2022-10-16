@@ -2108,8 +2108,7 @@ void ParseConfiguration(button_info *ub)
 		NULL
 	};
 
-	items[0] = fxmalloc(strlen(MyName) + 2);
-	sprintf(items[0], "*%s", MyName);
+	xasprintf(&items[0], "*%s", MyName);
 
 	/* send config lines with MyName */
 	InitGetConfigLine(fd, items[0]);

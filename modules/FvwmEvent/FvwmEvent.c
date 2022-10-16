@@ -432,11 +432,11 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 			if (!audio_play_dir || audio_play_dir[0] == '\0' ||
 			    action[0] == '/')
 			{
-				sprintf(buf,"%s %s", cmd_line, action);
+				snprintf(buf,len,"%s %s", cmd_line, action);
 			}
 			else
 			{
-				sprintf(buf,"%s %s/%s &", cmd_line,
+				snprintf(buf,len,"%s %s/%s &", cmd_line,
 					audio_play_dir, action);
 			}
 			if (!system(buf))
@@ -459,18 +459,18 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 				if (action_arg & ARG_NO_WINID)
 				{
 					action_arg &= ~ARG_NO_WINID;
-					sprintf(buf, "%s %s %ld", cmd_line,
+					snprintf(buf, len, "%s %s %ld", cmd_line,
 						action,	body[action_arg]);
 				}
 				else
 				{
-					sprintf(buf, "%s %s 0x%lx", cmd_line,
+					snprintf(buf, len, "%s %s 0x%lx", cmd_line,
 						action,	body[action_arg]);
 				}
 			}
 			else
 			{
-				sprintf(buf,"%s %s", cmd_line, action);
+				snprintf(buf, len,"%s %s", cmd_line, action);
 			}
 			/* let fvwm execute the function */
 			SendText(fd, buf, fw);

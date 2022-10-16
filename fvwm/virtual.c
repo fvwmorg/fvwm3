@@ -2251,18 +2251,18 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 		char stylecmd2[99];
 
 		Scr.ScrollDelay = val[0];
-		sprintf(cmd, "EdgeResistance %d", val[0]);
-		sprintf(stylecmd, "Style * EdgeMoveDelay %d", val[0]);
+		snprintf(cmd, sizeof(cmd), "EdgeResistance %d", val[0]);
+		snprintf(stylecmd, sizeof(stylecmd), "Style * EdgeMoveDelay %d", val[0]);
 		if (n == 2)
 		{
-			sprintf(
-				stylecmd2, "Style * EdgeMoveResistance %d",
+			snprintf(stylecmd2, sizeof(stylecmd2),
+				"Style * EdgeMoveResistance %d",
 				val[1]);
 		}
 		else
 		{
-			sprintf(
-				stylecmd2, "Style * EdgeMoveResistance %d %d",
+			snprintf(stylecmd2, sizeof(stylecmd2),
+				"Style * EdgeMoveResistance %d %d",
 				val[1], val[2]);
 		}
 		fvwm_debug(__func__,
@@ -3086,17 +3086,14 @@ apply_desktops_monitor(struct monitor *m)
 			/* should send the info to the FvwmPager and set the EWMH
 			 * desktop names */
 			{
-				asprintf(&msg, "DesktopName %d %s",
+				xasprintf(&msg, "DesktopName %d %s",
 					dc->desk, dc->name);
 			}
 #if 0
 			else
 			{
-				/* TA:  FIXME!  xasprintf() */
-				msg = fxmalloc(strlen(default_desk_name)+44);
-				sprintf(
-						msg, "DesktopName %d %s %d", desk,
-						default_desk_name, desk);
+				xasprintf(&msg, "DesktopName %d %s %d", desk,
+					default_desk_name, desk);
 			}
 #endif
 			BroadcastConfigInfoString(msg);

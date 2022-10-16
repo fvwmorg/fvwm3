@@ -209,7 +209,7 @@ void SetMessageMask(int *fd, unsigned long mask)
 {
 	char set_mask_mesg[50];
 
-	sprintf(set_mask_mesg, "SET_MASK %lu", mask);
+	snprintf(set_mask_mesg, sizeof(set_mask_mesg), "SET_MASK %lu", mask);
 	SendText(fd, set_mask_mesg, 0);
 }
 
@@ -217,7 +217,8 @@ void SetSyncMask(int *fd, unsigned long mask)
 {
 	char set_syncmask_mesg[50];
 
-	sprintf(set_syncmask_mesg, "SET_SYNC_MASK %lu", mask);
+	snprintf(set_syncmask_mesg, sizeof(set_syncmask_mesg),
+		"SET_SYNC_MASK %lu", mask);
 	SendText(fd, set_syncmask_mesg, 0);
 }
 
@@ -225,7 +226,8 @@ void SetNoGrabMask(int *fd, unsigned long mask)
 {
 	char set_nograbmask_mesg[50];
 
-	sprintf(set_nograbmask_mesg, "SET_NOGRAB_MASK %lu", mask);
+	snprintf(set_nograbmask_mesg, sizeof(set_nograbmask_mesg),
+		"SET_NOGRAB_MASK %lu", mask);
 	SendText(fd, set_nograbmask_mesg, 0);
 }
 
@@ -239,9 +241,10 @@ static int first_pass = 1;
 
 void InitGetConfigLine(int *fd, char *match)
 {
-	char *buffer = (char *)alloca(strlen(match) + 32);
+	size_t len = strlen(match) + 32;
+	char *buffer = alloca(len);
 	first_pass = 0;              /* make sure get wont do this */
-	sprintf(buffer, "Send_ConfigInfo %s", match);
+	snprintf(buffer, len, "Send_ConfigInfo %s", match);
 	SendText(fd, buffer, 0);
 }
 

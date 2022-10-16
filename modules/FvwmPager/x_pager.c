@@ -160,8 +160,8 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	    ( psx != 0 || psy != 0 ))
 	{
 		if (monitor_to_track != NULL)
-			sprintf(screen, "screen %s", monitor_to_track);
-		sprintf(command, "Scroll %s %dp %dp", screen, psx, psy);
+			snprintf(screen, sizeof(screen), "screen %s", monitor_to_track);
+		snprintf(command, sizeof(command), "Scroll %s %dp %dp", screen, psx, psy);
 		SendText(fd, command, 0);
 		messages_sent++;
 		SendText(fd, "Send_Reply ScrollDone", 0);
@@ -1162,7 +1162,7 @@ void DispatchEvent(XEvent *Event)
       if (do_move_page)
       {
 	char command[64];
-	sprintf(command,"Scroll %d %d", dx, dy);
+	snprintf(command, sizeof(command),"Scroll %d %d", dx, dy);
 	SendText(fd, command, 0);
       }
     }
@@ -1661,7 +1661,7 @@ void MovePage(Bool is_new_desk)
       sptr = Desks[mon->virtual_scr.CurrentDesk -desk1].label;
     else
     {
-      sprintf(str, "GotoDesk %s %d", mon->name, mon->virtual_scr.CurrentDesk);
+      snprintf(str, sizeof(str), "GotoDesk %s %d", mon->name, mon->virtual_scr.CurrentDesk);
       sptr = &str[0];
     }
 
@@ -1816,7 +1816,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
 	if( w > desk_w)
 	{
-		sprintf(str,"%d",d);
+		snprintf(str,sizeof(str),"%d",d);
 		ptr = str;
 		w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
 	}
@@ -1932,8 +1932,9 @@ void SwitchToDesk(int Desk)
 	char command[256];
 	struct fpmonitor *m = fpmonitor_this();
 
-	sprintf(command, "GotoDesk %s 0 %d", monitor_to_track ? m->name : "",
-			Desk + desk1);
+	snprintf(command, sizeof(command),
+		"GotoDesk %s 0 %d", monitor_to_track ? m->name : "",
+		Desk + desk1);
 	SendText(fd,command,0);
 }
 
@@ -1957,7 +1958,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       vy = Event->xbutton.y * mon->virtual_scr.VHeight / (desk_h * mon->virtual_scr.MyDisplayHeight);
     mon->virtual_scr.Vx = vx * mon->virtual_scr.MyDisplayWidth;
     mon->virtual_scr.Vy = vy * mon->virtual_scr.MyDisplayHeight;
-    sprintf(command, "GotoDeskAndPage %s %d %d %d",
+    snprintf(command, sizeof(command), "GotoDeskAndPage %s %d %d %d",
 		monitor_to_track ? mon->name : "", Desk + desk1, vx, vy);
     SendText(fd, command, 0);
 
@@ -1985,7 +1986,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       x = mon->virtual_scr.VxMax / mon->virtual_scr.MyDisplayWidth;
     if (y * mon->virtual_scr.MyDisplayHeight > mon->virtual_scr.VyMax)
       y = mon->virtual_scr.VyMax / mon->virtual_scr.MyDisplayHeight;
-    sprintf(command, "GotoPage %s %d %d", monitor_to_track ? mon->name : "", x, y);
+    snprintf(command, sizeof(command), "GotoPage %s %d %d", monitor_to_track ? mon->name : "", x, y);
     SendText(fd, command, 0);
   }
   Wait = 1;
@@ -1996,7 +1997,7 @@ void IconSwitchPage(XEvent *Event)
   char command[34];
   struct fpmonitor *mon = fpmonitor_this();
 
-  sprintf(command,"GotoPage %s %d %d",
+  snprintf(command,sizeof(command),"GotoPage %s %d %d",
 	  monitor_to_track ? mon->name : "",
 	  Event->xbutton.x * mon->virtual_scr.VWidth /
 		  (icon.width * mon->virtual_scr.MyDisplayWidth),
@@ -2639,7 +2640,7 @@ void MoveWindow(XEvent *Event)
 					ChangeDeskForWindow(t,mon->virtual_scr.CurrentDesk);
 			}
 			else if (NewDesk + desk1 != mon->virtual_scr.CurrentDesk) {
-				sprintf(command, "Silent MoveToDesk 0 %d",
+				snprintf(command, sizeof(command), "Silent MoveToDesk 0 %d",
 					NewDesk + desk1);
 				SendText(fd, command, t->w);
 				t->desk = NewDesk + desk1;
@@ -2659,7 +2660,7 @@ void MoveWindow(XEvent *Event)
 				/* XXX: Note the use of ewmhiwa to disable
 				 * clipping the coordinates to the wrong area!
 				 */
-				sprintf(buf, "Silent Move +%dp +%dp ewmhiwa",
+				snprintf(buf, sizeof(buf), "Silent Move +%dp +%dp ewmhiwa",
 					rec.x, rec.y);
 				SendText(fd, buf, t->w);
 				XSync(dpy,0);
@@ -2670,7 +2671,7 @@ void MoveWindow(XEvent *Event)
 		}
 
 		if (do_switch_desk_later) {
-			sprintf(command, "Silent MoveToDesk 0 %d", NewDesk +
+			snprintf(command, sizeof(command), "Silent MoveToDesk 0 %d", NewDesk +
 				desk1);
 			SendText(fd, command, t->w);
 			t->desk = NewDesk + desk1;
@@ -3034,7 +3035,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 
 		if (moved) {
 			char buf[64];
-			sprintf(buf, "Silent Move +%dp +%dp ewmhiwa",
+			snprintf(buf, sizeof(buf), "Silent Move +%dp +%dp ewmhiwa",
 				rec.x, rec.y);
 			SendText(fd, buf, t->w);
 			XSync(dpy, 0);

@@ -1009,7 +1009,7 @@ static void ReadFormData(void)
   int leading_len;
   char *line_buf;			/* ptr to curr config line */
   char cmd_buffer[200];
-  sprintf(cmd_buffer,"read %s Quiet",CF.file_to_read);
+  snprintf(cmd_buffer, sizeof(cmd_buffer), "read %s Quiet",CF.file_to_read);
   SendText(Channel,cmd_buffer,0);	/* read data */
   leading_len = strlen(CF.leading);
   InitGetConfigLine(Channel, CF.leading); /* ask for certain lines */
@@ -2734,7 +2734,7 @@ int main (int argc, char **argv)
   ReadDefaults();			/* get config from fvwm */
 
   if (strcasecmp(module->name,"FvwmForm") != 0) { /* if not already read */
-    sprintf(cmd,"read %s Quiet",module->name); /* read quiet modules config */
+    snprintf(cmd,sizeof(cmd),"read %s Quiet",module->name); /* read quiet modules config */
     SendText(Channel,cmd,0);
   }
 

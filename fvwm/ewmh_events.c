@@ -92,7 +92,7 @@ int ewmh_DesktopGeometry(
 
 		return -1;
 	}
-	sprintf(action, "DesktopSize %ld %ld", width, height);
+	snprintf(action, sizeof(action), "DesktopSize %ld %ld", width, height);
 	execute_function_override_window(NULL, NULL, action, NULL, 0, NULL);
 
 	return -1;
@@ -449,7 +449,7 @@ int ewmh_MoveResize(
 
 	if (!move)
 	{
-		sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
+		snprintf(cmd, sizeof(cmd), "WarpToWindow %i %i",x_warp,y_warp);
 		execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
 	}
 
@@ -547,7 +547,7 @@ int ewmh_WMState(
 
 		if (maximize & EWMH_MAXIMIZE_REMOVE)
 		{
-			sprintf(cmd,"Maximize off");
+			strlcpy(cmd, "Maximize off", sizeof(cmd));
 		}
 		else
 		{
@@ -557,7 +557,7 @@ int ewmh_WMState(
 			{
 				return 0;
 			}
-			sprintf(cmd,"Maximize on %i %i", max_horiz, max_vert);
+			snprintf(cmd, sizeof(cmd), "Maximize on %i %i", max_horiz, max_vert);
 		}
 		execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
 	}
@@ -714,12 +714,12 @@ int ewmh_WMStateHidden(
 			{
 				return 0;
 			}
-			sprintf(cmd, "Iconify on");
+			strlcpy(cmd, "Iconify on", sizeof(cmd));
 		}
 		else
 		{
 			/* deiconify */
-			sprintf(cmd, "Iconify off");
+			strlcpy(cmd, "Iconify off", sizeof(cmd));
 		}
 		execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
 	}

@@ -4994,7 +4994,6 @@ void CMD_BorderStyle(F_CMD_ARGS)
 	{
 		if (StrEquals(parm, "active") || StrEquals(parm, "inactive"))
 		{
-			int len;
 			char *end, *tmp;
 			DecorFace tmpdf, *df;
 
@@ -5046,11 +5045,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
 					   parm);
 				return;
 			}
-			len = end - action + 1;
-			/* TA:  FIXME xasprintf */
-			tmp = fxmalloc(len);
-			strncpy(tmp, action, len - 1);
-			tmp[len - 1] = 0;
+			tmp = fxstrdup(action);
 			ReadDecorFace(tmp, df,-1,True);
 			free(tmp);
 			action = end + 1;

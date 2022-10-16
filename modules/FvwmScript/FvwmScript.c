@@ -189,7 +189,7 @@ void ReadConfig (char *ScriptName)
      it ends up trying the command line file name undecorated, which
      could be a full path, or it could be relative to the current directory.
      Not very pretty, dje 12/26/99 */
-  sprintf(s,"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
+  snprintf(s,sizeof(s),"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
   yyin = fopen(s,"r");
   if (yyin == NULL) {                   /* file not found yet, */
     TryToFind(ScriptName);                   /* look in some other places */
@@ -223,10 +223,10 @@ static void TryToFind(char *filename) {
     yyin = fopen(filename,"r");
     return;
   }
-  sprintf(path,"%s/%s",getenv("FVWM_USERDIR"),filename);
+  snprintf(path,sizeof(path),"%s/%s",getenv("FVWM_USERDIR"),filename);
   yyin = fopen( path, "r" );
   if ( yyin == NULL ) {
-    sprintf(path,"%s/%s",FVWM_DATADIR, filename );
+    snprintf(path,sizeof(path),"%s/%s",FVWM_DATADIR, filename );
     yyin = fopen( path, "r" );
   }
   return;
@@ -339,10 +339,11 @@ void Xinit(int IsFather)
 
   if (IsFather)
   {
-    name = fxcalloc(sizeof(char), strlen("FvwmScript") + 5);
+    size_t len = strlen("FvwmScript") + 5;
+    name = fxcalloc(sizeof(char), len);
     do
     {
-      sprintf(name,"%c%xFvwmScript",161,i);
+      snprintf(name, len,"%c%xFvwmScript",161,i);
       i++;
       myatom = XInternAtom(dpy, name, False);
     }
@@ -1279,7 +1280,7 @@ void MainLoop (void)
 			  if (tabxobj[i]->TypeWidget == SwallowExec &&
 			      tabxobj[i]->win != None)
 			  {
-				  sprintf(cmd,"PropertyChange %u %u %lu %lu",
+				  snprintf(cmd,sizeof(cmd),"PropertyChange %u %u %lu %lu",
 					  MX_PROPERTY_CHANGE_SWALLOW, 1,
 					  tabxobj[i]->win, s);
 				  SendText(fd,cmd,0);

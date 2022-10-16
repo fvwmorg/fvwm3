@@ -369,8 +369,7 @@ void EvtKeyPushButton(struct XObj *xobj, XKeyEvent *EvtKey)
 	carks2 = XKeysymToString(ks);
 	if (carks2 != NULL)
 	{
-		carks = (char*)calloc(sizeof(char), 30);
-		sprintf(carks, "%s", carks2);
+		carks = fxstrdup(carks2);
 		if (strcmp(carks, "Return") == 0)
 		{
 			xobj->value = 1;

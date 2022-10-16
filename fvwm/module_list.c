@@ -321,10 +321,10 @@ static fmodule *do_execute_module(
 
 	MOD_NAME(module) = stripcpy(cptr);
 	free(cptr);
-	sprintf(arg2, "%d", app_to_fvwm[1]);
-	sprintf(arg3, "%d", fvwm_to_app[0]);
-	sprintf(arg5, "%lx", (unsigned long)win);
-	sprintf(arg6, "%lx", (unsigned long)exc->w.wcontext);
+	snprintf(arg2, sizeof(arg2), "%d", app_to_fvwm[1]);
+	snprintf(arg3, sizeof(arg3), "%d", fvwm_to_app[0]);
+	snprintf(arg5, sizeof(arg5), "%lx", (unsigned long)win);
+	snprintf(arg6, sizeof(arg6), "%lx", (unsigned long)exc->w.wcontext);
 	args[0] = arg1;
 	args[1] = arg2;
 	args[2] = arg3;
@@ -416,11 +416,12 @@ static fmodule *do_execute_module(
 			char visualid[32];
 			char colormap[32];
 
-			sprintf(
-				visualid, "FVWM_VISUALID=%lx",
+			snprintf(visualid, sizeof(visualid),
+				"FVWM_VISUALID=%lx",
 				XVisualIDFromVisual(Pvisual));
 			flib_putenv("FVWM_VISUALID", visualid);
-			sprintf(colormap, "FVWM_COLORMAP=%lx", Pcmap);
+			snprintf(colormap, sizeof(colormap),
+				"FVWM_COLORMAP=%lx", Pcmap);
 			flib_putenv("FVWM_COLORMAP", colormap);
 		}
 		else

@@ -258,7 +258,7 @@ void move_resize_raise_window(
 		const char *function = do_maximize?
 			"ResizeMoveMaximize":
 			"ResizeMove";
-		sprintf(msg, "%s %dp %dp %up %upi %s", function, w, h, x, y,
+		snprintf(msg, sizeof(msg), "%s %dp %dp %up %upi %s", function, w, h, x, y,
 			ewmhiwa);
 		SendText(fd, msg, wi->frame);
 	}
@@ -268,10 +268,10 @@ void move_resize_raise_window(
 			"ResizeMoveMaximize":
 			do_animate ? "AnimatedMove" : "Move";
 		if (do_maximize)
-			sprintf(msg, "%s keep keep %up %up %s", function, x, y,
+			snprintf(msg, sizeof(msg), "%s keep keep %up %up %s", function, x, y,
 				ewmhiwa);
 		else
-			sprintf(msg, "%s %up %up %s", function, x, y, ewmhiwa);
+			snprintf(msg, sizeof(msg), "%s %up %up %s", function, x, y, ewmhiwa);
 		SendText(fd, msg, wi->frame);
 	}
 

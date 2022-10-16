@@ -116,22 +116,6 @@ int sm_fd = -1;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static
-char *duplicate(const char *s)
-{
-	int l;
-	char *r;
-
-	/* TA:  FIXME!  Use xasprintf() */
-
-	if (!s) return NULL;
-	l = strlen(s);
-	r = fxmalloc (sizeof(char)*(l+1));
-	strncpy(r, s, l+1);
-
-	return r;
-}
-
 static char *get_version_string(void)
 {
 	return (VERSION);
@@ -815,7 +799,7 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	prop4val.value = (FSmPointer) &priority;
 	prop4val.length = 1;
 
-	sprintf(screen_num, "%d", (int)Scr.screen);
+	snprintf(screen_num, sizeof(screen_num), "%d", (int)Scr.screen);
 
 	prop5.name = FSmCloneCommand;
 	prop5.type = FSmLISTofARRAY8;
@@ -906,9 +890,9 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 			   should be LISTofARRAY8 on posix systems, but xsm
 			   demands that it be ARRAY8.
 			*/
-			char *discardCommand = alloca(
-				(10 + strlen(filename)) * sizeof(char));
-			sprintf (discardCommand, "rm -f '%s'", filename);
+			size_t len = 10 + strlen(filename);
+			char *discardCommand = alloca(len);
+			snprintf (discardCommand, len, "rm -f '%s'", filename);
 			prop7.type = FSmARRAY8;
 			prop7.num_vals = 1;
 			prop7.vals = &prop7val;
@@ -1463,7 +1447,7 @@ LoadWindowStates(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			matches[num_match - 1].client_id = duplicate(s1);
+			matches[num_match - 1].client_id = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[WINDOW_ROLE]"))
 		{
@@ -1473,7 +1457,7 @@ LoadWindowStates(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			matches[num_match - 1].window_role = duplicate(s1);
+			matches[num_match - 1].window_role = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[RES_NAME]"))
 		{
@@ -1483,7 +1467,7 @@ LoadWindowStates(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			matches[num_match - 1].res_name = duplicate(s1);
+			matches[num_match - 1].res_name = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[RES_CLASS]"))
 		{
@@ -1493,7 +1477,7 @@ LoadWindowStates(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			matches[num_match - 1].res_class = duplicate(s1);
+			matches[num_match - 1].res_class = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[WM_NAME]"))
 		{
@@ -1503,7 +1487,7 @@ LoadWindowStates(char *filename)
 				s2++;
 			}
 			sscanf(s2, "%[^\n]", s1);
-			matches[num_match - 1].wm_name = duplicate(s1);
+			matches[num_match - 1].wm_name = fxstrdup(s1);
 		}
 		else if (!strcmp(s1, "[WM_COMMAND]"))
 		{
@@ -1519,7 +1503,7 @@ LoadWindowStates(char *filename)
 				sscanf (s+pos, "%s%n", s1, &pos1);
 				pos += pos1;
 				matches[num_match - 1].wm_command[i] =
-					duplicate (s1);
+					fxstrdup(s1);
 			}
 		}
 	}

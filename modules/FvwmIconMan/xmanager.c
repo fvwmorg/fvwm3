@@ -846,7 +846,8 @@ void set_win_iconified(WinData *win, int iconified)
 			}
 			if (iconified)
 			{
-				sprintf(string, "%s %d %d %d %d %d %d %d %d",
+				snprintf(string, sizeof(string),
+					"%s %d %d %d %d %d %d %d %d",
 					win->manager->AnimCommand,
 					(int)win->x, (int)win->y,
 					(int)win->width, (int)win->height,
@@ -854,7 +855,8 @@ void set_win_iconified(WinData *win, int iconified)
 			}
 			else
 			{
-				sprintf(string, "%s %d %d %d %d %d %d %d %d",
+				snprintf(string, sizeof(string),
+					"%s %d %d %d %d %d %d %d %d",
 					win->manager->AnimCommand,
 					abs_x, abs_y, w, h,
 					(int)win->x, (int)win->y,

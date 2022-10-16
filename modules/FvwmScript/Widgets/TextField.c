@@ -607,8 +607,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
 
 	if (carks2!=NULL)
 	{
-		carks=(char*)calloc(sizeof(char),30);
-		sprintf(carks,"%s",carks2);
+		carks=fxstrdup(carks2);
 		if (strcmp(carks,"Right")==0)
 		{
 			/* if we are at the end, don't go further */

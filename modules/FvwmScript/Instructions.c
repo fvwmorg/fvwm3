@@ -155,14 +155,12 @@ static char *CalcArg (long *TabArg,int *Ix)
   if (TabArg[*Ix]>100000)       /* Number coding case */
   {
     i = (int)TabArg[*Ix] - 200000;
-    TmpStr = fxcalloc(1, sizeof(char) * 10);
-    sprintf(TmpStr,"%d",i);
+    xasprintf(&TmpStr,"%d",i);
   }
   else if (TabArg[*Ix] < -200000)/* Comparison fuction ID case */
   {
    i = TabArg[*Ix]+250000;
-   TmpStr = fxcalloc(1, sizeof(char) * 10);
-   sprintf(TmpStr,"%d",i);
+   xasprintf(&TmpStr,"%d",i);
   }
   else if (TabArg[*Ix] < -100000)       /* Function ID case */
   {
@@ -189,8 +187,7 @@ static char *FuncGetValue(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 10);
-  sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value);
+  xasprintf(&tmp,"%d",tabxobj[TabIdObj[Id]]->value);
   return tmp;
 }
 
@@ -204,8 +201,7 @@ static char *FuncGetMinValue(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 10);
-  sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value2);
+  xasprintf(&tmp,"%d",tabxobj[TabIdObj[Id]]->value2);
   return tmp;
 }
 
@@ -219,8 +215,7 @@ static char *FuncGetMaxValue(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 10);
-  sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value3);
+  xasprintf(&tmp,"%d",tabxobj[TabIdObj[Id]]->value3);
   return tmp;
 }
 
@@ -235,10 +230,9 @@ static char *FuncGetFore(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[fore];
   XQueryColor(dpy, Pcmap, &color);
-  sprintf(tmp, "%02x%02x%02x",
+  xasprintf(&tmp, "%02x%02x%02x",
 	  color.red >> 8, color.green >> 8, color.blue >> 8);
   return tmp;
 }
@@ -254,10 +248,9 @@ static char *FuncGetBack(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[back];
   XQueryColor(dpy, Pcmap, &color);
-  sprintf(tmp, "%02x%02x%02x",
+  xasprintf(&tmp, "%02x%02x%02x",
 	  color.red >> 8, color.green >> 8, color.blue >> 8);
   return tmp;
 }
@@ -273,10 +266,9 @@ static char *FuncGetHili(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[hili];
   XQueryColor(dpy, Pcmap, &color);
-  sprintf(tmp, "%02x%02x%02x",
+  xasprintf(&tmp, "%02x%02x%02x",
 	  color.red >> 8, color.green >> 8, color.blue >> 8);
   return tmp;
 }
@@ -292,10 +284,9 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
-  tmp = fxcalloc(1, sizeof(char) * 7);
   color.pixel = tabxobj[TabIdObj[Id]]->TabColor[shad];
   XQueryColor(dpy, Pcmap, &color);
-  sprintf(tmp, "%02x%02x%02x",
+  xasprintf(&tmp, "%02x%02x%02x",
 	  color.red >> 8, color.green >> 8, color.blue >> 8);
   return tmp;
 }
@@ -430,9 +421,7 @@ static char *FuncNumToHex(int *NbArg, long *TabArg)
   nbchar = atoi(str);
   free(str);
 
-  str = fxcalloc(1, nbchar + 10);
-  sprintf(str,"%X",value);
-  j = strlen(str);
+  j = xasprintf(&str,"%X",value);
   if (j < nbchar)
   {
     memmove(&str[nbchar-j],str,j);
@@ -456,8 +445,7 @@ static char *FuncHexToNum(int *NbArg, long *TabArg)
   k = (int)strtol(str,NULL,16);
   free(str);
 
-  str2 = fxcalloc(1, 20);
-  sprintf(str2,"%d",k);
+  xasprintf(&str2,"%d",k);
   return str2;
 }
 
@@ -475,8 +463,7 @@ static char *FuncAdd(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = fxcalloc(1, 20);
-  sprintf(str,"%d",val1+val2);
+  xasprintf(&str,"%d",val1+val2);
   return str;
 }
 
@@ -494,8 +481,7 @@ static char *FuncMult(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = fxcalloc(1, 20);
-  sprintf(str,"%d",val1*val2);
+  xasprintf(&str,"%d",val1*val2);
   return str;
 }
 
@@ -513,8 +499,7 @@ static char *FuncDiv(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = fxcalloc(1, 20);
-  sprintf(str,"%d",val1/val2);
+  xasprintf(&str,"%d",val1/val2);
   return str;
 }
 
@@ -536,9 +521,8 @@ static char *RemainderOfDiv(int *NbArg, long *TabArg)
   str = CalcArg(TabArg,NbArg);
   val2 = atoi(str);
   free(str);
-  str = fxcalloc(1, 20);
   res = div(val1,val2);
-  sprintf(str,"%d",res.rem);
+  xasprintf(&str,"%d",res.rem);
   return str;
 #endif
 }
@@ -618,14 +602,12 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   }
 
   /* Building the command */
-  execstr = fxcalloc(strlen(module->name) + strlen(arg) + strlen(x11base->TabScriptId[x11base->NbChild + 2]) + 5,
-                    sizeof(char));
   scriptname = fxcalloc(sizeof(char), 100);
   sscanf(arg,"%s",scriptname);
   scriptarg = fxcalloc(sizeof(char), strlen(arg));
   scriptarg = (char*)strncpy(scriptarg, &arg[strlen(scriptname)],
 			     strlen(arg) - strlen(scriptname));
-  sprintf(execstr,"%s %s %s %s",module->name,scriptname,
+  xasprintf(&execstr,"%s %s %s %s",module->name,scriptname,
 	  x11base->TabScriptId[x11base->NbChild + 2],scriptarg);
   free(scriptname);
   free(scriptarg);
@@ -654,11 +636,7 @@ static char *LaunchScript (int *NbArg,long *TabArg)
 /* GetScriptFather */
 static char *GetScriptFather (int *NbArg,long *TabArg)
 {
-  char *str;
-
-  str = fxcalloc(10, sizeof(char));
-  sprintf(str,"0");
-  return str;
+  return fxstrdup("0");
 }
 
 /* GetTime */
@@ -667,9 +645,8 @@ static char *GetTime (int *NbArg,long *TabArg)
   char *str;
   time_t t;
 
-  str = fxcalloc(20, sizeof(char));
   t = time(NULL);
-  sprintf(str,"%lld",(long long)t-x11base->BeginTime);
+  xasprintf(&str,"%lld",(long long)t-x11base->BeginTime);
   return str;
 }
 
@@ -715,8 +692,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
   send = (int)atoi(arg);
   free(arg);
 
-  msg = fxcalloc(256, sizeof(char));
-  sprintf(msg,"No message");
+  msg = fxstrdup("No message");
 
   /* Get atoms */
   AReceiv = XInternAtom(dpy,x11base->TabScriptId[1],True);
@@ -778,8 +754,7 @@ static char *FuncGetPid(int *NbArg,long *TabArg)
   pid_t pid;
 
   pid = getpid();
-  str = fxcalloc(1, 20);
-  sprintf(str,"%d",pid);
+  xasprintf(&str,"%d",pid);
   return str;
 }
 
@@ -813,9 +788,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   free(tmp);
 
   setFvwmUserDir();
-  in_fifo =
-    fxcalloc(strlen(com_name) + strlen(FvwmUserDir) + 14, sizeof(char));
-  sprintf(in_fifo,"%s/.tmp-com-in-%s",FvwmUserDir,com_name);
+  xasprintf(&in_fifo,"%s/.tmp-com-in-%s",FvwmUserDir,com_name);
 
   /* unlock the receiver, wait IN_FIFO_TIMEOUT * IN_FIFO_NBR_OF_TRY so that *
    * the receiver has the time to go in its communication loop at startup   *
@@ -871,16 +844,12 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   {
     free(cmd);
     free(com_name);
-    str=fxcalloc(2, sizeof(char));
-    sprintf(str,(err) ? "0" : "1");
-    return str;
+    return fxstrdup(err ? "0" : "1");
   }
 
   /* get the answer from the receiver.                              *
    * we wait OUT_FIFO_TIMEOUT * OUT_FIFO_NBR_OF_TRY for this answer */
-  out_fifo =
-    fxcalloc(strlen(com_name) + strlen(FvwmUserDir) + 15, sizeof(char));
-  sprintf(out_fifo,"%s/.tmp-com-out-%s",FvwmUserDir,com_name);
+  xasprintf(&out_fifo,"%s/.tmp-com-out-%s",FvwmUserDir,com_name);
   i = 0;
   while(1)
   {
@@ -929,9 +898,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   {
     if (buf)
       free(buf);
-    str=fxcalloc(2, sizeof(char));
-    sprintf(str,"0");
-    return str;
+    return fxstrdup("0");
   }
   l = strlen(buf);
   str=fxcalloc(l + 1, sizeof(char));
@@ -1573,8 +1540,7 @@ static void IfThen (int NbArg,long *TabArg)
     if (TabArg[j] > 100000)     /* Number coding case */
     {
       i = (int)TabArg[j] - 200000;
-      arg[CurrArg] = fxcalloc(1, sizeof(char) * 10);
-      sprintf(arg[CurrArg],"%d",i);
+      xasprintf(&arg[CurrArg],"%d",i);
       CurrArg++;
     }
     else if (TabArg[j] < -200000)/* Comparison function ID case */
@@ -1622,8 +1588,7 @@ static void Loop (int NbArg,long *TabArg)
     {
       int x;
       x = (int)TabArg[i] - 200000;
-      arg[CurrArg] = fxcalloc(1, sizeof(char) * 10);
-      sprintf(arg[CurrArg],"%d",x);
+      xasprintf(&arg[CurrArg],"%d",x);
     }
     else if (TabArg[i] < -100000)       /* Function ID case */
     {
@@ -1715,8 +1680,8 @@ static void WriteToFile (int NbArg,long *TabArg)
     arg[1][i+1] = '\0';
   }
 
-  sprintf(StrEnd,"#end\n");
-  sprintf(StrBegin,"#%s,",ScriptName);
+  strlcpy(StrEnd,"#end\n",sizeof(StrEnd));
+  snprintf(StrBegin,sizeof(StrBegin),"#%s,",ScriptName);
 
   buf=fxcalloc(1, maxsize);
 
@@ -1724,10 +1689,8 @@ static void WriteToFile (int NbArg,long *TabArg)
   {
     file = fxstrdup(arg[0]);
     home = getenv("HOME");
-    arg[0] = fxrealloc(arg[0],
-                      sizeof(char) * (strlen(arg[0]) + 4 + strlen(home)),
-                      sizeof(arg[0]));
-    sprintf(arg[0],"%s/%s",home,file);
+    free(arg[0]);
+    xasprintf(&arg[0],"%s/%s",home,file);
     free(file);
   }
   f = fopen(arg[0],"a+");
@@ -1740,14 +1703,16 @@ static void WriteToFile (int NbArg,long *TabArg)
   }
   if (CurrPos==size)
   {
-    sprintf(buf + strlen(buf),"\n%s%d\n%s%s\n",StrBegin,getpid(),arg[1],StrEnd);
+    size_t l = strlen(buf);
+    if (l < maxsize)
+      snprintf(buf + l, maxsize - l, "\n%s%d\n%s%s\n",StrBegin,getpid(),arg[1],StrEnd);
   }
   else
   {
     sscanf(&buf[CurrPos+strlen(StrBegin)],"%d",&OldPID);
     if (OldPID == getpid())
     {
-      sprintf(str,"%d\n",OldPID);
+      snprintf(str,sizeof(str),"%d\n",OldPID);
       while(((strncmp(StrEnd,&buf[CurrPos],strlen(StrEnd))) != 0) &&
 	    (CurrPos<size))
       {
@@ -1765,7 +1730,7 @@ static void WriteToFile (int NbArg,long *TabArg)
       {
 	CurrPos2++;
       }
-      sprintf(str,"%d\n%s",getpid(),arg[1]);
+      snprintf(str,sizeof(str),"%d\n%s",getpid(),arg[1]);
       memmove(&buf[CurrPos+strlen(str)], &buf[CurrPos2], strlen(buf)-CurrPos2);
       buf[strlen(buf)-((CurrPos2-CurrPos)-strlen(str))] = '\0';
       memmove(&buf[CurrPos],str,strlen(str));
@@ -1812,8 +1777,7 @@ static void SendToScript (int NbArg,long *TabArg)
   }
 
   /* Compute Receiver */
-  R=fxcalloc(strlen(x11base->TabScriptId[dest]) + 1, sizeof(char));
-  sprintf(R,"%s",x11base->TabScriptId[dest]);
+  R=fxstrdup(x11base->TabScriptId[dest]);
   myatom=XInternAtom(dpy,R,True);
 
   if ((BuffSend.NbMsg<40)&&(XGetSelectionOwner(dpy,myatom)!=None))

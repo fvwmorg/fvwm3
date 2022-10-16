@@ -115,7 +115,8 @@ static char *error_name(unsigned char code)
 {
 	if (code == 0 || code > (sizeof(error_names) / sizeof(char *)))
 	{
-		sprintf(unknown, "Unknown: %d", (int)code);
+		snprintf(unknown, sizeof(unknown),
+			"Unknown: %d", (int)code);
 		return unknown;
 	}
 	return error_names[code - 1];
@@ -251,11 +252,11 @@ static char *request_name(unsigned char code)
 	{
 		if (code == FRenderGetMajorOpCode())
 		{
-			sprintf(unknown, "XRender");
+			snprintf(unknown, sizeof(unknown), "XRender");
 		}
 		else
 		{
-			sprintf(unknown, "Unknown: %d", (int)code);
+			snprintf(unknown, sizeof(unknown), "Unknown: %d", (int)code);
 		}
 		return unknown;
 	}

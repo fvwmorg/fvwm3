@@ -354,7 +354,7 @@ int main(int argc, char **argv)
   Desks = fxcalloc(1, ndesks*sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
     {
-      sprintf(line,"Desk %d",i+desk1);
+      snprintf(line,sizeof(line),"Desk %d",i+desk1);
       CopyString(&Desks[i].label,line);
       Desks[i].colorset = -1;
       Desks[i].highcolorset = -1;
@@ -1011,7 +1011,7 @@ void list_new_desk(unsigned long *body)
     }
     else
     {
-      sprintf(line, "Desk %d", desk1);
+      snprintf(line, sizeof(line), "Desk %d", desk1);
       CopyString(&Desks[0].label, line);
     }
     XStoreName(dpy, Scr.Pager_w, Desks[0].label);
@@ -1117,7 +1117,7 @@ void list_new_desk(unsigned long *body)
     }
     else
     {
-      sprintf(line, "Desk %d", m->virtual_scr.CurrentDesk);
+      snprintf(line, sizeof(line), "Desk %d", m->virtual_scr.CurrentDesk);
       name = &(line[0]);
     }
     XStoreName(dpy, Scr.Pager_w, name);

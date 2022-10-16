@@ -5627,8 +5627,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	}
 	mr = clone_menu(mr_to_copy);
 	/* also dump the menu style */
-	buffer = fxmalloc(23);
-	sprintf(buffer,"%lu",(unsigned long)mr);
+	xasprintf(&buffer, "%lu", (unsigned long)mr);
 	action = buffer;
 	ms = menustyle_parse_style(F_PASS_ARGS);
 	if (!ms)

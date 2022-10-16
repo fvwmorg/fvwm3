@@ -492,9 +492,7 @@ static signed int expand_vars_extended(
 		if (string == NULL)
 		{
 			const char *ddn = _("Desk");
-			/* TA:  FIXME!  xasprintf() */
-			allocated_string = fxmalloc(19 + strlen(ddn));
-			sprintf(allocated_string, "%s %i", ddn, cs);
+			xasprintf(&allocated_string, "%s %i", ddn, cs);
 			string = allocated_string;
 		}
 		goto GOT_STRING;

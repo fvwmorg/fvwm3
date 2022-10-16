@@ -108,7 +108,7 @@ void AllocColorset(int n)
 static char csetbuf[270];
 char *DumpColorset(int n, colorset_t *cs)
 {
-	sprintf(csetbuf,
+	snprintf(csetbuf, sizeof(csetbuf),
 		"Colorset "
 		"%x %lx %lx %lx %lx %lx %lx %lx %lx %lx "
 		"%x %x %x %x %x %x %x %x %x %x %x",

@@ -51,7 +51,7 @@ void DrawThumbV(struct XObj *xobj, XEvent *evp)
 	XDrawSegments(dpy, xobj->win, xobj->gc, &segm, 1);
 	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-	sprintf(str, "%d", xobj->value);
+	snprintf(str, sizeof(str), "%d", xobj->value);
 	x = x-FlocaleTextWidth(xobj->Ffont, str, strlen(str))-6;
 	y = y + 13 + xobj->Ffont->ascent/2;
 	MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
@@ -68,7 +68,7 @@ void HideThumbV(struct XObj *xobj)
 		(xobj->height - 36) * (xobj->value - xobj->value3) /
 		(xobj->value2 - xobj->value3);
 	XClearArea(dpy, xobj->win, x, y, 20, 32, False);
-	sprintf(str, "%d", xobj->value);
+	snprintf(str, sizeof(str), "%d", xobj->value);
 	XClearArea(
 		dpy, xobj->win, 0, 0,xobj->width/2 - 14,xobj->height, False);
 }
@@ -129,9 +129,9 @@ void InitVScrollBar(struct XObj *xobj)
 	i = (xobj->Ffont->height)*2+30;
 	if (xobj->height < i)
 		xobj->height = i;
-	sprintf(str, "%d", xobj->value2);
+	snprintf(str, sizeof(str), "%d", xobj->value2);
 	i = FlocaleTextWidth(xobj->Ffont, str, strlen(str));
-	sprintf(str, "%d", xobj->value3);
+	snprintf(str, sizeof(str), "%d", xobj->value3);
 	j = FlocaleTextWidth(xobj->Ffont, str, strlen(str));
 	if (i<j)
 		i = j*2+30;
@@ -168,10 +168,10 @@ void DrawVScrollBar(struct XObj *xobj, XEvent *evp)
 	/* Write values */
 	x = x + 26;
 	y = xobj->Ffont->ascent + 2;
-	sprintf(str, "%d", xobj->value3);
+	snprintf(str, sizeof(str), "%d", xobj->value3);
 	MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
 		     !xobj->flags[1], NULL, evp);
-	sprintf(str, "%d", xobj->value2);
+	snprintf(str, sizeof(str), "%d", xobj->value2);
 	y = h - xobj->Ffont->descent - 2;
 	MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
 		     !xobj->flags[1], NULL, evp);

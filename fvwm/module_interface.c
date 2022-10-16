@@ -670,7 +670,7 @@ void broadcast_ignore_modifiers(void)
 {
 	char msg[32];
 
-	sprintf(msg, "IgnoreModifiers %d", GetUnusedModifiers());
+	snprintf(msg, sizeof(msg), "IgnoreModifiers %d", GetUnusedModifiers());
 	BroadcastConfigInfoString(msg);
 
 	return;

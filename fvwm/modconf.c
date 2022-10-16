@@ -284,9 +284,7 @@ static void send_desktop_names(fmodule *module)
 	{
 		if (d->name != NULL)
 		{
-			/* TA:  FIXME!  xasprintf() */
-			name = fxmalloc(strlen(d->name) + 44);
-			sprintf(name,"DesktopName %d %s", d->desk, d->name);
+			xasprintf(&name, "DesktopName %d %s", d->desk, d->name);
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
 		}
@@ -300,7 +298,7 @@ static void send_desktop_geometry(fmodule *module)
 	char msg[64];
 	struct monitor	*m = monitor_get_current();
 
-	sprintf(msg, "DesktopSize %d %d\n",
+	snprintf(msg, sizeof(msg), "DesktopSize %d %d\n",
 		m->virtual_scr.VxMax / monitor_get_all_widths() + 1,
 		m->virtual_scr.VyMax / monitor_get_all_heights() + 1);
 	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
@@ -315,9 +313,7 @@ static void send_image_path(fmodule *module)
 
 	if (ImagePath && *ImagePath != 0)
 	{
-		/* TA:  FIXME!  xasprintf() */
-		msg = fxmalloc(strlen(ImagePath) + 12);
-		sprintf(msg, "ImagePath %s\n", ImagePath);
+		xasprintf(&msg, "ImagePath %s\n", ImagePath);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 		free(msg);
 	}
@@ -331,7 +327,8 @@ static void send_color_limit(fmodule *module)
 	{
 		char msg[64];
 
-		sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
+		snprintf(msg, sizeof(msg),
+			"ColorLimit %d\n", Scr.ColorLimit);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 	}
 
@@ -359,7 +356,7 @@ static void send_click_time(fmodule *module)
 
 	/* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
 	 * 'not at all' during InitFunction and RestartFunction. */
-	sprintf(msg,"ClickTime %d\n", (Scr.ClickTime < 0) ?
+	snprintf(msg, sizeof(msg), "ClickTime %d\n", (Scr.ClickTime < 0) ?
 		-Scr.ClickTime : Scr.ClickTime);
 	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
@@ -370,7 +367,7 @@ static void send_move_threshold(fmodule *module)
 {
 	char msg[64];
 
-	sprintf(msg, "MoveThreshold %d\n", Scr.MoveThreshold);
+	snprintf(msg, sizeof(msg), "MoveThreshold %d\n", Scr.MoveThreshold);
 	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
@@ -380,7 +377,7 @@ void send_ignore_modifiers(fmodule *module)
 {
 	char msg[64];
 
-	sprintf(msg, "IgnoreModifiers %d\n", GetUnusedModifiers());
+	snprintf(msg, sizeof(msg), "IgnoreModifiers %d\n", GetUnusedModifiers());
 	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
 
 	return;
