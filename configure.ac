@@ -1375,6 +1375,10 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define SUPPRESS_UNUSED_VAR_WARNING(x) \
 do { void *p; p = (void *)&x; (void)p; } while (0);
 
+#ifndef HAVE_STRLCAT
+#   include "libs/strlcat.h"
+#endif
+
 #ifndef HAVE_STRLCPY
 #   include "libs/strlcpy.h"
 #endif
