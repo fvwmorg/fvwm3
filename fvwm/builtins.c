@@ -250,24 +250,6 @@ static void status_init_pipe(void)
 	free(pipename);
 }
 
-/** Prepend rather than replace the image path.
-    Used for obsolete PixmapPath and IconPath **/
-static void obsolete_imagepaths( const char* pre_path )
-{
-	char* tmp = stripcpy( pre_path );
-	char* path = alloca(strlen( tmp ) + strlen(PictureGetImagePath()) + 2 );
-
-	strcpy( path, tmp );
-	free( tmp );
-
-	strcat( path, ":" );
-	strcat( path, PictureGetImagePath() );
-
-	PictureSetImagePath( path );
-
-	return;
-}
-
 /*
  *
  * Reads a title button description (veliaa@rpi.edu)
@@ -2893,20 +2875,13 @@ void CMD_ImagePath(F_CMD_ARGS)
 void CMD_IconPath(F_CMD_ARGS)
 {
 	fvwm_debug(__func__,
-		   "IconPath is deprecated since 2.3.0; use ImagePath instead.");
-	obsolete_imagepaths( action );
-
-	return;
+	    "IconPath is deprecated; use ImagePath instead.");
 }
 
 void CMD_PixmapPath(F_CMD_ARGS)
 {
 	fvwm_debug(__func__,
-		   "PixmapPath is deprecated since 2.3.0; use ImagePath"
-		   " instead." );
-	obsolete_imagepaths( action );
-
-	return;
+	    "PixmapPath is deprecated; use ImagePath instead." );
 }
 
 void CMD_LocalePath(F_CMD_ARGS)
