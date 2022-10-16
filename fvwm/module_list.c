@@ -1115,8 +1115,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		token = PeekToken(next, &next);
 		if (token)
 		{
-			expect = alloca(strlen(token) + 1);
-			strcpy(expect, token);
+			expect = fxstrdup(token);
 		}
 		action = next;
 		token = PeekToken(action, &next);
@@ -1131,21 +1130,21 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		else
 		{
 			fvwm_debug(__func__, "illegal timeout");
-			return;
+			goto done;
 		}
 	}
 
 	if (!action)
 	{
 		/* no module name */
-		return;
+		goto done;
 	}
 
 	module = do_execute_module(F_PASS_ARGS, False, False);
 	if (module == NULL)
 	{
 		/* executing the module failed, just return */
-		return;
+		goto done;
 	}
 
 	/* Busy cursor stuff */
@@ -1267,8 +1266,8 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 	{
 		UngrabEm(GRAB_BUSY);
 	}
-
-	return;
+done:
+	free(expect);
 }
 
 /* mask handling - does this belong here? */

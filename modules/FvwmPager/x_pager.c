@@ -1047,10 +1047,7 @@ void UpdateWindowShape(void)
     shape_count =
       ndesks + ((m->virtual_scr.CurrentDesk < desk1 || m->virtual_scr.CurrentDesk >desk2) ? 0 : 1);
 
-    shape = (XRectangle *)alloca (shape_count * sizeof (XRectangle));
-
-    if (shape == NULL)
-      return;
+    shape = fxmalloc(shape_count * sizeof (XRectangle));
 
     cnt = 0;
     y_pos = (LabelsBelow ? 0 : label_h);
@@ -1084,6 +1081,7 @@ void UpdateWindowShape(void)
 
     FShapeCombineRectangles(
       dpy, Scr.Pager_w, FShapeBounding, 0, 0, shape, shape_count, FShapeSet, 0);
+    free(shape);
   }
 }
 

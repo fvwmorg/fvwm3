@@ -106,11 +106,6 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-#ifndef C_ALLOCA
-#undef alloca
-#define alloca(x) do { } while (0)
-#endif
-
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
 #endif
@@ -4244,13 +4239,6 @@ void dispatch_event(XEvent *e)
 		(*event_group->jump_table[e->type - event_group->base])(&ea);
 		exc_destroy_context(ea.exc);
 	}
-
-	/* If we're using the C version of alloca, see if anything needs to be
-	 * freed up.
-	 */
-	alloca(0);
-
-	return;
 }
 
 /* ewmh configure request */

@@ -827,8 +827,7 @@ KeySym FvwmStringToKeysym(Display *dpy, char *key)
 	}
 	else
 	{
-		s = alloca(strlen(key) + 1);
-		strcpy(s, key);
+		s = fxstrdup(key);
 		/* always prefer the lower case spelling if it exists */
 		*s = tolower(*s);
 		keysym = XStringToKeysym(s);
@@ -837,6 +836,7 @@ KeySym FvwmStringToKeysym(Display *dpy, char *key)
 			*s = toupper(*s);
 			keysym = XStringToKeysym(s);
 		}
+		free(s);
 	}
 	if (keysym == NoSymbol || XKeysymToKeycode(dpy, keysym) == 0)
 	{

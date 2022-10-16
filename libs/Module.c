@@ -144,7 +144,7 @@ void SendText(int *fd, const char *message, unsigned long window)
 
 	/* Get enough memory to store the entire message. */
 	len = strlen(message);
-	p = buf = alloca(sizeof(long) * (3 + 1 + (len / sizeof(long))));
+	p = buf = fxmalloc(sizeof(long) * (3 + 1 + (len / sizeof(long))));
 
 	/* Put the message in the buffer, and... */
 	*((unsigned long *)p) = window;
@@ -166,6 +166,7 @@ void SendText(int *fd, const char *message, unsigned long window)
 		n = write(fd[0], buf, p - buf);
 		(void)n;
 	}
+	free(buf);
 }
 
 /*
@@ -183,13 +184,14 @@ void SendFvwmPipe(int *fd, const char *message, unsigned long window)
 
 	while ((temp = strchr(hold, ',')) != NULL)
 	{
-		char *temp_msg = (char*)alloca(temp - hold + 1);
+		char *temp_msg = fxmalloc(temp - hold + 1);
 
 		strncpy(temp_msg, hold, (temp - hold));
 		temp_msg[(temp - hold)] = '\0';
 		hold = temp + 1;
 
 		SendText(fd, temp_msg, window);
+		free(temp_msg);
 	}
 
 	/*
@@ -241,11 +243,12 @@ static int first_pass = 1;
 
 void InitGetConfigLine(int *fd, char *match)
 {
-	size_t len = strlen(match) + 32;
-	char *buffer = alloca(len);
+	char *buffer;
+
 	first_pass = 0;              /* make sure get wont do this */
-	snprintf(buffer, len, "Send_ConfigInfo %s", match);
+	xasprintf(&buffer, "Send_ConfigInfo %s", match);
 	SendText(fd, buffer, 0);
+	free(buffer);
 }
 
 
