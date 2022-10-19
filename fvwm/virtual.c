@@ -2464,6 +2464,8 @@ update:
 		update_fvwm_monitor(t);
 
 	BroadcastMonitorList(NULL);
+
+	status_send();
 }
 
 void
