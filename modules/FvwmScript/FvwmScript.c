@@ -78,7 +78,7 @@ Window ref;
 FlocaleWinString *FwinString;
 
 extern int yyparse(void);
-extern void (*TabCom[25]) (int NbArg,long *TabArg);
+extern void (*TabCom[]) (int NbArg,long *TabArg);
 
 Display *dpy;
 int screen;
