@@ -59,6 +59,7 @@ sub format_output
 {
 	my ($data) = @_;
         my $skip_all_but_global = 0;
+	my $dl;
 
         if (exists $data->{'screens'}->{'global_monitor'} and
             (exists $scr_map{'global_monitor'} and scalar keys %scr_map >= 1)) {
@@ -66,6 +67,8 @@ sub format_output
 	    delete $data->{'screens'}->{'global_monitor'};
             $scr_map{'global_monitor'}->{'screen'} = 0;
         }
+
+	$dl = $data->{'version'} eq 2 ? $data->{'desktop_mode'} : '';
 
 	foreach my $screen  (keys %{ $data->{'screens'} }) {
 		my $extra_msg = '';
@@ -93,7 +96,8 @@ sub format_output
 			if ($is_current) {
 					$msg .= "|%{B#39c488} $sym_name %{B-}";
 
-					$extra_msg .= "%{B#D7C72F}[Scr:$screen][A:$desk_count]%{B-}";
+					$extra_msg .= "%{B#D7C72F}[Scr:$screen][A:$desk_count]";
+					$extra_msg .= "[L:$dl]%{B-}";
 					# Gather any other bits of information for the _CURRENT_
 					# group we might want.
 					if ($is_urgent) {
