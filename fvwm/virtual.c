@@ -121,6 +121,7 @@ static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 static void init_one_panframe(PanFrame *, int, int, int, int, int);
 static void parse_edge_leave_command(char *, int);
+static void broadcast_new_desk_monitor(struct monitor *);
 
 struct desktop_cmds	 desktop_cmd_q;
 struct desktop_fws	 desktop_fvwm_q;
@@ -1667,115 +1668,89 @@ done:
 	return;
 }
 
+void
+broadcast_new_desk_monitor(struct monitor *m)
+{
+	/* Should never happen. */
+	if (m == NULL)
+		return;
+
+	BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+	    (long)m->si->rr_output);
+
+	/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
+	 * window upon desk change.  This is a workaround for a
+	 * problem in FvwmPager: The pager has a separate 'root'
+	 * window for each desk.  If the active desk changes, the
+	 * pager destroys sticky mini windows and creates new ones in
+	 * the other desktop 'root'.  But the pager can't know where to
+	 * stack them.  So we have to tell it explicitly where they
+	 * go :-( This should be fixed in the pager, but right now the
+	 * pager doesn't maintain the stacking order. */
+	BroadcastRestackAllWindows();
+	EWMH_SetCurrentDesktop(m);
+}
+
 void goto_desk(int desk, struct monitor *m)
 {
 	struct monitor	*m2 = NULL;
-	bool has_run_globally = false;
-
-	/* RBW - the unmapping operations are now removed to their own
-	 * functions so they can also be used by the new GoToDeskAndPage
-	 * command. */
-
-	/* FIXME: needs to broadcast monitors if global. */
 
 	if (m == NULL)
 		return;
 
-	if (m->virtual_scr.CurrentDesk != desk)
-	{
-		m->virtual_scr.prev_desk = m->virtual_scr.CurrentDesk;
-		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
-		m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
-		m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
+	/* Don't try and map a desk which we're already on. */
+	if (m->virtual_scr.CurrentDesk == desk)
+		return;
 
-		monitor_assign_virtual(m);
+	focus_grab_buttons_all();
 
-		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
-		m->virtual_scr.CurrentDesk = desk;
-		MapDesk(m, desk, True);
-		monitor_assign_virtual(m);
+	m->virtual_scr.prev_desk = m->virtual_scr.CurrentDesk;
+	m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
+	m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
+	m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
 
-		focus_grab_buttons_all();
+	monitor_assign_virtual(m);
 
-		if (monitor_mode == MONITOR_TRACKING_M) {
-			BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-					(long)m->si->rr_output);
-			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
-			 * window upon desk change.  This is a workaround for a
-			 * problem in FvwmPager: The pager has a separate 'root'
-			 * window for each desk.  If the active desk changes, the
-			 * pager destroys sticky mini windows and creates new ones in
-			 * the other desktop 'root'.  But the pager can't know where to
-			 * stack them.  So we have to tell it explicitly where they
-			 * go :-( This should be fixed in the pager, but right now the
-			 * pager doesn't maintain the stacking order. */
-			BroadcastRestackAllWindows();
-			EWMH_SetCurrentDesktop(m);
+	UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
+	m->virtual_scr.CurrentDesk = desk;
+	MapDesk(m, desk, True);
 
-			return;
-		}
+	monitor_assign_virtual(m);
 
+	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
 		TAILQ_FOREACH(m2, &monitor_q, entry) {
-			/* In global mode, only do this once. */
-			if (monitor_mode == MONITOR_TRACKING_G &&
-			    has_run_globally)
-				break;
-
-			if (is_tracking_shared && m == m2) {
-			    BroadcastPacket(M_NEW_DESK, 2,
-				(long)m2->virtual_scr.CurrentDesk,
-				(long)m2->si->rr_output);
-
-				goto done;
-			}
-
-			/* If we're swapping a desktop between monitors for
-			 * shared mode, only do this when the is_swapping flag
-			 * is true, otherwise events would be raised for a
-			 * new_desk for monitors/desks which have not changed.
-			 */
-			if (is_tracking_shared) {
-			    if ((!m->virtual_scr.is_swapping ||
-			        !m2->virtual_scr.is_swapping) && m2 != m)
-					continue;
-
-			    BroadcastPacket(M_NEW_DESK, 2,
-				(long)m2->virtual_scr.CurrentDesk,
-				(long)m2->si->rr_output);
-
-				goto done;
-			}
-			if (m != m2) {
-				m2->Desktops = m->Desktops;
-				if (!is_tracking_shared) {
-					m2->virtual_scr.CurrentDesk =
-						m->virtual_scr.CurrentDesk;
-				}
-
-				BroadcastPacket(M_NEW_DESK, 2,
-					(long)m2->virtual_scr.CurrentDesk,
-					(long)m2->si->rr_output);
-
-				if (monitor_mode == MONITOR_TRACKING_G &&
-				    !has_run_globally) {
-					has_run_globally = true;
-					goto done;
-				}
-			}
-done:
-
-			/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
-			 * window upon desk change.  This is a workaround for a
-			 * problem in FvwmPager: The pager has a separate 'root'
-			 * window for each desk.  If the active desk changes, the
-			 * pager destroys sticky mini windows and creates new ones in
-			 * the other desktop 'root'.  But the pager can't know where to
-			 * stack them.  So we have to tell it explicitly where they
-			 * go :-( This should be fixed in the pager, but right now the
-			 * pager doesn't maintain the stacking order. */
-			BroadcastRestackAllWindows();
-			EWMH_SetCurrentDesktop(m2);
+			if (m == m2)
+				continue;
+			m2->Desktops = m->Desktops;
+			m2->virtual_scr.CurrentDesk = m->virtual_scr.CurrentDesk;
 		}
+		broadcast_new_desk_monitor(m);
+
+		return;
+	}
+
+	if (monitor_mode == MONITOR_TRACKING_M) {
+		broadcast_new_desk_monitor(m);
+		return;
+	}
+
+	if (!is_tracking_shared)
+		return;
+
+	TAILQ_FOREACH(m2, &monitor_q, entry) {
+		/* If we're swapping a desktop between monitors for
+		 * shared mode, only do this when the is_swapping flag
+		 * is true, otherwise events would be raised for a
+		 * new_desk for monitors/desks which have not changed.
+		 */
+		if ((!m->virtual_scr.is_swapping ||
+		    !m2->virtual_scr.is_swapping) && m2 != m) {
+			continue;
+		}
+		if (m != m2) {
+			m2->Desktops = m->Desktops;
+		}
+		broadcast_new_desk_monitor(m2);
 	}
 }
 
