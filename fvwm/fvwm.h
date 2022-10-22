@@ -185,6 +185,19 @@ typedef struct
 	int bottom;
 } ewmh_strut;
 
+enum border_part_cardinals
+{
+	BP_NORTH = 0,
+	BP_NE,
+	BP_EAST,
+	BP_SE,
+	BP_SOUTH,
+	BP_SW,
+	BP_WEST,
+	BP_NW,
+	BP_SIZE
+};
+
 typedef struct
 {
 	/* common flags (former flags in bits 0-12) */
@@ -531,27 +544,7 @@ typedef struct style_flags
 	unsigned use_colorset : 1;
 	unsigned use_colorset_hi : 1;
 	unsigned use_border_colorset : 1;
-	unsigned use_border_colorset_regions : 1;
-	unsigned use_border_colorset_handles : 1;
-	unsigned use_border_colorset_north : 1;
-	unsigned use_border_colorset_south : 1;
-	unsigned use_border_colorset_east : 1;
-	unsigned use_border_colorset_west : 1;
-	unsigned use_border_colorset_handles_nw : 1;
-	unsigned use_border_colorset_handles_ne : 1;
-	unsigned use_border_colorset_handles_sw : 1;
-	unsigned use_border_colorset_handles_se : 1;
 	unsigned use_border_colorset_hi : 1;
-	unsigned use_border_colorset_hi_regions : 1;
-	unsigned use_border_colorset_hi_handles : 1;
-	unsigned use_border_colorset_hi_north : 1;
-	unsigned use_border_colorset_hi_south : 1;
-	unsigned use_border_colorset_hi_east : 1;
-	unsigned use_border_colorset_hi_west : 1;
-	unsigned use_border_colorset_hi_handles_nw : 1;
-	unsigned use_border_colorset_hi_handles_ne : 1;
-	unsigned use_border_colorset_hi_handles_sw : 1;
-	unsigned use_border_colorset_hi_handles_se : 1;
 	unsigned use_icon_title_colorset : 1;
 	unsigned use_icon_title_colorset_hi : 1;
 	unsigned use_icon_background_colorset : 1;
@@ -640,24 +633,8 @@ typedef struct window_style
 	char *back_color_name_hi;
 	int colorset;
 	int colorset_hi;
-	int border_colorset;
-	int border_colorset_north;
-	int border_colorset_south;
-	int border_colorset_east;
-	int border_colorset_west;
-	int border_colorset_handles_nw;
-	int border_colorset_handles_ne;
-	int border_colorset_handles_sw;
-	int border_colorset_handles_se;
-	int border_colorset_hi;
-	int border_colorset_hi_north;
-	int border_colorset_hi_south;
-	int border_colorset_hi_east;
-	int border_colorset_hi_west;
-	int border_colorset_hi_handles_nw;
-	int border_colorset_hi_handles_ne;
-	int border_colorset_hi_handles_sw;
-	int border_colorset_hi_handles_se;
+	int border_colorset[BP_SIZE];
+	int border_colorset_hi[BP_SIZE];
 	int icon_title_colorset;
 	int icon_title_colorset_hi;
 	int icon_background_colorset;
@@ -872,51 +849,13 @@ typedef struct FvwmWindow
 	int number_cmap_windows;
 	color_quad colors;
 	color_quad hicolors;
-	color_quad border_colors;
-	color_quad border_colors_north;
-	color_quad border_colors_south;
-	color_quad border_colors_east;
-	color_quad border_colors_west;
-
-	color_quad border_colors_handles_nw;
-	color_quad border_colors_handles_ne;
-	color_quad border_colors_handles_sw;
-	color_quad border_colors_handles_se;
-
-	color_quad border_hicolors;
-	color_quad border_hicolors_north;
-	color_quad border_hicolors_south;
-	color_quad border_hicolors_east;
-	color_quad border_hicolors_west;
-
-	color_quad border_hicolors_handles_nw;
-	color_quad border_hicolors_handles_ne;
-	color_quad border_hicolors_handles_sw;
-	color_quad border_hicolors_handles_se;
+	color_quad border_colors[BP_SIZE];
+	color_quad border_hicolors[BP_SIZE];
 
 	int cs;
 	int cs_hi;
-	int border_cs;
-	int border_cs_north;
-	int border_cs_south;
-	int border_cs_east;
-	int border_cs_west;
-
-	int border_cs_handles_nw;
-	int border_cs_handles_ne;
-	int border_cs_handles_sw;
-	int border_cs_handles_se;
-
-	int border_cs_hi;
-	int border_cs_hi_north;
-	int border_cs_hi_south;
-	int border_cs_hi_east;
-	int border_cs_hi_west;
-
-	int border_cs_hi_handles_nw;
-	int border_cs_hi_handles_ne;
-	int border_cs_hi_handles_sw;
-	int border_cs_hi_handles_se;
+	int border_cs[BP_SIZE];
+	int border_cs_hi[BP_SIZE];
 
 	int icon_title_cs;
 	int icon_title_cs_hi;

@@ -72,40 +72,8 @@
 	((sf)->use_colorset_hi)
 #define SUSE_BORDER_COLORSET(sf) \
 	((sf)->use_border_colorset)
-#define SUSE_BORDER_COLORSET_NORTH(sf) \
-	((sf)->use_border_colorset_north)
-#define SUSE_BORDER_COLORSET_SOUTH(sf) \
-	((sf)->use_border_colorset_south)
-#define SUSE_BORDER_COLORSET_EAST(sf) \
-	((sf)->use_border_colorset_east)
-#define SUSE_BORDER_COLORSET_WEST(sf) \
-	((sf)->use_border_colorset_west)
-#define SUSE_BORDER_COLORSET_HANDLES_NW(sf) \
-        ((sf)->use_border_colorset_handles_nw)
-#define SUSE_BORDER_COLORSET_HANDLES_NE(sf) \
-        ((sf)->use_border_colorset_handles_ne)
-#define SUSE_BORDER_COLORSET_HANDLES_SW(sf) \
-        ((sf)->use_border_colorset_handles_sw)
-#define SUSE_BORDER_COLORSET_HANDLES_SE(sf) \
-        ((sf)->use_border_colorset_handles_se)
 #define SUSE_BORDER_COLORSET_HI(sf) \
 	((sf)->use_border_colorset_hi)
-#define SUSE_BORDER_COLORSET_HI_NORTH(sf) \
-	((sf)->use_border_colorset_hi_north)
-#define SUSE_BORDER_COLORSET_HI_SOUTH(sf) \
-	((sf)->use_border_colorset_hi_south)
-#define SUSE_BORDER_COLORSET_HI_EAST(sf) \
-	((sf)->use_border_colorset_hi_east)
-#define SUSE_BORDER_COLORSET_HI_WEST(sf) \
-	((sf)->use_border_colorset_hi_west)
-#define SUSE_BORDER_COLORSET_HI_HANDLES_NW(sf) \
-        ((sf)->use_border_colorset_hi_handles_nw)
-#define SUSE_BORDER_COLORSET_HI_HANDLES_NE(sf) \
-        ((sf)->use_border_colorset_hi_handles_ne)
-#define SUSE_BORDER_COLORSET_HI_HANDLES_SW(sf) \
-        ((sf)->use_border_colorset_hi_handles_sw)
-#define SUSE_BORDER_COLORSET_HI_HANDLES_SE(sf) \
-        ((sf)->use_border_colorset_hi_handles_se)
 #define SUSE_ICON_TITLE_COLORSET(sf) \
 	((sf)->use_icon_title_colorset)
 #define SUSE_ICON_TITLE_COLORSET_HI(sf) \
@@ -486,82 +454,18 @@
 	((s).colorset)
 #define SSET_COLORSET(s,x) \
 	((s).colorset = (x))
-#define SSET_BORDER_COLORSET(s,x) \
-	((s).border_colorset = (x))
-#define SGET_BORDER_COLORSET(s) \
-	((s).border_colorset)
-#define SSET_BORDER_COLORSET_NORTH(s,x) \
-	((s).border_colorset_north = (x))
-#define SGET_BORDER_COLORSET_NORTH(s) \
-	((s).border_colorset_north)
-#define SSET_BORDER_COLORSET_SOUTH(s,x) \
-	((s).border_colorset_south = (x))
-#define SGET_BORDER_COLORSET_SOUTH(s) \
-	((s).border_colorset_south)
-#define SSET_BORDER_COLORSET_EAST(s,x) \
-	((s).border_colorset_east = (x))
-#define SGET_BORDER_COLORSET_EAST(s) \
-	((s).border_colorset_east)
-#define SSET_BORDER_COLORSET_WEST(s,x) \
-	((s).border_colorset_west = (x))
-#define SGET_BORDER_COLORSET_WEST(s) \
-	((s).border_colorset_west)
-#define SSET_BORDER_COLORSET_HANDLES_NW(s,x) \
-        ((s).border_colorset_handles_nw = (x))
-#define SGET_BORDER_COLORSET_HANDLES_NW(s) \
-        ((s).border_colorset_handles_nw)
-#define SSET_BORDER_COLORSET_HANDLES_NE(s,x) \
-        ((s).border_colorset_handles_ne = (x))
-#define SGET_BORDER_COLORSET_HANDLES_NE(s) \
-        ((s).border_colorset_handles_ne)
-#define SSET_BORDER_COLORSET_HANDLES_SW(s,x) \
-        ((s).border_colorset_handles_sw = (x))
-#define SGET_BORDER_COLORSET_HANDLES_SW(s) \
-        ((s).border_colorset_handles_sw)
-#define SSET_BORDER_COLORSET_HANDLES_SE(s,x) \
-        ((s).border_colorset_handles_se = (x))
-#define SGET_BORDER_COLORSET_HANDLES_SE(s) \
-        ((s).border_colorset_handles_se)
 #define SGET_COLORSET_HI(s) \
 	((s).colorset_hi)
 #define SSET_COLORSET_HI(s,x) \
 	((s).colorset_hi = (x))
-#define SGET_BORDER_COLORSET_HI(s) \
-	((s).border_colorset_hi)
-#define SSET_BORDER_COLORSET_HI(s,x) \
-	((s).border_colorset_hi = (x))
-#define SGET_BORDER_COLORSET_HI_NORTH(s) \
-	((s).border_colorset_hi_north)
-#define SSET_BORDER_COLORSET_HI_NORTH(s,x) \
-	((s).border_colorset_hi_north = (x))
-#define SGET_BORDER_COLORSET_HI_SOUTH(s) \
-	((s).border_colorset_hi_south)
-#define SSET_BORDER_COLORSET_HI_SOUTH(s,x) \
-	((s).border_colorset_hi_south = (x))
-#define SGET_BORDER_COLORSET_HI_EAST(s) \
-	((s).border_colorset_hi_east)
-#define SSET_BORDER_COLORSET_HI_EAST(s,x) \
-	((s).border_colorset_hi_east = (x))
-#define SGET_BORDER_COLORSET_HI_WEST(s) \
-	((s).border_colorset_hi_west)
-#define SSET_BORDER_COLORSET_HI_WEST(s,x) \
-	((s).border_colorset_hi_west = (x))
-#define SSET_BORDER_COLORSET_HI_HANDLES_NW(s,x) \
-        ((s).border_colorset_hi_handles_nw = (x))
-#define SGET_BORDER_COLORSET_HI_HANDLES_NW(s) \
-        ((s).border_colorset_hi_handles_nw)
-#define SSET_BORDER_COLORSET_HI_HANDLES_NE(s,x) \
-        ((s).border_colorset_hi_handles_ne = (x))
-#define SGET_BORDER_COLORSET_HI_HANDLES_NE(s) \
-        ((s).border_colorset_hi_handles_ne)
-#define SSET_BORDER_COLORSET_HI_HANDLES_SW(s,x) \
-        ((s).border_colorset_hi_handles_sw = (x))
-#define SGET_BORDER_COLORSET_HI_HANDLES_SW(s) \
-        ((s).border_colorset_hi_handles_sw)
-#define SSET_BORDER_COLORSET_HI_HANDLES_SE(s,x) \
-        ((s).border_colorset_hi_handles_se = (x))
-#define SGET_BORDER_COLORSET_HI_HANDLES_SE(s) \
-        ((s).border_colorset_hi_handles_se)
+#define SSET_BORDER_COLORSET(s,p,x) \
+	((s).border_colorset[(p)] = (x))
+#define SGET_BORDER_COLORSET(s, p) \
+	((s).border_colorset[(p)])
+#define SGET_BORDER_COLORSET_HI(s,p) \
+	((s).border_colorset_hi[(p)])
+#define SSET_BORDER_COLORSET_HI(s,p,x) \
+	((s).border_colorset_hi[(p)] = (x))
 #define SSET_ICON_TITLE_COLORSET(s,x) \
         ((s).icon_title_colorset = (x))
 #define SGET_ICON_TITLE_COLORSET(s) \
