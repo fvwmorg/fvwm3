@@ -1391,24 +1391,6 @@ int     vasprintf(char **, const char *, va_list);
 #include "libs/log.h"
 ])
 
-# mainly for fvwm-config
-AC_SUBST(with_bidi)
-AC_SUBST(with_gdkimlib)
-AC_SUBST(with_gettext)
-AC_SUBST(with_iconv)
-AC_SUBST(with_perllib)
-AC_SUBST(with_png)
-AC_SUBST(with_rsvg)
-AC_SUBST(with_readline)
-AC_SUBST(with_shape)
-AC_SUBST(with_shm)
-AC_SUBST(with_sm)
-AC_SUBST(with_xcursor)
-AC_SUBST(with_xft)
-AC_SUBST(with_xrandr)
-AC_SUBST(with_xrender)
-AC_SUBST(with_xpm)
-
 dnl with autoconf <2.60 this is needed
 AC_SUBST(datarootdir)
 AC_SUBST(docdir)
@@ -1426,7 +1408,6 @@ dnl
 	bin/Makefile
 	bin/FvwmCommand
 	bin/FvwmPrompt/Makefile
-	bin/fvwm-config
 	bin/fvwm-perllib
 	bin/fvwm-menu-xlock
 	bin/fvwm-menu-directory

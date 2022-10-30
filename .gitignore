@@ -16,7 +16,6 @@ autom4te.cache/
 bin/FvwmCommand
 bin/FvwmPrompt/FvwmPrompt
 bin/fvwm-bug
-bin/fvwm-config
 bin/fvwm-convert-2.4
 bin/fvwm-convert-2.6
 bin/fvwm-menu-desktop

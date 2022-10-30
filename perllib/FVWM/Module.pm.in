@@ -1156,7 +1156,7 @@ Returns the user data directory, usually ~/.fvwm or set by $FVWM_USERDIR.
 =item B<site_data_dir>
 
 Returns the system-wide data directory, the one configured when fvwm is
-installed. It is also returned by `fvwm-config --fvwm-datadir`.
+installed.
 
 =item B<search_dirs>
 
