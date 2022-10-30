@@ -6,7 +6,7 @@ bin_PROGRAMS = fvwm-root
 fvwm_root_SOURCE= fvwm-root.c
 fvwm_root_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
-bin_SCRIPTS = fvwm-config fvwm-perllib \
+bin_SCRIPTS = fvwm-perllib \
 	fvwm-convert-2.6 \
 	fvwm-menu-xlock fvwm-menu-directory \
 	fvwm-menu-desktop \

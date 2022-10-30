@@ -447,7 +447,6 @@ AddToMenu   MenuFvwmManPages "Help" Title
 + "fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
 + "fvwm-menu-directory" ViewManPage fvwm-menu-directory
 + "fvwm-menu-xlock"     ViewManPage fvwm-menu-xlock
-+ "fvwm-config"         ViewManPage fvwm-config
 
 #######
 # 5: Mouse and Key bindings

@@ -9487,8 +9487,6 @@ _SM_SAVE_DIR_::
 	it uses _$HOME_. Note, the state files are named _.fs-??????_ and
 	normally are removed automatically when not used anymore.
 
-*fvwm-config --info* is useful to query fvwm3 compiled-in paths
-
 == AUTHORS
 
 Robert Nation with help from many people, based on twm code, which was
