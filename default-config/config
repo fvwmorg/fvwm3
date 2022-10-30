@@ -319,7 +319,7 @@ Test (x $[infostore.runcmd]) + "R&un Command%icons/run_arrow.png%" Exec exec $[i
 + "Fvwm&Console%icons/terminal.png%"       Module FvwmConsole -terminal $[infostore.terminal]
 + "$[gt.&Wallpapers]%icons/wallpaper.png%" Popup BGMenu
 + "$[gt.M&an Pages]%icons/help.png%"       Popup MenuFvwmManPages
-+ "Copy Config%icons/conf.png%"            FvwmScript FvwmScript-ConfirmCopyConfig
++ "$[gt.Cop&y Config]%icons/conf.png%"     FvwmScript FvwmScript-ConfirmCopyConfig
 + "" Nop
 + "$[gt.Re&fresh]%icons/refresh.png%" Refresh
 + "$[gt.&Restart]%icons/restart.png%" Restart
