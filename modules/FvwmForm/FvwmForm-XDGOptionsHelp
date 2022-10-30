@@ -129,11 +129,11 @@ DestroyModuleConfig  FvwmForm-XDGOptionsHelp: *
 #*FvwmForm-XDGOptionsHelp:   Line    " "
 # Buttons
 *FvwmForm-XDGOptionsHelp:   Line    center
-*FvwmForm-XDGOptionsHelp:   Button  quit    "$[gt.Close]"         ^M
+*FvwmForm-XDGOptionsHelp:   Button  quit    "$[gt.Close]"
 *FvwmForm-XDGOptionsHelp:   Command Nop
 *FvwmForm-XDGOptionsHelp:   Button  continue "XDGMenu Help"
 *FvwmForm-XDGOptionsHelp:   Command Module FvwmForm FvwmForm-XDGMenuHelp
-*FvwmForm-XDGOptionsHelp:   Button  continue "fvwm-menu-desktop $[gt.manpage]"        
+*FvwmForm-XDGOptionsHelp:   Button  continue "fvwm-menu-desktop $[gt.manpage]"
 *FvwmForm-XDGOptionsHelp:   Command Exec exec xterm -g 100x50 -n "Help fvwm-menu-desktop" -T "Help fvwm-menu-desktop" -e "man fvwm-menu-desktop"
 *FvwmForm-XDGOptionsHelp:   Line    Left
 *FvwmForm-XDGOptionsHelp:   Line    " "
