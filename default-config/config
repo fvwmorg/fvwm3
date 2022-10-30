@@ -312,18 +312,18 @@ MenuStyle * Font "xft:Sans:Bold:size=8:antialias=True"
 DestroyMenu MenuFvwmRoot
 AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "$[gt.&Programs]%icons/programs.png%" Popup MenuPrograms
-+ "$[gt.XDG &Menu]%icons/apps.png%" Popup XDGMenu
-+ "&XTerm%icons/terminal.png%" Exec exec $[infostore.terminal]
++ "$[gt.XDG &Menu]%icons/apps.png%"     Popup XDGMenu
++ "&XTerm%icons/terminal.png%"          Exec exec $[infostore.terminal]
 Test (x $[infostore.runcmd]) + "R&un Command%icons/run_arrow.png%" Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
 + "" Nop
-+ "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
++ "Fvwm&Console%icons/terminal.png%"       Module FvwmConsole -terminal $[infostore.terminal]
 + "$[gt.&Wallpapers]%icons/wallpaper.png%" Popup BGMenu
-+ "$[gt.M&an Pages]%icons/help.png%" Popup MenuFvwmManPages
-+ "Copy Config%icons/conf.png%" FvwmScript FvwmScript-ConfirmCopyConfig
++ "$[gt.M&an Pages]%icons/help.png%"       Popup MenuFvwmManPages
++ "Copy Config%icons/conf.png%"            FvwmScript FvwmScript-ConfirmCopyConfig
 + "" Nop
 + "$[gt.Re&fresh]%icons/refresh.png%" Refresh
 + "$[gt.&Restart]%icons/restart.png%" Restart
-+ "$[gt.&Quit]%icons/quit.png%" Module FvwmScript FvwmScript-ConfirmQuit
++ "$[gt.&Quit]%icons/quit.png%"       Module FvwmScript FvwmScript-ConfirmQuit
 
 # Generate XDGMenu
 PipeRead "fvwm-menu-desktop -e"
@@ -349,107 +349,107 @@ Test (x vlc) + "VLC" Exec exec vlc
 # Menu icons are located in ~/.fvwm/images/bgicons/
 DestroyMenu BGMenu
 AddToMenu   BGMenu "$[gt.Wallpapers]" Title
-+ "$[gt.Floral]%bgicons/bg1.png%" SetBG bg1.png
++ "$[gt.Floral]%bgicons/bg1.png%"  SetBG bg1.png
 + "$[gt.Circles]%bgicons/bg2.png%" SetBG bg2.png
-+ "$[gt.Space]%bgicons/bg3.png%" SetBG bg3.png
++ "$[gt.Space]%bgicons/bg3.png%"   SetBG bg3.png
 
 # Window Operations Menus
 DestroyMenu MenuWindowOps
 AddToMenu   MenuWindowOps
-+ "$[gt.Move]"      Move
-+ "$[gt.Resize]"    Resize
-+ "$[gt.(De)Iconify]"   Iconify
-+ "$[gt.(Un)Maximize]"  Maximize
-+ "$[gt.(Un)Shade]"     WindowShade
-+ "$[gt.(Un)Stick]"     Stick
++ "$[gt.Move]"         Move
++ "$[gt.Resize]"       Resize
++ "$[gt.(De)Iconify]"  Iconify
++ "$[gt.(Un)Maximize]" Maximize
++ "$[gt.(Un)Shade]"    WindowShade
++ "$[gt.(Un)Stick]"    Stick
 + "" Nop
-+ "$[gt.Close]"     Close
-+ "$[gt.More]..."   Menu MenuWindowOpsLong This 0 0
++ "$[gt.Close]"   Close
++ "$[gt.More]..." Menu MenuWindowOpsLong This 0 0
 
 DestroyMenu MenuWindowOpsLong
 AddToMenu   MenuWindowOpsLong "$[gt.Window Ops]" Title
-+ "$[gt.Move]%icons/win/move.png%" Move
-+ "$[gt.Resize]%icons/win/resize.png%" Resize
++ "$[gt.Move]%icons/win/move.png%"           Move
++ "$[gt.Resize]%icons/win/resize.png%"       Resize
 + "$[gt.(De)Iconify]%icons/win/iconify.png%" Iconify
-+ "$[gt.(Un)Maximize]%icons/win/max.png%" Maximize
-+ "$[gt.(Un)Shade]%icons/win/shade.png%" WindowShade
-+ "$[gt.(Un)Sticky]%icons/win/sticky.png%" Stick
++ "$[gt.(Un)Maximize]%icons/win/max.png%"    Maximize
++ "$[gt.(Un)Shade]%icons/win/shade.png%"     WindowShade
++ "$[gt.(Un)Sticky]%icons/win/sticky.png%"   Stick
 + "$[gt.(No)Title Bar]%icons/win/title.png%" Pick (CirculateHit) ToggleTitle
-+ "$[gt.Send To]%icons/win/sendto.png%" Popup MenuSendTo
++ "$[gt.Send To]%icons/win/sendto.png%"      Popup MenuSendTo
 + "" Nop
-+ "$[gt.Close]%icons/win/close.png%" Close
++ "$[gt.Close]%icons/win/close.png%"     Close
 + "$[gt.Destroy]%icons/win/destroy.png%" Destroy
 + "" Nop
 + "$[gt.Raise]%icons/win/raise.png%" Raise
 + "$[gt.Lower]%icons/win/lower.png%" Lower
 + "" Nop
-+ "$[gt.Stays On Top]%icons/win/top.png%" Pick (CirculateHit) Layer 0 6
-+ "$[gt.Stays Put]%icons/win/stays.png%" Pick (CirculateHit) Layer 0 4
++ "$[gt.Stays On Top]%icons/win/top.png%"       Pick (CirculateHit) Layer 0 6
++ "$[gt.Stays Put]%icons/win/stays.png%"        Pick (CirculateHit) Layer 0 4
 + "$[gt.Stays On Bottom]%icons/win/bottom.png%" Pick (CirculateHit) Layer 0 2
 + "" Nop
 + "$[gt.Identify]%icons/info.png%" Module FvwmIdent
 
 DestroyMenu MenuIconOps
 AddToMenu   MenuIconOps
-+ "$[gt.(De)Iconify]%icons/win/iconify.png%"	Iconify
-+ "$[gt.(Un)Maximize]%icons/win/max.png%" 	Maximize
-+ "$[gt.(Un)Shade]%icons/win/shade.png%"	WindowShade
-+ "$[gt.(Un)Sticky]%icons/win/sticky.png%"	Stick
-+ "$[gt.(No)TitleBar]%icons/win/title.png%"	Pick (CirculateHit) ToggleTitle
-+ "$[gt.Send To]%icons/win/sendto.png%" 	Popup MenuSendTo
++ "$[gt.(De)Iconify]%icons/win/iconify.png%" Iconify
++ "$[gt.(Un)Maximize]%icons/win/max.png%"    Maximize
++ "$[gt.(Un)Shade]%icons/win/shade.png%"     WindowShade
++ "$[gt.(Un)Sticky]%icons/win/sticky.png%"   Stick
++ "$[gt.(No)TitleBar]%icons/win/title.png%"  Pick (CirculateHit) ToggleTitle
++ "$[gt.Send To]%icons/win/sendto.png%"      Popup MenuSendTo
 + "" Nop
-+ "$[gt.Close]%icons/win/close.png%"		Close
-+ "$[gt.Destroy]%icons/win/destroy.png%"	Destroy
++ "$[gt.Close]%icons/win/close.png%"     Close
++ "$[gt.Destroy]%icons/win/destroy.png%" Destroy
 + "" Nop
-+ "$[gt.Raise]%icons/win/raise.png%"		Raise
-+ "$[gt.Lower]%icons/win/lower.png%"		Lower
++ "$[gt.Raise]%icons/win/raise.png%" Raise
++ "$[gt.Lower]%icons/win/lower.png%" Lower
 + "" Nop
 + "$[gt.Stays On Top]%icons/win/top.png%"       Pick (CirculateHit) Layer 0 6
-+ "$[gt.Stays Put]%icons/win/stays.png%"       Pick (CirculateHit) Layer 0 4
++ "$[gt.Stays Put]%icons/win/stays.png%"        Pick (CirculateHit) Layer 0 4
 + "$[gt.Stays On Bottom]%icons/win/bottom.png%" Pick (CirculateHit) Layer 0 2
 + "" Nop
-+ "$[gt.Identify]%icons/info.png%"            Module FvwmIdent
++ "$[gt.Identify]%icons/info.png%" Module FvwmIdent
 
 DestroyMenu MenuSendTo
 AddToMenu MenuSendTo
 + "$[gt.Current]" MoveToCurrent
-+ "$[gt.Page]" PopUp MenuSendToPage
-+ "$[gt.Desk]" PopUp MenuSendToDesk
++ "$[gt.Page]"    PopUp MenuSendToPage
++ "$[gt.Desk]"    PopUp MenuSendToDesk
 
 DestroyMenu MenuSendToDesk
 AddToMenu   MenuSendToDesk
-+ "$[gt.Desk] 0"	MoveToDesk 0 0
-+ "$[gt.Desk] 1"	MoveToDesk 0 1
-+ "$[gt.Desk] 2"	MoveToDesk 0 2
-+ "$[gt.Desk] 3"	MoveToDesk 0 3
++ "$[gt.Desk] 0" MoveToDesk 0 0
++ "$[gt.Desk] 1" MoveToDesk 0 1
++ "$[gt.Desk] 2" MoveToDesk 0 2
++ "$[gt.Desk] 3" MoveToDesk 0 3
 
 DestroyMenu MenuSendToPage
 AddToMenu   MenuSendToPage
-+ "$[gt.Page] (0,0)"	MoveToPage 0 0
-+ "$[gt.Page] (0,1)"	MoveToPage 0 1
-+ "$[gt.Page] (1,0)"	MoveToPage 1 0
-+ "$[gt.Page] (1,1)"	MoveToPage 1 1
++ "$[gt.Page] (0,0)" MoveToPage 0 0
++ "$[gt.Page] (0,1)" MoveToPage 0 1
++ "$[gt.Page] (1,0)" MoveToPage 1 0
++ "$[gt.Page] (1,1)" MoveToPage 1 1
 
 
 # Fvwm Man Pages (Help) Menu
 DestroyMenu MenuFvwmManPages
 AddToMenu   MenuFvwmManPages "Help" Title
-+ "fvwm3"               ViewManPage fvwm3
-+ "FvwmAnimate"         ViewManPage FvwmAnimate
-+ "FvwmAuto"            ViewManPage FvwmAuto
-+ "FvwmBacker"          ViewManPage FvwmBacker
-+ "FvwmButtons"         ViewManPage FvwmButtons
-+ "FvwmCommand"         ViewManPage FvwmCommand
-+ "FvwmConsole"         ViewManPage FvwmConsole
-+ "FvwmEvent"           ViewManPage FvwmEvent
-+ "FvwmIconMan"         ViewManPage FvwmIconMan
-+ "FvwmIdent"           ViewManPage FvwmIdent
-+ "FvwmPager"           ViewManPage FvwmPager
-+ "FvwmPerl"            ViewManPage FvwmPerl
-+ "FvwmRearrange"       ViewManPage FvwmRearrange
-+ "FvwmScript"          ViewManPage FvwmScript
++ "fvwm3"         ViewManPage fvwm3
++ "FvwmAnimate"   ViewManPage FvwmAnimate
++ "FvwmAuto"      ViewManPage FvwmAuto
++ "FvwmBacker"    ViewManPage FvwmBacker
++ "FvwmButtons"   ViewManPage FvwmButtons
++ "FvwmCommand"   ViewManPage FvwmCommand
++ "FvwmConsole"   ViewManPage FvwmConsole
++ "FvwmEvent"     ViewManPage FvwmEvent
++ "FvwmIconMan"   ViewManPage FvwmIconMan
++ "FvwmIdent"     ViewManPage FvwmIdent
++ "FvwmPager"     ViewManPage FvwmPager
++ "FvwmPerl"      ViewManPage FvwmPerl
++ "FvwmRearrange" ViewManPage FvwmRearrange
++ "FvwmScript"    ViewManPage FvwmScript
 + "" Nop
-+ "fvwm-root"	        ViewManPage fvwm-root
++ "fvwm-root"           ViewManPage fvwm-root
 + "fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
 + "fvwm-menu-directory" ViewManPage fvwm-menu-directory
 + "fvwm-menu-xlock"     ViewManPage fvwm-menu-xlock
@@ -480,13 +480,13 @@ AddToMenu   MenuFvwmManPages "Help" Title
 # Alt-Space to launch dmenu (Note: dmenu must be present in the system)
 #
 # Silent suppresses any errors (such as keyboards with no Menu key).
-Silent Key F1 A M Menu MenuFvwmRoot
-Silent Key Menu A A Menu MenuFvwmRoot
-Silent Key Tab A M WindowList Root c c NoDeskSort, NoGeometry, SelectOnRelease Meta_L
-Silent Key F1 A C GotoDesk 0 0
-Silent Key F2 A C GotoDesk 0 1
-Silent Key F3 A C GotoDesk 0 2
-Silent Key F4 A C GotoDesk 0 3
+Silent Key F1      A M Menu MenuFvwmRoot
+Silent Key Menu    A A Menu MenuFvwmRoot
+Silent Key Tab     A M WindowList Root c c NoDeskSort, NoGeometry, SelectOnRelease Meta_L
+Silent Key F1      A C GotoDesk 0 0
+Silent Key F2      A C GotoDesk 0 1
+Silent Key F3      A C GotoDesk 0 2
+Silent Key F4      A C GotoDesk 0 3
 Silent Key Super_R A A Exec exec $[infostore.terminal]
 Test (x $[infostore.runcmd]) Silent Key Space A M Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
 
@@ -509,15 +509,15 @@ Mouse 1 6 A Iconify
 #                Right Click - WindowOps Menu
 #                Middle Click - Window List Menu
 #   Right click TitleBar/Borders for WindowOps Menu
-Mouse 1	T    A RaiseMoveX Move Maximize
-Mouse 1	FS   A RaiseMove Resize
-Mouse 4	T    A WindowShade True
-Mouse 5	T    A WindowShade False
-Mouse 1	R    A Menu MenuFvwmRoot
-Mouse 2	R    A WindowList
-Mouse 3	R    A Menu MenuWindowOpsLong
-Mouse 1	I    A RaiseMoveX Move "Iconify off"
-Mouse 3	T    A Menu MenuWindowOps
+Mouse 1 T    A RaiseMoveX Move Maximize
+Mouse 1 FS   A RaiseMove Resize
+Mouse 4 T    A WindowShade True
+Mouse 5 T    A WindowShade False
+Mouse 1 R    A Menu MenuFvwmRoot
+Mouse 2 R    A WindowList
+Mouse 3 R    A Menu MenuWindowOpsLong
+Mouse 1 I    A RaiseMoveX Move "Iconify off"
+Mouse 3 T    A Menu MenuWindowOps
 Mouse 3 I    A Menu MenuIconOps
 
 # Shuffle moves a window in a given direction until it hits another window.
