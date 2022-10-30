@@ -23,7 +23,7 @@ jobs:
     name: notifications
     steps:
       - name: irc pull request
-        uses: Gottox/irc-message-action@v1.3.1
+        uses: Gottox/irc-message-action@v2.1.3
         if: github.event_name == 'pull_request'
         with:
           server: "irc.libera.chat"
@@ -32,7 +32,7 @@ jobs:
           nickname: fvwm3-gh-pr
           message: "PR: [${{ github.event.pull_request.number }}]: ${{ github.event.pull_request.title }} -- [${{ github.event.pull_request.user.login }}]"
       - name: irc tag created
-        uses: Gottox/irc-message-action@v1.3.1
+        uses: Gottox/irc-message-action@v2.1.3
         if: github.event_name == 'create' && github.event.ref_type == 'tag'
         with:
           server: "irc.libera.chat"
