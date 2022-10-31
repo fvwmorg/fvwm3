@@ -102,9 +102,7 @@ a multi-screen display.
 *-V* | *--version*::
 
 Prints the version of fvwm to _stderr_. Also prints an information about
-the compiled in support for readline, xpm, png, svg, GNOME hints,
-EWMH hints, session management, bidirectional text, multibyte
-characters, RandR and Xft aa font rendering.
+the compiled in features as stated at compiletime.
 
 *-C* | *--visual* _visual-class_::
 
@@ -834,21 +832,12 @@ AddToFunc UrgencyDoneFunc
  + I Nop
 ....
 
-== GNOME COMPLIANCE
-
-Fvwm attempts to be GNOME (version 1) compliant. Check
-_http://www.gnome.org_ for what that may mean. To disable GNOME hints
-for some or all windows, the _GNOMEIgnoreHints_ style can be used.
-
 == EXTENDED WINDOW MANAGER HINTS
 
 Fvwm attempts to respect the extended window manager hints (ewmh or EWMH
 for short) specification:
 _https://specifications.freedesktop.org/wm-spec/wm-spec-1.3.html_ and
-some extensions of this specification. This allows fvwm to work with KDE
-version >= 2, GNOME version 2 and other applications which respect this
-specification (any application based on _GTK+_ version 2). Applications
-which respect this specification are called ewmh compliant applications.
+some extensions of this specification.
 
 This support is configurable with styles and commands. These styles and
 commands have EWMH as the prefix (so you can find them easily in this
@@ -1104,12 +1093,11 @@ In general iso10646-1 fonts together with UTF-8 string encoding allows
 the display of any characters in a given menu, *FvwmForm* etc.
 
 More and more, unicode is used and text files use UTF-8 encoding.
-However, in practice the characters used range over your locale charset
-(this is the case when you generate a menu with fvwm-menu-desktop with
-recent versions of KDE and GNOME). For saving memory (an iso10646-1 font
-may have a very large number of characters) or because you have a pretty
-font without an iso10646-1 charset, you can specify the string encoding
-to be UTF-8 and use a font in the locale charset:
+However, in practice the characters used range over your locale charset.
+For saving memory (an iso10646-1 font may have a very large number of
+characters) or because you have a pretty font without an iso10646-1 charset,
+you can specify the string encoding to be UTF-8 and use a font in the locale
+charset:
 
 ....
 StringEncoding=UTF-8:-*-pretty_font-*-12-*
@@ -5172,8 +5160,7 @@ _StartsOnPageIgnoresTransients_, _IconTitle_ / _!IconTitle_,
 _MwmButtons_ / _FvwmButtons_, _MwmBorder_ / _FvwmBorder_, _MwmDecor_ /
 _!MwmDecor_, _MwmFunctions_ / _!MwmFunctions_, _HintOverride_ /
 _!HintOverride_, _!Button_ / _Button_, _ResizeHintOverride_ /
-_!ResizeHintOverride_, _OLDecor_ / _!OLDecor_, _GNOMEUseHints_ /
-_GNOMEIgnoreHints_, _StickyIcon_ / _SlipperyIcon_,
+_!ResizeHintOverride_, _OLDecor_ / _!OLDecor_, _StickyIcon_ / _SlipperyIcon_,
 _StickyAcrossPagesIcon_ / _!StickyAcrossPagesIcon_,
 _StickyAcrossDesksIcon_ / _!StickyAcrossDesksIcon_, _ManualPlacement_
 / _CascadePlacement_ / _MinOverlapPlacement_ /
@@ -6607,13 +6594,6 @@ allows turns off the mwm hints completely.
 _OLDecor_ makes fvwm attempt to recognize and respect the olwm and
 olvwm hints that many older XView and OLIT applications use. Switch
 this option off with _NoOLDecor_.
-+
-With _GNOMEIgnoreHints_ fvwm ignores all GNOME hints for the window,
-even if GNOME compliance is compiled in. This is useful for those
-pesky applications that try to be more clever than the user and use
-GNOME hints to force the window manager to ignore the user's
-preferences. The _GNOMEUseHints_ style switches back to the default
-behavior.
 +
 _UseDecor_ This style is deprecated and will be removed in the future.
 There are plans to replace it with a more flexible solution in
