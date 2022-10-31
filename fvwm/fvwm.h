@@ -627,10 +627,6 @@ typedef struct window_style
 	signed char icon_title_relief;
 	char *icon_font;
 	char *window_font;
-	char *fore_color_name;
-	char *back_color_name;
-	char *fore_color_name_hi;
-	char *back_color_name_hi;
 	int colorset;
 	int colorset_hi;
 	int border_colorset[BP_SIZE];
