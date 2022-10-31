@@ -460,78 +460,6 @@ static void merge_styles(
 		SSET_START_SCREEN
 			(*merged_style, SGET_START_SCREEN(*add_style));
 	}
-	if (add_style->flag_mask.has_color_fore)
-	{
-		if (do_free_src_and_alloc_copy)
-		{
-			SAFEFREE(SGET_FORE_COLOR_NAME(*merged_style));
-			SSET_FORE_COLOR_NAME(
-				*merged_style,
-				(SGET_FORE_COLOR_NAME(*add_style)) ?
-				fxstrdup(SGET_FORE_COLOR_NAME(*add_style)) :
-				NULL);
-		}
-		else
-		{
-			SSET_FORE_COLOR_NAME(
-				*merged_style,
-				SGET_FORE_COLOR_NAME(*add_style));
-		}
-	}
-	if (add_style->flag_mask.has_color_back)
-	{
-		if (do_free_src_and_alloc_copy)
-		{
-			SAFEFREE(SGET_BACK_COLOR_NAME(*merged_style));
-			SSET_BACK_COLOR_NAME(
-				*merged_style,
-				(SGET_BACK_COLOR_NAME(*add_style)) ?
-				fxstrdup(SGET_BACK_COLOR_NAME(*add_style)) :
-				NULL);
-		}
-		else
-		{
-			SSET_BACK_COLOR_NAME(
-				*merged_style,
-				SGET_BACK_COLOR_NAME(*add_style));
-		}
-	}
-	if (add_style->flag_mask.has_color_fore_hi)
-	{
-		if (do_free_src_and_alloc_copy)
-		{
-			SAFEFREE(SGET_FORE_COLOR_NAME_HI(*merged_style));
-			SSET_FORE_COLOR_NAME_HI(
-				*merged_style,
-				(SGET_FORE_COLOR_NAME_HI(*add_style)) ?
-				fxstrdup(SGET_FORE_COLOR_NAME_HI(*add_style)) :
-				NULL);
-		}
-		else
-		{
-			SSET_FORE_COLOR_NAME_HI(
-				*merged_style,
-				SGET_FORE_COLOR_NAME_HI(*add_style));
-		}
-	}
-	if (add_style->flag_mask.has_color_back_hi)
-	{
-		if (do_free_src_and_alloc_copy)
-		{
-			SAFEFREE(SGET_BACK_COLOR_NAME_HI(*merged_style));
-			SSET_BACK_COLOR_NAME_HI(
-				*merged_style,
-				(SGET_BACK_COLOR_NAME_HI(*add_style)) ?
-				fxstrdup(SGET_BACK_COLOR_NAME_HI(*add_style)) :
-				NULL);
-		}
-		else
-		{
-			SSET_BACK_COLOR_NAME_HI(
-				*merged_style,
-				SGET_BACK_COLOR_NAME_HI(*add_style));
-		}
-	}
 	if (add_style->flags.has_border_width)
 	{
 		SSET_BORDER_WIDTH(
@@ -847,10 +775,6 @@ static void free_style(window_style *style)
 {
 	/* Free contents of style */
 	SAFEFREE(SGET_NAME(*style));
-	SAFEFREE(SGET_BACK_COLOR_NAME(*style));
-	SAFEFREE(SGET_FORE_COLOR_NAME(*style));
-	SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
-	SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
 	SAFEFREE(SGET_DECOR_NAME(*style));
 	SAFEFREE(SGET_ICON_FONT(*style));
 	SAFEFREE(SGET_WINDOW_FONT(*style));
@@ -878,22 +802,6 @@ static void free_style_mask(window_style *style, style_flags *mask)
 		 sizeof(style_flags));
 
 	/* Free contents of style */
-	if (pmask->has_color_back)
-	{
-		SAFEFREE(SGET_BACK_COLOR_NAME(*style));
-	}
-	if (pmask->has_color_fore)
-	{
-		SAFEFREE(SGET_FORE_COLOR_NAME(*style));
-	}
-	if (pmask->has_color_back_hi)
-	{
-		SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
-	}
-	if (pmask->has_color_fore_hi)
-	{
-		SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
-	}
 	if (pmask->has_decor)
 	{
 		SAFEFREE(SGET_DECOR_NAME(*style));
@@ -2230,28 +2138,7 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'b':
-		if (StrEquals(token, "BackColor"))
-		{
-			rest = GetNextToken(rest, &token);
-			if (token)
-			{
-				SAFEFREE(SGET_BACK_COLOR_NAME(*ps));
-				SSET_BACK_COLOR_NAME(*ps, token);
-				ps->flags.has_color_back = 1;
-				ps->flag_mask.has_color_back = 1;
-				ps->change_mask.has_color_back = 1;
-				ps->flags.use_colorset = 0;
-				ps->flag_mask.use_colorset = 1;
-				ps->change_mask.use_colorset = 1;
-			}
-			else
-			{
-				fvwm_debug(__func__,
-					   "Style BackColor requires color"
-					   " argument");
-			}
-		}
-		else if (StrEquals(token, "Button"))
+		if (StrEquals(token, "Button"))
 		{
 			rest = style_parse_button_style(ps, rest, on);
 		}
@@ -2367,94 +2254,6 @@ static Bool style_parse_one_style_option(
 			ps->flags.use_colorset = (*val >= 0);
 			ps->flag_mask.use_colorset = 1;
 			ps->change_mask.use_colorset = 1;
-		}
-		else if (StrEquals(token, "Color"))
-		{
-			char c = 0;
-			char *next;
-
-			next = GetNextToken(rest, &token);
-			if (token == NULL)
-			{
-				fvwm_debug(__func__,
-					   "Color Style requires a color"
-					   " argument");
-				break;
-			}
-			if (strncasecmp(token, "rgb:", 4) == 0)
-			{
-				char *s;
-				int i;
-
-				/* spool to third '/' */
-				for (i = 0, s = token + 4; *s && i < 3; s++)
-				{
-					if (*s == '/')
-					{
-						i++;
-					}
-				}
-				s--;
-				if (i == 3)
-				{
-					*s = 0;
-					/* spool to third '/' in original
-					 * string too */
-					for (i = 0, s = rest; *s && i < 3; s++)
-					{
-						if (*s == '/')
-						{
-							i++;
-						}
-					}
-					next = s - 1;
-				}
-			}
-			else
-			{
-				free(token);
-				next = DoGetNextToken(
-					rest, &token, NULL, ",/", &c);
-			}
-			rest = next;
-			SAFEFREE(SGET_FORE_COLOR_NAME(*ps));
-			SSET_FORE_COLOR_NAME(*ps, token);
-			ps->flags.has_color_fore = 1;
-			ps->flag_mask.has_color_fore = 1;
-			ps->change_mask.has_color_fore = 1;
-			ps->flags.use_colorset = 0;
-			ps->flag_mask.use_colorset = 1;
-			ps->change_mask.use_colorset = 1;
-
-			/* skip over '/' */
-			if (c != '/')
-			{
-				while (rest && *rest &&
-				       isspace((unsigned char)*rest) &&
-				       *rest != ',' && *rest != '/')
-				{
-					rest++;
-				}
-				if (*rest == '/')
-				{
-					rest++;
-				}
-			}
-
-			rest=GetNextToken(rest, &token);
-			if (!token)
-			{
-				fvwm_debug(__func__,
-					   "Color Style called with incomplete"
-					   " color argument.");
-				break;
-			}
-			SAFEFREE(SGET_BACK_COLOR_NAME(*ps));
-			SSET_BACK_COLOR_NAME(*ps, token);
-			ps->flags.has_color_back = 1;
-			ps->flag_mask.has_color_back = 1;
-			ps->change_mask.has_color_back = 1;
-			break;
 		}
 		else if (StrEquals(token, "CirculateSkipIcon"))
 		{
@@ -2734,27 +2533,6 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_WINDOW_FONT(SCC(*ps), 1);
 
 		}
-		else if (StrEquals(token, "ForeColor"))
-		{
-			rest = GetNextToken(rest, &token);
-			if (token)
-			{
-				SAFEFREE(SGET_FORE_COLOR_NAME(*ps));
-				SSET_FORE_COLOR_NAME(*ps, token);
-				ps->flags.has_color_fore = 1;
-				ps->flag_mask.has_color_fore = 1;
-				ps->change_mask.has_color_fore = 1;
-				ps->flags.use_colorset = 0;
-				ps->flag_mask.use_colorset = 1;
-				ps->change_mask.use_colorset = 1;
-			}
-			else
-			{
-				fvwm_debug(__func__,
-					   "ForeColor Style needs color argument"
-					);
-			}
-		}
 		else if (StrEquals(token, "FVWMBUTTONS"))
 		{
 			S_SET_HAS_MWM_BUTTONS(SCF(*ps), !on);
@@ -2868,48 +2646,6 @@ static Bool style_parse_one_style_option(
 				ps->flags.has_handle_width = 0;
 				ps->flag_mask.has_handle_width = 1;
 				ps->change_mask.has_handle_width = 1;
-			}
-		}
-		else if (StrEquals(token, "HilightFore"))
-		{
-			rest = GetNextToken(rest, &token);
-			if (token)
-			{
-				SAFEFREE(SGET_FORE_COLOR_NAME_HI(*ps));
-				SSET_FORE_COLOR_NAME_HI(*ps, token);
-				ps->flags.has_color_fore_hi = 1;
-				ps->flag_mask.has_color_fore_hi = 1;
-				ps->change_mask.has_color_fore_hi = 1;
-				ps->flags.use_colorset_hi = 0;
-				ps->flag_mask.use_colorset_hi = 1;
-				ps->change_mask.use_colorset_hi = 1;
-			}
-			else
-			{
-				fvwm_debug(__func__,
-					   "HilightFore Style needs color"
-					   " argument");
-			}
-		}
-		else if (StrEquals(token, "HilightBack"))
-		{
-			rest = GetNextToken(rest, &token);
-			if (token)
-			{
-				SAFEFREE(SGET_BACK_COLOR_NAME_HI(*ps));
-				SSET_BACK_COLOR_NAME_HI(*ps, token);
-				ps->flags.has_color_back_hi = 1;
-				ps->flag_mask.has_color_back_hi = 1;
-				ps->change_mask.has_color_back_hi = 1;
-				ps->flags.use_colorset_hi = 0;
-				ps->flag_mask.use_colorset_hi = 1;
-				ps->change_mask.use_colorset_hi = 1;
-			}
-			else
-			{
-				fvwm_debug(__func__,
-					   "HilightBack Style needs color"
-					   " argument");
 			}
 		}
 		else if (StrEquals(token, "HilightColorset"))
@@ -5157,24 +4893,16 @@ void check_window_style_change(
 		flags->do_update_modules_flags = 1;
 	}
 
-	/* has_color_back
-	 * has_color_fore
-	 * use_colorset
+	/* use_colorset
 	 * use_border_colorset */
-	if (ret_style->change_mask.has_color_fore ||
-	    ret_style->change_mask.has_color_back ||
-	    ret_style->change_mask.use_colorset ||
+	if (ret_style->change_mask.use_colorset ||
 	    ret_style->change_mask.use_border_colorset)
 	{
 		flags->do_update_window_color = 1;
 	}
-	/* has_color_back_hi
-	 * has_color_fore_hi
-	 * use_colorset_hi
+	/* use_colorset_hi
 	 * use_border_colorset_hi */
-	if (ret_style->change_mask.has_color_fore_hi ||
-	    ret_style->change_mask.has_color_back_hi ||
-	    ret_style->change_mask.use_colorset_hi ||
+	if (ret_style->change_mask.use_colorset_hi ||
 	    ret_style->change_mask.use_border_colorset_hi)
 	{
 		flags->do_update_window_color_hi = 1;
@@ -5423,28 +5151,12 @@ void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 	{
 		fw->cs = -1;
 	}
-	if (SGET_FORE_COLOR_NAME(*pstyle) != NULL &&
-	    !SUSE_COLORSET(&pstyle->flags))
-	{
-		fw->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
-	}
-	else
-	{
-		fw->colors.fore = Colorset[cs].fg;
-	}
-	if (SGET_BACK_COLOR_NAME(*pstyle) != NULL &&
-	    !SUSE_COLORSET(&pstyle->flags))
-	{
-		fw->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
-		fw->colors.shadow = GetShadow(fw->colors.back);
-		fw->colors.hilight = GetHilite(fw->colors.back);
-	}
-	else
-	{
-		fw->colors.hilight = Colorset[cs].hilite;
-		fw->colors.shadow = Colorset[cs].shadow;
-		fw->colors.back = Colorset[cs].bg;
-	}
+
+	fw->colors.fore = Colorset[cs].fg;
+	fw->colors.hilight = Colorset[cs].hilite;
+	fw->colors.shadow = Colorset[cs].shadow;
+	fw->colors.back = Colorset[cs].bg;
+
 	if (SUSE_BORDER_COLORSET(&pstyle->flags))
 	{
 		int i;
@@ -5483,30 +5195,12 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 	{
 		fw->cs_hi = -1;
 	}
-	if (
-		SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
-		!SUSE_COLORSET_HI(&pstyle->flags))
-	{
-		fw->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
-	}
-	else
-	{
-		fw->hicolors.fore = Colorset[cs].fg;
-	}
-	if (
-		SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
-		!SUSE_COLORSET_HI(&pstyle->flags))
-	{
-		fw->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
-		fw->hicolors.shadow = GetShadow(fw->hicolors.back);
-		fw->hicolors.hilight = GetHilite(fw->hicolors.back);
-	}
-	else
-	{
-		fw->hicolors.hilight = Colorset[cs].hilite;
-		fw->hicolors.shadow = Colorset[cs].shadow;
-		fw->hicolors.back = Colorset[cs].bg;
-	}
+
+	fw->hicolors.fore = Colorset[cs].fg;
+	fw->hicolors.hilight = Colorset[cs].hilite;
+	fw->hicolors.shadow = Colorset[cs].shadow;
+	fw->hicolors.back = Colorset[cs].bg;
+
 	if (SUSE_BORDER_COLORSET_HI(&pstyle->flags))
 	{
 		int i;
@@ -5625,46 +5319,6 @@ void print_styles(int verbose)
 			{
 				fvwm_debug(__func__, "    * 0x%lx\n",
 					   (unsigned long)SGET_WINDOW_ID(*nptr));
-			}
-		}
-		if (SGET_BACK_COLOR_NAME(*nptr))
-		{
-			mem += strlen(SGET_BACK_COLOR_NAME(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Back Color: %s\n",
-					   SGET_BACK_COLOR_NAME(*nptr));
-			}
-		}
-		if (SGET_FORE_COLOR_NAME(*nptr))
-		{
-			mem += strlen(SGET_FORE_COLOR_NAME(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Fore Color: %s\n",
-					   SGET_FORE_COLOR_NAME(*nptr));
-			}
-		}
-		if (SGET_BACK_COLOR_NAME_HI(*nptr))
-		{
-			mem += strlen(SGET_BACK_COLOR_NAME_HI(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Back Color hi: %s\n",
-					   SGET_BACK_COLOR_NAME_HI(*nptr));
-			}
-		}
-		if (SGET_FORE_COLOR_NAME_HI(*nptr))
-		{
-			mem += strlen(SGET_FORE_COLOR_NAME_HI(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Fore Color hi: %s\n",
-					   SGET_FORE_COLOR_NAME_HI(*nptr));
 			}
 		}
 		if (SGET_DECOR_NAME(*nptr))

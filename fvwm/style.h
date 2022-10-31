@@ -18,10 +18,6 @@
 	((sf)->do_start_shaded)
 #define SHAS_BORDER_WIDTH(sf) \
 	((sf)->has_border_width)
-#define SHAS_COLOR_BACK(sf) \
-	((sf)->has_color_back)
-#define SHAS_COLOR_FORE(sf) \
-	((sf)->has_color_fore)
 #define SHAS_HANDLE_WIDTH(sf) \
 	((sf)->has_handle_width)
 #define SHAS_ICON(sf) \
@@ -426,22 +422,6 @@
 	((s).decor_name)
 #define SSET_DECOR_NAME(s,x) \
 	((s).decor_name = (x))
-#define SGET_FORE_COLOR_NAME(s) \
-	((s).fore_color_name)
-#define SSET_FORE_COLOR_NAME(s,x) \
-	((s).fore_color_name = (x))
-#define SGET_BACK_COLOR_NAME(s) \
-	((s).back_color_name)
-#define SSET_BACK_COLOR_NAME(s,x) \
-	((s).back_color_name = (x))
-#define SGET_FORE_COLOR_NAME_HI(s) \
-	((s).fore_color_name_hi)
-#define SSET_FORE_COLOR_NAME_HI(s,x) \
-	((s).fore_color_name_hi = (x))
-#define SGET_BACK_COLOR_NAME_HI(s) \
-	((s).back_color_name_hi)
-#define SSET_BACK_COLOR_NAME_HI(s,x) \
-	((s).back_color_name_hi = (x))
 #define SGET_ICON_FONT(s) \
 	((s).icon_font)
 #define SSET_ICON_FONT(s,x) \

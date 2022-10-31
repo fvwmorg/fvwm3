@@ -5158,8 +5158,7 @@ _StaysPut_, _Sticky_ / _Slippery_, _StickyAcrossPages_ /
 _!StickyAcrossPages_, _StickyAcrossDesks_ / _!StickyAcrossDesks_,
 _!StickyStippledTitle_ / _StickyStippledTitle_,
 _!StickyStippledIconTitle_ / _StickyStippledIconTitle_, _StartIconic_
-/ _StartNormal_, _Color_, _ForeColor_, _BackColor_, _Colorset_,
-_HilightFore_, _HilightBack_, _HilightColorset_, _BorderColorset_,
+/ _StartNormal_,  _Colorset_, _HilightColorset_, _BorderColorset_,
 _HilightBorderColorset_, _IconTitleColorset_,
 _HilightIconTitleColorset_, _IconBackgroundColorset_,
 _IconTitleRelief_, _IconBackgroundRelief_, _IconBackgroundPadding_,
@@ -5441,23 +5440,12 @@ _StickyAcrossPages_ or _StickyAcrossDesks_ style. _!StippledTitle_
 reverts back to normal titles. _StippledTitleOff_ is equivalent to
 _!StippledTitle_ but is deprecated.
 +
-_Color_ takes two arguments. The first is the window-label text
-color and the second is the window decorations normal background
-color. The two colors are separated with a slash. If the use of a
-slash causes problems then the separate _ForeColor_ and _BackColor_
-options can be used.
-+
 *Colorset* takes the colorset number as its sole argument and
 overrides the colors set by _Color_. Instead, the corresponding
 colors from the given colorset are used. Note that all other
 features of a colorset are not used. Use the *Colorset* decoration
 style in the *TitleStyle* and _ButtonStyle_ command for that. To
 stop using the colorset, the colorset number is omitted.
-+
-The _HilightFore_, _HilightBack_ and _HilightColorset_ style options
-work exactly like _ForeColor_, _BackColor_ and _Colorset_ but are
-used only if the window has the focus. These styles replace the old
-commands *HilightColor* and _HilightColorset_.
 +
 _BorderColorset_ takes eight positive integers as its arguments and will
 apply the given colorsets to the eight individual components of the window
@@ -6868,8 +6856,7 @@ AddToDecor FlatDecor
 + BorderStyle -- HiddenHandles NoInset
 
 Style FlatStyle \
-	UseDecor FlatDecor, HandleWidth 4, ForeColor white, \
-	BackColor grey40, HilightFore black, HilightBack grey70
+	UseDecor FlatDecor, HandleWidth 4, Colorset 0, HilightColorset 1
 
 Style xterm UseStyle FlatStyle
 ....
