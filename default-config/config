@@ -243,7 +243,7 @@ Style * Colorset 1, HilightColorset 2
 #   North NorthEast East SouthEast South SouthWest West NorthWest
 # This makes the edges and corners (handles) different colors.
 Style * BorderColorset 3 4 3 4 3 4 3 4
-Style * HilightBorderColorset 4 13 4 13 4 13 4 13
+Style * HilightBorderColorset 4 8 4 8 4 8 4 8
 
 # Disable Icons from appearing on desktop.
 # Comment this out or use Style * Icon to get the icons back.
