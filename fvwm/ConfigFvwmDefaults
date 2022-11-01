@@ -56,6 +56,11 @@ Style * EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
 Style fvwm_menu NoPPosition, NeverFocus, NoLenience, \
 	WindowListSkip, CirculateSkip
 
+# Default colorsets to ensure they are set.
+Colorset 0 fg black, bg grey
+Colorset 1 fg black, bg grey25
+Style * Colorset 1, BorderColorset 1, HilightColorset 0, HilightBorderColorset 0
+
 # Alt-Tab:
 Key Tab A M WindowList Root c c NoDeskSort
 
