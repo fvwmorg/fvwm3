@@ -279,17 +279,15 @@ static int ParsePositionArgumentSuffix(
 }
 
 /* Functions to shuffle windows to the closest boundary. */
-static void grow_bound_to_next_monitor(
-	FvwmWindow *fw, rectangle *bound, rectangle win_r, direction_t dir)
+static void move_to_next_monitor(
+	FvwmWindow *fw, rectangle *win_r, bool ewmh, direction_t dir)
 {
 	position page;
 	struct monitor *m;
 
 	get_page_offset_check_visible(&page.x, &page.y, fw);
-	bound->x -= page.x;
-	bound->y -= page.y;
-	win_r.x -= page.x;
-	win_r.y -= page.y;
+	win_r->x -= page.x;
+	win_r->y -= page.y;
 
 	TAILQ_FOREACH(m, &monitor_q, entry)
 	{
@@ -297,36 +295,40 @@ static void grow_bound_to_next_monitor(
 			continue;
 
 		if (dir == DIR_N && m->si->y + m->si->h == fw->m->si->y &&
-			win_r.x < m->si->x + m->si->w &&
-			win_r.x + win_r.width > m->si->x)
+			win_r->x < m->si->x + m->si->w &&
+			win_r->x + win_r->width > m->si->x)
 		{
-			bound->y = m->si->y + m->ewmhc.BaseStrut.top;
-			bound->height = win_r.y + win_r.height - bound->y;
+			win_r->y = m->si->y + m->si->h - win_r->height;
+			if (ewmh)
+				win_r->y -= m->ewmhc.BaseStrut.bottom;
 		}
 		else if (dir == DIR_E && m->si->x == fw->m->si->x +
-			fw->m->si->w &&	win_r.y < m->si->y + m->si->h &&
-				win_r.y + win_r.height > m->si->y)
+			fw->m->si->w &&	win_r->y < m->si->y + m->si->h &&
+				win_r->y + win_r->height > m->si->y)
 		{
-			bound->width = m->si->x + m->si->w - bound->x -
-				m->ewmhc.BaseStrut.right;
+			win_r->x = m->si->x;
+			if (ewmh)
+				win_r->x += m->ewmhc.BaseStrut.left;
 		}
 		else if (dir == DIR_S && m->si->y == fw->m->si->y +
-			fw->m->si->h &&	win_r.x < m->si->x + m->si->w &&
-			win_r.x + win_r.width > m->si->x)
+			fw->m->si->h &&	win_r->x < m->si->x + m->si->w &&
+			win_r->x + win_r->width > m->si->x)
 		{
-			bound->height = m->si->y + m->si->h - bound->y -
-				m->ewmhc.BaseStrut.bottom;
+			win_r->y = m->si->y;
+			if (ewmh)
+				win_r->y += m->ewmhc.BaseStrut.top;
 		}
 		else if (dir == DIR_W && m->si->x + m->si->w == fw->m->si->x &&
-			win_r.y < m->si->y + m->si->h &&
-			win_r.y + win_r.height > m->si->y)
+			win_r->y < m->si->y + m->si->h &&
+			win_r->y + win_r->height > m->si->y)
 		{
-			bound->x = m->si->x + m->ewmhc.BaseStrut.left;
-			bound->width = win_r.x + win_r.width - bound->x;
+			win_r->x = m->si->x + m->si->w - win_r->width;
+			if (ewmh)
+				win_r->x -= m->ewmhc.BaseStrut.right;
 		}
 	}
-	bound->x += page.x;
-	bound->y += page.y;
+	win_r->x += page.x;
+	win_r->y += page.y;
 }
 static void shuffle_win_to_closest(
 	FvwmWindow *fw, char **action, position *pFinal, Bool *fWarp)
@@ -338,6 +340,7 @@ static void shuffle_win_to_closest(
 	int n;
 	int snap = SNAP_NONE;
 	int layers[2] = { -1, -1 };
+	bool ewmh = true;
 
 	cwin = fw->g.frame;
 	get_page_offset_check_visible(&page.x, &page.y, fw);
@@ -371,13 +374,16 @@ static void shuffle_win_to_closest(
 		{
 			*fWarp = true;
 		}
+		else if (StrEquals(token, "ewmhiwa"))
+		{
+			ewmh = false;
+		}
 		else
 		{
 			break;
 		}
 		*action = naction;
 		token = PeekToken(*action, &naction);
-
 	}
 
 	/* Get direction(s) */
@@ -391,14 +397,14 @@ static void shuffle_win_to_closest(
 		case DIR_N:
 			bound.x = cwin.x;
 			bound.y = fw->m->si->y + page.y;
-			if (cwin.y - bound.y > fw->m->ewmhc.BaseStrut.top)
+			if (ewmh)
 				bound.y += fw->m->ewmhc.BaseStrut.top;
 			bound.width = cwin.width;
 			bound.height = cwin.y + cwin.height - bound.y;
 			if (cwin.y <= bound.y)
 			{
-				grow_bound_to_next_monitor(
-					fw, &bound, cwin, DIR_N);
+				move_to_next_monitor(fw, &cwin, ewmh, DIR_N);
+				break;
 			}
 			grow_to_closest_type(fw, &cwin, bound, layers,
 				snap, false);
@@ -409,16 +415,13 @@ static void shuffle_win_to_closest(
 			bound.y = cwin.y;
 			bound.width = fw->m->si->x + fw->m->si->w -
 				bound.x + page.x;
-			if (bound.x + bound.width - cwin.x - cwin.width >
-				fw->m->ewmhc.BaseStrut.right)
-			{
+			if (ewmh)
 				bound.width -= fw->m->ewmhc.BaseStrut.right;
-			}
 			bound.height = cwin.height;
 			if (cwin.x + cwin.width >= bound.x + bound.width)
 			{
-				grow_bound_to_next_monitor(
-					fw, &bound, cwin, DIR_E);
+				move_to_next_monitor(fw, &cwin, ewmh, DIR_E);
+				break;
 			}
 			grow_to_closest_type(fw, &cwin, bound, layers,
 				snap, false);
@@ -431,15 +434,12 @@ static void shuffle_win_to_closest(
 			bound.width = cwin.width;
 			bound.height = fw->m->si->y + fw->m->si->h -
 				bound.y + page.y;
-			if (bound.y + bound.height - cwin.y - cwin.height >
-				fw->m->ewmhc.BaseStrut.bottom)
-			{
+			if (ewmh)
 				bound.height -= fw->m->ewmhc.BaseStrut.bottom;
-			}
 			if (cwin.y + cwin.height >= bound.y + bound.height)
 			{
-				grow_bound_to_next_monitor(
-					fw, &bound, cwin, DIR_S);
+				move_to_next_monitor(fw, &cwin, ewmh, DIR_S);
+				break;
 			}
 			grow_to_closest_type(fw, &cwin, bound, layers,
 				snap, false);
@@ -448,16 +448,15 @@ static void shuffle_win_to_closest(
 			break;
 		case DIR_W:
 			bound.x = fw->m->si->x + page.x;
-			if (cwin.x - bound.x > fw->m->ewmhc.BaseStrut.left)
+			if (ewmh)
 				bound.x += fw->m->ewmhc.BaseStrut.left;
 			bound.y = cwin.y;
-			bound.width = cwin.y + cwin.width - bound.x;
+			bound.width = cwin.x + cwin.width - bound.x;
 			bound.height = cwin.height;
-			bound.height = cwin.y + cwin.height - bound.y;
 			if (cwin.x <= bound.x)
 			{
-				grow_bound_to_next_monitor(
-					fw, &bound, cwin, DIR_W);
+				move_to_next_monitor(fw, &cwin, ewmh, DIR_W);
+				break;
 			}
 			grow_to_closest_type(fw, &cwin, bound, layers,
 				snap, false);
