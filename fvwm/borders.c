@@ -519,7 +519,7 @@ static void get_common_decorations(
 	}
 
 	/* MWMBorder style means thin 3d effects */
-	cd->relief_width = (HAS_MWM_BORDER(t) ? 2 : 2);
+	cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
 
 	if (cd->texture_pixmap)
 	{
@@ -2978,7 +2978,7 @@ static void border_draw_decor_to_pixmap(
 	}
 	else
 	{
-		border = HAS_MWM_BORDER(fw) ? 2 : 2;
+		border = HAS_MWM_BORDER(fw) ? 1 : 2;
 	}
 	dest_g.width = w_g->width;
 	dest_g.height = w_g->height;
