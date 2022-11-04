@@ -43,6 +43,7 @@
 #include "decorations.h"
 #include "virtual.h"
 #include "infostore.h"
+#include "expand.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -733,8 +734,19 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond, "Desk"))
 		{
-			if (sscanf(tmp, "%d", &mask->desk)) {
+			char	 desk[4096];
+			char	*desk_expanded = NULL;
+			const	 exec_context_t *exc = NULL;
+
+			if (sscanf(tmp, "%s", desk)) {
 				tmp = SkipNTokens(tmp, 1);
+				exc = exc_create_null_context();
+				desk_expanded = expand_vars(desk, NULL, False,
+				    True, NULL, exc);
+				exc_destroy_context(exc);
+
+				mask->desk = strtol(desk_expanded, NULL, 10);
+				free(desk_expanded);
 			}
 			mask->my_flags.do_check_cond_desk = on;
 		}
