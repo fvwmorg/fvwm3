@@ -2183,8 +2183,8 @@ static Bool style_parse_one_style_option(
 				    "contain positive integers, and have <= 8 "
 				    "value, and have <= 8 "
 				    "values: %s", rest);
-				break;
 			}
+			rest = NULL;
 		}
 		else if (StrEquals(token, "BottomTitleRotated"))
 		{
@@ -2664,8 +2664,8 @@ static Bool style_parse_one_style_option(
 				fvwm_debug(__func__, "HilightBorderColorset can "
 				    "only contain positive integers, and have "
 				    " <= 8 values: %s", rest);
-				break;
 			}
+			rest = NULL;
 		}
                 else if (StrEquals(token, "HilightIconTitleColorset"))
 		{
