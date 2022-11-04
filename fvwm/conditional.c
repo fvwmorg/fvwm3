@@ -1139,19 +1139,11 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	}
 	if (mask->my_flags.do_check_screen)
 	{
-		rectangle	 g;
-		const char	*mon_name;
-		struct monitor	*scr;
-
-		get_unshaded_geometry(fw, &g);
-		mon_name = FScreenOfPointerXY(g.x, g.y);
-		scr = monitor_resolve_name(mon_name);
-
 		if (mask->my_flags.do_not_check_screen) {
 			/* Negation of (!screen n) specified. */
-			return (scr != mask->screen);
+			return (fw->m != mask->screen);
 		} else
-			return (scr == mask->screen);
+			return (fw->m == mask->screen);
 	}
 
 	return True;
