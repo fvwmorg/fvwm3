@@ -30,8 +30,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   Current               - Operate on the currently focused window
   CursorMove            - Move the cursor pointer non interactively
   CursorStyle           - Define different cursor pointer shapes and colors
-  DefaultColors         - Set colors for the feedback window (will be obsolete)
-  DefaultColorset       - Set colors for the Move/Resize feedback window
   DefaultFont           - The default font to use (mainly for feedback window)
   DefaultIcon           - The default icon to use for iconified windows
   DefaultLayers         - Set StaysOnBottom, StaysPut, StaysOnTop layer numbers

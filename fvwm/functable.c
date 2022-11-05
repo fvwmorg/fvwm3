@@ -152,13 +152,6 @@ const func_t func_table[] =
 	CMD_ENT("cursorstyle", CMD_CursorStyle, F_CURSOR_STYLE, 0, 0),
 	/* - Define different cursor pointer shapes and colors */
 
-	CMD_ENT("defaultcolors", CMD_DefaultColors, F_DFLT_COLORS, 0, 0),
-	/* - Set colors for the feedback window (will be obsolete) */
-
-	CMD_ENT("defaultcolorset", CMD_DefaultColorset, F_DFLT_COLORSET,
-		0, 0),
-	/* - Set colors for the Move/Resize feedback window */
-
 	CMD_ENT("defaultfont", CMD_DefaultFont, F_DFLT_FONT, 0, 0),
 	/* - The default font to use (mainly for feedback window) */
 

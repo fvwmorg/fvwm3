@@ -876,13 +876,6 @@ CURSORSTYLEXOPTION =/ "fg"
 CURSORSTYLEXOPTION =/ "bg"
 ```
 ```
-CMD_DEFAULTCOLORS = "DefaultColors" [(COLOUR_FG] / "-") [(COLOUR_BG - "/")]
-; XXX - We need to represent colour values here --- RGB.txt, etc.
-```
-```
-CMD_DEFAULTCOLORSET = "DefaultColorset" (COLORSET_NUM / "-1")
-```
-```
 CMD_DEFAULTFONT = "DefaultFont" [FONTNAME]
 ```
 ```

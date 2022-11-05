@@ -362,7 +362,6 @@ typedef struct ScreenInfo
 	/* GC for transparency masks */
 	GC TransMaskGC;
 	/* don't change the order */
-	Pixel StdFore, StdBack, StdHilite, StdShadow;
 	GC StdGC;
 	GC StdReliefGC;
 	GC StdShadowGC;
@@ -427,9 +426,6 @@ typedef struct ScreenInfo
 	int ColormapFocus;
 	/* Limit on colors used in pixmaps */
 	int ColorLimit;
-	/* Default Colorset used by feedback window */
-	int DefaultColorset;
-
 	int use_backing_store;
 
 	/* some additional global options which will probably become window
@@ -468,7 +464,6 @@ typedef struct ScreenInfo
 		unsigned do_need_style_list_update : 1;
 		unsigned do_need_window_update : 1;
 		unsigned do_save_under : 1;
-		unsigned has_default_color_changed : 1;
 		unsigned has_default_font_changed : 1;
 		unsigned has_mouse_binding_changed : 1;
 		unsigned has_nr_buttons_changed : 1;
