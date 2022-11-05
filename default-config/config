@@ -435,6 +435,11 @@ AddToMenu   MenuSendToPage
 DestroyMenu MenuFvwmManPages
 AddToMenu   MenuFvwmManPages "Help" Title
 + "fvwm3"         ViewManPage fvwm3
++ "fvwm3commands" ViewManPage fvwm3commands
++ "fvwm3styles"   ViewManPage fvwm3styles
++ "fvwm3menus"    ViewManPage fvwm3menus
++ "fvwm3all"      ViewManPage fvwm3all
++ "" Nop
 + "FvwmAnimate"   ViewManPage FvwmAnimate
 + "FvwmAuto"      ViewManPage FvwmAuto
 + "FvwmBacker"    ViewManPage FvwmBacker
