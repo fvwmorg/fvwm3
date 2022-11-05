@@ -1092,7 +1092,6 @@ static void InitVariables(void)
 	menus_init();
 	Scr.last_added_item.type = ADDED_NONE;
 	Scr.DefaultIcon = NULL;
-	Scr.DefaultColorset = -1;
 	Scr.StdGC = 0;
 	Scr.StdReliefGC = 0;
 	Scr.StdShadowGC = 0;
@@ -1320,7 +1319,6 @@ static void SetRCDefaults(void)
 		 * configuration which defines these and more.
 		 */
 		{ "DefaultFont", "", "" },
-		{ "DefaultColors black grey", "", "" },
 		{ DEFAULT_MENU_STYLE, "", "" },
 		{ "TitleStyle Centered -- Raised", "", "" },
 		{ "Style * Color lightgrey/dimgrey", "", "" },
@@ -2511,7 +2509,9 @@ int main(int argc, char **argv)
 			PictureBlackPixel(), PictureWhitePixel(), Pdepth);
 	}
 
-	attributes.background_pixel = Scr.StdBack;
+	int cs = 0;
+
+	attributes.background_pixel = Colorset[cs].bg;
 	attributes.colormap = Pcmap;
 	attributes.border_pixel = 0;
 	valuemask = CWBackPixel | CWColormap | CWBorderPixel;

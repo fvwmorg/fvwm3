@@ -1400,7 +1400,7 @@ void ApplyDefaultFontAndColors(void)
 {
 	XGCValues gcv;
 	unsigned long gcm;
-	int cset = Scr.DefaultColorset;
+	int cset = 0;
 
 	/* make GC's */
 	gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
@@ -1411,16 +1411,9 @@ void ApplyDefaultFontAndColors(void)
 		gcv.font = Scr.DefaultFont->font->fid;
 	}
 	gcv.line_width = 0;
-	if (cset >= 0)
-	{
-		gcv.foreground = Colorset[cset].fg;
-		gcv.background = Colorset[cset].bg;
-	}
-	else
-	{
-		gcv.foreground = Scr.StdFore;
-		gcv.background = Scr.StdBack;
-	}
+	gcv.foreground = Colorset[cset].fg;
+	gcv.background = Colorset[cset].bg;
+
 	if (Scr.StdGC)
 	{
 		XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
@@ -1431,14 +1424,8 @@ void ApplyDefaultFontAndColors(void)
 	}
 
 	gcm = GCFunction|GCLineWidth|GCForeground;
-	if (cset >= 0)
-	{
-		gcv.foreground = Colorset[cset].hilite;
-	}
-	else
-	{
-		gcv.foreground = Scr.StdHilite;
-	}
+	gcv.foreground = Colorset[cset].hilite;
+
 	if (Scr.StdReliefGC)
 	{
 		XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
@@ -1448,14 +1435,8 @@ void ApplyDefaultFontAndColors(void)
 		Scr.StdReliefGC = fvwmlib_XCreateGC(
 			dpy, Scr.NoFocusWin, gcm, &gcv);
 	}
-	if (cset >= 0)
-	{
-		gcv.foreground = Colorset[cset].shadow;
-	}
-	else
-	{
-		gcv.foreground = Scr.StdShadow;
-	}
+
+	gcv.foreground = Colorset[cset].shadow;
 	if (Scr.StdShadowGC)
 	{
 		XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
@@ -2209,11 +2190,8 @@ void reset_decor_changes(void)
 
 void update_fvwm_colorset(int cset)
 {
-	if (cset == Scr.DefaultColorset)
-	{
-		Scr.flags.do_need_window_update = 1;
-		Scr.flags.has_default_color_changed = 1;
-	}
+	Scr.flags.do_need_window_update = 1;
+
 	UpdateMenuColorset(cset);
 	update_style_colorset(cset);
 	update_decors_colorset(cset);
@@ -3051,66 +3029,6 @@ void CMD_DefaultIcon(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DefaultColorset(F_CMD_ARGS)
-{
-	int cset;
-
-	if (GetIntegerArguments(action, NULL, &cset, 1) != 1)
-	{
-		return;
-	}
-	Scr.DefaultColorset = cset;
-	if (Scr.DefaultColorset < 0)
-	{
-		Scr.DefaultColorset = -1;
-	}
-	alloc_colorset(Scr.DefaultColorset);
-	Scr.flags.do_need_window_update = 1;
-	Scr.flags.has_default_color_changed = 1;
-
-	return;
-}
-
-void CMD_DefaultColors(F_CMD_ARGS)
-{
-	char *fore = NULL;
-	char *back = NULL;
-
-	action = GetNextToken(action, &fore);
-	if (action)
-	{
-		action = GetNextToken(action, &back);
-	}
-	if (!back)
-	{
-		back = fxstrdup(DEFAULT_BACK_COLOR);
-	}
-	if (!fore)
-	{
-		fore = fxstrdup(DEFAULT_FORE_COLOR);
-	}
-	if (!StrEquals(fore, "-"))
-	{
-		PictureFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0, True);
-		Scr.StdFore = GetColor(fore);
-	}
-	if (!StrEquals(back, "-"))
-	{
-		PictureFreeColors(dpy, Pcmap, &Scr.StdBack, 3, 0, True);
-		Scr.StdBack = GetColor(back);
-		Scr.StdHilite = GetHilite(Scr.StdBack);
-		Scr.StdShadow = GetShadow(Scr.StdBack);
-	}
-	free(fore);
-	free(back);
-
-	Scr.DefaultColorset = -1;
-	Scr.flags.do_need_window_update = 1;
-	Scr.flags.has_default_color_changed = 1;
-
-	return;
-}
-
 void CMD_DefaultFont(F_CMD_ARGS)
 {
 	char *font;
@@ -3747,7 +3665,6 @@ void CMD_Emulate(F_CMD_ARGS)
 
 	Scr.flags.do_need_window_update = 1;
 	Scr.flags.has_default_font_changed = 1;
-	Scr.flags.has_default_color_changed = 1;
 
 	return;
 }

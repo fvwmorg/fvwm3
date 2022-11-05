@@ -228,8 +228,6 @@ void CMD_CopyMenuStyle(F_CMD_ARGS);
 void CMD_Current(F_CMD_ARGS);
 void CMD_CursorMove(F_CMD_ARGS);
 void CMD_CursorStyle(F_CMD_ARGS);
-void CMD_DefaultColors(F_CMD_ARGS);
-void CMD_DefaultColorset(F_CMD_ARGS);
 void CMD_DefaultFont(F_CMD_ARGS);
 void CMD_DefaultIcon(F_CMD_ARGS);
 void CMD_DefaultLayers(F_CMD_ARGS);

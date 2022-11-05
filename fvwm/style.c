@@ -5140,16 +5140,12 @@ void update_style_colorset(int colorset)
 /* Update fore and back colours for a specific window */
 void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 {
-	int cs = Scr.DefaultColorset;
+	int cs = 0;
 
 	if (SUSE_COLORSET(&pstyle->flags))
 	{
 		cs = SGET_COLORSET(*pstyle);
 		fw->cs = cs;
-	}
-	else
-	{
-		fw->cs = -1;
 	}
 
 	fw->colors.fore = Colorset[cs].fg;
@@ -5184,18 +5180,13 @@ void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 
 void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 {
-	int cs = Scr.DefaultColorset;
+	int cs = 0;
 
 	if (SUSE_COLORSET_HI(&pstyle->flags))
 	{
 		cs = SGET_COLORSET_HI(*pstyle);
 		fw->cs_hi = cs;
 	}
-	else
-	{
-		fw->cs_hi = -1;
-	}
-
 	fw->hicolors.fore = Colorset[cs].fg;
 	fw->hicolors.hilight = Colorset[cs].hilite;
 	fw->hicolors.shadow = Colorset[cs].shadow;

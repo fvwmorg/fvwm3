@@ -1121,7 +1121,7 @@ static void position_geometry_window(const XEvent *eventp)
 void resize_geometry_window(void)
 {
 	size_rect s;
-	int cset = Scr.DefaultColorset;
+	int cset = 0;
 
 	if (Scr.SizeWindow.cset >= 0)
 		cset = Scr.SizeWindow.cset;
@@ -1143,12 +1143,6 @@ void resize_geometry_window(void)
 			dpy, Scr.SizeWindow.win, s.width, s.height,
 			&Colorset[cset], Pdepth, Scr.StdGC, False);
 	}
-	else
-	{
-		XSetWindowBackground(dpy, Scr.SizeWindow.win, Scr.StdBack);
-	}
-
-	return;
 }
 
 static void display_string(Bool Init, char *str)
@@ -1158,20 +1152,15 @@ static void display_string(Bool Init, char *str)
 	GC reliefGC;
 	GC shadowGC;
 	int offset;
+	int cs;
 	FlocaleWinString fstr;
 
 	memset(&fstr, 0, sizeof(fstr));
 
-	if (Scr.SizeWindow.cset >= 0)
-	{
-		fstr.colorset = &Colorset[Scr.SizeWindow.cset];
-		fstr.flags.has_colorset = True;
-	}
-	else if (Scr.DefaultColorset >= 0)
-	{
-		fstr.colorset = &Colorset[Scr.DefaultColorset];
-		fstr.flags.has_colorset = True;
-	}
+	cs = Scr.SizeWindow.cset > 0 ? Scr.SizeWindow.cset : 0;
+
+	fstr.colorset = &Colorset[cs];
+	fstr.flags.has_colorset = True;
 
 	if (Init)
 	{

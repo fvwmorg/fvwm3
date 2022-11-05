@@ -497,6 +497,8 @@ void GetIconPicture(FvwmWindow *fw, Bool no_icon_window)
  */
 static void set_icon_pixmap_background(FvwmWindow *fw)
 {
+	int cs = 0;
+
 	if (fw->iconPixmap != None &&
 	    (Pdefault || fw->iconDepth == 1 || fw->iconDepth == Pdepth ||
 	     IS_PIXMAP_OURS(fw)))
@@ -516,13 +518,13 @@ static void set_icon_pixmap_background(FvwmWindow *fw)
 			XSetWindowBackgroundPixmap(
 				dpy, FW_W_ICON_PIXMAP(fw), ParentRelative);
 		}
-		else if (Scr.DefaultColorset >= 0)
+		else
 		{
 			SetWindowBackground(
 				dpy, FW_W_ICON_PIXMAP(fw),
 				fw->icon_g.picture_w_g.width,
 				fw->icon_g.picture_w_g.height,
-				&Colorset[Scr.DefaultColorset], Pdepth,
+				&Colorset[cs], Pdepth,
 				Scr.StdGC, False);
 		}
 	}
@@ -543,6 +545,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 	Window old_icon_pixmap_w;
 	Window old_icon_w;
 	Bool is_old_icon_shaped = IS_ICON_SHAPED(fw);
+	int cs = 0;
 
 	old_icon_w = FW_W_ICON_TITLE(fw);
 	old_icon_pixmap_w = (IS_ICON_OURS(fw)) ? FW_W_ICON_PIXMAP(fw) : None;
@@ -598,7 +601,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 	valuemask = CWColormap | CWBorderPixel | CWBackPixel | CWCursor |
 		CWEventMask;
 	attributes.colormap = Pcmap;
-	attributes.background_pixel = Scr.StdBack;
+	attributes.background_pixel = Colorset[cs].bg;
 	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
 	attributes.border_pixel = 0;
 	attributes.event_mask = XEVMASK_ICONW;
@@ -632,14 +635,11 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 				fw->icon_g.title_w_g.height);
 		}
 	}
-	if (Scr.DefaultColorset >= 0)
-	{
-		SetWindowBackground(
-			dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.width,
-			fw->icon_g.title_w_g.height,
-			&Colorset[Scr.DefaultColorset], Pdepth, Scr.StdGC,
-			False);
-	}
+	SetWindowBackground(
+		dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.width,
+		fw->icon_g.title_w_g.height,
+		&Colorset[cs], Pdepth, Scr.StdGC,
+		False);
 
 	/*
 	 * create the icon picture window

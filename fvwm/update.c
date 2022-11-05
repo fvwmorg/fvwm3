@@ -705,8 +705,7 @@ void flush_window_updates(void)
 	DeleteFocus(False);
 
 	/* Apply the new default font and colours first */
-	if (Scr.flags.has_default_color_changed ||
-	    Scr.flags.has_default_font_changed)
+	if (Scr.flags.has_default_font_changed)
 	{
 		ApplyDefaultFontAndColors();
 	}
@@ -766,7 +765,6 @@ void flush_window_updates(void)
 	reset_decor_changes();
 	Scr.flags.do_need_window_update = 0;
 	Scr.flags.has_default_font_changed = 0;
-	Scr.flags.has_default_color_changed = 0;
 	Scr.flags.has_mouse_binding_changed = 0;
 	Scr.flags.has_nr_buttons_changed = 0;
 
