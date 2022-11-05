@@ -5219,9 +5219,9 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 
 		for (i = 0; i < BP_SIZE; i++) {
 			fw->border_cs_hi[i] = -1;
-			fw->border_hicolors[i].hilight = fw->colors.hilight;
-			fw->border_hicolors[i].shadow = fw->colors.shadow;
-			fw->border_hicolors[i].back = fw->colors.back;
+			fw->border_hicolors[i].hilight = fw->hicolors.hilight;
+			fw->border_hicolors[i].shadow = fw->hicolors.shadow;
+			fw->border_hicolors[i].back = fw->hicolors.back;
 		}
 	}
 }
