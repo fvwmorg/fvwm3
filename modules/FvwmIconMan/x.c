@@ -639,11 +639,14 @@ void X_init_manager (int man_id)
     ShutMeDown (1);
   }
 
-  if (man->tips_fontname == NULL)
-    man->tips_conf->Ffont = FlocaleLoadFont(theDisplay, NULL, MyName);
-  else
+  if (man->tips_fontname != NULL)
     man->tips_conf->Ffont = FlocaleLoadFont(
 	    theDisplay, man->tips_fontname, MyName);
+  else if (man->fontname != NULL)
+    man->tips_conf->Ffont = FlocaleLoadFont(
+	    theDisplay, man->fontname, MyName);
+  else
+    man->tips_conf->Ffont = FlocaleLoadFont(theDisplay, NULL, MyName);
 
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
     man->pixmap[i] = None;
