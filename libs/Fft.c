@@ -336,8 +336,15 @@ static void MatchFont(Display *dpy,
 
 			if (result == FcResultMatch) {
 				XftFont *fallback_font = XftFontOpenPattern(dpy, font_pattern);
-				if (fallback_font) sp.font = fallback_font;
-				else FcPatternDestroy(font_pattern);
+				/*
+				 * Hack to not use a fallback font for emoji's (codelen == 4).
+				 * FIXME: Temporary fix to avoid crashes until a proper
+				 * fix to display emoji's with a fallback font is found.
+				 */
+				if (fallback_font && codelen != 4)
+					sp.font = fallback_font;
+				else
+					FcPatternDestroy(font_pattern);
 			}
 		}
 		XGlyphInfo info;
