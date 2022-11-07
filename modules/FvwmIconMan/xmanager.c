@@ -455,13 +455,13 @@ static void resize_window(WinManager *man)
   fix_manager_size(man, man->geometry.width, man->geometry.height);
 }
 
-static char *make_display_string(WinData *win, char *format, int len)
+static char *make_display_string(WinData *win, char *format)
 {
 #define MAX_DISPLAY_SIZE 1024
 #define COPY(field)                                       \
   temp_p = win->field;                                    \
   if (temp_p)                                             \
-    while (*temp_p && out_p - buf < len - 1) \
+    while (*temp_p && out_p - buf < MAX_DISPLAY_SIZE - 1) \
       *out_p++ = *temp_p++;                               \
   in_p++;
 
@@ -471,10 +471,7 @@ static char *make_display_string(WinData *win, char *format, int len)
   in_p = format;
   out_p = buf;
 
-  if (len > MAX_DISPLAY_SIZE || len <= 0)
-    len = MAX_DISPLAY_SIZE;
-
-  while (*in_p && out_p - buf < len - 1) {
+  while (*in_p && out_p - buf < MAX_DISPLAY_SIZE - 1) {
     if (*in_p == '%') {
       switch (*(++in_p)) {
       case 'i':
@@ -1006,7 +1003,6 @@ void del_win_state(WinData *win, int flag)
 void set_win_displaystring(WinData *win)
 {
   WinManager *man = win->manager;
-  int maxlen;
   char *tmp;
 
   if (man && win->button && win->button == man->tipped_button)
@@ -1021,15 +1017,7 @@ void set_win_displaystring(WinData *win)
     return;
   }
 
-  if (man->window_up) {
-    assert(man->geometry.width && man->fontwidth);
-    maxlen = man->geometry.width / man->fontwidth + 2 /* fudge factor */;
-  }
-  else {
-    maxlen = 0;
-  }
-
-  tmp = make_display_string(win, man->formatstring, maxlen);
+  tmp = make_display_string(win, man->formatstring);
   if ((tmp == NULL && win->display_string == NULL) ||
       (tmp != NULL && win->display_string != NULL &&
        strcmp(tmp, win->display_string) == 0))
@@ -2583,8 +2571,7 @@ static char *get_tips(WinManager *man, Button *b)
 	{
 		CopyString(
 			&s, make_display_string(
-				b->drawn_state.win, man->tips_formatstring,
-				0));
+				b->drawn_state.win, man->tips_formatstring));
 		free_str = s;
 	}
 	else
