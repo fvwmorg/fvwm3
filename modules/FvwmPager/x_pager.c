@@ -122,7 +122,6 @@ Window icon_win;	       /* icon window */
 
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 
-static void adjust_for_sizehints(int, int);
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(void);
 static void fvwmrec_to_pager(rectangle *, bool);
@@ -441,31 +440,6 @@ void initialize_balloon_window(void)
 	return;
 }
 
-/* XXX: Here be dragons!  Ideally, this function should be parameterised,
- * however due to all the global state in FvwmPager, there's no point.  This
- * should get added to a clean up TODO at some point.
- */
-static void
-adjust_for_sizehints(int VxPages, int VyPages)
-{
-	int w_mult;
-	int h_mult;
-
-	w_mult = Columns * VxPages;
-	h_mult = Rows * VyPages;
-
-	/* Adjust window size to be even multiples of increment size. */
-	if (pwindow.width > 0) {
-		pwindow.width = (pwindow.width / w_mult + 1) * w_mult;
-	}
-	if (pwindow.height > 0) {
-		pwindow.height = (pwindow.height / h_mult + 1) * h_mult;
-	}
-
-	desk_w = (pwindow.width - Columns + 1) / Columns;
-	desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
-}
-
 /* Computes pager size rectangle from fvwm size or visa versa */
 static void
 fvwmrec_to_pager(rectangle *rec, bool is_icon)
@@ -702,10 +676,8 @@ void initialize_pager(void)
 			  label_h * Rows + Rows;
 	  }
   }
-  /* Adjust the window to handle these new sizehints.  This is also called
-   * from ReConfigure().
-   */
-  adjust_for_sizehints(VxPages, VyPages);
+  desk_w = (pwindow.width - Columns + 1) / Columns;
+  desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
 
   if (is_transient)
   {
@@ -1427,25 +1399,16 @@ void ReConfigure(void)
   unsigned border_width, depth;
   rectangle vp = {0, 0, 0, 0};
   int i = 0, j = 0, k = 0;
-  int old_ww;
-  int old_wh;
-  int is_size_changed;
   struct fpmonitor *mon = fpmonitor_this();
   int VxPages = mon->virtual_scr.VxPages, VyPages = mon->virtual_scr.VyPages;
 
-  old_ww = pwindow.width;
-  old_wh = pwindow.height;
   if (!XGetGeometry(dpy, Scr.Pager_w, &root, &vp.x, &vp.y, (unsigned *)&pwindow.width,
 		    (unsigned *)&pwindow.height, &border_width,&depth))
   {
     return;
   }
-  is_size_changed = (old_ww != pwindow.width || old_wh != pwindow.height);
-
-  adjust_for_sizehints(VxPages, VyPages);
-
-  XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
-
+  desk_w = (pwindow.width - Columns + 1) / Columns;
+  desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
   vp = set_vp_size_and_loc();
 
   for(k=0;k<Rows;k++)
@@ -1460,13 +1423,6 @@ void ReConfigure(void)
 	  desk_w,desk_h+label_h);
 	XMoveResizeWindow(
 	  dpy,Desks[i].w, -1, (LabelsBelow) ? -1 : label_h - 1, desk_w,desk_h);
-	if (!is_size_changed)
-	{
-		if (CSET_IS_TRANSPARENT(Desks[i].colorset))
-		{
-			draw_desk_background(i, vp.width, vp.height);
-		}
-	}
 	if (HilightDesks)
 	{
 	  if(i == mon->virtual_scr.CurrentDesk - desk1)
