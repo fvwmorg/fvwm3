@@ -380,8 +380,7 @@ static void animated_move_back(
 		Bool transparent_bg = False;
 
 		/* move it back */
-		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
-		    CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
+		if (CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
 		{
 			transparent_bg = True;
 			get_menu_repaint_transparent_parameters(
@@ -429,8 +428,7 @@ static void move_any_menu(
 		{
 			return;
 		}
-		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
-		    CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
+		if (CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
 		{
 			MenuRepaintTransparentParameters mrtp;
 
@@ -441,7 +439,7 @@ static void move_any_menu(
 			XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
 			repaint_transparent_menu(
 				&mrtp, False, endX,endY, endX, endY, True);
-      	      	}
+		}
 		else
 		{
 			XMoveWindow(dpy, MR_WINDOW(mr), endX, endY);
@@ -1874,8 +1872,7 @@ static void make_menu_window(MenuRoot *mr, Bool is_tear_off)
 		h = 1;
 	}
 
-	attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
-		Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
+	attributes.background_pixel = Colorset[MST_CSET_MENU(mr)].bg;
 	if (MR_WINDOW(mr) != None)
 	{
 		/* just resize the existing window */
@@ -2279,22 +2276,6 @@ static void get_popup_options(
 
 /* ---------------------------- menu painting functions --------------------- */
 
-static void clear_expose_menu_area(Window win, XEvent *e)
-{
-	if (e == NULL)
-	{
-		XClearWindow(dpy, win);
-	}
-	else
-	{
-		XClearArea(
-			dpy, win, e->xexpose.x, e->xexpose.y, e->xexpose.width,
-			e->xexpose.height, False);
-	}
-
-	return;
-}
-
 /*
  *
  * Draws a picture on the left side of the menu
@@ -2402,251 +2383,6 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	return;
 }
 
-static Bool paint_menu_gradient_background(
-	MenuRoot *mr, XEvent *pevent)
-{
-	MenuStyle *ms = MR_STYLE(mr);
-	int bw = MST_BORDER_WIDTH(mr);
-	XRectangle bounds;
-	Pixmap pmap;
-	GC pmapgc;
-	XGCValues gcv;
-	unsigned long gcm = GCLineWidth;
-	int switcher = -1;
-	Bool do_clear = False;
-
-	gcv.line_width = 1;
-	bounds.x = bw;
-	bounds.y = bw;
-	bounds.width = MR_WIDTH(mr) - bw;
-	bounds.height = MR_HEIGHT(mr) - bw;
-	/* H, V, D and B gradients are optimized and have
-	 * their own code here. (if no dither) */
-	if (!ST_FACE(ms).u.grad.do_dither)
-	{
-		switcher = ST_FACE(ms).gradient_type;
-	}
-	switch (switcher)
-	{
-	case H_GRADIENT:
-		if (MR_IS_BACKGROUND_SET(mr) == False)
-		{
-			register int i;
-			register int dw;
-
-			pmap = XCreatePixmap(
-				dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-				DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS,
-				Pdepth);
-			pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
-			dw = (float)
-				(bounds.width / ST_FACE(ms).u.grad.npixels)
-				+ 1;
-			for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
-			{
-				int x;
-
-				x = i * bounds.width /
-					ST_FACE(ms).u.grad.npixels;
-				XSetForeground(
-					dpy, pmapgc,
-					ST_FACE(ms).u.grad.xcs[i].pixel);
-				XFillRectangle(
-					dpy, pmap, pmapgc, x, 0, dw,
-					DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS);
-			}
-			XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
-			XFreeGC(dpy,pmapgc);
-			XFreePixmap(dpy,pmap);
-			MR_IS_BACKGROUND_SET(mr) = True;
-		}
-		do_clear = True;
-		break;
-	case V_GRADIENT:
-		if (MR_IS_BACKGROUND_SET(mr) == False)
-		{
-			register int i;
-			register int dh;
-			static int best_tile_width = 0;
-			int junk;
-
-			if (best_tile_width == 0)
-			{
-				int tw = DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS;
-
-				if (!XQueryBestTile(
-					    dpy, Scr.screen, tw, tw,
-					    (unsigned int*)&best_tile_width,
-					    (unsigned int*)&junk))
-				{
-					/* call failed, use default and risk a
-					 * screwed up tile */
-					best_tile_width = tw;
-				}
-			}
-			pmap = XCreatePixmap(
-				dpy, MR_WINDOW(mr), best_tile_width,
-				MR_HEIGHT(mr), Pdepth);
-			pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
-			dh = (float) (bounds.height /
-				      ST_FACE(ms).u.grad.npixels) + 1;
-			for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
-			{
-				int y;
-
-				y = i * bounds.height /
-					ST_FACE(ms).u.grad.npixels;
-				XSetForeground(
-					dpy, pmapgc,
-					ST_FACE(ms).u.grad.xcs[i].pixel);
-				XFillRectangle(
-					dpy, pmap, pmapgc, 0, y,
-					best_tile_width, dh);
-			}
-			XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
-			XFreeGC(dpy,pmapgc);
-			XFreePixmap(dpy,pmap);
-			MR_IS_BACKGROUND_SET(mr) = True;
-		}
-		do_clear = True;
-		break;
-	case D_GRADIENT:
-	case B_GRADIENT:
-	{
-		register int i = 0, numLines;
-		int cindex = -1;
-		XRectangle r;
-
-		if (pevent)
-		{
-			r.x = pevent->xexpose.x;
-			r.y = pevent->xexpose.y;
-			r.width = pevent->xexpose.width;
-			r.height = pevent->xexpose.height;
-		}
-		else
-		{
-			r.x = bw;
-			r.y = bw;
-			r.width = MR_WIDTH(mr) - 2 * bw;
-			r.height = MR_HEIGHT(mr) - 2 * bw;
-		}
-		XSetClipRectangles(
-			dpy, Scr.TransMaskGC, 0, 0, &r, 1, Unsorted);
-		numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
-		for (i = 0; i < numLines; i++)
-		{
-			if ((int)(i * ST_FACE(ms).u.grad.npixels / numLines) >
-			    cindex)
-			{
-				/* pick the next colour (skip if necc.) */
-				cindex = i * ST_FACE(ms).u.grad.npixels /
-					numLines;
-				XSetForeground(
-					dpy, Scr.TransMaskGC,
-					ST_FACE(ms).u.grad.xcs[cindex].pixel);
-			}
-			if (ST_FACE(ms).gradient_type == D_GRADIENT)
-			{
-				XDrawLine(dpy, MR_WINDOW(mr),
-					  Scr.TransMaskGC, 0, i, i, 0);
-			}
-			else /* B_GRADIENT */
-			{
-				XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC,
-					  0, MR_HEIGHT(mr) - 1 - i, i,
-					  MR_HEIGHT(mr) - 1);
-			}
-		}
-	}
-	XSetClipMask(dpy, Scr.TransMaskGC, None);
-	break;
-	default:
-		if (MR_IS_BACKGROUND_SET(mr) == False)
-		{
-			int g_width;
-			int g_height;
-
-			/* let library take care of all other gradients */
-			pmap = XCreatePixmap(
-				dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-				MR_HEIGHT(mr), Pdepth);
-			pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
-
-			/* find out the size the pixmap should be */
-			CalculateGradientDimensions(
-				dpy, MR_WINDOW(mr), ST_FACE(ms).u.grad.npixels,
-				ST_FACE(ms).gradient_type,
-				ST_FACE(ms).u.grad.do_dither, &g_width,
-				&g_height);
-			/* draw the gradient directly into the window */
-			CreateGradientPixmap(
-				dpy, MR_WINDOW(mr), pmapgc,
-				ST_FACE(ms).gradient_type, g_width, g_height,
-				ST_FACE(ms).u.grad.npixels,
-				ST_FACE(ms).u.grad.xcs,
-				ST_FACE(ms).u.grad.do_dither,
-				&(MR_STORED_PIXELS(mr).d_pixels),
-				&(MR_STORED_PIXELS(mr).d_npixels),
-				pmap, bw, bw,
-				MR_WIDTH(mr) - bw, MR_HEIGHT(mr) - bw, NULL);
-			XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
-			XFreeGC(dpy, pmapgc);
-			XFreePixmap(dpy, pmap);
-			MR_IS_BACKGROUND_SET(mr) = True;
-		}
-		do_clear = True;
-		break;
-	}
-	return do_clear;
-}
-
-static Bool paint_menu_pixmap_background(
-	MenuRoot *mr, XEvent *pevent)
-{
-	MenuStyle *ms = MR_STYLE(mr);
-	int width, height, x, y;
-	int bw = MST_BORDER_WIDTH(mr);
-	FvwmPicture *p;
-
-	p = ST_FACE(ms).u.p;
-	width = MR_WIDTH(mr) - 2 * bw;
-	height = MR_HEIGHT(mr) - 2 * bw;
-	y = (int)(height - p->height) / 2;
-	x = (int)(width - p->width) / 2;
-	if (x < bw)
-	{
-		x = bw;
-	}
-	if (y < bw)
-	{
-		y = bw;
-	}
-	if (width > p->width)
-	{
-		width = p->width;
-	}
-	if (height > p->height)
-	{
-		height = p->height;
-	}
-	if (width > MR_WIDTH(mr) - x - bw)
-	{
-		width = MR_WIDTH(mr) - x - bw;
-	}
-	if (height > MR_HEIGHT(mr) - y - bw)
-	{
-		height = MR_HEIGHT(mr) - y - bw;
-	}
-	XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
-	XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-	XCopyArea(
-		dpy, p->picture, MR_WINDOW(mr), Scr.TransMaskGC,
-		bw, bw, width, height, x, y);
-
-	return False;
-}
-
 /*
  *
  *  Procedure:
@@ -2669,7 +2405,6 @@ static void get_menu_paint_item_parameters(
 	mpip->fw = fw;
 	mpip->used_mini_icons = MR_USED_MINI_ICONS(mr);
 	mpip->cb_mr = mr;
-	mpip->cb_reset_bg = paint_menu_gradient_background;
 	mpip->flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 	mpip->flags.is_left_triangle = MR_IS_LEFT_TRIANGLE(mr);
 	mpip->ev = pevent;
@@ -2715,48 +2450,15 @@ static void paint_menu(
 	}
 	MR_IS_PAINTED(mr) = 1;
 	/* paint the menu background */
-	if (ms && ST_HAS_MENU_CSET(ms))
+	if (ms && MR_IS_BACKGROUND_SET(mr) == False)
 	{
-		if (MR_IS_BACKGROUND_SET(mr) == False)
-		{
-			SetWindowBackground(
-				dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-				MR_HEIGHT(mr), &Colorset[ST_CSET_MENU(ms)],
-				Pdepth, FORE_GC(ST_MENU_INACTIVE_GCS(ms)),
-				True);
-			MR_IS_BACKGROUND_SET(mr) = True;
-		}
+		SetWindowBackground(
+			dpy, MR_WINDOW(mr), MR_WIDTH(mr),
+			MR_HEIGHT(mr), &Colorset[ST_CSET_MENU(ms)],
+			Pdepth, FORE_GC(ST_MENU_INACTIVE_GCS(ms)),
+			True);
+		MR_IS_BACKGROUND_SET(mr) = True;
 	}
-	else if (ms)
-	{
-		int type;
-		Bool do_clear = False;
-
-		type = ST_FACE(ms).type;
-		switch(type)
-		{
-		case SolidMenu:
-			XSetWindowBackground(
-				dpy, MR_WINDOW(mr), MST_FACE(mr).u.back);
-			do_clear = True;
-			break;
-		case GradientMenu:
-			do_clear = paint_menu_gradient_background(mr, pevent);
-			break;
-		case PixmapMenu:
-			do_clear = paint_menu_pixmap_background(mr, pevent);
-			break;
-		case TiledPixmapMenu:
-			XSetWindowBackgroundPixmap(
-				dpy, MR_WINDOW(mr), ST_FACE(ms).u.p->picture);
-			do_clear = True;
-			break;
-		} /* switch(type) */
-		if (do_clear == True)
-		{
-			clear_expose_menu_area(MR_WINDOW(mr), pevent);
-		}
-	} /* if (ms) */
 	/* draw the relief */
 	RelieveRectangle(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
 			 MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
@@ -2832,154 +2534,6 @@ static void select_menu_item(
 	{
 		MI_WAS_DESELECTED(mi) = True;
 	}
-
-	if (!MST_HAS_MENU_CSET(mr))
-	{
-		switch (MST_FACE(mr).type)
-		{
-		case GradientMenu:
-			if (select == True)
-			{
-				int iy;
-				int ih;
-				int mw;
-				XEvent e;
-
-				if (!MR_IS_PAINTED(mr))
-				{
-					FCheckWeedTypedWindowEvents(
-						dpy, MR_WINDOW(mr), Expose,
-						NULL);
-					paint_menu(mr, NULL, fw);
-				}
-				iy = MI_Y_OFFSET(mi);
-				ih = MI_HEIGHT(mi) +
-					(MI_IS_SELECTABLE(mi) ?
-					 MST_RELIEF_THICKNESS(mr) : 0);
-				if (iy < 0)
-				{
-					ih += iy;
-					iy = 0;
-				}
-				mw = MR_WIDTH(mr) - 2 * MST_BORDER_WIDTH(mr);
-				if (iy + ih > MR_HEIGHT(mr))
-					ih = MR_HEIGHT(mr) - iy;
-				/* grab image */
-				MR_STORED_ITEM(mr).stored =
-					XCreatePixmap(
-						dpy, Scr.NoFocusWin, mw, ih,
-						Pdepth);
-				XSetGraphicsExposures(
-					dpy,
-					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
-					True);
-				XSync(dpy, 0);
-				while (FCheckTypedEvent(dpy, NoExpose, &e))
-				{
-					/* nothing to do here */
-				}
-				XCopyArea(
-					dpy, MR_WINDOW(mr),
-					MR_STORED_ITEM(mr).stored,
-					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
-					MST_BORDER_WIDTH(mr), iy, mw, ih, 0,
-					0);
-				XSync(dpy, 0);
-				if (FCheckTypedEvent(dpy, NoExpose, &e))
-				{
-					MR_STORED_ITEM(mr).y = iy;
-					MR_STORED_ITEM(mr).width = mw;
-					MR_STORED_ITEM(mr).height = ih;
-				}
-				else
-				{
-					XFreePixmap(
-						dpy,
-						MR_STORED_ITEM(mr).stored);
-					MR_STORED_ITEM(mr).stored = None;
-					MR_STORED_ITEM(mr).width = 0;
-					MR_STORED_ITEM(mr).height = 0;
-					MR_STORED_ITEM(mr).y = 0;
-				}
-				XSetGraphicsExposures(
-					dpy,
-					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
-					False);
-			}
-			else if (select == False &&
-				 MR_STORED_ITEM(mr).width != 0)
-			{
-				/* ungrab image */
-				XCopyArea(
-					dpy, MR_STORED_ITEM(mr).stored,
-					MR_WINDOW(mr),
-					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
-					0, 0, MR_STORED_ITEM(mr).width,
-					MR_STORED_ITEM(mr).height,
-					MST_BORDER_WIDTH(mr),
-					MR_STORED_ITEM(mr).y);
-
-				if (MR_STORED_ITEM(mr).stored != None)
-				{
-					XFreePixmap(
-						dpy, MR_STORED_ITEM(mr).stored);
-				}
-				MR_STORED_ITEM(mr).stored = None;
-				MR_STORED_ITEM(mr).width = 0;
-				MR_STORED_ITEM(mr).height = 0;
-				MR_STORED_ITEM(mr).y = 0;
-			}
-			else if (select == False)
-			{
-				XEvent e;
-				FvwmPicture *sidePic = NULL;
-
-				e.type = Expose;
-				e.xexpose.x = MST_BORDER_WIDTH(mr);
-				e.xexpose.y = MI_Y_OFFSET(mi);
-				e.xexpose.width = MR_WIDTH(mr) - 2 *
-					MST_BORDER_WIDTH(mr);
-				e.xexpose.height = MI_HEIGHT(mi) +
-					(MI_IS_SELECTABLE(mi) ?
-					 MST_RELIEF_THICKNESS(mr) : 0);
-				if (MR_SIDEPIC(mr))
-				{
-					sidePic = MR_SIDEPIC(mr);
-				}
-				else if (MST_SIDEPIC(mr))
-				{
-					sidePic = MST_SIDEPIC(mr);
-				}
-				if (sidePic)
-				{
-					e.xexpose.width -= sidePic->width;
-					if (MR_SIDEPIC_X_OFFSET(mr) ==
-					    MST_BORDER_WIDTH(mr))
-					{
-						e.xexpose.x += sidePic->width;
-					}
-				}
-				MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
-				paint_menu(mr, &e, fw);
-			}
-			break;
-		default:
-			if (MR_STORED_ITEM(mr).width != 0)
-			{
-				if (MR_STORED_ITEM(mr).stored != None)
-				{
-					XFreePixmap(
-						dpy,
-						MR_STORED_ITEM(mr).stored);
-				}
-				MR_STORED_ITEM(mr).stored = None;
-				MR_STORED_ITEM(mr).width = 0;
-				MR_STORED_ITEM(mr).height = 0;
-				MR_STORED_ITEM(mr).y = 0;
-			}
-			break;
-		} /* switch */
-	} /* if */
 
 	if (fw && !check_if_fvwm_window_exists(fw))
 	{
@@ -3524,10 +3078,8 @@ static int pop_menu_up(
 					MR_HAS_POPPED_UP_RIGHT(mr) = 0;
 				}
 				MR_XANIMATION(parent_menu) += end_x - prev_x;
-				if (ST_HAS_MENU_CSET(MR_STYLE(parent_menu)) &&
-				    CSET_IS_TRANSPARENT(
-					    ST_CSET_MENU(
-						    MR_STYLE(parent_menu))))
+				if (CSET_IS_TRANSPARENT(ST_CSET_MENU(
+							MR_STYLE(parent_menu))))
 				{
 					transparent_bg = True;
 					get_menu_repaint_transparent_parameters(
@@ -5852,8 +5404,7 @@ Bool menu_redraw_transparent_tear_off_menu(FvwmWindow *fw, Bool pr_only)
 	if (!(IS_TEAR_OFF_MENU(fw) &&
 	      XFindContext(dpy, FW_W(fw), MenuContext,(caddr_t *)&mr) !=
 	      XCNOENT &&
-	      (ms = MR_STYLE(mr)) &&
-	      ST_HAS_MENU_CSET(ms)))
+	      (ms = MR_STYLE(mr))))
 	{
 		return False;
 	}
@@ -6946,10 +6497,8 @@ void UpdateMenuColorset(int cset)
 
 	for (ms = menustyle_get_default_style(); ms; ms = ST_NEXT_STYLE(ms))
 	{
-		if ((ST_HAS_MENU_CSET(ms) && ST_CSET_MENU(ms) == cset) ||
-		    (ST_HAS_ACTIVE_CSET(ms) && ST_CSET_ACTIVE(ms) == cset) ||
-		    (ST_HAS_GREYED_CSET(ms) && ST_CSET_GREYED(ms) == cset) ||
-		    (ST_HAS_TITLE_CSET(ms) && ST_CSET_TITLE(ms) == cset))
+		if (ST_CSET_MENU(ms) == cset || ST_CSET_ACTIVE(ms) == cset ||
+		    ST_CSET_GREYED(ms) == cset || ST_CSET_TITLE(ms) == cset)
 		{
 			menustyle_update(ms);
 		}
@@ -6965,8 +6514,7 @@ void UpdateMenuColorset(int cset)
 		    XCNOENT &&
 		    (ms2 = MR_STYLE(mr)))
 		{
-			if   (ST_HAS_MENU_CSET(ms2) &&
-			      ST_CSET_MENU(ms2) == cset)
+			if (ST_CSET_MENU(ms2) == cset)
 			{
 				SetWindowBackground(
 					dpy, MR_WINDOW(mr), MR_WIDTH(mr),
@@ -6976,10 +6524,8 @@ void UpdateMenuColorset(int cset)
 					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
 					True);
 			}
-			else if ((ST_HAS_ACTIVE_CSET(ms2) &&
-				  ST_CSET_ACTIVE(ms2) == cset) ||
-				 (ST_HAS_GREYED_CSET(ms2) &&
-				  ST_CSET_GREYED(ms2) == cset))
+			else if (ST_CSET_ACTIVE(ms2) == cset ||
+				 ST_CSET_GREYED(ms2) == cset)
 			{
 				paint_menu(mr, NULL, NULL);
 			}

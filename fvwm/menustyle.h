@@ -20,8 +20,6 @@
 #define ST_IS_UPDATED(s)              ((s)->flags.is_updated)
 #define MST_IS_UPDATED(m)             ((m)->s->ms->flags.is_updated)
 /* look */
-#define ST_FACE(s)                    ((s)->look.face)
-#define MST_FACE(m)                   ((m)->s->ms->look.face)
 #define ST_DO_HILIGHT_BACK(s)         ((s)->look.flags.do_hilight_back)
 #define MST_DO_HILIGHT_BACK(m)        ((m)->s->ms->look.flags.do_hilight_back)
 #define ST_DO_HILIGHT_FORE(s)         ((s)->look.flags.do_hilight_fore)
@@ -43,14 +41,6 @@
 	((m)->s->ms->look.flags.has_triangle_relief)
 #define ST_HAS_SIDE_COLOR(s)          ((s)->look.flags.has_side_color)
 #define MST_HAS_SIDE_COLOR(m)         ((m)->s->ms->look.flags.has_side_color)
-#define ST_HAS_MENU_CSET(s)           ((s)->look.flags.has_menu_cset)
-#define MST_HAS_MENU_CSET(m)          ((m)->s->ms->look.flags.has_menu_cset)
-#define ST_HAS_ACTIVE_CSET(s)         ((s)->look.flags.has_active_cset)
-#define MST_HAS_ACTIVE_CSET(m)        ((m)->s->ms->look.flags.has_active_cset)
-#define ST_HAS_GREYED_CSET(s)         ((s)->look.flags.has_greyed_cset)
-#define MST_HAS_GREYED_CSET(m)        ((m)->s->ms->look.flags.has_greyed_cset)
-#define ST_HAS_TITLE_CSET(s)          ((s)->look.flags.has_title_cset)
-#define MST_HAS_TITLE_CSET(m)         ((m)->s->ms->look.flags.has_title_cset)
 #define ST_IS_ITEM_RELIEF_REVERSED(s) ((s)->look.flags.is_item_relief_reversed)
 #define MST_IS_ITEM_RELIEF_REVERSED(m)				\
 	((m)->s->ms->look.flags.is_item_relief_reversed)
@@ -115,12 +105,6 @@
 #define SHADOW_GC(g)                  ((g).shadow_gc)
 #define ST_MENU_STIPPLE_GC(s)         ((s)->look.MenuStippleGC)
 #define MST_MENU_STIPPLE_GC(m)        ((m)->s->ms->look.MenuStippleGC)
-#define ST_MENU_COLORS(s)             ((s)->look.MenuColors)
-#define MST_MENU_COLORS(m)            ((m)->s->ms->look.MenuColors)
-#define ST_MENU_ACTIVE_COLORS(s)      ((s)->look.MenuActiveColors)
-#define MST_MENU_ACTIVE_COLORS(m)     ((m)->s->ms->look.MenuActiveColors)
-#define ST_MENU_STIPPLE_COLORS(s)     ((s)->look.MenuStippleColors)
-#define MST_MENU_STIPPLE_COLORS(m)    ((m)->s->ms->look.MenuStippleColors)
 #define ST_PSTDFONT(s)                ((s)->look.pStdFont)
 #define MST_PSTDFONT(m)               ((m)->s->ms->look.pStdFont)
 #define ST_PTITLEFONT(s)              ((s)->look.pTitleFont)
@@ -185,17 +169,6 @@
 
 typedef enum
 {
-	/* menu types */
-	SimpleMenu = 0,
-	GradientMenu,
-	PixmapMenu,
-	TiledPixmapMenu,
-	SolidMenu
-	/* max button is 8 (0x8) */
-} MenuFaceType;
-
-typedef enum
-{
 	MDP_POST_MENU = 0,
 	MDP_ROOT_MENU = 1,
 	MDP_IGNORE = 2,
@@ -236,23 +209,6 @@ typedef struct MenuFeel
 	KeyCode select_on_release_key;
 } MenuFeel;
 
-typedef struct MenuFace
-{
-	union
-	{
-		FvwmPicture *p;
-		Pixel back;
-		struct
-		{
-			int npixels;
-			XColor *xcs;
-			Bool do_dither;
-		} grad;
-	} u;
-	MenuFaceType type;
-	char gradient_type;
-} MenuFace;
-
 typedef struct
 {
 	GC fore_gc;
@@ -263,7 +219,6 @@ typedef struct
 
 typedef struct MenuLook
 {
-	MenuFace face;
 	struct
 	{
 		unsigned do_hilight_back : 1;
@@ -274,13 +229,9 @@ typedef struct MenuLook
 		unsigned has_long_separators : 1;
 		unsigned has_triangle_relief : 1;
 		unsigned has_side_color : 1;
-		unsigned has_menu_cset : 1;
-		unsigned has_active_cset : 1;
-		unsigned has_greyed_cset : 1;
 		unsigned is_item_relief_reversed : 1;
 		unsigned using_default_font : 1;
 		unsigned triangles_use_fore : 1;
-		unsigned has_title_cset : 1;
 		unsigned do_hilight_title_back : 1;
 		unsigned using_default_titlefont : 1;
 	} flags;
@@ -314,9 +265,6 @@ typedef struct MenuLook
 	gc_quad_t active_gcs;
 	gc_quad_t stipple_gcs;
 	gc_quad_t title_gcs;
-	ColorPair MenuColors;
-	ColorPair MenuActiveColors;
-	ColorPair MenuStippleColors;
 	FlocaleFont *pStdFont;
 	FlocaleFont *pTitleFont;
 	int FontHeight;

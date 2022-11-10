@@ -51,29 +51,6 @@
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- local functions ---------------------------- */
-static void clear_menu_item_background(
-	MenuPaintItemParameters *mpip, int x, int y, int w, int h)
-{
-	MenuStyle *ms = mpip->ms;
-
-	if (!ST_HAS_MENU_CSET(ms) &&
-	    ST_FACE(ms).type == GradientMenu &&
-	    (ST_FACE(ms).gradient_type == D_GRADIENT ||
-	     ST_FACE(ms).gradient_type == B_GRADIENT))
-	{
-		XEvent e;
-
-		e.xexpose.x = x;
-		e.xexpose.y = y;
-		e.xexpose.width = w;
-		e.xexpose.height = h;
-		mpip->cb_reset_bg(mpip->cb_mr, &e);
-	}
-	else
-	{
-		XClearArea(dpy, mpip->w, x, y, w, h, False);
-	}
-}
 
 /*
  *
@@ -436,7 +413,7 @@ void menuitem_paint(
 		}
 	}
 
-	off_cs = ST_HAS_MENU_CSET(ms) ? ST_CSET_MENU(ms) : -1;
+	off_cs = ST_CSET_MENU(ms);
 	/* Note: it's ok to pass a NULL label to is_function_allowed. */
 	if (MI_SHOULD_BE_GREYED(mi) ||
 		(!IS_EWMH_DESKTOP_FW(mpip->fw) &&
@@ -447,7 +424,7 @@ void menuitem_paint(
 		MI_IS_SELECTABLE(mi) = False;
 		gcs = ST_MENU_STIPPLE_GCS(ms);
 		off_gcs = gcs;
-		off_cs = ST_HAS_GREYED_CSET(ms) ? ST_CSET_GREYED(ms) : -1;
+		off_cs = ST_CSET_GREYED(ms);
 	}
 	else if (is_item_selected)
 	{
@@ -468,11 +445,11 @@ void menuitem_paint(
 	}
 	if (is_item_selected)
 	{
-		cs = (ST_HAS_ACTIVE_CSET(ms)) ? ST_CSET_ACTIVE(ms) : -1;
+		cs = ST_CSET_ACTIVE(ms);
 	}
 	else if (MI_IS_TITLE(mi))
 	{
-		cs = (ST_HAS_TITLE_CSET(ms)) ? ST_CSET_TITLE(ms) : off_cs;
+		cs = ST_CSET_TITLE(ms);
 	}
 	else
 	{
@@ -513,15 +490,12 @@ void menuitem_paint(
 			}
 		}
 	}
-	else if ((MI_WAS_DESELECTED(mi) &&
-		  (relief_thickness > 0 ||
-		   ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)) &&
-		  (ST_FACE(ms).type != GradientMenu || ST_HAS_MENU_CSET(ms))))
+	else if (MI_WAS_DESELECTED(mi) &&
+		 (relief_thickness > 0 ||
+		  ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)))
 	{
 		int x1;
 		int x2;
-		/* we clear if xft_clear and !ST_HAS_MENU_CSET(ms) as the
-		 * non colorset code is too complicate ... olicha */
 		int d = 0;
 
 		if (MI_PREV_ITEM(mi) &&
@@ -536,9 +510,8 @@ void menuitem_paint(
 		x2 = max(
 			MDIM_HILIGHT_X_OFFSET(*dim) + MDIM_HILIGHT_WIDTH(*dim),
 			MDIM_ITEM_X_OFFSET(*dim) + MDIM_ITEM_WIDTH(*dim));
-		clear_menu_item_background(
-			mpip, x1, y_offset + d, x2 - x1,
-			y_height + relief_thickness - d);
+		XClearArea(dpy, mpip->w, x1, y_offset + d, x2 - x1,
+			   y_height + relief_thickness - d, False);
 		item_cleared = True;
 	}
 	else if (MI_IS_TITLE(mi))
@@ -778,9 +751,8 @@ void menuitem_paint(
 			{
 				if (!item_cleared && xft_clear)
 				{
-					clear_menu_item_background(
-						mpip, b.x, b.y, b.width,
-						b.height);
+					XClearArea(dpy, mpip->w, b.x, b.y,
+						   b.width, b.height, False);
 				}
 				FlocaleDrawString(dpy, font, fws, 0);
 
@@ -918,8 +890,8 @@ void menuitem_paint(
 				 (tmp_cs >=0 &&
 				  Colorset[tmp_cs].icon_alpha_percent < 100)))
 			{
-				clear_menu_item_background(
-					mpip, b.x, b.y, b.width, b.height);
+				XClearArea(dpy, mpip->w, b.x, b.y,
+					   b.width, b.height, False);
 			}
 			PGraphicsRenderPicture(
 				dpy, mpip->w, MI_PICTURE(mi), &fra,
@@ -1004,9 +976,8 @@ void menuitem_paint(
 					 Colorset[tmp_cs].icon_alpha_percent <
 					 100)))
 				{
-					clear_menu_item_background(
-						mpip,
-						b.x, b.y, b.width, b.height);
+					XClearArea(dpy, mpip->w, b.x, b.y,
+						   b.width, b.height, False);
 				}
 				PGraphicsRenderPicture(
 					dpy, mpip->w, MI_MINI_ICON(mi)[i],
