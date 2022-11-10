@@ -100,10 +100,6 @@
 #define DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS 4
 
 /*** colours ***/
-#define DEFAULT_FORE_COLOR                "black"
-#define DEFAULT_BACK_COLOR                "gray"
-#define DEFAULT_HILIGHT_COLOR             "white"
-#define DEFAULT_SHADOW_COLOR              "black"
 #define DEFAULT_CURSOR_FORE_COLOR         "black"
 #define DEFAULT_CURSOR_BACK_COLOR         "white"
 
