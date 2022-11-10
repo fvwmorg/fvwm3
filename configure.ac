@@ -1225,18 +1225,6 @@ fi
 # list (2001-02-16 and 2001-02-24)
 AM_SAFETY_CHECK_MKSTEMP
 
-# ********* IMLIB, GNOME
-# Check the availability of gdk-imlib
-AH_TEMPLATE([GDK_IMLIB],[Define if gdk-imlib is used])
-AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB))
-if test x"$no_imlib" = x; then
-  with_gdkimlib=yes
-  problem_gdkimlib=""
-else
-  with_gdkimlib=no
-  problem_gdkimlib=": Failed on gdk-imlib, see config.log"
-fi
-
 # Define some compatibility macros needed for config.h.
 mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
   [defined XK_Page_Up && defined XK_Page_Down],
