@@ -201,7 +201,11 @@ check_pid(void)
 			strerror(errno));
 		exit(1);
 	}
-	fscanf(pf, "%d", &pid);
+	if (fscanf(pf, "%d", &pid) != 1) {
+		fprintf(stderr, "Error reading pid from %s: %s\n", pid_file,
+			strerror(errno));
+		exit(1);
+	};
 
 	/* Non-fatal if we can't close this file handle from reading. */
 	(void)fclose(pf);
@@ -288,7 +292,7 @@ send_version_info(struct client *c)
 	/* Ensure there's a newline at the end of the string, so that
 	 * buffered output can be sent.
 	 */
-	asprintf(&to_client, "%s\n", fm->msg);
+	xasprintf(&to_client, "%s\n", fm->msg);
 
 	bufferevent_write(c->comms, to_client, strlen(to_client));
 	bufferevent_flush(c->comms, EV_WRITE, BEV_NORMAL);
@@ -669,7 +673,7 @@ broadcast_to_client(FvwmPacket *packet)
 		/* Ensure there's a newline at the end of the string, so that
 		 * buffered output can be sent.
 		 */
-		asprintf(&to_client, "%s\n", fm->msg);
+		xasprintf(&to_client, "%s\n", fm->msg);
 
 		bufferevent_write(c->comms, to_client, strlen(to_client));
 		bufferevent_flush(c->comms, EV_WRITE, BEV_NORMAL);
