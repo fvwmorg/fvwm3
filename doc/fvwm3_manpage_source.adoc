@@ -2531,14 +2531,6 @@ with a '/' in between. These options exclude each other. All paired
 options can be negated to have the effect of the counterpart option by
 prefixing ! to the option.
 +
-Some options are now negated by prefixing ! to the option. This is the
-preferred form for all such options. The other negative forms are now
-deprecated and will be removed in the future.
-+
-This is a list of MenuStyle deprecated negative options:
-ActiveForeOff, AnimationOff, AutomaticHotkeysOff, HilightBackOff,
-TitleWarpOff
-+
 _Fvwm_, _Mwm_, _Win_ reset all options to the style with the same name
 in former versions of fvwm. The default for new menu styles is _Fvwm_
 style. These options override all others except _Foreground_,
