@@ -329,14 +329,13 @@ static int menustyle_get_styleopt_index(char *option)
 	char *optlist[] = {
 		"fvwm", "mwm", "win",
 		"Foreground", "Background", "Greyed",
-		"HilightBack", "HilightBackOff",
-		"ActiveFore", "ActiveForeOff",
+		"HilightBack", "ActiveFore",
 		"Hilight3DThick", "Hilight3DThin", "Hilight3DOff",
-		"Animation", "AnimationOff",
+		"Animation",
 		"Font",
 		"MenuFace",
 		"PopupDelay", "PopupOffset",
-		"TitleWarp", "TitleWarpOff",
+		"TitleWarp",
 		"TitleUnderlines0", "TitleUnderlines1", "TitleUnderlines2",
 		"SeparatorsLong", "SeparatorsShort",
 		"TrianglesSolid", "TrianglesRelief",
@@ -349,7 +348,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"BorderWidth",
 		"Hilight3DThickness",
 		"ItemFormat",
-		"AutomaticHotkeys", "AutomaticHotkeysOff",
+		"AutomaticHotkeys",
 		"VerticalItemSpacing",
 		"VerticalTitleSpacing",
 		"MenuColorset", "ActiveColorset", "GreyedColorset",
@@ -1021,9 +1020,6 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
-		case 7: /* HilightBackOff */
-			on ^= 1;
-			/* fall throw */
 		case 6: /* HilightBack */
 			if (ST_HAS_ACTIVE_BACK(tmpms))
 			{
@@ -1046,10 +1042,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
-		case 9: /* ActiveForeOff */
-			on ^= 1;
-			/* fall throw */
-		case 8: /* ActiveFore */
+		case 7: /* ActiveFore */
 			if (ST_HAS_ACTIVE_FORE(tmpms))
 			{
 				fvwmlib_free_colors(
@@ -1071,27 +1064,23 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
-		case 10: /* Hilight3DThick */
+		case 8: /* Hilight3DThick */
 			ST_RELIEF_THICKNESS(tmpms) = 2;
 			break;
 
-		case 11: /* Hilight3DThin */
+		case 9: /* Hilight3DThin */
 			ST_RELIEF_THICKNESS(tmpms) = 1;
 			break;
 
-		case 12: /* Hilight3DOff */
+		case 10: /* Hilight3DOff */
 			ST_RELIEF_THICKNESS(tmpms) = 0;
 			break;
 
-		case 13: /* Animation */
+		case 11: /* Animation */
 			ST_IS_ANIMATED(tmpms) = on;
 			break;
 
-		case 14: /* AnimationOff */
-			ST_IS_ANIMATED(tmpms) = !on;
-			break;
-
-		case 15: /* Font */
+		case 12: /* Font */
 			if (arg1 != NULL &&
 			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
 			{
@@ -1117,7 +1106,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
-		case 16: /* MenuFace */
+		case 13: /* MenuFace */
 			while (args && *args != '\0' &&
 			       isspace((unsigned char)*args))
 			{
@@ -1126,7 +1115,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			menustyle_parse_face(args, &ST_FACE(tmpms), True);
 			break;
 
-		case 17: /* PopupDelay */
+		case 14: /* PopupDelay */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1138,7 +1127,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 18: /* PopupOffset */
+		case 15: /* PopupOffset */
 			if ((n = GetIntegerArguments(args, NULL, val, 2)) == 0)
 			{
 				fvwm_debug(__func__,
@@ -1159,51 +1148,47 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 19: /* TitleWarp */
+		case 16: /* TitleWarp */
 			ST_DO_WARP_TO_TITLE(tmpms) = on;
 			break;
 
-		case 20: /* TitleWarpOff */
-			ST_DO_WARP_TO_TITLE(tmpms) = !on;
-			break;
-
-		case 21: /* TitleUnderlines0 */
+		case 17: /* TitleUnderlines0 */
 			ST_TITLE_UNDERLINES(tmpms) = 0;
 			break;
 
-		case 22: /* TitleUnderlines1 */
+		case 18: /* TitleUnderlines1 */
 			ST_TITLE_UNDERLINES(tmpms) = 1;
 			break;
 
-		case 23: /* TitleUnderlines2 */
+		case 19: /* TitleUnderlines2 */
 			ST_TITLE_UNDERLINES(tmpms) = 2;
 			break;
 
-		case 24: /* SeparatorsLong */
+		case 20: /* SeparatorsLong */
 			ST_HAS_LONG_SEPARATORS(tmpms) = on;
 			break;
 
-		case 25: /* SeparatorsShort */
+		case 21: /* SeparatorsShort */
 			ST_HAS_LONG_SEPARATORS(tmpms) = !on;
 			break;
 
-		case 26: /* TrianglesSolid */
+		case 22: /* TrianglesSolid */
 			ST_HAS_TRIANGLE_RELIEF(tmpms) = !on;
 			break;
 
-		case 27: /* TrianglesRelief */
+		case 23: /* TrianglesRelief */
 			ST_HAS_TRIANGLE_RELIEF(tmpms) = on;
 			break;
 
-		case 28: /* PopupImmediately */
+		case 24: /* PopupImmediately */
 			ST_DO_POPUP_IMMEDIATELY(tmpms) = on;
 			break;
 
-		case 29: /* PopupDelayed */
+		case 25: /* PopupDelayed */
 			ST_DO_POPUP_IMMEDIATELY(tmpms) = !on;
 			break;
 
-		case 30: /* DoubleClickTime */
+		case 26: /* DoubleClickTime */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1216,7 +1201,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 31: /* SidePic */
+		case 27: /* SidePic */
 			if (ST_SIDEPIC(tmpms))
 			{
 				PDestroyFvwmPicture(dpy, ST_SIDEPIC(tmpms));
@@ -1236,7 +1221,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 32: /* SideColor */
+		case 28: /* SideColor */
 			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
 			{
 				fvwmlib_free_colors(
@@ -1250,31 +1235,31 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 33: /* PopupAsRootmenu */
+		case 29: /* PopupAsRootmenu */
 			ST_DO_POPUP_AS(tmpms) = MDP_ROOT_MENU;
 			break;
 
-		case 34: /* PopupAsSubmenu */
+		case 30: /* PopupAsSubmenu */
 			ST_DO_POPUP_AS(tmpms) = MDP_POST_MENU;
 			break;
 
-		case 35: /* RemoveSubmenus */
+		case 31: /* RemoveSubmenus */
 			ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = on;
 			break;
 
-		case 36: /* HoldSubmenus */
+		case 32: /* HoldSubmenus */
 			ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = !on;
 			break;
 
-		case 37: /* SubmenusRight */
+		case 33: /* SubmenusRight */
 			ST_USE_LEFT_SUBMENUS(tmpms) = !on;
 			break;
 
-		case 38: /* SubmenusLeft */
+		case 34: /* SubmenusLeft */
 			ST_USE_LEFT_SUBMENUS(tmpms) = on;
 			break;
 
-		case 39: /* BorderWidth */
+		case 35: /* BorderWidth */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0 || *val > MAX_MENU_BORDER_WIDTH)
 			{
@@ -1287,7 +1272,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 40: /* Hilight3DThickness */
+		case 36: /* Hilight3DThickness */
 			if (GetIntegerArguments(args, NULL, val, 1) > 0)
 			{
 				if (*val < 0)
@@ -1305,7 +1290,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 41: /* ItemFormat */
+		case 37: /* ItemFormat */
 			if (ST_ITEM_FORMAT(tmpms))
 			{
 				free(ST_ITEM_FORMAT(tmpms));
@@ -1317,15 +1302,11 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 42: /* AutomaticHotkeys */
+		case 38: /* AutomaticHotkeys */
 			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = on;
 			break;
 
-		case 43: /* AutomaticHotkeysOff */
-			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = !on;
-			break;
-
-		case 44: /* VerticalItemSpacing */
+		case 39: /* VerticalItemSpacing */
 			parse_vertical_spacing_line(
 				args, &ST_ITEM_GAP_ABOVE(tmpms),
 				&ST_ITEM_GAP_BELOW(tmpms),
@@ -1333,14 +1314,15 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 				DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2);
 			break;
 
-		case 45: /* VerticalTitleSpacing */
+		case 40: /* VerticalTitleSpacing */
 			parse_vertical_spacing_line(
 				args, &ST_TITLE_GAP_ABOVE(tmpms),
 				&ST_TITLE_GAP_BELOW(tmpms),
 				DEFAULT_MENU_TITLE_TEXT_Y_OFFSET,
 				DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2);
 			break;
-		case 46: /* MenuColorset */
+
+		case 41: /* MenuColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1355,7 +1337,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			has_gc_changed = True;
 			break;
-		case 47: /* ActiveColorset */
+
+		case 42: /* ActiveColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1371,7 +1354,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
-		case 48: /* GreyedColorset */
+		case 43: /* GreyedColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1387,7 +1370,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			has_gc_changed = True;
 			break;
 
-		case 49: /* SelectOnRelease */
+		case 44: /* SelectOnRelease */
 			keycode = 0;
 			if (arg1)
 			{
@@ -1397,15 +1380,15 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_SELECT_ON_RELEASE_KEY(tmpms) = keycode;
 			break;
 
-		case 50: /* PopdownImmediately */
+		case 45: /* PopdownImmediately */
 			ST_DO_POPDOWN_IMMEDIATELY(tmpms) = 1;
 			break;
 
-		case 51: /* PopdownDelayed */
+		case 46: /* PopdownDelayed */
 			ST_DO_POPDOWN_IMMEDIATELY(tmpms) = 0;
 			break;
 
-		case 52: /* PopdownDelay */
+		case 47: /* PopdownDelay */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1417,7 +1400,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 53: /* PopupActiveArea */
+		case 48: /* PopupActiveArea */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val <= 50 || *val > 100)
 			{
@@ -1430,17 +1413,17 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			break;
 
-		case 54: /* PopupIgnore */
+		case 49: /* PopupIgnore */
 			ST_DO_POPUP_AS(tmpms) = MDP_IGNORE;
 			break;
 
-		case 55: /* PopupClose */
+		case 50: /* PopupClose */
 			ST_DO_POPUP_AS(tmpms) = MDP_CLOSE;
 			break;
 
-		case 56: /* MouseWheel */
+		case 51: /* MouseWheel */
 			if (arg1)
-		        {
+			{
 				if (StrEquals(arg1, "ActivatesItem"))
 				{
 					ST_MOUSE_WHEEL(tmpms) = MMW_OFF;
@@ -1467,21 +1450,23 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 						   arg1);
 					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
 				}
-		        }
-		        else
-		        {
-		        	ST_MOUSE_WHEEL(tmpms) =
+			}
+			else
+			{
+				ST_MOUSE_WHEEL(tmpms) =
 					(on) ? MMW_POINTER : MMW_OFF;
 			}
 			break;
-		case 57: /* ScrollOffPage */
-	        	ST_SCROLL_OFF_PAGE(tmpms) = on;
+
+		case 52: /* ScrollOffPage */
+			ST_SCROLL_OFF_PAGE(tmpms) = on;
 			break;
 
-		case 58: /* TrianglesUseFore */
+		case 53: /* TrianglesUseFore */
 			ST_TRIANGLES_USE_FORE(tmpms) = on;
 			break;
-		case 59: /* TitleColorset */
+
+		case 54: /* TitleColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
 			    *val < 0)
 			{
@@ -1496,11 +1481,13 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			has_gc_changed = True;
 			break;
-		case 60: /* TitleHilightBack */
+
+		case 55: /* TitleHilightBack */
 			ST_DO_HILIGHT_TITLE_BACK(tmpms) = on;
 			has_gc_changed = True;
 			break;
-		case 61: /* TitleFont */
+
+		case 56: /* TitleFont */
 			if (arg1 != NULL &&
 			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
 			{
@@ -1527,13 +1514,15 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			}
 			has_gc_changed = True;
 			break;
-		case 62: /* VerticalMargins */
+
+		case 57: /* VerticalMargins */
 			parse_vertical_margins_line(
 				args, &ST_VERTICAL_MARGIN_TOP(tmpms),
 				&ST_VERTICAL_MARGIN_BOTTOM(tmpms),
 				0, 0);
 			break;
-		case 63: /* UniqueHotKeyActivatesImmediate */
+
+		case 58: /* UniqueHotKeyActivatesImmediate */
 			ST_HOTKEY_ACTIVATES_IMMEDIATE(tmpms) = on;
 			break;
 
