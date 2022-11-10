@@ -119,7 +119,6 @@ typedef struct MenuPaintItemParameters
 	int used_mini_icons;
 	struct MenuRoot *cb_mr;
 	/* number of item labels present in the item format */
-	Bool (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);
 	struct
 	{
 		unsigned is_first_item : 1;
