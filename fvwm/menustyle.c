@@ -324,53 +324,6 @@ static void parse_vertical_margins_line(
 	return;
 }
 
-static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
-{
-	char *buffer, *rest;
-	char *fore, *back, *stipple, *font, *style, *animated;
-	MenuStyle *ms = NULL;
-
-	rest = GetNextToken(action,&fore);
-	rest = GetNextToken(rest,&back);
-	rest = GetNextToken(rest,&stipple);
-	rest = GetNextToken(rest,&font);
-	rest = GetNextToken(rest,&style);
-	rest = GetNextToken(rest,&animated);
-
-	if (!fore || !back || !stipple || !font || !style)
-	{
-		fvwm_debug(__func__,
-			   "error in %s style specification", action);
-	}
-	else
-	{
-		xasprintf(&buffer,
-			"* \"%s\", Foreground \"%s\", Background \"%s\", "
-			"Greyed \"%s\", Font \"%s\", \"%s\"",
-			style, fore, back, stipple, font,
-			(animated && StrEquals(animated, "anim")) ?
-			"Animation" : "AnimationOff");
-		fvwm_debug(__func__,
-			   "The old MenuStyle syntax has been deprecated.  "
-			   "Use 'MenuStyle %s' instead of 'MenuStyle %s'\n",
-			   buffer, action);
-
-		action = buffer;
-		ms = menustyle_parse_style(F_PASS_ARGS);
-
-		free(buffer);
-	}
-
-	free(fore);
-	free(back);
-	free(stipple);
-	free(font);
-	free(style);
-	free(animated);
-
-	return ms;
-}
-
 static int menustyle_get_styleopt_index(char *option)
 {
 	char *optlist[] = {
@@ -1931,27 +1884,6 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 
 void CMD_MenuStyle(F_CMD_ARGS)
 {
-	char *option;
-	char *poption;
-
-	GetNextSimpleOption(SkipNTokens(action, 1), &option);
-	poption = option;
-	while (poption && poption[0] == '!')
-	{
-		poption++;
-	}
-	if (option == NULL || menustyle_get_styleopt_index(poption) != -1)
-	{
-		(void)menustyle_parse_style(F_PASS_ARGS);
-	}
-	else
-	{
-		(void)menustyle_parse_old_style(F_PASS_ARGS);
-	}
-	if (option)
-	{
-		free(option);
-	}
-
+	(void)menustyle_parse_style(F_PASS_ARGS);
 	return;
 }
