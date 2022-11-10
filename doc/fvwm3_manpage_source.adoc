@@ -2509,11 +2509,10 @@ using the *ChangeMenuStyle*. See also *DestroyMenuStyle*. When using
 monochrome color options are ignored.
 +
 _options_ is a comma separated list containing some of the keywords
-Fvwm / Mwm / Win, BorderWidth, Foreground, Background, Greyed,
-HilightBack / !HilightBack, HilightTitleBack, ActiveFore /
-!ActiveFore, MenuColorset, ActiveColorset, GreyedColorset,
+Fvwm / Mwm / Win, BorderWidth, HilightBack / !HilightBack, HilightTitleBack,
+ActiveFore / !ActiveFore, MenuColorset, ActiveColorset, GreyedColorset,
 TitleColorset, Hilight3DThick / Hilight3DThin / Hilight3DOff,
-Hilight3DThickness, Animation / !Animation, Font, TitleFont, MenuFace,
+Hilight3DThickness, Animation / !Animation, Font, TitleFont,
 PopupDelay, PopupOffset, TitleWarp / !TitleWarp, TitleUnderlines0 /
 TitleUnderlines1 / TitleUnderlines2, SeparatorsLong / SeparatorsShort,
 TrianglesSolid / TrianglesRelief, PopupImmediately / PopupDelayed,
@@ -2533,11 +2532,10 @@ prefixing ! to the option.
 +
 _Fvwm_, _Mwm_, _Win_ reset all options to the style with the same name
 in former versions of fvwm. The default for new menu styles is _Fvwm_
-style. These options override all others except _Foreground_,
-_Background_, _Greyed_, _HilightBack_, _ActiveFore_ and _PopupDelay_,
-so they should be used only as the first option specified for a menu
-style or to reset the style to defined behavior. The same effect can
-be created by setting all the other options one by one.
+style. These options override all others except _HilightBack_, _ActiveFore_
+and _PopupDelay_, so they should be used only as the first option specified
+for a menu style or to reset the style to defined behavior. The same effect
+can be created by setting all the other options one by one.
 +
 _Mwm_ and _Win_ style menus popup sub menus automatically. _Win_ menus
 indicate the current menu item by changing the background to dark.
@@ -2545,21 +2543,21 @@ _Fvwm_ sub menus overlap the parent menu, _Mwm_ and _Win_ style menus
 never overlap the parent menu.
 +
 _Fvwm_ style is equivalent to !HilightBack, Hilight3DThin,
-!ActiveFore, !Animation, Font, MenuFace, PopupOffset 0 67, TitleWarp,
+!ActiveFore, !Animation, Font, PopupOffset 0 67, TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
 PopdownDelayed, PopupDelay 150, PopdownDelay 150, PopupAsSubmenu,
 HoldSubmenus, SubmenusRight, BorderWidth 2, !AutomaticHotkeys,
 UniqueHotkeyActivatesImmediate, PopupActiveArea 75.
 +
 _Mwm_ style is equivalent to !HilightBack, Hilight3DThick,
-!ActiveFore, !Animation, Font, MenuFace, PopupOffset -3 100,
+!ActiveFore, !Animation, Font, PopupOffset -3 100,
 !TitleWarp, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopdownDelayed, PopdownDelay 150, PopupAsSubmenu,
 HoldSubmenus, SubmenusRight, BorderWidth 2,
 UniqueHotkeyActivatesImmediate, !AutomaticHotkeys, PopupActiveArea 75.
 +
 _Win_ style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
-!Animation, Font, MenuFace, PopupOffset -5 100, !TitleWarp,
+!Animation, Font, PopupOffset -5 100, !TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesSolid, PopupImmediately,
 PopdownDelayed, PopdownDelay 150, PopupAsSubmenu, RemoveSubmenus,
 SubmenusRight, BorderWidth 2, UniqueHotkeyActivatesImmediate,
@@ -2569,57 +2567,27 @@ _BorderWidth_ takes the thickness of the border around the menus in
 pixels. It may be zero to 50 pixels. The default is 2. Using an
 invalid value reverts the border width to the default.
 +
-_Foreground_ and _Background_ may have a color name as an argument.
-This color is used for menu text or the menu's background. You can
-omit the color name to reset these colors to the built-in default.
-+
-_Greyed_ may have a color name as an argument. This color is the one
-used to draw a menu-selection which is prohibited (or not recommended)
-by the Mwm hints which an application has specified. If the color is
-omitted the color of greyed menu entries is based on the background
-color of the menu.
-+
 _HilightBack_ and _!HilightBack_ switch hilighting the background of
-the selected menu item on and off. A specific background color may be
-used by providing the color name as an argument to _HilightBack_. If
-you use this option without an argument the color is based on the
-menu's background color. The _ActiveColorset_ option overrides the
-specified color. If the colorset has a non solid background it is used
-for the hilighting.
+the selected menu item on and off. The _ActiveColorset_ background
+color is used for the hilighting.
 +
 _HilightTitleBack_ switches hilighting the background of menu titles
-on. If a _TitleColorset_ was used, the background colour is taken from
-there. Otherwise the color is based on the menu's background color. If
-the colorset has a non solid background it is used for the hilighting.
+on. The _TitleColorset_ background color is used for the hilighting.
 +
 _ActiveFore_ and _!ActiveFore_ switch hilighting the foreground of the
-selected menu item on and off. A specific foreground color may be used
-by providing the color name as an argument to _ActiveFore_. Omitting
-the color turns hilighting on when an _ActiveColorset_ is used.
-_ActiveFore_ turns off hilighting the foreground completely. The
-_ActiveColorset_ option overrides the specified color.
+selected menu item on and off. The _ActiveColorset_ foreground color
+is used for the hilighting.
 +
-_MenuColorset_ controls if a colorset is used instead of the
-_Foreground_, _Background_ and _MenuFace_ menu styles. If the
-_MenuColorset_ keyword is followed by a number equal to zero or
-greater, this number is taken as the number of the colorset to use. If
-the number is omitted, the colorset is switched off and the regular
-menu styles are used again. The foreground and background colors of
-the menu items are replaced by the colors from the colorset. If the
-colorset has a pixmap defined, this pixmap is used as the background
-of the menu. Note that the _MenuFace_ menu style has been optimized
-for memory consumption and may use less memory than the background
-from a colorset. The shape mask from the colorset is used to shape the
+_MenuColorset_ controls the colorset used to color the menu. If the
+colorset has a pixmap or gradient defined, this is used as the background
+of the menu. The shape mask from the colorset is used to shape the
 menu. Please refer to the *Colorsets* section for details about
 colorsets.
 +
-_ActiveColorset_ works exactly like _MenuColorset_, but the foreground
-from the colorset replaces the color given with the _ActiveFore_ menu
-style and the colorset's background color replaces the color given
-with the _HilightBack_ command (to turn on background hilighting you
-have to use the _HilightBack_ menu style too). If specified, the
-hilight and shadow colors from the colorset are used too. The pixmap
-and shape mask from the colorset are not used. Hilighting the
+_ActiveColorset_ controls the color of the active menu item, provided
+the _HilightBack_ or _ActiveFore_ menu styles are used. If specified,
+the hilight and shadow colors from the colorset are used too. The
+pixmap and shape mask from the colorset are not used. Hilighting the
 background or foreground can be turned off individually with the
 _!ActiveFore_ or _!HilightBack_ menu styles.
 +
@@ -2648,53 +2616,6 @@ this name exists it is used for the text of all menu items. If it does
 not exist or if the name is left blank the built-in default is used.
 If a _TitleFont_ is given, it is used for all menu titles instead of
 the normal font.
-+
-_MenuFace_ enforces a fancy background upon the menus. You can use the
-same options for _MenuFace_ as for the *ButtonStyle*. See description
-of *ButtonStyle* command and the *Color Gradients* sections for more
-information. If you use _MenuFace_ without arguments the style is
-reverted back to normal.
-+
-Some examples of MenuFaces are:
-+
-....
-MenuFace DGradient 128 2 lightgrey 50 blue 50 white
-MenuFace TiledPixmap texture10.xpm
-MenuFace HGradient 128 2 Red 40 Maroon 60 White
-MenuFace Solid Maroon
-....
-+
-Note: The gradient styles H, V, B and D are optimized for high speed
-and low memory consumption in menus. This is not the case for all the
-other gradient styles. They may be slow and consume huge amounts of
-memory, so if you encounter performance problems with them you may be
-better off by not using them. To improve performance you can try one
-or all of the following:
-+
-Turn hilighting of the active menu item other than foreground color
-off:
-+
-....
-MenuStyle <style> Hilight3DOff, !HilightBack
-MenuStyle <style> ActiveFore <preferred color>
-....
-+
-Make sure sub menus do not overlap the parent menu. This can prevent
-menus being redrawn every time a sub menu pops up or down.
-+
-....
-MenuStyle <style> PopupOffset 1 100
-....
-+
-Run your X server with backing storage. If your X Server is started
-with the -bs option, turn it off. If not try the -wm and +bs options:
-+
-....
-startx -- -wm +bs
-....
-+
-You may have to adapt this example to your system (e.g. if you use
-xinit to start X).
 +
 _PopupDelay_ requires one numeric argument. This value is the delay in
 milliseconds before a sub menu is popped up when the pointer moves
@@ -2948,48 +2869,6 @@ the default. The opposite, _!ScrollOffPage_ disables this behaviour.
 _TrianglesUseFore_ draws sub menu triangles with the foreground color
 of the menu colorset (normally drawn with the hilight color).
 _!TrianglesUseFore_ disables this behaviour.
-+
-Examples:
-+
-....
-MenuStyle * Mwm
-MenuStyle * Foreground Black, Background gray40
-MenuStyle * Greyed gray70, ActiveFore White
-MenuStyle * !HilightBack, Hilight3DOff
-MenuStyle * Font lucidasanstypewriter-14
-MenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
-
-MenuStyle red Mwm
-MenuStyle red Foreground Yellow
-MenuStyle red Background Maroon
-MenuStyle red Greyed Red, ActiveFore Red
-MenuStyle red !HilightBack, Hilight3DOff
-MenuStyle red Font lucidasanstypewriter-12
-MenuStyle red MenuFace DGradient 64 Red Black
-....
-+
-Note that all style options could be placed on a single line for each
-style name.
-
-*MenuStyle* _forecolor_ _backcolor_ _shadecolor_ _font_ _style_ [_anim_]::
-	This is the old syntax of the *MenuStyle* command. It is obsolete and
-	may be removed in the future. Please use the new syntax as described
-	above.
-+
-Sets the menu style. When using monochrome the colors are ignored. The
-_shadecolor_ is the one used to draw a menu-selection which is
-prohibited (or not recommended) by the Mwm hints which an application
-has specified. The style option is either _Fvwm_, _Mwm_ or _Win_,
-which changes the appearance and operation of the menus.
-+
-_Mwm_ and _Win_ style menus popup sub menus automatically. _Win_ menus
-indicate the current menu item by changing the background to black.
-_Fvwm_ sub menus overlap the parent menu, _Mwm_ and _Win_ style menus
-never overlap the parent menu.
-+
-When the _anim_ option is given, sub menus that do not fit on the
-screen cause the parent menu to be shifted to the left so the sub menu
-can be seen. See also *SetAnimation* command.
 // END 'menus'
 endif::[]
 
@@ -9373,19 +9252,47 @@ Examples:
 +
 
 ....
-MenuStyle * \
-MenuFace DGradient 128 2 lightgrey 50 blue 50 white
+Colorset 0 DGradient 128 2 lightgrey 50 blue 50 white
 
 # 20% gradient from red to blue,
 # 30% from blue to black,
 # 50% from black to grey
-MenuStyle * \
-MenuFace DGradient 100 3 Red 20 Blue 30 Black 50 Grey
+Colorset 0 DGradient 100 3 Red 20 Blue 30 Black 50 Grey
 
 # 50% from blue to green, then
 # 50% from yellow to red
 Colorset 0 HGradient 128 3 Blue 1000 Green 1 Yellow 1000 Red
 ....
+
+Note: Some gradient styles may be slow and consume huge amounts of
+memory, so if you encounter performance problems with them you may be
+better off by not using them. To improve performance you can try one
+or all of the following:
++
+Turn hilighting of the active menu item other than foreground color
+off:
++
+....
+MenuStyle <style> Hilight3DOff, !HilightBack
+....
++
+Make sure sub menus do not overlap the parent menu. This can prevent
+menus being redrawn every time a sub menu pops up or down.
++
+....
+MenuStyle <style> PopupOffset 1 100
+....
++
+Run your X server with backing storage. If your X Server is started
+with the -bs option, turn it off. If not try the -wm and +bs options:
++
+....
+startx -- -wm +bs
+....
++
+You may have to adapt this example to your system (e.g. if you use
+xinit to start X).
+
 // END 'commands'
 endif::[]
 
