@@ -2561,8 +2561,8 @@ void HandleFocusIn(const evh_args_t *ea)
 		}
 		/* Not very useful if no window that fvwm and its modules know
 		 * about has the focus. */
-		fc = GetColor(DEFAULT_FORE_COLOR);
-		bc = GetColor(DEFAULT_BACK_COLOR);
+		fc = Colorset[0].fg;
+		bc = Colorset[0].bg;
 	}
 	else if (fw != Scr.Hilite ||
 		 /* domivogt (16-May-2000): This check is necessary to force

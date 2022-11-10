@@ -920,8 +920,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		{
 			SendPacket(
 				mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
-				(long)GetColor(DEFAULT_FORE_COLOR),
-				(long)GetColor(DEFAULT_BACK_COLOR));
+				(long)Colorset[0].fg, (long)Colorset[0].bg);
 		}
 		if (Scr.DefaultIcon != NULL)
 		{
@@ -996,9 +995,8 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		{
 			BroadcastPacket(
 				M_FOCUS_CHANGE, 5, (long)0, (long)0,
-				(unsigned long)True,
-				(long)GetColor(DEFAULT_FORE_COLOR),
-				(long)GetColor(DEFAULT_BACK_COLOR));
+				(unsigned long)True, (long)Colorset[0].fg,
+				(long)Colorset[0].bg);
 		}
 		else
 		{
