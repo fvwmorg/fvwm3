@@ -77,6 +77,11 @@
 #define SCTX_GET_MR(ctx)	((ctx).type == SCTX_MENU_ROOT ? \
 				 (ctx).menu_root.menu_root : NULL)
 
+#define MR_IS_TRANSLUCENT(mr) (!MR_IS_TEAR_OFF_MENU(mr) && \
+				 MST_IS_TRANSLUCENT(mr))
+#define MR_IS_TRANSPARENT(mr) (MR_IS_TRANSLUCENT(mr) || \
+				 CSET_IS_TRANSPARENT(MST_CSET_MENU((mr))))
+
 /* ---------------------------- imports ------------------------------------ */
 
 /* This external is safe. It's written only during startup. */
@@ -219,6 +224,8 @@ typedef struct mloop_static_info_t
 } mloop_static_info_t;
 
 /* ---------------------------- forward declarations ----------------------- */
+static MenuRoot *seek_submenu_instance(
+	MenuRoot *parent_menu, MenuItem *parent_item);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -380,11 +387,22 @@ static void animated_move_back(
 		Bool transparent_bg = False;
 
 		/* move it back */
-		if (CSET_IS_TRANSPARENT(ST_CSET_MENU(MR_STYLE(mr))))
+		if (MR_IS_TRANSPARENT(mr))
 		{
 			transparent_bg = True;
 			get_menu_repaint_transparent_parameters(
 				&mrtp, mr, fw);
+			if (MR_IS_TRANSLUCENT(mr) && MR_SUBMENU_ITEM(mr))
+			{
+				MenuRoot *smr;
+				smr = seek_submenu_instance(
+					mr, MR_SUBMENU_ITEM(mr));
+				if (smr)
+				{
+					/* just unmap it here, popdown later */
+					XUnmapWindow(dpy, MR_WINDOW(smr));
+				}
+			}
 		}
 		end.x = start.x - MR_XANIMATION(mr);
 		end.y = start.y;
@@ -1908,6 +1926,7 @@ static void make_menu_window(MenuRoot *mr, Bool is_tear_off)
 				/* Doh.  Use the standard display instead. */
 				MR_CREATE_DPY(mr) = dpy;
 			}
+			MR_IS_TEAR_OFF_MENU(mr) = 1;
 		}
 		else
 		{
@@ -2450,7 +2469,44 @@ static void paint_menu(
 	}
 	MR_IS_PAINTED(mr) = 1;
 	/* paint the menu background */
-	if (ms && MR_IS_BACKGROUND_SET(mr) == False)
+	if (MR_IS_TRANSLUCENT(mr))
+	{
+		Pixmap trans = None;
+		FvwmRenderAttributes fra;
+		fra.mask = FRAM_HAVE_TINT;
+		fra.tint = Colorset[ST_CSET_MENU(ms)].bg;
+		fra.tint_percent = ST_TRANSLUCENT_PERCENT(ms);
+
+		if (MR_IS_BACKGROUND_SET(mr) == False)
+		{
+			trans = PGraphicsCreateTranslucent(
+				dpy, MR_WINDOW(mr), &fra,
+				BACK_GC(ST_MENU_INACTIVE_GCS(ms)),
+				mr->d->x, mr->d->y, MR_WIDTH(mr),
+				MR_HEIGHT(mr));
+			XMapRaised(dpy, MR_WINDOW(mr));
+			if (trans != None)
+			{
+				XSetWindowBackgroundPixmap(
+					dpy, MR_WINDOW(mr), trans);
+				MR_IS_BACKGROUND_SET(mr) = True;
+				if (pevent == NULL)
+				{
+					XClearWindow(dpy, MR_WINDOW(mr));
+				} else {
+					XClearArea(
+						dpy, MR_WINDOW(mr),
+						pevent->xexpose.x,
+						pevent->xexpose.y,
+						pevent->xexpose.width,
+						pevent->xexpose.height,
+						False);
+				}
+				XFreePixmap(dpy, trans);
+			}
+		}
+	}
+	else if (ms && MR_IS_BACKGROUND_SET(mr) == False)
 	{
 		SetWindowBackground(
 			dpy, MR_WINDOW(mr), MR_WIDTH(mr),
@@ -3078,8 +3134,7 @@ static int pop_menu_up(
 					MR_HAS_POPPED_UP_RIGHT(mr) = 0;
 				}
 				MR_XANIMATION(parent_menu) += end_x - prev_x;
-				if (CSET_IS_TRANSPARENT(ST_CSET_MENU(
-							MR_STYLE(parent_menu))))
+				if (MR_IS_TRANSPARENT(parent_menu))
 				{
 					transparent_bg = True;
 					get_menu_repaint_transparent_parameters(
@@ -3262,10 +3317,21 @@ static int pop_menu_up(
 	 */
 
 	XMoveWindow(dpy, MR_WINDOW(mr), x, y);
+	mr->d->x = x;
+	mr->d->y = y;
 	XSelectInput(dpy, MR_WINDOW(mr), event_mask);
-	XMapRaised(dpy, MR_WINDOW(mr));
-	if (popdown_window)
-		XUnmapWindow(dpy, popdown_window);
+	if (MR_IS_TRANSLUCENT(mr))
+	{
+		if (popdown_window)
+			XUnmapWindow(dpy, popdown_window);
+		paint_menu(mr, NULL, fw);
+	}
+	else
+	{
+		XMapRaised(dpy, MR_WINDOW(mr));
+		if (popdown_window)
+			XUnmapWindow(dpy, popdown_window);
+	}
 	XFlush(dpy);
 	MR_MAPPED_COPIES(mr)++;
 	MST_USAGE_COUNT(mr)++;
@@ -5833,16 +5899,106 @@ void update_transparent_menu_bg(
 	{
 		last = True;
 	}
-	if (!last && CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)))
+	if (!last &&
+	    (CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)) ||
+	     MR_IS_TRANSLUCENT(mr)))
 	{
 		/* too slow ... */
 		return;
 	}
-	SetWindowBackgroundWithOffset(
-		dpy, MR_WINDOW(mr), step_x - current_x, step_y - current_y,
-		MR_WIDTH(mr), MR_HEIGHT(mr),
-		&Colorset[ST_CSET_MENU(ms)], Pdepth,
-		FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
+	if (MR_IS_TRANSLUCENT(mr))
+	{
+		Pixmap trans, tmp;
+		FvwmRenderAttributes fra;
+		fra.mask = 0;
+		fra.mask = FRAM_HAVE_TINT;
+		fra.tint = Colorset[ST_CSET_MENU(ms)].bg;
+		fra.tint_percent = ST_TRANSLUCENT_PERCENT(ms);
+		mr->d->x = step_x;
+		mr->d->y = step_y;
+
+		if (current_x == step_x)
+		{
+			/*
+			 * Reuse the old pixmap for the part of the menu
+			 * that has not moved. (This can be extended to get
+			 * two new rectangles, one in each direction)
+			 *
+			 * It saves the unmapping of the window and makes
+			 * Things less flickering.
+			 */
+			GC my_gc;
+			unsigned long valuemask = GCSubwindowMode;
+			XGCValues values;
+			int out_y = (step_y < 0) ? -step_y : 0;
+			int delta_y = step_y - current_y;
+			values.subwindow_mode = IncludeInferiors;
+			trans = XCreatePixmap(
+					dpy, MR_WINDOW(mr), MR_WIDTH(mr),
+					MR_HEIGHT(mr), Pdepth);
+			my_gc = fvwmlib_XCreateGC(dpy, MR_WINDOW(mr), 0, NULL);
+			XChangeGC(dpy, my_gc, valuemask, &values);
+			XClearWindow(dpy, MR_WINDOW(mr));
+
+			if (current_y < step_y)
+			{
+				XCopyArea(dpy, MR_WINDOW(mr), trans, my_gc, 0,
+					  delta_y, MR_WIDTH(mr),
+					  MR_HEIGHT(mr) - delta_y, 0, 0);
+				tmp = PGraphicsCreateTranslucent(
+					dpy, MR_WINDOW(mr), &fra,
+					BACK_GC(ST_MENU_INACTIVE_GCS(ms)),
+					current_x, current_y + MR_HEIGHT(mr),
+					MR_WIDTH(mr), delta_y);
+				XCopyArea(dpy, tmp, trans, my_gc, 0, 0,
+					  MR_WIDTH(mr), delta_y,
+					  0, MR_HEIGHT(mr) - delta_y);
+			} else {
+				XCopyArea(dpy, MR_WINDOW(mr), trans, my_gc,
+					  0, 0, MR_WIDTH(mr),
+					  MR_HEIGHT(mr) + delta_y,
+					  0, -delta_y);
+				tmp = PGraphicsCreateTranslucent(
+					dpy, MR_WINDOW(mr), &fra,
+					BACK_GC(ST_MENU_INACTIVE_GCS(ms)),
+					current_x, step_y, MR_WIDTH(mr),
+					-delta_y);
+				XCopyArea(dpy, tmp, trans, my_gc, 0, 0,
+					  MR_WIDTH(mr), -delta_y, 0, out_y);
+			}
+			XFreePixmap(dpy, tmp);
+			XFreeGC(dpy, my_gc);
+		} else {
+			XUnmapWindow(dpy, MR_WINDOW(mr));
+			trans = PGraphicsCreateTranslucent(
+				dpy, MR_WINDOW(mr), &fra,
+				BACK_GC(ST_MENU_INACTIVE_GCS(ms)),
+				step_x, step_y, MR_WIDTH(mr),
+				MR_HEIGHT(mr));
+			XMapRaised(dpy, MR_WINDOW(mr));
+		}
+		XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), trans);
+		XFreePixmap(dpy, trans);
+		if (current_x == step_x)
+		{
+			/* Redraw the border */
+			RelieveRectangle(
+				dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
+				MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
+				SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
+				HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
+				SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)),
+				MST_BORDER_WIDTH(mr));
+		}
+	}
+	else
+	{
+		SetWindowBackgroundWithOffset(
+			dpy, MR_WINDOW(mr), step_x - current_x,
+			step_y - current_y, MR_WIDTH(mr), MR_HEIGHT(mr),
+			&Colorset[ST_CSET_MENU(ms)], Pdepth,
+			FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
+	}
 }
 
 
@@ -5883,10 +6039,7 @@ void repaint_transparent_menu(
 	}
 	if (!is_bg_set)
 	{
-		SetWindowBackground(
-			dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-			&Colorset[ST_CSET_MENU(ms)], Pdepth,
-			FORE_GC(MST_MENU_INACTIVE_GCS(mr)), False);
+		update_transparent_menu_bg(prtm, x, y, x, y, end_x, end_y);
 	}
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
@@ -6522,7 +6675,10 @@ void UpdateMenuColorset(int cset)
 					&Colorset[ST_CSET_MENU(ms2)],
 					Pdepth,
 					FORE_GC(MST_MENU_INACTIVE_GCS(mr)),
-					True);
+					False);
+				XClearArea(
+					dpy, MR_WINDOW(mr), 0, 0,
+					MR_WIDTH(mr), MR_HEIGHT(mr), True);
 			}
 			else if (ST_CSET_ACTIVE(ms2) == cset ||
 				 ST_CSET_GREYED(ms2) == cset)

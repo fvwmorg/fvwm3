@@ -2523,7 +2523,8 @@ SubmenusLeft, SelectOnRelease, ItemFormat, VerticalItemSpacing,
 VerticalMargins, VerticalTitleSpacing, AutomaticHotkeys /
 !AutomaticHotkeys, UniqueHotkeyActivatesImmediate /
 !UniqueHotkeyActivatesImmediate, MouseWheel, ScrollOffPage /
-!ScrollOffPage, TrianglesUseFore / !TrianglesUseFore.
+!ScrollOffPage, TrianglesUseFore / !TrianglesUseFore,
+Translucent / !Translucent.
 +
 In the above list some options are listed as option pairs or triples
 with a '/' in between. These options exclude each other. All paired
@@ -2597,6 +2598,21 @@ style. No other parts of the colorset are used.
 +
 _TitleColorset_ works exactly like _MenuColorset_, but is used only
 for menu titles.
++
+_Translucent_ controls a pseudo transparent effect that uses a image
+of the desktop under the menu as its background image. This option
+takes one value that is a number between 0 (fully translucent)
+and 100 (not translucent), which is the percent of the translucency.
+Use _!Translucent_ (or no additional value) to turn the effect off.
+The translucent effect only applies to normal menus and does not
+apply to "torn off" menus. Note, only the menu background is
+translucent, the _HilightBack_ of the active item and
+_HilightTitleBack_ of the title are not. To have a fully translucent
+menu use the following.
++
+....
+MenuStyle * Translucent 60, !HilightBack, !HilightTitleBack, ActiveFore
+....
 +
 _Hilight3DThick_, _Hilight3DThin_ and _Hilight3DOff_ determine if the
 selected menu item is hilighted with a 3D relief. Thick reliefs are

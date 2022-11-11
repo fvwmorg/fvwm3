@@ -147,6 +147,9 @@ typedef struct MenuRootDynamic
 		int d_npixels;
 	} stored_pixels;
 	/* alloc pixels when dithering is used for gradients */
+	/* x,y XMapRaise */
+	int x;
+	int y;
 } MenuRootDynamic;
 
 /* access macros to dynamic menu members */

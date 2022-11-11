@@ -134,6 +134,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"TitleFont",
 		"VerticalMargins",
 		"UniqueHotkeyActivatesImmediate",
+		"Translucent",
 		NULL
 	};
 
@@ -487,6 +488,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_SCROLL_OFF_PAGE(tmpms) = 1;
 			ST_DO_HILIGHT_TITLE_BACK(tmpms) = 0;
 			ST_USING_DEFAULT_TITLEFONT(tmpms) = True;
+			ST_TRANSLUCENT_PERCENT(tmpms) = 100;
 			has_gc_changed = True;
 			option = "fvwm";
 		}
@@ -1070,6 +1072,18 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 54: /* UniqueHotKeyActivatesImmediate */
 			ST_HOTKEY_ACTIVATES_IMMEDIATE(tmpms) = on;
+			break;
+
+		case 55: /* Translucent */
+			if (!on ||
+			    GetIntegerArguments(args, NULL, val, 1) == 0 ||
+			    *val < 0 || *val > 100)
+			{
+				/* 100 percent means not translucent */
+				ST_TRANSLUCENT_PERCENT(tmpms) = 100;
+			} else {
+				ST_TRANSLUCENT_PERCENT(tmpms) = *val;
+			}
 			break;
 
 #if 0

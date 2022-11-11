@@ -111,6 +111,12 @@
 #define MST_PTITLEFONT(m)             ((m)->s->ms->look.pTitleFont)
 #define ST_FONT_HEIGHT(s)             ((s)->look.FontHeight)
 #define MST_FONT_HEIGHT(m)            ((m)->s->ms->look.FontHeight)
+#define ST_TRANSLUCENT_PERCENT(s)     ((s)->look.TranslucentPercent)
+#define MST_TRANSLUCENT_PERCENT(m)    ((m)->s->ms->look.TranslucentPercent)
+#define ST_IS_TRANSLUCENT(s)          ((s)->look.TranslucentPercent != 100)
+#define MST_IS_TRANSLUCENT(m)         ((m)->s->ms->look.TranslucentPercent != 100)
+
+
 /* feel */
 #define ST_IS_ANIMATED(s)             ((s)->feel.flags.is_animated)
 #define MST_IS_ANIMATED(m)            ((m)->s->ms->feel.flags.is_animated)
@@ -268,6 +274,7 @@ typedef struct MenuLook
 	FlocaleFont *pStdFont;
 	FlocaleFont *pTitleFont;
 	int FontHeight;
+	int TranslucentPercent;
 } MenuLook;
 
 typedef struct MenuStyle
