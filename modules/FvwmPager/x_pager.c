@@ -1400,7 +1400,6 @@ void ReConfigure(void)
   rectangle vp = {0, 0, 0, 0};
   int i = 0, j = 0, k = 0;
   struct fpmonitor *mon = fpmonitor_this();
-  int VxPages = mon->virtual_scr.VxPages, VyPages = mon->virtual_scr.VyPages;
 
   if (!XGetGeometry(dpy, Scr.Pager_w, &root, &vp.x, &vp.y, (unsigned *)&pwindow.width,
 		    (unsigned *)&pwindow.height, &border_width,&depth))
