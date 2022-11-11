@@ -101,7 +101,7 @@ static void draw_highlight_background(
 	struct MenuPaintItemParameters *mpip, int x, int y, int width,
 	int height, colorset_t *cs, GC gc)
 {
-	if (cs != NULL && cs->pixmap && cs->pixmap_type != PIXMAP_TILED)
+	if (cs->pixmap && cs->pixmap_type != PIXMAP_TILED)
 	{
 		Pixmap p;
 
@@ -484,8 +484,7 @@ void menuitem_paint(
 					y_offset + relief_thickness,
 					lit_x_end - lit_x_start,
 					y_height - relief_thickness,
-					(cs >= 0 ? &Colorset[cs] : NULL),
-					gcs.back_gc);
+					&Colorset[cs], gcs.back_gc);
 				item_cleared = True;
 			}
 		}
@@ -528,8 +527,7 @@ void menuitem_paint(
 				y_offset + relief_thickness,
 				lit_x_end - lit_x_start,
 				y_height - relief_thickness,
-				(cs >= 0 ? &Colorset[cs] : NULL),
-				gcs.back_gc);
+				&Colorset[cs], gcs.back_gc);
 			item_cleared = True;
 		}
 	}

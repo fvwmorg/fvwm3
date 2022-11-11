@@ -125,6 +125,10 @@ void PGraphicsTintRectangle(
 	Drawable dest, Bool dest_is_a_window, GC gc, GC mono_gc, GC alpha_gc,
 	int dest_x, int dest_y, int dest_w, int dest_h);
 
+Pixmap PGraphicsCreateTranslucent(
+	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
+	int x, int y, int width, int height);
+
 /* never used ! */
 Pixmap PGraphicsCreateDitherPixmap(
 	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
