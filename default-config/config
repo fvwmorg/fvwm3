@@ -302,7 +302,7 @@ Colorset 14 fg #a8988f, bg #2b4e5e, hi #aaaaaa, sh #999999, Plain, NoShape
 MenuStyle * MenuColorset 5, ActiveColorset 6, GreyedColorset 7, TitleColorset 8
 MenuStyle * Hilight3DOff, HilightBack, HilightTitleBack, SeparatorsLong
 MenuStyle * TrianglesSolid, TrianglesUseFore
-MenuStyle * ItemFormat "%|%3.1i%5.3l%5l%5r%5.3>%|"
+MenuStyle * ItemFormat "%s%|%3.1i%5.3l%5l%5r%5.3>%|"
 MenuStyle * Font "xft:Sans:Bold:size=8:antialias=True"
 
 # Root Menu
