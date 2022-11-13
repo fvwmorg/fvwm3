@@ -3867,10 +3867,12 @@ _South_/_S_/_Down_/_D_, or _West_/_W_/_Left_/_L_. The window will move
 in the given direction until it hits another window or the
 *EwmhBaseStruts*/screen boundary. When a window is at the
 *EwmhBaseStruts*/screen boundary, it will move to the next monitor
-in the given direction, if it exists. Windows will honor the EWMH
-working area and stop at the *EwmhBaseStruts* unless the literal
-option _ewmhiwa_ is given. If multiple _direction_(s) are given,
-the window will move the directions in the order of the sequence stated.
+in the given direction, if it exists. If a window is outside of the
+current working area (partly off screen), it will move to the edge of
+the working area. Windows will honor the EWMH working area and stop at
+the *EwmhBaseStruts* unless the literal option _ewmhiwa_ is given. If
+multiple _direction_(s) are given, the window will move the directions
+in the order of the sequence stated.
 +
 The literal option _Warp_ will warp the mouse pointer to the window.
 If the literal option _snap_ followed by a snap _type_ of _windows_,
