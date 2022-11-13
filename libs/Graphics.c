@@ -119,7 +119,7 @@ void do_relieve_rectangle_with_rotation(
 	}
 	max_w = min((w + 1) / 2, line_width);
 	max_h = min((h + 1) / 2, line_width);
-	seg = fxmalloc(sizeof(XSegment) * line_width * 2);
+	seg = fxmalloc(sizeof(XSegment) * line_width * 2 + 1);
 	/* from 0 to the lesser of line_width & just over half w */
 
 	/* left */
