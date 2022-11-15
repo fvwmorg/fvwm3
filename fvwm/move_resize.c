@@ -284,6 +284,8 @@ static void move_to_next_monitor(
 {
 	position page;
 	struct monitor *m;
+	int x1, x2, y1, y2; /* Working area bounds */
+	int check_vert = 0, check_hor = 0;
 
 	get_page_offset_check_visible(&page.x, &page.y, fw);
 	win_r->x -= page.x;
@@ -298,6 +300,7 @@ static void move_to_next_monitor(
 			win_r->x < m->si->x + m->si->w &&
 			win_r->x + win_r->width > m->si->x)
 		{
+			check_hor = 1;
 			win_r->y = m->si->y + m->si->h - win_r->height;
 			if (ewmh)
 				win_r->y -= m->ewmhc.BaseStrut.bottom;
@@ -306,6 +309,7 @@ static void move_to_next_monitor(
 			fw->m->si->w &&	win_r->y < m->si->y + m->si->h &&
 				win_r->y + win_r->height > m->si->y)
 		{
+			check_vert = 1;
 			win_r->x = m->si->x;
 			if (ewmh)
 				win_r->x += m->ewmhc.BaseStrut.left;
@@ -314,6 +318,7 @@ static void move_to_next_monitor(
 			fw->m->si->h &&	win_r->x < m->si->x + m->si->w &&
 			win_r->x + win_r->width > m->si->x)
 		{
+			check_hor = 1;
 			win_r->y = m->si->y;
 			if (ewmh)
 				win_r->y += m->ewmhc.BaseStrut.top;
@@ -322,9 +327,36 @@ static void move_to_next_monitor(
 			win_r->y < m->si->y + m->si->h &&
 			win_r->y + win_r->height > m->si->y)
 		{
+			check_vert = 1;
 			win_r->x = m->si->x + m->si->w - win_r->width;
 			if (ewmh)
 				win_r->x -= m->ewmhc.BaseStrut.right;
+		}
+		if (check_hor || check_vert) {
+			x1 = m->si->x;
+			y1 = m->si->y;
+			x2 = x1 + m->si->w;
+			y2 = y1 + m->si->h;
+			if (ewmh) {
+				x1 += m->ewmhc.BaseStrut.left;
+				y1 += m->ewmhc.BaseStrut.top;
+				x2 -= m->ewmhc.BaseStrut.right;
+				y2 -= m->ewmhc.BaseStrut.bottom;
+			}
+			break;
+		}
+	}
+	if (check_vert) {
+		if (win_r->y < y1) {
+			win_r->y = y1;
+		} else if (win_r->y + win_r->height > y2) { 
+			win_r->y = y2 - win_r->height;
+		}
+	} else if (check_hor) {
+		if (win_r->x < x1) {
+			win_r->x = x1;
+		} else if (win_r->x + win_r->width > x2) {
+			win_r->x = x2 - win_r->width;
 		}
 	}
 	win_r->x += page.x;
