@@ -305,6 +305,12 @@ MenuStyle * TrianglesSolid, TrianglesUseFore
 MenuStyle * ItemFormat "%s%|%3.1i%5.3l%5l%5r%5.3>%|"
 MenuStyle * Font "xft:Sans:Bold:size=8:antialias=True"
 
+# Allows Menu to have translucency.
+# This option takes numerical values between 0 (fully translucent)
+# and 100 (not translucent). Supplying no value (or an invalid value),
+# or using '!Translucent' turns translucency off.
+MenuStyle * Translucent 85
+
 # Root Menu
 #
 # The root menu will PopUp with a click in the root
