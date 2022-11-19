@@ -1659,6 +1659,7 @@ void setup_title_geometry(
 {
 	int width;
 	int offset;
+	style_flags *sflags = &(pstyle->flags);
 
 	get_title_font_size_and_offset(
 		fw, S_TITLE_DIR(SCF(*pstyle)),
@@ -1669,7 +1670,15 @@ void setup_title_geometry(
 		&width, &offset);
 	fw->title_thickness = width;
 	fw->title_text_offset = offset;
-	fw->corner_width = fw->title_thickness + fw->boundary_width;
+	fw->corner_length = fw->title_thickness + fw->boundary_width;
+	if (SHAS_CORNER_LENGTH(sflags))
+	{
+		fw->corner_length = SGET_CORNER_LENGTH(*pstyle);
+		if (fw->corner_length > 0)
+		{
+			fw->corner_length += fw->boundary_width;
+		}
+	}
 	if (!HAS_TITLE(fw))
 	{
 		fw->title_thickness = 0;

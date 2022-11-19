@@ -55,6 +55,8 @@ void frame_free_move_resize_args(
 void frame_get_titlebar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
 	frame_title_layout_t *title_layout);
+void frame_set_corner_length(
+	FvwmWindow *fw, int *width, int *height, int frame_w, int frame_h);
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);

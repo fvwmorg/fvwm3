@@ -513,6 +513,7 @@ typedef struct style_flags
 	unsigned has_edge_resistance_move : 1;
 	unsigned has_edge_resistance_screen_move : 1;
 	unsigned has_handle_width : 1;
+	unsigned has_corner_length : 1;
 	unsigned has_icon : 1;
 	unsigned has_icon_boxes : 1;
 	unsigned has_icon_size_limits : 1;
@@ -637,6 +638,7 @@ typedef struct window_style
 	short border_width;
 	/* resize handle width */
 	short handle_width;
+	short corner_length;
 	int layer;
 	int start_desk;
 	int start_page_x;
@@ -764,8 +766,7 @@ typedef struct FvwmWindow
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h too! */
 	short boundary_width;
 	short unshaped_boundary_width;
-	short corner_width;
-	short visual_corner_width;
+	short corner_length;
 
 	/* title font */
 	FlocaleFont *title_font;

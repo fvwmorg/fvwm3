@@ -470,6 +470,11 @@ static void merge_styles(
 		SSET_HANDLE_WIDTH(
 			*merged_style, SGET_HANDLE_WIDTH(*add_style));
 	}
+	if (add_style->flags.has_corner_length)
+	{
+		SSET_CORNER_LENGTH(
+			*merged_style, SGET_CORNER_LENGTH(*add_style));
+	}
 	if (add_style->flags.has_icon_size_limits)
 	{
 		SSET_MIN_ICON_WIDTH(
@@ -2348,6 +2353,28 @@ static Bool style_parse_one_style_option(
 			S_SET_IS_UNCLOSABLE(SCF(*ps), !on);
 			S_SET_IS_UNCLOSABLE(SCM(*ps), 1);
 			S_SET_IS_UNCLOSABLE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "CornerLength"))
+		{
+			int num;
+			num = GetSuffixedIntegerArguments(
+				rest, &rest, val, 1, "%", tmpno);
+
+			if (num > 0 && *val >= 0)
+			{
+				SSET_CORNER_LENGTH(*ps, (short)*val);
+				ps->flags.has_corner_length = 1;
+				/* Percent lengths are stored as negative values. */
+				if (*tmpno == 1) {
+					SSET_CORNER_LENGTH(*ps, -(short)*val);
+				}
+			}
+			else
+			{
+				ps->flags.has_corner_length = 0;
+			}
+			ps->flag_mask.has_corner_length = 1;
+			ps->change_mask.has_corner_length = 1;
 		}
 		else
 		{
@@ -4986,6 +5013,12 @@ void check_window_style_change(
 		flags->do_redecorate = 1;
 		flags->do_update_ewmh_allowed_actions = 1;
 		flags->do_update_modules_flags = 1;
+	}
+
+	/* has_corner_length */
+	if (ret_style->change_mask.has_corner_length)
+	{
+		flags->do_redecorate = 1;
 	}
 
 	if (ret_style->change_mask.do_save_under ||

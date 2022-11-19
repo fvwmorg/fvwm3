@@ -1531,11 +1531,41 @@ void frame_get_titlebar_dimensions(
 	return;
 }
 
+#define MIN_SIZE 5
+void frame_set_corner_length(
+	FvwmWindow *fw, int *width, int *height, int frame_w, int frame_h)
+{
+	*width = fw->corner_length;
+	*height = fw->corner_length;
+
+	/* Negative values mean treat as a percent length. */
+	if (*width < 0) {
+		*width *= -frame_w / 100;
+		*height *= -frame_h / 100;
+	}
+
+	/* Ensure a minimum/maximize size. */
+	int min_l = fw->title_thickness + fw->boundary_width;
+	if (frame_w > 2 * MIN_SIZE && *width > frame_w / 2 - MIN_SIZE) {
+		*width = frame_w / 2 - MIN_SIZE;
+	}
+	if (*width < min_l) {
+		*width = min_l;
+	}
+	if (frame_h > 2 * MIN_SIZE && *height > frame_h / 2 - MIN_SIZE) {
+		*height = frame_h / 2 - MIN_SIZE;
+	}
+	if (*height < min_l) {
+		*height = min_l;
+	}
+}
+#undef MIN_SIZE
+
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks)
 {
-	int min_w;
+	int min_l;
 	size_borders b;
 
 	ret_g->x = 0;
@@ -1570,16 +1600,16 @@ void frame_get_sidebar_geometry(
 		*ret_has_x_marks = True;
 		*ret_has_y_marks = True;
 	}
-	ret_g->x = fw->corner_width;
-	ret_g->y = fw->corner_width;
-	min_w = 2 * fw->corner_width + 4;
+	frame_set_corner_length(
+		fw, &ret_g->x, &ret_g->y, frame_g->width, frame_g->height);
 	/* limit by available space, remove handle marks if necessary */
-	if (frame_g->width < min_w)
+	min_l = 2*(fw->title_thickness + fw->boundary_width) + 4;
+	if (frame_g->width < min_l)
 	{
 		ret_g->x = frame_g->width / 3;
 		*ret_has_y_marks = False;
 	}
-	if (frame_g->height < min_w)
+	if (frame_g->height < min_l)
 	{
 		ret_g->y = frame_g->height / 3;
 		*ret_has_x_marks = False;

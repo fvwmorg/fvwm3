@@ -1765,6 +1765,7 @@ static void border_draw_one_border_part(
 	Pixmap p;
 	Window w;
 	Bool free_bg_pixmap = False;
+	int corner_w, corner_h;
 
 	/* make a pixmap */
 	border_get_part_geometry(fw, part, sidebar_g, &part_g, &w);
@@ -1780,6 +1781,8 @@ static void border_draw_one_border_part(
 	relative_g.y = part_g.y;
 	border_get_border_background(
 		&bg, cd, &part_g, &relative_g, &free_bg_pixmap, w, part);
+	frame_set_corner_length(
+		fw, &corner_w, &corner_h, frame_g->width, frame_g->height);
 	if (cd->texture_pixmap)
 	{
 		switch (part)
@@ -1789,11 +1792,11 @@ static void border_draw_one_border_part(
 			break;
 		case PART_BORDER_NE:
 		case PART_BORDER_SE:
-			bg.pixmap.g.x = frame_g->width - fw->corner_width;
+			bg.pixmap.g.x = frame_g->width - corner_w;
 			break;
 		case PART_BORDER_N:
 		case PART_BORDER_S:
-			bg.pixmap.g.x = fw->corner_width;
+			bg.pixmap.g.x = corner_w;
 			break;
 		default:
 			bg.pixmap.g.x = 0;
@@ -1806,11 +1809,11 @@ static void border_draw_one_border_part(
 			break;
 		case PART_BORDER_SW:
 		case PART_BORDER_SE:
-			bg.pixmap.g.y = frame_g->height - fw->corner_width;
+			bg.pixmap.g.y = frame_g->height - corner_h;
 			break;
 		case PART_BORDER_W:
 		case PART_BORDER_E:
-			bg.pixmap.g.y = fw->corner_width;
+			bg.pixmap.g.y = corner_h;
 			break;
 		default:
 			bg.pixmap.g.y = 0;
