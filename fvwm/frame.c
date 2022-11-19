@@ -1535,7 +1535,7 @@ void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks)
 {
-	int min_w;
+	int min_l;
 	size_borders b;
 
 	ret_g->x = 0;
@@ -1570,16 +1570,16 @@ void frame_get_sidebar_geometry(
 		*ret_has_x_marks = True;
 		*ret_has_y_marks = True;
 	}
-	ret_g->x = fw->corner_width;
-	ret_g->y = fw->corner_width;
-	min_w = 2 * fw->corner_width + 4;
+	ret_g->x = fw->corner_length;
+	ret_g->y = fw->corner_length;
+	min_l = 2 * fw->corner_length + 4;
 	/* limit by available space, remove handle marks if necessary */
-	if (frame_g->width < min_w)
+	if (frame_g->width < min_l)
 	{
 		ret_g->x = frame_g->width / 3;
 		*ret_has_y_marks = False;
 	}
-	if (frame_g->height < min_w)
+	if (frame_g->height < min_l)
 	{
 		ret_g->y = frame_g->height / 3;
 		*ret_has_x_marks = False;
