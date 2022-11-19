@@ -5005,10 +5005,11 @@ style.
 _options_ is a comma separated list containing one or more of the
 following keywords. Each group of style names is separated by slashes
 ('/'). The last style in these groups is the default. _BorderWidth_,
-_HandleWidth_, _!Icon_ / _Icon_, _MiniIcon_, _IconBox_, _IconGrid_,
-_IconFill_, _IconSize_, _!Title_ / _Title_, _TitleAtBottom_ /
-_TitleAtLeft_ / _TitleAtRight_ / _TitleAtTop_, _LeftTitleRotatedCW_ /
-_LeftTitleRotatedCCW_, _RightTitleRotatedCCW_ / _RightTitleRotatedCW_,
+_HandleWidth_, _CornerLength_, _!Icon_ / _Icon_, _MiniIcon_,
+_IconBox_, _IconGrid_, _IconFill_, _IconSize_, _!Title_ / _Title_,
+_TitleAtBottom_ / _TitleAtLeft_ / _TitleAtRight_ /
+_TitleAtTop_, _LeftTitleRotatedCW_ / _LeftTitleRotatedCCW_,
+_RightTitleRotatedCCW_ / _RightTitleRotatedCW_,
 _TopTitleRotated_ / _TopTitleNotRotated_, _BottomTitleRotated_ /
 _BottomTitleNotRotated_, _!UseTitleDecorRotation_ /
 _UseTitleDecorRotation_, _StippledTitle_ / _!StippledTitle_,
@@ -5489,12 +5490,16 @@ but is deprecated.
 +
 _HandleWidth_ takes a numeric argument which is the width of the
 border to place the window if it does have resize-handles. Using
-HandleWidth without an argument restores the default.
+_HandleWidth_ without an argument restores the default.
++
+_CornerLength_ takes a single numeric argument which is the length,
+in pixels, of the corner handles. The default is the title height.
+Using _CornerLength_ without an argument restores the default.
 +
 _BorderWidth_ takes a numeric argument which is the width of the
 border to place the window if it does not have resize-handles. It is
 used only if the _!Handles_ style is specified too. Using
-BorderWidth without an argument restores the default.
+_BorderWidth_ without an argument restores the default.
 +
 _DepressableBorder_ makes the border parts of the window decoration
 look sunken in when a button is pressed over them. This can be

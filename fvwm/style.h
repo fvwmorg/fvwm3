@@ -20,6 +20,8 @@
 	((sf)->has_border_width)
 #define SHAS_HANDLE_WIDTH(sf) \
 	((sf)->has_handle_width)
+#define SHAS_CORNER_LENGTH(sf) \
+	((sf)->has_corner_length)
 #define SHAS_ICON(sf) \
 	((sf)->has_icon)
 #define SHAS_ICON_BOXES(sf) \
@@ -468,6 +470,10 @@
 	((s).handle_width)
 #define SSET_HANDLE_WIDTH(s,x) \
 	((s).handle_width = (x))
+#define SGET_CORNER_LENGTH(s) \
+	((s).corner_length)
+#define SSET_CORNER_LENGTH(s,x) \
+	((s).corner_length = (x))
 #define SGET_LAYER(s) \
 	((s).layer)
 #define SSET_LAYER(s,x) \

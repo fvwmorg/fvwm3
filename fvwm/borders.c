@@ -1789,11 +1789,11 @@ static void border_draw_one_border_part(
 			break;
 		case PART_BORDER_NE:
 		case PART_BORDER_SE:
-			bg.pixmap.g.x = frame_g->width - fw->corner_width;
+			bg.pixmap.g.x = frame_g->width - fw->corner_length;
 			break;
 		case PART_BORDER_N:
 		case PART_BORDER_S:
-			bg.pixmap.g.x = fw->corner_width;
+			bg.pixmap.g.x = fw->corner_length;
 			break;
 		default:
 			bg.pixmap.g.x = 0;
@@ -1806,11 +1806,11 @@ static void border_draw_one_border_part(
 			break;
 		case PART_BORDER_SW:
 		case PART_BORDER_SE:
-			bg.pixmap.g.y = frame_g->height - fw->corner_width;
+			bg.pixmap.g.y = frame_g->height - fw->corner_length;
 			break;
 		case PART_BORDER_W:
 		case PART_BORDER_E:
-			bg.pixmap.g.y = fw->corner_width;
+			bg.pixmap.g.y = fw->corner_length;
 			break;
 		default:
 			bg.pixmap.g.y = 0;
