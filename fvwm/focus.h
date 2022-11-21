@@ -13,11 +13,11 @@
 #define FOCUS_SET(w, fw) _focus_set(w, fw)
 #define FOCUS_RESET() _focus_reset()
 
-#define SetFocusWindow(a, b, c) _SetFocusWindow(a, b, c, False);
-#define SetFocusWindowClientEntered(a, b, c) _SetFocusWindow(a, b, c, True);
-#define ReturnFocusWindow(a) _ReturnFocusWindow(a);
-#define DeleteFocus(a) _DeleteFocus(a);
-#define ForceDeleteFocus() _ForceDeleteFocus();
+#define SetFocusWindow(a, b, c) _SetFocusWindow(a, b, c, False)
+#define SetFocusWindowClientEntered(a, b, c) _SetFocusWindow(a, b, c, True)
+#define ReturnFocusWindow(a) _ReturnFocusWindow(a)
+#define DeleteFocus(a) _DeleteFocus(a)
+#define ForceDeleteFocus() _ForceDeleteFocus()
 
 
 /* ---------------------------- type definitions --------------------------- */

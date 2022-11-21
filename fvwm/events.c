@@ -2009,7 +2009,7 @@ toggle_prev_monitor_state(struct monitor *this, struct monitor *prev,
 
 #if DEBUG_ENTERNOTIFY
 static int ecount=0;
-#define ENTER_DBG(x) fprintf x;
+#define ENTER_DBG(x) fprintf x
 #else
 #define ENTER_DBG(x) do { } while (0)
 #endif
