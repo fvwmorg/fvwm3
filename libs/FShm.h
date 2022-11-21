@@ -52,7 +52,7 @@ typedef struct {
 
 /* shm */
 #define Fshmget(a, b, c) 0
-#define Fshmat(a, b, c)  NULL;
+#define Fshmat(a, b, c)  NULL
 #define Fshmdt(a)
 #define Fshmctl(a, b, c)
 
