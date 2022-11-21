@@ -580,7 +580,7 @@ Pixmap PCreateRenderPixmap(
 			{
 				error = True;
 				goto bail;
-			}			 
+			}
 			 if (mono_gc == None)
 			 {
 				 mono_gc = fvwmlib_XCreateGC(

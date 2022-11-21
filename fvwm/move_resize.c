@@ -349,7 +349,7 @@ static void move_to_next_monitor(
 	if (check_vert) {
 		if (win_r->y < y1) {
 			win_r->y = y1;
-		} else if (win_r->y + win_r->height > y2) { 
+		} else if (win_r->y + win_r->height > y2) {
 			win_r->y = y2 - win_r->height;
 		}
 	} else if (check_hor) {

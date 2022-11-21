@@ -148,7 +148,7 @@ poll_x(void)
 			int i;
 			sce = (XRRScreenChangeNotifyEvent *) &event;
 			sres = XRRGetScreenResources(sce->display, sce->root);
-			
+
 			if (sres == NULL)
 				break;
 
@@ -159,7 +159,7 @@ poll_x(void)
 					    sres->outputs[i]);
 
 				si = screen_info_by_name(oinfo->name);
-				
+
 				if (si != NULL) {
 					switch (oinfo->connection) {
 					case RR_Disconnected:
