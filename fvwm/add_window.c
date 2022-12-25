@@ -2599,12 +2599,12 @@ FvwmWindow *AddWindow(
 	}
 	{
 		unsigned int nchildren;
-		Window parent, *children;
+		Window parent, *children = NULL;
 		Status rc;
 
 		rc = XQueryTree(
 			dpy, w, &JunkRoot, &parent, &children, &nchildren);
-		if (nchildren > 0)
+		if (nchildren > 0 && children != NULL)
 		{
 			XFree(children);
 		}
