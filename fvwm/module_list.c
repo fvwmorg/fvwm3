@@ -1094,7 +1094,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 	int sec = 0;
 	char *next;
 	char *token;
-	char *expect = ModuleFinishedStartupResponse;
+	char *expect = fxstrdup(ModuleFinishedStartupResponse);
 	fmodule *module;
 	fd_set in_fdset;
 	fd_set out_fdset;
