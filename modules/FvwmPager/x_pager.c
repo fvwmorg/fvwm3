@@ -449,6 +449,7 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 	int m_width = monitor_get_all_widths();
 	int m_height = monitor_get_all_heights();
 	int offset_x = 0, offset_y = 0;
+	int x1, x2, y1, y2;
 
 	if (monitor_to_track != NULL) {
 		offset_x = (m_width - mon->w) * (rec->x / m_width) + mon->x;
@@ -463,16 +464,16 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 		scale_h = icon.height;
 	}
 
-	/* Due to rounding some windows may appear slightly off the page
-	 * edges when they are not. Should add some cleanup/snapping
-	 * code to help improve the visual effect.
-	 */
 	m_width = m_width * mon->virtual_scr.VxPages;
 	m_height = m_height * mon->virtual_scr.VyPages;
-	rec->width = (rec->width * scale_w) / m_width + 1;
-	rec->height = (rec->height * scale_h) / m_height + 1;
-	rec->x = ((rec->x - offset_x) * scale_w) / m_width;
-	rec->y = ((rec->y - offset_y) * scale_h) / m_height;
+	x1 = ((rec->x - offset_x) * scale_w) / m_width;
+	y1 = ((rec->y - offset_y) * scale_h) / m_height;
+	x2 = ((rec->x + rec->width  - offset_x) * scale_w) / m_width;
+	y2 = ((rec->y + rec->height - offset_y) * scale_h) / m_height;
+	rec->width  = x2 - x1 + 1;
+	rec->height = y2 - y1 + 1;
+	rec->x = x1;
+	rec->y = y1;
 }
 static void
 pagerrec_to_fvwm(rectangle *rec, bool is_icon)
