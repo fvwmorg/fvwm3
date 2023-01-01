@@ -508,6 +508,7 @@ typedef struct style_flags
 	unsigned has_color_back_hi : 1;
 	unsigned has_color_fore_hi : 1;
 	unsigned has_decor : 1;
+	unsigned has_fvwm_border_rw : 1;
 	unsigned has_edge_delay_ms_move : 1;
 	unsigned has_edge_delay_ms_resize : 1;
 	unsigned has_edge_resistance_move : 1;
@@ -656,6 +657,7 @@ typedef struct window_style
 	/* snap grid size */
 	int snap_grid_x;
 	int snap_grid_y;
+	int fvwm_border_rw;
 	int edge_delay_ms_move;
 	int edge_delay_ms_resize;
 	int edge_resistance_move;
@@ -887,6 +889,7 @@ typedef struct FvwmWindow
 	/* snap grid size */
 	int snap_grid_x;
 	int snap_grid_y;
+	int fvwm_border_rw;
 	int edge_delay_ms_move;
 	int edge_delay_ms_resize;
 	int edge_resistance_move;

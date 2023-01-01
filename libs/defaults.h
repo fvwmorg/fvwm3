@@ -278,6 +278,7 @@
 #define DEFAULT_HANDLE_WIDTH               7 /* pixels */
 #define MAX_BORDER_WIDTH                 500 /* pixels */
 #define MAX_HANDLE_WIDTH                   (MAX_BORDER_WIDTH)
+#define DEFAULT_FVWM_BORDER_RW		 2
 
 /*** module configuration ***/
 #define MAX_MODULE_ALIAS_LEN             250 /* bytes */

@@ -323,10 +323,13 @@ static void get_common_decorations(
 	Bool do_change_gcs)
 {
 	DecorFace *df;
+	window_style t_style;
 	color_quad *draw_colors[BP_SIZE];
 
 	df = border_get_border_style(t, has_focus);
 	cd->bg_border_cs = -1;
+
+	lookup_style(t, &t_style);
 
 	if (has_focus)
 	{
@@ -519,7 +522,7 @@ static void get_common_decorations(
 	}
 
 	/* MWMBorder style means thin 3d effects */
-	cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
+	cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : SGET_FVWM_BORDER_RW(t_style));
 
 	if (cd->texture_pixmap)
 	{
@@ -2962,6 +2965,7 @@ static void border_draw_decor_to_pixmap(
 	int border;
 	int lr_just, tb_just;
 	common_decorations_type *cd;
+	window_style t_style;
 
 	cd = td->cd;
 	/* setup some default */
@@ -2972,13 +2976,15 @@ static void border_draw_decor_to_pixmap(
 	bg.pixmap.g.x = 0;
 	bg.pixmap.g.y = 0;
 
+	lookup_style(fw, &t_style);
+
 	if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
 	{
 		border = 0;
 	}
 	else
 	{
-		border = HAS_MWM_BORDER(fw) ? 1 : 2;
+		border = HAS_MWM_BORDER(fw) ? 1 : SGET_FVWM_BORDER_RW(t_style);
 	}
 	dest_g.width = w_g->width;
 	dest_g.height = w_g->height;

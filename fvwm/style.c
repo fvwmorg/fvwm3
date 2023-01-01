@@ -541,6 +541,11 @@ static void merge_styles(
 		SSET_SNAP_GRID_Y(
 			*merged_style, SGET_SNAP_GRID_Y(*add_style));
 	}
+	if (add_style->flags.has_fvwm_border_rw)
+	{
+		SSET_FVWM_BORDER_RW(
+			*merged_style, SGET_FVWM_BORDER_RW(*add_style));
+	}
 	if (add_style->flags.has_edge_delay_ms_move)
 	{
 		SSET_EDGE_DELAY_MS_MOVE(
@@ -2544,6 +2549,22 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_MWM_BORDER(SCF(*ps), !on);
 			S_SET_HAS_MWM_BORDER(SCM(*ps), 1);
 			S_SET_HAS_MWM_BORDER(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "FvwmBorderRW"))
+		{
+			if (GetIntegerArguments(rest, &rest, val, 1))
+			{
+				SSET_FVWM_BORDER_RW(*ps, (short)*val);
+				ps->flags.has_fvwm_border_rw = 1;
+				ps->flag_mask.has_fvwm_border_rw = 1;
+				ps->change_mask.has_fvwm_border_rw = 1;
+			}
+			else
+			{
+				ps->flags.has_fvwm_border_rw = 0;
+				ps->flag_mask.has_fvwm_border_rw = 1;
+				ps->change_mask.has_fvwm_border_rw = 1;
+			}
 		}
 		else if (StrEquals(token, "FocusFollowsMouse"))
 		{

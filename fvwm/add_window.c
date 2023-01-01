@@ -710,6 +710,13 @@ void setup_numeric_vals(FvwmWindow *fw, window_style *pstyle)
 	fw->edge_resistance_move = pstyle->edge_resistance_move;
 	fw->edge_resistance_screen_move = pstyle->edge_resistance_screen_move;
 
+	if (pstyle->flags.has_fvwm_border_rw)
+	{
+		fw->fvwm_border_rw = pstyle->fvwm_border_rw;
+	} else {
+		fw->fvwm_border_rw = DEFAULT_FVWM_BORDER_RW;
+	}
+
 	return;
 }
 

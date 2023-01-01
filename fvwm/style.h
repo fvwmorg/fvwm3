@@ -576,6 +576,10 @@
 	((s).snap_grid_y)
 #define SSET_SNAP_GRID_Y(s,x) \
 	((s).snap_grid_y = (x))
+#define SGET_FVWM_BORDER_RW(s) \
+	((s).fvwm_border_rw)
+#define SSET_FVWM_BORDER_RW(s,x) \
+	((s).fvwm_border_rw = (x))
 #define SGET_EDGE_DELAY_MS_MOVE(s) \
 	((s).edge_delay_ms_move)
 #define SSET_EDGE_DELAY_MS_MOVE(s,x) \
