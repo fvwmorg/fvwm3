@@ -44,7 +44,7 @@ static int grav_matrix[3][3] =
 static Display *disp;
 static bool		 is_randr_present;
 
-static void		 scan_screens(Display *);
+static bool		 scan_screens(Display *);
 static struct monitor	*monitor_by_name(const char *);
 
 enum monitor_tracking monitor_mode;
@@ -360,7 +360,9 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 		XRROutputInfo		*oinfo = NULL;
 		int			 i;
 
-		scan_screens(dpy);
+		if (!scan_screens(dpy)) {
+			return;
+		}
 
 		for (i = 0; i < res->noutput; i++) {
 			oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
@@ -420,7 +422,7 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	monitor_check_primary();
 }
 
-static void
+static bool
 scan_screens(Display *dpy)
 {
 	XRRMonitorInfo		*rrm;
@@ -431,7 +433,7 @@ scan_screens(Display *dpy)
 	rrm = XRRGetMonitors(dpy, root, false, &n);
 	if (n <= 0) {
 		fvwm_debug(__func__, "get monitors failed\n");
-		exit(101);
+		return FALSE;
 	}
 
 	for (i = 0; i < n; i++) {
@@ -443,7 +445,7 @@ scan_screens(Display *dpy)
 				stderr,
 				"%s: couldn't detect monitor with empty name\n",
 				__func__);
-			exit (101);
+			return FALSE;
 		}
 
 		if (((m = monitor_by_name(name)) == NULL) ||
@@ -484,6 +486,8 @@ set_coords:
 	monitor_scan_edges(m);
 	monitor_check_primary();
 	XRRFreeMonitors(rrm);
+
+	return TRUE;
 }
 
 void FScreenInit(Display *dpy)
@@ -531,7 +535,10 @@ void FScreenInit(Display *dpy)
 	}
 	XRRFreeScreenResources(res);
 
-	scan_screens(dpy);
+	if (!scan_screens(dpy)) {
+		goto randr_fail;
+	}
+
 	is_tracking_shared = false;
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
