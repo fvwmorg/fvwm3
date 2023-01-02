@@ -513,12 +513,16 @@ set_vp_size_and_loc(void)
 	rectangle vp;
 	struct fpmonitor *mon = fpmonitor_this();
 
-	vp.width = desk_w / mon->virtual_scr.VxPages;
-	vp.height = desk_h / mon->virtual_scr.VyPages;
-	vp.x = (mon->virtual_scr.Vx * vp.width) /
-		mon->virtual_scr.MyDisplayWidth;
-	vp.y = (mon->virtual_scr.Vy * vp.height) /
-		mon->virtual_scr.MyDisplayHeight;
+	vp.x = (mon->virtual_scr.Vx * desk_w) /
+		mon->virtual_scr.VWidth;
+	vp.y = (mon->virtual_scr.Vy * desk_h) /
+		mon->virtual_scr.VHeight;
+	vp.width = ((mon->virtual_scr.Vx + mon->virtual_scr.VWidth /
+		     mon->virtual_scr.VxPages) * desk_w) /
+		     mon->virtual_scr.VWidth - vp.x;
+	vp.height = ((mon->virtual_scr.Vy + mon->virtual_scr.VHeight /
+		      mon->virtual_scr.VyPages) * desk_h) /
+		      mon->virtual_scr.VHeight - vp.y;
 	return vp;
 }
 
@@ -1587,7 +1591,8 @@ void MovePage(Bool is_new_desk)
     {
       if(i == mon->virtual_scr.CurrentDesk - desk1)
       {
-	XMoveWindow(dpy, Desks[i].CPagerWin, vp.x, vp.y);
+	XMoveResizeWindow(
+		dpy, Desks[i].CPagerWin, vp.x, vp.y, vp.width, vp.height);
 	XLowerWindow(dpy,Desks[i].CPagerWin);
 	if (CSET_IS_TRANSPARENT(Desks[i].highcolorset))
 	{
