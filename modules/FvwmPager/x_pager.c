@@ -448,14 +448,15 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 
 	int m_width = monitor_get_all_widths();
 	int m_height = monitor_get_all_heights();
-	int offset_x = 0, offset_y = 0;
-
 	if (monitor_to_track != NULL) {
-		offset_x = (m_width - mon->w) * (rec->x / m_width) + mon->x;
-		offset_y = (m_height - mon->h) * (rec->y / m_height) + mon->y;
+		/* Offset window location based on monitor location. */
+		rec->x -= (m_width - mon->w) * (rec->x / m_width) + mon->x;
+		rec->y -= (m_height - mon->h) * (rec->y / m_height) + mon->y;
 		m_width = mon->w;
 		m_height = mon->h;
 	}
+	m_width *= mon->virtual_scr.VxPages;
+	m_height *= mon->virtual_scr.VyPages;
 
 	int scale_w = desk_w, scale_h = desk_h;
 	if ( is_icon ) {
@@ -463,16 +464,16 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 		scale_h = icon.height;
 	}
 
-	/* Due to rounding some windows may appear slightly off the page
-	 * edges when they are not. Should add some cleanup/snapping
-	 * code to help improve the visual effect.
+	/* To deal with rounding issues, first compute the right/bottom
+	 * location of the window so the rounding is consistent for windows
+	 * of different sizes at the same position.
 	 */
-	m_width = m_width * mon->virtual_scr.VxPages;
-	m_height = m_height * mon->virtual_scr.VyPages;
-	rec->width = (rec->width * scale_w) / m_width + 1;
-	rec->height = (rec->height * scale_h) / m_height + 1;
-	rec->x = ((rec->x - offset_x) * scale_w) / m_width;
-	rec->y = ((rec->y - offset_y) * scale_h) / m_height;
+	rec->width = ((rec->x + rec->width) * scale_w) / m_width;
+	rec->height = ((rec->y + rec->height) * scale_h) / m_height;
+	rec->x = (rec->x * scale_w) / m_width;
+	rec->y = (rec->y * scale_h) / m_height;
+	rec->width -= rec->x;
+	rec->height -= rec->y;
 }
 static void
 pagerrec_to_fvwm(rectangle *rec, bool is_icon)
