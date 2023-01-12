@@ -1,0 +1,17 @@
+changelog:
+  exclude:
+    labels:
+      - "skip:changelog"
+  categories:
+    - title: Breaking Changes
+      labels:
+        - "type:breaking"
+    - title: Enhancements
+      labels:
+        - "type:enhancement"
+        - "type:new-feature"
+    - title: Bug Fixes
+        - "type:bug"
+    - title: Other Changes
+      labels:
+        - "*"
