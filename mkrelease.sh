@@ -1,8 +1,10 @@
 #!/bin/bash
 
+set -xv
+
 # mkrelease -- script to help ease the burden of creating a fvwm3 release.
 #
-# Originally published December 2020.  Released under the same licesne as
+# Originally published December 2020.  Released under the same licence as
 # fvwm3 itself.
 
 function die()
@@ -11,35 +13,15 @@ function die()
 	exit 1
 }
 
-[ -z "$(git status --untracked-files=no --porcelain)" ] && {
-	echo "*** Working tree is clean, continuing..."
-} || {
-	die "Repo contains uncommitted changes"
-}
+[ -z "$1" ] && die "No version given"
+next_version="$1"
 
 current_ver="$(git describe --tags --abbrev=0)"
 current_tag="$(git describe --tags --abbrev=0)"
 pre_tag="${current_tag%.*}"
 current_tag="${current_tag##*.}"
 
-next_version=$((current_tag += 1))
-next_version="${pre_tag}.${current_tag}"
-
-[ -z "$next_version" ] && die "Couldn't determine next version"
-
-[ -n "$1" ] && {
-	next_version="$1"
-	echo "*** overriding next version as: $next_version"
-}
-
 next_release_branch="release/$next_version"
-
-git rev-parse --verify "$next_release_branch" &>/dev/null && \
-	die "Branch $next_release_branch already exists..."
-
-echo "*** creating release branch as: release/$next_version"
-git pull --quiet && git switch --quiet -c release/$next_version master || \
-	die "Couldn't create release/$next_version from master"
 
 echo "*** updating configure.ac:"
 echo "***     new version ($next_version)..."
@@ -59,9 +41,11 @@ sed -i -e "/^RELDATELONG=/cRELDATELONG=\"$reldatelong\"" configure.ac
 sed -i -e "/^RELDATESHORT=/cRELDATESHORT=\"$reldateshort\"" configure.ac
 sed -i -e "/^RELDATENUM=/cRELDATENUM=\"$reldatenum\"" configure.ac
 
+exit
+
 echo
 echo "*** generating release tarball"
-make dist &>/dev/null || die "Couldn't generate dist tarball"
+make dist || die "Couldn't generate dist tarball"
 
 echo "*** test compiling release tarball"
 cp ./fvwm3-${next_version}.tar.gz /tmp && {
