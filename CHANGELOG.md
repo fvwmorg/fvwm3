@@ -1,5 +1,55 @@
 # Changelog
 
+
+## What's Changed
+### Breaking Changes
+* remove fvwm-config by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/731
+* ta/alloca by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/722
+* deprecate color commands by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/738
+* Ensure a default colorset is always configured. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/740
+* MenuStyle: Remove Depreciated options and non colorset  by @somiaj in https://github.com/fvwmorg/fvwm3/pull/757
+### Enhancements
+* decor: allow window borders separate colours by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/730
+* Update Move shuffle logic to jump to next monitor by @somiaj in https://github.com/fvwmorg/fvwm3/pull/742
+* conditional: screen: simplify logic by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/746
+* Allow SidePic in default-config. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/762
+* Move shuffle, ensure window inside working area. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/767
+* Translucent Menus by @somiaj in https://github.com/fvwmorg/fvwm3/pull/760
+* Updates to FvwmPager scaling math to improve visual aspects due to rounding errors. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/790
+### Other Changes
+* doc: don't install fvwm3_manpage_source by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/712
+* Rename .stalonetrayrc to stalonetrayrc by @wfp5p in https://github.com/fvwmorg/fvwm3/pull/713
+* Fix background resetting in default-config by @somiaj in https://github.com/fvwmorg/fvwm3/pull/714
+* desk_add: fix window counting by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/716
+* remove unused variable by @omar-polo in https://github.com/fvwmorg/fvwm3/pull/718
+* two clock_t and time_t casts for portability by @omar-polo in https://github.com/fvwmorg/fvwm3/pull/719
+* changing sprintf -> snprintf & co by @omar-polo in https://github.com/fvwmorg/fvwm3/pull/720
+* DesktopConfiguration: send status_send() by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/724
+* FvwmScript.c: fix wrong size of TabCom array by @slazav in https://github.com/fvwmorg/fvwm3/pull/725
+* gotodesk: simplify logic for shared/global by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/727
+* Add a multicolor border example to default-config by @somiaj in https://github.com/fvwmorg/fvwm3/pull/732
+* Some pedantic clean up of whitespace and add missing translation strings. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/733
+* Tweak HilightBorderColorset by @lgsobalvarro in https://github.com/fvwmorg/fvwm3/pull/737
+* docs: remove obsolete GNOME references by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/739
+* MWMBorder: fix calculation by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/743
+* Don't set border colorsets by default. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/747
+* style: silence warning for unconsumed string by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/745
+* Add split manpages to default-config. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/750
+* FvwnIconMan use font as fallback for tips font. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/751
+* FvwmIconMan: Don't chop window display string by @somiaj in https://github.com/fvwmorg/fvwm3/pull/752
+* commands: remove DefaultColors & DefaultColorset by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/749
+* fvwm-config: remove .in file by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/758
+* FvwmPager make mini windows always round down. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/756
+* Clean up some build warnings by @somiaj in https://github.com/fvwmorg/fvwm3/pull/759
+* Move shuffle modifications. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/764
+* borders: treat 0 pixels as 1 pixel border by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/765
+* AddWindow: don't crash reparenting by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/786
+* ModuleSynchronous: don't segfault on free() by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/787
+
+## New Contributors
+* @wfp5p made their first contribution in https://github.com/fvwmorg/fvwm3/pull/713
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.0.5...1.0.6
 ## [1.0.5](https://github.com/fvwmorg/fvwm3/tree/1.0.5) (2022-09-28)
 
 [Full Changelog](https://github.com/fvwmorg/fvwm3/compare/1.0.4...1.0.5)
