@@ -744,6 +744,7 @@ void X_init_manager (int man_id)
   if (man->geometry_str) {
     fscreen_scr_arg arg;
     arg.mouse_ev = NULL;
+    arg.name = NULL;
 
     geometry_mask = FScreenParseGeometryWithScreen(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
