@@ -43,6 +43,7 @@ static int grav_matrix[3][3] =
 
 static Display *disp;
 static bool		 is_randr_present;
+static bool		 randr_initialised;
 
 static void		 scan_screens(Display *);
 static struct monitor	*monitor_by_name(const char *);
@@ -82,6 +83,9 @@ static void
 monitor_scan_edges(struct monitor *m)
 {
 	struct monitor	*m_loop;
+
+	if (m == NULL)
+		return;
 
 	m->edge.top = m->edge.bottom = m->edge.left = m->edge.right =
 		MONITOR_OUTSIDE_EDGE;
@@ -424,12 +428,12 @@ static void
 scan_screens(Display *dpy)
 {
 	XRRMonitorInfo		*rrm;
-	struct monitor 		*m;
+	struct monitor 		*m = NULL;
     	int			 i, n = 0;
 	Window			 root = RootWindow(dpy, DefaultScreen(dpy));
 
 	rrm = XRRGetMonitors(dpy, root, false, &n);
-	if (n <= 0) {
+	if (n <= 0 && (!randr_initialised && monitor_get_count() == 0)) {
 		fvwm_debug(__func__, "get monitors failed\n");
 		exit(101);
 	}
@@ -492,9 +496,13 @@ void FScreenInit(Display *dpy)
 	struct monitor		*m;
 	int			 err_base = 0, major, minor;
 
+	if (randr_initialised)
+		return;
+
 	disp = dpy;
 	randr_event = 0;
 	is_randr_present = false;
+	randr_initialised = false;
 
 	if (TAILQ_EMPTY(&monitor_q))
 		TAILQ_INIT(&monitor_q);
@@ -532,6 +540,7 @@ void FScreenInit(Display *dpy)
 	XRRFreeScreenResources(res);
 
 	scan_screens(dpy);
+	randr_initialised = true;
 	is_tracking_shared = false;
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
