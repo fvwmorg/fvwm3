@@ -17,7 +17,7 @@ else
 MODULE_ADOC = $(MODULE_ADOC_SRCS)
 endif
 
-EXTRA_DIST = $(MODULE_ADOC)
+EXTRA_DIST = $(MODULE_ADOC_SRCS)
 
 nothing:
 
