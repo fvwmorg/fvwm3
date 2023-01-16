@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.6a](https://github.com/fvwmorg/fvwm3/tree/1.0.6a) (2023-01-16)
+
+## What's Changed
+### Other Changes
+* dist: doc: include all doc sources by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/806
+
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.0.6...1.0.6a
 ## [1.0.6](https://github.com/fvwmorg/fvwm3/tree/1.0.6) (2023-01-14)
 
 ## What's Changed

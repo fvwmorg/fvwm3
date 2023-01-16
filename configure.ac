@@ -3,7 +3,7 @@ dnl
 AC_PREREQ(2.60)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED="no"
+ISRELEASED="yes"
 if test $ISRELEASED = "no"; then
 	RELDATELONG=""
 	RELDATESHORT=""
@@ -14,7 +14,7 @@ fi
 # Silence warning: ar: 'u' modifier ignored since 'D' is the default
 AC_SUBST(AR_FLAGS, [cr])
 
-AC_INIT([fvwm3], 1.0.7, [fvwm-workers@fvwm.org])
+AC_INIT([fvwm3], 1.0.6a, [fvwm-workers@fvwm.org])
 AC_CONFIG_AUX_DIR(etc)
 AC_CONFIG_LIBOBJ_DIR(libs)
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -26,9 +26,9 @@ VERSIONINFO=m4_esyscmd([./utils/fvwm-version-str.sh])
 dnl date of the released version (please zero pad the day in the last 2 dates)
 dnl for example: "4 February 2003", "04 Feb 2003", "2003-02-04"
 dnl date format strings: "%e %B %Y", "%d-%b-%Y", "%Y-%m-%d"
-RELDATELONG="14 January 23"
-RELDATESHORT="14-Jan-23"
-RELDATENUM="23-01-14"
+RELDATELONG="16 January 23"
+RELDATESHORT="16-Jan-23"
+RELDATENUM="23-01-16"
 
 # constant variable settings
 FVWMNAMELONG="F? Virtual Window Manager"
