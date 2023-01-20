@@ -5078,6 +5078,8 @@ static void maximize_fvwm_window(
 	 * maximized  window is moved more than the screen width/height. */
 	fw->g.max_offset.x = fw->g.normal.x - fw->g.max.x;
 	fw->g.max_offset.y = fw->g.normal.y - fw->g.max.y;
+
+	update_fvwm_monitor(fw);
 #if 0
 fprintf(stderr,"%d %d %d %d, g.max_offset.x = %d, g.max_offset.y = %d, %d %d %d %d\n", fw->g.max.x, fw->g.max.y, fw->g.max.width, fw->g.max.height, fw->g.max_offset.x, fw->g.max_offset.y, fw->g.normal.x, fw->g.normal.y, fw->g.normal.width, fw->g.normal.height);
 #endif
@@ -5216,13 +5218,30 @@ void CMD_Maximize(F_CMD_ARGS)
 
 	if (!is_screen_given)
 	{
-		fscreen_scr_arg fscr;
+		fscreen_scr_arg  fscr;
+		struct monitor	*possibly_new_monitor = NULL;
 
 		fscr.xypos.x = fw->g.frame.x + fw->g.frame.width  / 2 - page.x;
 		fscr.xypos.y = fw->g.frame.y + fw->g.frame.height / 2 - page.y;
 		FScreenGetScrRect(
 			&fscr, FSCREEN_XYPOS, &scr.x, &scr.y,
 			&scr.width, &scr.height);
+
+		/*
+		 * Check if we need to assign fw to a new monitor.  When
+		 * selecting the monitor to maximize this window on, the above
+		 * FScreenGetScrRect() call could choose a different monitor.
+		 *
+		 * However, the monitor information used when updating the EWMH
+		 * work area intersection takes its information from the
+		 * montior the window is currently assigned to.
+		 *
+		 * If they differ, assign the new monitor so the correct
+		 * offets are used.
+		 */
+		possibly_new_monitor = FindScreenOfXY(scr.x, scr.y);
+		if (possibly_new_monitor != fw->m)
+			fw->m = possibly_new_monitor;
 	}
 
 	if (!ignore_working_area)
