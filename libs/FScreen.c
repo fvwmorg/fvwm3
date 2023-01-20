@@ -986,7 +986,7 @@ int FScreenParseGeometry(
 	char *parsestring, int *x_return, int *y_return,
 	unsigned int *width_return, unsigned int *height_return)
 {
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m = NULL;
 	int		 rc, x, y, w, h;
 
 	x = 0;
@@ -1001,11 +1001,16 @@ int FScreenParseGeometry(
 			parsestring, x_return, y_return, width_return,
 			height_return, &scr);
 
-		m = monitor_resolve_name(scr);
-		if (m == NULL)
-		{
-			/* fall back to current screen */
-			m = monitor_get_current();
+		if ((m = monitor_resolve_name(scr)) == NULL) {
+			/* If the monitor we tried to look up is NULL, it will
+			 * be because there was no geometry string specifying
+			 * the monitor name.
+			 *
+			 * In such cases, we should assume that the user has
+			 * requested the geometry to be relevant to the global
+			 * screen.
+			 */
+			m = monitor_get_global();
 		}
 		x = m->si->x;
 		y = m->si->y;
