@@ -219,8 +219,7 @@ monitor_resolve_name(const char *scr)
 	}
 	/* "@g" is for the global screen. */
 	if (strcmp(scr, "g") == 0) {
-		monitor_refresh_global();
-		m = monitor_global;
+		m = monitor_get_global();
 	}
 	/* "@c" is for the current screen. */
 	else if (strcmp(scr, "c") == 0)
@@ -678,15 +677,13 @@ FindScreen(fscreen_scr_arg *arg, fscreen_scr_t screen)
 	fscreen_scr_arg  tmp;
 
 	if (monitor_get_count() == 0) {
-		monitor_refresh_global();
-		return (monitor_global);
+		return (monitor_get_global());
 	}
 
 	switch (screen)
 	{
 	case FSCREEN_GLOBAL:
-		monitor_refresh_global();
-		m = monitor_global;
+		m = monitor_get_global();
 		break;
 	case FSCREEN_PRIMARY:
 		m = monitor_by_primary();
@@ -769,8 +766,7 @@ Bool FScreenGetScrRect(fscreen_scr_arg *arg, fscreen_scr_t screen,
 	struct monitor	*m = FindScreen(arg, screen);
 	if (m == NULL) {
 		fvwm_debug(__func__, "m is NULL, using global screen\n");
-		monitor_refresh_global();
-		m = monitor_global;
+		m = monitor_get_global();
 	}
 
 	if (x)
