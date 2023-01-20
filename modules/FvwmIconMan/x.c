@@ -737,22 +737,10 @@ void X_init_manager (int man_id)
 	man->geometry.boxheight = height;
     }
   }
-  FScreenGetScrRect(NULL, FSCREEN_PRIMARY, &man->managed_g.x, &man->managed_g.y,
-		    &man->managed_g.width, &man->managed_g.height);
-  man->geometry.x = man->managed_g.x;
-  man->geometry.y = man->managed_g.y;
   if (man->geometry_str) {
-    fscreen_scr_arg arg;
-    arg.mouse_ev = NULL;
-    arg.name = NULL;
-
-    geometry_mask = FScreenParseGeometryWithScreen(
+    geometry_mask = FScreenParseGeometry(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
-      &man->geometry.cols, &man->geometry.rows, NULL);
-
-    FScreenGetScrRect(
-      &arg, FSCREEN_BY_NAME, &man->managed_g.x, &man->managed_g.y,
-      &man->managed_g.width, &man->managed_g.height);
+      &man->geometry.cols, &man->geometry.rows);
 
     if (geometry_mask & XValue)
       man->geometry.x += man->managed_g.x;
