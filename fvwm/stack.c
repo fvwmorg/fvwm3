@@ -74,7 +74,7 @@ typedef enum
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static void __raise_or_lower_window(
+static void _raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
 	Bool is_new_window, Bool is_client_request);
 static void raise_or_lower_window(
@@ -358,7 +358,7 @@ static void raise_over_unmanaged(FvwmWindow *t)
 	return;
 }
 
-static Bool __is_restack_transients_needed(
+static Bool _is_restack_transients_needed(
 	FvwmWindow *t, stack_mode_t mode)
 {
 	if (DO_RAISE_TRANSIENT(t))
@@ -379,7 +379,7 @@ static Bool __is_restack_transients_needed(
 	return False;
 }
 
-static Bool __must_move_transients(
+static Bool _must_move_transients(
 	FvwmWindow *t, stack_mode_t mode)
 {
 	if (IS_ICONIFIED(t))
@@ -387,7 +387,7 @@ static Bool __must_move_transients(
 		return False;
 	}
 	/* raise */
-	if (__is_restack_transients_needed(t, mode) == True)
+	if (_is_restack_transients_needed(t, mode) == True)
 	{
 		Bool scanning_above_window = True;
 		FvwmWindow *q;
@@ -430,7 +430,7 @@ static Bool __must_move_transients(
 	return False;
 }
 
-static Window __get_stacking_sibling(FvwmWindow *fw, Bool do_stack_below)
+static Window _get_stacking_sibling(FvwmWindow *fw, Bool do_stack_below)
 {
 	Window w;
 
@@ -452,7 +452,7 @@ static Window __get_stacking_sibling(FvwmWindow *fw, Bool do_stack_below)
 	return w;
 }
 
-static void __sort_transient_ring(FvwmWindow *ring)
+static void _sort_transient_ring(FvwmWindow *ring)
 {
 	FvwmWindow *s;
 	FvwmWindow *t;
@@ -507,7 +507,7 @@ static void __sort_transient_ring(FvwmWindow *ring)
 	return;
 }
 
-static void __restack_window_list(
+static void _restack_window_list(
 	FvwmWindow *r, FvwmWindow *s, int count, Bool do_broadcast_all,
 	Bool do_lower)
 {
@@ -550,10 +550,10 @@ static void __restack_window_list(
 			}
 		}
 	}
-	changes.sibling = __get_stacking_sibling(r, True);
+	changes.sibling = _get_stacking_sibling(r, True);
 	if (changes.sibling == None)
 	{
-		changes.sibling = __get_stacking_sibling(s, False);
+		changes.sibling = _get_stacking_sibling(s, False);
 		is_reversed = 1;
 	}
 	else
@@ -594,7 +594,7 @@ static void __restack_window_list(
 	return;
 }
 
-FvwmWindow *__get_window_to_insert_after(FvwmWindow *fw, stack_mode_t mode)
+FvwmWindow *_get_window_to_insert_after(FvwmWindow *fw, stack_mode_t mode)
 {
 	int test_layer;
 	FvwmWindow *s;
@@ -627,7 +627,7 @@ FvwmWindow *__get_window_to_insert_after(FvwmWindow *fw, stack_mode_t mode)
 	return s;
 }
 
-static void __mark_group_member(
+static void _mark_group_member(
 	FvwmWindow *fw, FvwmWindow *start, FvwmWindow *end)
 {
 	FvwmWindow *t;
@@ -650,7 +650,7 @@ static void __mark_group_member(
 
 }
 
-static Bool __mark_transient_subtree_test(
+static Bool _mark_transient_subtree_test(
 	FvwmWindow *s, FvwmWindow *start, FvwmWindow *end, int mark_mode,
 	Bool do_ignore_icons, Bool use_window_group_hint)
 {
@@ -683,7 +683,7 @@ static Bool __mark_transient_subtree_test(
 	{
 		if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
 		    ((mark_mode == MARK_ALL) ||
-		     __is_restack_transients_needed(
+		     _is_restack_transients_needed(
 			     r, (stack_mode_t)mark_mode) == True))
 		{
 			/* have to move this one too */
@@ -695,7 +695,7 @@ static Bool __mark_transient_subtree_test(
 	}
 	if (use_group_hint && !IS_IN_TRANSIENT_SUBTREE(s))
 	{
-		__mark_group_member(s, start, end);
+		_mark_group_member(s, start, end);
 		if (IS_IN_TRANSIENT_SUBTREE(s))
 		{
 			/* need another scan through the list */
@@ -806,7 +806,7 @@ static Bool is_transient_subtree_straight(
 	     s = s->stack_prev)
 	{
 		if (
-			__mark_transient_subtree_test(
+			_mark_transient_subtree_test(
 				s, start, end, mark_mode,
 				do_ignore_icons,
 				use_window_group_hint))
@@ -834,7 +834,7 @@ static Bool is_transient_subtree_straight(
 	for (s = start; s != t; s = s->stack_prev)
 	{
 		if (
-			__mark_transient_subtree_test(
+			_mark_transient_subtree_test(
 				s, start, end, mark_mode,
 				do_ignore_icons,
 				use_window_group_hint))
@@ -847,7 +847,7 @@ static Bool is_transient_subtree_straight(
 }
 
 /* function to test if all windows are at correct place from start. */
-static Bool __is_restack_needed(
+static Bool _is_restack_needed(
 	FvwmWindow *t, stack_mode_t mode, Bool do_restack_transients,
 	Bool is_new_window)
 {
@@ -885,7 +885,7 @@ static Bool __is_restack_needed(
 	return True;
 }
 
-static Bool __restack_window(
+static Bool _restack_window(
 	FvwmWindow *t, stack_mode_t mode, Bool do_restack_transients,
 	Bool is_new_window, Bool is_client_request)
 {
@@ -894,7 +894,7 @@ static Bool __restack_window(
 	FvwmWindow tmp_r;
 	int count;
 
-	if (!__is_restack_needed(
+	if (!_is_restack_needed(
 		    t, mode, do_restack_transients, is_new_window))
 	{
 		/* need to cancel out the effect of any M_RAISE/M_LOWER that
@@ -941,7 +941,7 @@ static Bool __restack_window(
 	}
 	else
 	{
-		s = __get_window_to_insert_after(t, mode);
+		s = _get_window_to_insert_after(t, mode);
 	}
 	remove_window_from_stack_ring(t);
 	r = s->stack_prev;
@@ -949,7 +949,7 @@ static Bool __restack_window(
 	{
 		/* re-sort the transient windows according to their scratch.i
 		 * register */
-		__sort_transient_ring(&tmp_r);
+		_sort_transient_ring(&tmp_r);
 		/* insert all transients between r and s. */
 		add_windowlist_to_stack_ring_after(&tmp_r, r);
 	}
@@ -978,7 +978,7 @@ static Bool __restack_window(
 	else
 	{
 		/* restack the windows between r and s */
-		__restack_window_list(
+		_restack_window_list(
 			r, s, count, do_restack_transients,
 			mode == (SM_LOWER) ? True : False);
 	}
@@ -986,7 +986,7 @@ static Bool __restack_window(
 	return False;
 }
 
-static Bool __raise_lower_recursion(
+static Bool _raise_lower_recursion(
 	FvwmWindow *t, stack_mode_t mode, Bool is_client_request)
 {
 	FvwmWindow *t2;
@@ -1021,9 +1021,9 @@ static Bool __raise_lower_recursion(
 				 * other branches. */
 				t->scratch.i = MAX_TRANSIENTS_IN_BRANCH;
 			}
-			__raise_or_lower_window(
+			_raise_or_lower_window(
 				t2, mode, True, False, is_client_request);
-			if (__is_restack_transients_needed(t2, mode))
+			if (_is_restack_transients_needed(t2, mode))
 			{
 				/* moving the parent moves our window already */
 				return True;
@@ -1034,7 +1034,7 @@ static Bool __raise_lower_recursion(
 	return False;
 }
 
-static void __raise_or_lower_window(
+static void _raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
 	Bool is_new_window, Bool is_client_request)
 {
@@ -1047,9 +1047,9 @@ static void __raise_or_lower_window(
 
 	/* New windows are simply raised/lowered without touching the
 	 * transientfor at first.  Then, further down in the code,
-	 * __raise_or_lower_window() is called again to raise/lower the
+	 * _raise_or_lower_window() is called again to raise/lower the
 	 * transientfor if necessary.  We can not do the recursion stuff for
-	 * new windows because the __must_move_transients() call needs a
+	 * new windows because the _must_move_transients() call needs a
 	 * properly ordered stack ring - but the new window is still at the
 	 * front of the stack ring. */
 	if (allow_recursion && !is_new_window && !IS_ICONIFIED(t))
@@ -1064,7 +1064,7 @@ static void __raise_or_lower_window(
 		 * window). */
 		if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
 		{
-			if (__raise_lower_recursion(
+			if (_raise_lower_recursion(
 				    t, mode, is_client_request) == True)
 			{
 				return;
@@ -1078,9 +1078,9 @@ static void __raise_or_lower_window(
 	}
 	else
 	{
-		do_move_transients = __must_move_transients(t, mode);
+		do_move_transients = _must_move_transients(t, mode);
 	}
-	if (__restack_window(
+	if (_restack_window(
 		    t, mode, do_move_transients, is_new_window,
 		    is_client_request) == True)
 	{
@@ -1155,7 +1155,7 @@ static void raise_or_lower_window(
 	{
 		fw->scratch.i = 0;
 	}
-	__raise_or_lower_window(
+	_raise_or_lower_window(
 		t, mode, allow_recursion, is_new_window, is_client_request);
 
 	return;
@@ -1556,7 +1556,7 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 
 #define EXPERIMENTAL_ROU_HANDLING 0
 #define ROUDEBUG 0
-static Bool __is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
+static Bool _is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 {
 	Window	junk;
 	Bool  ontop	= False;
@@ -1944,7 +1944,7 @@ void mark_transient_subtree(
 		{
 
 			if (
-				__mark_transient_subtree_test(
+				_mark_transient_subtree_test(
 					s, start, end, mark_mode,
 					do_ignore_icons,
 					use_window_group_hint))
@@ -2027,7 +2027,7 @@ void new_layer(FvwmWindow *fw, int layer)
 		EWMH_SetWMState(fw, False);
 	}
 	/* move the windows without modifying their stacking order */
-	__restack_window_list(
+	_restack_window_list(
 		list_head.stack_next->stack_prev, target, count, (count > 1),
 		do_lower);
 	focus_grab_buttons_on_layer(layer);
@@ -2050,12 +2050,12 @@ void init_stack_and_layers(void)
 
 Bool is_on_top_of_layer(FvwmWindow *fw)
 {
-	return __is_on_top_of_layer(fw, False);
+	return _is_on_top_of_layer(fw, False);
 }
 
 Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 {
-	return __is_on_top_of_layer(fw, True);
+	return _is_on_top_of_layer(fw, True);
 }
 
 /* ----------------------------- built in functions ----------------------- */

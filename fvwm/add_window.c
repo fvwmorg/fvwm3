@@ -1408,7 +1408,7 @@ static void setup_key_and_button_grabs(FvwmWindow *fw)
 	return;
 }
 
-static void __add_window_handle_x_resources(FvwmWindow *fw)
+static void _add_window_handle_x_resources(FvwmWindow *fw)
 {
 	int client_argc = 0;
 	char **client_argv = NULL;
@@ -2161,7 +2161,7 @@ FvwmWindow *AddWindow(
 	setup_class_and_resource(fw);
 
 	/****** style setup ******/
-	__add_window_handle_x_resources(fw);
+	_add_window_handle_x_resources(fw);
 	/* get merged styles */
 	lookup_style(fw, &style);
 	sflags = SGET_FLAGS_POINTER(style);

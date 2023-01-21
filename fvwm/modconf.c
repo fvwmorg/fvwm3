@@ -173,7 +173,7 @@ fprintf(stderr, "%s: mldata '%s', mlaliaslen %d\n", __func__, this->data, this->
 	exc_destroy_context(exc);
 	/* Free rline only if it is xasprintf'd memory (not pointing at tline
 	 * anymore). If we free our tline argument it causes a crash in
-	 * __execute_function. */
+	 * _execute_function. */
 	if (rline != tline)
 		free(rline);
 

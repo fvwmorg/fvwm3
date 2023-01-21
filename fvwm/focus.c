@@ -121,7 +121,7 @@ static Bool focus_get_fpol_context_flag(
 /*
  * Helper functions for setting the focus
  */
-static void __try_program_focus(Window w, const FvwmWindow *fw)
+static void _try_program_focus(Window w, const FvwmWindow *fw)
 {
 	if (fw && WM_TAKES_FOCUS(fw) &&
 	    FP_DO_FOCUS_BY_PROGRAM(FW_FOCUS_POLICY(fw)))
@@ -132,7 +132,7 @@ static void __try_program_focus(Window w, const FvwmWindow *fw)
 	return;
 }
 
-static Bool __try_forbid_user_focus(
+static Bool _try_forbid_user_focus(
 	Window w, FvwmWindow *fw)
 {
 	if (fw == NULL ||
@@ -143,7 +143,7 @@ static Bool __try_forbid_user_focus(
 	if (WM_TAKES_FOCUS(fw))
 	{
 		/* give it a chance to take the focus itself */
-		__try_program_focus(w, fw);
+		_try_program_focus(w, fw);
 		XFlush(dpy);
 	}
 	else
@@ -156,7 +156,7 @@ static Bool __try_forbid_user_focus(
 	return True;
 }
 
-static Bool __check_allow_focus(
+static Bool _check_allow_focus(
 	Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
 {
 	FvwmWindow *sf;
@@ -183,7 +183,7 @@ static Bool __check_allow_focus(
 	return False;
 }
 
-static void __update_windowlist(
+static void _update_windowlist(
 	FvwmWindow *fw, fpol_set_focus_by_t set_by,
 	int is_focus_by_flip_focus_cmd)
 {
@@ -253,7 +253,7 @@ static void __update_windowlist(
 	return;
 }
 
-static Bool __try_other_screen_focus(const FvwmWindow *fw)
+static Bool _try_other_screen_focus(const FvwmWindow *fw)
 {
 	if (fw == NULL && !Scr.flags.is_pointer_on_this_screen)
 	{
@@ -277,23 +277,23 @@ static Bool __try_other_screen_focus(const FvwmWindow *fw)
 /*
  * Sets the input focus to the indicated window.
  */
-static void __set_focus_to_fwin(
+static void _set_focus_to_fwin(
 	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
 	struct monitor	*m;
 
-	if (__try_forbid_user_focus(w, fw) == True)
+	if (_try_forbid_user_focus(w, fw) == True)
 	{
 		return;
 	}
-	__try_program_focus(w, fw);
-	if (__check_allow_focus(w, fw, args->set_by) == False)
+	_try_program_focus(w, fw);
+	if (_check_allow_focus(w, fw, args->set_by) == False)
 	{
 		return;
 	}
-	__update_windowlist(fw, args->set_by, args->is_focus_by_flip_focus_cmd);
-	if (__try_other_screen_focus(fw) == True)
+	_update_windowlist(fw, args->set_by, args->is_focus_by_flip_focus_cmd);
+	if (_try_other_screen_focus(fw) == True)
 	{
 		return;
 	}
@@ -406,7 +406,7 @@ static void set_focus_to_fwin(
 		focus_grab_buttons(sf);
 		return;
 	}
-	__set_focus_to_fwin(w, fw, args);
+	_set_focus_to_fwin(w, fw, args);
 	/* Make sure the button grabs on the new and the old focused windows
 	 * are up to date. */
         if (args->client_entered)
@@ -589,7 +589,7 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	return (flag) ? True : False;
 }
 
-static FvwmWindow *__restore_focus_after_unmap(
+static FvwmWindow *_restore_focus_after_unmap(
 	const FvwmWindow *fw, Bool do_skip_marked_transients)
 {
 	FvwmWindow *t = NULL;
@@ -642,7 +642,7 @@ static FvwmWindow *__restore_focus_after_unmap(
  * Moves focus to specified window; only to be called bay Focus and FlipFocus
  *
  */
-static void __activate_window_by_command(
+static void _activate_window_by_command(
 	F_CMD_ARGS, int is_focus_by_flip_focus_cmd)
 {
 	int cx;
@@ -755,7 +755,7 @@ static void __activate_window_by_command(
 	return;
 }
 
-static void __focus_grab_one_button(
+static void _focus_grab_one_button(
 	FvwmWindow *fw, int button, int grab_buttons)
 {
 	Bool do_grab;
@@ -886,7 +886,7 @@ Bool focus_query_close_release_focus(const FvwmWindow *fw)
 	return False;
 }
 
-static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
+static void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	int i;
 	Bool do_grab_window = False;
@@ -909,7 +909,7 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 		MyXGrabServer(dpy);
 		for (i = 0; i < NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
 		{
-			__focus_grab_one_button(fw, i, grab_buttons);
+			_focus_grab_one_button(fw, i, grab_buttons);
 		}
 		MyXUngrabServer (dpy);
 	}
@@ -919,12 +919,12 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 
 void focus_grab_buttons(FvwmWindow *fw)
 {
-        __focus_grab_buttons(fw, False);
+        _focus_grab_buttons(fw, False);
 }
 
 void focus_grab_buttons_client_entered(FvwmWindow *fw)
 {
-        __focus_grab_buttons(fw, True);
+        _focus_grab_buttons(fw, True);
 }
 
 void focus_grab_buttons_on_layer(int layer)
@@ -1040,7 +1040,7 @@ void restore_focus_after_unmap(
 
 	if (focus_is_focused(fw))
 	{
-		set_focus_to = __restore_focus_after_unmap(
+		set_focus_to = _restore_focus_after_unmap(
 			fw, do_skip_marked_transients);
 	}
 	if (fw == Scr.pushed_window)
@@ -1207,14 +1207,14 @@ void refresh_focus(const FvwmWindow *fw)
 void CMD_FlipFocus(F_CMD_ARGS)
 {
 	/* Reorder the window list */
-	__activate_window_by_command(F_PASS_ARGS, 1);
+	_activate_window_by_command(F_PASS_ARGS, 1);
 
 	return;
 }
 
 void CMD_Focus(F_CMD_ARGS)
 {
-	__activate_window_by_command(F_PASS_ARGS, 0);
+	_activate_window_by_command(F_PASS_ARGS, 0);
 
 	return;
 }

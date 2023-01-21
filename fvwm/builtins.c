@@ -507,7 +507,7 @@ static char *ReadTitleButton(
 }
 
 /* Remove the given decor from all windows */
-static void __remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
+static void _remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
 {
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
@@ -1287,7 +1287,7 @@ void update_decors_colorset(int cset)
 	}
 }
 
-static Bool __parse_vector_line_one_coord(
+static Bool _parse_vector_line_one_coord(
 	char **ret_action, int *pcoord, int *poff, char *action)
 {
 	int offset;
@@ -1327,7 +1327,7 @@ static Bool __parse_vector_line_one_coord(
 	return True;
 }
 
-static Bool __parse_vector_line(
+static Bool _parse_vector_line(
 	char **ret_action, int *px, int *py, int *pxoff, int *pyoff, int *pc,
 	char *action)
 {
@@ -1336,7 +1336,7 @@ static Bool __parse_vector_line(
 	int n;
 
 	*ret_action = action;
-	if (__parse_vector_line_one_coord(&action, px, pxoff, action) == False)
+	if (_parse_vector_line_one_coord(&action, px, pxoff, action) == False)
 	{
 		return False;
 	}
@@ -1345,7 +1345,7 @@ static Bool __parse_vector_line(
 		return False;
 	}
 	action++;
-	if (__parse_vector_line_one_coord(&action, py, pyoff, action) == False)
+	if (_parse_vector_line_one_coord(&action, py, pyoff, action) == False)
 	{
 		return False;
 	}
@@ -1692,7 +1692,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				int yoff = 0;
 				int c;
 
-				if (__parse_vector_line(
+				if (_parse_vector_line(
 					    &s, &x, &y, &xoff, &yoff, &c, s) ==
 				    False)
 				{
@@ -3201,7 +3201,7 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 	{
 		if (!do_recreate)
 		{
-			__remove_window_decors(F_PASS_ARGS, found);
+			_remove_window_decors(F_PASS_ARGS, found);
 		}
 		DestroyFvwmDecor(found);
 		if (do_recreate)
@@ -3753,7 +3753,7 @@ static Bool FKeysymToKeycode (Display *disp, KeySym keysym,
 	return False;
 }
 
-static void __fake_event(F_CMD_ARGS, FakeEventType type)
+static void _fake_event(F_CMD_ARGS, FakeEventType type)
 {
 	char *token;
 	char *optlist[] = {
@@ -4026,14 +4026,14 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 
 void CMD_FakeClick(F_CMD_ARGS)
 {
-	__fake_event(F_PASS_ARGS, FakeMouseEvent);
+	_fake_event(F_PASS_ARGS, FakeMouseEvent);
 
 	return;
 }
 
 void CMD_FakeKeypress(F_CMD_ARGS)
 {
-	__fake_event(F_PASS_ARGS, FakeKeyEvent);
+	_fake_event(F_PASS_ARGS, FakeKeyEvent);
 
 	return;
 }

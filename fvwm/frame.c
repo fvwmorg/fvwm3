@@ -347,7 +347,7 @@ static void frame_setup_titlebar(
 	return;
 }
 
-static void __frame_setup_window(
+static void _frame_setup_window(
 	FvwmWindow *fw, rectangle *frame_g, Bool do_send_configure_notify,
 	Bool do_force, Bool is_application_request)
 {
@@ -2054,7 +2054,7 @@ void frame_setup_window(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	__frame_setup_window(fw, &g, do_send_configure_notify, False, False);
+	_frame_setup_window(fw, &g, do_send_configure_notify, False, False);
 
 	return;
 }
@@ -2069,7 +2069,7 @@ void frame_setup_window_app_request(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	__frame_setup_window(fw, &g, do_send_configure_notify, False, True);
+	_frame_setup_window(fw, &g, do_send_configure_notify, False, True);
 
 	return;
 }
@@ -2084,7 +2084,7 @@ void frame_force_setup_window(
 	g.y = y;
 	g.width = w;
 	g.height = h;
-	__frame_setup_window(fw, &g, do_send_configure_notify, True, False);
+	_frame_setup_window(fw, &g, do_send_configure_notify, True, False);
 
 	return;
 }

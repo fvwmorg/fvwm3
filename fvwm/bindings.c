@@ -213,7 +213,7 @@ static int bind_get_bound_button_contexts(
 	return bcontext;
 }
 
-static void __rebind_global_key(Binding **pblist, int Button_Key)
+static void _rebind_global_key(Binding **pblist, int Button_Key)
 {
 	Binding *b;
 
@@ -464,7 +464,7 @@ static int ParseBinding(
 			}
 			if (ret)
 			{
-				__rebind_global_key(
+				_rebind_global_key(
 					pblist, rmlist->Button_Key);
 			}
 		}

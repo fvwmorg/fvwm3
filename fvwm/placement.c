@@ -247,24 +247,24 @@ typedef struct pl_ret_t
 
 /* ---------------------------- forward declarations ----------------------- */
 
-static pl_loop_rc_t __pl_minoverlap_get_first_pos(
+static pl_loop_rc_t _pl_minoverlap_get_first_pos(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
-static pl_loop_rc_t __pl_minoverlap_get_next_pos(
+static pl_loop_rc_t _pl_minoverlap_get_next_pos(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
 	position hint_p);
-static pl_penalty_t __pl_minoverlap_get_pos_penalty(
+static pl_penalty_t _pl_minoverlap_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
 
-static pl_penalty_t __pl_smart_get_pos_penalty(
+static pl_penalty_t _pl_smart_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const pl_arg_t *arg);
 
-static pl_penalty_t __pl_position_get_pos_simple(
+static pl_penalty_t _pl_position_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
 
-static pl_penalty_t __pl_cascade_get_pos_simple(
+static pl_penalty_t _pl_cascade_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
 
-static pl_penalty_t __pl_manual_get_pos_simple(
+static pl_penalty_t _pl_manual_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg);
 
 /* ---------------------------- local variables ---------------------------- */
@@ -272,32 +272,32 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 const pl_algo_t minoverlap_placement_algo =
 {
 	NULL,
-	__pl_minoverlap_get_first_pos,
-	__pl_minoverlap_get_next_pos,
-	__pl_minoverlap_get_pos_penalty
+	_pl_minoverlap_get_first_pos,
+	_pl_minoverlap_get_next_pos,
+	_pl_minoverlap_get_pos_penalty
 };
 
 const pl_algo_t smart_placement_algo =
 {
 	NULL,
-	__pl_minoverlap_get_first_pos,
-	__pl_minoverlap_get_next_pos,
-	__pl_smart_get_pos_penalty
+	_pl_minoverlap_get_first_pos,
+	_pl_minoverlap_get_next_pos,
+	_pl_smart_get_pos_penalty
 };
 
 const pl_algo_t position_placement_algo =
 {
-	__pl_position_get_pos_simple
+	_pl_position_get_pos_simple
 };
 
 const pl_algo_t cascade_placement_algo =
 {
-	__pl_cascade_get_pos_simple
+	_pl_cascade_get_pos_simple
 };
 
 const pl_algo_t manual_placement_algo =
 {
-	__pl_manual_get_pos_simple
+	_pl_manual_get_pos_simple
 };
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -386,7 +386,7 @@ done:
 	}
 }
 
-static pl_penalty_t __pl_position_get_pos_simple(
+static pl_penalty_t _pl_position_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	char *spos;
@@ -497,7 +497,7 @@ static pl_penalty_t __pl_position_get_pos_simple(
 
 /* ---------------------------- local functions (CascadePlacement)---------- */
 
-static pl_penalty_t __pl_cascade_get_pos_simple(
+static pl_penalty_t _pl_cascade_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	size_borders b;
@@ -591,7 +591,7 @@ static pl_penalty_t __pl_cascade_get_pos_simple(
 
 /* ---------------------------- local functions (ManualPlacement)----------- */
 
-static pl_penalty_t __pl_manual_get_pos_simple(
+static pl_penalty_t _pl_manual_get_pos_simple(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	ret_p->x = 0;
@@ -626,7 +626,7 @@ static pl_penalty_t __pl_manual_get_pos_simple(
 			XMapRaised(dpy, Scr.SizeWindow.win);
 		}
 		FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &m.x, &m.y, NULL, NULL);
-		if (__move_loop(arg->exc, m, drag, ret_p, False, CRS_POSITION))
+		if (move_loop(arg->exc, m, drag, ret_p, False, CRS_POSITION))
 		{
 			ret->flags.do_resize_too = 1;
 		}
@@ -663,7 +663,7 @@ static pl_penalty_t __pl_manual_get_pos_simple(
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
 
-static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
+static int _pl_minoverlap_get_next_x(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int xnew;
@@ -802,7 +802,7 @@ static int __pl_minoverlap_get_next_x(const pl_arg_t *arg)
 	return xnew;
 }
 
-static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
+static int _pl_minoverlap_get_next_y(const pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
 	int ynew;
@@ -932,7 +932,7 @@ static int __pl_minoverlap_get_next_y(const pl_arg_t *arg)
 	return ynew;
 }
 
-static pl_loop_rc_t __pl_minoverlap_get_first_pos(
+static pl_loop_rc_t _pl_minoverlap_get_first_pos(
 	position *ret_p, struct pl_ret_t *ret, const pl_arg_t *arg)
 {
 	/* top left corner of page */
@@ -942,7 +942,7 @@ static pl_loop_rc_t __pl_minoverlap_get_first_pos(
 	return PL_LOOP_CONT;
 }
 
-static pl_loop_rc_t __pl_minoverlap_get_next_pos(
+static pl_loop_rc_t _pl_minoverlap_get_next_pos(
 	position *ret_p, struct pl_ret_t *ret, const struct pl_arg_t *arg,
 	position hint_p)
 {
@@ -951,14 +951,14 @@ static pl_loop_rc_t __pl_minoverlap_get_next_pos(
 	if (ret_p->x + arg->place_g.width <= arg->page_p2.x)
 	{
 		/* try next x */
-		ret_p->x = __pl_minoverlap_get_next_x(arg);
+		ret_p->x = _pl_minoverlap_get_next_x(arg);
 		ret_p->y = arg->place_g.y;
 	}
 	if (ret_p->x + arg->place_g.width > arg->page_p2.x)
 	{
 		/* out of room in x direction. Try next y. Reset x.*/
 		ret_p->x = arg->page_p1.x;
-		ret_p->y = __pl_minoverlap_get_next_y(arg);
+		ret_p->y = _pl_minoverlap_get_next_y(arg);
 	}
 	if (ret_p->y + arg->place_g.height > arg->page_p2.y)
 	{
@@ -969,7 +969,7 @@ static pl_loop_rc_t __pl_minoverlap_get_next_pos(
 	return PL_LOOP_CONT;
 }
 
-static pl_penalty_t __pl_minoverlap_get_avoidance_penalty(
+static pl_penalty_t _pl_minoverlap_get_avoidance_penalty(
 	const pl_arg_t *arg, FvwmWindow *other_fw, const rectangle *other_g)
 {
 	pl_penalty_t anew;
@@ -1072,7 +1072,7 @@ static pl_penalty_t __pl_minoverlap_get_avoidance_penalty(
 	return anew;
 }
 
-static pl_penalty_t __pl_minoverlap_get_pos_penalty(
+static pl_penalty_t _pl_minoverlap_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	FvwmWindow *other_fw;
@@ -1114,7 +1114,7 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 		{
 			pl_penalty_t anew;
 
-			anew = __pl_minoverlap_get_avoidance_penalty(
+			anew = _pl_minoverlap_get_avoidance_penalty(
 				arg, other_fw, &other_g);
 			penalty += anew;
 			if (
@@ -1180,14 +1180,14 @@ static pl_penalty_t __pl_minoverlap_get_pos_penalty(
 
 /* ---------------------------- local functions (SmartPlacement) ----------- */
 
-static pl_penalty_t __pl_smart_get_pos_penalty(
+static pl_penalty_t _pl_smart_get_pos_penalty(
 	position *ret_hint_p, struct pl_ret_t *ret, const struct pl_arg_t *arg)
 {
 	pl_penalty_t p;
 
 	arg->scratch->pp = &default_pl_penalty;
 	arg->scratch->ppp = &default_pl_percent_penalty;
-	p = __pl_minoverlap_get_pos_penalty(ret_hint_p, ret, arg);
+	p = _pl_minoverlap_get_pos_penalty(ret_hint_p, ret, arg);
 	if (p != 0)
 	{
 		p = -1;
@@ -1264,7 +1264,7 @@ static int placement_loop(pl_ret_t *ret, pl_arg_t *arg)
 	return (ret->best_penalty == -1) ? -1 : 0;
 }
 
-static void __place_get_placement_flags(
+static void _place_get_placement_flags(
 	pl_flags_t *ret_flags, FvwmWindow *fw, window_style *pstyle,
 	initial_window_options_t *win_opts, int mode, pl_reason_t *reason)
 {
@@ -1344,7 +1344,7 @@ static void __place_get_placement_flags(
 	return;
 }
 
-static int __add_algo(
+static int _add_algo(
 	const pl_algo_t **algos, int num_algos, const pl_algo_t *new_algo)
 {
 	if (num_algos >= MAX_NUM_PLACEMENT_ALGOS)
@@ -1357,7 +1357,7 @@ static int __add_algo(
 	return num_algos;
 }
 
-static int __place_get_wm_pos(
+static int _place_get_wm_pos(
 	const exec_context_t *exc, window_style *pstyle, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
@@ -1418,36 +1418,36 @@ static int __place_get_wm_pos(
 	switch (placement_mode)
 	{
 	case PLACE_POSITION:
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &position_placement_algo);
 		break;
 	case PLACE_TILEMANUAL:
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &smart_placement_algo);
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &manual_placement_algo);
 		break;
 	case PLACE_MINOVERLAPPERCENT:
 		arg.flags.use_percent = 1;
 		/* fall through */
 	case PLACE_MINOVERLAP:
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &minoverlap_placement_algo);
 		break;
 	case PLACE_TILECASCADE:
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &smart_placement_algo);
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &cascade_placement_algo);
 		break;
 	case PLACE_MANUAL:
 	case PLACE_MANUAL_B:
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &manual_placement_algo);
 		break;
 	case PLACE_CASCADE:
 	case PLACE_CASCADE_B:
-		num_algos = __add_algo(
+		num_algos = _add_algo(
 			algos, num_algos, &cascade_placement_algo);
 		break;
 	default:
@@ -1477,7 +1477,7 @@ static int __place_get_wm_pos(
 	return ret.flags.do_resize_too;
 }
 
-static int __place_get_nowm_pos(
+static int _place_get_nowm_pos(
 	const exec_context_t *exc, window_style *pstyle, rectangle *attr_g,
 	pl_flags_t flags, rectangle screen_g, pl_start_style_t start_style,
 	int mode, initial_window_options_t *win_opts, pl_reason_t *reason,
@@ -1639,7 +1639,7 @@ static int __place_get_nowm_pos(
  *   0 = window lost
  *   1 = OK
  *   2 = OK, window must be resized too */
-static int __place_window(
+static int _place_window(
 	const exec_context_t *exc, window_style *pstyle, rectangle *attr_g,
 	pl_start_style_t start_style, int mode,
 	initial_window_options_t *win_opts, pl_reason_t *reason)
@@ -1972,17 +1972,17 @@ static int __place_window(
 	}
 
 	/* pick a location for the window. */
-	__place_get_placement_flags(
+	_place_get_placement_flags(
 		&flags, fw, pstyle, win_opts, mode, reason);
 	if (flags.do_not_use_wm_placement)
 	{
-		rc = __place_get_nowm_pos(
+		rc = _place_get_nowm_pos(
 			exc, pstyle, attr_g, flags, screen_g, start_style,
 			mode, win_opts, reason, pdeltax, pdeltay);
 	}
 	else
 	{
-		rc = __place_get_wm_pos(
+		rc = _place_get_wm_pos(
 			exc, pstyle, attr_g, flags, screen_g, start_style,
 			mode, win_opts, reason, pdeltax, pdeltay);
 	}
@@ -2003,7 +2003,7 @@ static int __place_window(
 	return rc;
 }
 
-static void __place_handle_x_resources(
+static void _place_handle_x_resources(
 	FvwmWindow *fw, window_style *pstyle, pl_reason_t *reason)
 {
 	int client_argc = 0;
@@ -2104,7 +2104,7 @@ static void __place_handle_x_resources(
 	return;
 }
 
-static void __explain_placement(FvwmWindow *fw, pl_reason_t *reason)
+static void _explain_placement(FvwmWindow *fw, pl_reason_t *reason)
 {
 	char explanation[2048];
 	char *r;
@@ -2394,7 +2394,7 @@ Bool setup_window_placement(
 		reason.screen.reason = PR_SCREEN_STYLE;
 		reason.screen.screen = SGET_START_SCREEN(*pstyle);
 	}
-	__place_handle_x_resources(fw, pstyle, &reason);
+	_place_handle_x_resources(fw, pstyle, &reason);
 	if (pstyle->flags.do_start_iconic)
 	{
 		win_opts->initial_state = IconicState;
@@ -2424,7 +2424,7 @@ Bool setup_window_placement(
 	start_style.screen = (e != NULL) ? fxstrdup(e) : fxstrdup("");
 	fvwm_debug(__func__, "Expanding screen from '%s' -> '%s'",
 			sc ? sc : "null", start_style.screen);
-	rc = __place_window(
+	rc = _place_window(
 		exc, pstyle, attr_g, start_style, mode, win_opts, &reason);
 
 	exc_destroy_context(exc);
@@ -2433,7 +2433,7 @@ Bool setup_window_placement(
 
 	if (Scr.bo.do_explain_window_placement == 1)
 	{
-		__explain_placement(fw, &reason);
+		_explain_placement(fw, &reason);
 	}
 
 	desk_add_fw(fw);
@@ -2494,7 +2494,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 			position new_p = { new_g.x, new_g.y };
 			position old_p = { old_g.x, old_g.y };
 
-			__move_icon(fw, new_p, old_p, do_move_animated, False);
+			move_icon(fw, new_p, old_p, do_move_animated, False);
 		}
 	}
 	else

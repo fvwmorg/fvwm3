@@ -137,7 +137,7 @@ static Bool _pred_button_event(Display *display, XEvent *event, XPointer arg)
 		True : False;
 }
 
-static void __drag_viewport(const exec_context_t *exc, int scroll_speed)
+static void _drag_viewport(const exec_context_t *exc, int scroll_speed)
 {
 	XEvent e;
 	int x;
@@ -1441,7 +1441,7 @@ static void move_viewport_delta(
 	 * top to bottom and then unmap windows bottom up.
 	 */
 	/* TA: 2020-01-21:  This change of skipping monitors will
-	 * break using 'Scroll' and __drag_viewport().  We need to
+	 * break using 'Scroll' and _drag_viewport().  We need to
 	 * ensure we handle this case properly.
 	 */
 	t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
@@ -2762,7 +2762,7 @@ void CMD_Scroll(F_CMD_ARGS)
 				scroll_speed *= -1;
 			}
 		}
-		__drag_viewport(exc, scroll_speed);
+		_drag_viewport(exc, scroll_speed);
 
 		return;
 	}
