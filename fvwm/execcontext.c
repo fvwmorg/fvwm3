@@ -48,7 +48,7 @@ static int nx = 0;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static void __exc_change_context(
+static void _exc_change_context(
 	exec_context_t *exc, exec_context_changes_t *ecc,
 	exec_context_change_mask_t mask)
 {
@@ -130,7 +130,7 @@ const exec_context_t *exc_create_context(
 		}
 	}
 	exc = (exec_context_t *)exc_create_null_context();
-	__exc_change_context(exc, ecc, mask);
+	_exc_change_context(exc, ecc, mask);
 
 	return exc;
 }
@@ -156,7 +156,7 @@ const exec_context_t *exc_clone_context(
 		fvwm_debug(__func__, "%p\n", exc);
 	}
 	memcpy(exc, excin, sizeof(*exc));
-	__exc_change_context(exc, ecc, mask);
+	_exc_change_context(exc, ecc, mask);
 
 	return exc;
 }

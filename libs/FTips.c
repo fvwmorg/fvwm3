@@ -77,7 +77,7 @@ static Atom _net_um_for = None;
 /* ---------------------------- local functions ---------------------------- */
 
 static
-unsigned long __get_time(void)
+unsigned long _get_time(void)
 {
 	struct timeval t;
 
@@ -86,7 +86,7 @@ unsigned long __get_time(void)
 }
 
 static
-void __initialize_window(Display *dpy)
+void _initialize_window(Display *dpy)
 {
 	XGCValues xgcv;
 	unsigned long valuemask;
@@ -119,7 +119,7 @@ void __initialize_window(Display *dpy)
 }
 
 static
-void __setup_cs(Display *dpy)
+void _setup_cs(Display *dpy)
 {
 	XSetWindowAttributes xswa;
 	unsigned long valuemask = 0;
@@ -150,7 +150,7 @@ void __setup_cs(Display *dpy)
 }
 
 static
-void __setup_gc(Display *dpy)
+void _setup_gc(Display *dpy)
 {
 	XGCValues xgcv;
 	unsigned long valuemask;
@@ -175,7 +175,7 @@ void __setup_gc(Display *dpy)
 }
 
 static
-void __draw(Display *dpy)
+void _draw(Display *dpy)
 {
 	if (!current_config->Ffont)
 	{
@@ -202,7 +202,7 @@ void __draw(Display *dpy)
 }
 
 static
-void __map_window(Display *dpy)
+void _map_window(Display *dpy)
 {
 	rectangle new_g;
 	rectangle screen_g;
@@ -417,7 +417,7 @@ void __map_window(Display *dpy)
 	/* make changes to window */
 	XMoveResizeWindow(
 		dpy, win, new_g.x, new_g.y, new_g.width, new_g.height);
-	__setup_gc(dpy);
+	_setup_gc(dpy);
 	if (current_config->colorset > -1)
 	{
 		SetWindowBackground(
@@ -456,15 +456,15 @@ Bool FTipsInit(Display *dpy)
 {
 
 	current_config = default_config = FTipsNewConfig();
-	__initialize_window(dpy);
+	_initialize_window(dpy);
 
 	if (gc == None || win == None)
 	{
 		return False;
 	}
 
-	__setup_cs(dpy);
-	__setup_gc(dpy);
+	_setup_cs(dpy);
+	_setup_gc(dpy);
 
 	memset(&fwin_string, 0, sizeof(fwin_string));
 
@@ -521,7 +521,7 @@ void FTipsOn(
 		}
 		return;
 	}
-	onTime = __get_time();
+	onTime = _get_time();
 	if (state == FVWM_TIPS_MAPPED)
 	{
 		FTipsCancel(dpy);
@@ -561,11 +561,11 @@ unsigned long FTipsCheck(Display *dpy)
 		return 0;
 	}
 
-	ct = __get_time();
+	ct = _get_time();
 
 	if (ct >= timeOut)
 	{
-		__map_window(dpy);
+		_map_window(dpy);
 		XFlush(dpy);
 		state = FVWM_TIPS_MAPPED;
 		return 0;
@@ -602,7 +602,7 @@ Bool FTipsExpose(Display *dpy, XEvent *ev)
 		stderr, "\tExpose: %i,%i,%i,%i %i\n",
 		ex, ey, ex2-ex, ey2-ey, ev->xexpose.count);
 #endif
-	__draw(dpy);
+	_draw(dpy);
 
 	return True;
 }
@@ -639,8 +639,8 @@ void FTipsUpdateLabel(Display *dpy, char *str)
 	CopyString(&label, str);
 	if (state == FVWM_TIPS_MAPPED)
 	{
-		__map_window(dpy);
-		__draw(dpy);
+		_map_window(dpy);
+		_draw(dpy);
 	}
 }
 
@@ -650,6 +650,6 @@ void FTipsColorsetChanged(Display *dpy, int cs)
 	{
 		return;
 	}
-	__map_window(dpy);
-	__draw(dpy);
+	_map_window(dpy);
+	_draw(dpy);
 }

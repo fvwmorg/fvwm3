@@ -691,7 +691,7 @@ void maximize_adjust_offset(FvwmWindow *fw)
 }
 
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
-static void __cs_handle_aspect_ratio(
+static void _cs_handle_aspect_ratio(
 	size_rect *ret_s, FvwmWindow *fw, size_rect s, const size_rect base,
 	const size_rect inc, size_rect min, size_rect max, int xmotion,
 	int ymotion, int flags)
@@ -1007,7 +1007,7 @@ void constrain_size(
 	 */
 	if (fw->hints.flags & PAspect)
 	{
-		__cs_handle_aspect_ratio(
+		_cs_handle_aspect_ratio(
 			&d, fw, d, base, inc, min, max, xmotion, ymotion,
 			flags);
 	}

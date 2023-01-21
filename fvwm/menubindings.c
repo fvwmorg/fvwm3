@@ -168,7 +168,7 @@ static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 	return count;
 }
 
-static Binding *__menu_binding_is_mouse(
+static Binding *_menu_binding_is_mouse(
 	Binding *blist, XEvent* event, int context)
 {
 	Binding *b;
@@ -335,7 +335,7 @@ static void parse_menu_action(
 	return;
 }
 
-static Binding *__menu_binding_is_key(
+static Binding *_menu_binding_is_key(
 	Binding *blist, XEvent* event, int context)
 {
 	Binding *b;
@@ -371,10 +371,10 @@ Binding *menu_binding_is_mouse(XEvent* event, int context)
 {
 	Binding *b;
 
-	b = __menu_binding_is_mouse(menu_bindings_regular, event, context);
+	b = _menu_binding_is_mouse(menu_bindings_regular, event, context);
 	if (b == NULL)
 	{
-		b = __menu_binding_is_mouse(
+		b = _menu_binding_is_mouse(
 			menu_bindings_fallback, event, context);
 	}
 
@@ -385,10 +385,10 @@ Binding *menu_binding_is_key(XEvent* event, int context)
 {
 	Binding *b;
 
-	b = __menu_binding_is_key(menu_bindings_regular, event, context);
+	b = _menu_binding_is_key(menu_bindings_regular, event, context);
 	if (b == NULL)
 	{
-		b = __menu_binding_is_key(
+		b = _menu_binding_is_key(
 			menu_bindings_fallback, event, context);
 	}
 

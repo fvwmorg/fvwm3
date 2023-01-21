@@ -1356,8 +1356,8 @@ static Bool _pred_button_click(
 	return False;
 }
 
-/* Helper function for __handle_focus_raise_click(). */
-static Bool __test_for_motion(int x0, int y0)
+/* Helper function for _handle_focus_raise_click(). */
+static Bool _test_for_motion(int x0, int y0)
 {
 	int x;
 	int y;
@@ -1410,8 +1410,8 @@ static Bool __test_for_motion(int x0, int y0)
 	return True;
 }
 
-/* Helper function for __handle_focus_raise_click(). */
-static void __check_click_to_focus_or_raise(
+/* Helper function for _handle_focus_raise_click(). */
+static void _check_click_to_focus_or_raise(
 	hfrc_ret_t *ret_args, const exec_context_t *exc)
 {
 	FvwmWindow * const fw = exc->w.fw;
@@ -1452,9 +1452,9 @@ static void __check_click_to_focus_or_raise(
 		/* Pass further events to the application and check if a button
 		 * release or motion event occurs next.  If we don't do this
 		 * here, the pointer will seem to be frozen in
-		 * __test_for_motion(). */
+		 * _test_for_motion(). */
 		XAllowEvents(dpy, ReplayPointer, CurrentTime);
-		if (__test_for_motion(te->xbutton.x_root, te->xbutton.y_root))
+		if (_test_for_motion(te->xbutton.x_root, te->xbutton.y_root))
 		{
 			/* the pointer was moved, process event normally */
 			ret_args->do_focus = 0;
@@ -1483,7 +1483,7 @@ static void __check_click_to_focus_or_raise(
 }
 
 /* Finds out if the click on a window must be used to focus or raise it. */
-static void __handle_focus_raise_click(
+static void _handle_focus_raise_click(
 	hfrc_ret_t *ret_args, const exec_context_t *exc)
 {
 	memset(ret_args, 0, sizeof(*ret_args));
@@ -1510,14 +1510,14 @@ static void __handle_focus_raise_click(
 	}
 	else
 	{
-		__check_click_to_focus_or_raise(ret_args, exc);
+		_check_click_to_focus_or_raise(ret_args, exc);
 	}
 
 	return;
 }
 
 /* Helper function for HandleButtonPress */
-static Bool __is_bpress_window_handled(const exec_context_t *exc)
+static Bool _is_bpress_window_handled(const exec_context_t *exc)
 {
 	Window eventw;
 	const XEvent *te = exc->x.etrigger;
@@ -1556,8 +1556,8 @@ static Bool __is_bpress_window_handled(const exec_context_t *exc)
 	return True;
 }
 
-/* Helper function for __handle_bpress_on_managed */
-static Bool __handle_click_to_focus(const exec_context_t *exc)
+/* Helper function for _handle_bpress_on_managed */
+static Bool _handle_click_to_focus(const exec_context_t *exc)
 {
 	fpol_set_focus_by_t set_by;
 
@@ -1586,8 +1586,8 @@ static Bool __handle_click_to_focus(const exec_context_t *exc)
 	return focus_is_focused(exc->w.fw);
 }
 
-/* Helper function for __handle_bpress_on_managed */
-static Bool __handle_click_to_raise(const exec_context_t *exc)
+/* Helper function for _handle_bpress_on_managed */
+static Bool _handle_click_to_raise(const exec_context_t *exc)
 {
 	Bool rc = False;
 	int is_focused;
@@ -1601,8 +1601,8 @@ static Bool __handle_click_to_raise(const exec_context_t *exc)
 	return rc;
 }
 
-/* Helper function for __handle_bpress_on_managed */
-static Bool __handle_bpress_action(
+/* Helper function for _handle_bpress_on_managed */
+static Bool _handle_bpress_action(
 	const exec_context_t *exc, char *action)
 {
 	window_parts part;
@@ -1647,7 +1647,7 @@ static Bool __handle_bpress_action(
 }
 
 /* Handles button presses on the root window. */
-static void __handle_bpress_on_root(const exec_context_t *exc)
+static void _handle_bpress_on_root(const exec_context_t *exc)
 {
 	char *action;
 
@@ -1673,7 +1673,7 @@ static void __handle_bpress_on_root(const exec_context_t *exc)
 }
 
 /* Handles button presses on unmanaged windows */
-static void __handle_bpress_on_unmanaged(const exec_context_t *exc)
+static void _handle_bpress_on_unmanaged(const exec_context_t *exc)
 {
 	/* Pass the event to the application. */
 	XAllowEvents(dpy, ReplayPointer, CurrentTime);
@@ -1683,7 +1683,7 @@ static void __handle_bpress_on_unmanaged(const exec_context_t *exc)
 }
 
 /* Handles button presses on managed windows */
-static void __handle_bpress_on_managed(const exec_context_t *exc)
+static void _handle_bpress_on_managed(const exec_context_t *exc)
 {
 	char *action;
 	hfrc_ret_t f;
@@ -1692,11 +1692,11 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 
 	e = exc->x.etrigger;
 	/* Now handle click to focus and click to raise. */
-	__handle_focus_raise_click(&f, exc);
+	_handle_focus_raise_click(&f, exc);
 	PressedW = (f.do_forbid_function) ? None : exc->w.w;
 	if (f.do_focus)
 	{
-		if (!__handle_click_to_focus(exc))
+		if (!_handle_click_to_focus(exc))
 		{
 			/* Window didn't accept the focus; pass the click to
 			 * the application. */
@@ -1705,7 +1705,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	}
 	if (f.do_raise)
 	{
-		if (__handle_click_to_raise(exc) == True)
+		if (_handle_click_to_raise(exc) == True)
 		{
 			/* We can't raise the window immediately because the
 			 * action bound to the click might be "Lower" or
@@ -1724,7 +1724,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 			e->xbutton.state, GetUnusedModifiers(),
 			exc->w.wcontext, BIND_BUTTONPRESS, &fw->class,
 			fw->name.name);
-		if (__handle_bpress_action(exc, action))
+		if (_handle_bpress_action(exc, action))
 		{
 			f.do_swallow_click = 1;
 		}
@@ -1756,7 +1756,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 }
 
 /* restore focus stolen by unmanaged */
-static void __refocus_stolen_focus_win(const evh_args_t *ea)
+static void _refocus_stolen_focus_win(const evh_args_t *ea)
 {
 	FOCUS_SET(Scr.StolenFocusWin, Scr.StolenFocusFvwmWin);
 	ea->exc->x.etrigger->xfocus.window = Scr.StolenFocusWin;
@@ -1859,17 +1859,17 @@ monitor_emit_broadcast(void)
 void HandleButtonPress(const evh_args_t *ea)
 {
 	GrabEm(CRS_NONE, GRAB_PASSIVE);
-	if (__is_bpress_window_handled(ea->exc) == False)
+	if (_is_bpress_window_handled(ea->exc) == False)
 	{
-		__handle_bpress_on_unmanaged(ea->exc);
+		_handle_bpress_on_unmanaged(ea->exc);
 	}
 	else if (ea->exc->w.fw != NULL)
 	{
-		__handle_bpress_on_managed(ea->exc);
+		_handle_bpress_on_managed(ea->exc);
 	}
 	else
 	{
-		__handle_bpress_on_root(ea->exc);
+		_handle_bpress_on_root(ea->exc);
 	}
 	UngrabEm(GRAB_PASSIVE);
 
@@ -2242,7 +2242,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 			Scr.UnknownWinFocused != None && sf != NULL &&
 			sf == Scr.StolenFocusFvwmWin)
 		{
-			__refocus_stolen_focus_win(ea);
+			_refocus_stolen_focus_win(ea);
 		}
 		if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 		{
@@ -2276,7 +2276,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 			(sf = get_focus_window()) != NULL &&
 			sf == Scr.StolenFocusFvwmWin)
 		{
-			__refocus_stolen_focus_win(ea);
+			_refocus_stolen_focus_win(ea);
 		}
 		/* check for edge commands */
 		if (ewp->window == m->PanFrameTop.win)
@@ -2400,7 +2400,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 		Scr.UnknownWinFocused != None && sf != NULL &&
 		sf == Scr.StolenFocusFvwmWin)
 	{
-			__refocus_stolen_focus_win(ea);
+			_refocus_stolen_focus_win(ea);
 	}
 	/* We get an EnterNotify with mode == UnGrab when fvwm releases the
 	 * grab held during iconification. We have to ignore this, or icon
@@ -2522,7 +2522,7 @@ void HandleFocusIn(const evh_args_t *ea)
 				Scr.focus_in_pending_window->name.name : "");
 		}
 		Scr.focus_in_requested_window = NULL;
-		__refocus_stolen_focus_win(ea);
+		_refocus_stolen_focus_win(ea);
 
 		return;
 	}
@@ -2643,13 +2643,13 @@ void HandleFocusOut(const evh_args_t *ea)
 	if (Scr.UnknownWinFocused != None && Scr.StolenFocusWin != None &&
 	    ea->exc->x.etrigger->xfocus.window == Scr.UnknownWinFocused)
 	{
-		__refocus_stolen_focus_win(ea);
+		_refocus_stolen_focus_win(ea);
 	}
 
 	return;
 }
 
-void __handle_key(const evh_args_t *ea, Bool is_press)
+void _handle_key(const evh_args_t *ea, Bool is_press)
 {
 	char *action;
 	FvwmWindow *sf;
@@ -2760,12 +2760,12 @@ void __handle_key(const evh_args_t *ea, Bool is_press)
 
 void HandleKeyPress(const evh_args_t *ea)
 {
-	__handle_key(ea, True);
+	_handle_key(ea, True);
 }
 
 void HandleKeyRelease(const evh_args_t *ea)
 {
-	__handle_key(ea, False);
+	_handle_key(ea, False);
 }
 
 void HandleLeaveNotify(const evh_args_t *ea)

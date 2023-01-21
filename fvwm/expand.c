@@ -248,7 +248,7 @@ enum
 
 /* ---------------------------- local functions ---------------------------- */
 
-int __eae_parse_range(char *input, int *lower, int *upper)
+int _eae_parse_range(char *input, int *lower, int *upper)
 {
 	int rc;
 	int n;
@@ -307,7 +307,7 @@ static signed int expand_args_extended(
 	int i;
 	size_t len;
 
-	rc = __eae_parse_range(input, &lower, &upper);
+	rc = _eae_parse_range(input, &lower, &upper);
 	if (rc == -1)
 	{
 		return -1;

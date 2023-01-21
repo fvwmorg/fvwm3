@@ -19,7 +19,7 @@ typedef enum
 	FUNC_ADD_TO              = 0x04,
 	FUNC_DECOR               = 0x08,
 	FUNC_ALLOW_UNMANAGED     = 0x10,
-	/* only used in __execute_command_line */
+	/* only used in _execute_command_line */
 	FUNC_IS_MOVE_TYPE        = 0x20,
 	/* only to be passed to execute_function() */
 	FUNC_IS_UNMANAGED        = 0x40,

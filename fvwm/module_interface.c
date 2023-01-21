@@ -267,7 +267,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	return;
 }
 
-action_flags *__get_allowed_actions(const FvwmWindow *fw)
+action_flags *_get_allowed_actions(const FvwmWindow *fw)
 {
 	static action_flags act;
 	act.is_movable = is_function_allowed(
@@ -368,7 +368,7 @@ action_flags *__get_allowed_actions(const FvwmWindow *fw)
 		(unsigned long)(sizeof((*(_fw))->flags)),	\
 		&(*(_fw))->flags,				\
 		(unsigned long)(sizeof(action_flags)),		\
-		__get_allowed_actions((*(_fw)))
+		_get_allowed_actions((*(_fw)))
 
 void SendConfig(fmodule *module, unsigned long event_type, const FvwmWindow *t)
 {

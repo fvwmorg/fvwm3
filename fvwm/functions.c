@@ -88,7 +88,7 @@ static const cmdparser_hooks_t *cmdparser_hooks = NULL;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static int __context_has_window(
+static int _context_has_window(
 	const exec_context_t *exc, execute_flags_t flags)
 {
 	if (exc->w.fw != NULL)
@@ -388,7 +388,7 @@ static Bool DeferExecution(
 	return False;
 }
 
-static void __execute_command_line(
+static void _execute_command_line(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *xaction,
 	cmdparser_context_t *caller_pc,
 	func_flags_t exec_flags, char *all_pos_args_string,
@@ -640,7 +640,7 @@ static void __execute_command_line(
 		}
 		else if (
 			(bif->flags & FUNC_NEEDS_WINDOW) &&
-			!__context_has_window(
+			!_context_has_window(
 				exc, bif->flags & FUNC_ALLOW_UNMANAGED))
 		{
 			if (PARSER_DEBUG)
@@ -828,7 +828,7 @@ static cfunc_action_t CheckActionType(
 	return (is_button_pressed) ? CF_HOLD : CF_TIMEOUT;
 }
 
-static void __run_complex_function_items(
+static void _run_complex_function_items(
 	cond_rc_t *cond_rc, char cond, FvwmFunction *func,
 	const exec_context_t *exc, cmdparser_context_t *caller_pc,
 	char *all_pos_args_string, char *pos_arg_tokens[],
@@ -864,7 +864,7 @@ static void __run_complex_function_items(
 				return;
 			}
 			(*run_item_count)++;
-			__execute_command_line(
+			_execute_command_line(
 				cond_rc, exc, fi->action, caller_pc,
 				FUNC_DONT_DEFER, all_pos_args_string,
 				pos_arg_tokens, has_ref_window_moved);
@@ -882,7 +882,7 @@ static void __run_complex_function_items(
 	return;
 }
 
-static void __cf_cleanup(
+static void _cf_cleanup(
 	FvwmFunction *func, int *depth, int *run_item_count,
 	char *all_pos_args_string, char **pos_arg_tokens, cond_rc_t *cond_rc)
 {
@@ -1057,7 +1057,7 @@ static void execute_complex_function(
 	if (has_immediate)
 	{
 		exc2 = exc_clone_context(exc, &ecc, mask);
-		__run_complex_function_items(
+		_run_complex_function_items(
 			cond_rc, CF_IMMEDIATE, func, exc2, pc,
 			all_pos_args_string, pos_arg_tokens, &run_item_count,
 			has_ref_window_moved);
@@ -1138,7 +1138,7 @@ static void execute_complex_function(
 	if (do_run_late_immediate)
 	{
 		exc2 = exc_clone_context(exc, &ecc, mask);
-		__run_complex_function_items(
+		_run_complex_function_items(
 			cond_rc, CF_LATE_IMMEDIATE, func, exc2, pc,
 			all_pos_args_string, pos_arg_tokens, &run_item_count,
 			has_ref_window_moved);
@@ -1208,19 +1208,19 @@ static void execute_complex_function(
 	exc2 = exc_clone_context(exc, &ecc, mask);
 	if (do_run_late_immediate)
 	{
-		__run_complex_function_items(
+		_run_complex_function_items(
 			cond_rc, CF_LATE_IMMEDIATE, func, exc2, pc,
 			all_pos_args_string, pos_arg_tokens, &run_item_count,
 			has_ref_window_moved);
 	}
-	__run_complex_function_items(
+	_run_complex_function_items(
 		cond_rc, type, func, exc2, pc, all_pos_args_string,
 		pos_arg_tokens, &run_item_count, has_ref_window_moved);
 	exc_destroy_context(exc2);
 
   ungrab_exit:
 	func->use_depth--;
-	__cf_cleanup(
+	_cf_cleanup(
 		func, &depth, &run_item_count, all_pos_args_string,
 		pos_arg_tokens, cond_rc);
 	if (do_ungrab)
@@ -1242,7 +1242,7 @@ void functions_init(void)
 
 void execute_function(F_CMD_ARGS, func_flags_t exec_flags)
 {
-	__execute_command_line(F_PASS_ARGS, exec_flags, NULL, NULL, False);
+	_execute_command_line(F_PASS_ARGS, exec_flags, NULL, NULL, False);
 
 	return;
 }

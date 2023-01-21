@@ -393,7 +393,7 @@ void gravity_split_xy_dir(
 	}
 }
 
-static inline int __gravity_override_one_axis(int dir_orig, int dir_mod)
+static inline int _gravity_override_one_axis(int dir_orig, int dir_mod)
 {
 	int ret_dir;
 
@@ -422,8 +422,8 @@ int gravity_override_dir(
 
 	gravity_split_xy_dir(&orig_x, &orig_y, dir_orig);
 	gravity_split_xy_dir(&mod_x, &mod_y, dir_mod);
-	ret_x = __gravity_override_one_axis(orig_x, mod_x);
-	ret_y = __gravity_override_one_axis(orig_y, mod_y);
+	ret_x = _gravity_override_one_axis(orig_x, mod_x);
+	ret_y = _gravity_override_one_axis(orig_y, mod_y);
 	ret_dir = gravity_combine_xy_dir(ret_x, ret_y);
 
 	return ret_dir;

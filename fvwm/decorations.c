@@ -607,7 +607,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 	return;
 }
 
-static Bool __is_resize_allowed(
+static Bool _is_resize_allowed(
 	const FvwmWindow *t, int functions, request_origin_t request_origin)
 {
         if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
@@ -766,7 +766,7 @@ Bool is_function_allowed(
 		}
 		break;
 	case F_RESIZE:
-	        if(!__is_resize_allowed(t, functions, request_origin))
+	        if(!_is_resize_allowed(t, functions, request_origin))
 		{
 		        return False;
 		}
@@ -780,7 +780,7 @@ Bool is_function_allowed(
 		break;
 	case F_MAXIMIZE:
 	        if (IS_MAXIMIZE_FIXED_SIZE_DISALLOWED(t) &&
-		    !__is_resize_allowed(t, functions, request_origin))
+		    !_is_resize_allowed(t, functions, request_origin))
 		{
 		       return False;
 		}

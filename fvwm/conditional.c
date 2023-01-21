@@ -1427,7 +1427,7 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 	return;
 }
 
-static int __rc_matches_rcstring_consume(
+static int _rc_matches_rcstring_consume(
 	char **ret_rest, cond_rc_t *cond_rc, char *action)
 {
 	cond_rc_enum match_rc;
@@ -1861,7 +1861,7 @@ void CMD_TestRc(F_CMD_ARGS)
 		/* useless if no return code to compare to is given */
 		return;
 	}
-	if (__rc_matches_rcstring_consume(&rest, cond_rc, action) &&
+	if (_rc_matches_rcstring_consume(&rest, cond_rc, action) &&
 	    rest != NULL)
 	{
 		/* execute the command in root window context; overwrite the

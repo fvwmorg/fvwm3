@@ -64,7 +64,7 @@ static window_style *last_style_in_list = NULL;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static Bool __validate_titleformat_string(const char *formatstr)
+static Bool _validate_titleformat_string(const char *formatstr)
 {
 	const char *fmt;
 
@@ -920,7 +920,7 @@ static int remove_all_of_style_from_list(style_id_t style_id)
 	return is_changed;
 }
 
-static int __simplify_style_list(void)
+static int _simplify_style_list(void)
 {
 	window_style *cur;
 	int has_modified;
@@ -2790,7 +2790,7 @@ static Bool style_parse_one_style_option(
 				fmt_string = DEFAULT_TITLE_FORMAT;
 			}
 
-			if (!__validate_titleformat_string(fmt_string))
+			if (!_validate_titleformat_string(fmt_string))
 			{
 				fvwm_debug(__func__,
 					   "TitleFormat string invalid:  %s",
@@ -4146,7 +4146,7 @@ static Bool style_parse_one_style_option(
 				fmt_string = DEFAULT_TITLE_FORMAT;
 			}
 
-			if (!__validate_titleformat_string(fmt_string))
+			if (!_validate_titleformat_string(fmt_string))
 			{
 				fvwm_debug(__func__,
 					   "TitleFormat string invalid:  %s",
@@ -4485,7 +4485,7 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
  * must be freed in ProcessDestroyStyle().
  */
 
-static void __style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
+static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 {
 	/* temp area to build name list */
 	window_style *ps;
@@ -4621,7 +4621,7 @@ void free_icon_boxes(icon_boxes *ib)
 void simplify_style_list(void)
 {
 	/* one pass through the style list, then process other events first */
-	Scr.flags.do_need_style_list_update = __simplify_style_list();
+	Scr.flags.do_need_style_list_update = _simplify_style_list();
 
 	return;
 }
@@ -5376,21 +5376,21 @@ void print_styles(int verbose)
 
 void CMD_Style(F_CMD_ARGS)
 {
-	__style_command(F_PASS_ARGS, NULL, False);
+	_style_command(F_PASS_ARGS, NULL, False);
 
 	return;
 }
 
 void CMD_WindowStyle(F_CMD_ARGS)
 {
-	__style_command(F_PASS_ARGS, NULL, True);
+	_style_command(F_PASS_ARGS, NULL, True);
 
 	return;
 }
 
 void CMD_FocusStyle(F_CMD_ARGS)
 {
-	__style_command(F_PASS_ARGS, "FP", False);
+	_style_command(F_PASS_ARGS, "FP", False);
 
 	return;
 }

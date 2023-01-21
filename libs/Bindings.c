@@ -417,7 +417,7 @@ static Bool does_binding_apply_to_window(
 	return False;
 }
 
-static Bool __compare_binding(
+static Bool _compare_binding(
 	Binding *b,
 	int button_keycode, unsigned int modifier, unsigned int used_modifiers,
 	int Context, binding_t type, const XClassHint *win_class,
@@ -475,7 +475,7 @@ void *CheckBinding(
 	modifier &= (used_modifiers & ALL_MODIFIERS);
 	for (b = blist; b != NULL; b = b->NextBinding)
 	{
-		if (__compare_binding(
+		if (_compare_binding(
 			    b, button_keycode, modifier,
 			    used_modifiers, Context, type, win_class,
 			    win_name) == True)
@@ -516,7 +516,7 @@ void *CheckTwoBindings(
 	modifier &= (used_modifiers & ALL_MODIFIERS);
 	for (b = blist; b != NULL; b = b->NextBinding)
 	{
-		if (__compare_binding(
+		if (_compare_binding(
 			    b, button_keycode, modifier,
 			    used_modifiers, Context, type, win_class, win_name)
 		    == True)
@@ -533,7 +533,7 @@ void *CheckTwoBindings(
 				}
 			}
 		}
-		if (__compare_binding(
+		if (_compare_binding(
 			    b, button_keycode, modifier,
 			    used_modifiers, Context2, type2, win_class2,
 			    win_name2) == True)

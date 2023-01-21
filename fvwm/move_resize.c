@@ -349,7 +349,7 @@ static void move_to_next_monitor(
 	if (check_vert) {
 		if (win_r->y < y1) {
 			win_r->y = y1;
-		} else if (win_r->y + win_r->height > y2) { 
+		} else if (win_r->y + win_r->height > y2) {
 			win_r->y = y2 - win_r->height;
 		}
 	} else if (check_hor) {
@@ -1575,7 +1575,7 @@ static void InteractiveMove(
 	{
 		size_rect sz = { drag.width, drag.height };
 
-		__move_loop(exc, offset, sz, pFinal, do_move_opaque, CRS_MOVE);
+		move_loop(exc, offset, sz, pFinal, do_move_opaque, CRS_MOVE);
 	}
 	if (!Scr.gs.do_hide_position_window)
 	{
@@ -1956,7 +1956,7 @@ int placement_binding(int button, KeySym keysym, int modifier, char *action)
  * Start a window move operation
  *
  */
-void __move_icon(
+void move_icon(
 	FvwmWindow *fw, position new, position old,
 	Bool do_move_animated, Bool do_warp_pointer)
 {
@@ -2022,7 +2022,7 @@ void __move_icon(
 	return;
 }
 
-static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
+static void _move_window(F_CMD_ARGS, Bool do_animate, int mode)
 {
 	position final = { 0, 0 };
 	int n;
@@ -2214,7 +2214,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	}
 	else /* icon window */
 	{
-		__move_icon(fw, final, p, do_animate, fWarp);
+		move_icon(fw, final, p, do_animate, fWarp);
 		XFlush(dpy);
 	}
 	focus_grab_buttons_on_layer(fw->layer);
@@ -2224,25 +2224,25 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 
 void CMD_Move(F_CMD_ARGS)
 {
-	__move_window(F_PASS_ARGS, False, MOVE_NORMAL);
+	_move_window(F_PASS_ARGS, False, MOVE_NORMAL);
 	update_fvwm_monitor(exc->w.fw);
 }
 
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
-	__move_window(F_PASS_ARGS, True, MOVE_NORMAL);
+	_move_window(F_PASS_ARGS, True, MOVE_NORMAL);
 	update_fvwm_monitor(exc->w.fw);
 }
 
 void CMD_MoveToPage(F_CMD_ARGS)
 {
-	__move_window(F_PASS_ARGS, False, MOVE_PAGE);
+	_move_window(F_PASS_ARGS, False, MOVE_PAGE);
 	update_fvwm_monitor(exc->w.fw);
 }
 
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
-	__move_window(F_PASS_ARGS, False, MOVE_SCREEN);
+	_move_window(F_PASS_ARGS, False, MOVE_SCREEN);
 	update_fvwm_monitor(exc->w.fw);
 }
 
@@ -2557,7 +2557,7 @@ extern Window bad_window;
  * Returns True if the window has to be resized after the move.
  *
  */
-Bool __move_loop(
+Bool move_loop(
 	const exec_context_t *exc, position offset, size_rect sz,
 	position *pFinal, Bool do_move_opaque, int cursor)
 {
@@ -3526,7 +3526,7 @@ void CMD_XorPixmap(F_CMD_ARGS)
  * as the quadrants drawn by the rubber-band, if "ResizeOpaque" has not been
  * set.
  */
-static direction_t __resize_get_dir_from_resize_quadrant(
+static direction_t _resize_get_dir_from_resize_quadrant(
 	position off, position p)
 {
 	direction_t dir = DIR_NONE;
@@ -3600,7 +3600,7 @@ static direction_t __resize_get_dir_from_resize_quadrant(
 	return dir;
 }
 
-static void __resize_get_dir_from_window(
+static void _resize_get_dir_from_window(
 	position *ret_motion, FvwmWindow *fw, Window context_w)
 {
 	if (context_w != Scr.Root && context_w != None)
@@ -3646,7 +3646,7 @@ static void __resize_get_dir_from_window(
 	return;
 }
 
-static void __resize_get_dir_proximity(
+static void _resize_get_dir_proximity(
 	position *ret_motion, FvwmWindow *fw, position off,
 	position p, position *warp, Bool find_nearest_border)
 {
@@ -3689,7 +3689,7 @@ static void __resize_get_dir_proximity(
 	}
 
 	/* Get the direction from the quadrant the pointer is in. */
-	dir = __resize_get_dir_from_resize_quadrant(off, p);
+	dir = _resize_get_dir_from_resize_quadrant(off, p);
 
 	switch (dir)
 	{
@@ -3744,7 +3744,7 @@ static void __resize_get_dir_proximity(
 	return;
 }
 
-static void __resize_get_refpos(
+static void _resize_get_refpos(
 	position *ret, position motion, size_rect sz, FvwmWindow *fw)
 {
 	if (motion.x > 0)
@@ -3776,7 +3776,7 @@ static void __resize_get_refpos(
 }
 
 /* Procedure:
- *      __resize_step - move the rubberband around.  This is called for
+ *      _resize_step - move the rubberband around.  This is called for
  *                 each motion event when we are resizing
  *
  *  Inputs:
@@ -3787,7 +3787,7 @@ static void __resize_get_refpos(
  *      pmotion  - pointer to motion in resize_window
  *
  */
-static void __resize_step(
+static void _resize_step(
 	const exec_context_t *exc, position root, position *off,
 	rectangle *drag, const rectangle *orig, position *pmotion,
 	Bool do_resize_opaque, Bool is_direction_fixed)
@@ -3932,7 +3932,7 @@ static void __resize_step(
 }
 
 /* Starts a window resize operation */
-static Bool __resize_window(F_CMD_ARGS)
+static Bool _resize_window(F_CMD_ARGS)
 {
 	FvwmWindow *fw = exc->w.fw;
 	Bool is_finished = False, is_done = False, is_aborted = False;
@@ -4178,7 +4178,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	{
 		position toff = { orig->width, orig->height };
 
-		dir = __resize_get_dir_from_resize_quadrant(toff, p2);
+		dir = _resize_get_dir_from_resize_quadrant(toff, p2);
 	}
 
 	if (dir != DIR_NONE)
@@ -4192,7 +4192,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	if (motion.x == 0 && motion.y == 0)
 	{
-		__resize_get_dir_from_window(&motion, fw, PressedW);
+		_resize_get_dir_from_window(&motion, fw, PressedW);
 	}
 	if (FW_W_TITLE(fw) != None && PressedW == FW_W_TITLE(fw))
 	{
@@ -4220,7 +4220,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	{
 		position toff = { orig->width, orig->height };
 
-		__resize_get_dir_proximity(
+		_resize_get_dir_proximity(
 			&motion, fw, toff, p2, &warp,
 			automatic_border_direction);
 		if (motion.x != 0 || motion.y != 0)
@@ -4232,7 +4232,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	{
 		size_rect sz = { orig->width, orig->height };
 
-		__resize_get_refpos(&ref, motion, sz, fw);
+		_resize_get_refpos(&ref, motion, sz, fw);
 	}
 	else
 	{
@@ -4283,7 +4283,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				fw->g.frame.width, fw->g.frame.height
 			};
 
-			__resize_get_refpos(&ref, motion, sz, fw);
+			_resize_get_refpos(&ref, motion, sz, fw);
 		}
 	}
 	off.x = 0;
@@ -4344,7 +4344,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			stashed.x = 0;
 			stashed.y = 0;
 		}
-		__resize_step(
+		_resize_step(
 			exc, stashed, &toff, drag, orig,
 			&motion, do_resize_opaque, True);
 	}
@@ -4530,7 +4530,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				p.y = ev.xmotion.y_root;
 				/* resize before paging request to prevent
 				 * resize from lagging * mouse - mab */
-				__resize_step(
+				_resize_step(
 					exc, p, &off, drag, orig,
 					&motion, do_resize_opaque,
 					is_direction_fixed);
@@ -4548,7 +4548,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				drag->x -= delta.x;
 				drag->y -= delta.y;
 
-				__resize_step(
+				_resize_step(
 					exc, p, &off, drag, orig,
 					&motion, do_resize_opaque,
 					is_direction_fixed);
@@ -4646,7 +4646,7 @@ static Bool __resize_window(F_CMD_ARGS)
 
 			motion.x = 1;
 			motion.y = 1;
-			__resize_step(
+			_resize_step(
 				exc, psorig, &toff, &g, orig,
 				&motion, do_resize_opaque, True);
 		}
@@ -4764,7 +4764,7 @@ void CMD_Resize(F_CMD_ARGS)
 		return;
 	}
 
-	__resize_window(F_PASS_ARGS);
+	_resize_window(F_PASS_ARGS);
 	update_fvwm_monitor(fw);
 
 	return;
@@ -5445,7 +5445,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	/* keep a copy of the old geometry */
 	normal_g = fw->g.normal;
 	/* resize the window normally */
-	was_resized = __resize_window(F_PASS_ARGS);
+	was_resized = _resize_window(F_PASS_ARGS);
 	if (was_resized == True)
 	{
 		/* set the new geometry as the maximized geometry and restore
@@ -5513,7 +5513,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 		    fw->m->virtual_scr.CurrentDesk))
 		{
 			action = "";
-			__move_window(F_PASS_ARGS, False, MOVE_PAGE);
+			_move_window(F_PASS_ARGS, False, MOVE_PAGE);
 			update_fvwm_monitor(fw);
 		}
 		SET_STICKY_ACROSS_PAGES(fw, 1);
@@ -5549,7 +5549,7 @@ int stick_across_desks(F_CMD_ARGS, int toggle)
 	return 1;
 }
 
-static void __handle_stick_exit(
+static void _handle_stick_exit(
 	FvwmWindow *fw, int do_not_draw, int do_silently)
 {
 	if (do_not_draw == 0)
@@ -5579,7 +5579,7 @@ void handle_stick_across_pages(
 	did_change = stick_across_pages(F_PASS_ARGS, toggle);
 	if (did_change)
 	{
-		__handle_stick_exit(fw, do_not_draw, do_silently);
+		_handle_stick_exit(fw, do_not_draw, do_silently);
 	}
 
 	return;
@@ -5594,7 +5594,7 @@ void handle_stick_across_desks(
 	did_change = stick_across_desks(F_PASS_ARGS, toggle);
 	if (did_change)
 	{
-		__handle_stick_exit(fw, do_not_draw, do_silently);
+		_handle_stick_exit(fw, do_not_draw, do_silently);
 	}
 
 	return;
@@ -5612,7 +5612,7 @@ void handle_stick(
 	did_change |= stick_across_pages(F_PASS_ARGS, toggle_page);
 	if (did_change)
 	{
-		__handle_stick_exit(fw, do_not_draw, do_silently);
+		_handle_stick_exit(fw, do_not_draw, do_silently);
 	}
 
 	return;
