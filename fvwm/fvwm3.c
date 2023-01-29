@@ -72,6 +72,7 @@
 #include "frame.h"
 #include "menus.h"
 #include "menubindings.h"
+#include "parser.h"
 #include "libs/FGettext.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -1196,6 +1197,7 @@ static void usage(int is_verbose)
 		   " [-I vis-id | -C vis-class]"
 		   " [-l colors"
 		   " [-L|A|S|P] ...]"
+		   " [-p]"
 		   " [-r]"
 		   " [OTHER OPTIONS] ..."
 		   "\n");
@@ -1221,6 +1223,7 @@ static void usage(int is_verbose)
 		   " -L:           strict color limit\n"
                    " -o logfile:   output file or '-' for stderr\n"
 		   " -P:           visual palette\n"
+		   " -p:	   use new parser\n"
 		   " -r:           replace running window manager\n"
 		   " -s [screen]:  manage a single screen\n"
 		   " -S:           static palette\n"
@@ -2007,6 +2010,11 @@ int main(int argc, char **argv)
 			 strcmp(argv[i], "--visual-palette") == 0)
 		{
 			colorLimitop.use_named_table = True;
+		}
+		else if (strcmp(argv[i], "-p") == 0 ||
+			 strcmp(argv[i], "--parser") == 0)
+		{
+			setup_parser();
 		}
 		else if (strcmp(argv[i], "-V") == 0 ||
 			 strcmp(argv[i], "-version") == 0 ||
