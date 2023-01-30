@@ -677,6 +677,7 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 	fw->m = mnew;
 	fw->Desk = mnew->virtual_scr.CurrentDesk;
 	EWMH_SetCurrentDesktop(fw->m);
+	EWMH_UpdateWorkArea(fw->m);
 	desk_add_fw(fw);
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 
