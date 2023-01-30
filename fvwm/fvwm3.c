@@ -2014,7 +2014,9 @@ int main(int argc, char **argv)
 		else if (strcmp(argv[i], "-p") == 0 ||
 			 strcmp(argv[i], "--parser") == 0)
 		{
-			setup_parser();
+			fprintf(stderr, "Calling setup_parser...\n");
+			if (fork() == 0)
+				setup_parser();
 		}
 		else if (strcmp(argv[i], "-V") == 0 ||
 			 strcmp(argv[i], "-version") == 0 ||
