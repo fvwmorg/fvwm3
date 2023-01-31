@@ -737,6 +737,16 @@ void X_init_manager (int man_id)
 	man->geometry.boxheight = height;
     }
   }
+
+  /* Populate the managed instance of this FvwmIconMan with the position of
+   * the global screen.  This is potentially overriden if the user supplies
+   * their own ManagerGeometry string.
+   */
+  FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &man->managed_g.x, &man->managed_g.y,
+		  &man->managed_g.width, &man->managed_g.height);
+  man->geometry.x = man->managed_g.x;
+  man->geometry.y = man->managed_g.y;
+
   if (man->geometry_str) {
     geometry_mask = FScreenParseGeometry(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
