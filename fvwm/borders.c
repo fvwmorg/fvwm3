@@ -1127,9 +1127,9 @@ static void border_fetch_mwm_layout(
 	ret_size_descr->w_hiout = 2;
 	ret_size_descr->w_trout = 0;
 	ret_size_descr->w_trin = 0;
-	ret_size_descr->w_shin = 2;
+	ret_size_descr->w_shin = 1;
 	ret_size_descr->w_din = 0;
-	ret_size_descr->sum = 4;
+	ret_size_descr->sum = 3;
 	ret_size_descr->trim = ret_size_descr->sum - fw->boundary_width + 1;
 	check_remove_inset(borderstyle, ret_size_descr);
 	trim_border_layout(fw, borderstyle, ret_size_descr);
