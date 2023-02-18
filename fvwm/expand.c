@@ -513,6 +513,15 @@ static signed int expand_vars_extended(
 			goto GOT_STRING;
 		}
 
+		if (strcmp(rest, "prev_primary") == 0) {
+			struct monitor *m2 = monitor_by_last_primary();
+
+			if (m2 != NULL)
+				string = m2->si->name;
+			should_quote = False;
+			goto GOT_STRING;
+		}
+
 		if (strcmp(rest, "current") == 0) {
 			struct monitor *m2 = monitor_get_current();
 

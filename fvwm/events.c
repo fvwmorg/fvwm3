@@ -1853,6 +1853,18 @@ monitor_emit_broadcast(void)
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
+
+		if (m->flags & MONITOR_PRIMARY) {
+			struct monitor *pm = m, *mnew;
+
+			if ((mnew = monitor_by_last_primary()) == NULL)
+				break;
+
+			if (pm != mnew) {
+				execute_function_override_window(
+				    NULL, NULL, randrfunc, NULL, 0, NULL);
+			}
+		}
 	}
 }
 

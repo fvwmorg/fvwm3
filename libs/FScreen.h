@@ -81,7 +81,7 @@ struct monitor {
 	int			 flags;
 	int			 emit;
 	int			 dx, dy;
-	bool			 is_prev;
+	bool			 is_prev, was_primary;
 
 	/* info for some desktops; the first entries should be generic info
          * correct for any desktop not in the list
@@ -146,6 +146,7 @@ struct monitor	*monitor_resolve_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_output(int);
 struct monitor  *monitor_by_primary(void);
+struct monitor  *monitor_by_last_primary(void);
 struct monitor  *monitor_get_current(void);
 struct monitor  *monitor_get_prev(void);
 struct monitor  *monitor_get_global(void);

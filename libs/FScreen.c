@@ -294,6 +294,21 @@ monitor_by_primary(void)
 	return (m);
 }
 
+struct monitor *
+monitor_by_last_primary(void)
+{
+	struct monitor	*m = NULL, *m_loop;
+
+	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		if (m_loop->was_primary && !(m_loop->flags & MONITOR_PRIMARY)) {
+			m = m_loop;
+			break;
+		}
+	}
+
+	return (m);
+}
+
 static void
 monitor_check_primary(void)
 {
@@ -476,10 +491,13 @@ set_coords:
 		m->si->w = rrm[i].width;
 		m->si->h = rrm[i].height;
 		m->si->rr_output = *rrm[i].outputs;
-		if (rrm[i].primary > 0)
+		if (rrm[i].primary > 0) {
 			m->flags |= MONITOR_PRIMARY;
-		else
+			m->was_primary = false;
+		} else {
 			m->flags &= ~MONITOR_PRIMARY;
+			m->was_primary = true;
+		}
 
 		XFree(name);
 	}
@@ -549,6 +567,7 @@ void FScreenInit(Display *dpy)
 		m->Desktops->desk = 0;
 		m->flags |= (MONITOR_NEW|MONITOR_ENABLED);
 		m->is_prev = false;
+		m->was_primary = false;
 		monitor_scan_edges(m);
 	}
 
