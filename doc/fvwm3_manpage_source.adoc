@@ -1584,7 +1584,8 @@ $[pointer.screen]::
 +
 This is deprecated; use $[monitor.current] instead.
 
-$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
+$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width],
+$[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
 	Returns information about the selected monitor. These can be nested, for
 	example: $[monitor.$[monitor.primary].width]
 +
@@ -1609,6 +1610,9 @@ isn't one.
 "pagey" returns the Y page of the referenced monitor.
 +
 "primary" is the name of the output set as primary via xrandr(1).
++
+"prev_primary" is the name of the output which was the previous primary
+monitor.
 +
 "prev_desk" returns the previous desk on the referenced monitor.
 +
