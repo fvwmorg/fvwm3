@@ -86,7 +86,7 @@ if test ! x"$with_golang" = xno; then
 		sed -e 's/ .*$//')
 	    AC_MSG_CHECKING([whether go version is >= 1.14.x ($go_version)])
 	    case "$go_version" in
-	     1.14*|1.15*|1.16*|1.17*|1.18*|1.19*)
+	     1.14*|1.15*|1.16*|1.17*|1.18*|1.19*|1.20*|1.21*)
 	      AC_MSG_RESULT([yes - version is: $go_version])
 	      with_golang="yes"
 	      GO=
