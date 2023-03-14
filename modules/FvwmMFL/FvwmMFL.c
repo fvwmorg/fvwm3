@@ -20,6 +20,7 @@
 #include "libs/cJSON.h"
 
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <sys/time.h>
 
@@ -793,24 +794,21 @@ void
 set_socket_pathname(void)
 {
 	char		*mflsock_env, *tmpdir;
-	const char	*unrolled_path;
+	const char	*unrolled_path = NULL;
+	struct stat	 sb;
 
 	/* Figure out if we are using default MFL socket path or we should
 	 * respect environment variable FVWMMFL_SOCKET for FvwmMFL socket path
 	 */
+	if ((tmpdir = getenv("TMPDIR")) == NULL)
+		tmpdir = "/tmp";
+	xasprintf(&sock_pathname, "%s/%s", tmpdir, MFL_SOCKET_DEFAULT);
 
-	mflsock_env = getenv("FVWMMFL_SOCKET");
-	if (mflsock_env == NULL) {
-		/* Check if TMPDIR is defined.  If so, use that, otherwise
-		 * default to /tmp for the directory name.
-		 */
-		if ((tmpdir = getenv("TMPDIR")) == NULL)
-			tmpdir = "/tmp";
-		xasprintf(&sock_pathname, "%s/%s", tmpdir, MFL_SOCKET_DEFAULT);
+	if (lstat(sock_pathname, &sb) == 0)
 		return;
-	}
 
-	unrolled_path = expand_path(mflsock_env);
+	if ((mflsock_env = getenv("FVWMMFL_SOCKET")) != NULL)
+		unrolled_path = expand_path(mflsock_env);
 	if (unrolled_path[0] == '/')
 		sock_pathname = fxstrdup(unrolled_path);
 	else {
