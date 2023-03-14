@@ -18,11 +18,18 @@ def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
     # Connect the socket to the "port" where the server is listening
-    # FvwmMFL is setting this in environment, so we can really treat
-    # absence of the environment FVWMMFL_SOCKET as error, except when
-    # explicit -f <sockname> has been specified by the user.
+    # FvwmMFL is setting this in environment. This is done by using
+    # the explicit -f <sockname> flag if it is provided, otherwise
+    # use the environment FVWMMFL_SOCKET if it is defined, then fall
+    # back to TMPDIR/fvwm_mfl.sock if TMPDIR is defined, and last use
+    # the default location /tmp/fvwm_mfl.sock.
     if not fvwm_socket:
-        fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET'))
+        if 'FVWMMFL_SOCKET' in os.environ:
+            fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET'))
+        elif 'TMPDIR' in os.environ:
+            fvwm_socket = str(os.environ.get('TMPDIR')) + '/fvwm_mfl.sock'
+        else:
+            fvwm_socket = '/tmp/fvwm_mfl.sock'
         def_socket = True
     else:
         def_socket = False
