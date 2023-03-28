@@ -2613,43 +2613,6 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	MoveViewport(m, val[1], val[2], True);
 	m->virtual_scr.prev_desk = current_desk;
 	m->virtual_scr.prev_desk_and_page_desk = current_desk;
-	if (is_new_desk)
-	{
-		/* If we're in global mode, store the virtual_scr across all
-		 * monitors.  This will allow for per-monitor tracking to be
-		 * toggled, as well as ensuring commands such as
-		 * Goto{Page,Desk} operate correctly.
-		 */
-		monitor_assign_virtual(m);
-
-		goto_desk(m->virtual_scr.CurrentDesk, m);
-		focus_grab_buttons_all();
-
-		/* If we're sharing desks between monitors, don't send further
-		 * NEW_DESK packets, as we've already handled this in the call
-		 * to goto_desk above.
-		 */
-		if (is_tracking_shared)
-			goto done;
-
-		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->si->rr_output);
-		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
-		 * window upon desk change.  This is a workaround for a
-		 * problem in FvwmPager: The pager has a separate 'root'
-		 * window for each desk.  If the active desk changes, the
-		 * pager destroys sticky mini windows and creates new ones in
-		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.  So we have to tell it ecplicitly where they
-		 * go :-( This should be fixed in the pager, but right now the
-		 * pager doesn't the stacking order. */
-		BroadcastRestackAllWindows();
-	}
-	else
-	{
-		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->si->rr_output);
-	}
 done:
 	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);
