@@ -2563,6 +2563,7 @@ void CMD_Desk(F_CMD_ARGS)
 void CMD_GotoDeskAndPage(F_CMD_ARGS)
 {
 	int val[3];
+	int current_desk;
 	Bool is_new_desk;
 	char *next;
 	char *token;
@@ -2579,6 +2580,11 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		m = monitor_get_current();
 	}
 	/* FIXME: monitor needs broadcast when global. */
+
+	// Save current desk here since `MoveViewport` will assign an
+	// incorrect value to `prev_desk_and_page_desk` later, we can fix
+	// it with this value then.
+	current_desk = m->virtual_scr.CurrentDesk;
 
 	if (MatchToken(action, "prev"))
 	{
@@ -2604,15 +2610,11 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		UnmapDesk(m, m->virtual_scr.CurrentDesk, True);
 		CMD_GOTO_DESK(m, val[0]);
 	}
-	m->virtual_scr.prev_desk_and_page_page_x = m->virtual_scr.Vx;
-	m->virtual_scr.prev_desk_and_page_page_y = m->virtual_scr.Vy;
 	MoveViewport(m, val[1], val[2], True);
+	m->virtual_scr.prev_desk = current_desk;
+	m->virtual_scr.prev_desk_and_page_desk = current_desk;
 	if (is_new_desk)
 	{
-		m->virtual_scr.prev_desk = m->virtual_scr.CurrentDesk;
-		m->virtual_scr.prev_desk_and_page_desk = m->virtual_scr.CurrentDesk;
-		m->virtual_scr.CurrentDesk = val[0];
-
 		/* If we're in global mode, store the virtual_scr across all
 		 * monitors.  This will allow for per-monitor tracking to be
 		 * toggled, as well as ensuring commands such as
