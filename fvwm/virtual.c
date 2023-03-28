@@ -2631,8 +2631,6 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		if (is_tracking_shared)
 			goto done;
 
-		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->si->rr_output);
 		/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky
 		 * window upon desk change.  This is a workaround for a
 		 * problem in FvwmPager: The pager has a separate 'root'
@@ -2643,11 +2641,6 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't the stacking order. */
 		BroadcastRestackAllWindows();
-	}
-	else
-	{
-		BroadcastPacket(M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-				(long)m->si->rr_output);
 	}
 done:
 	BroadcastMonitorList(NULL);
