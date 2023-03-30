@@ -42,6 +42,7 @@
 #include "module_list.h"
 #include "focus.h"
 #include "ewmh.h"
+#include "ewmh_intern.h"
 #include "move_resize.h"
 #include "borders.h"
 #include "frame.h"
@@ -2434,6 +2435,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 update:
 	initPanFrames();
 	raisePanFrames();
+	ewmh_SetWorkArea(m);
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
 		update_fvwm_monitor(t);

@@ -561,6 +561,8 @@ void FScreenInit(Display *dpy)
 	is_tracking_shared = false;
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
+		memset(&m->ewmhc, 0, sizeof(m->ewmhc));
+
 		m->Desktops = fxcalloc(1, sizeof *m->Desktops);
 		m->Desktops->name = NULL;
 		m->Desktops->next = NULL;
