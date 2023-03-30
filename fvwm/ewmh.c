@@ -983,6 +983,7 @@ void EWMH_SetClientListStacking(struct monitor *m)
 
 void ewmh_SetWorkArea(struct monitor *m)
 {
+	struct monitor	*m_global = monitor_get_global();
 	long val[256][4]; /* no more than 256 desktops */
 	int i = 0;
 
@@ -991,17 +992,15 @@ void ewmh_SetWorkArea(struct monitor *m)
 
 	while(i < m->ewmhc.NumberOfDesktops && i < 256)
 	{
-		val[i][0] = m->Desktops->ewmh_working_area.x;
-		val[i][1] = m->Desktops->ewmh_working_area.y;
-		val[i][2] = m->Desktops->ewmh_working_area.width;
-		val[i][3] = m->Desktops->ewmh_working_area.height;
+		val[i][0] = m_global->si->x;
+		val[i][1] = m_global->si->y;
+		val[i][2] = m_global->si->w;
+		val[i][3] = m_global->si->h;
 		i++;
 	}
 	ewmh_ChangeProperty(
 		Scr.Root, "_NET_WORKAREA", EWMH_ATOM_LIST_FVWM_ROOT,
 		(unsigned char *)&val, i*4);
-
-	return;
 }
 
 void ewmh_ComputeAndSetWorkArea(struct monitor *m)
@@ -1012,8 +1011,6 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 	int bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
-
-	/* FIXME: needs broadcast if global monitor in use. */
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
@@ -1060,8 +1057,6 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 		{
 			fvwm_debug(__func__, "differ, so setting work area\n");
 		}
-
-		ewmh_SetWorkArea(m);
 	}
 
 	return;
@@ -1075,8 +1070,6 @@ void ewmh_HandleDynamicWorkArea(struct monitor *m)
 	int dyn_bottom = m->ewmhc.BaseStrut.bottom;
 	int x,y,width,height;
 	FvwmWindow *fw;
-
-	/* FIXME: needs broadcast if global monitor in use. */
 
 	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
 	{
@@ -1145,8 +1138,6 @@ void EWMH_GetWorkAreaIntersection(
 			__func__, "mon: %s {x: %d, y: %d, w: %d, h: %d\n",
 			m->si->name, *x, *y, *w, *h);
 	}
-
-	/* FIXME: needs broadcast if global monitor in use. */
 
 	switch(type)
 	{
@@ -1223,8 +1214,6 @@ float ewmh_GetStrutIntersection(struct monitor *m,
 	float ret = 0;
 	int x21, y21, x22, y22;
 
-	/* FIXME: possibly need to consider using m->si->x/y/w/h */
-
 	/* left */
 	x21 = 0;
 	y21 = 0;
@@ -1270,8 +1259,6 @@ float EWMH_GetStrutIntersection(struct monitor *m,
 	int x11, int y11, int x12, int y12, Bool use_percent)
 {
 	int left, right, top, bottom;
-
-	/* FIXME: needs broadcast if global monitor in use. */
 
 	left = m->Desktops->ewmh_working_area.x;
 	right = monitor_get_all_widths() -
@@ -1983,7 +1970,6 @@ void EWMH_Init(struct monitor *m)
 	EWMH_SetDesktopGeometry(m);
 	EWMH_SetClientList(m);
 	EWMH_SetClientListStacking(m);
-	ewmh_ComputeAndSetWorkArea(m);
 
 	return;
 }
