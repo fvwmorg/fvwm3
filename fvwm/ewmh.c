@@ -983,19 +983,54 @@ void EWMH_SetClientListStacking(struct monitor *m)
 
 void ewmh_SetWorkArea(struct monitor *m)
 {
-	struct monitor	*m_global = monitor_get_global();
+	struct monitor	*mtmp;
 	long val[256][4]; /* no more than 256 desktops */
 	int i = 0;
 
 	if (m->Desktops == NULL)
 		return;
 
+	/*
+	 * Set _NET_WORKAREA to be the smallest rectangle that can contain
+	 * any single monitor's work area. For single monitor setups this
+	 * gives the correct working area, and for multiple monitor
+	 * setups this ensures that the single _NET_WORKAREA setting will
+	 * never be smaller than the working area of any monitor.
+	 */
+	int x = m->Desktops->ewmh_working_area.x;
+	int y = m->Desktops->ewmh_working_area.y;
+	int w = m->Desktops->ewmh_working_area.width;
+	int h = m->Desktops->ewmh_working_area.height;
+	TAILQ_FOREACH(mtmp, &monitor_q, entry) {
+		if (mtmp == m)
+			continue;
+
+		if (mtmp->Desktops->ewmh_working_area.x < x)
+		{
+			w += x - mtmp->Desktops->ewmh_working_area.x;
+			x = mtmp->Desktops->ewmh_working_area.x;
+		}
+		if (mtmp->Desktops->ewmh_working_area.y < y)
+		{
+			h += y - mtmp->Desktops->ewmh_working_area.y;
+			y = mtmp->Desktops->ewmh_working_area.y;
+		}
+		if (mtmp->Desktops->ewmh_working_area.width > w)
+		{
+			w = mtmp->Desktops->ewmh_working_area.width;
+		}
+		if (mtmp->Desktops->ewmh_working_area.height > h)
+		{
+			h = mtmp->Desktops->ewmh_working_area.height;
+		}
+	}
+
 	while(i < m->ewmhc.NumberOfDesktops && i < 256)
 	{
-		val[i][0] = m_global->si->x;
-		val[i][1] = m_global->si->y;
-		val[i][2] = m_global->si->w;
-		val[i][3] = m_global->si->h;
+		val[i][0] = x;
+		val[i][1] = y;
+		val[i][2] = w;
+		val[i][3] = h;
 		i++;
 	}
 	ewmh_ChangeProperty(
