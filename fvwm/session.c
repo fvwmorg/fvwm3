@@ -745,7 +745,7 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	FSmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
 	struct passwd *pwd;
 	char *user_id;
-	char *discardCommand;
+	char *discardCommand = NULL;
 	char screen_num[32];
 	int numVals, i, priority = 30;
 	Bool is_xsm_detected = False;
