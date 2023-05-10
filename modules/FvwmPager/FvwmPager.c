@@ -717,7 +717,6 @@ void handle_config_win_package(PagerWindow *t,
 void list_add(unsigned long *body)
 {
 	PagerWindow *t,**prev;
-	int i=0;
 	struct ConfigWinPacket  *cfgpacket = (void *) body;
 	struct fpmonitor *newm;
 
@@ -738,7 +737,6 @@ void list_add(unsigned long *body)
 		}
 		prev = &(t->next);
 		t = t->next;
-		i++;
 	}
 	*prev = fxcalloc(1, sizeof(PagerWindow));
 	handle_config_win_package(*prev, cfgpacket);
