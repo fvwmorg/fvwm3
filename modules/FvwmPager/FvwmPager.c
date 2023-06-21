@@ -1916,6 +1916,8 @@ void ParseOptions(void)
 
     if (StrEquals(resource, "Monitor")) {
 	    free(monitor_to_track);
+	    next = SkipSpaces(next, NULL, 0);
+
 	    if (next == NULL) {
 		    fvwm_debug(__func__, "FvwmPager: no monitor name given "
 				    "using current monitor\n");
