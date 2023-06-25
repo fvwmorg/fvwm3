@@ -125,15 +125,14 @@ int EWMH_WMIconName(
 {
 	int size = 0;
 	char *val;
-	char *tmp_str;
-	FlocaleCharset *fc = NULL;
+	char *text;
 
 	if (!FiconvSupport)
 	{
 		return 0;
 	}
 
-	val = ewmh_AtomGetByName(
+	text = val = ewmh_AtomGetByName(
 		FW_W(fw), "_NET_WM_ICON_NAME",
 		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
@@ -142,28 +141,25 @@ int EWMH_WMIconName(
 		SET_HAS_EWMH_WM_ICON_NAME(fw,0);
 		return 0;
 	}
-	if (IS_ICON_FONT_LOADED(fw) && fw->icon_font != NULL)
+	if (IS_ICON_FONT_LOADED(fw) && fw->icon_font != NULL && fw->icon_font->fftf.fftfont[0] == NULL)
 	{
-		fc = fw->icon_font->str_fc;
+		text = FiconvUtf8ToCharset(dpy, fw->icon_font->str_fc, val, size);
+		free(val);
 	}
-
-	tmp_str = (char *)FiconvUtf8ToCharset(
-		dpy, fc, (const char *) val, size);
-	free(val);
-	if (tmp_str == NULL)
+	if (text == NULL)
 	{
 		SET_HAS_EWMH_WM_ICON_NAME(fw, 0);
 		return 0;
 	}
-	if (strlen(tmp_str) > MAX_ICON_NAME_LEN)
+	if (strlen(text) > MAX_ICON_NAME_LEN)
 	{
-		tmp_str[MAX_ICON_NAME_LEN] = 0;
+		text[MAX_ICON_NAME_LEN] = 0;
 	}
 	SET_HAS_EWMH_WM_ICON_NAME(fw, 1);
-	if (fw->icon_name.name && strcmp(tmp_str, fw->icon_name.name) == 0)
+	if (fw->icon_name.name && strcmp(text, fw->icon_name.name) == 0)
 	{
 		/* migo: some apps update their names every second */
-		free(tmp_str);
+		free(text);
 		return 0;
 	}
 
@@ -173,7 +169,7 @@ int EWMH_WMIconName(
 		free_window_names(fw, False, True);
 	}
 
-	fw->icon_name.name = tmp_str;
+	fw->icon_name.name = text;
 
 	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 
@@ -193,14 +189,13 @@ int EWMH_WMName(
 {
 	int size = 0;
 	char *val;
-	char *tmp_str;
-	FlocaleCharset *fc = NULL;
+	char *text;
 	int what_changed;
 
 	if (!FiconvSupport)
 		return 0;
 
-	val = ewmh_AtomGetByName(
+	text = val = ewmh_AtomGetByName(
 		FW_W(fw), "_NET_WM_NAME",
 		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
@@ -209,28 +204,25 @@ int EWMH_WMName(
 		SET_HAS_EWMH_WM_NAME(fw,0);
 		return 0;
 	}
-	if (IS_WINDOW_FONT_LOADED(fw) && fw->title_font != NULL)
+	if (IS_WINDOW_FONT_LOADED(fw) && fw->title_font != NULL && fw->title_font->fftf.fftfont[0] == NULL)
 	{
-		fc = fw->title_font->str_fc;
+		text = FiconvUtf8ToCharset(dpy, fw->title_font->str_fc, val, size);
+		free(val);
 	}
-
-	tmp_str = (char *)FiconvUtf8ToCharset(
-		dpy, fc, (const char *) val, size);
-	free(val);
-	if (tmp_str == NULL)
+	if (text == NULL)
 	{
 		SET_HAS_EWMH_WM_NAME(fw,0);
 		return 0;
 	}
-	if (strlen(tmp_str) > MAX_WINDOW_NAME_LEN)
+	if (strlen(text) > MAX_WINDOW_NAME_LEN)
 	{
-		tmp_str[MAX_WINDOW_NAME_LEN] = 0;
+		text[MAX_WINDOW_NAME_LEN] = 0;
 	}
 	SET_HAS_EWMH_WM_NAME(fw, 1);
-	if (fw->name.name && strcmp(tmp_str, fw->name.name) == 0)
+	if (fw->name.name && strcmp(text, fw->name.name) == 0)
 	{
 		/* migo: some apps update their names every second */
-		free(tmp_str);
+		free(text);
 		return 0;
 	}
 
@@ -240,7 +232,7 @@ int EWMH_WMName(
 		free_window_names(fw, True, False);
 	}
 
-	fw->name.name = tmp_str;
+	fw->name.name = text;
 
 	if (ev == NULL)
 	{
