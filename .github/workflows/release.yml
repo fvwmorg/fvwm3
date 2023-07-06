@@ -32,7 +32,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           https://api.github.com/repos/fvwmorg/fvwm3/releases/generate-notes \
-          -d '{"tag_name":"${{ github.event.inputs.versionRelease }}","target_commitish":"master","configuration_file_path":".github/release.yml"}' | \
+          -d '{"tag_name":"${{ github.event.inputs.versionRelease }}","target_commitish":"main","configuration_file_path":".github/release.yml"}' | \
                 jq -r '.body' >> ./tmp.out
         sed -i '2d' ./tmp.out
         sed -i "2r tmp.out" CHANGELOG.md
@@ -47,7 +47,7 @@ jobs:
       with:
        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
        head: release/${{ github.event.inputs.versionRelease }}
-       base: master
+       base: main
        title: release ${{ github.event.inputs.versionRelease }}
        reviewers: ${{ github.event.issue.user.login }}
        body: |

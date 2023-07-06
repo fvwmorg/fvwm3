@@ -8,7 +8,7 @@
 
     https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
 
-  - [https://raw.githubusercontent.com/fvwmorg/fvwm3/master/doc/README]Documentation updated (where appropriate)
+  - [https://raw.githubusercontent.com/fvwmorg/fvwm3/main/doc/README]Documentation updated (where appropriate)
 
   - Style guide followed (try and match the surrounding code where possible)
 
