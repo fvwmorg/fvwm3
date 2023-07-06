@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.0.7](https://github.com/fvwmorg/fvwm3/tree/1.0.7) (2023-07-06)
+
+## What's Changed
+### Breaking Changes
+* Use the global screen for geometry strings which don't specify a monitor by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/814
+### Enhancements
+* code: rename functions with two underscores by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/815
+* Revert MWM borders line width in border_fetch_mwm_layout by @NsCDE in https://github.com/fvwmorg/fvwm3/pull/824
+* cJSON: update to v1.7.16 by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/863
+### Other Changes
+* dist: doc: include all doc sources by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/806
+* maximize: randr: assign correct monitor to window by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/812
+* FvwmIconMan: populate manager geom via global screen by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/821
+* configure: drop check for -Werror by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/829
+* configure: support newer golang versions by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/830
+* Use default location of FvwmMFL socket in FvwmCommand. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/835
+* monitor: add prev_primary logic by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/826
+* EWMH: Update SetWorkArea() to use global w/h by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/840
+* Fix GotoDeskAndPage by @shang in https://github.com/fvwmorg/fvwm3/pull/837
+* clang: fix warnings by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/847
+* FvwmPerl: fix regexp warning for special chars by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/852
+* fonts: don't fallback to iconv using XFT by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/862
+* FvwmPager: monitor config: skip whitespace by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/856
+
+## New Contributors
+* @shang made their first contribution in https://github.com/fvwmorg/fvwm3/pull/837
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.0.6...1.0.7
 ## [1.0.6a](https://github.com/fvwmorg/fvwm3/tree/1.0.6a) (2023-01-16)
 
 ## What's Changed
