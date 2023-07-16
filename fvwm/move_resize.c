@@ -2469,10 +2469,20 @@ static void DoSnapAttract(FvwmWindow *fw, size_rect sz, position *p)
 	if (get_visible_icon_title_geometry(fw, &g))
 		self.height += g.height;
 
+	bool is_snap_screen = (fw->snap_attraction.mode & SNAP_SCREEN) ?
+		true : false;
+	bool is_snap_same = (fw->snap_attraction.mode & SNAP_SAME) ?
+		true : false;
+	bool is_iconified_and_snap_icons = IS_ICONIFIED(fw) &&
+		(fw->snap_attraction.mode & SNAP_ICONS) ? true : false;
+	bool is_not_iconified_and_snap_windows = !IS_ICONIFIED(fw) &&
+		(fw->snap_attraction.mode & SNAP_WINDOWS) ? true : false;
 	int icon_mask = IS_ICONIFIED(fw) ? SNAP_SCREEN_ICONS :
 		SNAP_SCREEN_WINDOWS;
-	bool snap_mon = (fw->snap_attraction.mode & SNAP_SCREEN_ALL ||
-		fw->snap_attraction.mode & (SNAP_SCREEN & icon_mask)) ?
+	bool snap_mon = (is_snap_screen && ( is_snap_same ||
+			is_iconified_and_snap_icons ||
+			is_not_iconified_and_snap_windows)) ||
+		fw->snap_attraction.mode & (SNAP_SCREEN_ALL | icon_mask) ?
 		true : false;
 	bool snap_win = (fw->snap_attraction.mode &
 		(SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) ? true : false;
