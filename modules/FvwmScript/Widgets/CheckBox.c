@@ -70,7 +70,7 @@ void InitCheckBox(struct XObj *xobj)
   /* resize the widget */
   xobj->height = xobj->Ffont->height + 5;
   xobj->width =
-    FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)) + 30;
+    FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)) * 1.5;
   XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
   if (xobj->colorset >= 0)
     SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
@@ -91,12 +91,12 @@ void DrawCheckBox(struct XObj *xobj, XEvent *evp)
   XSegment segm[2];
 
   /* drawing of the round rectangle */
-  DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
-		 xobj, hili, shad);
+  DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, hili, shad);
 
   /* Compute the position of string */
-  MyDrawString(dpy, xobj, xobj->win, 23, xobj->Ffont->ascent, xobj->title,
-	       fore, hili, back, !xobj->flags[1], NULL, evp);
+  MyDrawString(dpy, xobj, xobj->win, xobj->height * 1.3, xobj->Ffont->ascent,
+	       xobj->title, fore, hili, back, !xobj->flags[1], NULL, evp);
+
   /* draw the cross */
   if (xobj->value)
   {
@@ -138,8 +138,7 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	WinBut = Win2;
 	/* Mouse on button */
-	DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height,
-		       xobj->height, xobj, shad, hili);
+	DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, shad, hili);
 	In = 1;
       }
       else
@@ -147,16 +146,14 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
 	if (Win2 == WinBut)
 	{
 	  /* Mouse on button */
-	  DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
-			 xobj, shad, hili);
+	  DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, shad, hili);
 	  In = 1;
 	}
 	else if (In)
 	{
 	  In = 0;
 	  /* Mouse not on button */
-	  DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
-			 xobj, hili, shad);
+	  DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, hili, shad);
 	}
       }
       break;
@@ -167,14 +164,12 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	In = 1;
 	/* Mouse on button */
-	DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
-		       xobj, shad, hili);
+	DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, shad, hili);
       }
       else if (In)
       {
 	/* Mouse not on button */
-	DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
-		       xobj, hili, shad);
+	DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, hili, shad);
 	In = 0;
       }
       break;
@@ -185,8 +180,7 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	/* Send an empty message of SingleClic type, for a mouse click */
 	xobj->value = !xobj->value;
-	DrawReliefRect(0, xobj->Ffont->ascent -11, xobj->height, xobj->height,
-		       xobj, hili, shad);
+	DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, hili, shad);
 	SendMsg(xobj,SingleClic);
       }
       if (xobj->value)
@@ -223,8 +217,7 @@ void EvtKeyCheckBox(struct XObj *xobj, XKeyEvent *EvtKey)
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Return) {
     xobj->value = !xobj->value;
-    DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height,
-		   xobj->height, xobj, hili, shad);
+    DrawReliefRect(0, 0, xobj->height, xobj->height, xobj, hili, shad);
     SendMsg(xobj,SingleClic);
     if (xobj->value)
     {
