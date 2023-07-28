@@ -659,7 +659,7 @@ and back quote:
 `This is a strange quote`.
 +
 The back quoting is unusual but used on purpose, if you use a
-preprocessor like FvwmCpp and want it to get into your commands, like
+preprocessor and want it to get into your commands, like
 this:
 +
 ....
