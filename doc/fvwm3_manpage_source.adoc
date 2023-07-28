@@ -51,7 +51,7 @@ Any module started by command line arguments is assumed to be a module
 that sends back config commands. All command line modules have to quit
 before fvwm proceeds on to the StartFunction and setting border
 decorations and styles. There is a potential deadlock if you start a
-module other than *FvwmCpp*/*FvwmM4*/*FvwmPerl* but there is a timeout
+module other than *FvwmPerl* but there is a timeout
 so fvwm eventually gets going.
 +
 As an example, starting the pager this way hangs fvwm until the timeout,
@@ -3384,21 +3384,6 @@ For example:
 ....
 ImagePath $HOME/icons:+:/usr/include/X11/bitmaps
 ....
-
-+
-Note: if the *FvwmM4* module is used to parse your _config_ files,
-then m4 may want to mangle the word "include" which frequently shows
-up in the *ImagePath* command. To fix this one may add
-+
-
-....
-undefine(`include')
-....
-
-+
-prior to the *ImagePath* command, or better: use the *-m4-prefix*
-option to force all *m4* directives to have a prefix of "m4_" (see the
-*FvwmM4* man page).
 
 *LocalePath* _path_::
 	Specifies a colon separated list of "locale path" in which to search
@@ -7947,8 +7932,7 @@ section *Conditional Commands* for the meaning of return codes).
 *SetEnv* _variable_ _value_::
 	Set an environment variable to a new value, similar to the shell's
 	export or setenv command. The _variable_ and its _value_ are inherited
-	by processes started directly by fvwm. This can be especially useful
-	in conjunction with the *FvwmM4* module. For example:
+	by processes started directly by fvwm. For example:
 +
 
 ....
@@ -7956,10 +7940,7 @@ SetEnv height HEIGHT
 ....
 
 +
-makes the *FvwmM4* set variable _HEIGHT_ usable by processes started
-by fvwm as the environment variable _$height_. If _value_ includes
-whitespace, you should enclose it in quotes. If no _value_ is given,
-the variable is deleted.
+
 
 *Silent* _command_::
 	A number of commands require a window to operate on. If no window was
@@ -8725,16 +8706,14 @@ change the background when you change desktops), *FvwmBanner* (to
 display a spiffy XBM, XPM, PNG or SVG), *FvwmButtons* (brings up a
 customizable tool bar), *FvwmCommandS* (a command server to use with
 shell's FvwmCommand client), *FvwmConsole* (to execute fvwm commands
-directly), *FvwmCpp* (to preprocess your _config_ with cpp),
-*FvwmEvent* (trigger various actions by events), *FvwmForm* (to bring
-up dialogs), *FvwmIconMan* (a flexible icon manager), *FvwmIdent* (to
-get window info), *FvwmM4* (to preprocess your _config_ with m4),
-*FvwmPager* (a mini version of the desktop), *FvwmPerl* (a Perl
-manipulator and preprocessor), *FvwmProxy* (to locate and control
-obscured windows by using small proxy windows), *FvwmRearrange* (to
-rearrange windows), *FvwmScript* (another powerful dialog toolkit),
-These modules have their own man pages. There may be other modules out
-on there as well.
+directly), *FvwmEvent* (trigger various actions by events), *FvwmForm*
+(to bring up dialogs), *FvwmIconMan* (a flexible icon manager),
+*FvwmIdent* (to get window info), *FvwmPager* (a mini version of the
+desktop), *FvwmPerl* (a Perl manipulator and preprocessor), *FvwmProxy*
+(to locate and control obscured windows by using small proxy windows),
+*FvwmRearrange* (to rearrange windows), *FvwmScript* (another powerful
+dialog toolkit), These modules have their own man pages. There may be
+other modules out on there as well.
 +
 Modules can be short lived transient programs or, like *FvwmButtons* ,
 can remain for the duration of the X session. Modules are terminated
