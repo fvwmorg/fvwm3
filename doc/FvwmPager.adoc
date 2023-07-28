@@ -228,9 +228,7 @@ size may be slightly different than the specified size.
   When Iconified, the pager uses the color specified by *FvwmPager:
   Back.
 +
-*TIP:* Try using *FvwmPager: DeskColor in conjunction with FvwmCpp (or
-FvwmM4) and FvwmBacker to assign identical colors to your various
-desktops and the pager representations.
+
 
 *FvwmPager: Pixmap pixmap::
   Use _pixmap_ as background for the pager.
@@ -239,9 +237,6 @@ desktops and the pager representations.
   is "*") in the pager window. This replaces the background pixmap for
   the particular _desk_.
 +
-*TIP:* Try using *FvwmPager: DeskPixmap in conjunction with FvwmCpp (or
-FvwmM4) and FvwmBacker to assign identical pixmaps to your various
-desktops and the pager representations.
 
 *FvwmPager: DeskTopScale number::
   If the geometry is not specified, then a desktop reduction factor is
