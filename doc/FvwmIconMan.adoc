@@ -207,8 +207,7 @@ The following options may be specified:
   A printf like format string which describes the string to be printed
   in the manager window for each managed window. Possible flags are: %t,
   %i, %c, and %r for the window's title, icon title, class, or resource
-  name, respectively. The default is "%c: %i". *Warning*: m4 reserves
-  the word _format_, so if you use m4, take appropriate action.
+  name, respectively. The default is "%c: %i".
 *FvwmIconMan: [id] IconName iconstring::
   Specifies the window icon name for that manager window. _Iconstring_
   may either be a single word, or a string enclosed in quotes. The
