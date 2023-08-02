@@ -15,14 +15,20 @@ SUBDIRS = \
 	doc \
 	$(POSUB)
 
+XSESSIONFILE = contrib/xsession/fvwm3.desktop
+xsessionsdir = $(datarootdir)/xsessions
+xsessions_DATA = $(XSESSIONFILE)
+
+CLEANFILES = $(XSESSIONFILE)
+
+EXTRA_DIST = CHANGELOG.md $(XSESSIONFILE).in
+
 ## ---------------------------------------------------------------------------
 ## Manage bzip2 archive together with gzip archive
 #  Usage:
 #    make dist2       # instead of make dist
 #    make distcheck2  # instead of make distcheck
 #    make distclean2  # instead of make distclean
-
-EXTRA_DIST = CHANGELOG.md
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-mandoc
 
@@ -41,3 +47,6 @@ distclean2: distclean
 
 uninstall-hook:
 	-rmdir @FVWM_DATADIR@
+
+$(XSESSIONFILE): $(XSESSIONFILE).in
+	${SED} -e 's|[@]bindir@|$(bindir)|g' < "$@.in" > "$@"
