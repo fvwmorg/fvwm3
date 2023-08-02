@@ -30,6 +30,7 @@ config.h.in
 config.log
 config.status
 configure
+contrib/xsession/fvwm3.desktop
 core
 doc/footer.html
 doc/fvwm.ent
