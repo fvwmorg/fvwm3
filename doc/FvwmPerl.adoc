@@ -114,7 +114,7 @@ to be preprosessed.
 ModuleSynchronize FvwmPerl
 
 AddToFunc .
-+ I SendToModule FvwmPerl preprocess -c -- $*
++ I SendToModule FvwmPerl preprocess -c $*
 
 . Exec exec xterm -name xterm-%{++$i}%   # use unique name
 
@@ -251,7 +251,7 @@ define the following two shortcut functions:
 DestroyFunc PerlEval
 AddToFunc I SendToModule MyPerl eval $*
 DestroyFunc PP
-AddToFunc I SendToModule MyPerl preprocessc-c -- $*
+AddToFunc I SendToModule MyPerl preprocessc-c $*
 ....
 +
 These 4 actions may be requested in one of 3 ways: 1) in the command
