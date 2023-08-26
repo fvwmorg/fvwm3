@@ -458,7 +458,7 @@ void *atom_get(Window win, Atom to_get, Atom type, int *size)
 		int asize;
 
 		asize = atom_size(format_ret);
-		data = fxmalloc(num_ret * asize);
+		data = fxmalloc(num_ret * asize + 1);
 		if (format_ret == 32 && asize * 8 != format_ret)
 		{
 			int i;
@@ -472,7 +472,7 @@ void *atom_get(Window win, Atom to_get, Atom type, int *size)
 		{
 			if (data)
 			{
-				memcpy(data, retval, num_ret * asize);
+				memcpy(data, retval, num_ret * asize + 1);
 			}
 		}
 		XFree(retval);
