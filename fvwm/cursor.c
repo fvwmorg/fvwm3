@@ -126,7 +126,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	int my_nc;
 	FvwmWindow *fw2;
 	Cursor cursor;
-	struct monitor	*m = monitor_get_current();
+	struct monitor	*m = NULL;
 
 	cursor = 0;
 	cname = PeekToken(action, &action);
@@ -416,12 +416,18 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	/* Do the menus for good measure */
 	SetMenuCursor(Scr.FvwmCursors[CRS_MENU]);
 
-	SafeDefineCursor(m->PanFrameTop.win, Scr.FvwmCursors[CRS_TOP_EDGE]);
-	SafeDefineCursor(
-		m->PanFrameBottom.win, Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
-	SafeDefineCursor(m->PanFrameLeft.win, Scr.FvwmCursors[CRS_LEFT_EDGE]);
-	SafeDefineCursor(
-		m->PanFrameRight.win, Scr.FvwmCursors[CRS_RIGHT_EDGE]);
+	/* Set the cursors on all monitors. */
+	TAILQ_FOREACH(m, &monitor_q, entry) {
+		SafeDefineCursor(m->PanFrameTop.win,
+		   Scr.FvwmCursors[CRS_TOP_EDGE]);
+		SafeDefineCursor(m->PanFrameBottom.win,
+		   Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
+		SafeDefineCursor(m->PanFrameLeft.win,
+		   Scr.FvwmCursors[CRS_LEFT_EDGE]);
+		SafeDefineCursor(
+			m->PanFrameRight.win,
+			Scr.FvwmCursors[CRS_RIGHT_EDGE]);
+	}
 	/* migo (04/Nov/1999): don't annoy users which use xsetroot */
 	if (index == CRS_ROOT)
 	{
