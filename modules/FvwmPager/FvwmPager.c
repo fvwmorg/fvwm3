@@ -189,7 +189,17 @@ fpmonitor_by_output(int output)
 	return (NULL);
 }
 
+int
+fpmonitor_get_all_widths(void)
+{
+	return (DisplayWidth(dpy, DefaultScreen(dpy)));
+}
 
+int
+fpmonitor_get_all_heights(void)
+{
+	return (DisplayHeight(dpy, DefaultScreen(dpy)));
+}
 
 struct fpmonitor *
 fpmonitor_this(void)

@@ -452,8 +452,8 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon)
 {
 	struct fpmonitor *mon = fpmonitor_this();
 
-	int m_width = monitor_get_all_widths();
-	int m_height = monitor_get_all_heights();
+	int m_width = fpmonitor_get_all_widths();
+	int m_height = fpmonitor_get_all_heights();
 	if (monitor_to_track != NULL) {
 		/* Offset window location based on monitor location. */
 		rec->x -= (m_width - mon->w) * (rec->x / m_width) + mon->x;
@@ -486,8 +486,8 @@ pagerrec_to_fvwm(rectangle *rec, bool is_icon)
 {
 	struct fpmonitor *mon = fpmonitor_this();
 
-	int m_width = monitor_get_all_widths();
-	int m_height = monitor_get_all_heights();
+	int m_width = fpmonitor_get_all_widths();
+	int m_height = fpmonitor_get_all_heights();
 	int offset_x = 0, offset_y = 0;
 
 	int scale_w = desk_w, scale_h = desk_h;
@@ -667,8 +667,8 @@ void initialize_pager(void)
   /* Set window size if not fully set by user to match */
   /* aspect ratio of monitor(s) being shown. */
   if ( pwindow.width == 0 || pwindow.height == 0 ) {
-	  int vWidth  = monitor_get_all_widths();
-	  int vHeight = monitor_get_all_heights();
+	  int vWidth  = fpmonitor_get_all_widths();
+	  int vHeight = fpmonitor_get_all_heights();
 	  if (monitor_to_track != NULL) {
 		  vWidth = mon->w;
 		  vHeight = mon->h;
@@ -716,11 +716,11 @@ void initialize_pager(void)
   if (xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
-    pwindow.x = monitor_get_all_widths() - pwindow.width + pwindow.x;
+    pwindow.x = fpmonitor_get_all_widths() - pwindow.width + pwindow.x;
   }
   if (yneg)
   {
-    pwindow.y = monitor_get_all_heights() - pwindow.height + pwindow.y;
+    pwindow.y = fpmonitor_get_all_heights() - pwindow.height + pwindow.y;
     if(sizehints.win_gravity == NorthEastGravity)
       sizehints.win_gravity = SouthEastGravity;
     else
