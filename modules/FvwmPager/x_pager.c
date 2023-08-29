@@ -235,6 +235,9 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 			page_w = icon.width;
 		page_w = page_w / m->virtual_scr.VxPages;
 
+		if (page_w == 0)
+			page_w = 1;
+
 		rec.width = MinSize;
 		if (rec.x > page_w - MinSize &&
 			(rec.x + rec.width)%page_w < MinSize)
@@ -248,6 +251,9 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 		if (is_icon)
 			page_h = icon.height;
 		page_h = page_h / m->virtual_scr.VyPages;
+
+		if (page_h == 0)
+			page_h = 1;
 
 		rec.height = MinSize;
 		if (rec.y > page_h - MinSize &&
