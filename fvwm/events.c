@@ -3724,11 +3724,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 		 * request, due to XSizeHints disallowing resize -- FVWM would
 		 * always use old values if the application decided to toggle
 		 * such things, and FVWM would then never resize the window.
-		 *
-		 * Note that SET_HAS_NEW_WM_NORMAL_HINTS being set here to
-		 * true is still valid.
 		 */
-		GetWindowSizeHintsWithCheck(fw, 1);
+		GetWindowSizeHintsWithCheck(fw, 0);
 		break;
 	default:
 		if (te->xproperty.atom == _XA_WM_PROTOCOLS)
