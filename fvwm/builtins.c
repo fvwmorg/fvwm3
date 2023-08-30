@@ -868,11 +868,8 @@ static void DestroyFvwmDecor(FvwmDecor *decor)
 	}
 	FreeDecorFace(dpy, &decor->BorderStyle.active);
 	FreeDecorFace(dpy, &decor->BorderStyle.inactive);
-	if (decor->tag)
-	{
-		free(decor->tag);
-		decor->tag = NULL;
-	}
+	free(decor->tag);
+	decor->tag = NULL;
 
 	return;
 }
@@ -1838,11 +1835,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				}
 				return False;
 			}
-			if (file)
-			{
-				free(file);
-				file = NULL;
-			}
+			free(file);
+			file = NULL;
 
 			memset(&df->style, 0, sizeof(df->style));
 			if (strncasecmp(style,"Tiled",5)==0)

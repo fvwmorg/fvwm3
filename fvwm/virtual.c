@@ -3010,11 +3010,8 @@ apply_desktops_monitor(struct monitor *m)
 
 		if (d != NULL)
 		{
-			if (d->name != NULL)
-			{
-				free(d->name);
-				d->name = NULL;
-			}
+			free(d->name);
+			d->name = NULL;
 			CopyString(&d->name, dc->name);
 		}
 		else

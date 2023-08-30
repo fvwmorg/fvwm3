@@ -38,11 +38,8 @@ int	lib_log_level = 0;
 void
 set_log_file(char *name)
 {
-	if (log_file_name != NULL)
-	{
-		free(log_file_name);
-		log_file_name = NULL;
-	}
+	free(log_file_name);
+	log_file_name = NULL;
 	if (name != NULL)
 	{
 		log_file_name = fxstrdup(name);

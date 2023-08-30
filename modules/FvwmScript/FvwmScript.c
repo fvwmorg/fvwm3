@@ -738,10 +738,8 @@ void SendMsgAndString(char *action, char *type)
 	/* skip the integer argument */
 	action = GetNextToken(action, &token);
 	action = GetNextToken(action, &token);
-	if (LastString != NULL) {
-	  free(LastString);
-	  LastString = NULL;
-	}
+	free(LastString);
+	LastString = NULL;
 	if (action != NULL && strlen(action) > 0)
 	  CopyString(&LastString,action);
 

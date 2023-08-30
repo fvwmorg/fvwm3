@@ -90,11 +90,8 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 		}
 		return;
 	}
-	if (menu_name)
-	{
-		free(menu_name);
-		menu_name = NULL;
-	}
+	free(menu_name);
+	menu_name = NULL;
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;

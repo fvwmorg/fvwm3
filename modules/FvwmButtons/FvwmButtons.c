@@ -1310,11 +1310,8 @@ void Loop(void)
 	{
 	  XUngrabPointer(Dpy, CurrentTime); /* And fall through */
 	}
-	if (act)
-	{
-	  free(act);
-	  act = NULL;
-	}
+	free(act);
+	act = NULL;
 	/* fall through */
 
       case KeyRelease:
@@ -1351,12 +1348,8 @@ void Loop(void)
 	act = GetButtonAction(b,Event.xbutton.button);
 
 	ButtonPressProcess(b, &act);
-
-	if (act != NULL)
-	{
-	  free(act);
-	  act = NULL;
-	}
+	free(act);
+	act = NULL;
 	b = CurrentButton;
 	CurrentButton = NULL;
 	ActiveButton = b;

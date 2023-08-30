@@ -1461,11 +1461,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 				&shadow_dir, fontname, module);
 			break;
 		case 1: /* encoding= */
-			if (encoding != NULL)
-			{
-				free(encoding);
-				encoding = NULL;
-			}
+			free(encoding);
+			encoding = NULL;
 			if (opt_str && *opt_str)
 			{
 				CopyString(&encoding, opt_str);
@@ -2086,18 +2083,11 @@ void FlocaleDrawString(
 
 	if (do_free)
 	{
-		if (fws->e_str != NULL)
-		{
-			free(fws->e_str);
-			fws->e_str = NULL;
-		}
+		free(fws->e_str);
+		fws->e_str = NULL;
 	}
-
-	if (fws->str2b != NULL)
-	{
-		free(fws->str2b);
-		fws->str2b = NULL;
-	}
+	free(fws->str2b);
+	fws->str2b = NULL;
 
 	if(comb_chars != NULL)
 	{
@@ -2156,12 +2146,8 @@ void FlocaleDrawUnderline(
 		free(fws->e_str);
 		fws->e_str = NULL;
 	}
-
-	if(fws->str2b != NULL)
-	{
-		free(fws->str2b);
-		fws->str2b = NULL;
-	}
+	free(fws->str2b);
+	fws->str2b = NULL;
 	free(l_to_v);
 
 	return;

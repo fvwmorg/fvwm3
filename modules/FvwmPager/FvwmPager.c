@@ -994,11 +994,8 @@ void list_new_desk(unsigned long *body)
 	ChangeDeskForWindow(t, t->desk);
     }
     item = FindDeskStrings(m->virtual_scr.CurrentDesk);
-    if (Desks[0].label != NULL)
-    {
-      free(Desks[0].label);
-      Desks[0].label = NULL;
-    }
+    free(Desks[0].label);
+    Desks[0].label = NULL;
     if (item->next != NULL && item->next->label != NULL)
     {
       CopyString(&Desks[0].label, item->next->label);
@@ -1016,12 +1013,8 @@ void list_new_desk(unsigned long *body)
       PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
       Desks[0].bgPixmap = NULL;
     }
-
-    if (Desks[0].Dcolor != NULL)
-    {
-      free (Desks[0].Dcolor);
-      Desks[0].Dcolor = NULL;
-    }
+    free (Desks[0].Dcolor);
+    Desks[0].Dcolor = NULL;
 
     if (item->next != NULL)
     {
@@ -1740,12 +1733,8 @@ static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
     item = FindDeskStrings(desk);
     if (item->next != NULL)
     {
-      /* replace label */
-      if (item->next->label != NULL)
-      {
-	free(item->next->label);
-	item->next->label = NULL;
-      }
+      free(item->next->label);
+item->next->label = NULL;
       CopyString(&(item->next->label), label);
     }
     else
@@ -1830,11 +1819,8 @@ void ParseOptions(void)
     }
     else if (StrEquals(token, "ImagePath"))
     {
-      if (ImagePath != NULL)
-      {
-	free(ImagePath);
-	ImagePath = NULL;
-      }
+      free(ImagePath);
+ImagePath = NULL;
       GetNextToken(next, &ImagePath);
 
       continue;
@@ -2022,11 +2008,8 @@ void ParseOptions(void)
       if(strncasecmp(font_string,"none",4) == 0)
       {
 	uselabel = 0;
-	if (font_string)
-	{
-	  free(font_string);
-	  font_string = NULL;
-	}
+	free(font_string);
+	font_string = NULL;
       }
     }
     else if (StrEquals(resource, "Fore"))
@@ -2063,12 +2046,8 @@ void ParseOptions(void)
 	item = FindDeskStrings(desk);
 	if (item->next != NULL)
 	{
-	  /* replace Dcolor */
-	  if (item->next->Dcolor != NULL)
-	  {
-	    free(item->next->Dcolor);
-	    item->next->Dcolor = NULL;
-	  }
+	  free(item->next->Dcolor);
+	  item->next->Dcolor = NULL;
 	  CopyString(&(item->next->Dcolor), arg2);
 	}
 	else
