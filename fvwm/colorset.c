@@ -263,12 +263,8 @@ static char *get_simple_color(
 	int special_flag, char *special_string)
 {
 	char *rest;
-
-	if (*color)
-	{
-		free(*color);
-		*color = NULL;
-	}
+	free(*color);
+	*color = NULL;
 	rest = GetNextToken(string, color);
 	if (*color)
 	{
@@ -360,16 +356,10 @@ static void free_colorset_background(colorset_t *cs, Bool do_free_args)
 	}
 	if (do_free_args)
 	{
-		if (cs->pixmap_args != NULL)
-		{
-			free(cs->pixmap_args);
-			cs->pixmap_args = NULL;
-		}
-		if (cs->gradient_args != NULL)
-		{
-			free(cs->gradient_args);
-			cs->gradient_args = NULL;
-		}
+		free(cs->pixmap_args);
+		cs->pixmap_args = NULL;
+		free(cs->gradient_args);
+		cs->gradient_args = NULL;
 		cs->is_maybe_root_transparent = False;
 		cs->pixmap_type = 0;
 	}
@@ -950,12 +940,8 @@ void parse_colorset(int n, char *line)
 			}
 			break;
 		} /* switch */
-
-		if (option)
-		{
-			free(option);
-			option = NULL;
-		}
+		free(option);
+		option = NULL;
 		free(optstring);
 		optstring = NULL;
 	} /* while (line && *line) */

@@ -1137,20 +1137,15 @@ void ParseConfigLine(char *buf) {
 	}
 	break;
       case Color_arg:                   /* Color */
-	if (Animate.color) {
-	  free(Animate.color);          /* release storage holding color name */
-	  Animate.color = 0;            /* show its gone */
-	}
+	free(Animate.color);          /* release storage holding color name */
+	Animate.color = 0;
 	if ((strcasecmp(q,"None") != 0) /* If not color "none"  */
 	    && (strcasecmp(q,"Black^White") != 0)
 	    && (strcasecmp(q,"White^Black") != 0)) {
 	  Animate.color = fxstrdup(q); /* make copy of name */
 	}
-	/* override the pixmap option */
-	if (Animate.pixmap) {
-	  free(Animate.pixmap);
-	  Animate.pixmap = 0;
-	}
+	free(Animate.pixmap);
+	Animate.pixmap = 0;
 	if (pixmap) {
 	  XFreePixmap(dpy, pixmap);
 	  pixmap = None;
@@ -1158,10 +1153,8 @@ void ParseConfigLine(char *buf) {
 	CreateDrawGC();                /* update GC */
 	break;
       case Pixmap_arg:
-	if (Animate.pixmap) {
-	  free(Animate.pixmap);        /* release storage holding pixmap name */
-	  Animate.pixmap = 0;          /* show its gone */
-	}
+	free(Animate.pixmap);        /* release storage holding pixmap name */
+	Animate.pixmap = 0;
 	if (strcasecmp(q,"None") != 0) { /* If not pixmap "none"  */
 	  Animate.pixmap = fxstrdup(q); /* make copy of name */
 	}

@@ -625,11 +625,8 @@ static XColor *AllocNonlinearGradient(
 			}
 			curpixel += n - 1;
 		}
-		if (c)
-		{
-			free(c);
-			c = NULL;
-		}
+		free(c);
+		c = NULL;
 		if (curpixel != seg_end_colors[i])
 		{
 			fvwm_debug(__func__,

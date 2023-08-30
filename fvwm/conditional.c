@@ -786,11 +786,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			    "Use comma instead of whitespace to separate "
 			    "conditions");
 		} else {
-			if (allocated_condition != NULL)
-			{
-				free(allocated_condition);
-				allocated_condition = NULL;
-			}
+			free(allocated_condition);
+			allocated_condition = NULL;
 			if (next_condition && *next_condition)
 			{
 				next_condition = GetNextFullOption(

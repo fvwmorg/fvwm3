@@ -2560,12 +2560,8 @@ static char *get_tips(WinManager *man, Button *b)
 	{
 		return NULL;
 	}
-
-	if (free_str != NULL)
-	{
-		free(free_str);
-		free_str = NULL;
-	}
+	free(free_str);
+	free_str = NULL;
 
 	if (man->tips_formatstring && b->drawn_state.win)
 	{

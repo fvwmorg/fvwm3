@@ -847,11 +847,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 33: /* ItemFormat */
-			if (ST_ITEM_FORMAT(tmpms))
-			{
-				free(ST_ITEM_FORMAT(tmpms));
-				ST_ITEM_FORMAT(tmpms) = NULL;
-			}
+			free(ST_ITEM_FORMAT(tmpms));
+			ST_ITEM_FORMAT(tmpms) = NULL;
 			if (arg1)
 			{
 				ST_ITEM_FORMAT(tmpms) = fxstrdup(arg1);
@@ -1097,19 +1094,12 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 				   poption);
 			break;
 		} /* switch */
-
-		if (option)
-		{
-			free(option);
-			option = NULL;
-		}
+		free(option);
+		option = NULL;
 		free(optstring);
 		optstring = NULL;
-		if (arg1)
-		{
-			free(arg1);
-			arg1 = NULL;
-		}
+		free(arg1);
+		arg1 = NULL;
 	} /* while */
 
 	if (has_gc_changed)
@@ -1266,13 +1256,8 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	/* Hilight3DThickness */
 	ST_IS_ITEM_RELIEF_REVERSED(destms) =
 		ST_IS_ITEM_RELIEF_REVERSED(origms);
-
-	/* ItemFormat */
-	if (ST_ITEM_FORMAT(destms))
-	{
-		free(ST_ITEM_FORMAT(destms));
-		ST_ITEM_FORMAT(destms) = NULL;
-	}
+	free(ST_ITEM_FORMAT(destms));
+	ST_ITEM_FORMAT(destms) = NULL;
 	if (ST_ITEM_FORMAT(origms))
 	{
 		ST_ITEM_FORMAT(destms) = fxstrdup(ST_ITEM_FORMAT(origms));

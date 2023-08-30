@@ -3301,12 +3301,8 @@ void destroy_window(FvwmWindow *fw)
 	/****** free strings ******/
 
 	free_window_names(fw, True, True);
-
-	if (fw->style_name)
-	{
-		free(fw->style_name);
-		fw->style_name = NULL;
-	}
+	free(fw->style_name);
+	fw->style_name = NULL;
 	if (fw->class.res_name && fw->class.res_name != NoResource)
 	{
 		XFree ((char *)fw->class.res_name);
