@@ -134,7 +134,7 @@ func main() {
 	shell.SetHistoryPath(consoleHistory)
 
 	shell.NotFound(func(c *ishell.Context) {
-		handleInput(c, strings.Join(c.Args, " "), writeToFMD)
+		handleInput(c, strings.Join(c.RawArgs, " "), writeToFMD)
 	})
 
 	// register a function for overriding Fvwm3's "Quit" command, to
