@@ -1474,8 +1474,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 		default:
 			break;
 		}
-		if (opt_str != NULL)
-			free(opt_str);
+		free(opt_str);
 	}
 	if (str && *str)
 	{
@@ -1647,10 +1646,8 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	}
 	if (flf->flags.must_free_fc)
 	{
-		if (flf->fc->x)
-			free(flf->fc->x);
-		if (flf->fc->bidi)
-			free(flf->fc->bidi);
+		free(flf->fc->x);
+		free(flf->fc->bidi);
 		if (flf->fc->locale != NULL)
 		{
 			while (FLC_GET_LOCALE_CHARSET(flf->fc,i) != NULL)
@@ -2105,8 +2102,7 @@ void FlocaleDrawString(
 	if(comb_chars != NULL)
 	{
 	        free(comb_chars);
-		if(pixel_pos)
-			free(pixel_pos);
+		free(pixel_pos);
 	}
 
 	return;

@@ -896,8 +896,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
 
   if (err)
   {
-    if (buf)
-      free(buf);
+    free(buf);
     return fxstrdup("0");
   }
   l = strlen(buf);
@@ -1157,8 +1156,7 @@ static void ChangeFont (int NbArg,long *TabArg)
   i++;
   arg[1] = CalcArg(TabArg,&i);
   IdItem = TabIdObj[atoi(arg[0])];
-  if (tabxobj[IdItem]->font)
-    free(tabxobj[IdItem]->font);
+  free(tabxobj[IdItem]->font);
   tabxobj[IdItem]->font = fxstrdup(arg[1]);
 
   if ((Ffont =
@@ -1219,9 +1217,7 @@ static void ChangeTitle (int NbArg,long *TabArg)
   i++;
   arg[1] = CalcArg(TabArg,&i);
   IdItem = TabIdObj[atoi(arg[0])];
-
-  if (tabxobj[IdItem]->title)
-    free(tabxobj[IdItem]->title);
+  free(tabxobj[IdItem]->title);
   tabxobj[IdItem]->title=fxstrdup(arg[1]);
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
@@ -1241,9 +1237,7 @@ static void ChangeLocaleTitle (int NbArg,long *TabArg)
   i++;
   arg[1] = CalcArg(TabArg,&i);
   IdItem = TabIdObj[atoi(arg[0])];
-
-  if (tabxobj[IdItem]->title)
-    free(tabxobj[IdItem]->title);
+  free(tabxobj[IdItem]->title);
   tabxobj[IdItem]->title=fxstrdup(FGettext(arg[1]));
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);

@@ -2800,10 +2800,7 @@ static void do_label_window(PagerWindow *t, Window w)
   {
     return;
   }
-
-  /* Update the window label for this window */
-  if (t->window_label)
-    free(t->window_label);
+  free(t->window_label);
   t->window_label = GetBalloonLabel(t, WindowLabelFormat);
   if (w != None)
   {

@@ -837,14 +837,10 @@ void list_destroy(unsigned long *body)
       XDestroyWindow(dpy,t->IconView);
       if(FocusWin == t)
 	FocusWin = NULL;
-      if(t->res_class != NULL)
-	free(t->res_class);
-      if(t->res_name != NULL)
-	free(t->res_name);
-      if(t->window_name != NULL)
-	free(t->window_name);
-      if(t->icon_name != NULL)
-	free(t->icon_name);
+      free(t->res_class);
+      free(t->res_name);
+      free(t->window_name);
+      free(t->icon_name);
       free(t);
     }
 }
@@ -1309,18 +1305,15 @@ void list_window_name(unsigned long *body,unsigned long type)
     {
       switch (type) {
       case M_RES_CLASS:
-	if(t->res_class != NULL)
-	  free(t->res_class);
+	free(t->res_class);
 	CopyString(&t->res_class,(char *)(&body[3]));
 	break;
       case M_RES_NAME:
-	if(t->res_name != NULL)
-	  free(t->res_name);
+	free(t->res_name);
 	CopyString(&t->res_name,(char *)(&body[3]));
 	break;
       case M_VISIBLE_NAME:
-	if(t->window_name != NULL)
-	  free(t->window_name);
+	free(t->window_name);
 	CopyString(&t->window_name,(char *)(&body[3]));
 	break;
       }
@@ -1368,8 +1361,7 @@ void list_icon_name(unsigned long *body)
     }
   if(t!= NULL)
     {
-      if(t->icon_name != NULL)
-	free(t->icon_name);
+      free(t->icon_name);
       CopyString(&t->icon_name,(char *)(&body[3]));
       /* repaint by clearing window */
       if ((FwindowFont != NULL) && (t->icon_name != NULL)
@@ -2025,8 +2017,7 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "Font"))
     {
-      if (font_string)
-	free(font_string);
+      free(font_string);
       CopyStringWithQuotes(&font_string, next);
       if(strncasecmp(font_string,"none",4) == 0)
       {
@@ -2042,8 +2033,7 @@ void ParseOptions(void)
     {
       if(Pdepth > 1)
       {
-	if (PagerFore)
-	  free(PagerFore);
+	free(PagerFore);
 	CopyString(&PagerFore,arg1);
       }
     }
@@ -2051,8 +2041,7 @@ void ParseOptions(void)
     {
       if(Pdepth > 1)
       {
-	if (PagerBack)
-	  free(PagerBack);
+	free(PagerBack);
 	CopyString(&PagerBack,arg1);
       }
     }
@@ -2203,15 +2192,13 @@ void ParseOptions(void)
     {
       if(Pdepth > 1)
       {
-	if (HilightC)
-	  free(HilightC);
+	free(HilightC);
 	CopyString(&HilightC,arg1);
       }
     }
     else if (StrEquals(resource, "SmallFont"))
     {
-      if (smallFont)
-	free(smallFont);
+      free(smallFont);
       CopyStringWithQuotes(&smallFont, next);
       if (strncasecmp(smallFont,"none",4) == 0)
       {
@@ -2263,14 +2250,10 @@ void ParseOptions(void)
     {
       if (Pdepth > 1)
       {
-	if (WindowFore)
-	  free(WindowFore);
-	if (WindowBack)
-	  free(WindowBack);
-	if (WindowHiFore)
-	  free(WindowHiFore);
-	if (WindowHiBack)
-	  free(WindowHiBack);
+	free(WindowFore);
+	free(WindowBack);
+	free(WindowHiFore);
+	free(WindowHiBack);
 	CopyString(&WindowFore, arg1);
 	CopyString(&WindowBack, arg2);
 	tline2 = GetNextToken(tline2, &WindowHiFore);
@@ -2311,8 +2294,7 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource,"WindowLabelFormat"))
     {
-      if (WindowLabelFormat)
-	free(WindowLabelFormat);
+      free(WindowLabelFormat);
       CopyString(&WindowLabelFormat,arg1);
     }
     else if (StrEquals(resource,"UseSkipList"))
@@ -2345,8 +2327,7 @@ void ParseOptions(void)
        -- ric@giccs.georgetown.edu */
     else if (StrEquals(resource, "Balloons"))
     {
-      if (BalloonTypeString)
-	free(BalloonTypeString);
+      free(BalloonTypeString);
       CopyString(&BalloonTypeString, arg1);
 
       if ( strncasecmp(BalloonTypeString, "Pager", 5) == 0 ) {
@@ -2372,8 +2353,7 @@ void ParseOptions(void)
     {
       if (Pdepth > 1)
       {
-	if (BalloonBack)
-	  free(BalloonBack);
+	free(BalloonBack);
 	CopyString(&BalloonBack, arg1);
       }
     }
@@ -2382,23 +2362,20 @@ void ParseOptions(void)
     {
       if (Pdepth > 1)
       {
-	if (BalloonFore)
-	  free(BalloonFore);
+	free(BalloonFore);
 	CopyString(&BalloonFore, arg1);
       }
     }
 
     else if (StrEquals(resource, "BalloonFont"))
     {
-      if (BalloonFont)
-	free(BalloonFont);
+      free(BalloonFont);
       CopyStringWithQuotes(&BalloonFont, next);
     }
 
     else if (StrEquals(resource, "BalloonBorderColor"))
     {
-      if (BalloonBorderColor)
-	free(BalloonBorderColor);
+      free(BalloonBorderColor);
       CopyString(&BalloonBorderColor, arg1);
     }
 
@@ -2424,8 +2401,7 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource,"BalloonStringFormat"))
     {
-      if (BalloonFormatString)
-	free(BalloonFormatString);
+      free(BalloonFormatString);
       CopyString(&BalloonFormatString,arg1);
     }
 

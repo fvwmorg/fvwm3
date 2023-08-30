@@ -750,8 +750,7 @@ void SendMsgAndString(char *action, char *type)
 	fvwm_debug(__func__, "[%s][%s]: <<WARNING>> no Widget %i\n",
                    ScriptName,type,val[0]);
       }
-      if (token)
-	free(token);
+      free(token);
     }else{
       fvwm_debug(__func__, "[%s][%s]: <<WARNING>> Syntax Error: %s\n",
                  ScriptName,type,action);
@@ -788,8 +787,8 @@ void SendMsgAndString(char *action, char *type)
                        type);
     }
 
-    if(arg1) free(arg1);
-    if(arg2) free(arg2);
+    free(arg1);
+    free(arg2);
 
   }
 }
@@ -1295,9 +1294,7 @@ void MainLoop (void)
 	  action = GetNextToken(action, &token);
 
           SendMsgAndString(action, token);
-
-	  if (token)
-	    free(token);
+	  free(token);
 	}
 	else
 	  for (i=0; i<nbobj; i++)
