@@ -468,21 +468,18 @@ static void ct_Geometry(char *cp)
 }
 static void ct_Fore(char *cp)
 {
-  if (color_names[c_fg])
-    free(color_names[c_fg]);
+  free(color_names[c_fg]);
   color_names[c_fg] = fxstrdup(cp);
   colorset = -1;
   myfprintf((stderr, "ColorFore: %s\n", color_names[c_fg]));
 }
 static void ct_Back(char *cp)
 {
-  if (color_names[c_bg])
-    free(color_names[c_bg]);
+  free(color_names[c_bg]);
   color_names[c_bg] = fxstrdup(cp);
   if (bg_state == 'd')
   {
-    if (screen_background_color)
-      free(screen_background_color);
+    free(screen_background_color);
     screen_background_color = fxstrdup(color_names[c_bg]);
     bg_state = 's';			/* indicate set by command */
   }
@@ -497,16 +494,14 @@ static void ct_Colorset(char *cp)
 }
 static void ct_ItemFore(char *cp)
 {
-  if (color_names[c_item_fg])
-    free(color_names[c_item_fg]);
+  free(color_names[c_item_fg]);
   color_names[c_item_fg] = fxstrdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemFore: %s\n", color_names[c_item_fg]));
 }
 static void ct_ItemBack(char *cp)
 {
-  if (color_names[c_item_bg])
-    free(color_names[c_item_bg]);
+  free(color_names[c_item_bg]);
   color_names[c_item_bg] = fxstrdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemBack: %s\n", color_names[c_item_bg]));
@@ -518,22 +513,19 @@ static void ct_ItemColorset(char *cp)
 }
 static void ct_Font(char *cp)
 {
-  if (font_names[f_text])
-    free(font_names[f_text]);
+  free(font_names[f_text]);
   CopyStringWithQuotes(&font_names[f_text], cp);
   myfprintf((stderr, "Font: %s\n", font_names[f_text]));
 }
 static void ct_TimeoutFont(char *cp)
 {
-  if (font_names[f_timeout])
-    free(font_names[f_timeout]);
+  free(font_names[f_timeout]);
   CopyStringWithQuotes(&font_names[f_timeout], cp);
   myfprintf((stderr, "TimeoutFont: %s\n", font_names[f_timeout]));
 }
 static void ct_ButtonFont(char *cp)
 {
-  if (font_names[f_button])
-    free(font_names[f_button]);
+  free(font_names[f_button]);
   CopyStringWithQuotes(&font_names[f_button], cp);
   myfprintf((stderr, "ButtonFont: %s\n", font_names[f_button]));
 }
@@ -559,8 +551,7 @@ static void ct_ButtonPointer(char *cp)
 }
 static void ct_InputFont(char *cp)
 {
-  if (font_names[f_input])
-    free(font_names[f_input]);
+  free(font_names[f_input]);
   CopyStringWithQuotes(&font_names[f_input], cp);
   myfprintf((stderr, "InputFont: %s\n", font_names[f_input]));
 }
@@ -1051,12 +1042,10 @@ static void PutDataInForm(char *cp)
     do {
       if (strcasecmp(var_name,item->header.name) == 0) {
 	var_len = strlen(cp);
-	if (item->input.init_value)
-	  free(item->input.init_value);
+	free(item->input.init_value);
 	item->input.init_value = fxmalloc(var_len + 1);
 	strcpy(item->input.init_value,cp); /* new initial value in field */
-	if (item->input.value)
-	  free(item->input.value);
+	free(item->input.value);
 	item->input.buf = var_len+1;
 	item->input.value = fxmalloc(item->input.buf);
 	strcpy(item->input.value,cp);	  /* new value in field */
@@ -1666,8 +1655,7 @@ void RedrawTimeout(Item *item)
     item->header.dt_ptr->dt_Fstr->colorset = &Colorset[colorset];
     item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
   }
-  if (item->header.dt_ptr->dt_Fstr->str != NULL)
-    free(item->header.dt_ptr->dt_Fstr->str);
+  free(item->header.dt_ptr->dt_Fstr->str);
   item->header.dt_ptr->dt_Fstr->str = fxstrdup(tmpbuf);
   item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x + TEXT_SPC;
   item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + ( CF.padVText / 2 ) +

@@ -728,7 +728,7 @@ static void ParseContainer(char **ss,button_info *b)
 			}
 			break;
     case 5: /* Fore */
-      if (b->c->fore) free(b->c->fore);
+      free(b->c->fore);
       b->c->fore = seekright(&s);
       b->c->flags.b_Fore = (b->c->fore ? 1 : 0);
       break;
@@ -807,8 +807,7 @@ static void ParseContainer(char **ss,button_info *b)
 	  char *temp;
 
 	  temp = seekright(&s);
-	  if (temp)
-	    free(temp);
+	  free(temp);
 	}
       }
       break;
@@ -854,8 +853,7 @@ static void ParseContainer(char **ss,button_info *b)
       t = seekright(&s);
       fvwm_debug(__func__, "%s: Illegal container option \"%s\"\n",MyName,
                  (t)?t:"");
-      if (t)
-	free(t);
+      free(t);
     }
   }
   if (*s)

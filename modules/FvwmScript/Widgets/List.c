@@ -223,8 +223,7 @@ void DrawCellule(
 			  inter.x, inter.y, inter.width, inter.height,
 			  False);
 	  }
-	  if (Title != NULL)
-		  free(Title);
+	  free(Title);
   }
 }
 
