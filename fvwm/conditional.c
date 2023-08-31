@@ -1122,14 +1122,23 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 			return False;
 		}
 	}
+
+	if (mask->my_flags.do_check_cond_desk &&
+	    mask->my_flags.do_check_screen) {
+		if (fw->Desk == mask->desk) {
+			/*Check the screen. */
+			if (mask->my_flags.do_not_check_screen) {
+				/* Negation of (!screen n) specified. */
+				return (fw->m != mask->screen);
+			} else
+				return (fw->m == mask->screen);
+		}
+		return False;
+	}
+
 	if (mask->my_flags.do_check_cond_desk)
 	{
 		if (fw->Desk == mask->desk)
-			return True;
-		else
-			return False;
-
-		if (fw->Desk != mask->desk)
 			return True;
 		else
 			return False;
