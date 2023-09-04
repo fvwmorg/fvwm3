@@ -600,7 +600,7 @@ void print_bindings(void)
 /* Removes all unused modifiers from in_modifiers */
 unsigned int MaskUsedModifiers(unsigned int in_modifiers)
 {
-	return in_modifiers & ~mods_unused;
+	return in_modifiers & ~mods_unused & ~DEFAULT_XKB_MODS_IGNORED;
 }
 
 unsigned int GetUnusedModifiers(void)

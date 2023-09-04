@@ -38,6 +38,16 @@
         ((Button1MotionMask * ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1)))
 #define DEFAULT_MODS_UNUSED                LockMask
 
+/* Default modifier bits to ignore in XEvent.xkey.state or XEvent.xbutton.state.
+ * According to section "Xkb State to Core Protocol State Transformation" of the
+ * "The X Keyboard Extension: Library Specification", the Xkb-aware server
+ * reports group index in bits 13 and 14, which interferes with FVWM's modifier
+ * handling as described in https://github.com/fvwmorg/fvwm3/issues/861. */
+#ifdef HAVE_X11_XKBLIB_H
+#define DEFAULT_XKB_MODS_IGNORED ((1 << 13) | (1 << 14))
+#else
+#define DEFAULT_XKB_MODS_IGNORED 0
+#endif
 
 /*
  * These values may be adjusted to fine tune the menu looks.
