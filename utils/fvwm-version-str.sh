@@ -17,5 +17,5 @@ VERSION="released"
 if grep -q -i '^ISRELEASED="yes"' ./configure.ac; then
 	echo "$VERSION"
 else
-	git describe --always --long --dirty
+	git describe --always --long --dirty --tags
 fi
