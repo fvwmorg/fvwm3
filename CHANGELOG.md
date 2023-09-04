@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.0.8](https://github.com/fvwmorg/fvwm3/tree/1.0.8) (2023-09-04)
+
+## What's Changed
+### Enhancements
+* Add .desktop entry for XSession by @Zirias in https://github.com/fvwmorg/fvwm3/pull/876
+### Other Changes
+* FvwmScript: fix rendering of checkboxes by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/870
+* Ls/manpage by @lgsobalvarro in https://github.com/fvwmorg/fvwm3/pull/874
+* SnapAttraction: honor all tokens mentioned in the manpage by @ch-f in https://github.com/fvwmorg/fvwm3/pull/869
+* docs: FvwmPerl: fixup examples by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/877
+* default-config: use primary mon for RightPanel by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/884
+* XGetWindowProp: accommodate NUL byte by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/883
+* FvwmPager: fix division by zero by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/885
+* *: code cleanup: remove if (x) free checks by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/891
+* FvwmPrompt: preserve quotes, etc by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/892
+* conditional: Screen+Desk is not mutually-exclusive by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/895
+* sizehints: tighten check by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/888
+* CursorStyle: fix panframe cursors by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/887
+* FvwmPager: add fpmonitor impls for widths/heights by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/886
+* MaskUsedModifiers: remove bits used for XKB group index by @farblos in https://github.com/fvwmorg/fvwm3/pull/901
+
+## New Contributors
+* @ch-f made their first contribution in https://github.com/fvwmorg/fvwm3/pull/869
+* @farblos made their first contribution in https://github.com/fvwmorg/fvwm3/pull/901
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.0.7...1.0.8
 ## [1.0.7](https://github.com/fvwmorg/fvwm3/tree/1.0.7) (2023-07-06)
 
 ## What's Changed
