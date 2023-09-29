@@ -20,6 +20,7 @@
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
+#include "window_flags.h"
 
 #include <stdio.h>
 #ifdef HAVE_GETPWUID
@@ -1538,6 +1539,8 @@ MatchWinToSM(
 		{
 			matches[i].used = 1;
 
+			SET_ICONIFIED(ewin, 0);
+
 			if (!Restarting)
 			{
 				/* We don't want to restore too much state if
@@ -1609,7 +1612,9 @@ MatchWinToSM(
 					win_opts->initial_icon_x -= m->virtual_scr.Vx;
 					win_opts->initial_icon_y -= m->virtual_scr.Vy;
 				}
-			}
+			} else
+				win_opts->initial_state = NormalState;
+
 			ewin->m = matches[i].m;
 			ewin->g.normal.x = matches[i].x;
 			ewin->g.normal.y = matches[i].y;
