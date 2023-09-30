@@ -78,7 +78,7 @@ void insert_metainfo(char *key, char *value)
 
 	/* It's a new item, add it to the list. */
 	mi_new = new_metainfo();
-	mi_new->key = key;
+	mi_new->key = fxstrdup(key);
 	CopyString(&mi_new->value, value);
 
 	mi_new->next = mi_store;
@@ -192,6 +192,7 @@ void CMD_InfoStoreAdd(F_CMD_ARGS)
 	}
 
 	insert_metainfo(key, value);
+	free(key);
 	free(value);
 
 	return;
