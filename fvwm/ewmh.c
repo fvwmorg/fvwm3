@@ -1916,7 +1916,7 @@ void EWMH_Init(struct monitor *m)
 	int supported_count = 0;
 	long val;
 	XTextProperty text;
-	unsigned char *utf_name = "FVWM3";
+	char *utf_name = "FVWM3";
 	char *names[1];
 	XClassHint classhints;
 
@@ -1952,7 +1952,7 @@ void EWMH_Init(struct monitor *m)
 
 	ewmh_ChangeProperty(
 		Scr.NoFocusWin, "_NET_WM_NAME", EWMH_ATOM_LIST_PROPERTY_NOTIFY,
-		utf_name, strlen(utf_name));
+		(unsigned char *)utf_name, strlen(utf_name));
 
 	clean_up();
 
