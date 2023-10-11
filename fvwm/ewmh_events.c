@@ -49,6 +49,14 @@ extern ewmh_atom ewmh_atom_wm_state[];
 int ewmh_CurrentDesktop(
 	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
+	/* If we get a request through which is for the root window, and the
+	 * intend window (fw) is NULL, disallow this.  We only want to switch
+	 * desktops on client requests for the correct desktop.
+	 */
+	if (ev->xclient.window == Scr.Root && fw == NULL) {
+		return -1;
+	}
+
 	struct monitor	*m = monitor_get_current();
 	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff)
 	{
@@ -63,6 +71,10 @@ int ewmh_CurrentDesktop(
 
 		return -1;
 	}
+
+	if (fw != NULL)
+		m = fw->m;
+
 	goto_desk(ev->xclient.data.l[0], m);
 
 	return -1;
