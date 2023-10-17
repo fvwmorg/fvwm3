@@ -996,6 +996,7 @@ AC_DEFUN([AM_SAFETY_CHECK_MKSTEMP],[
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 int main(void)
 {
   char template[128];
