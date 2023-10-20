@@ -2140,8 +2140,22 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 void CMD_EdgeScroll(F_CMD_ARGS)
 {
 	int val1, val2, val1_unit, val2_unit, n;
-	char *token;
-	struct monitor	*m;
+	char *token, *option;
+	struct monitor	*m = NULL, *m_this = NULL;
+
+	option = PeekToken(action, NULL);
+	if (StrEquals(option, "screen")) {
+		/* Skip literal 'screen' */
+		option = PeekToken(action, &action);
+		/* Actually get the screen value. */
+		option = PeekToken(action, &action);
+
+		if ((m = monitor_resolve_name(option)) == NULL) {
+			fvwm_debug(__func__, "Invalid screen: %s", option);
+			return;
+		}
+	}
+
 
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (n != 2)
@@ -2194,10 +2208,20 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 		}
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	if (m != NULL) {
 		m->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
 		m->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
 		checkPanFrames(m);
+
+		return;
+	}
+
+	TAILQ_FOREACH(m_this, &monitor_q, entry) {
+		if (m != NULL && m == m_this)
+			continue;
+		m_this->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
+		m_this->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
+		checkPanFrames(m_this);
 	}
 
 
