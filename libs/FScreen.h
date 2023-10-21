@@ -117,6 +117,9 @@ struct monitor {
                 int Vx;
                 int Vy;
 
+		int edge_thickness;
+		int last_edge_thickness;
+
                 int EdgeScrollX;
                 int EdgeScrollY;
 
@@ -135,6 +138,7 @@ struct monitor {
 	PanFrame PanFrameLeft;
 	PanFrame PanFrameRight;
 	PanFrame PanFrameBottom;
+	bool pan_frames_mapped;
 
 	TAILQ_ENTRY(monitor) entry;
 };

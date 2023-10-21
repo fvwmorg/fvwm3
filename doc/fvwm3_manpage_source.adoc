@@ -7390,9 +7390,13 @@ Style * EdgeMoveResistance moving screen-scrolling
 +
 Fvwm does this substitution automatically and prints a warning.
 
-*EdgeScroll* _horizontal_[p] _vertical_[p] [wrap | wrapx | wrapy]::
+*EdgeScroll* [_screen RANDRNAME_] _horizontal_[p] _vertical_[p] [wrap | wrapx | wrapy]::
 	Specifies the percentage of a page to scroll when the cursor hits the
-	edge of a page. A trailing '_p_' changes the interpretation to mean
+	edge of a page.
+	The optional '_screen RANDRNAME_' specifies the RandR monitor which
+	this setting should apply to, ignoring all other monitors.  Without
+	this option, it applies the value to all monitors.
+	A trailing '_p_' changes the interpretation to mean
 	pixels. If you do not want any paging or scrolling when you hit the
 	edge of a page include
 +
@@ -7426,10 +7430,14 @@ EdgeScroll 100000 100000
 is used fvwm scrolls by whole pages, wrapping around at the edge of
 the desktop.
 
-*EdgeThickness* 0 | 1 | 2::
+*EdgeThickness* [_screen RANDRNAME_] 0 | 1 | 2::
 	This is the width or height of the invisible window that fvwm creates
 	on the edges of the screen that are used for the edge scrolling
 	feature.
++
+The optional '_screen RANDRNAME_' specifies the RandR monitor which
+this setting should apply to, ignoring all other monitors.  Without
+this option, it applies the value to all monitors.
 +
 In order to enable page scrolling via the mouse, four windows called
 the "pan frames" are placed at the very edge of the screen. This is
