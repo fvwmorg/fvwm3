@@ -11,7 +11,7 @@ int HandlePaging(
 	XEvent *pev, position warp_size, position *p, position *delta,
 	Bool Grab, Bool fLoop,	Bool do_continue_previous, int delay);
 void raisePanFrames(void);
-void initPanFrames(void);
+void initPanFrames(struct monitor *);
 Bool is_pan_frame(Window w);
 void MoveViewport(struct monitor *, int newx, int newy,Bool);
 void goto_desk(int desk, struct monitor *);

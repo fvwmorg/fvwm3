@@ -470,7 +470,10 @@ scan_screens(Display *dpy)
 			m->flags |= MONITOR_NEW;
 			m->si = screen_info_new();
 			m->si->name = strdup(name);
+
 			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
+			m->virtual_scr.edge_thickness = 2;
+			m->virtual_scr.last_edge_thickness = 2;
 
 			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
 			TAILQ_INSERT_TAIL(&monitor_q, m, entry);

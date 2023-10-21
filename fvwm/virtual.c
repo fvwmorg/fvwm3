@@ -114,10 +114,6 @@
  *
  * 2 is the default.
  */
-static int edge_thickness = 2;
-static int last_edge_thickness = 2;
-static bool pan_frames_mapped = false;
-
 static void store_desktop_cmd(int, char *);
 static int number_of_desktops(struct monitor *);
 static void init_one_panframe(PanFrame *, int, int, int, int, int);
@@ -735,6 +731,7 @@ int HandlePaging(
 	static Bool is_last_position_valid = False;
 	struct monitor	*m = monitor_get_current();
 	int mwidth, mheight;
+	int edge_thickness = m->virtual_scr.edge_thickness;
 
 	mwidth = monitor_get_all_widths();
 	mheight = monitor_get_all_heights();
@@ -1049,6 +1046,8 @@ void checkPanFrames(struct monitor *m)
 	int x = m->si->x;
 	int y = m->si->y;
 
+	int edge_thickness = m->virtual_scr.edge_thickness;
+	int last_edge_thickness = m->virtual_scr.last_edge_thickness;
 
 	if (!Scr.flags.are_windows_captured)
 		return;
@@ -1294,13 +1293,19 @@ init_one_panframe(PanFrame *pf, int x, int y, int w, int h, int cursor)
  * Creates the windows for edge-scrolling
  *
  */
-void initPanFrames(void)
+void initPanFrames(struct monitor *ref)
 {
 	int saved_thickness;
-	struct monitor	*m;
+	int edge_thickness;
+	struct monitor	*m = NULL;
 
-	if (pan_frames_mapped)
+	if (ref == NULL)
 		return;
+
+	if (ref->pan_frames_mapped)
+		return;
+
+	edge_thickness = ref->virtual_scr.edge_thickness;
 
 	/* Not creating the frames disables all subsequent behavior */
 	/* TKP. This is bad, it will cause an XMap request on a null window
@@ -1315,6 +1320,8 @@ void initPanFrames(void)
 	/* Free panframes here for all monitors. */
 	fvwm_debug(__func__, "freeing panframes");
 	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (ref != NULL && m != ref)
+			continue;
 		if (m->PanFrameLeft.isMapped)
 		{
 			XUnmapWindow(dpy, m->PanFrameLeft.win);
@@ -1338,6 +1345,8 @@ void initPanFrames(void)
 	}
 
 	TAILQ_FOREACH(m, &monitor_q, entry) {
+		if (ref != NULL && m != ref)
+			continue;
 		init_one_panframe(&m->PanFrameTop, m->si->x, m->si->y, m->si->w,
 		    edge_thickness, CRS_TOP_EDGE);
 		init_one_panframe(&m->PanFrameLeft, m->si->x, m->si->y,
@@ -1353,8 +1362,8 @@ void initPanFrames(void)
 			m->PanFrameRight.isMapped= m->PanFrameBottom.isMapped=false;
 		checkPanFrames(m);
 	}
-	edge_thickness = saved_thickness;
-	pan_frames_mapped = true;
+	ref->virtual_scr.edge_thickness = saved_thickness;
+	ref->pan_frames_mapped = true;
 	fvwm_debug(__func__, "finished setting up per-monitor panframes");
 }
 
@@ -2049,7 +2058,7 @@ void parse_edge_leave_command(char *action, int type)
 	if ((option = PeekToken(action, NULL)) != NULL)
 		command = action;
 
-	initPanFrames();
+	initPanFrames(NULL);
 
 	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
 		char **target;
@@ -2114,6 +2123,23 @@ void CMD_EdgeLeaveCommand(F_CMD_ARGS)
 void CMD_EdgeThickness(F_CMD_ARGS)
 {
 	int val, n;
+	char *option;
+	struct monitor *m = NULL, *m_loop = NULL;
+
+	option = PeekToken(action, NULL);
+	if (StrEquals(option, "screen")) {
+		/* Skip literal 'screen' */
+		option = PeekToken(action, &action);
+		/* Actually get the screen value. */
+		option = PeekToken(action, &action);
+
+		if ((m = monitor_resolve_name(option)) == NULL) {
+			fvwm_debug(__func__, "Invalid screen: %s", option);
+			return;
+		}
+
+		fvwm_debug(__func__, "Only setting for %s", m->si->name);
+	}
 
 	n = GetIntegerArguments(action, NULL, &val, 1);
 	if (n != 1)
@@ -2131,10 +2157,22 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 			   " found %d",val);
 		return;
 	}
-	edge_thickness = val;
-	initPanFrames();
 
-	return;
+	/* If we've only been asked to change this for one monitor, stop doing
+	 * anything else after this point, so as not to overwrite any other
+	 * per-monitor values.
+	 */
+	if (m != NULL) {
+		m->virtual_scr.edge_thickness = val;
+		initPanFrames(m);
+
+		return;
+	}
+
+	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		m_loop->virtual_scr.edge_thickness = val;
+		initPanFrames(m_loop);
+	}
 }
 
 void CMD_EdgeScroll(F_CMD_ARGS)
@@ -2217,15 +2255,10 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 	}
 
 	TAILQ_FOREACH(m_this, &monitor_q, entry) {
-		if (m != NULL && m == m_this)
-			continue;
 		m_this->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
 		m_this->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
 		checkPanFrames(m_this);
 	}
-
-
-	return;
 }
 
 void CMD_EdgeResistance(F_CMD_ARGS)
@@ -2457,7 +2490,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 	return;
 
 update:
-	initPanFrames();
+	initPanFrames(NULL);
 	raisePanFrames();
 	ewmh_SetWorkArea(m);
 
