@@ -49,4 +49,5 @@ uninstall-hook:
 	-rmdir @FVWM_DATADIR@
 
 $(XSESSIONFILE): $(XSESSIONFILE).in
-	${SED} -e 's|[@]bindir@|$(bindir)|g' < "$@.in" > "$@"
+	${SED} -e 's|[@]bindir@|$(bindir)|g' \
+		-e 's|[@]datadir@|$(datadir)|g' < "$@.in" > "$@"
