@@ -1,5 +1,7 @@
 [Desktop Entry]
 Name=FVWM3
-Comment=The fvwm3 window manager
+Keywords=Fvwm3 Window Manager
+Comment=F? Virtual Window Manager
+Icon=@datadir@/fvwm3/default-config/images/fvwm-logo-small.png
 Type=Application
 Exec=@bindir@/fvwm3
