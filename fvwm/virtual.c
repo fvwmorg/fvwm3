@@ -733,6 +733,8 @@ int HandlePaging(
 	int mwidth, mheight;
 	int edge_thickness = m->virtual_scr.edge_thickness;
 
+	fvwm_debug(__func__, "ET (%s) is: %d", m->si->name, edge_thickness);
+
 	mwidth = monitor_get_all_widths();
 	mheight = monitor_get_all_heights();
 
@@ -1302,9 +1304,6 @@ void initPanFrames(struct monitor *ref)
 	if (ref == NULL)
 		return;
 
-	if (ref->pan_frames_mapped)
-		return;
-
 	edge_thickness = ref->virtual_scr.edge_thickness;
 
 	/* Not creating the frames disables all subsequent behavior */
@@ -1363,7 +1362,6 @@ void initPanFrames(struct monitor *ref)
 		checkPanFrames(m);
 	}
 	ref->virtual_scr.edge_thickness = saved_thickness;
-	ref->pan_frames_mapped = true;
 	fvwm_debug(__func__, "finished setting up per-monitor panframes");
 }
 
