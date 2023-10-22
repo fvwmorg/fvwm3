@@ -55,13 +55,14 @@ extern bool is_tracking_shared;
 struct screen_info {
 	const char		*name;
 	int			 x, y, w, h;
+	int			 number;
 	RROutput		 rr_output;
 
 	TAILQ_ENTRY(screen_info) entry;
 };
 TAILQ_HEAD(screen_infos, screen_info);
 
-extern struct screen_infos	 screen_info_q;
+extern struct screen_infos	 screen_info_q, screen_info_q_temp;
 
 struct screen_info	*screen_info_new(void);
 struct screen_info	*screen_info_by_name(const char *);
