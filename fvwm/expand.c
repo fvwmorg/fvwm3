@@ -542,10 +542,11 @@ static signed int expand_vars_extended(
 
 		/* We could be left with "<NAME>.?" */
 		char		*m_name = NULL;
-		struct monitor  *mon2;
+		struct monitor  *mon2 = NULL, *m_loop;
 		char		*rest_s;
 		char *p_free;
 		int got_string;
+		int pos = -1;
 
 		/* The first word is the monitor name:
 		 *
@@ -557,17 +558,36 @@ static signed int expand_vars_extended(
 		p_free = rest_s;
 		got_string = 0;
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
+			if ((pos = atoi(m_name)) >= 0) {
+				TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+					if (m_loop->si->number == pos) {
+						mon2 = m_loop;
+						break;
+					}
+				}
+
+				goto rest;
+			}
+
 			mon2 = monitor_resolve_name(m_name);
+rest:
 			if (mon2 == NULL)
 			{
 				free(p_free);
 				return -1;
 			}
-
 			/* Skip over the monitor name. */
 			rest += strlen(m_name) + 1;
 
 			/* Match remainder to valid fields. */
+			if (strcmp(rest, "name") == 0) {
+				is_numeric = False;
+				string = mon2->si->name;
+				should_quote = False;
+				got_string = 1;
+				break;
+			}
+
 			if (strcmp(rest, "x") == 0) {
 				is_numeric = True;
 				val = mon2->si->x;

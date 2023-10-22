@@ -47,10 +47,11 @@ static bool		 randr_initialised;
 
 static void		 scan_screens(Display *);
 static struct monitor	*monitor_by_name(const char *);
+static void		 monitor_set_coords(struct monitor *, XRRMonitorInfo);
 
 enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
-struct screen_infos	 screen_info_q;
+struct screen_infos	 screen_info_q, screen_info_q_temp;
 struct monitors		monitor_q;
 int randr_event;
 const char *prev_focused_monitor;
@@ -439,11 +440,32 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 }
 
 static void
+monitor_set_coords(struct monitor *m, XRRMonitorInfo rrm)
+{
+	if (m == NULL)
+		return;
+
+	m->si->x = rrm.x;
+	m->si->y = rrm.y;
+	m->si->w = rrm.width;
+	m->si->h = rrm.height;
+	m->si->rr_output = *rrm.outputs;
+	if (rrm.primary > 0) {
+		m->flags |= MONITOR_PRIMARY;
+		m->was_primary = false;
+	} else {
+		m->flags &= ~MONITOR_PRIMARY;
+		m->was_primary = true;
+	}
+}
+
+static void
 scan_screens(Display *dpy)
 {
 	XRRMonitorInfo		*rrm;
-	struct monitor 		*m = NULL;
+	struct monitor 		*m = NULL, *m2 = NULL;
     	int			 i, n = 0;
+	int			 pos = 0;
 	Window			 root = RootWindow(dpy, DefaultScreen(dpy));
 
 	rrm = XRRGetMonitors(dpy, root, false, &n);
@@ -470,39 +492,44 @@ scan_screens(Display *dpy)
 			m->flags |= MONITOR_NEW;
 			m->si = screen_info_new();
 			m->si->name = strdup(name);
-
 			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
 			m->virtual_scr.edge_thickness = 2;
 			m->virtual_scr.last_edge_thickness = 2;
 
 			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
-			TAILQ_INSERT_TAIL(&monitor_q, m, entry);
 
-			goto set_coords;
+			if (TAILQ_EMPTY(&monitor_q)) {
+				TAILQ_INSERT_HEAD(&monitor_q, m, entry);
+				monitor_set_coords(m, rrm[i]);
+				goto done;
+			}
+
+			TAILQ_FOREACH(m2, &monitor_q, entry) {
+				if (m == m2 || (strcmp(m2->si->name, name) == 0))
+					continue;
+				if (rrm[i].x < m2->si->x) {
+					TAILQ_INSERT_BEFORE(m2, m, entry);
+					break;
+				} else {
+					TAILQ_INSERT_TAIL(&monitor_q, m, entry);
+					break;
+				}
+			}
+
+			monitor_set_coords(m, rrm[i]);
 		}
-
 		if ((strcmp(m->si->name, name) == 0) &&
 		    (m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
 		    m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
 			if (m->flags & MONITOR_ENABLED)
 				m->flags |= MONITOR_CHANGED;
 		}
-
-set_coords:
-		m->si->x = rrm[i].x;
-		m->si->y = rrm[i].y;
-		m->si->w = rrm[i].width;
-		m->si->h = rrm[i].height;
-		m->si->rr_output = *rrm[i].outputs;
-		if (rrm[i].primary > 0) {
-			m->flags |= MONITOR_PRIMARY;
-			m->was_primary = false;
-		} else {
-			m->flags &= ~MONITOR_PRIMARY;
-			m->was_primary = true;
-		}
-
+done:
 		XFree(name);
+	}
+
+	TAILQ_FOREACH(m2, &monitor_q, entry) {
+		m2->si->number = pos++;
 	}
 
 	monitor_scan_edges(m);
@@ -604,6 +631,7 @@ monitor_dump_state(struct monitor *m)
 			continue;
 		fvwm_debug(
 			__func__,
+			"\tNumber:\t%d\n"
 			"\tName:\t%s\n"
 			"\tDisabled:\t%s\n"
 			"\tIs Primary:\t%s\n"
@@ -619,6 +647,7 @@ monitor_dump_state(struct monitor *m)
 			"\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
 			"\tDesktops:\t%s\n"
 			"\tFlags:%s\n\n",
+			m2->si->number,
 			m2->si->name,
 			(m2->flags & MONITOR_DISABLED) ? "true" : "false",
 			(m2->flags & MONITOR_PRIMARY) ? "yes" : "no",
