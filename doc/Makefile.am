@@ -22,13 +22,20 @@ EXTRA_DIST = $(MODULE_ADOC_SRCS)
 nothing:
 
 clean:
-	rm -f *.1 *.ad
+	rm -f *.1 *.ad *.html
 
 distclean-local: clean
 
-if FVWM_BUILD_MANDOC
+if FVWM_BUILD_DOC
 M1M = $(filter-out fvwm3_manpage_source.adoc, $(MODULE_ADOC))
+if FVWM_BUILD_MANDOC
 man1_MANS = $(patsubst %.adoc,%.1, $(M1M))
+endif
+if FVWM_BUILD_HTMLDOC
+html_MANS = $(patsubst %.adoc,%.html, $(M1M))
+doc_DATA = $(patsubst %.adoc,%.html, $(M1M))
+endif
+
 EXTRACT_SECTIONS = \
 	commands \
 	menus \
@@ -36,8 +43,9 @@ EXTRACT_SECTIONS = \
 SECTION_FILES = $(patsubst %,fvwm3_%.ad, $(EXTRACT_SECTIONS))
 
 all: docs
-docs: $(man1_MANS)
+docs: $(man1_MANS) $(html_MANS)
 $(man1_MANS): $(SECTION_FILES)
+$(html_MANS): $(SECTION_FILES)
 
 %.ad: fvwm3_manpage_source.adoc
 	SECTION=$(patsubst fvwm3_%.ad,%,$@); \
@@ -48,4 +56,8 @@ $(man1_MANS): $(SECTION_FILES)
 
 %.1: %.adoc
 	"$(ASCIIDOC)" -b manpage -a "$(patsubst %.1,%,$@)" "$<" -o "$@"
+
+%.html: %.adoc
+	"$(ASCIIDOC)" -b html5 -a toc -a "$(patsubst %.html,%,$@)" "$<" -o "$@"
+
 endif
