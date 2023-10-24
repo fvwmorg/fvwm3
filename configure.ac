@@ -142,7 +142,7 @@ AC_ARG_ENABLE(package-subdirs,
 
 FVWM_MODULEDIR='${libexecdir}'"$FVWM_MODULESUBDIR"
 FVWM_DATADIR='${datadir}'"$FVWM_DATASUBDIR"
-FVWM_DOCDIR='${datadir}'"$FVWM_DOCSUBDIR"
+FVWM_DOCDIR='${datadir}'"$FVWM_DATASUBDIR/htmldoc"
 FVWM_PERLLIBDIR='${datadir}'"$FVWM_DATASUBDIR/perllib"
 FVWM_CONFDIR='${sysconfdir}'dnl used _only_ to search for system.fvwm2rc
 
@@ -320,6 +320,35 @@ if test ! x"$with_mandoc" = xno; then
 	fi
 fi
 AM_CONDITIONAL([FVWM_BUILD_MANDOC], [test x"$with_mandoc" = xyes])
+
+AC_ARG_ENABLE(htmldoc,
+  AS_HELP_STRING([--enable-htmldoc],
+    [enable generation of html man pages]),
+  [ if test x"$enableval" = xyes; then
+		with_htmldoc="yes, check"
+	else
+		with_htmldoc="no"
+		problem_htmldoc=": Explicitly disabled"
+	fi ],
+	[ with_htmldoc="no" ]
+)
+
+if test ! x"$with_htmldoc" = xno; then
+	if test x"$ASCIIDOC" = x ; then
+		with_htmldoc="no"
+		problem_htmldoc=": No asciidoctor found in PATH"
+	elif test x"$SED" = x ; then
+		with_htmldoc="no"
+		problem_htmldoc=": No sed found in PATH"
+	elif test x"$HAVE_PERL_FOR_DOCS" = x0 ; then
+		with_htmldoc="no"
+		problem_htmldoc=": No perl found in PATH"
+	else
+		with_htmldoc="yes"
+	fi
+fi
+AM_CONDITIONAL([FVWM_BUILD_HTMLDOC], [test x"$with_htmldoc" = xyes])
+AM_CONDITIONAL([FVWM_BUILD_DOC], [test x"$with_mandoc" = xyes || test x"$with_htmldoc" = xyes])
 
 # ********* session management
 # Check the availability of SM; we don't have to add any extra libraries,
@@ -1461,7 +1490,7 @@ Fvwm3 Configuration:
   Man pages:   $my_mandir
   Modules:     $my_moddir
   Data files:  $my_datdir
-  Doc files:   $my_docdir
+  HTML docs:   $my_docdir
   Perl lib:    $my_plldir
   Locale msg:  $my_localedir $INST_LINGUAS
 
@@ -1479,5 +1508,6 @@ Fvwm3 Configuration:
   With Xrender image support?         $with_xrender$problem_xrender
   With Golang support?                $with_golang$problem_golang
   Build man pages?                    $with_mandoc$problem_mandoc
+  Build html man pages?               $with_htmldoc$problem_htmldoc
 
 "
