@@ -404,7 +404,8 @@ sub wrong_usage {
 __END__
 
 # ---------------------------------------------------------------------------
-
+# Manpage has been moved to doc/fvwm-menu-directory.adoc.
+# This is no loner used to generate the manpage.
 =head1 NAME
 
 fvwm-menu-directory - builds a directory browsing menu for fvwm

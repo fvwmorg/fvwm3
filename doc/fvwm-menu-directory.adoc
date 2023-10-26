@@ -1,0 +1,260 @@
+= fvwm-menu-directory(1)
+
+== NAME
+
+fvwm-menu-directory - builds a directory browsing menu for fvwm
+
+== SYNOPSIS
+
+fvwm-menu-directory [ *--help*|*-h*|*-?* ] [ *--version*|*-V* ]
+[ *--name*|*-na* NAME ] [ *--title*|*-t* NAME ]
+[ *--item*|*-it* NAME ] [ *--icon-title*|*-icon-t* XPM ]
+[ *--icon-dir*|*-icon-d* XPM ] [ *--icon-file*|*-icon-f* XPM ]
+[ *--icon-app*|*-icon-a* XPM ] [ *--wm-icons* ] [ *--dir*|*-d* NAME ]
+[ *--order*|*-o* NUM ] [ *--[no]all*|*-a* ] [ *--[no]links*|*-l* ]
+[ *--xterm*|*-x* CMD ] [ *--exec-title*|*-exec-t* CMD ]
+[ *--exec-file*|*-exec-f* CMD ] [ *--exec-app*|*-exec-a* [CMD] ]
+[ *--command-title*|*-command-t* CMD ] [ *--command-file*|*-command-f* CMD ]
+[ *--command-app*|*-command-a* CMD ] [ *--[no]reuse*|*-r* ]
+[ *--[no]check-subdirs*|*-ch* ] [ *--special-dirs*|*-s* [VALUE] ]
+[ *--[no]memory-for-speed*|*-mem* ] [ *--menu-style*|*-men* NAME ]
+[ *--func-name*|*-f* NAME ]
+
+== DESCRIPTION
+
+A perl script which provides an output to read in with PipeRead to build
+an fvwm menu containing a directory listing. Almost everything can be
+configured.
+
+== HINTS
+
+The title item with its own attached action is usually added to the
+menu. This may be used to define an action for the directory for which
+the menu is built, such as starting a terminal in this directory (the
+default). However, this may annoy some users. To disable the title
+action use *--command-title ""*, to remove the title completely use
+*--title ""*.
+
+== OPTIONS
+
+*--help*::
+  Show the usage and exit.
+*--version*::
+  Show version and exit.
+*--name* _name_::
+  Menu name, used only with *--reuse*, default is `+MenuBrowser+`.
+*--title* _title_::
+  Menu title format, default is `+'%*-40p'+` - last 40 characters of the
+  current full path. TAB can be specified as `+'\t'+`, but in .fvwm2rc you
+  should specify a double backslash or a real TAB.
++
+Format specifiers:
+`+%d+` - the current directory name `+%p+` - the current directory full path.
++
+These specifiers can receive an optional integer size, positive for
+right adjusted string or negative for left adjusted, example: `+%8x+`;
+and optional `+*num+` or `+*-num+`, which means to leave only the first
+or last (if minus) num of chars, the num must be greater than 3, since the
+striped part is replaced with ..., example: `+%*30x+`. Both can be combined:
+`+%-10*-20x+`, this instructs to get only the 20 last characters, but if the
+length is less then 10 - to fill with up to 10 spaces on the right.
+
+*--item* _format_::
+  Menu item format, default is `+'%n'+`. TAB and width modifiers for `+%n+`,
+  `+%N+` and `+%s+` can be specified as described in *--title* above.
+  Note, specifying a non default format slows the script.
++
+Format specifiers:
++
+....
+%n - file/dir name (without the path)
+%N - file/dir name (full with the path)
+%d - file/dir date (yyyy-mm-dd HH:MM:SS)
+%D - file/dir date (yyyy-mm-dd)
+%s - file/dir size (in bytes)
+%t - file/dir type (File|Dir |Link|Sock|Blck|Char|Pipe)
+%T - file/dir type (F|D|L|S|B|C|P)
+....
++
+Example: `+--title '%*-40p\tDate, Type\tSize' --item '%*40n\t%d %t\t%s'+`
+
+*--icon-title* _icon_::
+  Menu title icon, default is none.
+*--icon-dir* _icon_::
+  Menu dir icon, default is none.
+*--icon-file* _icon_::
+  Menu file icon, default is none.
+*--icon-app* _icon_::
+  Menu application icon, default is none.
+*--wm-icons*::
+  Define icon names suitable for use with wm-icons package. Currently this
+  is equivalent to: `+--icon-title menu/folder-open.xpm --icon-item
+  menu/file.xpm --icon-dir menu/folder.xpm --icon-app menu/utility.xpm+`.
+*--dir* _dir_::
+  Starting dir, default is `+${HOME-.}+`.
+*--order* _number_::
+  In the range (-6 .. 6), default is 5:
++
+....
+1 - do not sort
+2 - dirs first
+3 - files first
+4 - sort by name
+5 - dirs first
+6 - files first
+....
++
+Negative number represents reverse order.
+
+*--[no]all*::
+  Show hidden files, like in 'ls -A', default is *--noall*.
+*--[no]links*::
+  Follow linked directories, default is *--nolinks*.
+*--xterm* _command_::
+  X terminal call, default is 'xterm -e'.
+*--exec-title* _command_::
+  An fvwm Exec command on directory title (usually the shell), default is
+  `+${SHELL-/bin/sh}+`. '-' means no Exec command, i.e. Nop. If the command
+  is not started with '^' X terminal call is prepended. The command is
+  started in the currently browsed directory.
+*--exec-file* _command_::
+  An fvwm Exec command on regular files, default is `+${EDITOR-vi}+`. '-'
+  means no Exec command, i.e. Nop. If the command is not started with '^'
+  X terminal call is prepended. The actual file name is appended to the
+  command.
+*--exec-app* [_command_]::
+  An fvwm Exec command on +x files, default is '-', which means the same
+  command as on regular files. If no command is given, it is assumed to be
+  empty - simply run the +x file. If the command is not started with '^' X
+  terminal call is prepended. The actual file name is appended to the
+  command.
+*--command-title* _command_::
+  An fvwm command to execute on title. If this option is not given (or
+  command is '-'), the *--exec-title* is used instead. In the command,
+  `+%d+` is substituted with the full directory path.
++
+In fact, _--exec-title=tcsh_ is equivalent to _--command-title='Exec cd %d; xterm
+-e tcsh'_.
++
+The empty value disables the title action.
+
+*--command-file* _command_::
+  An fvwm command to execute on regular files. If this option is not given
+  (or command is '-'), the *--exec-file* is used instead. In the
+  command, `+%f+` is substituted with the full file path.
++
+In fact, _--exec-file=vi_ is equivalent to _--command-file='Exec xterm -e vi %f'_.
+
+*--command-app* _command_::
+  An fvwm command to execute on +x files. If this option is not given (or
+  command is '-'), the *--command-app* is used instead. In the command,
+  `+%f+` is substituted with the full file path.
++
+In fact, _--exec-app=^exec_ is equivalent to _--command-app='Exec exec %f'_.
+
+*--[no]reuse*::
+  No pop-up menus, reuse the same menu, default is *--noreuse*. When you
+  specify this option the Menu action is used, not Popup. Also, the *--name*
+  parameter is not ignored, and *--dir* parameter is ignored if there is
+  `+~/.fvwm/.fvwm-menu-directory.dir+` file. This file is only created or used
+  with this option specified, it is the only solution for the current fvwm
+  menu state.
+*--[no]check-subdirs*::
+  Check all subdirs for having execute (+x) permission and replace
+  "Popup"/"Menu" command with Nop for these without permissions. This has a
+  visual effect of disabling popup triangle in the subdirectory item. The
+  default is *--nocheck-subdirs*, because: 1) enabling this slows a bit the
+  script, 2) with this option enabled, if no icons used and no dir/file
+  separate sorting used there is no way to know that the item is directory
+  and not file.
+*--special-dirs* _value_::
+  Add .. or ~ or / special directories according to given optional value.
+  Without with option these directories are not added. Default value if
+  not specified is "1,2". The value is comma separated ordered special
+  directory indexes, where 1 is parent directory, 2 is home directory, 3
+  is root directory. If minus is prepended to the value, special
+  directories are added at the bottom of menu instead of top. Value 0 or
+  any bad value is equivalent to non-specifying this option at all.
+*--[no]memory-for-speed*::
+  Use speed optimization, i.e. use previously created directory menus
+  without destroying it when closed, default is *--nomemory-for-speed*.
++
+Warning: speed optimization takes up a lot of memory that is never freed
+again while fvwm is running.
+
+*--menu-style* _name_::
+  Assign MenuStyle name to the menus.
+*--func-name* _name_::
+  Overwrite the default MissingSubmenuFunction name that is
+  FuncFvwmMenuDirectory.
+
+Option parameters can be specified either using '=' or in the next
+argument. Short options are ok if not ambiguous: `+-a+`, `+-x+`,
+`+-icon-f+`; but be careful with short options, what is now unambiguous,
+can become ambiguous in the next versions.
+
+== USAGE
+
+Put this into your fvwm configuration file to invoke the script:
+
+....
+AddToFunc FuncFvwmMenuDirectory
++ I PipeRead "fvwm-menu-directory -d $0"
+....
+
+More complex example:
+
+....
+AddToFunc FuncFvwmMenuDirectory
++ I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' \\
+    -a -l -o 6 --exec-app --exec-title 'tcsh -l' \\
+    --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
+....
+
+And put this in the menu from which you want to pop-up the directory
+menus:
+
+....
+AddToMenu SomeMenu MissingSubmenuFunction FuncFvwmMenuDirectory
++ "Home Directory" Popup $[HOME]
++ "Httpd Directory" Popup /home/httpd
+....
+
+Note: please use absolute path names.
+
+It is a good idea to set the menu pop-up delay to something positive and
+enable busy cursor
+
+....
+MenuStyle * PopupDelayed, PopupDelay 200
+BusyCursor DynamicMenu True
+....
+
+in your configuration file when using this script for better results.
+
+Another interesting usage (`+'--reuse'+` or `+'-r'+` is mandatory for this):
+
+....
+AddToMenu Browser
++ DynamicPopupAction PipeRead \\
+  "fvwm-menu-directory -r -na Browser -d / -s"
+AddToMenu SomeMenu "My Browser" Menu Browser
+....
+
+Here the `+'--dir'+` parameter (starting directory) is ignored if there is
+`+~/.fvwm/.fvwm-menu-directory.dir+` file, which you can delete.
+
+== AUTHORS
+
+Inspired on 1999-06-07 by Dominik Vogt <domivogt@fvwm.org>.
+
+Rewritten on 1999-08-05 by Mikhael Goikhman <migo@homemail.com>.
+
+== COPYING
+
+The script is distributed by the same terms as fvwm itself. See GNU
+General Public License for details.
+
+== BUGS
+
+Report bugs to <fvwm-workers@fvwm.org> or <https://github.com/fvwmorg/fvwm3>.
