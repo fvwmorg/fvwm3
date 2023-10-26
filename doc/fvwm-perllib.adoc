@@ -1,0 +1,78 @@
+= fvwm-perllib(1)
+
+== NAME
+
+fvwm-perllib - shows the documentation of the Fvwm Perl library
+
+== SYNOPSIS
+
+fvwm-perllib [ **--help**|**-h**|**-?** ] [ **--version**|**-v**|**-V** ]
+[ *man* [ _Perl::Class_ ] ] [ *cat* [ _Perl::Class_ ] ]
+[ *raw* [ _Perl::Class_ ] ] [ *dir* ]
+
+== DESCRIPTION
+
+Starting from fvwm-2.5.x versions there is a built-in support for
+creating fvwm modules in Perl. This *fvwm-perllib* utility provides help
+services for the Fvwm Perl library.
+
+== OPTIONS
+
+*--help*::
+  Show the help and exit.
+
+*--version*::
+  Show the version and exit.
+
+*--man* or *man* [ _Perl::Class_ ]::
+  Show manual page just like *man*(1).
+
+*--cat* or *cat* [ _Perl::Class_ ]::
+  Show manual page in plain text.
+
+*--raw* or *raw* [ _Perl::Class_ ]::
+  Generate output in man format (not human readable).
+
+*--dir* or *dir*::
+  Print perllib directory without a trailing end of line.
+
+== USAGE
+
+Use this in the fvwm modules written in Perl:
+
+....
+use lib `fvwm-perllib dir`;
+....
+
+Introduction to the Fvwm Perl library:
+
+....
+% fvwm-perllib man
+....
+
+Manual page for the `+FVWM::Module+` class:
+
+....
+% fvwm-perllib man FVWM::Module
+....
+
+Standard options:
+
+....
+% fvwm-perllib --help % fvwm-perllib --version
+....
+
+== AUTHORS
+
+Mikhael Goikhman <migo@homemail.com>.
+
+== COPYING
+
+The script is distributed by the same terms as fvwm itself. See GNU
+General Public License for details.
+
+== BUGS
+
+No known bugs.
+
+Report bugs to <fvwm-workers@fvwm.org> or <https://github.com/fvwmorg/fvwm3>.

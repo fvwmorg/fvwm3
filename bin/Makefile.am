@@ -12,8 +12,6 @@ bin_SCRIPTS = fvwm-perllib \
 	fvwm-menu-desktop \
 	FvwmCommand
 
-man_MANS = fvwm-menu-xlock.1 fvwm-menu-directory.1 fvwm-perllib.1
-
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm3 $(xpm_LIBS) $(Xcursor_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(Xrender_LIBS) \
 	$(Xcursor_LIBS) $(png_LIBS) $(rsvg_LIBS) $(XRandR_LIBS) \
@@ -24,42 +22,10 @@ AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 configdir = @FVWM_DATADIR@
 config_DATA = fvwm-menu-desktop-config.fpl
 
-EXTRA_DIST = fvwm-menu-desktop-config.fpl $(man_MANS) FvwmPrompt
+EXTRA_DIST = fvwm-menu-desktop-config.fpl FvwmPrompt
 
 dist-hook:
 	rm -f $(distdir)/FvwmPrompt/FvwmPrompt
-
-## The long generation for *.1 is to make both pod2man and 'make -j' happy.
-
-_fvwm-menu-xlock.1: fvwm-menu-xlock
-	@TMP=tmp-$$$$ NAME=fvwm-menu-xlock && (\
-	mkdir $$TMP && \
-	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
-		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
-	mv $$TMP/$$NAME.1 .; \
-	rm -rf $$TMP)
-
-_fvwm-menu-directory.1: fvwm-menu-directory
-	@TMP=tmp-$$$$ NAME=fvwm-menu-directory && (\
-	mkdir $$TMP && \
-	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
-		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
-	mv $$TMP/$$NAME.1 .; \
-	rm -rf $$TMP)
-
-_fvwm-perllib.1: fvwm-perllib
-	@TMP=tmp-$$$$ NAME=fvwm-perllib && (\
-	mkdir $$TMP && \
-	cp $$NAME.in $$TMP/$$NAME && \
-	pod2man --center "Fvwm Utilities" --release "@VERSION@@VERSIONINFO@" \
-		--name $$NAME $$TMP/$$NAME >$$TMP/$$NAME.1 && \
-	mv $$TMP/$$NAME.1 .; \
-	rm -rf $$TMP)
-
-regenerate: \
-	_fvwm-menu-xlock.1
 
 ## Create compatibility symlinks if available
 

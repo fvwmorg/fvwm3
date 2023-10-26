@@ -141,7 +141,8 @@ sub wrong_usage {
 __END__
 
 # ---------------------------------------------------------------------------
-
+# Manpage has been moved to doc/fvwm-menu-xlock.adoc.
+# This is no longer used to generate the manpage.
 =head1 NAME
 
 fvwm-menu-xlock - builds xlock menu definition for fvwm

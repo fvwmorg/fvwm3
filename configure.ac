@@ -111,7 +111,6 @@ if test x"$PERL" = x; then
 fi
 if test ! x"$PERL" = x; then
 	AC_MSG_CHECKING([for perl $REQUIRED_PERL_VERSION or better])
-	HAVE_PERL_FOR_DOCS=1
 	if ("$PERL" -e "require $REQUIRED_PERL_VERSION;") 2>/dev/null; then
 		AC_MSG_RESULT(yes)
 	else
@@ -119,7 +118,6 @@ if test ! x"$PERL" = x; then
 		AC_MSG_WARN([$PERL not found or too old])
 	fi
 else
-	HAVE_PERL_FOR_DOCS=0
 	AC_MSG_WARN([perl is not found, it is required for some scripts and modules])
 	AC_MSG_WARN([It is recommended to install perl $REQUIRED_PERL_VERSION or better later])
 	PERL=/usr/bin/perl
@@ -309,12 +307,6 @@ if test ! x"$with_mandoc" = xno; then
 	if test x"$ASCIIDOC" = x ; then
 		with_mandoc="no"
 		problem_mandoc=": No asciidoctor found in PATH"
-	elif test x"$SED" = x ; then
-		with_mandoc="no"
-		problem_mandoc=": No sed found in PATH"
-	elif test x"$HAVE_PERL_FOR_DOCS" = x0 ; then
-		with_mandoc="no"
-		problem_mandoc=": No perl found in PATH"
 	else
 		with_mandoc="yes"
 	fi
@@ -337,12 +329,6 @@ if test ! x"$with_htmldoc" = xno; then
 	if test x"$ASCIIDOC" = x ; then
 		with_htmldoc="no"
 		problem_htmldoc=": No asciidoctor found in PATH"
-	elif test x"$SED" = x ; then
-		with_htmldoc="no"
-		problem_htmldoc=": No sed found in PATH"
-	elif test x"$HAVE_PERL_FOR_DOCS" = x0 ; then
-		with_htmldoc="no"
-		problem_htmldoc=": No perl found in PATH"
 	else
 		with_htmldoc="yes"
 	fi
