@@ -559,7 +559,7 @@ static signed int expand_vars_extended(
 		got_string = 0;
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
 			if ((pos = atoi(m_name)) >= 0) {
-				TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+				RB_FOREACH(m_loop, monitors, &monitor_q) {
 					if (m_loop->si->number == pos) {
 						mon2 = m_loop;
 						break;

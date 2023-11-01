@@ -160,7 +160,7 @@ status_send(void)
 	screens = cJSON_AddObjectToObject(msg, "screens");
 
 	d_count = 0, m_count = 0;
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		cJSON	*this_desktop;
 		if ((desk_doc[d_count] = cJSON_CreateObject()) == NULL)
 			goto out;

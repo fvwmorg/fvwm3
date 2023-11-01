@@ -417,7 +417,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	SetMenuCursor(Scr.FvwmCursors[CRS_MENU]);
 
 	/* Set the cursors on all monitors. */
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		SafeDefineCursor(m->PanFrameTop.win,
 		   Scr.FvwmCursors[CRS_TOP_EDGE]);
 		SafeDefineCursor(m->PanFrameBottom.win,

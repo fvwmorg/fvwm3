@@ -158,7 +158,7 @@ SaveGlobalState(FILE *f)
 	struct monitor	*m;
 
 	fprintf(f, "[GLOBAL]\n");
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		fprintf(f, "  [MONITOR] %i\n", (int)m->si->rr_output);
 		fprintf(f, "      [DESKTOP] %i\n", m->virtual_scr.CurrentDesk);
 		fprintf(f, "      [VIEWPORT] %i %i %i %i\n",

@@ -374,7 +374,7 @@ adjust_for_shared_placement(FvwmWindow *fw, const exec_context_t *exc)
 done:
 	if (Restarting)
 		return;
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->virtual_scr.CurrentDesk == fw->Desk) {
 			xasprintf(&cmd, "MoveToScreen %s", m->si->name);
 			execute_function_override_window(

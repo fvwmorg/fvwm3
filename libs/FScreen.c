@@ -28,6 +28,7 @@
 #include "PictureBase.h"
 #include "FScreen.h"
 #include "FEvent.h"
+#include "queue.h"
 
 #define GLOBAL_SCREEN_NAME "_global"
 
@@ -52,10 +53,12 @@ static void		 monitor_set_coords(struct monitor *, XRRMonitorInfo);
 enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
 struct screen_infos	 screen_info_q, screen_info_q_temp;
-struct monitors		monitor_q;
+struct monitors		 monitor_q;
 int randr_event;
 const char *prev_focused_monitor;
 static struct monitor	*monitor_global = NULL;
+
+RB_GENERATE(monitors, monitor, entry, monitor_compare);
 
 static void GetMouseXY(XEvent *eventp, int *x, int *y)
 {
@@ -91,7 +94,7 @@ monitor_scan_edges(struct monitor *m)
 	m->edge.top = m->edge.bottom = m->edge.left = m->edge.right =
 		MONITOR_OUTSIDE_EDGE;
 
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
 		if (m_loop == m)
 			continue;
 
@@ -174,7 +177,7 @@ monitor_get_prev(void)
 	struct monitor	*m, *mret = NULL;
 	struct monitor  *this = monitor_get_current();
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m == this)
 			continue;
 		if (m->is_prev) {
@@ -248,7 +251,7 @@ monitor_by_name(const char *name)
 	}
 
 	mret = NULL;
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (strcmp(m->si->name, name) == 0) {
 			mret = m;
 			break;
@@ -263,7 +266,7 @@ monitor_by_output(int output)
 {
 	struct monitor	*m, *mret = NULL;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->si->rr_output == output) {
 		       mret = m;
 		       break;
@@ -274,7 +277,7 @@ monitor_by_output(int output)
 		fvwm_debug(__func__,
 			   "%s: couldn't find monitor with output '%d', "
 			   "returning first output.\n", __func__, output);
-		mret = TAILQ_FIRST(&monitor_q);
+		mret = RB_MIN(monitors, &monitor_q);
 	}
 
 	return (mret);
@@ -285,7 +288,7 @@ monitor_by_primary(void)
 {
 	struct monitor	*m = NULL, *m_loop;
 
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
 		if (m_loop->flags & MONITOR_PRIMARY) {
 			m = m_loop;
 			break;
@@ -300,7 +303,7 @@ monitor_by_last_primary(void)
 {
 	struct monitor	*m = NULL, *m_loop;
 
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
 		if (m_loop->was_primary && !(m_loop->flags & MONITOR_PRIMARY)) {
 			m = m_loop;
 			break;
@@ -316,7 +319,7 @@ monitor_check_primary(void)
 	if (monitor_by_primary() == NULL) {
 		struct monitor	*m;
 
-		m = TAILQ_FIRST(&monitor_q);
+		m = RB_MIN(monitors, &monitor_q);
 		m->flags |= MONITOR_PRIMARY;
 	}
 }
@@ -341,7 +344,7 @@ monitor_assign_virtual(struct monitor *ref)
 	if (monitor_mode == MONITOR_TRACKING_M || is_tracking_shared)
 		return;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m == ref)
 			continue;
 
@@ -355,7 +358,7 @@ monitor_assign_virtual(struct monitor *ref)
 void
 FScreenSelect(Display *dpy)
 {
-	XRRSelectInput(disp, DefaultRootWindow(disp),
+	XRRSelectInput(dpy, DefaultRootWindow(dpy),
 		RRScreenChangeNotifyMask | RROutputChangeNotifyMask);
 }
 
@@ -379,7 +382,7 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 		XRROutputInfo		*oinfo = NULL;
 		int			 i;
 
-		scan_screens(dpy);
+		//scan_screens(dpy);
 
 		for (i = 0; i < res->noutput; i++) {
 			oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
@@ -391,7 +394,7 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 			if (si == NULL)
 				continue;
 
-			TAILQ_FOREACH(m, &monitor_q, entry) {
+			RB_FOREACH(m, monitors, &monitor_q) {
 				if (m->si == si) {
 					m->emit &= ~MONITOR_ALL;
 					break;
@@ -433,7 +436,7 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	}
 	XRRFreeScreenResources(res);
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 		monitor_scan_edges(m);
 
 	monitor_check_primary();
@@ -459,13 +462,22 @@ monitor_set_coords(struct monitor *m, XRRMonitorInfo rrm)
 	}
 }
 
+int
+monitor_compare(struct monitor *a, struct monitor *b)
+{
+	fvwm_debug(__func__, "a: %s, y: %d x: %d", a->si->name, a->si->y, a->si->x);
+	fvwm_debug(__func__, "b: %s, y: %d x: %d", b->si->name, b->si->y, b->si->x);
+
+	if (a->si->y == b->si->y)
+		return a->si->x - b->si->x;
+	return b->si->y - a->si->y;
+}
+
 static void
 scan_screens(Display *dpy)
 {
 	XRRMonitorInfo		*rrm;
-	struct monitor 		*m = NULL, *m2 = NULL;
     	int			 i, n = 0;
-	int			 pos = 0;
 	Window			 root = RootWindow(dpy, DefaultScreen(dpy));
 
 	rrm = XRRGetMonitors(dpy, root, false, &n);
@@ -474,9 +486,11 @@ scan_screens(Display *dpy)
 		exit(101);
 	}
 
-	for (i = 0; i < n; i++) {
+	fvwm_debug(__func__, "HERE: 1 (%d)", n);
 
-		char *name = XGetAtomName(dpy, rrm[i].name);
+	for (i = 0; i < n; i++) {
+		struct monitor 	*m = NULL;
+		char		*name = XGetAtomName(dpy, rrm[i].name);
 
 		if (name == NULL) {
 			fprintf(
@@ -496,43 +510,26 @@ scan_screens(Display *dpy)
 			m->virtual_scr.edge_thickness = 2;
 			m->virtual_scr.last_edge_thickness = 2;
 
-			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
-
-			if (TAILQ_EMPTY(&monitor_q)) {
-				TAILQ_INSERT_HEAD(&monitor_q, m, entry);
-				monitor_set_coords(m, rrm[i]);
-				goto done;
-			}
-
-			TAILQ_FOREACH(m2, &monitor_q, entry) {
-				if (m == m2 || (strcmp(m2->si->name, name) == 0))
-					continue;
-				if (rrm[i].x < m2->si->x) {
-					TAILQ_INSERT_BEFORE(m2, m, entry);
-					break;
-				} else {
-					TAILQ_INSERT_TAIL(&monitor_q, m, entry);
-					break;
-				}
-			}
-
+			fvwm_debug(__func__, "HERE: 3");
 			monitor_set_coords(m, rrm[i]);
+			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
+			RB_INSERT(monitors, &monitor_q, m);
 		}
-		if ((strcmp(m->si->name, name) == 0) &&
-		    (m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
-		    m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
-			if (m->flags & MONITOR_ENABLED)
-				m->flags |= MONITOR_CHANGED;
+
+		RB_FOREACH(m, monitors, &monitor_q) {
+			if ((strcmp(m->si->name, name) == 0) &&
+				(m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
+				m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
+				if (m->flags & MONITOR_ENABLED)
+					m->flags |= MONITOR_CHANGED;
+
+				monitor_set_coords(m, rrm[i]);
+			}
 		}
-done:
-		XFree(name);
+		if (name != NULL)
+			XFree(name);
 	}
 
-	TAILQ_FOREACH(m2, &monitor_q, entry) {
-		m2->si->number = pos++;
-	}
-
-	monitor_scan_edges(m);
 	monitor_check_primary();
 	XRRFreeMonitors(rrm);
 }
@@ -551,8 +548,8 @@ void FScreenInit(Display *dpy)
 	is_randr_present = false;
 	randr_initialised = false;
 
-	if (TAILQ_EMPTY(&monitor_q))
-		TAILQ_INIT(&monitor_q);
+	if (RB_EMPTY(&monitor_q))
+		RB_INIT(&monitor_q);
 
 	if (TAILQ_EMPTY(&screen_info_q))
 		TAILQ_INIT(&screen_info_q);
@@ -590,7 +587,7 @@ void FScreenInit(Display *dpy)
 	randr_initialised = true;
 	is_tracking_shared = false;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		memset(&m->ewmhc, 0, sizeof(m->ewmhc));
 
 		m->Desktops = fxcalloc(1, sizeof *m->Desktops);
@@ -621,7 +618,7 @@ monitor_dump_state(struct monitor *m)
 
 	fvwm_debug(__func__, "Monitor Debug\n");
 	fvwm_debug(__func__, "\tnumber of outputs: %d\n", monitor_get_count());
-	TAILQ_FOREACH(m2, &monitor_q, entry) {
+	RB_FOREACH(m2, monitors, &monitor_q) {
 		if (m2 == NULL) {
 			fvwm_debug(__func__,
 				   "monitor in list is NULL.  Bug!\n");
@@ -678,7 +675,7 @@ monitor_get_count(void)
 	struct monitor	*m = NULL;
 	int		 c = 0;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->flags & MONITOR_DISABLED)
 			continue;
 		c++;
@@ -702,7 +699,7 @@ FindScreenOfXY(int x, int y)
 	xa %= all_widths;
 	ya %= all_heights;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		/* If we have more than one screen configured, then don't match
 		 * on the global screen, as that's separate to XY positioning
 		 * which is only concerned with the *specific* screen.
@@ -717,7 +714,7 @@ FindScreenOfXY(int x, int y)
 
 	/* FIXME: this is a convenience, but could confuse callers. */
 	if (m == NULL)
-		return TAILQ_FIRST(&monitor_q);
+		return RB_MIN(monitors, &monitor_q);
 
 	return (NULL);
 }

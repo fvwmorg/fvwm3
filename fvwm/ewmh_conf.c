@@ -131,7 +131,7 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 		return;
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		set_ewmhc_desktop_values(m, num, val);
 	}
 }
@@ -171,7 +171,7 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		return;
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		fvwm_debug(__func__, "mon: %s {l: %d, r: %d, t: %d, b: %d}\n",
 			m->si->name, val[0], val[1], val[2], val[3]);
 		set_ewmhc_strut_values(m, val);
