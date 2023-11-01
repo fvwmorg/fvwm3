@@ -291,7 +291,7 @@ static void move_to_next_monitor(
 	win_r->x -= page.x;
 	win_r->y -= page.y;
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 	{
 		if (fw->m == m)
 			continue;
@@ -2293,7 +2293,7 @@ static void DoSnapMonitor(
 	} score = { MAXSCORE, MAXSCORE };
 	struct monitor *m;
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 	{
 		mon.x = m->si->x;
 		mon.y = m->si->y;
@@ -2438,7 +2438,7 @@ static void DoSnapWindow(FvwmWindow *fw, rectangle self, position *new)
 	/* Ignore snapping to window sides on monitor edges */
 	struct monitor *m;
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 	{
 		if ((new->x == m->si->x || new->x == m->si->x + m->si->w) &&
 			(self.y >= m->si->y &&

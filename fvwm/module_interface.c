@@ -475,7 +475,7 @@ void BroadcastMonitorList(fmodule *this)
 	module_list_itr_init(&moditr);
 
 	while ((module = module_list_itr_next(&moditr)) != NULL) {
-		TAILQ_FOREACH(m, &monitor_q, entry) {
+		RB_FOREACH(m, monitors, &monitor_q) {
 			if (m->flags & MONITOR_DISABLED)
 				continue;
 			xasprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d",
@@ -896,7 +896,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	 * Modules can filter out those monitor packets they're not interested
 	 * in.
 	 */
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		SendPacket(mod, M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
 			(long)m->si->rr_output);
 		SendPacket(

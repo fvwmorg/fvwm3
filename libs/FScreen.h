@@ -6,6 +6,9 @@
 #include "fvwm_x11.h"
 #include "fvwmrect.h"
 
+#include "queue.h"
+#include "tree.h"
+
 #include <stdbool.h>
 
 typedef struct
@@ -141,11 +144,14 @@ struct monitor {
 	PanFrame PanFrameBottom;
 	bool pan_frames_mapped;
 
-	TAILQ_ENTRY(monitor) entry;
+	RB_ENTRY(monitor) entry;
 };
-TAILQ_HEAD(monitors, monitor);
+RB_HEAD(monitors, monitor);
 
-extern struct monitors		monitor_q;
+extern struct monitors  monitors;
+extern struct monitors	monitor_q;
+int			monitor_compare(struct monitor *, struct monitor *);
+RB_PROTOTYPE(monitors, monitor, entry, monitor_compare);
 
 struct monitor	*monitor_resolve_name(const char *);
 struct monitor	*monitor_by_xy(int, int);

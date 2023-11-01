@@ -1470,7 +1470,7 @@ void StartupStuff(void)
 	/* Have to do this here too because preprocessor modules have not run
 	 * to the end when HandleEvents is entered from the main loop. */
 	struct monitor *m;
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 		checkPanFrames(m);
 
 	fFvwmInStartup = False;
@@ -2417,7 +2417,7 @@ int main(int argc, char **argv)
 	LoadWindowStates(state_filename);
 
 	is_tracking_shared = false;
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 		EWMH_Init(m);
 
 	SetRCDefaults();

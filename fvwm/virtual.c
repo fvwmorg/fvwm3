@@ -1242,7 +1242,7 @@ void raisePanFrames(void)
 	 * every time they are raised by using XRestackWindows. */
 
 	n = 0;
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->PanFrameTop.isMapped)
 		{
 			windows[n++] = m->PanFrameTop.win;
@@ -1314,7 +1314,7 @@ void initPanFrames(struct monitor *ref)
 	}
 
 	/* Free panframes here for all monitors. */
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (ref != NULL && m != ref)
 			continue;
 		if (m->PanFrameLeft.isMapped)
@@ -1339,7 +1339,7 @@ void initPanFrames(struct monitor *ref)
 		}
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (ref != NULL && m != ref)
 			continue;
 		init_one_panframe(&m->PanFrameTop, m->si->x, m->si->y, m->si->w,
@@ -1364,7 +1364,7 @@ Bool is_pan_frame(Window w)
 {
 	struct monitor *m;
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		bool is_pf_top = (w == m->PanFrameTop.win);
 		bool is_pf_bottom = (w == m->PanFrameBottom.win);
 		bool is_pf_left = (w == m->PanFrameLeft.win);
@@ -1409,7 +1409,7 @@ static void move_viewport_delta(
 
 	if (do_broadcast)
 	{
-		TAILQ_FOREACH(mloop, &monitor_q, entry)
+		RB_FOREACH(mloop, monitors, &monitor_q)
 		{
 			if (is_tracking_shared) {
 			    if ((!m->virtual_scr.is_swapping ||
@@ -1639,7 +1639,7 @@ void MoveViewport(struct monitor *m, int newx, int newy, Bool grab)
 	if (!global)
 		goto done;
 
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
 		if (m == m_loop)
 			continue;
 		checkPanFrames(m_loop);
@@ -1721,7 +1721,7 @@ void goto_desk(int desk, struct monitor *m)
 	monitor_assign_virtual(m);
 
 	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
-		TAILQ_FOREACH(m2, &monitor_q, entry) {
+		RB_FOREACH(m2, monitors, &monitor_q) {
 			if (m == m2)
 				continue;
 			m2->Desktops = m->Desktops;
@@ -1740,7 +1740,7 @@ void goto_desk(int desk, struct monitor *m)
 	if (!is_tracking_shared)
 		return;
 
-	TAILQ_FOREACH(m2, &monitor_q, entry) {
+	RB_FOREACH(m2, monitors, &monitor_q) {
 		/* If we're swapping a desktop between monitors for
 		 * shared mode, only do this when the is_swapping flag
 		 * is true, otherwise events would be raised for a
@@ -2053,7 +2053,7 @@ void parse_edge_leave_command(char *action, int type)
 
 	initPanFrames(NULL);
 
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
 		char **target;
 
 		/* Skip this monitor if it's not the one we're after. */
@@ -2162,7 +2162,7 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 		return;
 	}
 
-	TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
 		m_loop->virtual_scr.edge_thickness = val;
 		initPanFrames(m_loop);
 	}
@@ -2247,7 +2247,7 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 		return;
 	}
 
-	TAILQ_FOREACH(m_this, &monitor_q, entry) {
+	RB_FOREACH(m_this, monitors, &monitor_q) {
 		m_this->virtual_scr.EdgeScrollX = val1 * val1_unit / 100;
 		m_this->virtual_scr.EdgeScrollY = val2 * val2_unit / 100;
 		checkPanFrames(m_this);
@@ -2341,7 +2341,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		 */
 		is_tracking_shared = false;
 		char *cmd = NULL;
-		TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		RB_FOREACH(m_loop, monitors, &monitor_q) {
 			if (m_loop == m)
 				continue;
 			xasprintf(&cmd, "GotoDeskAndPage %s %d %d %d",
@@ -2425,7 +2425,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 			 * increment the desktop they're on, having first set
 			 * the tracking mode to be per-monitor.
 			 */
-			struct monitor	*m_first = TAILQ_FIRST(&monitor_q);
+			struct monitor	*m_first = RB_MIN(monitors, &monitor_q);
 			struct monitor	*m_loop;
 			int		 this_d = m_first->virtual_scr.CurrentDesk;
 
@@ -2435,7 +2435,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 			 * Go through the other monitors, and assign them a
 			 * new desk which is higher than the previous.
 			 */
-			TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+			RB_FOREACH(m_loop, monitors, &monitor_q) {
 				if (m_loop == m_first) {
 					this_d++;
 					continue;
@@ -2461,10 +2461,10 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 			 * be moved to the screen for which the desktop has
 			 * the current desktop.
 			 */
-			struct monitor	*m_loop, *first = TAILQ_FIRST(&monitor_q);
+			struct monitor	*m_loop, *first = RB_MIN(monitors, &monitor_q);
 			int		 this_desk = first->virtual_scr.CurrentDesk;
 
-			TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+			RB_FOREACH(m_loop, monitors, &monitor_q) {
 				if (m_loop == first) {
 					CMD_MOVE_SCREEN_DESK(m_loop,
 					    m_loop->virtual_scr.CurrentDesk);
@@ -2517,7 +2517,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		return;
 	}
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		m->dx = val[0] <= 0 ? 1 : val[0];
 		m->dy = val[1] <= 0 ? 1 : val[1];
 
@@ -2572,7 +2572,7 @@ void CMD_GotoDesk(F_CMD_ARGS)
 		 */
 		int	 this_desk_now = m->virtual_scr.CurrentDesk;
 
-		TAILQ_FOREACH(m_loop, &monitor_q, entry) {
+		RB_FOREACH(m_loop, monitors, &monitor_q) {
 			if (m_loop == m)
 				continue;
 
@@ -2755,7 +2755,7 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 		struct monitor	*m;
 		char		*cmd;
 
-		TAILQ_FOREACH(m, &monitor_q, entry) {
+		RB_FOREACH(m, monitors, &monitor_q) {
 			if (m->virtual_scr.CurrentDesk == desk) {
 				xasprintf(&cmd,
 				    "MoveToPage %s $[w.pagex] $[w.pagey]",
@@ -3144,6 +3144,6 @@ void CMD_DesktopName(F_CMD_ARGS)
 
 	store_desktop_cmd(desk, action);
 
-	TAILQ_FOREACH(m, &monitor_q, entry)
+	RB_FOREACH(m, monitors, &monitor_q)
 		apply_desktops_monitor(m);
 }

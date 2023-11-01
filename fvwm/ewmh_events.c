@@ -144,7 +144,7 @@ int ewmh_NumberOfDesktops(
 	struct monitor	*m;
 
 	/* not a lot of sinification for fvwm */
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		EWMH_SetNumberOfDesktops(m);
 
 		if (d > 0 &&

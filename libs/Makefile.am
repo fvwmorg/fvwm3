@@ -16,7 +16,7 @@ libfvwm3_a_SOURCES = \
 	fsm.h ftime.h fvwm_sys_stat.h fvwm_x11.h fvwmlib.h fvwmrect.h fvwmsignal.h \
 	gravity.c gravity.h getpwuid.h lang-strings.h log.h modifiers.h queue.h \
 	safemalloc.h setpgrp.h strlcat.h strlcpy.h timeout.h vpacket.h wcontext.h wild.h \
-	cJSON.h \
+	cJSON.h tree.h \
 	\
 	BidiJoin.c Flocale.c PictureUtils.c FScreen.c Graphics.c \
 	PictureGraphics.c Bindings.c FlocaleCharset.c Parse.c \

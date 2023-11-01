@@ -1782,9 +1782,9 @@ void monitor_update_ewmh(void)
 		monitor_dump_state(NULL);
 	}
 
-	mref = TAILQ_FIRST(&monitor_q);
+	mref = RB_MIN(monitors, &monitor_q);
 
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->flags & MONITOR_NEW) {
 			if (m->Desktops == NULL) {
 				int ewbs[4] = {0, 0, 0, 0};
@@ -1826,7 +1826,7 @@ monitor_emit_broadcast(void)
 	struct monitor	*m;
 	char		*randrfunc = "RandRFunc";
 
-	TAILQ_FOREACH (m, &monitor_q, entry) {
+	RB_FOREACH (m, monitors, &monitor_q) {
 		if (m->emit & MONITOR_CHANGED) {
 			BroadcastName(
 				MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
@@ -4180,8 +4180,8 @@ void dispatch_event(XEvent *e)
 	switch (e->type - randr_event) {
 		case RRScreenChangeNotify: {
 			sce = (XRRScreenChangeNotifyEvent *)e;
-			monitor_output_change(sce->display, sce);
 			XRRUpdateConfiguration(e);
+			monitor_output_change(sce->display, sce);
 			monitor_update_ewmh();
 			monitor_emit_broadcast();
 			initPanFrames(NULL);
