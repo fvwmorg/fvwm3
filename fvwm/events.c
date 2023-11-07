@@ -2338,8 +2338,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 			int p = HandlePaging(
 				&e, edge_scroll, &junk, &delta,
 				True, True, False, Scr.ScrollDelay);
-			fvwm_debug(__func__, "handled paging for %s (%d)",
-				m->si->name, p);
 			return;
 		}
 	}
