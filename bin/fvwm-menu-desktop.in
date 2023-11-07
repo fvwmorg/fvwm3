@@ -715,9 +715,10 @@ def printmenu(name, icon, command):
     iconfile = ''
     if IconScaleTool.enable_icon:
         iconfile = geticonfile(icon) or getdefaulticonfile(command) or icon
-        if not (iconfile == '' or iconfile == None):
+        if not (iconfile == '' or iconfile == None) and os.path.isfile(iconfile):
             iconfile = '%'+iconfile+'%'
         else:
+            iconfile = ''
             sys.stderr.write("%s icon or default icon not found!\n")
     printtext('+ "%s%s" %s' % (escapemenutext(name), iconfile, command))
 
