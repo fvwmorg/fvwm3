@@ -2886,34 +2886,6 @@ void CMD_ModuleTimeout(F_CMD_ARGS)
 	return;
 }
 
-void CMD_HilightColor(F_CMD_ARGS)
-{
-	char *fore;
-	char *back;
-
-	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
-	{
-		fvwm_debug(__func__,
-			   "Decors do not support the HilightColor command"
-			   " anymore. Please use"
-			   " 'Style <stylename> HilightFore <forecolor>' and"
-			   " 'Style <stylename> HilightBack <backcolor>' instead."
-			   " Sorry for the inconvenience.");
-		return;
-	}
-	action = GetNextToken(action, &fore);
-	GetNextToken(action, &back);
-	if (fore && back)
-	{
-		xasprintf(&action, "* HilightFore %s, HilightBack %s", fore, back);
-		CMD_Style(F_PASS_ARGS);
-	}
-	free(fore);
-	free(back);
-
-	return;
-}
-
 void CMD_HilightColorset(F_CMD_ARGS)
 {
 	char *newaction;

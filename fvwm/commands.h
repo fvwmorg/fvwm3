@@ -270,7 +270,6 @@ void CMD_GotoDesk(F_CMD_ARGS);
 void CMD_GotoDeskAndPage(F_CMD_ARGS);
 void CMD_GotoPage(F_CMD_ARGS);
 void CMD_HideGeometryWindow(F_CMD_ARGS);
-void CMD_HilightColor(F_CMD_ARGS);
 void CMD_HilightColorset(F_CMD_ARGS);
 void CMD_IconFont(F_CMD_ARGS);
 void CMD_Iconify(F_CMD_ARGS);

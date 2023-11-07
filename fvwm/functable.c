@@ -291,9 +291,6 @@ const func_t func_table[] =
 		F_HIDEGEOMWINDOW, 0, 0),
 	/* - (obsolete, use GeometryWindow Hide instead) */
 
-	CMD_ENT("hilightcolor", CMD_HilightColor, F_HICOLOR, 0, 0),
-	/* - (obsolete, use Style * HighlightFore/Back) */
-
 	CMD_ENT("hilightcolorset", CMD_HilightColorset, F_HICOLORSET, 0, 0),
 	/* - (obsolete, use Style * HighlightColorset) */
 
