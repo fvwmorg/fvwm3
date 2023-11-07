@@ -480,7 +480,7 @@ Standard output is a series Fvwm commands."""
             if not style_id:
                 style_id = ent.getIcon()
             if style_id and ent.getIcon():
-                sys.stdout.write('Style {} MiniIcon "{}"\n'.format(style_id, geticonfile(ent.getIcon())))
+                sys.stdout.write('Style "{}" MiniIcon "{}"\n'.format(style_id, geticonfile(ent.getIcon())))
 
     sys.stdout.flush()
     vprint("\nProcess took " + str(time.time()-timestamp) + " seconds")
