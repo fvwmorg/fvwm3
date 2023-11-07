@@ -1321,8 +1321,6 @@ static void SetRCDefaults(void)
 		{ "DefaultFont", "", "" },
 		{ DEFAULT_MENU_STYLE, "", "" },
 		{ "TitleStyle Centered -- Raised", "", "" },
-		{ "Style * Color lightgrey/dimgrey", "", "" },
-		{ "Style * HilightFore black, HilightBack grey", "", "" },
 		{ "AddToFunc LoadDefaultConfig", "", "" },
 		{ "+ I Read "FVWM_DATADIR"/default-config/config", "", "" },
 		{ "+ I StartFunction", "", "" },
