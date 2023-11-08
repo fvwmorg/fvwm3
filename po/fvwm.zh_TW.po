@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: fvwm\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-06-29 23:39-0600\n"
-"PO-Revision-Date: 2023-11-08 22:13+0800\n"
+"PO-Revision-Date: 2023-11-08 22:21+0800\n"
 "Last-Translator: Thomas Funk <t.funk@web.de>\n"
 "Language-Team: User\n"
 "Language: zh_TW\n"
@@ -46,7 +46,7 @@ msgstr "離開 fvwm"
 #. ./default-config/config: line 413
 #: ../fvwm/expand.c:492
 msgid "Desk"
-msgstr "Arbeitsplatz"
+msgstr "桌面"
 
 #: ../fvwm/windowlist.c:96 ../fvwm/windowlist.c:102 ../fvwm/windowlist.c:109
 msgid "\tGeometry"
@@ -55,7 +55,7 @@ msgstr "\t幾何"
 #: ../fvwm/windowlist.c:107
 #, c-format
 msgid "Desk: %d%s"
-msgstr "Arbeitsplatz: %d%s"
+msgstr "桌面： %d%s"
 
 #: ../fvwm/menus.c:1798
 msgid "More&..."
