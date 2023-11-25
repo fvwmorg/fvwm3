@@ -58,7 +58,6 @@ extern bool is_tracking_shared;
 struct screen_info {
 	const char		*name;
 	int			 x, y, w, h;
-	int			 number;
 	RROutput		 rr_output;
 
 	TAILQ_ENTRY(screen_info) entry;
@@ -84,6 +83,7 @@ struct monitor {
 	struct screen_info	*si;
 	int			 flags;
 	int			 emit;
+	int			 number;
 	int			 dx, dy;
 	bool			 is_prev, was_primary;
 
