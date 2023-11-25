@@ -49,6 +49,7 @@ static bool		 randr_initialised;
 static void		 scan_screens(Display *);
 static struct monitor	*monitor_by_name(const char *);
 static void		 monitor_set_coords(struct monitor *, XRRMonitorInfo);
+static void		 monitor_assign_number(void);
 
 enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
@@ -382,7 +383,7 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 		XRROutputInfo		*oinfo = NULL;
 		int			 i;
 
-		//scan_screens(dpy);
+		scan_screens(dpy);
 
 		for (i = 0; i < res->noutput; i++) {
 			oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
@@ -462,15 +463,27 @@ monitor_set_coords(struct monitor *m, XRRMonitorInfo rrm)
 	}
 }
 
+static void
+monitor_assign_number(void)
+{
+	struct monitor	*m;
+	int		 n = 0;
+
+	RB_FOREACH(m, monitors, &monitor_q) {
+		if (m->flags & MONITOR_DISABLED)
+			continue;
+		m->number = n++;
+	}
+}
+
 int
 monitor_compare(struct monitor *a, struct monitor *b)
 {
 	fvwm_debug(__func__, "a: %s, y: %d x: %d", a->si->name, a->si->y, a->si->x);
 	fvwm_debug(__func__, "b: %s, y: %d x: %d", b->si->name, b->si->y, b->si->x);
 
-	if (a->si->y == b->si->y)
-		return a->si->x - b->si->x;
-	return b->si->y - a->si->y;
+	return (a->si->y == b->si->y) ?
+		(a->si->x - b->si->x) : (a->si->y - b->si->y);
 }
 
 static void
@@ -485,8 +498,6 @@ scan_screens(Display *dpy)
 		fvwm_debug(__func__, "get monitors failed\n");
 		exit(101);
 	}
-
-	fvwm_debug(__func__, "HERE: 1 (%d)", n);
 
 	for (i = 0; i < n; i++) {
 		struct monitor 	*m = NULL;
@@ -510,7 +521,6 @@ scan_screens(Display *dpy)
 			m->virtual_scr.edge_thickness = 2;
 			m->virtual_scr.last_edge_thickness = 2;
 
-			fvwm_debug(__func__, "HERE: 3");
 			monitor_set_coords(m, rrm[i]);
 			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
 			RB_INSERT(monitors, &monitor_q, m);
@@ -530,6 +540,11 @@ scan_screens(Display *dpy)
 			XFree(name);
 	}
 
+
+	/* Now that all monitors have been inserted, assign them a number from
+	 * 0 -> n so that they can be referenced in order.
+	 */
+	monitor_assign_number();
 	monitor_check_primary();
 	XRRFreeMonitors(rrm);
 }
@@ -644,7 +659,7 @@ monitor_dump_state(struct monitor *m)
 			"\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
 			"\tDesktops:\t%s\n"
 			"\tFlags:%s\n\n",
-			m2->si->number,
+			m2->number,
 			m2->si->name,
 			(m2->flags & MONITOR_DISABLED) ? "true" : "false",
 			(m2->flags & MONITOR_PRIMARY) ? "yes" : "no",

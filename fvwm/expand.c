@@ -560,7 +560,7 @@ static signed int expand_vars_extended(
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
 			if ((pos = atoi(m_name)) >= 0) {
 				RB_FOREACH(m_loop, monitors, &monitor_q) {
-					if (m_loop->si->number == pos) {
+					if (m_loop->number == pos) {
 						mon2 = m_loop;
 						break;
 					}
