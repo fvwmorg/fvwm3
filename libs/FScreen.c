@@ -500,7 +500,7 @@ scan_screens(Display *dpy)
 	}
 
 	for (i = 0; i < n; i++) {
-		struct monitor 	*m = NULL;
+		struct monitor 	*m = NULL, *m1 = NULL;
 		char		*name = XGetAtomName(dpy, rrm[i].name);
 
 		if (name == NULL) {
@@ -526,14 +526,19 @@ scan_screens(Display *dpy)
 			RB_INSERT(monitors, &monitor_q, m);
 		}
 
-		RB_FOREACH(m, monitors, &monitor_q) {
+		RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
 			if ((strcmp(m->si->name, name) == 0) &&
 				(m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
 				m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
+
+				RB_REMOVE(monitors, &monitor_q, m);
+
 				if (m->flags & MONITOR_ENABLED)
 					m->flags |= MONITOR_CHANGED;
 
 				monitor_set_coords(m, rrm[i]);
+
+				RB_INSERT(monitors, &monitor_q, m);
 			}
 		}
 		if (name != NULL)
