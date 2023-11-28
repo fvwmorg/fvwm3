@@ -402,17 +402,32 @@ confused with RandR support.
 
 == RANDR SUPPORT
 
-Fvwm supports the RandR X11 protocol. If Fvwm has been compiled wiith
+Fvwm supports the RandR X11 protocol. If Fvwm has been compiled with
 RandR support then it tracks the outputs (displays) which it finds.
 These outputs are stored by name, which can be found by running using
 the xrand(1) command.
 
+When Fvwm detects monitors, it adds them to a tree with a defined order, and
+each monitor is assigned a number.  That order is top-down, left-to-right, so
+for example, the following diagram illustrates a monitor layout and their
+assigned number.
+
+....
+A (0)
+B (1)   C (2)    D (3)
+....
+
+Hence it is possible to then refer to the 2nd monitor and print its name via
+expansion variables as:
+
+....
+$[monitor.1.name]
+....
+
+Which would print the name, *B*.
+
 In doing so, Fvwm tracks events from RandR, such as when a given output
-changes size, or has been removed. In such cases, Fvwm will react by
-moving windows. If an output is removed, those windows on that removed
-output will be moved to the next active output (the output which
-contains the mouse pointer). If the same output reappears, Fvwm will
-move those windows back again.
+changes size, or has been added or removed.
 
 In addition to specific *FvwmEvent* conditions which can be used to track a
 monitor's change, there is a function called _RandRFunc_ which the user can
@@ -1551,8 +1566,7 @@ $[w.layer]::
 	The layer of the window.
 
 $[w.screen]::
-	The screen name the window is on. If RandR is not present, this does not
-	expand.
+	The screen name the window is on.
 
 $[cw.x] $[cw.y] $[cw.width] $[cw.height]::
 	These work like $[w.…] but return the geometry of the client part of the
@@ -1579,13 +1593,12 @@ $[pointer.cx] $[pointer.cy]::
 	expanded.
 
 $[pointer.screen]::
-	The screen name the pointer is currently on. No expansion if RandR is
-	not enabled.
+	The screen name the pointer is currently on.
 +
 This is deprecated; use $[monitor.current] instead.
 
 $[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width],
-$[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
+$[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.number] $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
 	Returns information about the selected monitor. These can be nested, for
 	example: $[monitor.$[monitor.primary].width]
 +
@@ -1594,6 +1607,8 @@ $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.
 "x" returns the monitor's x position; "y" returns the monitor's y
 position; "width" returns the monitor's width (in pixels); "height"
 returns the monitor's height (in pixels)
++
+"number" returns the monitor's position within the tree.  See RANDR SUPPORT.
 +
 "current" is the same as the deprecated $[screen.pointer] variable; the
 monitor which has the mouse pointer.
@@ -1625,7 +1640,7 @@ $[screen]::
 	screens.
 
 $[screen.count]::
-	The total number of screens detected. Assumes RandR.
+	The total number of screens detected.
 +
 This is deprecated; use $[monitor.count] instead.
 
@@ -5597,7 +5612,7 @@ defined previously by another Style command for the same style.
 That's why the backslash in the previous example is required.
 +
 Note: The geometry for the icon box command takes the additional
-screen specifier "@w" in case RandR isused. This designates the
+screen specifier "@w" in case RandR is used. This designates the
 screen where the window center is located. The additional screen
 specifier is not allowed anywhere else.
 +
