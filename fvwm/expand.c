@@ -25,6 +25,7 @@
 #include "libs/ColorUtils.h"
 #include "libs/safemalloc.h"
 #include "libs/FEvent.h"
+#include "libs/strtonum.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -544,6 +545,7 @@ static signed int expand_vars_extended(
 		char		*m_name = NULL;
 		struct monitor  *mon2 = NULL, *m_loop;
 		char		*rest_s;
+		const char	*errstr;
 		char *p_free;
 		int got_string;
 		int pos = -1;
@@ -558,15 +560,18 @@ static signed int expand_vars_extended(
 		p_free = rest_s;
 		got_string = 0;
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
-			if ((pos = atoi(m_name)) >= 0) {
-				RB_FOREACH(m_loop, monitors, &monitor_q) {
-					if (m_loop->number == pos) {
-						mon2 = m_loop;
-						break;
-					}
-				}
+			/* Try parsing the name as a number.  If that fails,
+			 * then treat it as a valid name.
+			 */
+			pos = strtonum(m_name, 1, INT_MAX, &errstr);
+			if (errstr != NULL)
+				pos = -1;
 
-				goto rest;
+			RB_FOREACH(m_loop, monitors, &monitor_q) {
+				if (m_loop->number == pos) {
+					mon2 = m_loop;
+					goto rest;
+				}
 			}
 
 			mon2 = monitor_resolve_name(m_name);
@@ -620,6 +625,15 @@ rest:
 				is_numeric = True;
 				val = (int)mon2->si->rr_output;
 				got_string = 1;
+				break;
+			}
+
+			if (strcmp(rest, "number") == 0) {
+				is_numeric = True;
+				val = (int)mon2->number;
+				got_string = 1;
+				fvwm_debug(__func__, "THOMAS: %s %d",
+				mon2->si->name, mon2->number);
 				break;
 			}
 
