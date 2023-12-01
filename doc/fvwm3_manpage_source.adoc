@@ -8046,10 +8046,11 @@ The format of the JSON blob looks like this:
 
 ....
 {
-    "version": 1,
+    "version": 3,
     "current_screen": "HDMI2",
     "screens": {
         "HDMI2": {
+	    "randr_order": 0,
             "current_client": "n6tadam@shuttle: ~",
             "desktops": {
                 "0": {
