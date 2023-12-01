@@ -149,7 +149,7 @@ status_send(void)
 
 	m_cur = monitor_get_current();
 
-	cJSON_AddNumberToObject(msg, "version", 2);
+	cJSON_AddNumberToObject(msg, "version", 3);
 	cJSON_AddStringToObject(msg, "current_screen", m_cur->si->name);
 	cJSON_AddStringToObject(msg, "desktop_mode",
 	    monitor_mode == MONITOR_TRACKING_G && is_tracking_shared ? "shared" :
@@ -192,6 +192,8 @@ status_send(void)
 		}
 
 		cJSON_AddItemToObject(screens, m->si->name, desk_doc[d_count]);
+		cJSON_AddNumberToObject(desk_doc[d_count], "randr_order",
+		    m->number);
 
 		d_count++;
 		m_count++;
