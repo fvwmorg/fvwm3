@@ -31,7 +31,12 @@
 #include <stdbool.h>
 #include <unistd.h>
 
+#ifdef HOST_MACOS
+#include <event.h>
+#else
 #include <event2/event.h>
+#endif
+
 /* FIXME: including event_struct.h won't be binary comaptible with future
  * versions of libevent.
  */
