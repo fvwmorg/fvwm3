@@ -15,7 +15,7 @@ libfvwm3_a_SOURCES = \
 	XError.h XResource.h charmap.h defaults.h envvar.h fio.h flist.h fqueue.h \
 	fsm.h ftime.h fvwm_sys_stat.h fvwm_x11.h fvwmlib.h fvwmrect.h fvwmsignal.h \
 	gravity.c gravity.h getpwuid.h lang-strings.h log.h modifiers.h queue.h \
-	safemalloc.h setpgrp.h strlcat.h strlcpy.h timeout.h vpacket.h wcontext.h wild.h \
+	safemalloc.h setpgrp.h timeout.h vpacket.h wcontext.h wild.h \
 	cJSON.h tree.h strtonum.h \
 	\
 	BidiJoin.c Flocale.c PictureUtils.c FScreen.c Graphics.c \
@@ -27,8 +27,14 @@ libfvwm3_a_SOURCES = \
 	fvwmrect.c FRenderInit.c safemalloc.c  FBidi.c \
 	wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
 	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
-	modifiers.c fsm.c FTips.c fio.c fvwmlib3.c strlcat.c strlcpy.c \
+	modifiers.c fsm.c FTips.c fio.c fvwmlib3.c \
 	getpwuid.c cJSON.c strtonum.c
+
+if HOST_MACOS
+foo=
+else
+libfvwm3_a_SOURCES += strlcpy.h strlcat.h strlcpy.c strlcat.c
+endif
 
 libfvwm3_a_LIBADD = @LIBOBJS@
 

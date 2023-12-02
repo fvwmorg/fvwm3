@@ -267,17 +267,33 @@ AC_CANONICAL_HOST
 AC_MSG_CHECKING(platform)
 case "$host_os" in
 freebsd*)
+	PLATFORM=freebsd
 	AC_MSG_RESULT(FreeBSD)
 	AC_CHECK_LIB(xpg4, setlocale, [LIBS="$LIBS -lxpg4"])
 	;;
 *openbsd*)
+	PLATFORM=openbsd
 	AC_MSG_RESULT(OpenBSD)
 	CFLAGS="$CFLAGS -I/usr/local/include"
 	LDFLAGS="$LDFLAGS -L/usr/local/lib"
 	;;
+*darwin*)
+	PLATFORM=macos
+	AC_MSG_RESULT(MacOS)
+	;;
 *)
+	PLATFORM=unknown
+	AC_MSG_RESULT(unknown)
 	;;
 esac
+
+AC_SUBST(PLATFORM)
+
+AM_CONDITIONAL([HOST_MACOS], [test "$PLATFORM" = "macos"])
+
+if test "x$PLATFORM" = "xmacos"; then
+AC_DEFINE([HOST_MACOS], [macos], [Host is MacOS])
+fi
 
 PKG_PROG_PKG_CONFIG
 
@@ -1359,12 +1375,17 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define SUPPRESS_UNUSED_VAR_WARNING(x) \
 do { void *p; p = (void *)&x; (void)p; } while (0);
 
+#ifdef HOST_MACOS
+#undef HAVE_STRLCAT
+#undef HAVE_STRLCPY
+#else
 #ifndef HAVE_STRLCAT
 #   include "libs/strlcat.h"
 #endif
 
 #ifndef HAVE_STRLCPY
 #   include "libs/strlcpy.h"
+#endif
 #endif
 
 #ifndef HAVE_ASPRINTF
