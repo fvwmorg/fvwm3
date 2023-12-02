@@ -563,7 +563,7 @@ static signed int expand_vars_extended(
 			/* Try parsing the name as a number.  If that fails,
 			 * then treat it as a valid name.
 			 */
-			pos = strtonum(m_name, 1, INT_MAX, &errstr);
+			pos = strtonum(m_name, 0, INT_MAX, &errstr);
 			if (errstr != NULL)
 				pos = -1;
 
