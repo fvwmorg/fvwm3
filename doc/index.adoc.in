@@ -1,0 +1,38 @@
+= Fvwm3 Manual Pages
+
+== Fvwm3
+
+* xref:fvwm3.adoc[Fvwm 3]
+* xref:fvwm3menus.adoc[Fvwm 3 Menus]
+* xref:fvwm3commands.adoc[Fvwm 3 Commands]
+* xref:fvwm3styles.adoc[Fvwm 3 Styles]
+* xref:fvwm3all.adoc[Single Fvwm3 Manual Page]
+
+== Fvwm3 Helper Binaries
+
+* xref:FvwmPrompt.adoc[FvwmPrompt]
+* xref:FvwmCommand.adoc[FvwmCommand]
+* xref:fvwm-menu-desktop.adoc[fvwm-menu-desktop]
+* xref:fvwm-menu-directory.adoc[fvwm-menu-directory]
+* xref:fvwm-menu-xlock.adoc[fvwm-menu-xlock]
+* xref:fvwm-perllib.adoc[fvwm-perllib]
+* xref:fvwm-root.adoc[fvwm-root]
+* xref:fvwm-convert-2.6.adoc[fvwm-convert-2.6]
+
+== Fvwm3 Modules
+
+* xref:FvwmAnimate.adoc[FvwmAnimate]
+* xref:FvwmAuto.adoc[FvwmAuto]
+* xref:FvwmBacker.adoc[FvwmBacker]
+* xref:FvwmButtons.adoc[FvwmButtons]
+* xref:FvwmConsole.adoc[FvwmConsole]
+* xref:FvwmEvent.adoc[FvwmEvent]
+* xref:FvwmForm.adoc[FvwmForm]
+* xref:FvwmIconMan.adoc[FvwmIconMan]
+* xref:FvwmIdent.adoc[FvwmIdent]
+* xref:FvwmMFL.adoc[FvwmMFL]
+* xref:FvwmPager.adoc[FvwmPager]
+* xref:FvwmPerl.adoc[FvwmPerl]
+* xref:FvwmPrompt.adoc[FvwmPrompt]
+* xref:FvwmRearrange.adoc[FvwmRearrange]
+* xref:FvwmScript.adoc[FvwmScript]
