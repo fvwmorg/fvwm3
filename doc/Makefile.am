@@ -58,6 +58,6 @@ $(html_MANS): $(SECTION_FILES)
 	"$(ASCIIDOC)" -b manpage -a "$(patsubst %.1,%,$@)" "$<" -o "$@"
 
 %.html: %.adoc
-	"$(ASCIIDOC)" -b html5 -a toc -a "$(patsubst %.html,%,$@)" "$<" -o "$@"
+	"$(ASCIIDOC)" -b html5 -a toc -a webfonts! -a "$(patsubst %.html,%,$@)" "$<" -o "$@"
 
 endif
