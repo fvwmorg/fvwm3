@@ -2335,7 +2335,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 			/* this was in the HandleMotionNotify before, HEDU */
 			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
-			int p = HandlePaging(
+			HandlePaging(
 				&e, edge_scroll, &junk, &delta,
 				True, True, False, Scr.ScrollDelay);
 			return;
