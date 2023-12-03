@@ -1,4 +1,4 @@
-= FvwmConsole(1)
+= FvwmCommand(1)
 
 :doctype: manpage
 :mantitle: FvwmCommand
