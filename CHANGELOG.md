@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.0.9](https://github.com/fvwmorg/fvwm3/tree/1.0.9) (2023-12-03)
+
+## What's Changed
+### Enhancements
+* Add Keywords and Icon to fvwm3.desktop file. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/917
+* Add configure option to generate html man pages. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/920
+* Update Chinese translate by @louies0623 in https://github.com/fvwmorg/fvwm3/pull/923
+* ta/monitor ordering by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/919
+* WIP: MacOS Support by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/911
+* Add Style CornerLength by @somiaj in https://github.com/fvwmorg/fvwm3/pull/928
+### Other Changes
+* Infostore: guard against UAF by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/908
+* recapture: fix incorrect handling of InitialState by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/907
+* Simplify _NET_WM_NAME setting by @omar-polo in https://github.com/fvwmorg/fvwm3/pull/909
+* ewmh: fix compiler warning by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/910
+* Fix a typo in fvwm3 -h by @bsdmp in https://github.com/fvwmorg/fvwm3/pull/915
+* _NET_CURRENT_DESKTOP: ignore the root window by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/912
+* Fix implicit function declaration in configure by @Kangie in https://github.com/fvwmorg/fvwm3/pull/914
+* dist: exclude FvwmPrompt binary by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/918
+* EdgeScroll: implement per monitor by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/916
+* Formatting improvements to fvwm-menu-desktop manpage. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/921
+* Varrious fixes for errors found in fvwm3-output.log by @somiaj in https://github.com/fvwmorg/fvwm3/pull/922
+* expand: fix $[monitor.0.XX] case by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/927
+
+## New Contributors
+* @bsdmp made their first contribution in https://github.com/fvwmorg/fvwm3/pull/915
+* @Kangie made their first contribution in https://github.com/fvwmorg/fvwm3/pull/914
+* @louies0623 made their first contribution in https://github.com/fvwmorg/fvwm3/pull/923
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.0.8...1.0.9
 ## [1.0.8](https://github.com/fvwmorg/fvwm3/tree/1.0.8) (2023-09-04)
 
 ## What's Changed
