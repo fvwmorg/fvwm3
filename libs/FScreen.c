@@ -458,8 +458,10 @@ monitor_set_coords(struct monitor *m, XRRMonitorInfo rrm)
 		m->flags |= MONITOR_PRIMARY;
 		m->was_primary = false;
 	} else {
-		m->flags &= ~MONITOR_PRIMARY;
-		m->was_primary = true;
+		if (m->flags & MONITOR_PRIMARY) {
+			m->flags &= ~MONITOR_PRIMARY;
+			m->was_primary = true;
+		}
 	}
 }
 
@@ -524,13 +526,12 @@ scan_screens(Display *dpy)
 			monitor_set_coords(m, rrm[i]);
 			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
 			RB_INSERT(monitors, &monitor_q, m);
+
+			goto done;
 		}
 
 		RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
-			if ((strcmp(m->si->name, name) == 0) &&
-				(m->si->x != rrm[i].x || m->si->y != rrm[i].y ||
-				m->si->w != rrm[i].width || m->si->h != rrm[i].height)) {
-
+			if (strcmp(m->si->name, name) == 0) {
 				RB_REMOVE(monitors, &monitor_q, m);
 
 				if (m->flags & MONITOR_ENABLED)
@@ -541,6 +542,7 @@ scan_screens(Display *dpy)
 				RB_INSERT(monitors, &monitor_q, m);
 			}
 		}
+done:
 		if (name != NULL)
 			XFree(name);
 	}
