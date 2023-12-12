@@ -667,7 +667,7 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 	rectangle g;
 	struct monitor *mnew;
 
-	get_unshaded_geometry(fw, &g);
+	g = IS_MAXIMIZED(fw) ? fw->g.max : fw->g.normal;
 	mnew = FindScreenOfXY(g.x, g.y);
 
 	/* Avoid unnecessary updates. */
