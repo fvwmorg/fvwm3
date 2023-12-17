@@ -487,7 +487,7 @@ AddToMenu   MenuFvwmManPages "Help" Title
 # Silent suppresses any errors (such as keyboards with no Menu key).
 Silent Key F1      A M Menu MenuFvwmRoot
 Silent Key Menu    A A Menu MenuFvwmRoot
-Silent Key Tab     A M WindowList Root c c NoDeskSort, NoGeometry, SelectOnRelease Meta_L
+Silent Key Tab     A M WindowList Root c c NoDeskSort, NoGeometry, SelectOnRelease Meta_L, CurrentAtEnd
 Silent Key F1      A C GotoDesk 0 0
 Silent Key F2      A C GotoDesk 0 1
 Silent Key F3      A C GotoDesk 0 2
