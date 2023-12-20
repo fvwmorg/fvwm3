@@ -4,4 +4,5 @@ Keywords=Fvwm3 Window Manager
 Comment=F? Virtual Window Manager
 Icon=@datadir@/fvwm3/default-config/images/fvwm-logo-small.png
 Type=Application
+DesktopNames=FVWM3;FVWM;
 Exec=@bindir@/fvwm3
