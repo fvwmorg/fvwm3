@@ -29,6 +29,7 @@
 #include "FScreen.h"
 #include "FEvent.h"
 #include "queue.h"
+#include "strtonum.h"
 
 #define GLOBAL_SCREEN_NAME "_global"
 
@@ -217,11 +218,30 @@ struct monitor *
 monitor_resolve_name(const char *scr)
 {
 	struct monitor	*m = NULL;
+	int		 pos = -1;
+	const char	*errstr;
 
 	if (scr == NULL)
 	{
 		return NULL;
 	}
+
+	/* Try and look up the monitor as a number.  If that succeeds,
+	 * try and match that number as something valid in the monitor
+	 * information we have.
+	 */
+	pos = strtonum(scr, 0, INT_MAX, &errstr);
+	if (errstr == NULL) {
+		/* We have a valid number.  Look it up. */
+		struct monitor	*m_loop;
+
+		RB_FOREACH(m_loop, monitors, &monitor_q) {
+			if (m_loop->number == pos)
+				return (m_loop);
+		}
+		return (NULL);
+	}
+
 	/* "@g" is for the global screen. */
 	if (strcmp(scr, "g") == 0) {
 		m = monitor_get_global();

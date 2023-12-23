@@ -341,6 +341,16 @@ the window's upper right hand corner 5 pixels above and to the left of
 the upper left hand corner of the screen; others may do just plain
 bizarre things.
 
+There is a fvwm-specific extension to geometry strings which can also
+enforce the geometry is relative to the given screen.  For example:
+
+....
+xterm -geometry +0+0@n
+....
+
+Where 'n' can be one of a RandR monitor name, or an assigned monitor number.
+For more details, see the RANDR SUPPORT section.
+
 There are several ways to cause a window to map onto a desktop or page
 other than the currently active one. The geometry technique mentioned
 above (specifying x,y coordinates larger than the physical screen size),
