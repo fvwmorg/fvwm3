@@ -156,6 +156,7 @@ RB_PROTOTYPE(monitors, monitor, entry, monitor_compare);
 struct monitor	*monitor_resolve_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_output(int);
+struct monitor	*monitor_by_number(int);
 struct monitor  *monitor_by_primary(void);
 struct monitor  *monitor_by_last_primary(void);
 struct monitor  *monitor_get_current(void);
