@@ -243,16 +243,8 @@ monitor_resolve_name(const char *scr)
 	 * information we have.
 	 */
 	pos = strtonum(scr, 0, INT_MAX, &errstr);
-	if (errstr == NULL) {
-		/* We have a valid number.  Look it up. */
-		struct monitor	*m_loop;
-
-		RB_FOREACH(m_loop, monitors, &monitor_q) {
-			if (m_loop->number == pos)
-				return (m_loop);
-		}
-		return (NULL);
-	}
+	if (errstr == NULL)
+		return (monitor_by_number(pos));
 
 	/* "@g" is for the global screen. */
 	if (strcmp(scr, "g") == 0) {
