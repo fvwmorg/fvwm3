@@ -25,7 +25,6 @@
 #include "libs/ColorUtils.h"
 #include "libs/safemalloc.h"
 #include "libs/FEvent.h"
-#include "libs/strtonum.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -543,12 +542,10 @@ static signed int expand_vars_extended(
 
 		/* We could be left with "<NAME>.?" */
 		char		*m_name = NULL;
-		struct monitor  *mon2 = NULL, *m_loop;
+		struct monitor  *mon2 = NULL;
 		char		*rest_s;
-		const char	*errstr;
 		char *p_free;
 		int got_string;
-		int pos = -1;
 
 		/* The first word is the monitor name:
 		 *
@@ -560,22 +557,7 @@ static signed int expand_vars_extended(
 		p_free = rest_s;
 		got_string = 0;
 		while ((m_name = strsep(&rest_s, ".")) != NULL) {
-			/* Try parsing the name as a number.  If that fails,
-			 * then treat it as a valid name.
-			 */
-			pos = strtonum(m_name, 0, INT_MAX, &errstr);
-			if (errstr != NULL)
-				pos = -1;
-
-			RB_FOREACH(m_loop, monitors, &monitor_q) {
-				if (m_loop->number == pos) {
-					mon2 = m_loop;
-					goto rest;
-				}
-			}
-
 			mon2 = monitor_resolve_name(m_name);
-rest:
 			if (mon2 == NULL)
 			{
 				free(p_free);
