@@ -115,6 +115,18 @@ monitor_scan_edges(struct monitor *m)
 	}
 }
 
+struct monitor *
+monitor_by_number(int n)
+{
+	struct monitor	*m_loop;
+
+	RB_FOREACH(m_loop, monitors, &monitor_q) {
+		if (m_loop->number == n)
+			return (m_loop);
+	}
+	return (NULL);
+}
+
 void
 monitor_refresh_global(void)
 {
