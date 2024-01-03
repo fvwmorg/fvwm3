@@ -1831,6 +1831,20 @@ Bool get_page_arguments(
 	limitdeskx = 1;
 	limitdesky = 1;
 
+	/* We've received something like:
+	 *
+	 * GotoPage 0 0
+	 *
+	 * But no monitor token.  Use the current monitor.
+	 */
+	if (GetIntegerArguments(action, NULL, val, 2) == 2) {
+		xasprintf(&action, "%s %d %d",
+			monitor_get_current()->si->name, val[0], val[1]);
+
+		val[0] = -1;
+		val[1] = -1;
+	}
+
 	token = PeekToken(action, &next);
 	m = monitor_resolve_name(token);
 	if (m != NULL)
