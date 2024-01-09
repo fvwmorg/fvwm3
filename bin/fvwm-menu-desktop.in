@@ -506,30 +506,38 @@ def getmenulist(desktop, menu_type):
             pattern = '*.menu'
             for filename in fnmatch.filter(dir_list, pattern):
                 filelist.add(filename)
-            
+
             # the menudict dictionary has a unsorted list (set) for the values.
             # set is easier to use then a list for removing items 
             menudict[dir] = filelist
             found_menus += len(filelist)
             vprint(" found in %s: %s" %(dir, list(filelist)))
-    
+
     desktop_dict = {}
     if not found_menus == 0:
         all_menus = []
-        # remove all menus in /etc/xdg/menus if exist in user dir
-        for path in list(menudict.keys()):
-            if not path == '/etc/xdg/menus':
-                if path == os.path.join(os.getenv("HOME"), '.config/menus'):
-                    menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
-                #else:
-                #    menudict[path] = menudict[path] - menudict['/etc/xdg/menus']
+        # If install_prefix is set /etc/xdg/menus is not used,
+        # instead generate all menus from only this location.
+        if install_prefix == "":
+            # remove all menus in /etc/xdg/menus if exist in user dir
+            for path in list(menudict.keys()):
+                if not path == '/etc/xdg/menus':
+                    if path == os.path.join(os.getenv("HOME"), '.config/menus'):
+                        menudict['/etc/xdg/menus'] = menudict['/etc/xdg/menus'] - menudict[path]
+                    #else:
+                    #    menudict[path] = menudict[path] - menudict['/etc/xdg/menus']
+                    for menu in list(menudict[path]):
+                        all_menus.append(path + '/' + menu)
+
+            if not menudict['/etc/xdg/menus'] == 0:
+                for menu in list(menudict['/etc/xdg/menus']):
+                    all_menus.append('/etc/xdg/menus/' + menu) 
+
+        else:
+            for path in list(menudict.keys()):
                 for menu in list(menudict[path]):
-                    all_menus.append(path + '/' + menu)
-        
-        if not menudict['/etc/xdg/menus'] == 0:
-            for menu in list(menudict['/etc/xdg/menus']):
-                all_menus.append('/etc/xdg/menus/' + menu) 
-         
+                    all_menus.append(path + menu)
+
         if get_menus == 'all' or (build_all_menus and desktop == '' and menu_type == ''):
             return all_menus, ''
 
@@ -549,7 +557,7 @@ def getmenulist(desktop, menu_type):
                 return config_menulist, ''
             else:
                 vprint(" Ignoring menus in config file, due to --desktop or --menu-type.")
-        
+
         # filter --desktop and --menu-type options
         if desktop != '' or menu_type != '':
             vprint("\n Filtering menus according to --desktop %s and --menu-type %s" % (desktop, menu_type) )
@@ -613,7 +621,7 @@ def getmenulist(desktop, menu_type):
             # fill the weight dictionary with the counts
             weight_dict[de] = [user_menus, system_menus, user_menus+system_menus]
             vprint(" %s => %s" %(de, weight_dict[de]))
-    
+
         # get the highest rated desktop
         highest = 0
         de_highest = ''
@@ -652,7 +660,7 @@ def getmenulist(desktop, menu_type):
         if highest == 0 : # no dev environments?
             de_highest = 'others' # use 'others'
         vprint( "\n Winner: %s" %de_highest)
-        
+
         # Perhaps there're a global menus available which are not in the highest rated list
         if 'none' in desktop_dict:
             for menu in desktop_dict['none']:
@@ -662,7 +670,7 @@ def getmenulist(desktop, menu_type):
                 found = fnmatch.filter(desktop_dict[de_highest], '*'+name[-1]+'*')
                 if found == []:
                     desktop_dict[de_highest].add(menu)
-        
+
         # Add 'others' menus to list, because these could be tool menus like yast, etc
         if 'others' in desktop_dict:
             for menu in desktop_dict['others']:
