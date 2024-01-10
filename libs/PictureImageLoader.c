@@ -34,7 +34,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
 
-#include <fvwmlib.h>
+#include "fvwmlib.h"
 #include "System.h"
 #include "Strings.h"
 #include "Picture.h"

@@ -22,7 +22,7 @@
 
 #include <X11/Xlib.h>
 
-#include <fvwmlib.h>
+#include "fvwmlib.h"
 #include "PictureBase.h"
 #include "Colorset.h"
 #include "FRenderInit.h"

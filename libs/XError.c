@@ -22,7 +22,7 @@
 
 #include <stdio.h>
 #include <X11/Xlib.h>
-#include <fvwmlib.h>
+#include "fvwmlib.h"
 #include "FRenderInit.h"
 #include "XError.h"
 #undef XSetErrorHandler
