@@ -79,6 +79,7 @@ AddToFunc   StartFunction
 + I Test (Init) InitBackground
 + I Module FvwmButtons RightPanel
 + I Module FvwmEvent EventNewDesk
++ I Module FvwmMFL
 
 # Function to set background when fvwm starts
 DestroyFunc InitBackground
@@ -316,7 +317,8 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "&XTerm%icons/terminal.png%"          Exec exec $[infostore.terminal]
 Test (x $[infostore.runcmd]) + "R&un Command%icons/run_arrow.png%" Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
 + "" Nop
-+ "Fvwm&Console%icons/terminal.png%"       Module FvwmConsole -terminal $[infostore.terminal]
+Test (x $[FVWM_MODULEDIR]/FvwmConsole) + "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
+Test (x FvwmPrompt) + "&FvwmPrompt%icons/terminal.png%" Exec exec $[infostore.terminal] -e FvwmPrompt
 + "$[gt.&Wallpapers]%icons/wallpaper.png%" Popup BGMenu
 + "$[gt.M&an Pages]%icons/help.png%"       Popup MenuFvwmManPages
 + "$[gt.Cop&y Config]%icons/conf.png%"     FvwmScript FvwmScript-ConfirmCopyConfig
@@ -445,12 +447,13 @@ AddToMenu   MenuFvwmManPages "Help" Title
 + "FvwmBacker"    ViewManPage FvwmBacker
 + "FvwmButtons"   ViewManPage FvwmButtons
 + "FvwmCommand"   ViewManPage FvwmCommand
-+ "FvwmConsole"   ViewManPage FvwmConsole
+Test (x $[FVWM_MODULEDIR]/FvwmConsole) + "FvwmConsole" ViewManPage FvwmConsole
 + "FvwmEvent"     ViewManPage FvwmEvent
 + "FvwmIconMan"   ViewManPage FvwmIconMan
 + "FvwmIdent"     ViewManPage FvwmIdent
 + "FvwmPager"     ViewManPage FvwmPager
 + "FvwmPerl"      ViewManPage FvwmPerl
+Test (x FvwmPrompt) + "FvwmPrompt" ViewManPage FvwmPrompt
 + "FvwmRearrange" ViewManPage FvwmRearrange
 + "FvwmScript"    ViewManPage FvwmScript
 + "" Nop
