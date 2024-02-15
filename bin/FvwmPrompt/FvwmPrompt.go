@@ -152,7 +152,7 @@ func main() {
 	go connectToFMD(shell, readFromFMD, writeToFMD)
 
 	if isInteractive {
-		shell.Process(os.Args[1:]...)
+		handleInput(nil, strings.Join(os.Args[1:], " "), writeToFMD);
 	} else {
 		red := color.New(color.FgRed).SprintFunc()
 		shell.Actions.SetPrompt(red(*cmdLineArgs.promptText))
