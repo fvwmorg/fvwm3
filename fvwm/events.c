@@ -1774,7 +1774,7 @@ static void _refocus_stolen_focus_win(const evh_args_t *ea)
 void monitor_update_ewmh(void)
 {
 	FvwmWindow	*t;
-	struct monitor	*m, *mref;
+	struct monitor	*m, *mref, *mo, *mo1;
 
 	fvwm_debug(__func__, "monitor debug...\n");
 	if (Scr.bo.do_debug_randr)
@@ -1785,6 +1785,23 @@ void monitor_update_ewmh(void)
 	mref = RB_MIN(monitors, &monitor_q);
 
 	RB_FOREACH(m, monitors, &monitor_q) {
+		if (m->flags & MONITOR_CHANGED) {
+			if (changed_monitor_count() == 1)
+				goto out;
+			TAILQ_FOREACH(mo, &monitorsold_q, oentry) {
+				if (strcmp(m->si->name, mo->si->name) != 0)
+					continue;
+				if (mo->Desktops == NULL)
+					continue;
+				for (t = Scr.FvwmRoot.next; t; t = t->next) {
+					if (t->m == mo) {
+						t->m = m;
+						update_fvwm_monitor(t);
+					}
+				}
+			}
+			continue;
+		}
 		if (m->flags & MONITOR_NEW) {
 			if (m->Desktops == NULL) {
 				int ewbs[4] = {0, 0, 0, 0};
@@ -1794,6 +1811,9 @@ void monitor_update_ewmh(void)
 				m->Desktops->next = NULL;
 				m->Desktops->desk = 0;
 				apply_desktops_monitor(m);
+
+				if (m->Desktops->next == mref->Desktops->next)
+					continue;
 
 				calculate_page_sizes(m, mref->dx, mref->dy);
 
@@ -1812,6 +1832,14 @@ void monitor_update_ewmh(void)
 		}
 		EWMH_Init(m);
 	}
+
+out:
+	TAILQ_FOREACH_SAFE(mo, &monitorsold_q, oentry, mo1) {
+		TAILQ_REMOVE(&monitorsold_q, mo, oentry);
+		fvwm_debug(__func__, "Removed mo '%s' from processing",
+		    mo->si->name);
+	}
+
 
 	BroadcastMonitorList(NULL);
 
@@ -1861,6 +1889,7 @@ monitor_emit_broadcast(void)
 				break;
 
 			if (pm != mnew) {
+				fvwm_debug(__func__, "MONITOR PRIMARY");
 				execute_function_override_window(
 				    NULL, NULL, randrfunc, NULL, 0, NULL);
 			}

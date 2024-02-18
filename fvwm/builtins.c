@@ -165,6 +165,9 @@ status_send(void)
 		if ((desk_doc[d_count] = cJSON_CreateObject()) == NULL)
 			goto out;
 
+		if (m->Desktops == NULL)
+			goto out;
+
 		this_desktop = cJSON_AddObjectToObject(desk_doc[d_count],
 		    "desktops");
 
