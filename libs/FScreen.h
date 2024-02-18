@@ -145,14 +145,18 @@ struct monitor {
 	bool pan_frames_mapped;
 
 	RB_ENTRY(monitor) entry;
+	TAILQ_ENTRY(monitor) oentry;
 };
 RB_HEAD(monitors, monitor);
+TAILQ_HEAD(monitorsold, monitor);
 
 extern struct monitors  monitors;
 extern struct monitors	monitor_q;
+extern struct monitorsold  monitorsold_q;
 int			monitor_compare(struct monitor *, struct monitor *);
 RB_PROTOTYPE(monitors, monitor, entry, monitor_compare);
 
+int		 changed_monitor_count(void);
 struct monitor	*monitor_resolve_name(const char *);
 struct monitor	*monitor_by_xy(int, int);
 struct monitor  *monitor_by_output(int);

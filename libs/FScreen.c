@@ -56,6 +56,7 @@ enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
 struct screen_infos	 screen_info_q, screen_info_q_temp;
 struct monitors		 monitor_q;
+struct monitorsold	 monitorsold_q;
 int randr_event;
 const char *prev_focused_monitor;
 static struct monitor	*monitor_global = NULL;
@@ -338,6 +339,17 @@ monitor_by_last_primary(void)
 	return (m);
 }
 
+int changed_monitor_count(void)
+{
+	struct monitor	*m;
+	int c = 0;
+
+	TAILQ_FOREACH(m, &monitorsold_q, oentry)
+		c++;
+
+	return (c);
+}
+
 static void
 monitor_check_primary(void)
 {
@@ -431,8 +443,10 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 
 			if (oinfo->connection == RR_Connected &&
 			    m->flags & MONITOR_ENABLED) {
-				if (m->flags & MONITOR_CHANGED)
+				if (m->flags & MONITOR_CHANGED) {
 					m->emit |= MONITOR_CHANGED;
+					TAILQ_INSERT_TAIL(&monitorsold_q, m, oentry);
+				}
 				continue;
 			}
 
@@ -599,6 +613,9 @@ void FScreenInit(Display *dpy)
 
 	if (TAILQ_EMPTY(&screen_info_q))
 		TAILQ_INIT(&screen_info_q);
+
+	if (TAILQ_EMPTY(&monitorsold_q))
+		TAILQ_INIT(&monitorsold_q);
 
 	if (!XRRQueryExtension(dpy, &randr_event, &err_base) ||
 	    !XRRQueryVersion (dpy, &major, &minor)) {
