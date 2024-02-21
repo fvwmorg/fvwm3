@@ -2295,6 +2295,12 @@ void HandleEnterNotify(const evh_args_t *ea)
 		pfm = monitor_resolve_name(prev_focused_monitor);
 		this_m = monitor_get_current();
 
+		/* Don't toggle the previous monitor if there isn't one, or
+		 * the two monitors are the same.
+		 */
+		if ((pfm == NULL) || (pfm == this_m))
+			return;
+
 		/* Send MX_MONITOR_FOCUS event. */
 		toggle_prev_monitor_state(this_m, pfm, NULL);
 
