@@ -1036,10 +1036,6 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 	if (Scr.bo.do_debug_randr)
 	{
-		fvwm_debug(
-			__func__, "monitor '%s': {l: %d, r: %d, t: %d, b: %d} "
-			"{x: %d, y: %d, w: %d, h: %d}\n", m->si->name,
-			left, right, top, bottom, x, y, width, height);
 	}
 
 	if (
@@ -1055,7 +1051,10 @@ void ewmh_ComputeAndSetWorkArea(struct monitor *m)
 
 		if (Scr.bo.do_debug_randr)
 		{
-			fvwm_debug(__func__, "differ, so setting work area\n");
+			fvwm_debug(__func__, "monitor '%s': "
+			    "{l: %d, r: %d, t: %d, b: %d} "
+			    "{x: %d, y: %d, w: %d, h: %d}\n", m->si->name,
+			    left, right, top, bottom, x, y, width, height);
 		}
 	}
 
@@ -1129,16 +1128,6 @@ void EWMH_GetWorkAreaIntersection(
 	int area_h = m->Desktops->ewmh_working_area.height;
 	Bool is_dynamic = False;
 
-	if (Scr.bo.do_debug_randr)
-	{
-		fvwm_debug(
-			__func__, "mon: %s {ax: %d, ay: %d, aw: %d, ah: %d\n",
-			m->si->name, area_x, area_y, area_w, area_h);
-		fvwm_debug(
-			__func__, "mon: %s {x: %d, y: %d, w: %d, h: %d\n",
-			m->si->name, *x, *y, *w, *h);
-	}
-
 	switch(type)
 	{
 	case EWMH_IGNORE_WORKING_AREA:
@@ -1168,10 +1157,9 @@ void EWMH_GetWorkAreaIntersection(
 	*w = nw;
 	*h = nh;
 
-	if (Scr.bo.do_debug_randr)
-	{
-		fvwm_debug(
-			__func__,
+	if (Scr.bo.do_debug_randr &&
+	    (*x != area_x || *y != area_y || *w != area_w || *h != area_h)) {
+		fvwm_debug(__func__,
 			"mon: %s finalising: {x: %d, y: %d, w: %d, h: %d}\n",
 			m->si->name, *x, *y, *w, *h);
 	}

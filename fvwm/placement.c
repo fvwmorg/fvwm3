@@ -2422,8 +2422,6 @@ Bool setup_window_placement(
 		e = expand_vars(sc, NULL, False, True, NULL, exc);
 
 	start_style.screen = (e != NULL) ? fxstrdup(e) : fxstrdup("");
-	fvwm_debug(__func__, "Expanding screen from '%s' -> '%s'",
-			sc ? sc : "null", start_style.screen);
 	rc = _place_window(
 		exc, pstyle, attr_g, start_style, mode, win_opts, &reason);
 

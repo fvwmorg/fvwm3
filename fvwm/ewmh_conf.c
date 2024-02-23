@@ -172,8 +172,6 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 	}
 
 	RB_FOREACH(m, monitors, &monitor_q) {
-		fvwm_debug(__func__, "mon: %s {l: %d, r: %d, t: %d, b: %d}\n",
-			m->si->name, val[0], val[1], val[2], val[3]);
 		set_ewmhc_strut_values(m, val);
 	}
 }

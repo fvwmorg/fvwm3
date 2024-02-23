@@ -705,6 +705,11 @@ monitor_dump_state(struct monitor *m)
 			"\t\tCurrentDesk: %d\n"
 			"\t\tCurrentPage: {x: %d, y: %d}\n"
 			"\t\tMyDisplayWidth: %d, MyDisplayHeight: %d\n\t}\n"
+			"\tEWMH: {\n"
+			"\t\tBaseStrut Top:    %d\n"
+			"\t\tBaseStrut Bottom: %d\n"
+			"\t\tBaseStrut Left:   %d\n"
+			"\t\tBaseStrut Right:  %d\n\t}\n"
 			"\tDesktops:\t%s\n"
 			"\tFlags:%s\n\n",
 			m2->number,
@@ -724,6 +729,10 @@ monitor_dump_state(struct monitor *m)
 			(int)(m2->virtual_scr.Vy / monitor_get_all_heights()),
 			monitor_get_all_widths(),
 			monitor_get_all_heights(),
+			m2->ewmhc.BaseStrut.top,
+			m2->ewmhc.BaseStrut.bottom,
+			m2->ewmhc.BaseStrut.left,
+			m2->ewmhc.BaseStrut.right,
 			m2->Desktops ? "yes" : "no",
 			monitor_mode == MONITOR_TRACKING_G ? "global" :
 			monitor_mode == MONITOR_TRACKING_M ? "per-monitor" :
