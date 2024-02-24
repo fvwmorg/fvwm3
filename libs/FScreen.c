@@ -26,6 +26,7 @@
 
 #include "log.h"
 #include "defaults.h"
+#include "log.h"
 #include "fvwmlib.h"
 #include "Parse.h"
 #include "PictureBase.h"

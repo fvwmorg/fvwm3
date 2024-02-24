@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <limits.h>
 
+#include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/FGettext.h"
 #include "libs/Parse.h"

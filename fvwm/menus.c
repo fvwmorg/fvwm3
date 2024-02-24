@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include "libs/log.h"
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/Grab.h"
