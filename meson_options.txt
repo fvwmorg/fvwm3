@@ -1,0 +1,3 @@
+option('mandoc', type: 'boolean', value: false, description: 'Enable generation of man pages')
+option('htmldoc', type: 'boolean', value: false, description: 'Enable generation of HTML man pages')
+option('sm', type: 'boolean', value: true, description: 'Enable session management')
