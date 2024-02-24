@@ -58,6 +58,7 @@
 #include <time.h>
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "cmdparser.h"
 #include "execcontext.h"

@@ -25,6 +25,8 @@
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "libs/FEvent.h"
+#include "libs/fvwmsignal.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "libs/PictureImageLoader.h"
 #include "externs.h"

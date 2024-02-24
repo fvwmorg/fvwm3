@@ -25,6 +25,8 @@
 #include <fvwmlib.h>
 #include "FRenderInit.h"
 #include "XError.h"
+#include "log.h"
+
 #undef XSetErrorHandler
 
 #define USE_GET_ERROR_TEXT 1

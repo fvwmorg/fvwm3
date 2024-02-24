@@ -26,6 +26,7 @@
 #include <fcntl.h>
 #endif
 
+#include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/Parse.h"

@@ -29,6 +29,7 @@
 
 #include "fvwmlib.h"
 #include "getpwuid.h"
+#include "defaults.h"
 #include "log.h"
 
 static char	*log_file_name;

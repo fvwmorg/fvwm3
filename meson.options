@@ -1,0 +1,114 @@
+option(
+    'bidi',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable fribidi support',
+)
+option(
+    'cairo',
+    type: 'feature',
+    value: 'auto',
+    description: 'Use Cairo as a librsvg backend',
+)
+option(
+    'cairo-svg',
+    type: 'feature',
+    value: 'auto',
+    description: 'Use CairoSVG as a librsvg backend',
+)
+option(
+    'freetype',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable freetype support',
+)
+option(
+    'golang',
+    type: 'feature',
+    value: 'auto',
+    description: 'Build Golang modules',
+)
+option(
+    'docdir',
+    type: 'string',
+    description: 'Directory to install documentation',
+)
+option(
+    'htmldoc',
+    type: 'boolean',
+    value: false,
+    description: 'Enable generation of HTML man pages',
+)
+option(
+    'iconv',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable iconv support',
+)
+option(
+    'libsvg-cairo',
+    type: 'feature',
+    value: 'auto',
+    description: 'Use librsvg as a librsvg backend',
+)
+option(
+    'mandoc',
+    type: 'boolean',
+    value: false,
+    description: 'Enable generation of man pages',
+)
+option('nls', type: 'feature', value: 'auto', description: 'Enable NLS')
+option('png', type: 'feature', value: 'auto', description: 'Enable png support')
+option(
+    'python',
+    type: 'string',
+    description: 'Select python implementation',
+)
+option(
+    'readline',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable readline support for FvwmConsole (disabled if using Go)',
+)
+option(
+    'sm',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable session management support',
+)
+option(
+    'svg',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable svg support',
+)
+option(
+    'xcursor',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable Xcursor support',
+)
+option(
+    'xext',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable shaped window support via Xext',
+)
+option(
+    'xkbcommon',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable xkbcommon support',
+)
+option(
+    'xrender',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable XRender support',
+)
+option(
+    'xpm',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable X PixMap (xpm) support',
+)
