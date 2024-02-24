@@ -155,7 +155,7 @@ extern colorset_t *Colorset;
     (cset != NULL && cset->pixmap == ParentRelative && \
      cset->tint_percent > 0)
 
-#ifndef FVWM_COLORSET_PRIVATE
+#ifdef FVWM_COLORSET_PRIVATE
 /* Create n new colorsets, fvwm/colorset.c does its own thing (different size)
  */
 void AllocColorset(int n);

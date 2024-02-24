@@ -21,6 +21,7 @@
 #include <stdint.h>
 
 #include "safemalloc.h"
+#include "log.h"
 
 void *
 fxmalloc(size_t length)
