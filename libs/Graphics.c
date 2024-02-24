@@ -24,6 +24,7 @@
 #include <math.h>
 
 #include "defaults.h"
+#include "log.h"
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
 #include "libs/PictureBase.h"

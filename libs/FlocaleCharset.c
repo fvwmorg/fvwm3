@@ -28,6 +28,8 @@
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
 
+#include "log.h"
+
 #if FlocaleLibcharsetSupport
 #include <libcharset.h>
 #endif

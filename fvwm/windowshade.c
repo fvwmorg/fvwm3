@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 
+#include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"

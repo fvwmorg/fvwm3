@@ -25,6 +25,7 @@
 #include <math.h>
 #include <stdbool.h>
 
+#include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/Grab.h"
