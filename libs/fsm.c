@@ -40,6 +40,7 @@ extern void _IceTransNoListen(char *protocol);
 #endif
 
 #include "fvwmlib.h"
+#include "log.h"
 #include "System.h"
 #include "flist.h"
 #include "fsm.h"

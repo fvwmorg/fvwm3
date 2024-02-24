@@ -22,6 +22,7 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/defaults.h"
 #include "libs/Strings.h"
 #include "libs/wild.h"
 #include "libs/Grab.h"

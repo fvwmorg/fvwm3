@@ -31,6 +31,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/Parse.h"
 #include "libs/Graphics.h"
 #include "libs/Picture.h"

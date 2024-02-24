@@ -1,0 +1,5 @@
+#!/bin/sh
+## FvwmTalk was made obsolete in March 1999.
+## This provides compatibility.
+
+exec @FVWM_MODULEDIR@/FvwmForm "$@" FvwmForm-Talk

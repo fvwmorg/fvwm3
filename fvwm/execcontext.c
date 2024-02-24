@@ -23,6 +23,7 @@
 #include "externs.h"
 #include "execcontext.h"
 #include "libs/FEvent.h"
+#include "libs/log.h"
 
 #undef PEVENT_PRIVILEGED_ACCESS
 

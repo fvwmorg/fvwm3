@@ -22,6 +22,7 @@
 #include "envvar.h"
 #include "System.h"
 #include "Strings.h"
+#include "log.h"
 
 #if HAVE_UNAME
 #include <sys/utsname.h>

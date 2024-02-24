@@ -43,6 +43,7 @@
 #include "Picture.h"
 #include "PictureUtils.h"
 #include "Fsvg.h"
+#include "log.h"
 
 static FvwmPicture *FvwmPictureList=NULL;
 
