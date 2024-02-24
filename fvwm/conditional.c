@@ -26,6 +26,7 @@
 #include "libs/charmap.h"
 #include "libs/FEvent.h"
 #include "libs/wcontext.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cmdparser.h"

@@ -26,6 +26,7 @@
 
 #include "FGettext.h"
 #include "locale.h"
+#include "log.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

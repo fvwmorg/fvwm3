@@ -50,6 +50,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/FShape.h"
 #include "libs/FEvent.h"
 #include "libs/Picture.h"
