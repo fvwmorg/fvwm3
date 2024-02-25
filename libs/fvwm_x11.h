@@ -20,7 +20,7 @@
 #define XpmSupport 0
 #endif
 
-#if HAVE_PNG
+#ifdef HAVE_PNG
 #define PngSupport 1
 #include <png.h>
 #else

@@ -20,8 +20,16 @@ add_project_arguments(
   language: 'c',
 )
 
+i18n = import('i18n')
+add_project_arguments('-DGETTEXT_PACKAGE="fvwm"', language:'c')
+i18n.gettext(meson.project_name())
+
 cc = meson.get_compiler('c')
 host = host_machine.system()
+
+if host_machine.endian() == 'big'
+  conf.set('WORDS_BIGENDIAN', true)
+endif
 
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
@@ -35,6 +43,8 @@ conf = configuration_data()
 conf.set_quoted('FVWM2RC', '.fvwm2rc')
 conf.set_quoted('FVWM_CONFIG', 'config')
 conf.set_quoted('FVWM_IMAGEPATH', '/usr/include/X11/bitmaps:/usr/include/X11/pixmaps')
+conf.set('RESTSIGTYPE', 'void')
+conf.set('SIGNAL_RETURN', 'return')
 
 # Header checks.
 headers = [
@@ -58,58 +68,233 @@ headers = [
 
 foreach h : headers
   if cc.has_header(h)
-    conf.set('HAVE_' + h.to_upper().underscorify(), true)
+    conf.set10('HAVE_' + h.to_upper().underscorify(), true)
   endif
 endforeach
 
 # Function checks.
-functions = [
-  'div',
-  'getpwuid',
-  'gettimeofday',
-  'lstat',
-  'memcpy',
-  'memmove',
-  'mkfifo',
-  'putenv',
-  'setpgid',
-  'setpgrp',
-  'setvbuf',
-  'sigaction',
-  'siginterrupt',
-  'socket',
-  'strchr',
-  'strdup',
-  'strstr',
-  'strtol',
-  'sysconf',
-  'uname',
-  'waitpid',
-]
+functions = {
+  'div': {},
+  'getpwuid': {},
+  'gettimeofday': {},
+  'lstat': {},
+  'memcpy': {},
+  'memmove': {},
+  'mkfifo': {},
+  'nl_langinfo': {'have': 'HAVE_CODESET'},
+  'putenv': {},
+  'setpgid': {},
+  'setpgrp': {},
+  'setvbuf': {},
+  'sigaction': {},
+  'siginterrupt': {},
+  'socket': {},
+  'strchr': {},
+  'strdup': {},
+  'strstr': {},
+  'strtol': {},
+  'sysconf': {},
+  'uname': {},
+  'waitpid': {},
+}
 
-foreach f : functions
+foreach f, v : functions
   if cc.has_function(f, dependencies: syslibs)
-    conf.set('HAVE_' + f.to_upper().underscorify(), true)
+    val = ''
+    if 'have' in v
+      val = v['have']
+    else
+      val = 'HAVE_' + f.to_upper().underscorify()
+    endif
+    conf.set10(val, true)
   endif
 endforeach
 
 # Dependencies.
-x11 = dependency(
-  'x11',
-  required: true,
-  not_found_message: 'X11 libraries or header files could not be found.',
-)
+all_found_deps = []
+all_req_deps = ['x11', 'xt', 'xrandr', 'libevent']
+all_optional_deps = {
+  'iconv': {'have': 'HAVE_ICONV', 'feature': true, 'opt': 'iconv'},
+  'libpng': {
+    'version': '>=1.2',
+    'opt': 'png',
+    'disabled_msg': ''''***
+      disabling PNG support will mean the default
+      configuration shipped with FVWM will be without icon
+      support.  Be sure this is what you mean to do.
+      ***''',
+    'not_found_msg': '''***
+      libpng found, and -Dpng=false was given.
+      It is recommended to use libpng so that PNG icons can
+      be rendered by FVWM, which the default configuration
+      file needs, as well as other third-party programs
+      which generate menus, for example.
 
-xt = dependency(
-  'xt',
-  required: true,
-  not_found_message: 'lixbt libraries or header files could not be found.',
-)
+      If it is critical that FVWM does not link against
+      libpng (perhaps due to size limitations of the
+      binary), then use -Dpng=false
+      ***''',
+    'have': 'HAVE_PNG',
+  },
+  'readline': {'have': 'HAVE_READLINE'},
+  'sm': {'have': 'SESSION'},
+  'xcursor': {'have': 'HAVE_XCURSOR'},
+  'xkbcommon-x11': {'have': 'HAVE_X11_XKBLIB_H'},
+  'xpm': { 'version': '>=2.0.0', 'have': 'HAVE_XPM' },
+  'xrender': {'have': 'HAVE_XRENDER'},
+  'freetype2': {
+    'optional': {
+      'xft': { 'version': '>=2.3.0', 'required': true },
+      'fontconfig': { 'version': '>=9.0.0', 'required': true },
+    },
+    'have': 'HAVE_XFT',
+  },
+  'librsvg-2.0': {
+    'have': 'HAVE_RSVG',
+    'version': '>=2.13.92',
+    'optional': {
+      'x-one-of': {
+        'cairo': {},
+        'cairo-svg': {},
+        'libsvg-cairo': {},
+      },
+    },
+  },
+  'fribidi': {
+    'have': 'HAVE_BIDI',
+    'version': '>=0.19.2',
+  },
+}
 
-sm = dependency(
-  'sm',
-  required: false,
-)
+foreach rd : all_req_deps
+  if not dependency(rd, required: true).found()
+    msg = '@0@ libraries or header files could not be found.'.format(rd)
+    error(msg)
+  endif
+
+  # If found, declare HAVE_* defines.
+  conf.set10('HAVE_' + rd.to_upper().underscorify(), true)
+endforeach
+
+foreach k, _ : all_optional_deps
+  version = '>=0.0'
+  is_feature = false
+  required = false
+  this_dep = ''
+
+  if 'version' in all_optional_deps[k]
+    version = all_optional_deps[k]['version']
+  endif
+
+  if 'feature' in all_optional_deps[k]
+    is_feature = true
+    required = get_option(all_optional_deps[k]['opt'])
+    this_dep = dependency(k,
+      required: required,
+    )
+  else
+    this_dep = dependency(k,
+      required: required,
+      version: version,
+    )
+  endif
+
+  # If the dependency is not found and we have custom messages, display them
+  # and move on.
+  if not this_dep.found()
+    if 'disabled_msg' in all_optional_deps[k]
+      message(all_optional_deps[k]['disabled_msg'])
+      continue
+    endif
+  endif
+
+  if this_dep.found()
+    if not is_feature and 'opt' in all_optional_deps[k] and not get_option(all_optional_deps[k]['opt'])
+      if 'not_found_msg' in all_optional_deps[k]
+        message(all_optional_deps[k]['not_found_msg'])
+      endif
+      all_found_deps += this_dep
+      continue
+    endif
+  endif
+
+  if this_dep.found() and 'optional' not in all_optional_deps[k]
+    conf.set10(all_optional_deps[k]['have'], true)
+    continue
+  endif
+
+  if this_dep.found() and 'optional' in all_optional_deps[k]
+    opt_found = false
+    opt_found_names = []
+    foreach ok, _ : all_optional_deps[k]['optional']
+      op_ver = '>=0.0'
+      if 'version' in all_optional_deps[k]['optional'][ok]
+        op_ver = all_optional_deps[k]['optional'][ok]['version']
+      endif
+
+      required = false
+      if 'required' in all_optional_deps[k]['optional'][ok]
+        required = all_optional_deps[k]['optional'][ok]['required']
+      endif
+
+      if 'x-one-of' in all_optional_deps[k]['optional']
+        # Special case (because there's not enough of these already!):
+        #
+        # In this instance, treat this as a set -- we need at least one in
+        # order to succeed.
+        xof_found = false
+        xof_names = []
+        foreach xof, _ : all_optional_deps[k]['optional']['x-one-of']
+          xof_names += xof
+          xof_ver = '>=0.0'
+          if 'version' in all_optional_deps[k]['optional']['x-one-of'][xof]
+            xof_ver = all_optional_deps[k]['optional']['x-one-of'][xof]['version']
+          endif
+
+          xof_dep = dependency(xof,
+            version: xof_ver,
+            required: false,
+          )
+
+          if xof_dep.found()
+            xof_found = true
+            all_found_deps += xof_dep
+            break
+          endif
+        endforeach
+
+        if not xof_found
+          p = ''
+          foreach n : xof_names
+            p += n + ' '
+          endforeach
+          error('Expected to find one of: ' + p)
+        endif
+      else
+        op_dep = dependency(ok,
+          required: required,
+          version: op_ver,
+        )
+
+        if op_dep.found()
+          opt_found = true
+          all_found_deps += op_dep
+          break
+        endif
+      endif
+      endforeach
+    endif
+endforeach
+
+# Hard-coded
+non_configurable_ops = [
+  'HAVE_XSM',
+  'SHAPE',
+]
+
+foreach nco : non_configurable_ops
+  conf.set10(nco, true)
+endforeach
 
 asciidoctor = find_program('asciidoctor', required: false)
 
@@ -127,14 +312,27 @@ elif get_option('htmldoc') == false
   htmldoc_explain = 'No'
 endif
 
-if not sm.found() and get_option('sm') == true
-  error('libsm requested, but the library cannot be found')
-endif
+conf_template = '@0@/config_defines.h'.format(meson.current_source_dir())
 
-conf.set('SESSION', sm.found() and get_option('sm') == true)
+conf_out = configure_file(
+  output: 'configtemp.h',
+  configuration: conf,
+)
 
-configure_file(output: 'config-new.h',
-  configuration: conf)
+conf_cmd = '@0@/runme.sh'.format(meson.current_source_dir())
+build_dir = '@0@/config.h'.format(meson.current_build_dir())
+#genprog = import('python').find_installation('python3')
+configure_file(
+  output: 'foo.txt',
+  command: [conf_cmd, conf_out, conf_template, build_dir ],
+)
+
+libraries = []
+lib_includes = include_directories('.')
+fvwm_includes = include_directories('fvwm')
+subdir('libs')
+
+#subdir('po')
 
 summary({
   'prefix': get_option('prefix'),

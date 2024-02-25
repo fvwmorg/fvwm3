@@ -12,7 +12,7 @@
 
 #include "config.h"
 
-#if HAVE_BIDI
+#ifdef HAVE_BIDI
 
 #include <fribidi/fribidi.h>
 
