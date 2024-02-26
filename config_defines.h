@@ -1,16 +1,4 @@
-/* Allow GCC extensions to work, if you have GCC. */
-#ifndef __attribute__
-/* This feature is available in gcc versions 2.5 and later. */
-#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 5) || __STRICT_ANSI__
-#    define __attribute__(x)
-#  endif
-/* The __-protected variants of `format' and `printf' attributes
- * are accepted by gcc versions 2.6.4 (effectively 2.7) and later. */
-#  if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
-#    define __format__ format
-#    define __printf__ printf
-#  endif
-#endif
+#include <stdio.h>
 
 #ifdef HAVE_STRING_H
 #  include <string.h>
@@ -61,7 +49,7 @@
 #  define abs(a) (((a)>=0)?(a):-(a))
 #endif
 
-#include "libs/defaults.h"
+//#include "libs/defaults.h"
 
 #ifndef O_NOFOLLOW
 #define O_NOFOLLOW 0
@@ -98,42 +86,4 @@ int	asprintf(char **, const char *, ...);
 int     vasprintf(char **, const char *, va_list);
 #endif
 
-#include "libs/log.h"
-
-
-/* Define to empty if 'const' does not conform to ANSI C. */
-#undef const
-
-/* Define to the type used in arguments 2-4 of `select', if not set by system
-   headers. */
-#undef fd_set
-
-/* Define to the type used in argument 1 `select'. Usually this is an `int'.
-   */
-#undef fd_set_size_t
-
-/* Define to '__inline__' or '__inline' if that's what the C compiler
-   calls it, or to nothing if 'inline' is not supported under any name.  */
-#ifndef __cplusplus
-#undef inline
-#endif
-
-/* Define to the type of a signed integer type of width exactly 16 bits if
-   such a type exists and the standard includes do not define it. */
-#undef int16_t
-
-/* Define to 'long int' if <sys/types.h> does not define. */
-#undef off_t
-
-/* Define as a signed integer type capable of holding a process identifier. */
-#undef pid_t
-
-/* Specify a type for sig_atomic_t if it's not available. */
-#undef sig_atomic_t
-
-/* Define as 'unsigned int' if <stddef.h> doesn't define. */
-#undef size_t
-
-/* Define to the type of an unsigned integer type of width exactly 16 bits if
-   such a type exists and the standard includes do not define it. */
-#undef uint16_t
+//#include "libs/log.h"

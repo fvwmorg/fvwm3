@@ -57,6 +57,7 @@
 #include "Colorset.h"
 #include "Ficonv.h"
 #include "CombineChars.h"
+#include "log.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

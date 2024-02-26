@@ -13,9 +13,11 @@ project(
 
 add_project_arguments(
   [
-      '-Wno-implicit_int',
+      '-Wno-implicit-int',
       '-fno-common',
       '-Wno-error=format-security',
+      '-Wno-sign-compare',
+      '-Wno-unused-parameter',
   ],
   language: 'c',
 )
@@ -43,8 +45,10 @@ conf = configuration_data()
 conf.set_quoted('FVWM2RC', '.fvwm2rc')
 conf.set_quoted('FVWM_CONFIG', 'config')
 conf.set_quoted('FVWM_IMAGEPATH', '/usr/include/X11/bitmaps:/usr/include/X11/pixmaps')
-conf.set('RESTSIGTYPE', 'void')
+conf.set('RETSIGTYPE', 'void')
 conf.set('SIGNAL_RETURN', 'return')
+conf.set('ICONV_ARG_CONST', 'const')
+conf.set('fd_set_size_t', 'int')
 
 # Header checks.
 headers = [
@@ -193,6 +197,10 @@ foreach k, _ : all_optional_deps
       required: required,
     )
   else
+    if 'required' in all_optional_deps[k]
+      required = all_optional_deps[k]['required']
+    endif
+
     this_dep = dependency(k,
       required: required,
       version: version,
@@ -259,6 +267,7 @@ foreach k, _ : all_optional_deps
           if xof_dep.found()
             xof_found = true
             all_found_deps += xof_dep
+            message('Found: ' + xof)
             break
           endif
         endforeach
@@ -269,6 +278,8 @@ foreach k, _ : all_optional_deps
             p += n + ' '
           endforeach
           error('Expected to find one of: ' + p)
+        else
+          conf.set10(all_optional_deps[k]['have'], true)
         endif
       else
         op_dep = dependency(ok,
@@ -279,6 +290,7 @@ foreach k, _ : all_optional_deps
         if op_dep.found()
           opt_found = true
           all_found_deps += op_dep
+          conf.set10(all_optional_deps[k]['have'], true)
           break
         endif
       endif
@@ -288,6 +300,7 @@ endforeach
 
 # Hard-coded
 non_configurable_ops = [
+  'HAVE_NLS',
   'HAVE_XSM',
   'SHAPE',
 ]

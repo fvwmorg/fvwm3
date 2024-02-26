@@ -6,9 +6,14 @@
 
 #ifdef HAVE_RSVG
 #define USE_SVG 1
+#if defined(__FreeBSD__)
+#include <librsvg-2.0/librsvg/rsvg.h>
+#else
 #include <librsvg/rsvg.h>
+#endif
 #include <cairo.h>
 #else
+#warning "SETTING USE_SVG TO 0"
 #define USE_SVG 0
 #endif
 

@@ -31,6 +31,8 @@
 #include <X11/cursorfont.h>
 
 #include "fvwmlib.h"
+#include "defaults.h"
+#include "log.h"
 #include "Grab.h"
 #include "Target.h"
 #include "FEvent.h"

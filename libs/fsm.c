@@ -35,6 +35,7 @@
 #include <X11/Xatom.h>
 
 #include "fvwmlib.h"
+#include "log.h"
 #include "System.h"
 #include "flist.h"
 #include "fsm.h"
