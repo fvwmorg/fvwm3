@@ -1,0 +1,1099 @@
+# German translations for fvwm package
+# Copyright (C) 2013 fvwm workers
+# This file is distributed under the same license as the fvwm package.
+# Andrei Mitrofanow <smilebef@web.de>, 2003.
+# Thomas Funk <t.funk@web.de>, 2013
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-29 23:39-0600\n"
+"PO-Revision-Date: 2013-10-25 22:45+0200\n"
+"Last-Translator: Thomas Funk <t.funk@web.de>\n"
+"Language-Team: German\n"
+"Language: German\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-15\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: ../fvwm/fvwm3.c:1352
+msgid "Builtin Menu"
+msgstr "Internes Menü"
+
+#: ../fvwm/fvwm3.c:1359
+msgid "Issue fvwm commands"
+msgstr "Fvwm-Konsole"
+
+#: ../fvwm/fvwm3.c:1364
+msgid "Desktop Menu"
+msgstr ""
+
+#: ../fvwm/fvwm3.c:1369
+msgid "Restart fvwm"
+msgstr "Fvwm neu starten"
+
+#: ../fvwm/fvwm3.c:1374
+msgid "Exit fvwm"
+msgstr "Fvwm beenden"
+
+#. #-#-#-#-#  duplicate.pot (PACKAGE VERSION)  #-#-#-#-#
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 406
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 410
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 411
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 412
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 413
+#: ../fvwm/expand.c:492
+msgid "Desk"
+msgstr "Arbeitsplatz"
+
+#: ../fvwm/windowlist.c:96 ../fvwm/windowlist.c:102 ../fvwm/windowlist.c:109
+msgid "\tGeometry"
+msgstr "\tGeometrie"
+
+#: ../fvwm/windowlist.c:107
+#, c-format
+msgid "Desk: %d%s"
+msgstr "Arbeitsplatz: %d%s"
+
+#: ../fvwm/menus.c:1798
+msgid "More&..."
+msgstr "Mehr&..."
+
+#. ./default-config/config: line 303
+msgid "&Programs"
+msgstr ""
+
+#. ./default-config/config: line 304
+msgid "XDG &Menu"
+msgstr ""
+
+#. ./default-config/config: line 309
+msgid "&Wallpapers"
+msgstr ""
+
+#. ./default-config/config: line 310
+msgid "M&an Pages"
+msgstr ""
+
+#. ./default-config/config: line 313
+#, fuzzy
+msgid "Re&fresh"
+msgstr "Fester erneuern"
+
+#. ./default-config/config: line 314
+#, fuzzy
+msgid "&Restart"
+msgstr "Neustart"
+
+#. ./default-config/config: line 315
+#, fuzzy
+msgid "&Quit"
+msgstr "Beenden"
+
+#. ./default-config/config: line 326
+msgid "Programs"
+msgstr ""
+
+#. ./default-config/config: line 340
+msgid "Wallpapers"
+msgstr ""
+
+#. ./default-config/config: line 341
+msgid "Floral"
+msgstr ""
+
+#. ./default-config/config: line 342
+msgid "Circles"
+msgstr ""
+
+#. ./default-config/config: line 343
+msgid "Space"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 348
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 360
+#, fuzzy
+msgid "Move"
+msgstr "&Verschieben"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 349
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 361
+#, fuzzy
+msgid "Resize"
+msgstr "&Grösse ändern"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 350
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 362
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 383
+#, fuzzy
+msgid "(De)Iconify"
+msgstr "(De)&Minimierer"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 351
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 363
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 384
+#, fuzzy
+msgid "(Un)Maximize"
+msgstr "(De)Ma&ximierer"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 352
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 364
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 385
+msgid "(Un)Shade"
+msgstr ""
+
+#. ./default-config/config: line 353
+#, fuzzy
+msgid "(Un)Stick"
+msgstr "(Los)&Festklemmer"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 355
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 369
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 390
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 293
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 64
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 132
+#, fuzzy
+msgid "Close"
+msgstr "&Schliesse"
+
+#. ./default-config/config: line 356
+#, fuzzy
+msgid "More"
+msgstr "Mehr&..."
+
+#. ./default-config/config: line 359
+msgid "Window Ops"
+msgstr "Fenster"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 365
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 386
+#, fuzzy
+msgid "(Un)Sticky"
+msgstr "(Los)&Festklemmer"
+
+#. ./default-config/config: line 366
+msgid "(No)Title Bar"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 367
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 388
+msgid "Send To"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 370
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 391
+msgid "Destroy"
+msgstr "&Zerstöre"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 372
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 393
+#, fuzzy
+msgid "Raise"
+msgstr "An&heben"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 373
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 394
+#, fuzzy
+msgid "Lower"
+msgstr "Ab&senken"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 375
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 396
+msgid "Stays On Top"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 376
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 397
+msgid "Stays Put"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 377
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 398
+msgid "Stays On Bottom"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 379
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 400
+msgid "Identify"
+msgstr ""
+
+#. ./default-config/config: line 387
+msgid "(No)TitleBar"
+msgstr ""
+
+#. ./default-config/config: line 404
+msgid "Current"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 405
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 417
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 418
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 419
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./default-config/config: line 420
+msgid "Page"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 55
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 58
+#, fuzzy
+msgid "Fvwm XDGMenu Config"
+msgstr "Fvwm Menu Desktop Konfiguration"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 62
+#, fuzzy
+msgid "Available Menus"
+msgstr "Einzelmenü"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 70
+msgid "Menus in"
+msgstr "Menüs in"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 98
+msgid "No menus found! Check why from within a terminal with"
+msgstr "Keine Menüs gefunden! In einem Terminal checken warum mit"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 109
+#, fuzzy
+msgid "Options"
+msgstr "Generelle Optionen"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 110
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 291
+msgid "Help"
+msgstr "Hilfe"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 115
+#, fuzzy
+msgid "Include in Menu?    "
+msgstr "Einfügen in Menü:    "
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 117
+msgid "Config   "
+msgstr ""
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 118
+#, fuzzy
+msgid "Regenerate  "
+msgstr "XDG Menu neu erstellen"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 119
+msgid "Both   "
+msgstr ""
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 120
+msgid "None  "
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 123
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 27
+msgid "Use Icons?          "
+msgstr "Icons verwenden?     "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 125
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 136
+msgid "Yes      "
+msgstr "Ja       "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 126
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 137
+msgid "No   "
+msgstr "Nein "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 128
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 139
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 147
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 155
+msgid "  "
+msgstr "  "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 129
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 38
+msgid "Icon size:          "
+msgstr "Icongröße:           "
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 131
+msgid " (Default is 24)"
+msgstr "(Default ist 24)"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 134
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 99
+msgid "Use Titles?         "
+msgstr "Titel verwenden?     "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 140
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 57
+msgid "Used Icon theme:    "
+msgstr "Benutzter Icontheme: "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 144
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 71
+msgid "Directory Icon:     "
+msgstr "Verzeichnis-Icon:    "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 148
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 85
+msgid "Application Icon:   "
+msgstr "Applikations-Icon:   "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 152
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 104
+#, fuzzy
+msgid "Top Menu Name:      "
+msgstr "Verwendeter Menütyp: "
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 156
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 109
+#, fuzzy
+msgid "Insert Menu Into:   "
+msgstr "Einfügen in Menü:    "
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 160
+msgid "Terminal command:   "
+msgstr ""
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 162
+msgid " (Used to run Terminal entries)"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 165
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 46
+msgid "Icon directory:     "
+msgstr "Icon-Verzeichnis:    "
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 167
+msgid " (Directory for converted icons)"
+msgstr " (für konvertierte Icons)"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./bin/fvwm-menu-desktop-config.fpl: line 170
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 122
+msgid "Output path:        "
+msgstr "Ausgabepfad:         "
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 172
+msgid " (Full path to store output)"
+msgstr " (voller Speicherpfad der Ausgabe)"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 180
+#, fuzzy
+msgid "Export Menu"
+msgstr "Haupt Menu"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 211
+msgid "Save and Regenerate"
+msgstr ""
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 251
+msgid "Save"
+msgstr ""
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 289
+msgid "Reset"
+msgstr "Zurücksetzen"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 6
+msgid "XDGMenu Help"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 10
+msgid "XDGMenu.Help"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 17
+#, fuzzy
+msgid ""
+"All the XDG menus found on the system are listed under Available Menus.  Use"
+msgstr ""
+"In diesem Bereich werden alle XDG Menüs angezeigt, die auf dem System "
+"gefunden werden."
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 19
+msgid ""
+"this FvwmForm to configure some of the defaults options for fvwm-menu-desktop"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 21
+msgid ""
+"and select which menus are generated.  Select the options you want and then"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 23
+msgid "generate then generate the menu by selecting the following:"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 27
+#, fuzzy
+msgid "Export Menu:"
+msgstr "Haupt Menu"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 29
+msgid ""
+"     Generates a menu by calling fvwm-menu-desktop with the selected options"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 31
+msgid ""
+"     and saves the output to Output Path. After the menu file is created it"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 33
+msgid ""
+"     is read by fvwm. This option does not save any changes made to settings."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 37
+msgid "Save and Regenerate:"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 39
+msgid ""
+"     This saves the settings then runs fvwm-menu-desktop with no options "
+"using"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 41
+msgid ""
+"     the defaults saved in the config file. This does not export the menu."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 45
+#, fuzzy
+msgid ""
+"Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX."
+msgstr ""
+"Anmerkung: gleiche Menüs, die in /etc/xdg/menus UND $HOME/.config/menus/ "
+"gefunden werden,"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 47
+#, fuzzy
+msgid ""
+"Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/"
+"menus/"
+msgstr ""
+"Anmerkung: gleiche Menüs, die in /etc/xdg/menus UND $HOME/.config/menus/ "
+"gefunden werden,"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 49
+#, fuzzy
+msgid ""
+"following the XDG menu specification are only shown in $HOME/.config/menus/."
+msgstr ""
+"werden der XDG Menüspezifikation folgend nur unter $HOME/.config/menus/ "
+"angezeigt."
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 53
+#, fuzzy
+msgid "If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'."
+msgstr ""
+"Wenn keine Menüs erscheinen, von einem Terminal mit 'fvwm-menu-desktop -v' "
+"checken warum."
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 55
+#, fuzzy
+msgid "Also it is a good idea to check $HOME/.xsession-errors for errors."
+msgstr ""
+"Auch ist es eine gute Idee in .xsession-errors nach Fehlermeldungen zu "
+"schauen."
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 6
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 10
+#, fuzzy
+msgid "XDGMenu Options Help"
+msgstr "Generelle Optionen"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 15
+msgid "General Options"
+msgstr "Generelle Optionen"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 19
+#, fuzzy
+msgid "Include in Menu:    "
+msgstr "Einfügen in Menü:    "
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 20
+msgid ""
+"Set if XDGMenu will include menu items to Configure and/or Regenerate the "
+"menu"
+msgstr ""
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 22
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 30
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 33
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 41
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 49
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 52
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 60
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 63
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 66
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 74
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 77
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 80
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 88
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 91
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 94
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 117
+msgid "                    "
+msgstr "                     "
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 23
+msgid "at the bottom of the top level menu."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 28
+#, fuzzy
+msgid ""
+"Option enables mini-icons in the menu(s). Warning! If ImageMagick is "
+"installed"
+msgstr "Option aktiviert Mini-Icons in dem/den Menü(s)."
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 31
+msgid ""
+"the script may generate all the icons and pause your system until the job is"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 34
+msgid ""
+"done. After the icons are generated, it will not take as long to regenerate."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 39
+msgid ""
+"If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
+"is"
+msgstr ""
+"Wenn 'Icons verwenden' gesetzt ist, werden per default 24x24 Mini-Icons "
+"verwendet."
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 42
+msgid "desired enter the wanted size in this field."
+msgstr ""
+"Wenn eine andere Größe verwendet werden soll, in diesem Feld eintragen."
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 47
+msgid ""
+"If the specified icon isn't that size it is converted if ImageMagick is "
+"installed."
+msgstr ""
+"Wenn das Icon in der Größe nicht vorhanden ist, wird es konvertiert, falls "
+"ImageMagick"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 50
+msgid ""
+"Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
+"here."
+msgstr ""
+"installiert ist. Generierte Icons werden unter $HOME/.fvwm/icons oder dem "
+"hier"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 53
+msgid "Otherwise no icon appears in the menu for that entry."
+msgstr ""
+"angegebenen Verzeichnis gespeichert. Sonst taucht kein Icon im Menü für den "
+"Eintrag auf."
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 58
+msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
+msgstr ""
+"Setzt den Icontheme. Default ist 'gnome', aber alle die unter /usr/share/"
+"icons gefunden"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 61
+msgid ""
+"/usr/share/icons can used except the hicolor theme because it's the default"
+msgstr ""
+"werden, können verwendet werden. Ausgenommen 'hicolor', weil dieser der "
+"default"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 64
+msgid ""
+"fallback theme if no icon is found. Note that the theme name must be written"
+msgstr ""
+"Fallback Theme ist, wenn kein Icon gefunden wird. Es ist wichtig, dass der "
+"Themename"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 67
+msgid "exactly as the icon directory e.g."
+msgstr "exakt gleich wie das Verzeichnis geschrieben wird:"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 72
+msgid ""
+"If 'Use Icons' is enabled and for a directory in a menu no icon is found"
+msgstr ""
+"Wenn 'Icons verwenden' gesetzt ist und für ein Verzeichnis kein Icon "
+"gefunden wird, wird"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 75
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 89
+msgid "as default icon is used. But if the gnome icon theme isn't"
+msgstr "als Defaulticon verwendet. Wenn jedoch der Gnome-Icontheme nicht"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 78
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 92
+msgid "installed no default icon appears. Another icon can defined here."
+msgstr ""
+"installiert ist, taucht auch kein Icon für den Eintrag auf. Darum kann hier "
+"ein anderes"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 81
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 95
+msgid "Only the name of an icon is needed not the path!"
+msgstr ""
+"Defaulticon definiert werden. Es muss nur der Name, nicht der Pfad angegeben "
+"werden!"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 86
+msgid "If 'Use Icons' is enabled and for an application no icon is found"
+msgstr ""
+"Wenn 'Icons verwenden' gesetzt ist, aber für eine Applikation kein Icon "
+"gefunden wird, wird"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 100
+#, fuzzy
+msgid ""
+"If this option is set menus are generated with titles. Default is use titles."
+msgstr ""
+"Wenn diese Option gesetzt ist, werden Menüs mit Titeln erstellt. Default ist "
+"ohne Titel."
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 105
+msgid "Sets the name of the name of the top level menu. Default is XDGMenu."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 110
+msgid "Inserts the menu items into the given Menu."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 114
+msgid "Terminal Command:   "
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 115
+msgid ""
+"Enter terminal emulator command used to launch terminal applications. The "
+"command"
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 118
+msgid "must end with an execute option (-e). Default xterm -e."
+msgstr ""
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 123
+#, fuzzy
+msgid "Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu."
+msgstr ""
+"Hier den VOLLEN Speicherpfad des Fvwm-Menüs eintragen. Default ist "
+"$FVWM_USERDIR/.menu."
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 136
+msgid "manpage"
+msgstr ""
+
+#~ msgid "Setup Form"
+#~ msgstr "Konfiguration mit Form"
+
+#~ msgid "Setup 95 Script"
+#~ msgstr "Konfiguration mit Script95"
+
+#~ msgid "Remote Logins"
+#~ msgstr "Entfernt Anmelden"
+
+#~ msgid "Utilities"
+#~ msgstr "Werkzeuge"
+
+#~ msgid "Fvwm Modules"
+#~ msgstr "Module von Fvwm"
+
+#~ msgid "Fvwm Window Ops"
+#~ msgstr "Fenster"
+
+#~ msgid "Fvwm Config Ops"
+#~ msgstr "Konfiguration"
+
+#~ msgid "Refresh Screen"
+#~ msgstr "Bildschirm neuzeichnen"
+
+#~ msgid "Recapture Screen"
+#~ msgstr "Bildschirm speichern"
+
+#~ msgid "Exit Fvwm"
+#~ msgstr "Fvwm beenden"
+
+#~ msgid "Reset X defaults"
+#~ msgstr "X Voreinstellungen setzen"
+
+#~ msgid "Sloppy Focus"
+#~ msgstr "Fokus flüssig"
+
+#~ msgid "Click To Focus"
+#~ msgstr "Klick für Fokus"
+
+#~ msgid "Focus Follows Mouse"
+#~ msgstr "Fokus folgt Maus"
+
+#~ msgid "Colormap Follows Mouse"
+#~ msgstr "Farbpalette folgt Maus"
+
+#~ msgid "Colormap Follows Focus"
+#~ msgstr "Farbpalette folgt Fokus"
+
+#~ msgid "Full Paging ON"
+#~ msgstr "Seitenübergang"
+
+#~ msgid "All Paging OFF"
+#~ msgstr "Seitenübergang aus"
+
+#~ msgid "Horizontal Paging Only"
+#~ msgstr "Seitenübergang horizontal"
+
+#~ msgid "Vertical Paging Only"
+#~ msgstr "Seitenübergang vertikale"
+
+#~ msgid "Partial Paging"
+#~ msgstr "Seitenübergang teilweise"
+
+#~ msgid "Full Paging && Edge Wrap"
+#~ msgstr "Seitenübergang  && Ecken"
+
+#~ msgid "&Delete"
+#~ msgstr "&Lösche"
+
+#~ msgid "Print"
+#~ msgstr "Drucken"
+
+#~ msgid "Print Re&verse"
+#~ msgstr "Drucken (Rückseite)"
+
+#~ msgid "Control Animation"
+#~ msgstr "Animationskontrolle"
+
+#~ msgid "desks"
+#~ msgstr "Arbeitsplatz"
+
+#~ msgid "Stop Module Menu"
+#~ msgstr "Fvwm-Module stoppen"
+
+#~ msgid "Stop Fvwm Modules"
+#~ msgstr "Fvwm-Module stoppen"
+
+#~ msgid "Stop"
+#~ msgstr "Stop"
+
+#~ msgid "Really Quit Fvwm?"
+#~ msgstr "Fvwm beenden?"
+
+#~ msgid "Yes, Really Quit"
+#~ msgstr "Ja, fvwm beenden"
+
+#~ msgid "Start"
+#~ msgstr "Start"
+
+#~ msgid "Just an Xterm"
+#~ msgstr "XTerm"
+
+#~ msgid "No, Don't Quit"
+#~ msgstr "Nein, fvwm nicht beenden"
+
+# FvwmForm
+#~ msgid "fvwm - Create Configuration"
+#~ msgstr "fvwm - Erzeuge Konfiguration"
+
+#~ msgid "Use this form to create your fvwm2rc configuration file."
+#~ msgstr "Nutze dieses Formular um fvwm2rc zu erzeugen"
+
+#~ msgid "The file created is ~/.fvwm/.fvwm2rc or $FVWM_USERDIR/.fvwm2rc."
+#~ msgstr "Die Datei ist ~/.fvwm/.fvwm2rc oder $FVWM_USERDIR/.fvwm2rc."
+
+#~ msgid "After creation, the fvwm2rc file can then be changed with any"
+#~ msgstr "Nach dem Erzeugen, können Sie die Datei mit einem Editor"
+
+#~ msgid "editor to suit your own needs."
+#~ msgstr "an Ihre Wünsche anpassen"
+
+#~ msgid "Create a starting .fvwm2rc file"
+#~ msgstr "Erzeuge eine Startdatei .fvwm2rc"
+
+#~ msgid "These files are optional.  Select the modules you want to customize."
+#~ msgstr "Diese Dateien sind nicht notwendig. Die Auswahl der Module anpassen"
+
+#~ msgid "You can always copy them later."
+#~ msgstr "Sie können diese später kopieren"
+
+#~ msgid "Return - Dismiss"
+#~ msgstr "Annehmen - Schliessen"
+
+#~ msgid "Copy Config File(s)"
+#~ msgstr "Konfigurationsdateien kopieren"
+
+#~ msgid "Multiple Menu"
+#~ msgstr "Mehrfachmenü"
+
+#~ msgid ""
+#~ "If you want a single menu only deselect all menus above and fill out the "
+#~ "fields below."
+#~ msgstr ""
+#~ "Für ein Einzelmenü alle nicht benötigten Menüs deselektieren und die "
+#~ "Felder unten ausfüllen."
+
+#~ msgid "But remember, if the menu doesn't exist, nothing happens."
+#~ msgstr "Bitte beachten: wenn ein Menü leer ist, passiert nichts."
+
+#~ msgid "Menu Top Title:     "
+#~ msgstr "Menü Top Titel:      "
+
+#~ msgid "Install-Prefix:     "
+#~ msgstr "Install-Prefix:      "
+
+#~ msgid "Desktop:            "
+#~ msgstr "Desktop:             "
+
+#~ msgid "Menutype:           "
+#~ msgstr "Menütyp:             "
+
+#~ msgid "Multiple "
+#~ msgstr "Mehrfach "
+
+#~ msgid "Single"
+#~ msgstr "Einzel"
+
+#~ msgid "Menu(s) in a Menu?  "
+#~ msgstr "Menü(s) in dem Menü? "
+
+#~ msgid "Generate Menu(s)"
+#~ msgstr "Menü(s) erstellen"
+
+#~ msgid "Save Settings"
+#~ msgstr "Settings speichern"
+
+#~ msgid "Regenerate XDG Menu(s)"
+#~ msgstr "XDG Menu(s) neu erstellen"
+
+#~ msgid ""
+#~ "In this section you can define a custom-assembled menu 'foo-bar.menu' "
+#~ "placed on another"
+#~ msgstr ""
+#~ "In dieser Sektion können Sie ein eigenerstelltes Menü 'foo-bar.menu', das "
+#~ "an einem anderen Ort als in"
+
+#~ msgid "location as defined in the XDG menu definitions."
+#~ msgstr "den XDG Menüspezifikationen definiert ist, erstellen."
+
+#~ msgid ""
+#~ "Specifies the menu title of the top menu used by Fvwm's Popup command."
+#~ msgstr ""
+#~ "Spezifiziert den Menütitel des Topmenüs, das Fvwm's Popup Kommando "
+#~ "verwendet."
+
+#~ msgid "Default is 'FvwmMenu'."
+#~ msgstr "Default ist 'FvwmMenu'."
+
+#~ msgid ""
+#~ "Overrides the standard locations for XDG menu definitions. The standard"
+#~ msgstr ""
+#~ "Überschreibt die Standardorte für die XDG Menüdefinitionen. Die "
+#~ "Standardorte"
+
+#~ msgid "locations are /etc/xdg/menus and"
+#~ msgstr "sind /etc/xdg/menus und"
+
+#~ msgid "if available."
+#~ msgstr "(wenn vorhanden)."
+
+#~ msgid "Overrides the name of the main desktop environment installed on the"
+#~ msgstr ""
+#~ "Überschreibt den Namen der Haupt-Desktop-Umgebung, welche auf dem System"
+
+#~ msgid ""
+#~ "system. If a system offers multiple desktop environments $XDG_MENU_PREFIX"
+#~ msgstr ""
+#~ "installiert ist. Wenn ein System mehrere Desktop-Umgebungen bereitstellt, "
+#~ "ist"
+
+#~ msgid "is typically set. It is ignored if this field is used."
+#~ msgstr ""
+#~ "normalerweise $XDG_MENU_PREFIX gesetzt. Die Variable wird jedoch "
+#~ "ignoriert,"
+
+#~ msgid "Possible names: gnome, kde, lxde, etc."
+#~ msgstr ""
+#~ "wenn dieses Feld benutzt wird. Mögliche Namen: gnome, kde, lxde, etc."
+
+#~ msgid ""
+#~ "Defines which type of menu should be found. Possible name types could be:"
+#~ msgstr ""
+#~ "Definiert welcher Menütyp gefunden werden soll. Mögliche Typen könnten "
+#~ "sein:"
+
+#~ msgid ""
+#~ "applications, settings, preferences, etc. Note if the specified menu type"
+#~ msgstr ""
+#~ "applications, settings, preferences, etc. Achtung, wenn das hier "
+#~ "spezifizierte"
+
+#~ msgid "doesn't exist the generated menu is empty!"
+#~ msgstr "Menü nicht existiert, ist das erstellte Menü leer!"
+
+#~ msgid ""
+#~ "will integrate in one Fvwm menu. If you want to generate a custom-"
+#~ "assembled menu"
+#~ msgstr ""
+#~ "Alle ausgewählten Menüs werden in einem Fvwm-Menü integriert. Wenn Sie "
+#~ "ein eigens"
+
+#~ msgid "use the 'Single Menu' section."
+#~ msgstr ""
+#~ "zusammengestelltes Menu erstellen wollen, benutzen Sie die 'Einzelmenü' "
+#~ "Sektion."
+
+#~ msgid "List menus with checkboxes found in /etc/xdg/menus/"
+#~ msgstr "Listet in /etc/xdg/menus/ gefundene Menüs mit Checkboxen auf."
+
+#~ msgid "List menus with checkboxes found in $HOME/.config/menus/"
+#~ msgstr "Listet in $HOME/.config/menus/ gefundene Menüs mit Checkboxen auf"
+
+#~ msgid "One limitation exists:"
+#~ msgstr "Es existiert eine Limitierung:"
+
+#~ msgid ""
+#~ "If there are too much menus found an error occurs in .xsession-errors:"
+#~ msgstr ""
+#~ "Wenn zuviele Menüs gefunden werden, taucht folgende Fehlemeldung in ."
+#~ "xsession-errors auf:"
+
+#~ msgid ""
+#~ "This happens because PipeRead used for menu generation has a command "
+#~ "length"
+#~ msgstr ""
+#~ "Das passiert, weil PipeRead, das zum generieren des Menüs verwendet wird, "
+#~ "eine Limitierung"
+
+#~ msgid "limit of 1000 characters. Sorry for that inconvinience."
+#~ msgstr ""
+#~ "von 1000 Zeichen für ein Kommando hat. Entschuldigung für diese "
+#~ "Unannehmlichkeit."
+
+#~ msgid "Set which menu generation will be used."
+#~ msgstr "Setzt die zu verwendende Menügenerierungsart."
+
+#~ msgid "Enable this checkbox to insert generated menu(s) IN a menu."
+#~ msgstr ""
+#~ "Aktivieren Sie diese Checkbox, um erstellte Menüs IN einem Menü "
+#~ "einzubinden."
+
+#~ msgid ""
+#~ "Enter in this field the name of the menu (its top title) where the "
+#~ "generated menu(s)"
+#~ msgstr ""
+#~ "Hier den Namen des Menüs (seinen Toptitel) eintragen, wo die erstellten "
+#~ "Menüs"
+
+#~ msgid ""
+#~ "should insert. For more information see the USAGE section in the man page "
+#~ "of"
+#~ msgstr ""
+#~ "eingebunden werden sollen. Für weitere Informationen siehe die USAGE "
+#~ "Sektion von"

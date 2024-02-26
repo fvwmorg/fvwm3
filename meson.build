@@ -23,10 +23,6 @@ add_project_arguments(
   language: 'c',
 )
 
-i18n = import('i18n')
-add_project_arguments('-DGETTEXT_PACKAGE="fvwm"', language:'c')
-i18n.gettext(meson.project_name())
-
 cc = meson.get_compiler('c')
 host = host_machine.system()
 
@@ -57,6 +53,7 @@ headers = [
   'float.h',
   'getopt.h',
   'inttypes.h',
+  'libintl.h',
   'limits.h',
   'malloc.h',
   'memory.h',
@@ -99,6 +96,7 @@ functions = {
   'strstr': {},
   'strtol': {},
   'sysconf': {},
+  'intl': {},
   'uname': {},
   'waitpid': {},
 }
@@ -337,7 +335,6 @@ conf_out = configure_file(
 
 conf_cmd = '@0@/runme.sh'.format(meson.current_source_dir())
 build_dir = '@0@/config.h'.format(meson.current_build_dir())
-#genprog = import('python').find_installation('python3')
 configure_file(
   output: 'foo.txt',
   command: [conf_cmd, conf_out, conf_template, build_dir ],
@@ -348,7 +345,7 @@ lib_includes = include_directories('.')
 fvwm_includes = include_directories('fvwm')
 subdir('libs')
 
-#subdir('po')
+subdir('po')
 
 summary({
   'prefix': get_option('prefix'),

@@ -1,0 +1,925 @@
+# German translations for fvwm package
+# Copyright (C) 2013 fvwm workers
+# This file is distributed under the same license as the fvwm package.
+# Andrei Mitrofanow <smilebef@web.de>, 2003.
+# Thomas Funk <t.funk@web.de>, 2013
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-06-29 23:39-0600\n"
+"PO-Revision-Date: 2023-11-08 22:21+0800\n"
+"Last-Translator: Thomas Funk <t.funk@web.de>\n"
+"Language-Team: User\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 3.4.1\n"
+
+#: ../fvwm/fvwm3.c:1352
+msgid "Builtin Menu"
+msgstr "內部選單"
+
+#: ../fvwm/fvwm3.c:1359
+msgid "Issue fvwm commands"
+msgstr "發送 fvwm 命令"
+
+#: ../fvwm/fvwm3.c:1364
+msgid "Desktop Menu"
+msgstr "桌面選單"
+
+#: ../fvwm/fvwm3.c:1369
+msgid "Restart fvwm"
+msgstr "重新啟動 fvwm"
+
+#: ../fvwm/fvwm3.c:1374
+msgid "Exit fvwm"
+msgstr "離開 fvwm"
+
+#. ./default-config/config: line 406
+#. ./default-config/config: line 410
+#. ./default-config/config: line 411
+#. ./default-config/config: line 412
+#. ./default-config/config: line 413
+#: ../fvwm/expand.c:492
+msgid "Desk"
+msgstr "桌面"
+
+#: ../fvwm/windowlist.c:96 ../fvwm/windowlist.c:102 ../fvwm/windowlist.c:109
+msgid "\tGeometry"
+msgstr "\t幾何"
+
+#: ../fvwm/windowlist.c:107
+#, c-format
+msgid "Desk: %d%s"
+msgstr "桌面： %d%s"
+
+#: ../fvwm/menus.c:1798
+msgid "More&..."
+msgstr "更多(&.)..."
+
+#. ./default-config/config: line 303
+msgid "&Programs"
+msgstr "程式(&P)"
+
+#. ./default-config/config: line 304
+msgid "XDG &Menu"
+msgstr "XDG 選單(&M)"
+
+#. ./default-config/config: line 309
+msgid "&Wallpapers"
+msgstr "桌布(&W)"
+
+#. ./default-config/config: line 310
+msgid "M&an Pages"
+msgstr "手冊(&A)"
+
+#. ./default-config/config: line 313
+msgid "Re&fresh"
+msgstr "重新整理(&F)"
+
+#. ./default-config/config: line 314
+msgid "&Restart"
+msgstr "重新啟動(&R)"
+
+#. ./default-config/config: line 315
+msgid "&Quit"
+msgstr "退出(&Q)"
+
+#. ./default-config/config: line 326
+msgid "Programs"
+msgstr "程式"
+
+#. ./default-config/config: line 340
+msgid "Wallpapers"
+msgstr "桌布"
+
+#. ./default-config/config: line 341
+msgid "Floral"
+msgstr "印花"
+
+#. ./default-config/config: line 342
+msgid "Circles"
+msgstr "圓圈"
+
+#. ./default-config/config: line 343
+msgid "Space"
+msgstr "空間"
+
+#. ./default-config/config: line 348
+#. ./default-config/config: line 360
+msgid "Move"
+msgstr "移動"
+
+#. ./default-config/config: line 349
+#. ./default-config/config: line 361
+msgid "Resize"
+msgstr "調整尺寸"
+
+#. ./default-config/config: line 350
+#. ./default-config/config: line 362
+#. ./default-config/config: line 383
+msgid "(De)Iconify"
+msgstr "（去除）圖示化"
+
+#. ./default-config/config: line 351
+#. ./default-config/config: line 363
+#. ./default-config/config: line 384
+msgid "(Un)Maximize"
+msgstr "（取消）最大化"
+
+#. ./default-config/config: line 352
+#. ./default-config/config: line 364
+#. ./default-config/config: line 385
+msgid "(Un)Shade"
+msgstr "（取消）陰影"
+
+#. ./default-config/config: line 353
+msgid "(Un)Stick"
+msgstr "（取消）固定"
+
+#. ./default-config/config: line 355
+#. ./default-config/config: line 369
+#. ./default-config/config: line 390
+#. ./bin/fvwm-menu-desktop-config.fpl: line 293
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 64
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 132
+msgid "Close"
+msgstr "關閉"
+
+#. ./default-config/config: line 356
+msgid "More"
+msgstr "更多"
+
+#. ./default-config/config: line 359
+msgid "Window Ops"
+msgstr "視窗操作"
+
+#. ./default-config/config: line 365
+#. ./default-config/config: line 386
+msgid "(Un)Sticky"
+msgstr "（取消）黏住"
+
+#. ./default-config/config: line 366
+msgid "(No)Title Bar"
+msgstr "（無）標題欄"
+
+#. ./default-config/config: line 367
+#. ./default-config/config: line 388
+msgid "Send To"
+msgstr "寄給"
+
+#. ./default-config/config: line 370
+#. ./default-config/config: line 391
+msgid "Destroy"
+msgstr "破壞"
+
+#. ./default-config/config: line 372
+#. ./default-config/config: line 393
+msgid "Raise"
+msgstr "上升"
+
+#. ./default-config/config: line 373
+#. ./default-config/config: line 394
+msgid "Lower"
+msgstr "下降"
+
+#. ./default-config/config: line 375
+#. ./default-config/config: line 396
+msgid "Stays On Top"
+msgstr "保持在頂部"
+
+#. ./default-config/config: line 376
+#. ./default-config/config: line 397
+msgid "Stays Put"
+msgstr "保持原狀"
+
+#. ./default-config/config: line 377
+#. ./default-config/config: line 398
+msgid "Stays On Bottom"
+msgstr "保持在底部"
+
+#. ./default-config/config: line 379
+#. ./default-config/config: line 400
+msgid "Identify"
+msgstr "識別"
+
+#. ./default-config/config: line 387
+msgid "(No)TitleBar"
+msgstr "（無）標題欄"
+
+#. ./default-config/config: line 404
+msgid "Current"
+msgstr "目前"
+
+#. ./default-config/config: line 405
+#. ./default-config/config: line 417
+#. ./default-config/config: line 418
+#. ./default-config/config: line 419
+#. ./default-config/config: line 420
+msgid "Page"
+msgstr "頁面"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 55
+#. ./bin/fvwm-menu-desktop-config.fpl: line 58
+msgid "Fvwm XDGMenu Config"
+msgstr "Fvwm XDG 選單配置"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 62
+msgid "Available Menus"
+msgstr "可用的選單"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 70
+msgid "Menus in"
+msgstr "選單位於"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 98
+msgid "No menus found! Check why from within a terminal with"
+msgstr "沒有找到選單！ 從終端內檢查原因"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 109
+msgid "Options"
+msgstr "選項"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 110
+#. ./bin/fvwm-menu-desktop-config.fpl: line 291
+msgid "Help"
+msgstr "說明"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 115
+msgid "Include in Menu?    "
+msgstr "包含在選單中？"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 117
+msgid "Config   "
+msgstr "配置"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 118
+msgid "Regenerate  "
+msgstr "重新生成"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 119
+msgid "Both   "
+msgstr "兩者"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 120
+msgid "None  "
+msgstr "無"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 123
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 27
+msgid "Use Icons?          "
+msgstr "使用圖示？"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 125
+#. ./bin/fvwm-menu-desktop-config.fpl: line 136
+msgid "Yes      "
+msgstr "是"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 126
+#. ./bin/fvwm-menu-desktop-config.fpl: line 137
+msgid "No   "
+msgstr "不"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 128
+#. ./bin/fvwm-menu-desktop-config.fpl: line 139
+#. ./bin/fvwm-menu-desktop-config.fpl: line 147
+#. ./bin/fvwm-menu-desktop-config.fpl: line 155
+msgid "  "
+msgstr "  "
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 129
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 38
+msgid "Icon size:          "
+msgstr "圖示大小："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 131
+msgid " (Default is 24)"
+msgstr "（預設為 24）"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 134
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 99
+msgid "Use Titles?         "
+msgstr "使用標題？"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 140
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 57
+msgid "Used Icon theme:    "
+msgstr "使用的圖示主題："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 144
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 71
+msgid "Directory Icon:     "
+msgstr "目錄圖示："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 148
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 85
+msgid "Application Icon:   "
+msgstr "應用程式圖示："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 152
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 104
+msgid "Top Menu Name:      "
+msgstr "頂部選單名稱："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 156
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 109
+msgid "Insert Menu Into:   "
+msgstr "將選單插入："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 160
+msgid "Terminal command:   "
+msgstr "終端命令："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 162
+msgid " (Used to run Terminal entries)"
+msgstr "（用於執行終端項目）"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 165
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 46
+msgid "Icon directory:     "
+msgstr "圖示目錄："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 167
+msgid " (Directory for converted icons)"
+msgstr "（對於轉換後的圖示）"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 170
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 122
+msgid "Output path:        "
+msgstr "輸出路徑："
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 172
+msgid " (Full path to store output)"
+msgstr "（輸出的完整儲存路徑）"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 180
+msgid "Export Menu"
+msgstr "匯出選單"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 211
+msgid "Save and Regenerate"
+msgstr "儲存並重新生成"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 251
+msgid "Save"
+msgstr "儲存"
+
+#. ./bin/fvwm-menu-desktop-config.fpl: line 289
+msgid "Reset"
+msgstr "重新設定"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 6
+msgid "XDGMenu Help"
+msgstr "XDG 選單說明"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 10
+msgid "XDGMenu.Help"
+msgstr "XDG 選單。說明"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 17
+msgid ""
+"All the XDG menus found on the system are listed under Available Menus.  Use"
+msgstr "在系統上找到的所有 XDG 選單都列在可用的項目中。 使用"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 19
+msgid ""
+"this FvwmForm to configure some of the defaults options for fvwm-menu-desktop"
+msgstr "此 Fvwm 表單用於設定 fvwm-menu-desktop 的一些預設選項"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 21
+msgid ""
+"and select which menus are generated.  Select the options you want and then"
+msgstr "並選擇生成哪些選單。 選擇您想要的選項，然後"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 23
+msgid "generate then generate the menu by selecting the following:"
+msgstr "生成然後透過選擇以下選項來生成選單："
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 27
+msgid "Export Menu:"
+msgstr "匯出選單："
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 29
+msgid ""
+"     Generates a menu by calling fvwm-menu-desktop with the selected options"
+msgstr "透過使用所選取的選項呼叫 fvwm-menu-desktop 來生成選單"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 31
+msgid ""
+"     and saves the output to Output Path. After the menu file is created it"
+msgstr "並將輸出儲存到輸出路徑。 選單檔案建立後"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 33
+msgid ""
+"     is read by fvwm. This option does not save any changes made to settings."
+msgstr "由 fvwm 讀取。 此選項不會儲存對設定所做的任何變更。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 37
+msgid "Save and Regenerate:"
+msgstr "儲存並重新生成："
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 39
+msgid ""
+"     This saves the settings then runs fvwm-menu-desktop with no options "
+"using"
+msgstr "這將會儲存設置，然後執行 fvwm-menu-desktop，且不使用任何選項"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 41
+msgid ""
+"     the defaults saved in the config file. This does not export the menu."
+msgstr "預設值儲存在設定檔中。 這不會導出選單。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 45
+msgid ""
+"Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX."
+msgstr "選單位於 /etc/xdg/menus、$HOME/.config/menus 和 $XDG_MENU_PREFIX。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 47
+msgid ""
+"Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/"
+"menus/"
+msgstr "請注意，在 /etc/xdg/menus 和 $HOME/.config/menus/ 下找到相同的選單"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 49
+msgid ""
+"following the XDG menu specification are only shown in $HOME/.config/menus/."
+msgstr "遵循 XDG 選單格式僅顯示在 $HOME/.config/menus/ 中。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 53
+msgid "If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'."
+msgstr "如果沒有出現選單，請檢查「fvwm-menu-desktop --get-menus all -v」。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 55
+msgid "Also it is a good idea to check $HOME/.xsession-errors for errors."
+msgstr "檢查 $HOME/.xsession-errors 是否有錯誤也是一個好主意。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 6
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 10
+msgid "XDGMenu Options Help"
+msgstr "XDG 選單選項說明"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 15
+msgid "General Options"
+msgstr "一般選項"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 19
+msgid "Include in Menu:    "
+msgstr "包含在選單中："
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 20
+msgid ""
+"Set if XDGMenu will include menu items to Configure and/or Regenerate the "
+"menu"
+msgstr "設定 XDG 選單是否包含用於配置和/或重新生成選單的選單選項"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 22
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 30
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 33
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 41
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 49
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 52
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 60
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 63
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 66
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 74
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 77
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 80
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 88
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 91
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 94
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 117
+msgid "                    "
+msgstr "                     "
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 23
+msgid "at the bottom of the top level menu."
+msgstr "在頂部選單的底部。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 28
+msgid ""
+"Option enables mini-icons in the menu(s). Warning! If ImageMagick is "
+"installed"
+msgstr "選項啟用選單中的迷你圖示。警告！如果安裝了 ImageMagick"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 31
+msgid ""
+"the script may generate all the icons and pause your system until the job is"
+msgstr "該腳本可能會產生所有圖示並暫停您的系統，直到作業完成"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 34
+msgid ""
+"done. After the icons are generated, it will not take as long to regenerate."
+msgstr "完成。 圖示生成後，重新生成的時間不會太長。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 39
+msgid ""
+"If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
+"is"
+msgstr "如果設定「使用圖示」，則預設使用 24x24 迷你圖示。 如果是其他尺寸"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 42
+msgid "desired enter the wanted size in this field."
+msgstr "在此欄位中輸入所需要的尺寸。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 47
+msgid ""
+"If the specified icon isn't that size it is converted if ImageMagick is "
+"installed."
+msgstr "如果指定的圖示不是該尺寸，則在安裝 ImageMagick 時會進行轉換。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 50
+msgid ""
+"Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
+"here."
+msgstr "產生的圖示儲存在 $HOME/.fvwm/icons 或此處指定的目錄中。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 53
+msgid "Otherwise no icon appears in the menu for that entry."
+msgstr "否則，選單中不會出現該項目的圖示。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 58
+msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
+msgstr ""
+"設定圖示主題。 預設為“gnome”，但所有這些都可以在 /usr/share/icons 下找到"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 61
+msgid ""
+"/usr/share/icons can used except the hicolor theme because it's the default"
+msgstr "/usr/share/icons 可以使用，但 hicolor 主題除外，因為它是預設主題"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 64
+msgid ""
+"fallback theme if no icon is found. Note that the theme name must be written"
+msgstr "如果沒有找到圖示，則使用備用主題。 注意主題名稱一定要寫"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 67
+msgid "exactly as the icon directory e.g."
+msgstr "與圖示目錄完全相同，例如"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 72
+msgid ""
+"If 'Use Icons' is enabled and for a directory in a menu no icon is found"
+msgstr "如果啟用「使用圖示」並且在選單中的目錄找不到圖示"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 75
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 89
+msgid "as default icon is used. But if the gnome icon theme isn't"
+msgstr "作為預設圖示。 但如果 Gnome 圖示主題不是"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 78
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 92
+msgid "installed no default icon appears. Another icon can defined here."
+msgstr "安裝後沒有出現預設圖示。 可以在此處定義另一個圖示。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 81
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 95
+msgid "Only the name of an icon is needed not the path!"
+msgstr "只需要圖示的名稱，不需要路徑！"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 86
+msgid "If 'Use Icons' is enabled and for an application no icon is found"
+msgstr "如果啟用「使用圖示」並且在應用程式中未找到圖示"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 100
+msgid ""
+"If this option is set menus are generated with titles. Default is use titles."
+msgstr "如果設置了此選項，則會產生帶有標題的選單。 預設是使用標題。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 105
+msgid "Sets the name of the name of the top level menu. Default is XDGMenu."
+msgstr "設定頂部選單的名稱。 預設為 XDG 選單。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 110
+msgid "Inserts the menu items into the given Menu."
+msgstr "將選單項目插入給定的選單中。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 114
+msgid "Terminal Command:   "
+msgstr "終端命令："
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 115
+msgid ""
+"Enter terminal emulator command used to launch terminal applications. The "
+"command"
+msgstr "輸入用於啟動終端應用程式的終端模擬器命令。命令"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 118
+msgid "must end with an execute option (-e). Default xterm -e."
+msgstr "必須以執行選項(-e)結尾。預設值為 xterm -e。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 123
+msgid "Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu."
+msgstr "輸入匯出選單的完整路徑。 預設值為 $FVWM_USERDIR/.XDGMmenu。"
+
+#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 136
+msgid "manpage"
+msgstr "手冊"
+
+#~ msgid "Setup Form"
+#~ msgstr "Konfiguration mit Form"
+
+#~ msgid "Setup 95 Script"
+#~ msgstr "Konfiguration mit Script95"
+
+#~ msgid "Remote Logins"
+#~ msgstr "Entfernt Anmelden"
+
+#~ msgid "Utilities"
+#~ msgstr "Werkzeuge"
+
+#~ msgid "Fvwm Modules"
+#~ msgstr "Module von Fvwm"
+
+#~ msgid "Fvwm Window Ops"
+#~ msgstr "Fenster"
+
+#~ msgid "Fvwm Config Ops"
+#~ msgstr "Konfiguration"
+
+#~ msgid "Refresh Screen"
+#~ msgstr "Bildschirm neuzeichnen"
+
+#~ msgid "Recapture Screen"
+#~ msgstr "Bildschirm speichern"
+
+#~ msgid "Exit Fvwm"
+#~ msgstr "Fvwm beenden"
+
+#~ msgid "Reset X defaults"
+#~ msgstr "X Voreinstellungen setzen"
+
+#~ msgid "Sloppy Focus"
+#~ msgstr "Fokus flüssig"
+
+#~ msgid "Click To Focus"
+#~ msgstr "Klick für Fokus"
+
+#~ msgid "Focus Follows Mouse"
+#~ msgstr "Fokus folgt Maus"
+
+#~ msgid "Colormap Follows Mouse"
+#~ msgstr "Farbpalette folgt Maus"
+
+#~ msgid "Colormap Follows Focus"
+#~ msgstr "Farbpalette folgt Fokus"
+
+#~ msgid "Full Paging ON"
+#~ msgstr "Seitenübergang"
+
+#~ msgid "All Paging OFF"
+#~ msgstr "Seitenübergang aus"
+
+#~ msgid "Horizontal Paging Only"
+#~ msgstr "Seitenübergang horizontal"
+
+#~ msgid "Vertical Paging Only"
+#~ msgstr "Seitenübergang vertikale"
+
+#~ msgid "Partial Paging"
+#~ msgstr "Seitenübergang teilweise"
+
+#~ msgid "Full Paging && Edge Wrap"
+#~ msgstr "Seitenübergang  && Ecken"
+
+#~ msgid "&Delete"
+#~ msgstr "&Lösche"
+
+#~ msgid "Print"
+#~ msgstr "Drucken"
+
+#~ msgid "Print Re&verse"
+#~ msgstr "Drucken (Rückseite)"
+
+#~ msgid "Control Animation"
+#~ msgstr "Animationskontrolle"
+
+#~ msgid "desks"
+#~ msgstr "Arbeitsplatz"
+
+#~ msgid "Stop Module Menu"
+#~ msgstr "Fvwm-Module stoppen"
+
+#~ msgid "Stop Fvwm Modules"
+#~ msgstr "Fvwm-Module stoppen"
+
+#~ msgid "Stop"
+#~ msgstr "Stop"
+
+#~ msgid "Really Quit Fvwm?"
+#~ msgstr "Fvwm beenden?"
+
+#~ msgid "Yes, Really Quit"
+#~ msgstr "Ja, fvwm beenden"
+
+#~ msgid "Start"
+#~ msgstr "Start"
+
+#~ msgid "Just an Xterm"
+#~ msgstr "XTerm"
+
+#~ msgid "No, Don't Quit"
+#~ msgstr "Nein, fvwm nicht beenden"
+
+# FvwmForm
+#~ msgid "fvwm - Create Configuration"
+#~ msgstr "fvwm - Erzeuge Konfiguration"
+
+#~ msgid "Use this form to create your fvwm2rc configuration file."
+#~ msgstr "Nutze dieses Formular um fvwm2rc zu erzeugen"
+
+#~ msgid "The file created is ~/.fvwm/.fvwm2rc or $FVWM_USERDIR/.fvwm2rc."
+#~ msgstr "Die Datei ist ~/.fvwm/.fvwm2rc oder $FVWM_USERDIR/.fvwm2rc."
+
+#~ msgid "After creation, the fvwm2rc file can then be changed with any"
+#~ msgstr "Nach dem Erzeugen, können Sie die Datei mit einem Editor"
+
+#~ msgid "editor to suit your own needs."
+#~ msgstr "an Ihre Wünsche anpassen"
+
+#~ msgid "Create a starting .fvwm2rc file"
+#~ msgstr "Erzeuge eine Startdatei .fvwm2rc"
+
+#~ msgid "These files are optional.  Select the modules you want to customize."
+#~ msgstr "Diese Dateien sind nicht notwendig. Die Auswahl der Module anpassen"
+
+#~ msgid "You can always copy them later."
+#~ msgstr "Sie können diese später kopieren"
+
+#~ msgid "Return - Dismiss"
+#~ msgstr "Annehmen - Schliessen"
+
+#~ msgid "Copy Config File(s)"
+#~ msgstr "Konfigurationsdateien kopieren"
+
+#~ msgid "Multiple Menu"
+#~ msgstr "Mehrfachmenü"
+
+#~ msgid ""
+#~ "If you want a single menu only deselect all menus above and fill out the "
+#~ "fields below."
+#~ msgstr ""
+#~ "Für ein Einzelmenü alle nicht benötigten Menüs deselektieren und die "
+#~ "Felder unten ausfüllen."
+
+#~ msgid "But remember, if the menu doesn't exist, nothing happens."
+#~ msgstr "Bitte beachten: wenn ein Menü leer ist, passiert nichts."
+
+#~ msgid "Menu Top Title:     "
+#~ msgstr "Menü Top Titel:      "
+
+#~ msgid "Install-Prefix:     "
+#~ msgstr "Install-Prefix:      "
+
+#~ msgid "Desktop:            "
+#~ msgstr "Desktop:             "
+
+#~ msgid "Menutype:           "
+#~ msgstr "Menütyp:             "
+
+#~ msgid "Multiple "
+#~ msgstr "Mehrfach "
+
+#~ msgid "Single"
+#~ msgstr "Einzel"
+
+#~ msgid "Menu(s) in a Menu?  "
+#~ msgstr "Menü(s) in dem Menü? "
+
+#~ msgid "Generate Menu(s)"
+#~ msgstr "Menü(s) erstellen"
+
+#~ msgid "Save Settings"
+#~ msgstr "Settings speichern"
+
+#~ msgid "Regenerate XDG Menu(s)"
+#~ msgstr "XDG Menu(s) neu erstellen"
+
+#~ msgid ""
+#~ "In this section you can define a custom-assembled menu 'foo-bar.menu' "
+#~ "placed on another"
+#~ msgstr ""
+#~ "In dieser Sektion können Sie ein eigenerstelltes Menü 'foo-bar.menu', das "
+#~ "an einem anderen Ort als in"
+
+#~ msgid "location as defined in the XDG menu definitions."
+#~ msgstr "den XDG Menüspezifikationen definiert ist, erstellen."
+
+#~ msgid ""
+#~ "Specifies the menu title of the top menu used by Fvwm's Popup command."
+#~ msgstr ""
+#~ "Spezifiziert den Menütitel des Topmenüs, das Fvwm's Popup Kommando "
+#~ "verwendet."
+
+#~ msgid "Default is 'FvwmMenu'."
+#~ msgstr "Default ist 'FvwmMenu'."
+
+#~ msgid ""
+#~ "Overrides the standard locations for XDG menu definitions. The standard"
+#~ msgstr ""
+#~ "Überschreibt die Standardorte für die XDG Menüdefinitionen. Die "
+#~ "Standardorte"
+
+#~ msgid "locations are /etc/xdg/menus and"
+#~ msgstr "sind /etc/xdg/menus und"
+
+#~ msgid "if available."
+#~ msgstr "(wenn vorhanden)."
+
+#~ msgid "Overrides the name of the main desktop environment installed on the"
+#~ msgstr ""
+#~ "Überschreibt den Namen der Haupt-Desktop-Umgebung, welche auf dem System"
+
+#~ msgid ""
+#~ "system. If a system offers multiple desktop environments $XDG_MENU_PREFIX"
+#~ msgstr ""
+#~ "installiert ist. Wenn ein System mehrere Desktop-Umgebungen bereitstellt, "
+#~ "ist"
+
+#~ msgid "is typically set. It is ignored if this field is used."
+#~ msgstr ""
+#~ "normalerweise $XDG_MENU_PREFIX gesetzt. Die Variable wird jedoch "
+#~ "ignoriert,"
+
+#~ msgid "Possible names: gnome, kde, lxde, etc."
+#~ msgstr ""
+#~ "wenn dieses Feld benutzt wird. Mögliche Namen: gnome, kde, lxde, etc."
+
+#~ msgid ""
+#~ "Defines which type of menu should be found. Possible name types could be:"
+#~ msgstr ""
+#~ "Definiert welcher Menütyp gefunden werden soll. Mögliche Typen könnten "
+#~ "sein:"
+
+#~ msgid ""
+#~ "applications, settings, preferences, etc. Note if the specified menu type"
+#~ msgstr ""
+#~ "applications, settings, preferences, etc. Achtung, wenn das hier "
+#~ "spezifizierte"
+
+#~ msgid "doesn't exist the generated menu is empty!"
+#~ msgstr "Menü nicht existiert, ist das erstellte Menü leer!"
+
+#~ msgid ""
+#~ "will integrate in one Fvwm menu. If you want to generate a custom-"
+#~ "assembled menu"
+#~ msgstr ""
+#~ "Alle ausgewählten Menüs werden in einem Fvwm-Menü integriert. Wenn Sie "
+#~ "ein eigens"
+
+#~ msgid "use the 'Single Menu' section."
+#~ msgstr ""
+#~ "zusammengestelltes Menu erstellen wollen, benutzen Sie die 'Einzelmenü' "
+#~ "Sektion."
+
+#~ msgid "List menus with checkboxes found in /etc/xdg/menus/"
+#~ msgstr "Listet in /etc/xdg/menus/ gefundene Menüs mit Checkboxen auf."
+
+#~ msgid "List menus with checkboxes found in $HOME/.config/menus/"
+#~ msgstr "Listet in $HOME/.config/menus/ gefundene Menüs mit Checkboxen auf"
+
+#~ msgid "One limitation exists:"
+#~ msgstr "Es existiert eine Limitierung:"
+
+#~ msgid ""
+#~ "If there are too much menus found an error occurs in .xsession-errors:"
+#~ msgstr ""
+#~ "Wenn zuviele Menüs gefunden werden, taucht folgende Fehlemeldung in ."
+#~ "xsession-errors auf:"
+
+#~ msgid ""
+#~ "This happens because PipeRead used for menu generation has a command "
+#~ "length"
+#~ msgstr ""
+#~ "Das passiert, weil PipeRead, das zum generieren des Menüs verwendet wird, "
+#~ "eine Limitierung"
+
+#~ msgid "limit of 1000 characters. Sorry for that inconvinience."
+#~ msgstr ""
+#~ "von 1000 Zeichen für ein Kommando hat. Entschuldigung für diese "
+#~ "Unannehmlichkeit."
+
+#~ msgid "Set which menu generation will be used."
+#~ msgstr "Setzt die zu verwendende Menügenerierungsart."
+
+#~ msgid "Enable this checkbox to insert generated menu(s) IN a menu."
+#~ msgstr ""
+#~ "Aktivieren Sie diese Checkbox, um erstellte Menüs IN einem Menü "
+#~ "einzubinden."
+
+#~ msgid ""
+#~ "Enter in this field the name of the menu (its top title) where the "
+#~ "generated menu(s)"
+#~ msgstr ""
+#~ "Hier den Namen des Menüs (seinen Toptitel) eintragen, wo die erstellten "
+#~ "Menüs"
+
+#~ msgid ""
+#~ "should insert. For more information see the USAGE section in the man page "
+#~ "of"
+#~ msgstr ""
+#~ "eingebunden werden sollen. Für weitere Informationen siehe die USAGE "
+#~ "Sektion von"
