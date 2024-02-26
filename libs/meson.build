@@ -1,4 +1,4 @@
-libraries += static_library('libfvwm3',
+libraries += static_library('fvwm3',
   sources: [
     'BidiJoin.c', 'Flocale.c', 'PictureUtils.c', 'FScreen.c', 'Graphics.c',
     'PictureGraphics.c', 'Bindings.c', 'FlocaleCharset.c', 'Parse.c',

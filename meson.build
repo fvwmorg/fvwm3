@@ -18,6 +18,7 @@ add_project_arguments(
       '-Wno-error=format-security',
       '-Wno-sign-compare',
       '-Wno-unused-parameter',
+      '-Wno-extra',
   ],
   language: 'c',
 )
@@ -227,11 +228,13 @@ foreach k, _ : all_optional_deps
   endif
 
   if this_dep.found() and 'optional' not in all_optional_deps[k]
+    all_found_deps += this_dep
     conf.set10(all_optional_deps[k]['have'], true)
     continue
   endif
 
   if this_dep.found() and 'optional' in all_optional_deps[k]
+    all_found_deps += this_dep
     opt_found = false
     opt_found_names = []
     foreach ok, _ : all_optional_deps[k]['optional']
@@ -267,7 +270,6 @@ foreach k, _ : all_optional_deps
           if xof_dep.found()
             xof_found = true
             all_found_deps += xof_dep
-            message('Found: ' + xof)
             break
           endif
         endforeach
@@ -279,6 +281,7 @@ foreach k, _ : all_optional_deps
           endforeach
           error('Expected to find one of: ' + p)
         else
+          all_found_deps += xof_dep
           conf.set10(all_optional_deps[k]['have'], true)
         endif
       else
