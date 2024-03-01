@@ -51,7 +51,7 @@ conf.set_quoted('LOCALEDIR', conf.get('FVWM_DATADIR') + '/' + 'locale')
 conf.set_quoted('FVWM_CONFDIR', get_option('sysconfdir'))
 conf.set('RETSIGTYPE', 'void')
 conf.set('SIGNAL_RETURN', 'return')
-conf.set('ICONV_ARG_CONST', 'const')
+conf.set('ICONV_ARG_CONST', '')
 conf.set('fd_set_size_t', 'int')
 conf.set('EXECUTABLE_EXTENSION', 'NULL')
 
@@ -61,7 +61,6 @@ headers = [
   'float.h',
   'getopt.h',
   'inttypes.h',
-  'libintl.h',
   'limits.h',
   'malloc.h',
   'memory.h',
@@ -130,7 +129,6 @@ endforeach
 all_found_deps = []
 all_req_deps = ['x11', 'xt', 'xrandr', 'libevent', 'ice']
 all_optional_deps = {
-  'iconv': {'have': 'HAVE_ICONV', 'feature': true, 'opt': 'iconv', 'custom': true},
   'xext': {'have': 'SHAPE', 'feature': true, 'opt': 'xent'},
   'libpng': {
     'version': '>=1.2',
@@ -206,26 +204,14 @@ foreach k, _ : all_optional_deps
 
   if 'feature' in all_optional_deps[k]
     is_feature = true
-    if get_option('iconv').allowed() and k == 'iconv'
-      iconv = dependency('iconv', fallback: ['iconv', 'libiconv'])
-      all_found_deps += iconv
-      conf.set10('HAVE_ICONV', true)
-      conf.set10('USE_LIBICONV', true)
-    else
     required = get_option(all_optional_deps[k]['opt'])
-    this_dep = dependency(k,
-      required: required,
-    )
-    endif
+    this_dep = dependency(k, required: required)
   else
     if 'required' in all_optional_deps[k]
       required = all_optional_deps[k]['required']
     endif
 
-    this_dep = dependency(k,
-      required: required,
-      version: version,
-    )
+    this_dep = dependency(k, required: required, version: version)
   endif
 
   # If the dependency is not found and we have custom messages, display them
@@ -313,7 +299,6 @@ foreach k, _ : all_optional_deps
         if op_dep.found()
           opt_found = true
           all_found_deps += op_dep
-          message('FOUND: ' + ok)
           conf.set10(all_optional_deps[k]['have'], true)
         endif
       endif
@@ -321,10 +306,26 @@ foreach k, _ : all_optional_deps
     endif
 endforeach
 
+# NLS
+libintl = dependency('intl', required: false)
+if libintl.found()
+    all_found_deps += libintl
+    conf.set10('HAVE_NLS', true)
+endif
+
+iconv = dependency('iconv')
+if iconv.found()
+  conf.set10('HAVE_ICONV', true)
+  all_found_deps += iconv
+endif
+
+if cc.has_header_symbol('libcharset.h', 'locale_charset')
+  conf.set10('HAVE_LIBCHARSET', true)
+endif
+
 # Hard-coded
 non_configurable_ops = [
   'FMiniIconsSupported',
-  'HAVE_NLS',
   'HAVE_XSM',
   'FVWM_COLORSET_PRIVATE',
 ]
