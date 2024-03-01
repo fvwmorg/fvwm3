@@ -26,6 +26,7 @@
 #include <ctype.h>
 #include <stdio.h>
 
+#include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"

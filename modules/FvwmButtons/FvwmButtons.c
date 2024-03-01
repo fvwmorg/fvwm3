@@ -35,6 +35,7 @@
 #include "libs/ftime.h"
 #include <sys/stat.h>
 
+#include "libs/log.h"
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"

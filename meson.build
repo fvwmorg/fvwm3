@@ -381,6 +381,21 @@ fvwm3 = executable(
   link_with: libraries,
 )
 
+modules = {
+  'FvwmAnimate': {'subdir': 'modules/FvwmAnimate'},
+  'FvwmAuto': {'subdir': 'modules/FvwmAuto'},
+  'FvwmBacker': {'subdir': 'modules/FvwmBacker'},
+  'FvwmButtons': {'subdir': 'modules/FvwmButtons'},
+  #FvwmConsole (TODO)
+  'FvwmEvent': {'subdir': 'modules/FvwmEvent'},
+
+}
+
+module_sources = []
+foreach m, _ : modules
+  subdir(modules[m]['subdir'])
+endforeach
+
 summary({
   'prefix': get_option('prefix'),
   'bindir': get_option('bindir'),

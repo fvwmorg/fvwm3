@@ -35,6 +35,7 @@
 
 #include "libs/Colorset.h"
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/Rectangles.h"
 #include "libs/FShape.h"	/* FShapesSupported */
 #include "libs/FEvent.h"
