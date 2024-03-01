@@ -21,6 +21,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/charmap.h"
 #include "libs/modifiers.h"
 #include "libs/ColorUtils.h"

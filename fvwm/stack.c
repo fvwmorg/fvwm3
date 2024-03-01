@@ -21,6 +21,7 @@
 #include <stdarg.h>
 #include <limits.h>
 
+#include "libs/log.h"
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/gravity.h"

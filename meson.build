@@ -26,10 +26,6 @@ add_project_arguments(
 cc = meson.get_compiler('c')
 host = host_machine.system()
 
-if host_machine.endian() == 'big'
-  conf.set('WORDS_BIGENDIAN', true)
-endif
-
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
 prefix = get_option('prefix')
@@ -38,14 +34,26 @@ syslibs = []
 
 conf = configuration_data()
 
+if host_machine.endian() == 'big'
+  conf.set('WORDS_BIGENDIAN', true)
+endif
+
 # Set static configuration.
+conf.set_quoted('VERSION', '1.1.0')
+conf.set_quoted('VERSIONINFO', meson.project_version())
+conf.set_quoted('PACKAGE', meson.project_name())
 conf.set_quoted('FVWM2RC', '.fvwm2rc')
 conf.set_quoted('FVWM_CONFIG', 'config')
 conf.set_quoted('FVWM_IMAGEPATH', '/usr/include/X11/bitmaps:/usr/include/X11/pixmaps')
+conf.set_quoted('FVWM_MODULEDIR', get_option('libexecdir') + '/' + meson.project_name() + '/' + meson.project_version())
+conf.set_quoted('FVWM_DATADIR', get_option('datadir') + '/' + meson.project_name())
+conf.set_quoted('LOCALEDIR', conf.get('FVWM_DATADIR') + '/' + 'locale')
+conf.set_quoted('FVWM_CONFDIR', get_option('sysconfdir'))
 conf.set('RETSIGTYPE', 'void')
 conf.set('SIGNAL_RETURN', 'return')
 conf.set('ICONV_ARG_CONST', 'const')
 conf.set('fd_set_size_t', 'int')
+conf.set('EXECUTABLE_EXTENSION', 'NULL')
 
 # Header checks.
 headers = [
@@ -73,6 +81,11 @@ foreach h : headers
     conf.set10('HAVE_' + h.to_upper().underscorify(), true)
   endif
 endforeach
+
+if conf.has('HAVE_SYS_SELECT_H')
+  conf.set10('HAVE_SELECT', true)
+  conf.set('SELECT_FD_SET_CAST', '')
+endif
 
 # Function checks.
 functions = {
@@ -115,9 +128,10 @@ endforeach
 
 # Dependencies.
 all_found_deps = []
-all_req_deps = ['x11', 'xt', 'xrandr', 'libevent']
+all_req_deps = ['x11', 'xt', 'xrandr', 'libevent', 'ice']
 all_optional_deps = {
-  'iconv': {'have': 'HAVE_ICONV', 'feature': true, 'opt': 'iconv'},
+  'iconv': {'have': 'HAVE_ICONV', 'feature': true, 'opt': 'iconv', 'custom': true},
+  'xext': {'have': 'SHAPE', 'feature': true, 'opt': 'xent'},
   'libpng': {
     'version': '>=1.2',
     'opt': 'png',
@@ -148,7 +162,7 @@ all_optional_deps = {
   'freetype2': {
     'optional': {
       'xft': { 'version': '>=2.3.0', 'required': true },
-      'fontconfig': { 'version': '>=9.0.0', 'required': true },
+      'fontconfig': { 'version': '>=2.0.0', 'required': true },
     },
     'have': 'HAVE_XFT',
   },
@@ -170,20 +184,21 @@ all_optional_deps = {
 }
 
 foreach rd : all_req_deps
-  if not dependency(rd, required: true).found()
+  this_dep = dependency(rd, required: true)
+  if not this_dep.found()
     msg = '@0@ libraries or header files could not be found.'.format(rd)
     error(msg)
   endif
 
   # If found, declare HAVE_* defines.
   conf.set10('HAVE_' + rd.to_upper().underscorify(), true)
+  all_found_deps += this_dep
 endforeach
 
 foreach k, _ : all_optional_deps
   version = '>=0.0'
   is_feature = false
   required = false
-  this_dep = ''
 
   if 'version' in all_optional_deps[k]
     version = all_optional_deps[k]['version']
@@ -191,10 +206,17 @@ foreach k, _ : all_optional_deps
 
   if 'feature' in all_optional_deps[k]
     is_feature = true
+    if get_option('iconv').allowed() and k == 'iconv'
+      iconv = dependency('iconv', fallback: ['iconv', 'libiconv'])
+      all_found_deps += iconv
+      conf.set10('HAVE_ICONV', true)
+      conf.set10('USE_LIBICONV', true)
+    else
     required = get_option(all_optional_deps[k]['opt'])
     this_dep = dependency(k,
       required: required,
     )
+    endif
   else
     if 'required' in all_optional_deps[k]
       required = all_optional_deps[k]['required']
@@ -291,8 +313,8 @@ foreach k, _ : all_optional_deps
         if op_dep.found()
           opt_found = true
           all_found_deps += op_dep
+          message('FOUND: ' + ok)
           conf.set10(all_optional_deps[k]['have'], true)
-          break
         endif
       endif
       endforeach
@@ -301,9 +323,10 @@ endforeach
 
 # Hard-coded
 non_configurable_ops = [
+  'FMiniIconsSupported',
   'HAVE_NLS',
   'HAVE_XSM',
-  'SHAPE',
+  'FVWM_COLORSET_PRIVATE',
 ]
 
 foreach nco : non_configurable_ops
@@ -336,7 +359,7 @@ conf_out = configure_file(
 conf_cmd = '@0@/runme.sh'.format(meson.current_source_dir())
 build_dir = '@0@/config.h'.format(meson.current_build_dir())
 configure_file(
-  output: 'foo.txt',
+  output: 'config.h',
   command: [conf_cmd, conf_out, conf_template, build_dir ],
 )
 
@@ -347,13 +370,28 @@ subdir('libs')
 
 subdir('po')
 
+subdir('fvwm')
+
+fvwm3 = executable(
+  meson.project_name(),
+  fvwm_sources,
+  include_directories: [lib_includes, fvwm_includes],
+  dependencies: all_found_deps,
+  link_with: libraries,
+)
+
 summary({
   'prefix': get_option('prefix'),
   'bindir': get_option('bindir'),
   'libdir': get_option('libdir'),
+  'libexecdir': get_option('libexecdir'),
   'datadir': get_option('datadir')
 }, section: 'Directories')
 summary({
+  'iconv': iconv,
+}, section: 'Libraries')
+summary({
+  'Module dir': conf.get('FVWM_MODULEDIR'),
   'Man pages': mandoc_explain,
   'HTML pages': htmldoc_explain,
 }, section: 'Configuration')

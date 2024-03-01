@@ -42,6 +42,8 @@
 
 /* for module syncronous */
 #include "libs/ftime.h"
+#include "libs/fvwmsignal.h"
+#include "libs/log.h"
 #include "libs/System.c"
 #include "libs/envvar.h"
 #include "libs/Parse.h"

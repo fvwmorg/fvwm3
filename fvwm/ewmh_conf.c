@@ -22,6 +22,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"

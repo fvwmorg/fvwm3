@@ -21,6 +21,7 @@
 #include <signal.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/FShape.h"
 #include "libs/Grab.h"
 #include "libs/charmap.h"

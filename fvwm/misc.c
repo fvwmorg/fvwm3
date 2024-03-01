@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+#include "libs/log.h"
 #include "libs/fvwm_x11.h"
 #include "libs/ftime.h"
 #include "libs/Parse.h"

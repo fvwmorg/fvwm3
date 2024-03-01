@@ -30,6 +30,7 @@
 #define assert(x) do { } while (0)
 #endif
 
+#include "libs/log.h"
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/charmap.h"

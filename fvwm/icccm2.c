@@ -20,6 +20,7 @@
 #include <fcntl.h>
 #endif
 
+#include "libs/log.h"
 #include "libs/fvwm_x11.h"
 #include "libs/FEvent.h"
 #include "fvwm.h"

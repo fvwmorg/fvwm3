@@ -31,6 +31,7 @@
 
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/envvar.h"
 #include "libs/Strings.h"
 #include "libs/System.h"
