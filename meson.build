@@ -26,6 +26,11 @@ add_project_arguments(
 cc = meson.get_compiler('c')
 host = host_machine.system()
 
+m_dep = cc.find_library('m', required : false)
+if m_dep.found()
+  add_project_link_arguments('-lm', language: 'c')
+endif
+
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
 prefix = get_option('prefix')
