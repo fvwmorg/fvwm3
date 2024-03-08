@@ -23,17 +23,18 @@ system in use.
 ## Core dependencies
 
 * libevent-dev (>= 2.0)
+* libfontconfig-dev
+* libfreetype6-dev
 * libx11-dev
+* libxext-dev
+* libxft-dev
 * libxrandr-dev (>= 1.5)
 * libxrender-dev
 * libxt-dev
-* libxft-dev
 
 ## Optional dependencies
 
 * asciidoctor
-* libfontconfig-dev
-* libfreetype6-dev
 * libfribidi-dev
 * libncurses5-dev
 * libpng-dev
@@ -41,7 +42,6 @@ system in use.
 * librsvg-dev
 * libsm-dev
 * libxcursor-dev
-* libxext-dev
 * libxi-dev
 * libxpm-dev
 * sharutils

@@ -643,6 +643,11 @@ AH_TEMPLATE([HAVE_XFT_UTF8],[Define if Xft library can handle utf8 encoding])
 AC_SUBST(Xft_LIBS)
 AC_SUBST(Xft_CFLAGS)
 
+if test x"$with_xft" = "no" || test x"$with_fontconfig" = "xno" || \
+  test x"$have_freetype" = "xno"; then
+  AC_MSG_ERROR(["*** XFT/Fontconfig/Freetype not found. ***])
+fi
+
 # ********* xpm
 problem_xpm=": Xpm library or header not found"
 
