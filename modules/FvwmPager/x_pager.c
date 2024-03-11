@@ -1898,8 +1898,7 @@ void SwitchToDesk(int Desk)
 	struct fpmonitor *m = fpmonitor_this();
 
 	snprintf(command, sizeof(command),
-		"GotoDesk %s 0 %d", monitor_to_track ? m->name : "",
-		Desk + desk1);
+		"GotoDesk %s 0 %d", m->name, Desk + desk1);
 	SendText(fd,command,0);
 }
 

@@ -679,6 +679,7 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 	EWMH_SetCurrentDesktop(fw->m);
 	desk_add_fw(fw);
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
+	BroadcastMonitorList(NULL);
 
 	return True;
 }
