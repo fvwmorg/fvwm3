@@ -1555,20 +1555,15 @@ void list_config_info(unsigned long *body)
 		DrawGrid(val, True, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
 		char	*mname;
-		int		 updated = 0;
 
 		tline = GetNextToken(tline, &mname);
 
 		TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
-			updated = 0;
 			if (strcmp(m2->name, mname) == 0) {
 				extract_monitor_config(m2,tline);
-				updated = 1;
+				return;
 			}
 		}
-
-		if (updated)
-			return;
 
 		m = fxcalloc(1, sizeof(*m));
 
@@ -1863,20 +1858,15 @@ ImagePath = NULL;
     }
     else if (StrEquals(token, "Monitor")) {
 	    char	*mname;
-	    int		 updated = 0;
 
 	    next = GetNextToken(next, &mname);
 
 	    TAILQ_FOREACH(m2, &fp_monitor_q, entry) {
-		    updated = 0;
 		    if (strcmp(m2->name, mname) == 0) {
 			    extract_monitor_config(m2, next);
-			    updated = 1;
+			    return;
 		    }
 	    }
-
-	    if (updated)
-		    continue;
 
 	    m = fxcalloc(1, sizeof(*m));
 
