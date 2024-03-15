@@ -2563,7 +2563,21 @@ void CMD_GotoDesk(F_CMD_ARGS)
 	struct monitor  *m, *m_loop;
 	char		*next, *token;
 	int		 new_desk;
+	int		 val[2];
 
+	/* We've received something like:
+	 *
+	 * GotoDesk 0 0
+	 *
+	 * But no monitor token.  Use the current monitor.
+	 */
+	if (GetIntegerArguments(action, NULL, val, 2) == 2) {
+		xasprintf(&action, "%s %d %d",
+			monitor_get_current()->si->name, val[0], val[1]);
+
+		val[0] = -1;
+		val[1] = -1;
+	}
 	token = PeekToken(action, &next);
 	m = monitor_resolve_name(token);
 	if (m != NULL)
@@ -2635,6 +2649,19 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	char *token;
 	struct monitor  *m;
 
+	/* We've received something like:
+	 *
+	 * GotoDeskAndPage 0 0
+	 *
+	 * But no monitor token.  Use the current monitor.
+	 */
+	if (GetIntegerArguments(action, NULL, val, 2) == 2) {
+		xasprintf(&action, "%s %d %d",
+			monitor_get_current()->si->name, val[0], val[1]);
+
+		val[0] = -1;
+		val[1] = -1;
+	}
 	token = PeekToken(action, &next);
 	m = monitor_resolve_name(token);
 	if (m != NULL)
