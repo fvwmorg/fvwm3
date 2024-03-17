@@ -7,19 +7,14 @@
 #include "libs/vpacket.h"
 #include "libs/Flocale.h"
 #include "libs/Module.h"
+#include "libs/FScreen.h"
 
 #define DEFAULT_PAGER_WINDOW_BORDER_WIDTH 1
 #define DEFAULT_PAGER_WINDOW_MIN_SIZE 3
 #define DEFAULT_PAGER_MOVE_THRESHOLD 3
 
 struct fpmonitor {
-	char		*name;
-	int		 is_primary, output;
-	int		 win_count;
-	int		 wants_refresh;
-	int		 is_disabled;
-	int		 is_current;
-	int		 x, y, w, h;
+	struct monitor *m;
 
         struct {
                 int VxMax;
@@ -30,10 +25,6 @@ struct fpmonitor {
 		int VyPages;
 		int VWidth;            /* Size of virtual desktop */
 		int VHeight;
-
-                int CurrentDesk;
-		int MyDisplayWidth;
-		int MyDisplayHeight;
         } virtual_scr;
 
 	TAILQ_ENTRY(fpmonitor) entry;
@@ -42,11 +33,7 @@ TAILQ_HEAD(fpmonitors, fpmonitor);
 
 extern struct fpmonitors	 fp_monitor_q;
 struct fpmonitor		*fpmonitor_by_name(const char *);
-struct fpmonitor		*fpmonitor_by_output(int);
-struct fpmonitor		*fpmonitor_get_current(void);
-struct fpmonitor 		*fpmonitor_this(void);
-int				 fpmonitor_get_all_widths(void);
-int				 fpmonitor_get_all_heights(void);
+struct fpmonitor		*fpmonitor_this(struct monitor *);
 
 typedef struct ScreenInfo
 {
@@ -84,7 +71,7 @@ typedef struct pager_window
   char *t;
   Window w;
   Window frame;
-  struct fpmonitor *m;
+  struct monitor *m;
   int x;
   int y;
   int width;

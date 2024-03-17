@@ -478,21 +478,7 @@ void BroadcastMonitorList(fmodule *this)
 		RB_FOREACH(m, monitors, &monitor_q) {
 			if (m->flags & MONITOR_DISABLED)
 				continue;
-			xasprintf(&name, "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d",
-				m->si->name,
-				(int)m->si->rr_output,
-				m == monitor_get_current(),
-				monitor_get_all_widths(),
-				monitor_get_all_heights(),
-				m->virtual_scr.Vx,
-				m->virtual_scr.Vy,
-				m->virtual_scr.VxMax,
-				m->virtual_scr.VyMax,
-				m->si->x,
-				m->si->y,
-				m->si->w,
-				m->si->h
-			);
+			xasprintf(&name, "Monitor %s", m->si->name);
 
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
