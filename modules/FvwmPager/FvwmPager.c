@@ -1506,7 +1506,6 @@ void list_config_info(unsigned long *body)
 
 	tline = (char*)&(body[3]);
 	token = PeekToken(tline, &tline);
-	fprintf(stderr, "TOKEN: %s\n", token);
 	if (StrEquals(token, "Colorset"))
 	{
 		color = LoadColorset(tline);
