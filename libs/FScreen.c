@@ -15,6 +15,8 @@
 
 #include "config.h"
 
+#include <X11/extensions/Xrandr.h>
+#include <X11/extensions/randr.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -22,6 +24,7 @@
 #include <errno.h>
 #include <err.h>
 
+#include "log.h"
 #include "defaults.h"
 #include "fvwmlib.h"
 #include "Parse.h"
@@ -48,9 +51,14 @@ static bool		 is_randr_present;
 static bool		 randr_initialised;
 
 static void		 scan_screens(Display *);
+static struct monitor	*monitor_new(const char *);
+static void		 monitor_mark_new(struct monitor *);
+static void		 monitor_mark_inlist(const char *);
+static bool		 monitor_mark_changed(struct monitor *, XRRMonitorInfo *);
 static struct monitor	*monitor_by_name(const char *);
 static void		 monitor_set_coords(struct monitor *, XRRMonitorInfo);
 static void		 monitor_assign_number(void);
+static void		 monitor_add(XRRMonitorInfo *);
 
 enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
@@ -76,12 +84,15 @@ static void GetMouseXY(XEvent *eventp, int *x, int *y)
 		disp, DefaultRootWindow(disp), eventp, x, y);
 }
 
-struct monitor *
-monitor_new(void)
+static struct monitor *
+monitor_new(const char *name)
 {
 	struct monitor	*m;
 
 	m = fxcalloc(1, sizeof *m);
+	m->flags = 0;
+	m->si = screen_info_new();
+	m->si->name = fxstrdup(name);
 
 	return (m);
 }
@@ -140,11 +151,8 @@ monitor_refresh_global(void)
 	 *   si->name,
 	 *   si->{x, y, w, h}
 	 */
-	if (monitor_global == NULL) {
-		monitor_global = monitor_new();
-		monitor_global->si = screen_info_new();
-		monitor_global->si->name = fxstrdup(GLOBAL_SCREEN_NAME);
-	}
+	if (monitor_global == NULL)
+		monitor_global = monitor_new(GLOBAL_SCREEN_NAME);
 
 	/* At this point, the global screen has been initialised.  Refresh the
 	 * coordinate list.
@@ -402,83 +410,7 @@ FScreenSelect(Display *dpy)
 void
 monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 {
-	XRRScreenResources	*res;
-	struct monitor		*m = NULL;
-
-	fvwm_debug(__func__, "%s: outputs have changed\n", __func__);
-
-	if ((res = XRRGetScreenResources(dpy, e->root)) == NULL) {
-		fvwm_debug(__func__,
-			   "%s: couldn't acquire screen resources\n",
-			   __func__);
-		return;
-	}
-
-	{
-		struct screen_info	*si;
-		XRROutputInfo		*oinfo = NULL;
-		int			 i;
-
-		scan_screens(dpy);
-
-		for (i = 0; i < res->noutput; i++) {
-			oinfo = XRRGetOutputInfo(dpy, res, res->outputs[i]);
-			if (oinfo == NULL)
-				continue;
-
-			si = screen_info_by_name(oinfo->name);
-
-			if (si == NULL)
-				continue;
-
-			RB_FOREACH(m, monitors, &monitor_q) {
-				if (m->si == si) {
-					m->emit &= ~MONITOR_ALL;
-					break;
-				}
-			}
-
-			if (m == NULL)
-				continue;
-
-			if (oinfo->connection == RR_Connected &&
-			    m->flags & MONITOR_ENABLED) {
-				if (m->flags & MONITOR_CHANGED) {
-					m->emit |= MONITOR_CHANGED;
-					TAILQ_INSERT_TAIL(&monitorsold_q, m, oentry);
-				}
-				continue;
-			}
-
-			if (oinfo->connection == RR_Disconnected &&
-			    m->flags & MONITOR_DISABLED) {
-				continue;
-			}
-
-			switch (oinfo->connection) {
-			case RR_Connected:
-				m->flags &= ~MONITOR_DISABLED;
-				m->flags |= MONITOR_ENABLED;
-
-				m->emit |= MONITOR_ENABLED;
-				break;
-			case RR_Disconnected:
-				m->flags &= ~MONITOR_ENABLED;
-				m->flags |= MONITOR_DISABLED;
-				m->emit |= MONITOR_DISABLED;
-				break;
-			default:
-				break;
-			}
-		}
-		XRRFreeOutputInfo(oinfo);
-	}
-	XRRFreeScreenResources(res);
-
-	RB_FOREACH(m, monitors, &monitor_q)
-		monitor_scan_edges(m);
-
-	monitor_check_primary();
+	scan_screens(dpy);
 }
 
 static void
@@ -519,73 +451,176 @@ monitor_assign_number(void)
 int
 monitor_compare(struct monitor *a, struct monitor *b)
 {
-	fvwm_debug(__func__, "a: %s, y: %d x: %d", a->si->name, a->si->y, a->si->x);
-	fvwm_debug(__func__, "b: %s, y: %d x: %d", b->si->name, b->si->y, b->si->x);
-
 	return (a->si->y == b->si->y) ?
 		(a->si->x - b->si->x) : (a->si->y - b->si->y);
 }
 
 static void
+monitor_mark_new(struct monitor *m)
+{
+	if (m == NULL)
+		return;
+
+	m->flags |= MONITOR_NEW;
+
+	memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
+	m->virtual_scr.edge_thickness = 2;
+	m->virtual_scr.last_edge_thickness = 2;
+
+	memset(&m->ewmhc, 0, sizeof(m->ewmhc));
+	m->Desktops = NULL;
+	m->is_prev = false;
+	m->was_primary = false;
+
+	TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
+
+	fvwm_debug(__func__, "Added new monitor: %s (%p)", m->si->name, m);
+}
+
+static void
+monitor_add(XRRMonitorInfo *rrm)
+{
+	struct monitor	*m = NULL;
+	char		*name = NULL;
+
+	if ((name = XGetAtomName(disp, rrm->name)) == NULL) {
+		fvwm_debug(__func__, "Tried detecting monitor "
+		    "with output '%d' but it has no name.  Skipping.",
+		    (int)*rrm->outputs);
+		return;
+	}
+	m = monitor_new(name);
+	monitor_set_coords(m, *rrm);
+	monitor_mark_new(m);
+
+	XFree(name);
+
+	RB_INSERT(monitors, &monitor_q, m);
+}
+
+static bool
+monitor_mark_changed(struct monitor *m, XRRMonitorInfo *rrm)
+{
+	if (m == NULL || rrm == NULL)
+		return (false);
+
+	if (m->si->x != rrm->x ||
+	    m->si->y != rrm->y ||
+	    m->si->w != rrm->width ||
+	    m->si->h != rrm->height) {
+		m->flags |= MONITOR_CHANGED;
+		m->emit |= MONITOR_CHANGED;
+
+		fvwm_debug(__func__, "%s: x: %d, y: %d, w: %d, h: %d "
+			"comp: x: %d, y: %d, w: %d, h: %d\n",
+			m->si->name, m->si->x, m->si->y, m->si->w, m->si->h,
+			rrm->x, rrm->y, rrm->width, rrm->height);
+
+		monitor_set_coords(m, *rrm);
+		TAILQ_INSERT_TAIL(&monitorsold_q, m, oentry);
+
+		return (true);
+	}
+	return (false);
+}
+
+static void
+monitor_mark_inlist(const char *name)
+{
+	struct monitor	 *m = NULL;
+
+	if (name == NULL)
+		return;
+
+	RB_FOREACH(m, monitors, &monitor_q) {
+		if (strcmp(m->si->name, name) == 0) {
+			m->flags |= MONITOR_FOUND;
+			break;
+		}
+	}
+}
+
+static void
 scan_screens(Display *dpy)
 {
+	struct monitor		*m = NULL, *m1 = NULL;
 	XRRMonitorInfo		*rrm;
+	char			*name = NULL;
     	int			 i, n = 0;
 	Window			 root = RootWindow(dpy, DefaultScreen(dpy));
 
-	rrm = XRRGetMonitors(dpy, root, false, &n);
+	rrm = XRRGetMonitors(dpy, root, true, &n);
 	if (n <= 0 && (!randr_initialised && monitor_get_count() == 0)) {
 		fvwm_debug(__func__, "get monitors failed\n");
 		exit(101);
 	}
 
-	for (i = 0; i < n; i++) {
-		struct monitor 	*m = NULL, *m1 = NULL;
-		char		*name = XGetAtomName(dpy, rrm[i].name);
-
-		if (name == NULL) {
-			fprintf(
-				stderr,
-				"%s: couldn't detect monitor with empty name\n",
-				__func__);
-			exit (101);
+	/*
+	 * 1. Handle the case where we have no monitors at all.  This is going
+	 * to happen at init time.  In such cases, we can say that the
+	 * monitor_q is empty.
+	 *
+	 * To handle this case, we create all entries, marking them as new.
+	 */
+	if (!randr_initialised && monitor_get_count() == 0) {
+		fvwm_debug(__func__, "Case 1: Add new monitors");
+		for (i = 0; i < n; i++) {
+			monitor_add(&rrm[i]);
 		}
-
-		if (((m = monitor_by_name(name)) == NULL) ||
-		    (m != NULL && strcmp(m->si->name, name) != 0)) {
-			m = monitor_new();
-			m->flags |= MONITOR_NEW;
-			m->si = screen_info_new();
-			m->si->name = strdup(name);
-			memset(&m->virtual_scr, 0, sizeof(m->virtual_scr));
-			m->virtual_scr.edge_thickness = 2;
-			m->virtual_scr.last_edge_thickness = 2;
-
-			monitor_set_coords(m, rrm[i]);
-			TAILQ_INSERT_TAIL(&screen_info_q, m->si, entry);
-			RB_INSERT(monitors, &monitor_q, m);
-
-			goto done;
-		}
-
-		RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
-			if (strcmp(m->si->name, name) == 0) {
-				RB_REMOVE(monitors, &monitor_q, m);
-
-				if (m->flags & MONITOR_ENABLED)
-					m->flags |= MONITOR_CHANGED;
-
-				monitor_set_coords(m, rrm[i]);
-
-				RB_INSERT(monitors, &monitor_q, m);
-			}
-		}
-done:
-		if (name != NULL)
-			XFree(name);
+		goto out;
 	}
 
+	/*
+	 * 2. Handle the case where an event has occurred for a monitor.  It
+	 * could be that:
+	 *   - It's a new monitor.
+	 *   - It's an existing monitor (position changed)
+	 *   - It's an existing monitor which has been toggled on or off.
+	 *
+	 *   In such cases, we must detect if the monitor exists and what
+	 *   state it is in.
+	 */
+	for (i = 0; i < n; i++) {
+		if ((name = XGetAtomName(dpy, rrm[i].name)) == NULL)
+			continue;
+		if ((m = monitor_by_name(name)) == NULL) {
+			/* Case 2.1 -- new monitor. */
+			fvwm_debug(__func__, "Case 2.1: new monitor");
+			monitor_add(&rrm[i]);
+		}
 
+		if (monitor_mark_changed(m, &rrm[i])) {
+			fvwm_debug(__func__, "Case 2.2: %s changed", m->si->name);
+		}
+		monitor_mark_inlist(name);
+
+		XFree(name);
+	}
+
+out:
+	RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
+		if (m->flags & MONITOR_CHANGED) {
+			m->flags &= ~MONITOR_DISABLED;
+			fvwm_debug(__func__, "REINSERTING: %s\n", m->si->name);
+			RB_REMOVE(monitors, &monitor_q, m);
+			RB_INSERT(monitors, &monitor_q, m);
+		}
+
+		/* Check for monitor connection status -- whether a monitor is
+		 * active or not.  Clearing the MONITOR_FOUND flag is
+		 * important here so that the monitor is reconsidered again.
+		 */
+		if (!(m->flags & MONITOR_FOUND)) {
+			m->flags |= MONITOR_DISABLED;
+			m->emit |= MONITOR_DISABLED;
+		} else if (m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) {
+			m->flags &= ~MONITOR_DISABLED;
+		} else {
+			m->emit |= MONITOR_ENABLED;
+		}
+		m->flags &= ~MONITOR_FOUND;
+
+	}
 	/* Now that all monitors have been inserted, assign them a number from
 	 * 0 -> n so that they can be referenced in order.
 	 */
@@ -650,20 +685,8 @@ void FScreenInit(Display *dpy)
 	randr_initialised = true;
 	is_tracking_shared = false;
 
-	RB_FOREACH(m, monitors, &monitor_q) {
-		memset(&m->ewmhc, 0, sizeof(m->ewmhc));
-
-		m->Desktops = fxcalloc(1, sizeof *m->Desktops);
-		m->Desktops->name = NULL;
-		m->Desktops->next = NULL;
-		m->Desktops->desk = 0;
-		m->flags |= (MONITOR_NEW|MONITOR_ENABLED);
-		m->is_prev = false;
-		m->was_primary = false;
+	RB_FOREACH(m, monitors, &monitor_q)
 		monitor_scan_edges(m);
-	}
-
-	monitor_check_primary();
 
 	return;
 
@@ -746,6 +769,9 @@ monitor_get_count(void)
 {
 	struct monitor	*m = NULL;
 	int		 c = 0;
+
+	if (RB_EMPTY(&monitor_q))
+		return c;
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->flags & MONITOR_DISABLED)

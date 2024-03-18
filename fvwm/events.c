@@ -45,6 +45,8 @@
 /* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
+#include <X11/extensions/Xrandr.h>
+#include <X11/extensions/randr.h>
 
 #if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h>
@@ -1776,7 +1778,6 @@ void monitor_update_ewmh(void)
 	FvwmWindow	*t;
 	struct monitor	*m, *mref, *mo, *mo1;
 
-	fvwm_debug(__func__, "monitor debug...\n");
 	if (Scr.bo.do_debug_randr)
 	{
 		monitor_dump_state(NULL);
@@ -1786,8 +1787,8 @@ void monitor_update_ewmh(void)
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->flags & MONITOR_CHANGED) {
-			if (changed_monitor_count() == 1)
-				goto out;
+			fvwm_debug(__func__, "Applying EWMH changes to "
+			    "existing %s", m->si->name);
 			TAILQ_FOREACH(mo, &monitorsold_q, oentry) {
 				if (strcmp(m->si->name, mo->si->name) != 0)
 					continue;
@@ -1799,41 +1800,39 @@ void monitor_update_ewmh(void)
 						update_fvwm_monitor(t);
 					}
 				}
+				m->emit |= MONITOR_CHANGED;
 			}
+			m->flags &= ~MONITOR_CHANGED;
 			continue;
 		}
 		if (m->flags & MONITOR_NEW) {
+			fvwm_debug(__func__, "Applying EWMH changes to new %s",
+			    m->si->name);
+			int ewbs[4] = {0, 0, 0, 0};
 			if (m->Desktops == NULL) {
-				int ewbs[4] = {0, 0, 0, 0};
-
 				m->Desktops = fxcalloc(1, sizeof *m->Desktops);
 				m->Desktops->name = NULL;
 				m->Desktops->next = NULL;
 				m->Desktops->desk = 0;
-				apply_desktops_monitor(m);
-
-				if (m->Desktops->next == mref->Desktops->next)
-					continue;
-
-				calculate_page_sizes(m, mref->dx, mref->dy);
-
-				fvwm_debug(__func__,
-					   "new_monitor: %s (%p) compared to (%p)\n",
-					   m->si->name,
-					   m->Desktops->next,
-					   mref->Desktops->next);
-
-				m->virtual_scr.Vx = 0;
-				m->virtual_scr.Vy = 0;
-
-				set_ewmhc_strut_values(m, ewbs);
 			}
-			m->flags &= ~MONITOR_NEW;
+
+			apply_desktops_monitor(m);
+			calculate_page_sizes(m, mref->dx, mref->dy);
+
+			fvwm_debug(__func__,
+				   "new_monitor: %s (%p) compared to (%p)\n",
+				   m->si->name,
+				   m->Desktops->next,
+				   mref->Desktops->next);
+
+			m->virtual_scr.Vx = 0;
+			m->virtual_scr.Vy = 0;
+
+			set_ewmhc_strut_values(m, ewbs);
 		}
 		EWMH_Init(m);
 	}
 
-out:
 	TAILQ_FOREACH_SAFE(mo, &monitorsold_q, oentry, mo1) {
 		TAILQ_REMOVE(&monitorsold_q, mo, oentry);
 		fvwm_debug(__func__, "Removed mo '%s' from processing",
@@ -1855,17 +1854,18 @@ monitor_emit_broadcast(void)
 	char		*randrfunc = "RandRFunc";
 
 	RB_FOREACH (m, monitors, &monitor_q) {
-		if (m->emit & MONITOR_CHANGED) {
+		if (m->emit > 0)
+			fvwm_debug(__func__, "%s: emit: %d\n", m->si->name, m->emit);
+		if (m->emit &= ~MONITOR_CHANGED) {
 			BroadcastName(
 				MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
-			m->emit &= ~MONITOR_ALL;
-			m->flags &= ~MONITOR_CHANGED;
+			m->emit &= ~MONITOR_CHANGED;
 
 			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
-		if (m->emit & MONITOR_ENABLED) {
+		if (m->emit &= ~MONITOR_ENABLED) {
 			BroadcastName(
 				MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
 
@@ -1873,7 +1873,8 @@ monitor_emit_broadcast(void)
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
-		if (m->emit & MONITOR_DISABLED) {
+		if (m->emit &= ~MONITOR_DISABLED) {
+			fvwm_debug(__func__, "MONITOR DISABLED: %s", m->si->name);
 			BroadcastName(
 				MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
 
@@ -4210,18 +4211,14 @@ void dispatch_event(XEvent *e)
 
 	XFlush(dpy);
 
-	XRRScreenChangeNotifyEvent *sce;
-
 	switch (e->type - randr_event) {
-		case RRScreenChangeNotify: {
-			sce = (XRRScreenChangeNotifyEvent *)e;
-			XRRUpdateConfiguration(e);
-			monitor_output_change(sce->display, sce);
-			monitor_update_ewmh();
-			monitor_emit_broadcast();
-			initPanFrames(NULL);
-			break;
-		}
+	case RRScreenChangeNotify:
+		XRRUpdateConfiguration(e);
+		monitor_output_change(e->xany.display, NULL);
+		monitor_update_ewmh();
+		monitor_emit_broadcast();
+		initPanFrames(NULL);
+		break;
 	}
 
 	if (w == Scr.Root)
