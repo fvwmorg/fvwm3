@@ -73,6 +73,7 @@
 #include "ewmh.h"
 #include "ewmh_intern.h"
 #include "geometry.h"
+#include "virtual.h"
 #include "window_flags.h"
 
 #define EWMH_DEBUG 0
@@ -1944,6 +1945,17 @@ void EWMH_Init(struct monitor *m)
 
 	clean_up();
 
+	if (m->Desktops == NULL) {
+		m->Desktops = fxcalloc(1, sizeof *m->Desktops);
+		m->Desktops->name = NULL;
+		m->Desktops->next = NULL;
+		m->Desktops->desk = 0;
+
+		/* XXX: mempcy virtual_scr??? */
+
+		apply_desktops_monitor(m);
+	}
+
 	EWMH_SetDesktopNames(m);
 	EWMH_SetCurrentDesktop(m);
 	EWMH_SetNumberOfDesktops(m);
@@ -1952,7 +1964,7 @@ void EWMH_Init(struct monitor *m)
 	EWMH_SetClientList(m);
 	EWMH_SetClientListStacking(m);
 
-	return;
+	m->flags &= ~MONITOR_NEW;
 }
 
 /*

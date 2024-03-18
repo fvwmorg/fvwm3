@@ -9,6 +9,7 @@
 #include "queue.h"
 #include "tree.h"
 
+#include <X11/extensions/Xrandr.h>
 #include <stdbool.h>
 
 typedef struct
@@ -73,8 +74,8 @@ struct screen_info	*screen_info_by_name(const char *);
 #define MONITOR_DISABLED 0x2
 #define MONITOR_ENABLED 0x4
 #define MONITOR_PRIMARY 0x8
-#define MONITOR_CHANGED 0x10
-#define MONITOR_ALL (MONITOR_DISABLED|MONITOR_ENABLED|MONITOR_CHANGED)
+#define MONITOR_CHANGED 0x100
+#define MONITOR_FOUND 0x200
 
 #define MONITOR_OUTSIDE_EDGE 0
 #define MONITOR_INSIDE_EDGE 1
@@ -171,7 +172,6 @@ void		 monitor_dump_state(struct monitor *);
 void		 monitor_output_change(Display *, XRRScreenChangeNotifyEvent *);
 int		 monitor_get_all_widths(void);
 int		 monitor_get_all_heights(void);
-void		 monitor_add_new(void);
 void		 monitor_assign_virtual(struct monitor *);
 void		 checkPanFrames(struct monitor *);
 
