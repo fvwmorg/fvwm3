@@ -851,26 +851,6 @@ void list_destroy(unsigned long *body)
 void list_monitor_focus(unsigned long *body)
 {
 	return;
-#if 0
-	struct fpmonitor	*m, *mcur, *mthis;
-	char	*mon_name = (char *)(&body[3]);
-
-	mcur = fpmonitor_get_current();
-
-	if (mcur == NULL || mon_name == NULL)
-		return;
-
-	mthis = fpmonitor_by_name(mon_name);
-
-	if (mcur == mthis)
-		return;
-
-	mcur->is_current = 0;
-	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-		if (m == mthis)
-			m->is_current = 1;
-	}
-#endif
 }
 
 /*
