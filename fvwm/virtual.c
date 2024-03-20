@@ -1842,7 +1842,7 @@ Bool get_page_arguments(
 	}
 
 	if (m == NULL)
-		monitor_get_current();
+		m = monitor_get_current();
 	*mret = m;
 
 	mw = monitor_get_all_widths();
