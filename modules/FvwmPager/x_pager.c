@@ -1650,7 +1650,7 @@ void MovePage(Bool is_new_desk)
       sptr = Desks[fp->m->virtual_scr.CurrentDesk -desk1].label;
     else
     {
-      snprintf(str, sizeof(str), "GotoDesk %s %d", fp->m->si->name, fp->m->virtual_scr.CurrentDesk);
+      snprintf(str, sizeof(str), "GotoDesk screen %s %d", fp->m->si->name, fp->m->virtual_scr.CurrentDesk);
       sptr = &str[0];
     }
 
@@ -1935,7 +1935,7 @@ void SwitchToDesk(int Desk)
 		return;
 	}
 	snprintf(command, sizeof(command),
-		"GotoDesk %s 0 %d", fp->m->si->name, Desk + desk1);
+		"GotoDesk screen %s 0 %d", fp->m->si->name, Desk + desk1);
 	SendText(fd,command,0);
 }
 
@@ -1964,7 +1964,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       vy = Event->xbutton.y * fp->virtual_scr.VHeight / (desk_h * monitor_get_all_heights());
     fp->m->virtual_scr.Vx = vx * monitor_get_all_widths();
     fp->m->virtual_scr.Vy = vy * monitor_get_all_heights();
-    snprintf(command, sizeof(command), "GotoDeskAndPage %s %d %d %d",
+    snprintf(command, sizeof(command), "GotoDeskAndPage screen %s %d %d %d",
 		fp->m->si->name, Desk + desk1, vx, vy);
     SendText(fd, command, 0);
 
@@ -1992,7 +1992,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       x = fp->virtual_scr.VxMax / monitor_get_all_widths();
     if (y * monitor_get_all_heights() > fp->virtual_scr.VyMax)
       y = fp->virtual_scr.VyMax / monitor_get_all_heights();
-    snprintf(command, sizeof(command), "GotoPage %s %d %d", fp->m->si->name, x, y);
+    snprintf(command, sizeof(command), "GotoPage screen %s %d %d", fp->m->si->name, x, y);
     SendText(fd, command, 0);
   }
   Wait = 1;
@@ -2008,7 +2008,7 @@ void IconSwitchPage(XEvent *Event)
     return;
   }
 
-  snprintf(command,sizeof(command),"GotoPage %s %d %d",
+  snprintf(command,sizeof(command),"GotoPage screen %s %d %d",
 	  fp->m->si->name,
 	  Event->xbutton.x * fp->virtual_scr.VWidth /
 		  (icon.width * monitor_get_all_widths()),

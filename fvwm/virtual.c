@@ -67,7 +67,7 @@
 #define CMD_GOTO_DESK(m, d)						    \
 	do {								    \
 		char	*cmd;						    \
-		xasprintf(&cmd, "GotoDesk %s 0 %d", (m)->si->name, (d));    \
+		xasprintf(&cmd, "GotoDesk screen %s 0 %d", (m)->si->name, (d));    \
 		execute_function_override_window(			    \
 			NULL, NULL, cmd, NULL, 0, NULL);		    \
 		free(cmd);						    \
@@ -1819,42 +1819,30 @@ Bool get_page_arguments(
 	int mw, mh;
 	char *token;
 	char *taction;
-	char *next;
 	int wrapx;
 	int wrapy;
 	int limitdeskx;
 	int limitdesky;
-	struct monitor	*m;
+	struct monitor	*m = NULL;
 
 	wrapx = 0;
 	wrapy = 0;
 	limitdeskx = 1;
 	limitdesky = 1;
 
-	/* We've received something like:
-	 *
-	 * GotoPage 0 0
-	 *
-	 * But no monitor token.  Use the current monitor.
-	 */
-	if (GetIntegerArguments(action, NULL, val, 2) == 2) {
-		xasprintf(&action, "%s %d %d",
-			monitor_get_current()->si->name, val[0], val[1]);
+	token = PeekToken(action, NULL);
+	if (StrEquals(token, "screen")) {
+		/* Skip literal 'screen' */
+		token = PeekToken(action, &action);
+		/* Actually get the screen value. */
+		token = PeekToken(action, &action);
 
-		val[0] = -1;
-		val[1] = -1;
+		if ((m = monitor_resolve_name(token)) == NULL)
+			fvwm_debug(__func__, "Invalid screen: %s", token);
 	}
 
-	token = PeekToken(action, &next);
-	m = monitor_resolve_name(token);
-	if (m != NULL)
-	{
-		action = next;
-	}
-	else
-	{
-		m = (fw && fw->m) ? fw->m : monitor_get_current();
-	}
+	if (m == NULL)
+		monitor_get_current();
 	*mret = m;
 
 	mw = monitor_get_all_widths();
@@ -2358,7 +2346,7 @@ void CMD_DesktopConfiguration(F_CMD_ARGS)
 		RB_FOREACH(m_loop, monitors, &monitor_q) {
 			if (m_loop == m)
 				continue;
-			xasprintf(&cmd, "GotoDeskAndPage %s %d %d %d",
+			xasprintf(&cmd, "GotoDeskAndPage screen %s %d %d %d",
 				m_loop->si->name,
 				m->virtual_scr.CurrentDesk,
 				m->virtual_scr.Vx / monitor_get_all_widths(),
@@ -2561,23 +2549,24 @@ void CMD_DesktopSize(F_CMD_ARGS)
 void CMD_GotoDesk(F_CMD_ARGS)
 {
 	struct monitor  *m, *m_loop;
-	char		*next, *token;
+	char		*token;
 	int		 new_desk;
 
-	/* We've received something like:
-	 *
-	 * GotoDesk 0 0
-	 *
-	 * But no monitor token.  Use the current monitor.
-	 */
-	token = PeekToken(action, &next);
-	m = monitor_resolve_name(token);
-	if (m == NULL) {
-		m = monitor_get_current();
-		next = action;
+	token = PeekToken(action, NULL);
+	if (StrEquals(token, "screen")) {
+		/* Skip literal 'screen' */
+		token = PeekToken(action, &action);
+		/* Actually get the screen value. */
+		token = PeekToken(action, &action);
+
+		if ((m = monitor_resolve_name(token)) == NULL)
+			fvwm_debug(__func__, "Invalid screen: %s", token);
 	}
 
-	new_desk = GetDeskNumber(m, next, m->virtual_scr.CurrentDesk);
+	if (m == NULL)
+		m = monitor_get_current();
+
+	new_desk = GetDeskNumber(m, action, m->virtual_scr.CurrentDesk);
 
 	if (is_tracking_shared) {
 		/* Check to see if this monitor is requesting a desktop which
@@ -2633,34 +2622,22 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	int val[3];
 	int current_desk;
 	Bool is_new_desk;
-	char *next;
 	char *token;
 	struct monitor  *m;
 
-	/* We've received something like:
-	 *
-	 * GotoDeskAndPage 0 0
-	 *
-	 * But no monitor token.  Use the current monitor.
-	 */
-	if (GetIntegerArguments(action, NULL, val, 2) == 2) {
-		xasprintf(&action, "%s %d %d",
-			monitor_get_current()->si->name, val[0], val[1]);
+	token = PeekToken(action, NULL);
+	if (StrEquals(token, "screen")) {
+		/* Skip literal 'screen' */
+		token = PeekToken(action, &action);
+		/* Actually get the screen value. */
+		token = PeekToken(action, &action);
 
-		val[0] = -1;
-		val[1] = -1;
+		if ((m = monitor_resolve_name(token)) == NULL)
+			fvwm_debug(__func__, "Invalid screen: %s", token);
 	}
-	token = PeekToken(action, &next);
-	m = monitor_resolve_name(token);
-	if (m != NULL)
-	{
-		action = next;
-	}
-	else
-	{
+
+	if (m == NULL)
 		m = monitor_get_current();
-	}
-	/* FIXME: monitor needs broadcast when global. */
 
 	if (MatchToken(action, "prev"))
 	{
