@@ -94,7 +94,7 @@ int desk_w = 0;
 int desk_h = 0;
 int label_h = 0;
 
-DeskInfo *Desks;
+//DeskInfo *Desks;
 int Wait = 0;
 int FvwmErrorHandler(Display *, XErrorEvent *);
 extern Bool is_transient;
@@ -766,10 +766,13 @@ void initialize_pager(void)
     XSetTransientForHint(dpy, Scr.Pager_w, Scr.Root);
   }
 
-  if((desk1==desk2)&&(Desks[0].label != NULL))
+  /* TA:  One big loop? */
+  TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+
+  if((desk1==desk2)&&(fp->Desks[0].label != NULL))
   {
     if (FlocaleTextListToTextProperty(
-	 dpy, &Desks[0].label, 1, XStdICCTextStyle, &name) == 0)
+	 dpy, &fp->Desks[0].label, 1, XStdICCTextStyle, &name) == 0)
     {
       fprintf(stderr,"%s: fatal error: cannot allocate desk name", MyName);
       exit(0);
@@ -778,7 +781,7 @@ void initialize_pager(void)
   else
   {
     if (FlocaleTextListToTextProperty(
-	 dpy, &Desks[0].label, 1, XStdICCTextStyle, &name) == 0)
+	 dpy, &fp->Desks[0].label, 1, XStdICCTextStyle, &name) == 0)
     {
       fprintf(stderr,"%s: fatal error: cannot allocate pager name", MyName);
       exit(0);
@@ -871,45 +874,45 @@ void initialize_pager(void)
   for(i=0;i<ndesks;i++)
   {
     /* create the GC for desk labels */
-    gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
-      : Colorset[Desks[i].colorset].fg;
+    gcv.foreground = (fp->Desks[i].colorset < 0) ? fore_pix
+      : Colorset[fp->Desks[i].colorset].fg;
     if (uselabel && Ffont && Ffont->font) {
       gcv.font = Ffont->font->fid;
-      Desks[i].NormalGC =
+      fp->Desks[i].NormalGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
     } else {
-      Desks[i].NormalGC =
+      fp->Desks[i].NormalGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
     }
     /* create the active desk hilite GC */
     if(Pdepth < 2)
       gcv.foreground = fore_pix;
     else
-      gcv.foreground = (Desks[i].highcolorset < 0) ? hi_pix
-	: Colorset[Desks[i].highcolorset].bg;
-    Desks[i].HiliteGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+      gcv.foreground = (fp->Desks[i].highcolorset < 0) ? hi_pix
+	: Colorset[fp->Desks[i].highcolorset].bg;
+    fp->Desks[i].HiliteGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
 
     /* create the hilight desk title drawing GC */
     if ((Pdepth < 2) || (fore_pix == hi_pix))
-      gcv.foreground = (Desks[i].highcolorset < 0) ? back_pix
-	: Colorset[Desks[i].highcolorset].fg;
+      gcv.foreground = (fp->Desks[i].highcolorset < 0) ? back_pix
+	: Colorset[fp->Desks[i].highcolorset].fg;
     else
-      gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
-	: Colorset[Desks[i].highcolorset].fg;
+      gcv.foreground = (fp->Desks[i].highcolorset < 0) ? fore_pix
+	: Colorset[fp->Desks[i].highcolorset].fg;
 
     if (uselabel && Ffont && Ffont->font) {
-      Desks[i].rvGC =
+      fp->Desks[i].rvGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
     } else {
-      Desks[i].rvGC =
+      fp->Desks[i].rvGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
     }
     /* create the virtual page boundary GC */
-    gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
-      : Colorset[Desks[i].colorset].fg;
+    gcv.foreground = (fp->Desks[i].colorset < 0) ? fore_pix
+      : Colorset[fp->Desks[i].colorset].fg;
     gcv.line_width = 1;
     gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
-    Desks[i].DashedGC =
+    fp->Desks[i].DashedGC =
       fvwmlib_XCreateGC(
 	dpy, Scr.Pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
     if (use_dashed_separators)
@@ -919,27 +922,27 @@ void initialize_pager(void)
        * not set explicitly. */
       dash_list[0] = 4;
       dash_list[1] = 4;
-      XSetDashes(dpy, Desks[i].DashedGC, 0, dash_list, 2);
+      XSetDashes(dpy, fp->Desks[i].DashedGC, 0, dash_list, 2);
     }
 
     valuemask = (CWBorderPixel | CWColormap | CWEventMask);
-    if (Desks[i].colorset >= 0 && Colorset[Desks[i].colorset].pixmap)
+    if (fp->Desks[i].colorset >= 0 && Colorset[fp->Desks[i].colorset].pixmap)
     {
 	valuemask |= CWBackPixmap;
-	attributes.background_pixmap = Colorset[Desks[i].colorset].pixmap;
+	attributes.background_pixmap = Colorset[fp->Desks[i].colorset].pixmap;
     }
     else
     {
 	valuemask |= CWBackPixel;
-	attributes.background_pixel = (Desks[i].colorset < 0) ?
-	    (Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix)
-	    : Colorset[Desks[i].colorset].bg;
+	attributes.background_pixel = (fp->Desks[i].colorset < 0) ?
+	    (fp->Desks[i].Dcolor ? GetColor(fp->Desks[i].Dcolor) : back_pix)
+	    : Colorset[fp->Desks[i].colorset].bg;
     }
 
-    attributes.border_pixel = (Desks[i].colorset < 0) ? fore_pix
-      : Colorset[Desks[i].colorset].fg;
+    attributes.border_pixel = (fp->Desks[i].colorset < 0) ? fore_pix
+      : Colorset[fp->Desks[i].colorset].fg;
     attributes.event_mask = (ExposureMask | ButtonReleaseMask);
-    Desks[i].title_w = XCreateWindow(
+    fp->Desks[i].title_w = XCreateWindow(
       dpy, Scr.Pager_w, vp.x - 1, vp.y - 1, vp.width, vp.height, 1,
       CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
     attributes.event_mask = (ExposureMask | ButtonReleaseMask |
@@ -950,21 +953,21 @@ void initialize_pager(void)
     valuemask &= ~(CWBackPixel);
 
 
-    if (Desks[i].colorset > -1 &&
-	Colorset[Desks[i].colorset].pixmap)
+    if (fp->Desks[i].colorset > -1 &&
+	Colorset[fp->Desks[i].colorset].pixmap)
     {
       valuemask |= CWBackPixmap;
       attributes.background_pixmap = None; /* set later */
     }
-    else if (Desks[i].bgPixmap)
+    else if (fp->Desks[i].bgPixmap)
     {
       valuemask |= CWBackPixmap;
-      attributes.background_pixmap = Desks[i].bgPixmap->picture;
+      attributes.background_pixmap = fp->Desks[i].bgPixmap->picture;
     }
-    else if (Desks[i].Dcolor)
+    else if (fp->Desks[i].Dcolor)
     {
       valuemask |= CWBackPixel;
-      attributes.background_pixel = GetColor(Desks[i].Dcolor);
+      attributes.background_pixel = GetColor(fp->Desks[i].Dcolor);
     }
     else if (PixmapBack)
     {
@@ -974,12 +977,12 @@ void initialize_pager(void)
     else
     {
       valuemask |= CWBackPixel;
-      attributes.background_pixel = (Desks[i].colorset < 0) ? back_pix
-	: Colorset[Desks[i].colorset].bg;
+      attributes.background_pixel = (fp->Desks[i].colorset < 0) ? back_pix
+	: Colorset[fp->Desks[i].colorset].bg;
     }
 
-    Desks[i].w = XCreateWindow(
-	    dpy, Desks[i].title_w, vp.x - 1, LabelsBelow ? -1 : label_h - 1,
+    fp->Desks[i].w = XCreateWindow(
+	    dpy, fp->Desks[i].title_w, vp.x - 1, LabelsBelow ? -1 : label_h - 1,
 	    vp.width, desk_h, 1, CopyFromParent, InputOutput, CopyFromParent,
 	    valuemask, &attributes);
 
@@ -989,8 +992,8 @@ void initialize_pager(void)
 
       attributes.event_mask = 0;
 
-      if (Desks[i].highcolorset > -1 &&
-	  Colorset[Desks[i].highcolorset].pixmap)
+      if (fp->Desks[i].highcolorset > -1 &&
+	  Colorset[fp->Desks[i].highcolorset].pixmap)
       {
 	valuemask |= CWBackPixmap;
 	attributes.background_pixmap = None; /* set later */
@@ -1003,29 +1006,30 @@ void initialize_pager(void)
       else
       {
 	valuemask |= CWBackPixel;
-	attributes.background_pixel = (Desks[i].highcolorset < 0) ? hi_pix
-	  : Colorset[Desks[i].highcolorset].bg;
+	attributes.background_pixel = (fp->Desks[i].highcolorset < 0) ? hi_pix
+	  : Colorset[fp->Desks[i].highcolorset].bg;
       }
 
-      Desks[i].CPagerWin=XCreateWindow(dpy, Desks[i].w, -32768, -32768,
+      fp->Desks[i].CPagerWin=XCreateWindow(dpy, fp->Desks[i].w, -32768, -32768,
 				       vp.width, vp.height, 0,
 				       CopyFromParent, InputOutput,
 				       CopyFromParent, valuemask, &attributes);
       draw_desk_background(i, vp.width, vp.height);
-      XMapRaised(dpy,Desks[i].CPagerWin);
+      XMapRaised(dpy,fp->Desks[i].CPagerWin);
     }
     else
     {
       draw_desk_background(i, 0, 0);
     }
 
-    XMapRaised(dpy,Desks[i].w);
-    XMapRaised(dpy,Desks[i].title_w);
+    XMapRaised(dpy,fp->Desks[i].w);
+    XMapRaised(dpy,fp->Desks[i].title_w);
 
     /* get font for balloon */
-    Desks[i].balloon.Ffont = balloon_font;
-    Desks[i].balloon.height = Desks[i].balloon.Ffont->height + 1;
+    fp->Desks[i].balloon.Ffont = balloon_font;
+    fp->Desks[i].balloon.height = fp->Desks[i].balloon.Ffont->height + 1;
   }
+} /* End big loop */
   initialize_balloon_window();
   XMapRaised(dpy,Scr.Pager_w);
 }

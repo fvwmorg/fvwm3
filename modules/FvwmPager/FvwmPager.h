@@ -13,8 +13,35 @@
 #define DEFAULT_PAGER_WINDOW_MIN_SIZE 3
 #define DEFAULT_PAGER_MOVE_THRESHOLD 3
 
+typedef struct balloon_window
+{
+  FlocaleFont *Ffont;
+  int height;            /* height of balloon window based on font */
+  int desk;
+} BalloonWindow;
+
+typedef struct desk_info
+{
+  Window w;
+  Window title_w;
+  Window CPagerWin;
+  FvwmPicture *bgPixmap;                /* Pixmap used as background. */
+  BalloonWindow balloon;
+  int colorset;
+  int highcolorset;
+  int ballooncolorset;
+  char *Dcolor;
+  char *label;
+  GC NormalGC;
+  GC DashedGC;                  /* used the the pages boundary lines */
+  GC HiliteGC;                  /* used for hilighting the active desk */
+  GC rvGC;                      /* used for drawing hilighted desk title */
+} DeskInfo;
+
 struct fpmonitor {
 	struct monitor *m;
+
+	DeskInfo *Desks;
 
         struct {
                 int VxMax;
@@ -117,31 +144,6 @@ typedef struct pager_window
 
   struct pager_window *next;
 } PagerWindow;
-
-typedef struct balloon_window
-{
-  FlocaleFont *Ffont;
-  int height;            /* height of balloon window based on font */
-  int desk;
-} BalloonWindow;
-
-typedef struct desk_info
-{
-  Window w;
-  Window title_w;
-  Window CPagerWin;
-  FvwmPicture *bgPixmap;                /* Pixmap used as background. */
-  BalloonWindow balloon;
-  int colorset;
-  int highcolorset;
-  int ballooncolorset;
-  char *Dcolor;
-  char *label;
-  GC NormalGC;
-  GC DashedGC;                  /* used the the pages boundary lines */
-  GC HiliteGC;                  /* used for hilighting the active desk */
-  GC rvGC;                      /* used for drawing hilighted desk title */
-} DeskInfo;
 
 typedef struct pager_string_list
 {
