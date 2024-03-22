@@ -482,6 +482,8 @@ void BroadcastMonitorList(fmodule *this)
 
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
+			SendPacket(module, M_END_CONFIG_INFO, (long)0, (long)0,
+			(long)0, (long)0, (long)0, (long)0, (long)0, (long)0);
 		}
 		xasprintf(&name, "DesktopConfiguration %d", monitor_mode);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
