@@ -159,6 +159,7 @@ fpmonitor_new(struct monitor *m)
 	struct fpmonitor	*fp;
 
 	fp = fxcalloc(1, sizeof(*fp));
+	fp->CPagerWin = fxcalloc(1, ndesks * sizeof(*fp->CPagerWin));
 	fp->m = m;
 	TAILQ_INSERT_TAIL(&fp_monitor_q, fp, entry);
 
@@ -408,6 +409,9 @@ int main(int argc, char **argv)
 		 MX_PROPERTY_CHANGE|
 		 MX_MONITOR_FOCUS);
 
+  RB_FOREACH(mon, monitors, &monitor_q)
+	(void)fpmonitor_new(mon);
+
   ParseOptions();
   if (is_transient)
   {
@@ -447,9 +451,6 @@ int main(int argc, char **argv)
 
   if (BalloonFormatString == NULL)
     BalloonFormatString = fxstrdup("%i");
-
-  RB_FOREACH(mon, monitors, &monitor_q)
-	(void)fpmonitor_new(mon);
 
   /* Create a list of all windows */
   /* Request a list of all windows,
@@ -1155,6 +1156,7 @@ void list_lower(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
+  struct fpmonitor *m;
 
   target_w = body[0];
   t = Start;
@@ -1166,8 +1168,11 @@ void list_lower(unsigned long *body)
     {
       if(t->PagerView != None)
 	XLowerWindow(dpy,t->PagerView);
-      if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks))
-	XLowerWindow(dpy,Desks[t->desk - desk1].CPagerWin);
+      if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks)) {
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		XLowerWindow(dpy, m->CPagerWin[t->desk - desk1]);
+	}
+      }
       XLowerWindow(dpy,t->IconView);
     }
 }
@@ -1566,7 +1571,6 @@ void list_config_info(unsigned long *body)
 
 		if (mmode > 0)
 			monitor_mode = mmode;
-		fprintf(stderr, "Setting monitor_mode: %d\n", mmode);
 	}
 }
 
@@ -2432,6 +2436,7 @@ void ExitPager(void)
 
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
     TAILQ_REMOVE(&fp_monitor_q, fp, entry);
+    free(fp->CPagerWin);
     free(fp);
   }
 
