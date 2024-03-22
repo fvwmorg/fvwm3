@@ -610,7 +610,7 @@ out:
 		 * active or not.  Clearing the MONITOR_FOUND flag is
 		 * important here so that the monitor is reconsidered again.
 		 */
-		if (!(m->flags & MONITOR_FOUND)) {
+		if (!(m->flags & (MONITOR_FOUND|MONITOR_NEW))) {
 			m->flags |= MONITOR_DISABLED;
 			m->emit |= MONITOR_DISABLED;
 		} else if (m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) {
