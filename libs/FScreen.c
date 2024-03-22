@@ -696,6 +696,22 @@ randr_fail:
 }
 
 void
+monitor_refresh_module(Display *dpy)
+{
+	struct monitor	*m = NULL;
+
+	RB_FOREACH(m, monitors, &monitor_q)
+		m->flags &= ~MONITOR_NEW;
+
+	scan_screens(dpy);
+
+	RB_FOREACH(m, monitors, &monitor_q) {
+		if (m->flags & MONITOR_NEW)
+			fprintf(stderr, "MON: %s is NEW...\n", m->si->name);
+	}
+}
+
+void
 monitor_dump_state(struct monitor *m)
 {
 	struct monitor	*mcur, *m2;
