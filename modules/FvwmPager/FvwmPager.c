@@ -974,6 +974,10 @@ void list_new_desk(unsigned long *body)
 
   oldDesk = fp->m->virtual_scr.CurrentDesk;
   fp->m->virtual_scr.CurrentDesk = (long)body[0];
+
+  if (monitor_mode == MONITOR_TRACKING_G)
+    monitor_assign_virtual(fp->m);
+
   if (fAlwaysCurrentDesk && oldDesk != fp->m->virtual_scr.CurrentDesk)
   {
     PagerWindow *t;
@@ -1555,6 +1559,14 @@ void list_config_info(unsigned long *body)
 			m->virtual_scr.VxPages = m->virtual_scr.VWidth / monitor_get_all_widths();
 			m->virtual_scr.VyPages = m->virtual_scr.VHeight / monitor_get_all_heights();
 		}
+	} else if (StrEquals(token, "DesktopConfiguration")) {
+		int mmode;
+
+		sscanf(tline, "%d", &mmode);
+
+		if (mmode > 0)
+			monitor_mode = mmode;
+		fprintf(stderr, "Setting monitor_mode: %d\n", mmode);
 	}
 }
 
