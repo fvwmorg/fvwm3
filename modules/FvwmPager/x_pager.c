@@ -1483,7 +1483,10 @@ void ReConfigure(void)
 	{
 	  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
 	    vp = set_vp_size_and_loc(m);
-	    if(i == m->m->virtual_scr.CurrentDesk - desk1) {
+	    if (i == m->m->virtual_scr.CurrentDesk - desk1 &&
+		(monitor_to_track == NULL ||
+		strcmp(m->m->si->name, monitor_to_track) == 0))
+	    {
 	      XMoveResizeWindow(dpy, m->CPagerWin[i],
 				vp.x, vp.y, vp.width, vp.height);
 	    } else {
@@ -1661,9 +1664,11 @@ void MovePage(Bool is_new_desk)
     if (HilightDesks)
     {
       TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	vp = set_vp_size_and_loc(m);
-	if(i == m->m->virtual_scr.CurrentDesk - desk1)
+	if (i == m->m->virtual_scr.CurrentDesk - desk1 &&
+		(monitor_to_track == NULL ||
+		strcmp(m->m->si->name, monitor_to_track) == 0))
 	{
+		vp = set_vp_size_and_loc(m);
 		XMoveResizeWindow(dpy, m->CPagerWin[i],
 				vp.x, vp.y, vp.width, vp.height);
 		XLowerWindow(dpy, m->CPagerWin[i]);
