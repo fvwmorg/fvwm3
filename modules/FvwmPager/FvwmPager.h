@@ -16,6 +16,8 @@
 struct fpmonitor {
 	struct monitor *m;
 
+	Window *CPagerWin;
+
         struct {
                 int VxMax;
                 int VyMax;
@@ -129,7 +131,6 @@ typedef struct desk_info
 {
   Window w;
   Window title_w;
-  Window CPagerWin;
   FvwmPicture *bgPixmap;                /* Pixmap used as background. */
   BalloonWindow balloon;
   int colorset;
