@@ -122,6 +122,7 @@ static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 Window icon_win;	       /* icon window */
 
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
+static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool);
@@ -161,8 +162,13 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 	    ( psx != 0 || psy != 0 ))
 	{
 		if (monitor_to_track != NULL)
-			snprintf(screen, sizeof(screen), "screen %s", monitor_to_track);
-		snprintf(command, sizeof(command), "Scroll %s %dp %dp", screen, psx, psy);
+			snprintf(screen, sizeof(screen), "screen %s",
+				 monitor_to_track);
+		else if (ScrollFp != NULL)
+			snprintf(screen, sizeof(screen), "screen %s",
+				 ScrollFp->m->si->name);
+		snprintf(command, sizeof(command), "Scroll %s %dp %dp",
+					 screen, psx, psy);
 		SendText(fd, command, 0);
 		messages_sent++;
 		SendText(fd, "Send_Reply ScrollDone", 0);
@@ -174,6 +180,7 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 void HandleScrollDone(void)
 {
 	do_scroll(0, 0, True, True);
+	ScrollFp = NULL;
 }
 
 typedef struct
@@ -218,10 +225,10 @@ static struct fpmonitor *mon_from_xy(int x, int y)
 	struct fpmonitor *m;
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
-	x %= monitor_get_all_widths();
-	y %= monitor_get_all_heights();
-
 	if (monitor_to_track == NULL) {
+		x %= monitor_get_all_widths();
+		y %= monitor_get_all_heights();
+
 		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
 		if (x >= m->m->si->x && x < m->m->si->x + m->m->si->w &&
 		    y >= m->m->si->y && y < m->m->si->y + m->m->si->h)
@@ -1227,6 +1234,7 @@ void DispatchEvent(XEvent *Event)
       }
       /* Flush any pending scroll operations */
       do_scroll(0, 0, True, False);
+      ScrollFp = NULL;
     }
     else if((Event->xbutton.button == 1)||
 	    (Event->xbutton.button == 2))
@@ -1236,7 +1244,7 @@ void DispatchEvent(XEvent *Event)
 	if(Event->xany.window == Desks[i].w)
 	  SwitchToDeskAndPage(i,Event);
 	else if(Event->xany.window == Desks[i].title_w)
-	  SwitchToDesk(i);
+	  SwitchToDesk(i, NULL);
       }
       if(Event->xany.window == icon_win)
       {
@@ -1262,9 +1270,6 @@ void DispatchEvent(XEvent *Event)
     }
     else if (Event->xbutton.button == 3)
     {
-      /* save initial virtual desk position for drag */
-      MyVx=fp->virtual_scr.Vx;
-      MyVy=fp->virtual_scr.Vy;
       for(i=0;i<ndesks;i++)
       {
 	if(Event->xany.window == Desks[i].w)
@@ -1274,11 +1279,17 @@ void DispatchEvent(XEvent *Event)
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
+	  fp = mon_from_xy(x * fp->virtual_scr.VWidth / desk_w,
+			   y * fp->virtual_scr.VHeight / desk_h);
+	  /* Save initial virtual desk info. */
+	  ScrollFp = fp;
+	  MyVx = fp->virtual_scr.Vx;
+	  MyVy = fp->virtual_scr.Vy;
 	  Scroll(x, y, fp->m->virtual_scr.CurrentDesk, False);
 	  if (fp->m->virtual_scr.CurrentDesk != i + desk1)
 	  {
 	    Wait = 0;
-	    SwitchToDesk(i);
+	    SwitchToDesk(i, fp);
 	  }
 	  break;
 	}
@@ -1290,6 +1301,12 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
+	fp = mon_from_xy(x * fp->virtual_scr.VWidth / icon.width,
+			 y * fp->virtual_scr.VHeight / icon.height);
+	/* Save initial virtual desk info. */
+	ScrollFp = fp;
+	MyVx = fp->virtual_scr.Vx;
+	MyVy = fp->virtual_scr.Vy;
 	Scroll(x, y, -1, True);
       }
     }
@@ -1977,10 +1994,10 @@ void DrawIconGrid(int erase)
 }
 
 
-void SwitchToDesk(int Desk)
+void SwitchToDesk(int Desk, struct fpmonitor *m)
 {
 	char command[256];
-	struct fpmonitor *fp = fpmonitor_this(NULL);
+	struct fpmonitor *fp = (m == NULL) ? fpmonitor_this(NULL) : m;
 
 	if (fp == NULL) {
 		fprintf(stderr, "%s: couldn't find monitor (fp is NULL)\n",
@@ -1998,7 +2015,6 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   char command[256];
   int vx, vy;
   struct fpmonitor *fp = fpmonitor_this(NULL);
-  struct fpmonitor *m;
 
   if (fp == NULL) {
     fprintf(stderr, "%s: couldn't find monitor (fp is NULL)\n", __func__);
@@ -2454,7 +2470,7 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 	static int last_sx = -999999;
 	static int last_sy = -999999;
 	int window_w = desk_w, window_h = desk_h, sx, sy, adjx, adjy;
-	struct fpmonitor *fp = fpmonitor_this(NULL);
+	struct fpmonitor *fp = ScrollFp;
 
 	if (fp == NULL)
 		return;
@@ -2469,9 +2485,17 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 		window_w = icon.width;
 		window_h = icon.height;
 	}
+
 	/* center around mouse */
-	adjx = (window_w / (1 + fp->virtual_scr.VxMax / monitor_get_all_widths()));
-	adjy = (window_h / (1 + fp->virtual_scr.VyMax / monitor_get_all_heights()));
+	if (monitor_mode == MONITOR_TRACKING_G) {
+		adjx = window_w / fp->virtual_scr.VxPages;
+		adjy = window_h / fp->virtual_scr.VyPages;
+	} else {
+		adjx = (2 * fp->m->si->x + fp->m->si->w) * window_w /
+			fp->virtual_scr.VWidth;
+		adjy = (2 * fp->m->si->y + fp->m->si->h) * window_h /
+			fp->virtual_scr.VHeight;
+	}
 	x -= adjx/2;
 	y -= adjy/2;
 
@@ -2485,13 +2509,13 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 		y = 0;
 	}
 
-	if (x > window_w - adjx)
+	if (x > window_w)
 	{
-		x = window_w - adjx;
+		x = window_w;
 	}
-	if (y > window_h - adjy)
+	if (y > window_h)
 	{
-		y = window_h - adjy;
+		y = window_h;
 	}
 
 	sx = 0;
