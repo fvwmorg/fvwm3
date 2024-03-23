@@ -125,8 +125,8 @@ static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 
 static rectangle CalcGeom(PagerWindow *, bool);
-static rectangle set_vp_size_and_loc(struct fpmonitor *, bool);
-static struct fpmonitor *mon_from_xy(int x, int y);
+static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
+static struct fpmonitor *mon_from_xy(int x, int y, bool allow_null);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
@@ -220,12 +220,14 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
 	return;
 }
 
-static struct fpmonitor *mon_from_xy(int x, int y)
+static struct fpmonitor *mon_from_xy(int x, int y, bool allow_null)
 {
 	struct fpmonitor *m;
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
-	if (monitor_to_track == NULL) {
+	if (monitor_to_track == NULL && monitor_mode != MONITOR_TRACKING_G) {
+		if (allow_null)
+			fp = NULL;
 		x %= monitor_get_all_widths();
 		y %= monitor_get_all_heights();
 
@@ -1243,7 +1245,9 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	  SwitchToDeskAndPage(i,Event);
-	else if(Event->xany.window == Desks[i].title_w)
+	/* Title clicks only change desk in global configuration. */
+	else if(Event->xany.window == Desks[i].title_w &&
+		monitor_mode == MONITOR_TRACKING_G)
 	  SwitchToDesk(i, NULL);
       }
       if(Event->xany.window == icon_win)
@@ -1280,7 +1284,9 @@ void DispatchEvent(XEvent *Event)
 	    /* pointer is on a different screen - that's okay here */
 	  }
 	  fp = mon_from_xy(x * fp->virtual_scr.VWidth / desk_w,
-			   y * fp->virtual_scr.VHeight / desk_h);
+			   y * fp->virtual_scr.VHeight / desk_h, true);
+	  if (fp == NULL)
+	    break;
 	  /* Save initial virtual desk info. */
 	  ScrollFp = fp;
 	  MyVx = fp->virtual_scr.Vx;
@@ -1302,7 +1308,9 @@ void DispatchEvent(XEvent *Event)
 	  /* pointer is on a different screen - that's okay here */
 	}
 	fp = mon_from_xy(x * fp->virtual_scr.VWidth / icon.width,
-			 y * fp->virtual_scr.VHeight / icon.height);
+			 y * fp->virtual_scr.VHeight / icon.height, true);
+	if (fp == NULL)
+	  break;
 	/* Save initial virtual desk info. */
 	ScrollFp = fp;
 	MyVx = fp->virtual_scr.Vx;
@@ -2024,7 +2032,9 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   /* Determine which monitor occupied the clicked region. */
   vx = (desk_w == 0) ? 0 : Event->xbutton.x * fp->virtual_scr.VWidth / desk_w;
   vy = (desk_h == 0) ? 0 : Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
-  fp = mon_from_xy(vx, vy);
+  fp = mon_from_xy(vx, vy, true);
+  if (fp == NULL)
+    return;
 
   if (fp->m->virtual_scr.CurrentDesk != (Desk + desk1))
   {
@@ -2076,7 +2086,9 @@ void IconSwitchPage(XEvent *Event)
 	icon.width;
   vy = (icon.height == 0) ? 0 : Event->xbutton.y * fp->virtual_scr.VHeight /
 	icon.height;
-  fp = mon_from_xy(vx, vy);
+  fp = mon_from_xy(vx, vy, true);
+  if (fp == NULL)
+    return;
 
   snprintf(command,sizeof(command),"GotoPage screen %s %d %d",
 	  fp->m->si->name,
@@ -2718,7 +2730,7 @@ void MoveWindow(XEvent *Event)
 				      x - rec.x, y - rec.y, &rec.x, &rec.y, &dumwin);
 
 		fp = mon_from_xy(rec.x * fp->virtual_scr.VWidth / desk_w,
-				rec.y * fp->virtual_scr.VHeight / desk_h);
+				rec.y * fp->virtual_scr.VHeight / desk_h, false);
 		pagerrec_to_fvwm(&rec, false, fp);
 		rec.x = rec.x - fp->virtual_scr.Vx;
 		rec.y = rec.y - fp->virtual_scr.Vy;
@@ -3123,7 +3135,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		rec.x = x - rec.x;
 		rec.y = y - rec.y;
 		fp = mon_from_xy(rec.x * fp->virtual_scr.VWidth / icon.width,
-				rec.y * fp->virtual_scr.VHeight / icon.height);
+				rec.y * fp->virtual_scr.VHeight / icon.height, false);
 		pagerrec_to_fvwm(&rec, true, fp);
 		rec.x = rec.x - fp->virtual_scr.Vx;
 		rec.y = rec.y - fp->virtual_scr.Vy;
