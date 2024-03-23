@@ -29,6 +29,9 @@ struct fpmonitor {
 		int VHeight;
         } virtual_scr;
 
+	int scr_width; /* Size of DisplayWidth() */
+	int scr_height; /* Size of DisplayHeight() */
+
 	TAILQ_ENTRY(fpmonitor) entry;
 };
 TAILQ_HEAD(fpmonitors, fpmonitor);
@@ -221,5 +224,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(int i);
 void HandleScrollDone(void);
+int fpmonitor_get_all_widths(void);
+int fpmonitor_get_all_heights(void);
 
 #endif /* FVWMPAGER_H */

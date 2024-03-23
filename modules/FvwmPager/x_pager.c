@@ -220,6 +220,25 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
 	return;
 }
 
+int fpmonitor_get_all_widths(void)
+{
+	struct fpmonitor *fp = TAILQ_FIRST(&fp_monitor_q);
+
+	if (fp->scr_width <= 0)
+		return (monitor_get_all_widths());
+
+	return (fp->scr_width);
+}
+
+int fpmonitor_get_all_heights(void)
+{
+	struct fpmonitor *fp = TAILQ_FIRST(&fp_monitor_q);
+
+	if (fp->scr_height <= 0)
+		return (monitor_get_all_heights());
+	return (fp->scr_height);
+}
+
 static struct fpmonitor *mon_from_xy(int x, int y, bool allow_null)
 {
 	struct fpmonitor *m;
@@ -485,8 +504,8 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon, struct fpmonitor *fp)
 	if (fp == NULL)
 		return;
 
-	int m_width = monitor_get_all_widths();
-	int m_height = monitor_get_all_heights();
+	int m_width = fpmonitor_get_all_widths();
+	int m_height = fpmonitor_get_all_heights();
 
 	if (monitor_to_track != NULL) {
 		/* Offset window location based on monitor location. */
@@ -521,8 +540,8 @@ pagerrec_to_fvwm(rectangle *rec, bool is_icon, struct fpmonitor *fp)
 	if (fp == NULL)
 		return;
 
-	int m_width = monitor_get_all_widths();
-	int m_height = monitor_get_all_heights();
+	int m_width = fpmonitor_get_all_widths();
+	int m_height = fpmonitor_get_all_heights();
 	int offset_x = 0, offset_y = 0;
 
 	int scale_w = desk_w, scale_h = desk_h;
@@ -715,44 +734,11 @@ void initialize_pager(struct fpmonitor *fp)
 
   int VxPages = fp->virtual_scr.VxPages, VyPages = fp->virtual_scr.VyPages;
 
-  /* Size the window */
-  if(Rows < 0)
-  {
-    if(Columns <= 0)
-    {
-      Columns = ndesks;
-      Rows = 1;
-    }
-    else
-    {
-      Rows = ndesks/Columns;
-      if(Rows*Columns < ndesks)
-	Rows++;
-    }
-  }
-  if(Columns < 0)
-  {
-    if (Rows == 0)
-      Rows = 1;
-    Columns = ndesks/Rows;
-    if(Rows*Columns < ndesks)
-      Columns++;
-  }
-
-  if(Rows*Columns < ndesks)
-  {
-    if (Columns == 0)
-      Columns = 1;
-    Rows = ndesks/Columns;
-    if (Rows*Columns < ndesks)
-      Rows++;
-  }
-
   /* Set window size if not fully set by user to match */
   /* aspect ratio of monitor(s) being shown. */
   if ( pwindow.width == 0 || pwindow.height == 0 ) {
-	  int vWidth  = monitor_get_all_widths();
-	  int vHeight = monitor_get_all_heights();
+	  int vWidth  = fpmonitor_get_all_widths();
+	  int vHeight = fpmonitor_get_all_heights();
 	  if (monitor_to_track != NULL) {
 		  vWidth = fp->m->si->w;
 		  vHeight = fp->m->si->h;
@@ -800,11 +786,11 @@ void initialize_pager(struct fpmonitor *fp)
   if (xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
-    pwindow.x = monitor_get_all_widths() - pwindow.width + pwindow.x;
+    pwindow.x = fpmonitor_get_all_widths() - pwindow.width + pwindow.x;
   }
   if (yneg)
   {
-    pwindow.y = monitor_get_all_heights() - pwindow.height + pwindow.y;
+    pwindow.y = fpmonitor_get_all_heights() - pwindow.height + pwindow.y;
     if(sizehints.win_gravity == NorthEastGravity)
       sizehints.win_gravity = SouthEastGravity;
     else
@@ -887,11 +873,11 @@ void initialize_pager(struct fpmonitor *fp)
   if (icon.x != -10000)
   {
     if (icon_xneg)
-      icon.x = monitor_get_all_widths() + icon.x - icon.width;
+      icon.x = fpmonitor_get_all_widths() + icon.x - icon.width;
     if (icon.y != -10000)
     {
       if (icon_yneg)
-	icon.y = monitor_get_all_heights() + icon.y - icon.height;
+	icon.y = fpmonitor_get_all_heights() + icon.y - icon.height;
     }
     else
     {
@@ -1834,7 +1820,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	/* desk grid */
 	if (!ew || ew == Desks[desk].w)
 	{
-		x = monitor_get_all_widths();
+		x = fpmonitor_get_all_widths();
 		y1 = 0;
 		y2 = desk_h;
 		while (x < fp->virtual_scr.VWidth)
@@ -1846,9 +1832,9 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 					dpy,Desks[desk].w,Desks[desk].DashedGC,
 					x1,y1,x1,y2);
 			}
-			x += monitor_get_all_widths();
+			x += fpmonitor_get_all_widths();
 		}
-		y = monitor_get_all_heights();
+		y = fpmonitor_get_all_heights();
 		x1 = 0;
 		x2 = desk_w;
 		while(y < fp->virtual_scr.VHeight)
@@ -1860,7 +1846,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 					dpy,Desks[desk].w,Desks[desk].DashedGC,
 					x1,y1,x2,y1);
 			}
-			y += monitor_get_all_heights();
+			y += fpmonitor_get_all_heights();
 		}
 	}
 
@@ -2074,8 +2060,8 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
     /* patch to let mouse button 3 change desks and do not cling to a page */
     fp->m->virtual_scr.Vx = vx;
     fp->m->virtual_scr.Vy = vy;
-    vx /= monitor_get_all_widths();
-    vy /= monitor_get_all_heights();
+    vx /= fpmonitor_get_all_widths();
+    vy /= fpmonitor_get_all_heights();
     snprintf(command, sizeof(command), "GotoDeskAndPage screen %s %d %d %d",
 		fp->m->si->name, Desk + desk1, vx, vy);
     SendText(fd, command, 0);
@@ -2094,8 +2080,8 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       vx = fp->virtual_scr.VxMax;
     if (vy > fp->virtual_scr.VyMax)
       vy = fp->virtual_scr.VyMax;
-    vx /= monitor_get_all_widths();
-    vy /= monitor_get_all_heights();
+    vx /= fpmonitor_get_all_widths();
+    vy /= fpmonitor_get_all_heights();
 
     snprintf(command, sizeof(command), "GotoPage screen %s %d %d", fp->m->si->name, vx, vy);
     SendText(fd, command, 0);
@@ -2126,9 +2112,9 @@ void IconSwitchPage(XEvent *Event)
   snprintf(command,sizeof(command),"GotoPage screen %s %d %d",
 	  fp->m->si->name,
 	  Event->xbutton.x * fp->virtual_scr.VWidth /
-		  (icon.width * monitor_get_all_widths()),
+		  (icon.width * fpmonitor_get_all_widths()),
 	  Event->xbutton.y * fp->virtual_scr.VHeight /
-		  (icon.height * monitor_get_all_heights()));
+		  (icon.height * fpmonitor_get_all_heights()));
   SendText(fd, command, 0);
   Wait = 1;
 }
@@ -3346,7 +3332,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 	}
 	/* too close to bottom ... make yoffset -ve */
 	else if ( new_g.y + new_g.height >
-		  monitor_get_all_heights() - (2 * BalloonBorderWidth) - 2 )
+		  fpmonitor_get_all_heights() - (2 * BalloonBorderWidth) - 2 )
 	{
 		y = - BalloonYOffset + 1 - new_g.height -
 			(2 * BalloonBorderWidth);
@@ -3360,9 +3346,9 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 	}
 	/* too close to right */
 	else if (new_g.x + new_g.width >
-		 monitor_get_all_widths() - (2 * BalloonBorderWidth) - 2 )
+		 fpmonitor_get_all_widths() - (2 * BalloonBorderWidth) - 2 )
 	{
-		new_g.x = monitor_get_all_widths() - new_g.width -
+		new_g.x = fpmonitor_get_all_widths() - new_g.width -
 			(2 * BalloonBorderWidth) - 2;
 	}
 	/* make changes to window */
