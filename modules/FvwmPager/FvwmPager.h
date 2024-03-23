@@ -105,14 +105,8 @@ typedef struct pager_window
   char *res_class;
   char *window_label; /* This is displayed inside the mini window */
   FvwmPicture mini_icon;
-  int pager_view_x;
-  int pager_view_y;
-  int pager_view_width;
-  int pager_view_height;
-  int icon_view_x;
-  int icon_view_y;
-  int icon_view_width;
-  int icon_view_height;
+  rectangle pager_view;
+  rectangle icon_view;
 
   Window PagerView;
   Window IconView;
