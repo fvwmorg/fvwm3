@@ -578,109 +578,142 @@ set_vp_size_and_loc(struct fpmonitor *m, bool is_icon)
 	return vp;
 }
 
-void initialize_pager(void)
+void initialise_common_pager_fragments(void)
+{
+	extern char *WindowBack, *WindowFore, *WindowHiBack, *WindowHiFore;
+	extern char *font_string, *smallFont;
+
+	/* I don't think that this is necessary - just let pager die */
+	/* domivogt (07-mar-1999): But it is! A window being moved in the pager
+	 * might die at any moment causing the Xlib calls to generate BadMatch
+	 * errors. Without an error handler the pager will die! */
+	XSetErrorHandler(FvwmErrorHandler);
+
+	wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
+
+	/* load the font */
+	/* Note: "font" is always created, whether labels are used or not
+	   because a GC below is set to use a font. dje Dec 2001.
+	   OK, I fixed the GC below, but now something else is blowing up.
+	   Right now, I've got to do some Real Life stuff, so this kludge is
+	   in place, its still better than I found it.
+	   I hope that I've fixed this (olicha)
+	*/
+	Ffont = FlocaleLoadFont(dpy, font_string, MyName);
+
+	label_h = (uselabel) ? Ffont->height + 2 : 0;
+
+	/* init our Flocale window string */
+	FlocaleAllocateWinString(&FwinString);
+
+	/* Check that shape extension exists. */
+	if (FHaveShapeExtension && ShapeLabels)
+	{
+		ShapeLabels = (FShapesSupported) ? 1 : 0;
+	}
+
+	if(smallFont != NULL)
+	{
+		FwindowFont = FlocaleLoadFont(dpy, smallFont, MyName);
+	}
+
+	/* Load the colors */
+	fore_pix = GetColor(PagerFore);
+	back_pix = GetColor(PagerBack);
+	hi_pix = GetColor(HilightC);
+
+	if (windowcolorset >= 0)
+	{
+		win_back_pix = Colorset[windowcolorset].bg;
+		win_fore_pix = Colorset[windowcolorset].fg;
+		win_pix_set = True;
+	}
+	else if (WindowBack && WindowFore)
+	{
+		win_back_pix = GetColor(WindowBack);
+		win_fore_pix = GetColor(WindowFore);
+		win_pix_set = True;
+	}
+
+	if (activecolorset >= 0)
+	{
+		win_hi_back_pix = Colorset[activecolorset].bg;
+		win_hi_fore_pix = Colorset[activecolorset].fg;
+		win_hi_pix_set = True;
+	}
+	else if (WindowHiBack && WindowHiFore)
+	{
+		win_hi_back_pix = GetColor(WindowHiBack);
+		win_hi_fore_pix = GetColor(WindowHiFore);
+		win_hi_pix_set = True;
+	}
+
+	/* Load pixmaps for mono use */
+	if(Pdepth<2)
+	{
+		Scr.gray_pixmap = XCreatePixmapFromBitmapData(dpy, Scr.Pager_w,
+			g_bits, g_width,g_height, fore_pix,back_pix,Pdepth);
+		Scr.light_gray_pixmap = XCreatePixmapFromBitmapData(dpy,
+			Scr.Pager_w,l_g_bits,l_g_width, l_g_height,
+			fore_pix,back_pix,Pdepth);
+		Scr.sticky_gray_pixmap = XCreatePixmapFromBitmapData(dpy,
+			Scr.Pager_w,s_g_bits,s_g_width, s_g_height,
+			fore_pix,back_pix,Pdepth);
+	}
+
+	/* Size the window */
+	if(Rows < 0)
+	{
+		if(Columns <= 0)
+		{
+			Columns = ndesks;
+			Rows = 1;
+		}
+		else
+	{
+			Rows = ndesks/Columns;
+			if(Rows*Columns < ndesks)
+			Rows++;
+		}
+	}
+	if(Columns < 0)
+	{
+		if (Rows == 0)
+			Rows = 1;
+		Columns = ndesks/Rows;
+		if(Rows*Columns < ndesks)
+			Columns++;
+	}
+
+	if(Rows*Columns < ndesks)
+	{
+		if (Columns == 0)
+			Columns = 1;
+		Rows = ndesks/Columns;
+		if (Rows*Columns < ndesks)
+			Rows++;
+	}
+}
+
+void initialize_pager(struct fpmonitor *fp)
 {
   XWMHints wmhints;
   XClassHint class1;
   XTextProperty name;
   unsigned long valuemask;
   XSetWindowAttributes attributes;
-  extern char *WindowBack, *WindowFore, *WindowHiBack, *WindowHiFore;
-  extern char *BalloonFont;
-  extern char *font_string, *smallFont;
   rectangle vp;
   int i = 0;
   XGCValues gcv;
+  extern char *BalloonFont;
   char dash_list[2];
   FlocaleFont *balloon_font;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
   struct fpmonitor *m;
 
   if (fp == NULL)
-    return;
+    fp = fpmonitor_this(NULL);
 
   int VxPages = fp->virtual_scr.VxPages, VyPages = fp->virtual_scr.VyPages;
-
-  /* I don't think that this is necessary - just let pager die */
-  /* domivogt (07-mar-1999): But it is! A window being moved in the pager
-   * might die at any moment causing the Xlib calls to generate BadMatch
-   * errors. Without an error handler the pager will die! */
-  XSetErrorHandler(FvwmErrorHandler);
-
-  wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
-
-  /* load the font */
-  /* Note: "font" is always created, whether labels are used or not
-     because a GC below is set to use a font. dje Dec 2001.
-     OK, I fixed the GC below, but now something else is blowing up.
-     Right now, I've got to do some Real Life stuff, so this kludge is
-     in place, its still better than I found it.
-     I hope that I've fixed this (olicha)
-  */
-  Ffont = FlocaleLoadFont(dpy, font_string, MyName);
-
-  label_h = (uselabel) ? Ffont->height + 2 : 0;
-
-  /* init our Flocale window string */
-  FlocaleAllocateWinString(&FwinString);
-
-  /* Check that shape extension exists. */
-  if (FHaveShapeExtension && ShapeLabels)
-  {
-    ShapeLabels = (FShapesSupported) ? 1 : 0;
-  }
-
-  if(smallFont != NULL)
-  {
-    FwindowFont = FlocaleLoadFont(dpy, smallFont, MyName);
-  }
-
-  /* Load the colors */
-  fore_pix = GetColor(PagerFore);
-  back_pix = GetColor(PagerBack);
-  hi_pix = GetColor(HilightC);
-
-  if (windowcolorset >= 0)
-  {
-    win_back_pix = Colorset[windowcolorset].bg;
-    win_fore_pix = Colorset[windowcolorset].fg;
-    win_pix_set = True;
-  }
-  else if (WindowBack && WindowFore)
-  {
-    win_back_pix = GetColor(WindowBack);
-    win_fore_pix = GetColor(WindowFore);
-    win_pix_set = True;
-  }
-
-  if (activecolorset >= 0)
-  {
-    win_hi_back_pix = Colorset[activecolorset].bg;
-    win_hi_fore_pix = Colorset[activecolorset].fg;
-    win_hi_pix_set = True;
-  }
-  else if (WindowHiBack && WindowHiFore)
-  {
-    win_hi_back_pix = GetColor(WindowHiBack);
-    win_hi_fore_pix = GetColor(WindowHiFore);
-    win_hi_pix_set = True;
-  }
-
-  /* Load pixmaps for mono use */
-  if(Pdepth<2)
-  {
-    Scr.gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,g_bits, g_width,g_height,
-				  fore_pix,back_pix,Pdepth);
-    Scr.light_gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,l_g_bits,l_g_width,
-				  l_g_height,
-				  fore_pix,back_pix,Pdepth);
-    Scr.sticky_gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.Pager_w,s_g_bits,s_g_width,
-				  s_g_height,
-				  fore_pix,back_pix,Pdepth);
-  }
 
   /* Size the window */
   if(Rows < 0)
