@@ -1546,6 +1546,12 @@ void list_config_info(unsigned long *body)
 			if (fp != NULL) {
 				goto assign;
 			}
+		} else {
+			if (flags & MONITOR_DISABLED) {
+				fprintf(stderr, "%s: DISABLED\n", mname);
+				/*** FIXME: Do something here. ***/
+				return;
+			}
 		}
 
 		fp = fpmonitor_new(tm);
