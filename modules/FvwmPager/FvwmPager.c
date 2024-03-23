@@ -934,10 +934,10 @@ void list_new_page(unsigned long *body)
   {
     fp->virtual_scr.VxPages = body[5];
     fp->virtual_scr.VyPages = body[6];
-    fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
-    fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
-    fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - monitor_get_all_widths();
-    fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - monitor_get_all_heights();
+    fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+    fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
+    fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
+    fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
     ReConfigure();
   }
   MovePage(False);
@@ -1526,6 +1526,7 @@ void list_config_info(unsigned long *body)
 		DrawGrid(val, True, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
 		int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
+		int		  scr_width, scr_height;
 		int		  flags;
 		char		 *mname;
 		struct monitor	 *tm;
@@ -1533,8 +1534,9 @@ void list_config_info(unsigned long *body)
 
 		tline = GetNextToken(tline, &mname);
 
-		sscanf(tline, "%d %d %d %d %d %d %d %d", &flags,
-		    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk);
+		sscanf(tline, "%d %d %d %d %d %d %d %d %d %d", &flags,
+		    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk,
+		    &scr_width, &scr_height);
 
 		monitor_refresh_module(dpy);
 
@@ -1557,6 +1559,8 @@ void list_config_info(unsigned long *body)
 		fp = fpmonitor_new(tm);
 		fp->m->flags |= MONITOR_NEW;
 assign:
+		fp->scr_width = scr_width;
+		fp->scr_height = scr_height;
 		fp->m->dx = dx;
 		fp->m->dy = dy;
 		fp->m->virtual_scr.Vx = fp->virtual_scr.Vx = Vx;
@@ -1565,24 +1569,24 @@ assign:
 		fp->m->virtual_scr.VyMax = fp->virtual_scr.VyMax = VyMax;
 		fp->m->virtual_scr.CurrentDesk = CurrentDesk;
 
-		fp->virtual_scr.VxMax = dx * monitor_get_all_widths() - monitor_get_all_widths();
-		fp->virtual_scr.VyMax = dy * monitor_get_all_heights() - monitor_get_all_heights();
+		fp->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+		fp->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
 		if (fp->virtual_scr.VxMax < 0)
 			fp->virtual_scr.VxMax = 0;
 		if (fp->virtual_scr.VyMax < 0)
 			fp->virtual_scr.VyMax = 0;
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxMax + monitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyMax + monitor_get_all_heights();
-		fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / monitor_get_all_widths();
-		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / monitor_get_all_heights();
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxMax + fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyMax + fpmonitor_get_all_heights();
+		fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / fpmonitor_get_all_widths();
+		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / fpmonitor_get_all_heights();
 
 		/* This comes from DesktopSize so probably not required. */
 #if 0
 
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
-		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - monitor_get_all_widths();
-		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - monitor_get_all_heights();
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
+		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
+		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
 #endif
 
 		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
@@ -1601,16 +1605,16 @@ assign:
 		sscanf(tline, "%d %d", &dx, &dy);
 
 		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-			m->virtual_scr.VxMax = dx * monitor_get_all_widths() - monitor_get_all_widths();
-			m->virtual_scr.VyMax = dy * monitor_get_all_heights() - monitor_get_all_heights();
+			m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+			m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
 			if (m->virtual_scr.VxMax < 0)
 				m->virtual_scr.VxMax = 0;
 			if (m->virtual_scr.VyMax < 0)
 				m->virtual_scr.VyMax = 0;
-			m->virtual_scr.VWidth = m->virtual_scr.VxMax + monitor_get_all_widths();
-			m->virtual_scr.VHeight = m->virtual_scr.VyMax + monitor_get_all_heights();
-			m->virtual_scr.VxPages = m->virtual_scr.VWidth / monitor_get_all_widths();
-			m->virtual_scr.VyPages = m->virtual_scr.VHeight / monitor_get_all_heights();
+			m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
+			m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
+			m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
+			m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
 		}
 	} else if (StrEquals(token, "DesktopConfiguration")) {
 		int mmode;
@@ -1904,8 +1908,8 @@ ImagePath = NULL;
 		fp->virtual_scr.Vy = m->virtual_scr.Vy;
 		fp->virtual_scr.VxMax = m->virtual_scr.VxMax;
 		fp->virtual_scr.VyMax = m->virtual_scr.VyMax;
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
 	    }
 	    continue;
     }
@@ -2426,16 +2430,16 @@ ImagePath = NULL;
 
   struct fpmonitor *m;
   TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	  m->virtual_scr.VxMax = dx * monitor_get_all_widths() - monitor_get_all_widths();
-	  m->virtual_scr.VyMax = dy * monitor_get_all_heights() - monitor_get_all_heights();
+	  m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+	  m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
 	  if (m->virtual_scr.VxMax < 0)
 		  m->virtual_scr.VxMax = 0;
 	  if (m->virtual_scr.VyMax < 0)
 		  m->virtual_scr.VyMax = 0;
-	  m->virtual_scr.VWidth = m->virtual_scr.VxMax + monitor_get_all_widths();
-	  m->virtual_scr.VHeight = m->virtual_scr.VyMax + monitor_get_all_heights();
-	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / monitor_get_all_widths();
-	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / monitor_get_all_heights();
+	  m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
+	  m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
+	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
+	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
 
 	  fvwm_debug(__func__,
 			  "%s: VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "

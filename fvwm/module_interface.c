@@ -475,14 +475,15 @@ void BroadcastMonitorList(fmodule *this)
 
 	module_list_itr_init(&moditr);
 
-	m_info = "Monitor %s %d %d %d %d %d %d %d %d";
+	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d";
 
 	while ((module = module_list_itr_next(&moditr)) != NULL) {
 		RB_FOREACH(m, monitors, &monitor_q) {
 			xasprintf(&name, m_info, m->si->name, m->flags,
 			    m->dx, m->dy, m->virtual_scr.Vx,
 			    m->virtual_scr.Vy, m->virtual_scr.VxMax,
-			    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk);
+			    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk,
+			    monitor_get_all_widths(), monitor_get_all_heights());
 
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
