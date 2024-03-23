@@ -1842,9 +1842,14 @@ void monitor_update_ewmh(void)
 
 	BroadcastMonitorList(NULL);
 
+	/* Clear the new status as we're done with it now. */
+	RB_FOREACH(m, monitors, &monitor_q)
+		m->flags &= ~MONITOR_NEW;
+
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
 		update_fvwm_monitor(t);
 	}
+
 }
 
 void
