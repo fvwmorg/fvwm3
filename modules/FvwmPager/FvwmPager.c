@@ -1592,6 +1592,7 @@ assign:
 		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
 			fprintf(stderr, "UPDATING MONITOR: %s\n", fp->m->si->name);
 			fp->m->flags &= ~MONITOR_NEW;
+			ReConfigureAll();
 #if 0
 			SendInfo(fd,"Send_WindowList",0);
 			initialize_pager(fp);
