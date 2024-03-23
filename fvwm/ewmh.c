@@ -1963,8 +1963,6 @@ void EWMH_Init(struct monitor *m)
 	EWMH_SetDesktopGeometry(m);
 	EWMH_SetClientList(m);
 	EWMH_SetClientListStacking(m);
-
-	m->flags &= ~MONITOR_NEW;
 }
 
 /*

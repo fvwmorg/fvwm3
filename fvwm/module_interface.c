@@ -468,26 +468,41 @@ void BroadcastName(
 void BroadcastMonitorList(fmodule *this)
 {
 	char		*name;
+	const char	*m_info;
 	struct monitor	*m;
 	fmodule_list_itr moditr;
 	fmodule *module;
 
 	module_list_itr_init(&moditr);
 
+	m_info = "Monitor %s %d %d %d %d %d %d %d %d";
+
 	while ((module = module_list_itr_next(&moditr)) != NULL) {
 		RB_FOREACH(m, monitors, &monitor_q) {
-			if (m->flags & MONITOR_DISABLED)
-				continue;
-			xasprintf(&name, "Monitor %s", m->si->name);
+			xasprintf(&name, m_info, m->si->name, m->flags,
+			    m->dx, m->dy, m->virtual_scr.Vx,
+			    m->virtual_scr.Vy, m->virtual_scr.VxMax,
+			    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk);
 
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
-			SendPacket(module, M_END_CONFIG_INFO, (long)0, (long)0,
-			(long)0, (long)0, (long)0, (long)0, (long)0, (long)0);
+
+			if (this == NULL) {
+				SendPacket(
+					module, M_END_CONFIG_INFO, (long)0,
+					(long)0, (long)0, (long)0,
+					(long)0, (long)0, (long)0, (long)0);
+			}
 		}
 		xasprintf(&name, "DesktopConfiguration %d", monitor_mode);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 		free(name);
+		if (this == NULL) {
+			SendPacket(
+				module, M_END_CONFIG_INFO, (long)0,
+				(long)0, (long)0, (long)0,
+			(long)0, (long)0, (long)0, (long)0);
+		}
 	}
 }
 
