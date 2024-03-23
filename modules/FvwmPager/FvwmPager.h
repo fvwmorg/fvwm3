@@ -196,7 +196,7 @@ void update_pr_transparent_windows(void);
 void MovePage(Bool is_new_desk);
 void DrawGrid(int desk,int erase,Window ew,XRectangle *r);
 void DrawIconGrid(int erase);
-void SwitchToDesk(int Desk);
+void SwitchToDesk(int Desk, struct fpmonitor *m);
 void SwitchToDeskAndPage(int Desk, XEvent *Event);
 void AddNewWindow(PagerWindow *prev);
 void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw);
