@@ -457,7 +457,8 @@ int main(int argc, char **argv)
   SendInfo(fd,"Send_WindowList",0);
 
   /* open a pager window */
-  initialize_pager();
+  initialise_common_pager_fragments();
+  initialize_pager(NULL);
 
   if (is_transient)
   {

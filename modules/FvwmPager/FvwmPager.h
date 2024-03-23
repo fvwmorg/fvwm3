@@ -186,7 +186,8 @@ int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Stuff in x_pager.c */
 void change_colorset(int colorset);
-void initialize_pager(void);
+void initialise_common_pager_fragments(void);
+void initialize_pager(struct fpmonitor *);
 void initialize_viz_pager(void);
 Pixel GetColor(char *name);
 void DispatchEvent(XEvent *Event);
