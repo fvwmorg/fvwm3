@@ -1524,39 +1524,42 @@ void list_config_info(unsigned long *body)
 		}
 		DrawGrid(val, True, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
-		char	*mname;
-		struct monitor *tm;
-		struct fpmonitor *fp, *fpfind;
-
-		monitor_refresh_module(dpy);
+		int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
+		int		  flags;
+		char		 *mname;
+		struct monitor	 *tm;
+		struct fpmonitor *fp;
 
 		tline = GetNextToken(tline, &mname);
+
+		sscanf(tline, "%d %d %d %d %d %d %d %d", &flags,
+		    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk);
+
+		monitor_refresh_module(dpy);
 
 		tm = monitor_resolve_name(mname);
 
 		if (tm != NULL) {
 			fp = fpmonitor_this(tm);
 
-			if (fp != NULL)
+			if (fp != NULL) {
 				goto assign;
+			}
 		}
 
 		fp = fpmonitor_new(tm);
-
+		fp->m->flags |= MONITOR_NEW;
 assign:
-		/* Grab the desktopsize values out of a monitor -- they're the
-		 * same for all monitors.
-		 */
-		TAILQ_FOREACH(fpfind, &fp_monitor_q, entry) {
-			if (fpfind == fp)
-				continue;
-			fp->virtual_scr.Vx = fpfind->virtual_scr.Vx;
-			fp->virtual_scr.Vy = fpfind->virtual_scr.Vy;
-			break;
-		}
+		fp->m->dx = dx;
+		fp->m->dy = dy;
+		fp->m->virtual_scr.Vx = fp->virtual_scr.Vx = Vx;
+		fp->m->virtual_scr.Vy = fp->virtual_scr.Vy = Vy;
+		fp->m->virtual_scr.VxMax = fp->virtual_scr.VxMax = VxMax;
+		fp->m->virtual_scr.VyMax = fp->virtual_scr.VyMax = VyMax;
+		fp->m->virtual_scr.CurrentDesk = CurrentDesk;
 
-		fp->virtual_scr.VxMax = fp->virtual_scr.Vx * monitor_get_all_widths() - monitor_get_all_widths();
-		fp->virtual_scr.VyMax = fp->virtual_scr.Vy * monitor_get_all_heights() - monitor_get_all_heights();
+		fp->virtual_scr.VxMax = dx * monitor_get_all_widths() - monitor_get_all_widths();
+		fp->virtual_scr.VyMax = dy * monitor_get_all_heights() - monitor_get_all_heights();
 		if (fp->virtual_scr.VxMax < 0)
 			fp->virtual_scr.VxMax = 0;
 		if (fp->virtual_scr.VyMax < 0)
@@ -1566,13 +1569,24 @@ assign:
 		fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / monitor_get_all_widths();
 		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / monitor_get_all_heights();
 
-/* This block below was the original set of calculations. */
+		/* This comes from DesktopSize so probably not required. */
 #if 0
+
 		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
 		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
 		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - monitor_get_all_widths();
 		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - monitor_get_all_heights();
 #endif
+
+		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
+			fprintf(stderr, "UPDATING MONITOR: %s\n", fp->m->si->name);
+			fp->m->flags &= ~MONITOR_NEW;
+#if 0
+			SendInfo(fd,"Send_WindowList",0);
+			initialize_pager(fp);
+#endif
+		}
+
 	} else if (StrEquals(token, "DesktopSize")) {
 		int dx, dy;
 		struct fpmonitor *m;
