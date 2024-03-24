@@ -210,12 +210,10 @@ fpmonitor_this(struct monitor *m_find)
 
 	if (m == NULL)
 		m = monitor_get_current();
-	if (m == NULL)
-		return (NULL);
-	if (m->flags & MONITOR_DISABLED)
-		return (NULL);
 
 search:
+	if (m == NULL || m->flags & MONITOR_DISABLED)
+		return (NULL);
 	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
 		if (fp->m == m)
 			return (fp);
@@ -419,12 +417,8 @@ int main(int argc, char **argv)
 		 MX_PROPERTY_CHANGE|
 		 MX_MONITOR_FOCUS);
 
-  RB_FOREACH(mon, monitors, &monitor_q) {
-	struct fpmonitor *fp;
-	fp = fpmonitor_new(mon);
-	if (mon->flags & MONITOR_DISABLED)
-		fp->disabled = true;
-  }
+  RB_FOREACH(mon, monitors, &monitor_q)
+	(void)fpmonitor_new(mon);
 
   ParseOptions();
   if (is_transient)
@@ -782,6 +776,9 @@ void list_configure(unsigned long *body)
   t = Start;
   newm = monitor_by_output((int)cfgpacket->monitor_id);
 
+  /* FIXME: monitor_by_output will never be NULL.
+   * It returns RB_MIN not monitor_get_current();
+   */
   if (newm == NULL) {
 	  fvwm_debug(__func__, "monitor was null with ID: %d\n",
                      (int)cfgpacket->monitor_id);
@@ -929,6 +926,9 @@ void list_new_page(unsigned long *body)
 	struct fpmonitor *fp;
 
 	m = monitor_by_output(mon_num);
+	/* Don't allow monitor_by_output to fallback to RB_MIN. */
+	if (m->si->rr_output != mon_num)
+		return;
 
 	if (monitor_to_track != NULL &&
 	    strcmp(m->si->name, monitor_to_track) != 0)
@@ -942,6 +942,7 @@ void list_new_page(unsigned long *body)
 	if (fp->m->virtual_scr.CurrentDesk != body[2]) {
 		/* first handle the new desk */
 		body[0] = body[2];
+		body[1] = mon_num;
 		list_new_desk(body);
 	}
 	if (fp->virtual_scr.VxPages != body[5] || fp->virtual_scr.VyPages != body[6])
@@ -972,10 +973,15 @@ void list_new_desk(unsigned long *body)
   int change_cs = -1;
   int change_ballooncs = -1;
   int change_highcs = -1;
+  int mon_num = body[1];
   struct monitor *mout;
   struct fpmonitor *fp;
 
-  mout = monitor_by_output((int)body[1]);
+  mout = monitor_by_output(mon_num);
+  /* Don't allow monitor_by_output to fallback to RB_MIN. */
+  if (mout->si->rr_output != mon_num)
+	  return;
+
   fp = fpmonitor_this(mout);
 
   if (fp == NULL)
