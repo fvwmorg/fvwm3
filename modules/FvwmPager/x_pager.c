@@ -271,6 +271,9 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 	else
 		fp = fpmonitor_this(t->m);
 
+	if (fp == NULL)
+		return rec;
+
 	rec.x = fp->virtual_scr.Vx + t->x;
 	rec.y = fp->virtual_scr.Vy + t->y;
 	rec.width = t->width;
@@ -2137,7 +2140,7 @@ void AddNewWindow(PagerWindow *t)
 	XSetWindowAttributes attributes;
 	rectangle rec;
 	int i;
-	struct fpmonitor *fp = fpmonitor_this(NULL);
+	struct fpmonitor *fp = fpmonitor_this(t->m);
 
 	if (fp == NULL)
 		return;
@@ -2244,7 +2247,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   rectangle rec;
   int i;
   Bool size_changed = False;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
+  struct fpmonitor *fp = fpmonitor_this(t->m);
 
   if (fp == NULL)
 	return;
@@ -2410,13 +2413,13 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 void MoveStickyWindow(Bool is_new_page, Bool is_new_desk)
 {
 	PagerWindow *t;
-	struct fpmonitor *fp = fpmonitor_this(NULL);
-
-	if (fp == NULL)
-		return;
+	struct fpmonitor *fp;
 
 	for (t = Start; t != NULL; t = t->next)
 	{
+		fp = fpmonitor_this(t->m);
+		if (fp == NULL)
+			continue;
 		if (
 			is_new_desk && t->desk != fp->m->virtual_scr.CurrentDesk &&
 			((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
