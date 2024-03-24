@@ -31,7 +31,7 @@ struct fpmonitor {
 
 	int scr_width; /* Size of DisplayWidth() */
 	int scr_height; /* Size of DisplayHeight() */
-
+	bool disabled;
 	TAILQ_ENTRY(fpmonitor) entry;
 };
 TAILQ_HEAD(fpmonitors, fpmonitor);
@@ -136,9 +136,11 @@ typedef struct desk_info
   char *Dcolor;
   char *label;
   GC NormalGC;
-  GC DashedGC;                  /* used the the pages boundary lines */
+  GC DashedGC;                  /* used for the pages boundary lines */
   GC HiliteGC;                  /* used for hilighting the active desk */
   GC rvGC;                      /* used for drawing hilighted desk title */
+  unsigned long fp_mask;        /* used for the fpmonitor window */
+  XSetWindowAttributes fp_attr; /* used for the fpmonitor window */
 } DeskInfo;
 
 typedef struct pager_string_list
@@ -190,7 +192,8 @@ int My_XNextEvent(Display *dpy, XEvent *event);
 /* Stuff in x_pager.c */
 void change_colorset(int colorset);
 void initialise_common_pager_fragments(void);
-void initialize_pager(struct fpmonitor *);
+void initialize_pager(void);
+void initialize_fpmonitor_windows(struct fpmonitor *);
 void initialize_viz_pager(void);
 Pixel GetColor(char *name);
 void DispatchEvent(XEvent *Event);
