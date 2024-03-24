@@ -73,7 +73,6 @@ static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 static struct fpmonitor *fpmonitor_from_xy(int x, int y);
 static struct fpmonitor *fpmonitor_from_n(int n);
 static int fpmonitor_count(void);
-static void set_desk_size(bool);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *get_label(const PagerWindow *pw,const char *fmt);

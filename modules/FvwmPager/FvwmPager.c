@@ -140,6 +140,7 @@ static void parse_monitor_line(char *);
 static void parse_desktop_size_line(char *);
 static void parse_desktop_configuration_line(char *);
 static PagerWindow *find_pager_window(Window target_w);
+static void update_monitor_to_track(struct fpmonitor **, char *, bool);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -437,7 +438,7 @@ int main(int argc, char **argv)
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
 		 M_END_WINDOWLIST|
-		 M_RESTACK);
+		 M_RESTACK|M_STRING);
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE|
@@ -635,6 +636,41 @@ void process_message(FvwmPacket* packet)
 		case MX_REPLY:
 			list_reply(body);
 			break;
+		case M_STRING: {
+			char *this = (char *)&body[3];
+			char *token;
+			char *rest = GetNextToken(this, &token);
+
+			if (rest != NULL && StrEquals(token, "Monitor")) {
+				update_monitor_to_track(
+					&monitor_to_track, rest, true);
+			} else if (StrEquals(token, "CurrentMonitor")) {
+				update_monitor_to_track(
+					&current_monitor, rest, false);
+			} else if (StrEquals(token, "DeskLabels")) {
+				use_desk_label = true;
+			} else if (StrEquals(token, "NoDeskLabels")) {
+				use_desk_label = false;
+			} else if (StrEquals(token, "MonitorLabels")) {
+				use_monitor_label = true;
+			} else if (StrEquals(token, "NoMonitorLabels")) {
+				use_monitor_label = false;
+			}
+			else if (StrEquals(token, "CurrentDeskPerMonitor")) {
+				CurrentDeskPerMonitor = true;
+			} else if (StrEquals(token, "CurrentDeskGlobal")) {
+				CurrentDeskPerMonitor = false;
+			} else if (StrEquals(token, "IsShared")) {
+				IsShared = true;
+			} else if (StrEquals(token, "IsNotShared")) {
+				IsShared = false;
+			} else {
+				break;
+			}
+			set_desk_size(true);
+			ReConfigure();
+			break;
+		}
 		default:
 			/* ignore unknown packet */
 			break;
@@ -1553,6 +1589,36 @@ void parse_desktop_configuration_line(char *tline)
 		}
 }
 
+static void update_monitor_to_track(struct fpmonitor **fp_track,
+				    char *name, bool update_prefered)
+{
+	struct fpmonitor *new_fp;
+
+	name = SkipSpaces(name, NULL, 0);
+	if (StrEquals(name, "none")) {
+		*fp_track = NULL;
+		if (update_prefered) {
+			free(preferred_monitor);
+			preferred_monitor = NULL;
+		}
+		return;
+	}
+
+	new_fp = fpmonitor_by_name(name);
+	/* Fallback to current monitor, if monitor not already set. */
+	if (new_fp != NULL)
+		*fp_track = new_fp;
+	else if (*fp_track == NULL)
+		*fp_track = fpmonitor_this(NULL);
+	if (update_prefered) {
+		/* Set this even if no monitor matches given name.
+		 * That monitor may get enabled later.
+		 */
+		free(preferred_monitor);
+		preferred_monitor = fxstrdup(name);
+	}
+}
+
 /*
  * This routine is responsible for reading and parsing the config file
  */
@@ -1725,20 +1791,11 @@ void ParseOptions(void)
 
 		next = SkipSpaces(next, NULL, 0);
 		if (StrEquals(resource, "Monitor")) {
-			free(preferred_monitor);
-			if (StrEquals(next, "none")) {
-				monitor_to_track = NULL;
-				preferred_monitor = NULL;
-				goto free_vars;
-			}
-			monitor_to_track = fpmonitor_by_name(next);
-			/* Fallback to current monitor. */
-			if (monitor_to_track == NULL)
-				monitor_to_track = fpmonitor_this(NULL);
-			preferred_monitor = fxstrdup(next);
+			update_monitor_to_track(
+				&monitor_to_track, next, true);
 		} else if (StrEquals(resource, "CurrentMonitor")) {
-			current_monitor = (StrEquals(next, "none")) ?
-				NULL : fpmonitor_by_name(next);
+			update_monitor_to_track(
+				&current_monitor, next, false);
 		} else if(StrEquals(resource, "Colorset")) {
 			SetDeskStyleColorset(arg1, arg2,
 				&(((DeskStyle *)(NULL))->cs));
