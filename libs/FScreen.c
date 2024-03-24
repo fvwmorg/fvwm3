@@ -801,17 +801,15 @@ struct monitor *
 FindScreenOfXY(int x, int y)
 {
 	struct monitor	*m;
-	int		 xa, ya;
-	int		 all_widths, all_heights;
+	int all_widths = monitor_get_all_widths();
+	int all_heights = monitor_get_all_heights();
 
-	all_widths =  monitor_get_all_widths();
-	all_heights = monitor_get_all_heights();
-
-	xa = abs(x);
-	ya = abs(y);
-
-	xa %= all_widths;
-	ya %= all_heights;
+	x %= all_widths;
+	y %= all_heights;
+	if (x < 0)
+		x += all_widths;
+	if (y < 0)
+		y += all_heights;
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		/* If we have more than one screen configured, then don't match
@@ -821,8 +819,8 @@ FindScreenOfXY(int x, int y)
 		if (monitor_get_count() > 0 &&
 		    strcmp(m->si->name, GLOBAL_SCREEN_NAME) == 0)
 			continue;
-		if (xa >= m->si->x && xa < m->si->x + m->si->w &&
-		    ya >= m->si->y && ya < m->si->y + m->si->h)
+		if (x >= m->si->x && x < m->si->x + m->si->w &&
+		    y >= m->si->y && y < m->si->y + m->si->h)
 			return (m);
 	}
 
