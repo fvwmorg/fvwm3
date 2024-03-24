@@ -371,6 +371,27 @@ done about this - except not using SloppyFocus in the pager.
   is especially meaningful when the _DesktopConfiguration_ command is
   set to _shared_.
 
+== SENDING COMMANDS
+
+Using the _SendToModule_ command, _FvwmPager_ can be sent the following
+list of commands: *Monitor*, *DeskLabels*, *NoDeskLabels*, *MonitorLabels*,
+and *NoMonitorLabels*. Each command functions identically to its
+configuration option, changing the configuration of the running pager.
+
+**Note**: these commands work only on the running instance only, to make
+any changes permanent, update the relevant config file.
+
+For example, you can tell a running instance of _FvwmPager_ to track a
+specific monitor by sending it the following command:
+
+....
+SendToModule FvwmPager Monitor RANDRNAME
+....
+
+This will either change which monitor is being shown or tell the pager to
+only show a specific monitor. Note that the special value of *none* will
+show all windows on all monitors.
+
 == AUTHOR
 
 Robert Nation +

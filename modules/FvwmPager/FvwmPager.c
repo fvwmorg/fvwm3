@@ -165,6 +165,7 @@ static RETSIGTYPE TerminateHandler(int);
 static void list_monitor_focus(unsigned long *);
 static struct fpmonitor *fpmonitor_new(struct monitor *);
 static void fpmonitor_disable(struct fpmonitor *);
+static void update_monitor_to_track(char *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -432,7 +433,7 @@ int main(int argc, char **argv)
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
 		 M_END_WINDOWLIST|
-		 M_RESTACK);
+		 M_RESTACK|M_STRING);
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE|
@@ -645,6 +646,28 @@ void process_message( FvwmPacket* packet )
     case MX_REPLY:
 	    list_reply(body);
 	    break;
+    case M_STRING: {
+	char *this = (char *)&body[3];
+	char *token;
+	char *rest = GetNextToken(this, &token);
+
+	if (rest != NULL && StrEquals(token, "Monitor")) {
+		update_monitor_to_track(rest);
+	} else if (StrEquals(token, "DeskLabels")) {
+		use_desk_label = True;
+	} else if (StrEquals(token, "NoDeskLabels")) {
+		use_desk_label = False;
+	} else if (StrEquals(token, "MonitorLabels")) {
+		use_monitor_label = True;
+	} else if (StrEquals(token, "NoMonitorLabels")) {
+		use_monitor_label = False;
+	} else {
+		break;
+	}
+	set_desk_size(true);
+	ReConfigure();
+	break;
+    }
     default:
       /* ignore unknown packet */
       break;
@@ -1808,6 +1831,37 @@ static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
   }
 }
 
+static void update_monitor_to_track(char *line)
+{
+	struct fpmonitor *m = NULL;
+	struct monitor *tm = monitor_get_current();
+
+	free(monitor_to_track);
+	line = SkipSpaces(line, NULL, 0);
+
+	if (line == NULL) {
+		fvwm_debug(__func__, "FvwmPager: no monitor name given "
+		"using current monitor\n");
+		/* m already set... */
+		monitor_to_track = fxstrdup(tm->si->name);
+		return;
+	}
+
+	if (strcmp(line, "none") == 0) {
+		monitor_to_track = NULL;
+		return;
+	}
+
+	if ((m = fpmonitor_by_name(line)) == NULL) {
+		fvwm_debug(__func__, "FvwmPager: monitor '%s' not found "
+		     "using current monitor", line);
+		monitor_to_track = fxstrdup(tm->si->name);
+		return;
+	}
+	fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
+	monitor_to_track = fxstrdup(m->m->si->name);
+}
+
 /*
  *
  * This routine is responsible for reading and parsing the config file
@@ -1921,40 +1975,20 @@ ImagePath = NULL;
     }
 
     if (StrEquals(resource, "Monitor")) {
-	    struct monitor *tm = monitor_get_current();
+	update_monitor_to_track(next);
 
-	    free(monitor_to_track);
-	    next = SkipSpaces(next, NULL, 0);
-
-	    if (next == NULL) {
-		    fvwm_debug(__func__, "FvwmPager: no monitor name given "
-				    "using current monitor\n");
-		    /* m already set... */
-		    monitor_to_track = fxstrdup(tm->si->name);
-		    continue;
-	    }
-	    if ((m = fpmonitor_by_name(next)) == NULL) {
-		    fvwm_debug(__func__, "FvwmPager: monitor '%s' not found "
-                               "using current monitor", next);
-		    monitor_to_track = fxstrdup(tm->si->name);
-		    continue;
-	    }
-	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
-	    monitor_to_track = fxstrdup(m->m->si->name);
-	    if (preferred_monitor != NULL)
-		free(preferred_monitor);
-	    preferred_monitor = fxstrdup(monitor_to_track);
+	free(preferred_monitor);
+	if (monitor_to_track != NULL)
+		preferred_monitor = fxstrdup(monitor_to_track);
     } else if(StrEquals(resource, "DeskLabels")) {
-	    use_desk_label = true;
+	use_desk_label = true;
     } else if(StrEquals(resource, "NoDeskLabels")) {
-	    use_desk_label = false;
+	use_desk_label = false;
     } else if(StrEquals(resource, "MonitorLabels")) {
-	    use_monitor_label = true;
+	use_monitor_label = true;
     } else if(StrEquals(resource, "NoMonitorLabels")) {
-	    use_monitor_label = false;
-    }
-    else if(StrEquals(resource,"Colorset"))
-    {
+	use_monitor_label = false;
+    } else if(StrEquals(resource,"Colorset")){
       ParseColorset(arg1, arg2,
 		    &(((DeskInfo *)(NULL))->colorset),
 		    &(((PagerStringList *)(NULL))->colorset),

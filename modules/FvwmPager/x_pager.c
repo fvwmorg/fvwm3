@@ -73,7 +73,6 @@ static struct fpmonitor *fpmonitor_from_xy(int x, int y);
 static struct fpmonitor *fpmonitor_from_n(int n);
 static struct fpmonitor *fpmonitor_from_desk(int desk);
 static int fpmonitor_count(void);
-static void set_desk_size(bool);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
