@@ -571,7 +571,7 @@ static rectangle
 set_vp_size_and_loc(struct fpmonitor *m, bool is_icon)
 {
 	int Vx = 0, Vy = 0, vp_w, vp_h;
-	rectangle vp;
+	rectangle vp = {0, 0, 0, 0};
 	struct fpmonitor *fp = (m != NULL) ? m : fpmonitor_this(NULL);
 	int scale_w = desk_w, scale_h = desk_h;
 	if (is_icon) {
@@ -1539,6 +1539,8 @@ void ReConfigure(void)
 	if (HilightDesks)
 	{
 	  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+	    if (m->disabled)
+	      continue;
 	    vp = set_vp_size_and_loc(m, false);
 	    if (i == m->m->virtual_scr.CurrentDesk - desk1 &&
 		(monitor_to_track == NULL ||
@@ -1721,7 +1723,7 @@ void MovePage(Bool is_new_desk)
     if (HilightDesks)
     {
       TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	if (i == m->m->virtual_scr.CurrentDesk - desk1 &&
+	if (!m->disabled && i == m->m->virtual_scr.CurrentDesk - desk1 &&
 		(monitor_to_track == NULL ||
 		strcmp(m->m->si->name, monitor_to_track) == 0))
 	{
@@ -1770,14 +1772,14 @@ void MovePage(Bool is_new_desk)
 
 void ReConfigureAll(void)
 {
-  PagerWindow *t;
+	PagerWindow *t;
 
-  t = Start;
-  while(t!= NULL)
-  {
-    MoveResizePagerView(t, True);
-    t = t->next;
-  }
+	t = Start;
+	while(t != NULL) {
+		MoveResizePagerView(t, True);
+		t = t->next;
+	}
+	ReConfigureIcons(False);
 }
 
 void ReConfigureIcons(Bool do_reconfigure_desk_only)
@@ -2011,7 +2013,8 @@ void DrawIconGrid(int erase)
 
 	if (HilightDesks) {
 		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
-			if (fp->m->virtual_scr.CurrentDesk != tmp ||
+			if (fp->disabled ||
+			   fp->m->virtual_scr.CurrentDesk != tmp ||
 			   (monitor_to_track != NULL &&
 			   strcmp(fp->m->si->name, monitor_to_track) != 0))
 				continue;
@@ -2319,7 +2322,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
   rectangle rec;
   Bool size_changed;
   Bool position_changed;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
+  struct fpmonitor *fp = fpmonitor_this(t->m);
 
   if (fp == NULL)
 	return;

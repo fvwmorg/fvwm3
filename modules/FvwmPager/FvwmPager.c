@@ -146,13 +146,14 @@ Bool is_transient = False;
 Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 Bool Swallowed = False;
+Bool fp_new_block = False;
 
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 void list_monitor_focus(unsigned long *);
 struct fpmonitor *fpmonitor_new(struct monitor *);
-void fpmonitor_remove(struct fpmonitor *);
+void fpmonitor_disable(struct fpmonitor *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -162,19 +163,18 @@ fpmonitor_new(struct monitor *m)
 	fp = fxcalloc(1, sizeof(*fp));
 	fp->CPagerWin = fxcalloc(1, ndesks * sizeof(*fp->CPagerWin));
 	fp->m = m;
+	fp->disabled = false;
 	TAILQ_INSERT_TAIL(&fp_monitor_q, fp, entry);
 
 	return (fp);
 }
 
-void fpmonitor_remove(struct fpmonitor *fp)
+void fpmonitor_disable(struct fpmonitor *fp)
 {
-	TAILQ_REMOVE(&fp_monitor_q, fp, entry);
+	fp->disabled = true;
 	for (int i = 0; i < ndesks; i++) {
-		XUnmapWindow(dpy, fp->CPagerWin[i]);
+		XMoveWindow(dpy, fp->CPagerWin[i], -32768,-32768);
 	}
-	free(fp->CPagerWin);
-	free(fp);
 }
 
 struct fpmonitor *
@@ -420,9 +420,10 @@ int main(int argc, char **argv)
 		 MX_MONITOR_FOCUS);
 
   RB_FOREACH(mon, monitors, &monitor_q) {
+	struct fpmonitor *fp;
+	fp = fpmonitor_new(mon);
 	if (mon->flags & MONITOR_DISABLED)
-		continue;
-	(void)fpmonitor_new(mon);
+		fp->disabled = true;
   }
 
   ParseOptions();
@@ -1559,19 +1560,25 @@ void list_config_info(unsigned long *body)
 			return;
 
 		if (flags & MONITOR_DISABLED) {
-			m = NULL;
-			m = fpmonitor_by_name(mname);
-			if (m != NULL) {
-				fpmonitor_remove(m);
+			fp = fpmonitor_by_name(mname);
+			if (fp != NULL) {
+				bool disabled = fp->disabled;
+				fpmonitor_disable(fp);
+				if (!disabled)
+					ReConfigureAll();
 			}
 			return;
 		}
 
 		if ((fp = fpmonitor_this(tm)) == NULL) {
+			if (fp_new_block)
+				return;
+			fp_new_block = True;
 			fp = fpmonitor_new(tm);
 			fp->m->flags |= MONITOR_NEW;
 		}
 
+		fp->disabled = false;
 		fp->scr_width = scr_width;
 		fp->scr_height = scr_height;
 		fp->m->dx = dx;
@@ -1594,10 +1601,10 @@ void list_config_info(unsigned long *body)
 		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / fpmonitor_get_all_heights();
 
 		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
-			fprintf(stderr, "UPDATING MONITOR: %s\n", fp->m->si->name);
 			fp->m->flags &= ~MONITOR_NEW;
 			initialize_fpmonitor_windows(fp);
 			ReConfigureAll();
+			fp_new_block = False;
 		}
 
 	} else if (StrEquals(token, "DesktopSize")) {
@@ -2492,7 +2499,9 @@ void ExitPager(void)
   struct fpmonitor *fp, *fp1;
 
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
-    fpmonitor_remove(fp);
+	TAILQ_REMOVE(&fp_monitor_q, fp, entry);
+	free(fp->CPagerWin);
+	free(fp);
   }
 
   if (is_transient)

@@ -31,7 +31,7 @@ struct fpmonitor {
 
 	int scr_width; /* Size of DisplayWidth() */
 	int scr_height; /* Size of DisplayHeight() */
-
+	bool disabled;
 	TAILQ_ENTRY(fpmonitor) entry;
 };
 TAILQ_HEAD(fpmonitors, fpmonitor);
