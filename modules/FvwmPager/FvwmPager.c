@@ -776,17 +776,6 @@ void list_configure(unsigned long *body)
   t = Start;
   newm = monitor_by_output((int)cfgpacket->monitor_id);
 
-  /* FIXME: monitor_by_output will never be NULL.
-   * It returns RB_MIN not monitor_get_current();
-   */
-  if (newm == NULL) {
-	  fvwm_debug(__func__, "monitor was null with ID: %d\n",
-                     (int)cfgpacket->monitor_id);
-	  fvwm_debug(__func__, "using current montior\n");
-
-	  newm = monitor_get_current();
-  }
-
   while( (t != NULL) && (t->w != target_w))
   {
 	  if (t->m != newm) {
