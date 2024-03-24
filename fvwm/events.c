@@ -1831,6 +1831,9 @@ void monitor_update_ewmh(void)
 			set_ewmhc_strut_values(m, ewbs);
 		}
 		EWMH_Init(m);
+
+		/* Clear the flag now that it's been registered. */
+		m->flags &= ~MONITOR_NEW;
 	}
 
 	TAILQ_FOREACH_SAFE(mo, &monitorsold_q, oentry, mo1) {
@@ -1842,14 +1845,9 @@ void monitor_update_ewmh(void)
 
 	BroadcastMonitorList(NULL);
 
-	/* Clear the new status as we're done with it now. */
-	RB_FOREACH(m, monitors, &monitor_q)
-		m->flags &= ~MONITOR_NEW;
-
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
 		update_fvwm_monitor(t);
 	}
-
 }
 
 void

@@ -613,13 +613,13 @@ out:
 		if (!(m->flags & (MONITOR_FOUND|MONITOR_NEW))) {
 			m->flags |= MONITOR_DISABLED;
 			m->emit |= MONITOR_DISABLED;
-		} else if (m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) {
+		} else if ((m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) ==
+			(MONITOR_FOUND|MONITOR_DISABLED)) {
 			m->flags &= ~MONITOR_DISABLED;
 		} else {
-			m->emit |= MONITOR_ENABLED;
+			m->flags |= MONITOR_ENABLED;
 		}
 		m->flags &= ~MONITOR_FOUND;
-
 	}
 	/* Now that all monitors have been inserted, assign them a number from
 	 * 0 -> n so that they can be referenced in order.

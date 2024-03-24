@@ -2417,8 +2417,15 @@ int main(int argc, char **argv)
 	LoadWindowStates(state_filename);
 
 	is_tracking_shared = false;
-	RB_FOREACH(m, monitors, &monitor_q)
+	RB_FOREACH(m, monitors, &monitor_q) {
 		EWMH_Init(m);
+
+		/* Having initialised the monitor at startup here, we can
+		 * remove this flag, as the monitor is no longer considered
+		 * new.
+		 */
+		m->flags &= ~MONITOR_NEW;
+	}
 
 	SetRCDefaults();
 	flush_window_updates();
