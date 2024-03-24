@@ -295,6 +295,7 @@ void initialize_pager(void);
 void initialize_fpmonitor_windows(struct fpmonitor *);
 void initialize_viz_pager(void);
 Pixel GetSimpleColor(char *name);
+void set_desk_size(bool);
 void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);

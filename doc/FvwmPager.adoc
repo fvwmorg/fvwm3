@@ -563,6 +563,29 @@ is an alias for this option and works the same.
 *FvwmPager: NoSeparators::
   Turns off the lines separating the pages of the virtual desktop.
 
+== SENDING COMMANDS
+
+Using the _SendToModule_ command, _FvwmPager_ can be sent the following
+list of commands: *Monitor*, *CurrentMonitor*, *DeskLabels*, *NoDeskLabels*,
+*MonitorLabels*, *NoMonitorLabels*, *CurrentDeskPerMonitor*,
+*CurrentDeskGlobal*, *IsShared*, and *IsNotShared*. Each command functions
+identically to its configuration option, changing the configuration of the
+running pager.
+
+**Note**: these commands work only on the running instance only, to make
+any changes permanent, update the relevant config file.
+
+For example, you can tell a running instance of _FvwmPager_ to track a
+specific monitor by sending it the following command:
+
+....
+SendToModule FvwmPager Monitor RandRname
+....
+
+This will either change which monitor is being shown or tell the pager to
+only show a specific monitor. Note that the special value of *none* will
+show all windows on all monitors.
+
 == AUTHOR
 
 Robert Nation +
