@@ -726,8 +726,8 @@ def printmenu(name, icon, command):
         if not (iconfile == '' or iconfile == None) and os.path.isfile(iconfile):
             iconfile = '%'+iconfile+'%'
         else:
+            vprint(f"{iconfile} icon or default icon not found!")
             iconfile = ''
-            sys.stderr.write("%s icon or default icon not found!\n")
     printtext('+ "%s%s" %s' % (escapemenutext(name), iconfile, command))
 
 def parsemenus(menulist, desktop, desktop_entries=[]):
