@@ -2699,7 +2699,6 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		BroadcastRestackAllWindows();
 	}
 done:
-	BroadcastMonitorList(NULL);
 	EWMH_SetCurrentDesktop(m);
 
 	return;
