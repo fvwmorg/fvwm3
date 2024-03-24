@@ -152,6 +152,7 @@ static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 void list_monitor_focus(unsigned long *);
 struct fpmonitor *fpmonitor_new(struct monitor *);
+void fpmonitor_remove(struct fpmonitor *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -164,6 +165,16 @@ fpmonitor_new(struct monitor *m)
 	TAILQ_INSERT_TAIL(&fp_monitor_q, fp, entry);
 
 	return (fp);
+}
+
+void fpmonitor_remove(struct fpmonitor *fp)
+{
+	TAILQ_REMOVE(&fp_monitor_q, fp, entry);
+	for (int i = 0; i < ndesks; i++) {
+		XUnmapWindow(dpy, fp->CPagerWin[i]);
+	}
+	free(fp->CPagerWin);
+	free(fp);
 }
 
 struct fpmonitor *
@@ -194,8 +205,8 @@ fpmonitor_this(struct monitor *m_find)
 	}
 	if (monitor_to_track == NULL)
 		m = monitor_get_current();
-
-	m = monitor_resolve_name(monitor_to_track);
+	else
+		m = monitor_resolve_name(monitor_to_track);
 
 	if (m == NULL)
 		m = monitor_get_current();
@@ -408,8 +419,11 @@ int main(int argc, char **argv)
 		 MX_PROPERTY_CHANGE|
 		 MX_MONITOR_FOCUS);
 
-  RB_FOREACH(mon, monitors, &monitor_q)
+  RB_FOREACH(mon, monitors, &monitor_q) {
+	if (mon->flags & MONITOR_DISABLED)
+		continue;
 	(void)fpmonitor_new(mon);
+  }
 
   ParseOptions();
   if (is_transient)
@@ -458,7 +472,7 @@ int main(int argc, char **argv)
 
   /* open a pager window */
   initialise_common_pager_fragments();
-  initialize_pager(NULL);
+  initialize_pager();
 
   if (is_transient)
   {
@@ -920,29 +934,29 @@ void list_new_page(unsigned long *body)
 		return;
 
 	if ((fp = fpmonitor_this(m)) == NULL)
-		fp = fpmonitor_new(m);
+		return;
 
-  fp->virtual_scr.Vx = body[0];
-  fp->virtual_scr.Vy = body[1];
-  if (fp->m->virtual_scr.CurrentDesk != body[2])
-  {
-      /* first handle the new desk */
-      body[0] = body[2];
-      list_new_desk(body);
-  }
-  if (fp->virtual_scr.VxPages != body[5] || fp->virtual_scr.VyPages != body[6])
-  {
-    fp->virtual_scr.VxPages = body[5];
-    fp->virtual_scr.VyPages = body[6];
-    fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
-    fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
-    fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
-    fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
-    ReConfigure();
-  }
-  MovePage(False);
-  MoveStickyWindow(True, False);
-  Hilight(FocusWin,True);
+	fp->virtual_scr.Vx = body[0];
+	fp->virtual_scr.Vy = body[1];
+	if (fp->m->virtual_scr.CurrentDesk != body[2]) {
+		/* first handle the new desk */
+		body[0] = body[2];
+		list_new_desk(body);
+	}
+	if (fp->virtual_scr.VxPages != body[5] || fp->virtual_scr.VyPages != body[6])
+	{
+		fp->virtual_scr.VxPages = body[5];
+		fp->virtual_scr.VyPages = body[6];
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
+		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
+		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
+		ReConfigure();
+	}
+
+	MovePage(False);
+	MoveStickyWindow(True, False);
+	Hilight(FocusWin,True);
 }
 
 /*
@@ -1541,24 +1555,23 @@ void list_config_info(unsigned long *body)
 		monitor_refresh_module(dpy);
 
 		tm = monitor_resolve_name(mname);
+		if (tm == NULL)
+			return;
 
-		if (tm != NULL) {
-			fp = fpmonitor_this(tm);
-
-			if (fp != NULL) {
-				goto assign;
+		if (flags & MONITOR_DISABLED) {
+			m = NULL;
+			m = fpmonitor_by_name(mname);
+			if (m != NULL) {
+				fpmonitor_remove(m);
 			}
-		} else {
-			if (flags & MONITOR_DISABLED) {
-				fprintf(stderr, "%s: DISABLED\n", mname);
-				/*** FIXME: Do something here. ***/
-				return;
-			}
+			return;
 		}
 
-		fp = fpmonitor_new(tm);
-		fp->m->flags |= MONITOR_NEW;
-assign:
+		if ((fp = fpmonitor_this(tm)) == NULL) {
+			fp = fpmonitor_new(tm);
+			fp->m->flags |= MONITOR_NEW;
+		}
+
 		fp->scr_width = scr_width;
 		fp->scr_height = scr_height;
 		fp->m->dx = dx;
@@ -1580,23 +1593,11 @@ assign:
 		fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / fpmonitor_get_all_widths();
 		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / fpmonitor_get_all_heights();
 
-		/* This comes from DesktopSize so probably not required. */
-#if 0
-
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
-		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
-		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
-#endif
-
 		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
 			fprintf(stderr, "UPDATING MONITOR: %s\n", fp->m->si->name);
 			fp->m->flags &= ~MONITOR_NEW;
+			initialize_fpmonitor_windows(fp);
 			ReConfigureAll();
-#if 0
-			SendInfo(fd,"Send_WindowList",0);
-			initialize_pager(fp);
-#endif
 		}
 
 	} else if (StrEquals(token, "DesktopSize")) {
@@ -1895,13 +1896,15 @@ ImagePath = NULL;
       }
       continue;
     }
+	/* Why are we doing anything here? */
     else if (StrEquals(token, "Monitor")) {
 	    char		*mname;
-	    struct monitor	*m;
-	    struct fpmonitor	*fp;
+	    //struct monitor	*m;
+	    //struct fpmonitor	*fp;
 
 	    next = GetNextToken(next, &mname);
-
+#if 0
+		/* Why are we looping here? */
 	    RB_FOREACH(m, monitors, &monitor_q) {
 		if ((fp = fpmonitor_this(m)) == NULL)
 			fp = fpmonitor_new(m);
@@ -1912,6 +1915,7 @@ ImagePath = NULL;
 		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
 		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
 	    }
+#endif
 	    continue;
     }
 
@@ -2488,9 +2492,7 @@ void ExitPager(void)
   struct fpmonitor *fp, *fp1;
 
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
-    TAILQ_REMOVE(&fp_monitor_q, fp, entry);
-    free(fp->CPagerWin);
-    free(fp);
+    fpmonitor_remove(fp);
   }
 
   if (is_transient)

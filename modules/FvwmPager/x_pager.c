@@ -247,8 +247,8 @@ static struct fpmonitor *mon_from_xy(int x, int y, bool allow_null)
 	if (monitor_to_track == NULL && monitor_mode != MONITOR_TRACKING_G) {
 		if (allow_null)
 			fp = NULL;
-		x %= monitor_get_all_widths();
-		y %= monitor_get_all_heights();
+		x %= fpmonitor_get_all_widths();
+		y %= fpmonitor_get_all_heights();
 
 		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
 		if (x >= m->m->si->x && x < m->m->si->x + m->m->si->w &&
@@ -714,7 +714,21 @@ void initialise_common_pager_fragments(void)
 	}
 }
 
-void initialize_pager(struct fpmonitor *fp)
+void initialize_fpmonitor_windows(struct fpmonitor *fp)
+{
+	rectangle vp = set_vp_size_and_loc(fp, false);
+	for (int i = 0; i < ndesks; i++) {
+		fp->CPagerWin[i] = XCreateWindow(dpy, Desks[i].w,
+				-32768, -32768, vp.width, vp.height, 0,
+				CopyFromParent, InputOutput,
+				CopyFromParent, Desks[i].fp_mask,
+				&Desks[i].fp_attr);
+		draw_desk_background(i, vp.width, vp.height, fp);
+		XMapRaised(dpy, fp->CPagerWin[i]);
+	}
+}
+
+void initialize_pager(void)
 {
   XWMHints wmhints;
   XClassHint class1;
@@ -727,10 +741,8 @@ void initialize_pager(struct fpmonitor *fp)
   extern char *BalloonFont;
   char dash_list[2];
   FlocaleFont *balloon_font;
+  struct fpmonitor *fp = fpmonitor_this(NULL);
   struct fpmonitor *m;
-
-  if (fp == NULL)
-    fp = fpmonitor_this(NULL);
 
   int VxPages = fp->virtual_scr.VxPages, VyPages = fp->virtual_scr.VyPages;
 
@@ -1061,28 +1073,24 @@ void initialize_pager(struct fpmonitor *fp)
 	attributes.background_pixel = (Desks[i].highcolorset < 0) ? hi_pix
 	  : Colorset[Desks[i].highcolorset].bg;
       }
-
-      TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	vp = set_vp_size_and_loc(m, false);
-	m->CPagerWin[i] = XCreateWindow(dpy, Desks[i].w, -32768, -32768,
-				     vp.width, vp.height, 0,
-				     CopyFromParent, InputOutput,
-				     CopyFromParent, valuemask, &attributes);
-	draw_desk_background(i, vp.width, vp.height, m);
-	XMapRaised(dpy, m->CPagerWin[i]);
-      }
     }
     else
     {
       draw_desk_background(i, 0, 0, fp);
     }
 
+    Desks[i].fp_mask = valuemask;
+    Desks[i].fp_attr = attributes;
     XMapRaised(dpy,Desks[i].w);
     XMapRaised(dpy,Desks[i].title_w);
 
     /* get font for balloon */
     Desks[i].balloon.Ffont = balloon_font;
     Desks[i].balloon.height = Desks[i].balloon.Ffont->height + 1;
+  }
+
+  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+    initialize_fpmonitor_windows(m);
   }
   initialize_balloon_window();
   XMapRaised(dpy,Scr.Pager_w);
