@@ -126,7 +126,7 @@ static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
-static struct fpmonitor *mon_from_xy(int x, int y, bool allow_null);
+static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
@@ -239,7 +239,7 @@ int fpmonitor_get_all_heights(void)
 	return (fp->scr_height);
 }
 
-static struct fpmonitor *mon_from_xy(int x, int y, bool allow_null)
+static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null)
 {
 	struct fpmonitor *m;
 	struct fpmonitor *fp = fpmonitor_this(NULL);
@@ -1310,7 +1310,7 @@ void DispatchEvent(XEvent *Event)
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
-	  fp = mon_from_xy(x * fp->virtual_scr.VWidth / desk_w,
+	  fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / desk_w,
 			   y * fp->virtual_scr.VHeight / desk_h, true);
 	  if (fp == NULL)
 	    break;
@@ -1334,7 +1334,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	fp = mon_from_xy(x * fp->virtual_scr.VWidth / icon.width,
+	fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / icon.width,
 			 y * fp->virtual_scr.VHeight / icon.height, true);
 	if (fp == NULL)
 	  break;
@@ -2059,7 +2059,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   /* Determine which monitor occupied the clicked region. */
   vx = (desk_w == 0) ? 0 : Event->xbutton.x * fp->virtual_scr.VWidth / desk_w;
   vy = (desk_h == 0) ? 0 : Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
-  fp = mon_from_xy(vx, vy, true);
+  fp = fpmonitor_from_xy(vx, vy, true);
   if (fp == NULL)
     return;
 
@@ -2113,7 +2113,7 @@ void IconSwitchPage(XEvent *Event)
 	icon.width;
   vy = (icon.height == 0) ? 0 : Event->xbutton.y * fp->virtual_scr.VHeight /
 	icon.height;
-  fp = mon_from_xy(vx, vy, true);
+  fp = fpmonitor_from_xy(vx, vy, true);
   if (fp == NULL)
     return;
 
@@ -2756,7 +2756,7 @@ void MoveWindow(XEvent *Event)
 		XTranslateCoordinates(dpy, Scr.Pager_w, Desks[NewDesk].w,
 				      x - rec.x, y - rec.y, &rec.x, &rec.y, &dumwin);
 
-		fp = mon_from_xy(rec.x * fp->virtual_scr.VWidth / desk_w,
+		fp = fpmonitor_from_xy(rec.x * fp->virtual_scr.VWidth / desk_w,
 				rec.y * fp->virtual_scr.VHeight / desk_h, false);
 		pagerrec_to_fvwm(&rec, false, fp);
 		rec.x = rec.x - fp->virtual_scr.Vx;
@@ -3161,7 +3161,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	} else {
 		rec.x = x - rec.x;
 		rec.y = y - rec.y;
-		fp = mon_from_xy(rec.x * fp->virtual_scr.VWidth / icon.width,
+		fp = fpmonitor_from_xy(rec.x * fp->virtual_scr.VWidth / icon.width,
 				rec.y * fp->virtual_scr.VHeight / icon.height, false);
 		pagerrec_to_fvwm(&rec, true, fp);
 		rec.x = rec.x - fp->virtual_scr.Vx;
