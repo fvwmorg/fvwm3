@@ -1567,7 +1567,7 @@ void list_config_info(unsigned long *body)
 				bool disabled = fp->disabled;
 				fpmonitor_disable(fp);
 				if (!disabled)
-					ReConfigureAll();
+					ReConfigure();
 			}
 			return;
 		}
@@ -1605,10 +1605,9 @@ void list_config_info(unsigned long *body)
 		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
 			fp->m->flags &= ~MONITOR_NEW;
 			initialize_fpmonitor_windows(fp);
-			ReConfigureAll();
 			fp_new_block = False;
 		}
-
+		ReConfigure();
 	} else if (StrEquals(token, "DesktopSize")) {
 		int dx, dy;
 		struct fpmonitor *m;
