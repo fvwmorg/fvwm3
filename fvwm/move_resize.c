@@ -2093,7 +2093,7 @@ static void _move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		}
 		/* It's possible that we've received a command such as:
 		 *
-		 * MoveToPage HDMI2 0 1
+		 * MoveToPage screen HDMI2 0 1
 		 *
 		 * In which case, move the window to the selected monitor,
 		 * first.
