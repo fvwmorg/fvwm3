@@ -713,7 +713,8 @@ int GetMoveArguments(FvwmWindow *fw,
 	int scr_h = monitor_get_all_heights();
 	Bool use_working_area = True;
 	Bool global_flag_parsed = False;
-	int use_virt_scr = 0;
+	Bool use_virt_x = False;
+	Bool use_virt_y = False;
 	int retval = 0;
 
 	if (!paction)
@@ -812,7 +813,7 @@ int GetMoveArguments(FvwmWindow *fw,
 				retval++;
 				if (n == 2)
 				{
-					use_virt_scr++;
+					use_virt_x = True;
 				}
 			}
 		}
@@ -830,7 +831,7 @@ int GetMoveArguments(FvwmWindow *fw,
 				retval++;
 				if (n == 2)
 				{
-					use_virt_scr += 2;
+					use_virt_y = True;
 				}
 			}
 		}
@@ -839,15 +840,13 @@ int GetMoveArguments(FvwmWindow *fw,
 			/* make sure warping is off for interactive moves */
 			*fWarp = False;
 		}
-		else
+		else if (use_virt_x || use_virt_y)
 		{
-			/* Adjust based on use_virt_scr
-			 * 0: none, 1: x only, 2: y only, 3: both
-			 */
+			/* Adjust position when using virtual screen. */
 			struct monitor *m = FindScreenOfXY(
 					pFinal->x, pFinal->y);
-			pFinal->x -= (use_virt_scr % 2) * m->virtual_scr.Vx;
-			pFinal->y -= (use_virt_scr / 2) * m->virtual_scr.Vy;
+			pFinal->x -= (use_virt_x) ? m->virtual_scr.Vx : 0;
+			pFinal->y -= (use_virt_y) ? m->virtual_scr.Vy : 0;
 		}
 	}
 	else
