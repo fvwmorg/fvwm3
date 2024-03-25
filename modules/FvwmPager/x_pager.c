@@ -127,6 +127,7 @@ static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null);
+static int fpmonitor_count(void);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
@@ -237,6 +238,16 @@ int fpmonitor_get_all_heights(void)
 	if (fp->scr_height <= 0)
 		return (monitor_get_all_heights());
 	return (fp->scr_height);
+}
+
+int fpmonitor_count(void)
+{
+	struct fpmonitor *fp;
+	int c = 0;
+
+	TAILQ_FOREACH(fp, &fp_monitor_q, entry)
+		c++;
+	return (c);
 }
 
 static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null)
@@ -1275,10 +1286,17 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	  SwitchToDeskAndPage(i,Event);
-	/* Title clicks only change desk in global configuration. */
+	/* Title clicks only change desk in global configuration, or when the
+	 * pager is being asked to track a specific monitor.  Or, regardless
+	 * of the DesktopConfiguration setting, there is only one monitor in
+	 * use.
+	 */
 	else if(Event->xany.window == Desks[i].title_w &&
-		monitor_mode == MONITOR_TRACKING_G)
-	  SwitchToDesk(i, NULL);
+		((monitor_mode == MONITOR_TRACKING_G) ||
+		 (monitor_to_track != NULL) || (fpmonitor_count() == 1))) {
+			SwitchToDesk(i, NULL);
+			break;
+	}
       }
       if(Event->xany.window == icon_win)
       {
