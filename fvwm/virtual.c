@@ -78,7 +78,7 @@
 		char	*cmd;						    \
 		xasprintf(&cmd,						    \
 		    "All (!Screen %s, Desk %d, CurrentPage, !CirculateHit) "\
-		    "MoveToPage %s $[w.pagex] $[w.pagey]",		    \
+		    "MoveToPage screen %s $[w.pagex] $[w.pagey]",	    \
 		    (m)->si->name, (d), (m)->si->name);			    \
 		execute_function_override_window(			    \
 			NULL, NULL, cmd, NULL, 0, NULL);		    \
@@ -626,7 +626,7 @@ static void MapDesk(struct monitor *m, int desk, Bool grab)
 					    m->virtual_scr.CurrentDesk);
 
 					xasprintf(&cmd,
-					    "MoveToPage %s $[w.pagex] $[w.pagey]",
+					    "MoveToPage screen %s $[w.pagex] $[w.pagey]",
 					    m->si->name);
 
 					/* execute_function_override_window()
@@ -2764,7 +2764,7 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 		RB_FOREACH(m, monitors, &monitor_q) {
 			if (m->virtual_scr.CurrentDesk == desk) {
 				xasprintf(&cmd,
-				    "MoveToPage %s $[w.pagex] $[w.pagey]",
+				    "MoveToPage screen %s $[w.pagex] $[w.pagey]",
 				    m->si->name);
 				execute_function_override_window(
 					NULL, NULL, cmd, NULL, 0, fw);
