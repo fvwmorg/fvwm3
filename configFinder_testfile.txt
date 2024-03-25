@@ -1,0 +1,6 @@
+//Comment
+/*Block
+
+Comment*/
+#define Name value
+#define Name2

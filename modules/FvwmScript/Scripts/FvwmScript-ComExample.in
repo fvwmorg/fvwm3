@@ -8,8 +8,8 @@ Begin
     Set $pid = (GetPid)
     Set $ComName = {ComExample-}$pid
     # defined when build
-    Set $DATADIR = {xFVWM_DATADIRx}
-    Set $Perl = {xPERLx}
+    Set $DATADIR = {@FVWM_DATADIR@}
+    Set $Perl = {@PERL_EXECUTABLE@}
     # run fvwm-script-ComExample.pl
     Do {Exec }$Perl{ -w }$DATADIR{/fvwm-script-ComExample.pl --com-name=}$ComName{ &}
 
