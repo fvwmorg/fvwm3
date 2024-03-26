@@ -1164,12 +1164,8 @@ static signed int expand_vars_extended(
 		case VAR_POINTER_CX:
 			is_x = True;
 		}
-		if (FQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
-				  &JunkX, &JunkY, &x, &y, &JunkMask) == False)
-		{
-			/* pointer is on a different screen, don't expand */
-			return -1;
-		}
+		FQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
+				  &JunkX, &JunkY, &x, &y, &JunkMask);
 		val = (is_x) ? x : y;
 		break;
 	case VAR_POINTER_SCREEN:

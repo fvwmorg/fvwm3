@@ -1041,13 +1041,9 @@ void focus_grab_buttons_on_pointer_window(void)
 	Window w;
 	FvwmWindow *fw;
 
-	if (!FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY, &JunkX,
-		    &JunkY, &JunkMask))
-	{
-		/* pointer is not on this screen */
-		return;
-	}
+		    &JunkY, &JunkMask);
 	if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
 	{
 		/* pointer is not over a window */

@@ -1120,14 +1120,9 @@ static void execute_complex_function(
 		FCheckMaskEvent(dpy, ButtonPressMask, &d);
 		break;
 	default:
-		if (FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y,
-			    &JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
-		}
+			    &JunkX, &JunkY, &JunkMask);
 		button = 0;
 		break;
 	}

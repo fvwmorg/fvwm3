@@ -183,7 +183,7 @@ int FPutBackEvent(
 	Display *display, XEvent *event);
 int FQLength(
 	Display *display);
-Bool FQueryPointer(
+void FQueryPointer(
 	Display *display, Window w, Window *root_return, Window *child_return,
 	int *root_x_return, int *root_y_return, int *win_x_return,
 	int *win_y_return, unsigned int *mask_return);
