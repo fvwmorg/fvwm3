@@ -707,21 +707,10 @@ void module_input_execute(struct fmodule_input *input)
 	 * This is OK now that the Pager uses "Move pointer"
 	 * A real fix would be for the modules to pass the button press coords
 	 */
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		    &e.xbutton.x_root, &e.xbutton.y_root, &e.xbutton.state) ==
-	    False)
-	{
-		/* pointer is not on this screen */
-		/* If a module does XUngrabPointer(), it can now get proper
-		 * Popups */
-		e.xbutton.window = Scr.Root;
-		ecc.w.fw = NULL;
-	}
-	else
-	{
-		e.xbutton.window = input->window;
-	}
+		    &e.xbutton.x_root, &e.xbutton.y_root, &e.xbutton.state);
+	e.xbutton.window = input->window;
 	e.xbutton.subwindow = None;
 	e.xbutton.button = 1;
 	/* If a module does XUngrabPointer(), it can now get proper Popups */

@@ -1372,18 +1372,18 @@ static Bool _test_for_motion(int x0, int y0)
 	/* However, some special mouse (e.g., a touchpad with the
 	 * synaptic driver) may handle a double click in a special way
 	 * (for dragging through short touching and holding down the
-	 * finger on the touchpad). Bascially, when you execute a
+	 * finger on the touchpad). Basically, when you execute a
 	 * double click the first button release is queued after the
-	 * second _physical_ mouse release happen. It seems that
-	 * FQueryPointer may not work as expected: it does not see
-	 * that the button is released on a double click.  So, we need
-	 * to check for a button press in the future to avoid a fvwm
+	 * second _physical_ mouse release happen. So, we need to
+	 * check for a button press in the future to avoid a fvwm
 	 * lockup! (olicha 2004-01-31) */
 
-	for (x = x0, y = y0; FQueryPointer(
-		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
-		     &x, &y, &mask) == True; usleep(20000))
+	for (x = x0, y = y0; True; usleep(20000))
 	{
+		FQueryPointer(
+		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+		     &x, &y, &mask);
+
 		if ((mask & DEFAULT_ALL_BUTTONS_MASK) == 0)
 		{
 			/* all buttons are released */
@@ -1408,7 +1408,7 @@ static Bool _test_for_motion(int x0, int y0)
 		}
 	}
 
-	/* pointer has moved off screen */
+	/* This won't happen */
 	return True;
 }
 
@@ -4591,17 +4591,16 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 {
 	Window child;
 	Window root;
-	Bool f;
 	evh_args_t ea;
 	exec_context_changes_t ecc;
 	XEvent e;
 	FvwmWindow *fw;
 
-	f = FQueryPointer(
+	FQueryPointer(
 		dpy, Scr.Root, &root, &child, &e.xcrossing.x_root,
 		&e.xcrossing.y_root, &e.xcrossing.x, &e.xcrossing.y,
 		&JunkMask);
-	if (f == False || child == None)
+	if (child == None)
 	{
 		return;
 	}
@@ -4691,11 +4690,8 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	int use_wait_cursor;
 	XEvent e;
 
-	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
-			  &JunkX, &JunkY, &mask) == False)
-	{
-		/* pointer is on a different screen - that's okay here */
-	}
+	FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+			  &JunkX, &JunkY, &mask);
 	mask &= DEFAULT_ALL_BUTTONS_MASK;
 	if (mask == 0)
 	{
@@ -4732,14 +4728,9 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		}
 		else
 		{
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
-				    &JunkX, &JunkY, &JunkX, &JunkY, &mask) ==
-			    False)
-			{
-				/* pointer is on a different screen - that's
-				 * okay here */
-			}
+				    &JunkX, &JunkY, &JunkX, &JunkY, &mask);
 			mask &= DEFAULT_ALL_BUTTONS_MASK;
 			usleep(1);
 		}

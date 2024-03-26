@@ -581,22 +581,13 @@ static int GetOnePositionArgument(
 	case 'm':
 	case 'M':
 	{
-	        int x;
+		int x;
 		int y;
 
-		if (
-			FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,
-			    &JunkY, &x, &y, &JunkMask) == False)
-		{
-			/* pointer is on a different screen - that's okay here
-			 */
-			final_pos = 0;
-		}
-		else
-		{
-			final_pos = (is_x) ? x : y;
-		}
+			    &JunkY, &x, &y, &JunkMask);
+		final_pos = (is_x) ? x : y;
 		s1++;
 		break;
 	}
@@ -1528,14 +1519,9 @@ static void InteractiveMove(
 
 	if (do_start_at_pointer)
 	{
-		if (FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &drag.x,
-			    &drag.y, &JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			drag.x = 0;
-			drag.y = 0;
-		}
+			    &drag.y, &JunkX, &JunkY, &JunkMask);
 	}
 	else
 	{
@@ -1746,19 +1732,12 @@ static void AnimatedMoveAnyWindow(
 		}
 		if (fWarpPointerToo == True)
 		{
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &JunkX, &JunkY, &pointer.x, &pointer.y,
-				    &JunkMask) == False)
-			{
-				/* pointer is on a different screen */
-				pointer = current;
-			}
-			else
-			{
-				pointer.x += current.x - last.x;
-				pointer.y += current.y - last.y;
-			}
+				    &JunkMask);
+			pointer.x += current.x - last.x;
+			pointer.y += current.y - last.y;
 			FWarpPointer(
 				dpy, None, Scr.Root, 0, 0, 0, 0, pointer.x,
 				pointer.y);
@@ -2694,19 +2673,11 @@ Bool move_loop(
 	/* prevent flicker when paging */
 	SET_WINDOW_BEING_MOVED_OPAQUE(fw, do_move_opaque);
 
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &p.x, &p.y,
-		    &JunkX, &JunkY, &button_mask) == False)
-	{
-		/* pointer is on a different screen */
-		p.x = 0;
-		p.y = 0;
-	}
-	else
-	{
-		p.x += offset.x;
-		p.y += offset.y;
-	}
+		    &JunkX, &JunkY, &button_mask);
+	p.x += offset.x;
+	p.y += offset.y;
 	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 	orig = p;
 
@@ -2783,19 +2754,11 @@ Bool move_loop(
 			fev_make_null_event(&e, dpy);
 			e.type = MotionNotify;
 			e.xmotion.time = fev_get_evtime();
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &p2.x,
-				    &p2.y, &JunkX, &JunkY, &JunkMask) == True)
-			{
-				e.xmotion.x_root = p2.x;
-				e.xmotion.y_root = p2.y;
-			}
-			else
-			{
-				/* pointer is on a different screen */
-				e.xmotion.x_root = 0;
-				e.xmotion.y_root = 0;
-			}
+				    &p2.y, &JunkX, &JunkY, &JunkMask);
+			e.xmotion.x_root = p2.x;
+			e.xmotion.y_root = p2.y;
 			e.xmotion.state = JunkMask;
 			e.xmotion.same_screen = True;
 			break;
@@ -2842,25 +2805,18 @@ Bool move_loop(
 
 			/* Query the pointer to catch the latest information.
 			 * This *is* necessary. */
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &JunkMask) == True)
-			{
-				fev_make_null_event(&e2, dpy);
-				e2.type = MotionNotify;
-				e2.xmotion.time = fev_get_evtime();
-				e2.xmotion.x_root = x;
-				e2.xmotion.y_root = y;
-				e2.xmotion.state = JunkMask;
-				e2.xmotion.same_screen = True;
-				e = e2;
-				fev_fake_event(&e);
-			}
-			else
-			{
-				/* pointer is on a different screen,
-				 * ignore event */
-			}
+				    &y, &JunkX, &JunkY, &JunkMask);
+			fev_make_null_event(&e2, dpy);
+			e2.type = MotionNotify;
+			e2.xmotion.time = fev_get_evtime();
+			e2.xmotion.x_root = x;
+			e2.xmotion.y_root = y;
+			e2.xmotion.state = JunkMask;
+			e2.xmotion.same_screen = True;
+			e = e2;
+			fev_fake_event(&e);
 		}
 		is_fake_event = False;
 		/* Handle a limited number of key press events to allow
@@ -4380,14 +4336,9 @@ static Bool _resize_window(F_CMD_ARGS)
 	{
 		position toff = { 0, 0 };
 
-		if (FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed.x,
-			    &stashed.y, &JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			stashed.x = 0;
-			stashed.y = 0;
-		}
+			    &stashed.y, &JunkX, &JunkY, &JunkMask);
 		_resize_step(
 			exc, stashed, &toff, drag, orig,
 			&motion, do_resize_opaque, True);
@@ -4462,27 +4413,19 @@ static Bool _resize_window(F_CMD_ARGS)
 
 			/* Query the pointer to catch the latest information.
 			 * This *is* necessary. */
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &JunkMask) == True)
-			{
-				/* Must NOT use button_mask here, or resize
-				 * will not work with num lock */
-				fev_make_null_event(&e2, dpy);
-				e2.type = MotionNotify;
-				e2.xmotion.time = fev_get_evtime();
-				e2.xmotion.x_root = x;
-				e2.xmotion.y_root = y;
-				e2.xmotion.state = JunkMask;
-				e2.xmotion.same_screen = True;
-				ev = e2;
-				fev_fake_event(&ev);
-			}
-			else
-			{
-				/* pointer is on a different screen,
-				 * ignore event */
-			}
+				    &y, &JunkX, &JunkY, &JunkMask);
+			
+			fev_make_null_event(&e2, dpy);
+			e2.type = MotionNotify;
+			e2.xmotion.time = fev_get_evtime();
+			e2.xmotion.x_root = x;
+			e2.xmotion.y_root = y;
+			e2.xmotion.state = JunkMask;
+			e2.xmotion.same_screen = True;
+			ev = e2;
+			fev_fake_event(&ev);
 		}
 
 		is_done = False;

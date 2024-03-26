@@ -425,14 +425,9 @@ int main(int argc, char **argv)
   ParseOptions();
   if (is_transient)
   {
-    if (FQueryPointer(
+    FQueryPointer(
 	  dpy, Scr.Root, &JunkRoot, &JunkChild, &pwindow.x, &pwindow.y, &JunkX,
-	  &JunkY, &JunkMask) == False)
-    {
-      /* pointer is on a different screen */
-      pwindow.x = 0;
-      pwindow.y = 0;
-    }
+	  &JunkY, &JunkMask);
     usposition = 1;
     xneg = 0;
     yneg = 0;

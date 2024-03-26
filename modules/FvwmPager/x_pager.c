@@ -1304,21 +1304,15 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	{
-	  if (FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY,&x, &y, &JunkMask) == False)
-	  {
-	    /* pointer is on a different screen - that's okay here */
-	  }
+	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
+			    &JunkX, &JunkY,&x, &y, &JunkMask);
 	  Scroll(x, y, i, False);
 	}
       }
       if(Event->xany.window == icon_win)
       {
-	if (FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
-			  &JunkX, &JunkY,&x, &y, &JunkMask) == False)
-	{
-	  /* pointer is on a different screen - that's okay here */
-	}
+	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+		  &JunkX, &JunkY,&x, &y, &JunkMask);
 	Scroll(x, y, -1, True);
       }
       /* Flush any pending scroll operations */
@@ -1398,8 +1392,8 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	{
-	  if (FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY,&x, &y, &JunkMask) == False)
+	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
+			    &JunkX, &JunkY,&x, &y, &JunkMask);
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
@@ -1426,8 +1420,8 @@ void DispatchEvent(XEvent *Event)
       }
       if(Event->xany.window == icon_win)
       {
-	if (FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
-			  &JunkX, &JunkY,&x, &y, &JunkMask) == False)
+	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+			  &JunkX, &JunkY,&x, &y, &JunkMask);
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
@@ -1464,21 +1458,15 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	{
-	  if (FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY,&x, &y, &JunkMask) == False)
-	  {
-	    /* pointer is on a different screen - that's okay here */
-	  }
+	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
+			    &JunkX, &JunkY,&x, &y, &JunkMask);
 	  Scroll(x, y, i, False);
 	}
       }
       if(Event->xany.window == icon_win)
       {
-	if (FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
-			  &JunkX, &JunkY,&x, &y, &JunkMask) == False)
-	{
-	  /* pointer is on a different screen - that's okay here */
-	}
+	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+			  &JunkX, &JunkY,&x, &y, &JunkMask);
 	Scroll(x, y, -1, True);
       }
 
@@ -2865,12 +2853,8 @@ void MoveWindow(XEvent *Event)
 			XDestroyWindow(dpy, t->PagerView);
 			t->PagerView = None;
 		}
-		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-				  &x, &y, &JunkX, &JunkY, &JunkMask) == False) {
-			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
-		}
+		FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+				  &x, &y, &JunkX, &JunkY, &JunkMask);
 		XUngrabPointer(dpy,CurrentTime);
 		XSync(dpy,0);
 
@@ -3300,13 +3284,9 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	if (moved && (abs(x - xi) < MoveThreshold && abs(y - yi) < MoveThreshold))
 			moved = 0;
 
-	if (KeepMoving)	{
-		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-				  &x, &y, &JunkX, &JunkY, &JunkMask) == False) {
-			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
-		}
+	if (KeepMoving) {
+		FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+				  &x, &y, &JunkX, &JunkY, &JunkMask);
 		XUngrabPointer(dpy, CurrentTime);
 		XSync(dpy, 0);
 		SendText(fd, "Silent Raise", t->w);
