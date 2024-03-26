@@ -71,8 +71,6 @@ static Bool lastFocusType;
 /* Last window which Fvwm gave the focus to NOT the window that really has the
  * focus */
 static FvwmWindow *ScreenFocus = NULL;
-/* Window which had focus before the pointer moved to a different screen. */
-static FvwmWindow *LastScreenFocus = NULL;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -253,27 +251,6 @@ static void _update_windowlist(
 	return;
 }
 
-static Bool _try_other_screen_focus(const FvwmWindow *fw)
-{
-	if (fw == NULL && !Scr.flags.is_pointer_on_this_screen)
-	{
-		FvwmWindow *sf;
-
-		sf = get_focus_window();
-		set_focus_window(NULL);
-		if (sf != NULL)
-		{
-			focus_grab_buttons(sf);
-		}
-		/* DV (25-Nov-2000): Don't give the Scr.NoFocusWin the focus
-		 * here. This would steal the focus from the other screen's
-		 * root window again. */
-		return True;
-	}
-
-	return False;
-}
-
 /*
  * Sets the input focus to the indicated window.
  */
@@ -293,10 +270,6 @@ static void _set_focus_to_fwin(
 		return;
 	}
 	_update_windowlist(fw, args->set_by, args->is_focus_by_flip_focus_cmd);
-	if (_try_other_screen_focus(fw) == True)
-	{
-		return;
-	}
 
 	if (fw && !args->do_forbid_warp)
 	{
@@ -1085,7 +1058,7 @@ void focus_grab_buttons_on_pointer_window(void)
 	return;
 }
 
-/* functions to access ScreenFocus, LastScreenFocus and PreviousFocus */
+/* functions to access ScreenFocus and PreviousFocus */
 FvwmWindow *get_focus_window(void)
 {
 	return ScreenFocus;
@@ -1094,28 +1067,6 @@ FvwmWindow *get_focus_window(void)
 void set_focus_window(FvwmWindow *fw)
 {
 	ScreenFocus = fw;
-
-	return;
-}
-
-FvwmWindow *get_last_screen_focus_window(void)
-{
-	return LastScreenFocus;
-}
-
-void set_last_screen_focus_window(FvwmWindow *fw)
-{
-	LastScreenFocus = fw;
-
-	return;
-}
-
-void update_last_screen_focus_window(FvwmWindow *fw)
-{
-	if (fw == LastScreenFocus)
-	{
-		LastScreenFocus = NULL;
-	}
 
 	return;
 }

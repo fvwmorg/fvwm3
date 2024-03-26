@@ -2709,17 +2709,6 @@ void CMD_Wait(F_CMD_ARGS)
 
 void CMD_Quit(F_CMD_ARGS)
 {
-	if (master_pid != getpid())
-	{
-		kill(master_pid, SIGTERM);
-	}
-	Done(0,NULL);
-
-	return;
-}
-
-void CMD_QuitScreen(F_CMD_ARGS)
-{
 	Done(0,NULL);
 
 	return;
