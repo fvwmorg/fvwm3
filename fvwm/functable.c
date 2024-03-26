@@ -438,9 +438,6 @@ const func_t func_table[] =
 	CMD_ENT("quit", CMD_Quit, F_QUIT, 0, 0),
 	/* - Exit fvwm */
 
-	CMD_ENT("quitscreen", CMD_QuitScreen, F_QUIT_SCREEN, 0, 0),
-	/* - Stop managing the specified screen */
-
 	CMD_ENT("quitsession", CMD_QuitSession, F_QUIT_SESSION, 0, 0),
 	/* - Ask session manager to shut down itself and fvwm */
 

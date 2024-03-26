@@ -1703,7 +1703,6 @@ void CMD_WindowId(F_CMD_ARGS)
 {
 	FvwmWindow *t;
 	char *token;
-	char *naction;
 	unsigned long win;
 	Bool use_condition = False;
 	Bool use_screenroot = False;
@@ -1715,24 +1714,9 @@ void CMD_WindowId(F_CMD_ARGS)
 
 	if (token && StrEquals(token, "root"))
 	{
-		int screen = Scr.screen;
-
 		free(token);
-		token = PeekToken(action, &naction);
-		if (!token || GetIntegerArguments(token, NULL, &screen, 1) != 1)
-		{
-			screen = Scr.screen;
-		}
-		else
-		{
-			action = naction;
-		}
 		use_screenroot = True;
-		if (screen < 0 || screen >= Scr.NumberOfScreens)
-		{
-			screen = 0;
-		}
-		win = XRootWindow(dpy, screen);
+		win = XRootWindow(dpy, Scr.screen);
 		if (win == None)
 		{
 			if (cond_rc != NULL)

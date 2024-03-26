@@ -117,7 +117,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   PrintInfo             - Print information about the state of fvwm
   PropertyChange        - Internal, used for inter-module communication
   Quit                  - Exit fvwm
-  QuitScreen            - Stop managing the specified screen
   QuitSession           - Ask session manager to shut down itself and fvwm
   Raise                 - Raise a window in a layer
   RaiseLower            - Alternately raise or lower a window in a layer

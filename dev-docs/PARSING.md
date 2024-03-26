@@ -1252,9 +1252,6 @@ PRINTINFOKEYWORD =/ "Infostore"
 CMD_QUIT = "Quit"
 ```
 ```
-CMD_QUITSCREEN = "QuitScreen"
-```
-```
 CMD_READ = "Read" FILENAME ["quiet"]
 ```
 ```
