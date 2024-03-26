@@ -152,6 +152,7 @@ static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 void list_monitor_focus(unsigned long *);
 struct fpmonitor *fpmonitor_new(struct monitor *);
+void update_monitor_to_track(char *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -402,7 +403,7 @@ int main(int argc, char **argv)
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
 		 M_END_WINDOWLIST|
-		 M_RESTACK);
+		 M_RESTACK|M_STRING);
   SetMessageMask(fd,
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE|
@@ -619,6 +620,17 @@ void process_message( FvwmPacket* packet )
     case MX_REPLY:
 	    list_reply(body);
 	    break;
+    case M_STRING: {
+	char *this = (char *)&body[3];
+	char *token;
+	char *rest = GetNextToken(this, &token);
+
+	if ((strcmp(token, "Monitor") == 0) && (rest != NULL)) {
+		update_monitor_to_track(rest);
+		ReConfigure();
+	}
+	break;
+    }
     default:
       /* ignore unknown packet */
       break;
@@ -1731,6 +1743,37 @@ static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
   }
 }
 
+void update_monitor_to_track(char *line)
+{
+	struct fpmonitor *m = NULL;
+	struct monitor *tm = monitor_get_current();
+
+	free(monitor_to_track);
+	line = SkipSpaces(line, NULL, 0);
+
+	if (line == NULL) {
+		fvwm_debug(__func__, "FvwmPager: no monitor name given "
+		"using current monitor\n");
+		/* m already set... */
+		monitor_to_track = fxstrdup(tm->si->name);
+		return;
+	}
+
+	if (strcmp(line, "none") == 0) {
+		monitor_to_track = NULL;
+		return;
+	}
+
+	if ((m = fpmonitor_by_name(line)) == NULL) {
+		fvwm_debug(__func__, "FvwmPager: monitor '%s' not found "
+		     "using current monitor", line);
+		monitor_to_track = fxstrdup(tm->si->name);
+		return;
+	}
+	fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
+	monitor_to_track = fxstrdup(m->m->si->name);
+}
+
 /*
  *
  * This routine is responsible for reading and parsing the config file
@@ -1863,26 +1906,7 @@ ImagePath = NULL;
     }
 
     if (StrEquals(resource, "Monitor")) {
-	    struct monitor *tm = monitor_get_current();
-
-	    free(monitor_to_track);
-	    next = SkipSpaces(next, NULL, 0);
-
-	    if (next == NULL) {
-		    fvwm_debug(__func__, "FvwmPager: no monitor name given "
-				    "using current monitor\n");
-		    /* m already set... */
-		    monitor_to_track = fxstrdup(tm->si->name);
-		    continue;
-	    }
-	    if ((m = fpmonitor_by_name(next)) == NULL) {
-		    fvwm_debug(__func__, "FvwmPager: monitor '%s' not found "
-                               "using current monitor", next);
-		    monitor_to_track = fxstrdup(tm->si->name);
-		    continue;
-	    }
-	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
-	    monitor_to_track = fxstrdup(m->m->si->name);
+	update_monitor_to_track(next);
     }
     else if(StrEquals(resource,"Colorset"))
     {

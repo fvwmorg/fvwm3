@@ -342,6 +342,24 @@ done about this - except not using SloppyFocus in the pager.
   is especially meaningful when the _DesktopConfiguration_ command is
   set to _per-monitor_.
 
+== SENDING COMMANDS
+
+_FvwmPager_ listens for the following commands while it is running, by using
+the _SendToModule_ command:
+
+*Monitor*::
+Configures the specified _FvwmPager_ to track windows on a specific monitor.
+For example:
++
+....
+SendToModule FP Monitor RANDRNAME
+....
++
+Where _RANDRNAME_ is a valid monitor name.
++
+Note that the special value of *none* can be used to track all windows on all
+monitors.
+
 == AUTHOR
 
 Robert Nation +
