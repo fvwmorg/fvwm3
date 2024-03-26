@@ -5,7 +5,6 @@
 [*-d* _displayname_]
 [*-f* _config-file_]
 [*-o* _logfile_]
-[*-s* [_screen_num_]]
 [*-v*]
 [other options]
 
@@ -90,14 +89,6 @@ the other wm is ICCCM2 2.0 compliant.
 
 This option is used when fvwm is started by a session manager. Should
 not be used by a user.
-
-*-s* | *--single-screen* [_screen_num_]::
-
-On a multi-screen display, run fvwm only on the screen named in the
-_$DISPLAY_ environment variable or provided through the *-d* option. The
-optional argument _screen_num_ should be positive or null and override
-the screen number. Normally, fvwm attempts to start up on all screens of
-a multi-screen display.
 
 *-V* | *--version*::
 
@@ -395,27 +386,17 @@ or
 XTerm*Page: 3 2 1
 ....
 
-== USE ON MULTI-SCREEN DISPLAYS
+== RANDR MULTI-SCREEN SUPPORT
 
-If the *-s* command line argument is not given, fvwm automatically
-starts up on every screen on the specified display. After fvwm starts
-each screen is treated independently. Restarts of fvwm need to be
-performed separately on each screen. The use of
+Fvwm best supports multiple screens using the RandR X11 protocol. If
+fvwm isn't built with the RandR protocol then the multi screen support
+is very limited, and it is suggested to rebuild with RandR. It is also
+recommended to use 'EdgeScroll 0 0' on multi-screen displays to avoid
+changing pages when moving the mouse between screens.
 
-....
-EdgeScroll 0 0
-....
-
-is strongly recommended for multi-screen displays. You may need to quit
-on each screen to quit from the X session completely. This is not to be
-confused with RandR support.
-
-== RANDR SUPPORT
-
-Fvwm supports the RandR X11 protocol. If Fvwm has been compiled with
-RandR support then it tracks the outputs (displays) which it finds.
-These outputs are stored by name, which can be found by running using
-the xrand(1) command.
+If Fvwm has been compiled with RandR support then it tracks the outputs
+(displays) which it finds. These outputs are stored by name, which can be
+found by running using the xrandr(1) command.
 
 When Fvwm detects monitors, it adds them to a tree with a defined order, and
 each monitor is assigned a number.  That order is top-down, left-to-right, so
@@ -455,7 +436,7 @@ AddToFunc   RandRFunc
 Because Fvwm has the capability to track outputs, Fvwm can be told how
 to handle those. This is controlled via the *DesktopConfiguration*
 command. By default, Fvwm treats all outputs it finds as one large
-screen, although Fvwm can be told to treat screens indepedantly of each
+screen, although Fvwm can be told to treat screens independently of each
 other.
 
 == INITIALIZATION
@@ -1260,25 +1241,6 @@ menus. If you change any of these resources during a session (e.g. by
 issuing *Style* commands or by using various modules), these changes are
 lost after saving and restarting the session. To become permanent, such
 changes have to be added to the configuration file.
-
-Note further that the current implementation has the following anomaly
-when used on a multi-screen display: Starting fvwm for the first time,
-fvwm manages all screens by forking a copy of itself for each screen.
-Every copy knows its parent and issuing a *Quit* command to any instance
-of fvwm kills the master and thus all copies of fvwm. When you save and
-restart the session, the session manager brings up a copy of fvwm on
-each screen, but this time they are started as individual instances
-managing one screen only. Thus a *Quit* kills only the copy it was sent
-to. This is probably not a very serious problem, since with session
-management, you are supposed to quit a session through the session
-manager anyway. If it is really needed,
-
-....
-Exec exec killall fvwm
-....
-
-still kills all copies of fvwm. Your system must have the *killall*
-command though.
 
 == BOOLEAN ARGUMENTS
 
@@ -2453,7 +2415,6 @@ AddToMenu Quit-Verify
  + "Really Quit Fvwm?" Title
  + "Yes, Really Quit"  Quit
  + "Restart Fvwm"      Restart
- + "Restart Fvwm 1.xx" Restart fvwm1 -s
  + ""                  Nop
  + "No, Don't Quit"    Nop
 
@@ -4418,11 +4379,11 @@ AddToFunc SelectWindow
 	reversed. This command works also with windows that are not managed by
 	fvwm. In this case fvwm does not bring the window onto the screen if
 	it is not visible. For example it is possible to warp the pointer to
-	the center of the root window on screen 1:
+	the center of the root window:
 +
 
 ....
-WindowId root 1 WarpToWindow 50 50
+WindowId root WarpToWindow 50 50
 ....
 
 
@@ -8366,16 +8327,14 @@ This command implies the conditions _CirculateHit_,
 _CirculateHitIcon_ and _CirculateHitShaded_. They can be turned off
 by specifying "!CirculateHit" etc. explicitly.
 +
-*WindowId* [_id_] [(_conditions_)] | [root [_screen_]] _command_:::
+*WindowId* [_id_] [(_conditions_)] | [root] _command_:::
 	The *WindowId* command looks for a specific window _id_ and runs the
 	specified _command_ on it. The second form of syntax retrieves the
-	window id of the root window of the given _screen_. If no _screen_
-	is given, the current screen is assumed. The window indicated by
-	_id_ may belong to a window not managed by fvwm or even a window on
-	a different screen. Although most commands can not operate on such
-	windows, there are some exceptions, for example the *WarpToWindow*
-	command. Returns -1 if no window with the given id exists. See
-	*Conditions* section for a list of conditions.
+	window id of the root window. The window indicated by
+	_id_ may belong to a window not managed by fvwm. Although most
+	commands can not operate on such windows, there are some exceptions,
+	for example the *WarpToWindow* command. Returns -1 if no window with
+	the given id exists. See *Conditions* section for a list of conditions.
 +
 This command implies the conditions _CirculateHit_,
 _CirculateHitIcon_ and _CirculateHitShaded_. They can be turned off
@@ -8832,10 +8791,6 @@ sequence
 *Quit*::
 	Exits fvwm, generally causing X to exit too.
 
-*QuitScreen*::
-	Causes fvwm to stop managing the screen on which the command was
-	issued.
-
 *Restart* [_window_manager_ [_params_]]::
 	Causes fvwm to restart itself if _window_manager_ is left blank, or to
 	switch to an alternate window manager (or other fvwm version) if
@@ -8851,9 +8806,8 @@ variables _$VAR_ or _$\{VAR}_. Here are several examples:
 
 ....
 Key F1 R N Restart
-Key F1 R N Restart fvwm -s
-Key F1 R N Restart fvwm1 -s -f .fvwmrc
-Key F1 R N Restart xterm -n '"X console"' -T \"X\ console\" -e fvwm -s
+Key F1 R N Restart fvwm1 -f .fvwmrc
+Key F1 R N Restart xterm -n '"X console"' -T \"X\ console\" -e fvwm
 ....
 
 +

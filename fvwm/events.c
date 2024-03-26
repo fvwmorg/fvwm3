@@ -2257,28 +2257,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 
 	if (ewp->window == Scr.Root)
 	{
-		FvwmWindow *lf = get_last_screen_focus_window();
-
-		if (!Scr.flags.is_pointer_on_this_screen)
-		{
-			Scr.flags.is_pointer_on_this_screen = 1;
-			if (lf && lf != &Scr.FvwmRoot &&
-			    !FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(lf)))
-			{
-				SetFocusWindow(lf, True, FOCUS_SET_FORCE);
-			}
-			else if (lf != &Scr.FvwmRoot)
-			{
-				ForceDeleteFocus();
-			}
-			else
-			{
-				/* This was the first EnterNotify event for the
-				 * root window - ignore */
-			}
-			set_last_screen_focus_window(NULL);
-		}
-		else if (!(sf = get_focus_window()) ||
+		if (!(sf = get_focus_window()) ||
 			 FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 		{
 			DeleteFocus(True);
@@ -2293,7 +2272,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 		{
 			InstallWindowColormaps(NULL);
 		}
-		focus_grab_buttons(lf);
 
 		struct monitor *pfm, *this_m;
 		pfm = monitor_resolve_name(prev_focused_monitor);
@@ -2309,10 +2287,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 		toggle_prev_monitor_state(this_m, pfm, NULL);
 
 		return;
-	}
-	else
-	{
-		Scr.flags.is_pointer_on_this_screen = 1;
 	}
 
 	/* An EnterEvent in one of the PanFrameWindows activates the Paging or
@@ -2372,7 +2346,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 				m = fw->m;
 
 			/* this was in the HandleMotionNotify before, HEDU */
-			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
 			HandlePaging(
 				&e, edge_scroll, &junk, &delta,
@@ -2920,42 +2893,8 @@ void HandleLeaveNotify(const evh_args_t *ea)
 	}
 
 
-	/* If we leave the root window, then we're really moving
-	 * another screen on a multiple screen display, and we
-	 * need to de-focus and unhighlight to make sure that we
-	 * don't end up with more than one highlighted window at a time */
-	if (lwp->window == Scr.Root &&
-	   /* domivogt (16-May-2000): added this test because somehow fvwm
-	    * sometimes gets a LeaveNotify on the root window although it is
-	    * single screen. */
-	    Scr.NumberOfScreens > 1)
-	{
-		if (lwp->mode == NotifyNormal)
-		{
-			if (lwp->detail != NotifyInferior)
-			{
-				FvwmWindow *sf = get_focus_window();
-
-				Scr.flags.is_pointer_on_this_screen = 0;
-				set_last_screen_focus_window(sf);
-				if (sf != NULL)
-				{
-					DeleteFocus(True);
-				}
-				if (Scr.Hilite != NULL)
-				{
-					border_draw_decorations(
-						Scr.Hilite, PART_ALL, False,
-						True, CLEAR_ALL, NULL, NULL);
-				}
-			}
-		}
-	}
-	else
-	{
-		/* handle a subwindow cmap */
-		LeaveSubWindowColormap(te->xany.window);
-	}
+	/* handle a subwindow cmap */
+	LeaveSubWindowColormap(te->xany.window);
 	if (fw != NULL &&
 	    (lwp->window == FW_W_FRAME(fw) ||
 	     lwp->window == FW_W_ICON_TITLE(fw) ||

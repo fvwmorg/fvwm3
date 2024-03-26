@@ -107,7 +107,6 @@ enum
 	F_PRINTINFO,
 	F_QUIT,
 	F_QUIT_SESSION,
-	F_QUIT_SCREEN,
 	F_READ,
 	F_REFRESH,
 	F_RESTART,
@@ -315,7 +314,6 @@ void CMD_Prev(F_CMD_ARGS);
 void CMD_PrintInfo(F_CMD_ARGS);
 void CMD_PropertyChange(F_CMD_ARGS);
 void CMD_Quit(F_CMD_ARGS);
-void CMD_QuitScreen(F_CMD_ARGS);
 void CMD_QuitSession(F_CMD_ARGS);
 void CMD_Raise(F_CMD_ARGS);
 void CMD_RaiseLower(F_CMD_ARGS);

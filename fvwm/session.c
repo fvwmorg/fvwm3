@@ -1054,10 +1054,6 @@ callback_die(FSmcConn sm_conn, FSmPointer client_data)
 	}
 	sm_fd = -1;
 
-	if (master_pid != getpid())
-	{
-		kill(master_pid, SIGTERM);
-	}
 	Done(0, NULL);
 }
 
