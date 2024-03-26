@@ -790,14 +790,9 @@ void list_end(void)
 		unsigned int JunkM;
 		fscreen_scr_arg fscr;
 
-		if (!FQueryPointer(
+		FQueryPointer(
 			dpy, Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC,
-			&JunkM))
-		{
-			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
-		}
+			&JunkM);
 
 		fscr.xypos.x = x;
 		fscr.xypos.y = y;

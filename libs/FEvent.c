@@ -252,7 +252,6 @@ Bool fev_get_evpos_or_query(
 	Window JunkW;
 	int JunkC;
 	unsigned int JunkM;
-	Bool rc;
 	int type;
 
 	type = (e != NULL) ? e->type : -1;
@@ -287,16 +286,10 @@ Bool fev_get_evpos_or_query(
 		}
 		return True;
 	default:
-		rc = FQueryPointer(
+		FQueryPointer(
 			dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC,
 			&JunkM);
-		if (rc == False)
-		{
-			/* pointer is on a different screen */
-			*ret_x = 0;
-			*ret_y = 0;
-		}
-		return rc;
+		return True;
 	}
 }
 
@@ -844,18 +837,16 @@ int FQLength(
 	return rc;
 }
 
-Bool FQueryPointer(
+void FQueryPointer(
 	Display *display, Window w, Window *root_return, Window *child_return,
 	int *root_x_return, int *root_y_return, int *win_x_return,
 	int *win_y_return, unsigned int *mask_return)
 {
-	Bool rc;
-
-	rc = XQueryPointer(
+	XQueryPointer(
 		display, w, root_return, child_return, root_x_return,
 		root_y_return, win_x_return, win_y_return, mask_return);
 
-	return rc;
+	return;
 }
 
 Status FSendEvent(

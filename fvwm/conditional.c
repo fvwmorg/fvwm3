@@ -1272,14 +1272,9 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 	}
 	else
 	{
-		if (FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &my_g.x,
-			    &my_g.y, &JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			my_g.x = 0;
-			my_g.y = 0;
-		}
+			    &my_g.y, &JunkX, &JunkY, &JunkMask);
 		my_g.width = 1;
 		my_g.height = 1;
 		my_cx = my_g.x;
@@ -2249,15 +2244,10 @@ void CMD_Test(F_CMD_ARGS)
 
 			if (!error)
 			{
-				if (FQueryPointer(
+				FQueryPointer(
 					dpy, Scr.Root, &JunkRoot, &win,
-					&JunkX, &JunkY,	&x, &y, &JunkMask)
- 					== False)
-				{
-					/* pointer is on a different screen */
-					match = 0;
-				}
-				else if (is_pan_frame(win))
+					&JunkX, &JunkY,	&x, &y, &JunkMask);
+				if (is_pan_frame(win))
 				{
 					if (dir == DIR_NONE ||
 					    (dir == DIR_N &&

@@ -449,13 +449,9 @@ FvwmWindow *get_pointer_fvwm_window(void)
 	Window ancestor;
 	FvwmWindow *t;
 
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &win, &JunkX, &JunkY,
-		    &x, &y, &JunkMask) == False)
-	{
-		/* pointer is on a different screen */
-		return NULL;
-	}
+		    &x, &y, &JunkMask);
 	for (t = NULL ; win != Scr.Root && win != None; win = ancestor)
 	{
 		Window root = None;
