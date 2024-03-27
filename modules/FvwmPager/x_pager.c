@@ -52,7 +52,8 @@ extern int windowcolorset, activecolorset;
 extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
 extern Bool win_pix_set, win_hi_pix_set;
 extern rectangle pwindow;
-extern int usposition,uselabel,xneg,yneg;
+extern int usposition, xneg, yneg;
+extern bool uselabel, use_monitor_label;
 extern int StartIconic;
 extern int MiniIcons;
 extern int LabelsBelow;
@@ -127,6 +128,8 @@ static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null);
+static struct fpmonitor *fpmonitor_from_n(int n);
+static struct fpmonitor *fpmonitor_from_desk(int desk);
 static int fpmonitor_count(void);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
@@ -246,8 +249,35 @@ int fpmonitor_count(void)
 	int c = 0;
 
 	TAILQ_FOREACH(fp, &fp_monitor_q, entry)
-		c++;
+		if (!fp->disabled)
+			c++;
 	return (c);
+}
+
+static struct fpmonitor *fpmonitor_from_n(int n)
+{
+	struct fpmonitor *fp;
+	int c = 0;
+
+	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+		if (fp->disabled)
+			continue;
+		if (c == n)
+			return fp;
+		c++;
+	}
+	return fp;
+}
+
+static struct fpmonitor *fpmonitor_from_desk(int desk)
+{
+	struct fpmonitor *fp;
+
+	TAILQ_FOREACH(fp, &fp_monitor_q, entry)
+		if (!fp->disabled && fp->m->virtual_scr.CurrentDesk == desk)
+			return fp;
+
+	return NULL;
 }
 
 static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null)
@@ -634,7 +664,9 @@ void initialise_common_pager_fragments(void)
 	*/
 	Ffont = FlocaleLoadFont(dpy, font_string, MyName);
 
-	label_h = (uselabel) ? Ffont->height + 2 : 0;
+	label_h = (uselabel || use_monitor_label) ? Ffont->height + 2 : 0;
+	if (use_monitor_label)
+		label_h *= 2;
 
 	/* init our Flocale window string */
 	FlocaleAllocateWinString(&FwinString);
@@ -952,7 +984,7 @@ void initialize_pager(void)
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
-    if (uselabel && Ffont && Ffont->font) {
+    if ((uselabel || use_monitor_label) && Ffont && Ffont->font) {
       gcv.font = Ffont->font->fid;
       Desks[i].NormalGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
@@ -976,7 +1008,7 @@ void initialize_pager(void)
       gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
 	: Colorset[Desks[i].highcolorset].fg;
 
-    if (uselabel && Ffont && Ffont->font) {
+    if ((uselabel || use_monitor_label) && Ffont && Ffont->font) {
       Desks[i].rvGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
     } else {
@@ -1113,7 +1145,7 @@ void UpdateWindowShape(void)
     XRectangle *shape;
     struct fpmonitor *fp = fpmonitor_this(NULL);
 
-    if (!fp || !ShapeLabels || !uselabel || label_h<=0)
+    if (!fp || !ShapeLabels || !uselabel || !use_monitor_label || label_h<=0)
       return;
 
     shape_count =
@@ -1276,20 +1308,44 @@ void DispatchEvent(XEvent *Event)
     else if((Event->xbutton.button == 1)||
 	    (Event->xbutton.button == 2))
     {
+      /* Location of monitor labels. */
+      int m_count = fpmonitor_count();
+      int ymin = label_h / 2, ymax = label_h;
+      if (LabelsBelow) {
+	ymin += desk_h;
+	ymax += desk_h;
+      }
+
       for(i=0;i<ndesks;i++)
       {
-	if(Event->xany.window == Desks[i].w)
-	  SwitchToDeskAndPage(i,Event);
+	if (Event->xany.window == Desks[i].w)
+	{
+		SwitchToDeskAndPage(i, Event);
+		break;
+	}
+	/* Check for clicks on monitor labels first, since these clicks
+	 * always indicate what monitor to switch to in all modes.
+	 */
+	else if (Event->xany.window == Desks[i].title_w &&
+		use_monitor_label && Event->xbutton.y >= ymin &&
+		Event->xbutton.y <= ymax)
+	{
+		struct fpmonitor *fp2 = fpmonitor_from_n(
+				m_count * Event->xbutton.x / desk_w);
+		SwitchToDesk(i, fp2);
+		break;
+	}
 	/* Title clicks only change desk in global configuration, or when the
 	 * pager is being asked to track a specific monitor.  Or, regardless
 	 * of the DesktopConfiguration setting, there is only one monitor in
 	 * use.
 	 */
 	else if(Event->xany.window == Desks[i].title_w &&
-		((monitor_mode == MONITOR_TRACKING_G) ||
-		 (monitor_to_track != NULL) || (fpmonitor_count() == 1))) {
-			SwitchToDesk(i, NULL);
-			break;
+		((monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) ||
+		 (monitor_to_track != NULL) || (m_count == 1)))
+	{
+		SwitchToDesk(i, NULL);
+		break;
 	}
       }
       if(Event->xany.window == icon_win)
@@ -1891,12 +1947,14 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 
 	/* desk label location */
 	y1 = (LabelsBelow) ? desk_h : 0;
+	d = desk1 + desk;
 
 	if (FftSupport)
 	{
 		erase = True;
 	}
-	if(((fp->m->virtual_scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
+	if (!ShapeLabels && !use_monitor_label &&
+		(fp->m->virtual_scr.CurrentDesk == d))
 	{
 		if (uselabel)
 		{
@@ -1907,27 +1965,41 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	}
 	else
 	{
-		if(uselabel && erase)
+		if((uselabel || use_monitor_label) && erase)
 		{
 			XClearArea(dpy, Desks[desk].title_w,
 				   0, y1, desk_w, label_h, False);
 		}
 	}
 
-	d = desk1+desk;
+	/* Draw monitor labels grid lines. */
+	if (use_monitor_label) {
+		int count = fpmonitor_count();
+		int y_loc = y1 + label_h / 2;
+		XDrawLine(
+			dpy, Desks[desk].title_w, Desks[desk].NormalGC,
+			0, y_loc, desk_w, y_loc);
+
+		for (int i = 1; i < count; i++)
+			XDrawLine(dpy,
+				Desks[desk].title_w, Desks[desk].NormalGC,
+				i * desk_w / count, y_loc, i * desk_w / count,
+				y_loc + label_h / 2);
+	}
+
 	ptr = Desks[desk].label;
 	w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
-	if( w > desk_w)
+	if (w > desk_w)
 	{
-		snprintf(str,sizeof(str),"%d",d);
+		snprintf(str, sizeof(str), "Desk%d", d);
 		ptr = str;
-		w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
+		w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
 	}
-	if((w <= desk_w)&&(uselabel))
+	if((w <= desk_w) && (uselabel || use_monitor_label))
 	{
 		FwinString->str = ptr;
 		FwinString->win = Desks[desk].title_w;
-		if(desk == (fp->m->virtual_scr.CurrentDesk - desk1))
+		if (!use_monitor_label && fp->m->virtual_scr.CurrentDesk == d)
 		{
 			cs = Desks[desk].highcolorset;
 			FwinString->gc = Desks[desk].rvGC;
@@ -1945,10 +2017,49 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 			FwinString->flags.has_colorset = True;
 		}
 		FwinString->x = (desk_w - w)/2;
-		FwinString->y = (LabelsBelow ?
-				 desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
+		FwinString->y = y1 + Ffont->ascent + 1;
 		FwinString->flags.has_clip_region = False;
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
+	}
+
+	if (use_monitor_label) {
+		int loop = 0;
+		int count = fpmonitor_count();
+		int label_width = desk_w / count;
+		struct fpmonitor *tm;
+
+		TAILQ_FOREACH(tm, &fp_monitor_q, entry) {
+			if (tm->disabled)
+				continue;
+			snprintf(str, sizeof(str), "%s", tm->m->si->name);
+
+			FwinString->str = str;
+			FwinString->win = Desks[desk].title_w;
+			if (tm->m->virtual_scr.CurrentDesk == d) {
+				cs = Desks[desk].highcolorset;
+				FwinString->gc = Desks[desk].rvGC;
+				XFillRectangle(
+					dpy,Desks[desk].title_w,
+					Desks[desk].HiliteGC,
+					loop * label_width,
+					y1 + label_h / 2,
+					label_width, label_h / 2);
+			} else {
+				cs = Desks[desk].colorset;
+				FwinString->gc = Desks[desk].NormalGC;
+			}
+
+			FwinString->flags.has_colorset = False;
+			if (cs >= 0)
+			{
+				FwinString->colorset = &Colorset[cs];
+				FwinString->flags.has_colorset = True;
+			}
+			FwinString->x = loop * label_width + (label_width - w)/2;
+			FwinString->y = y1 + Ffont->ascent + label_h / 2 + 1;
+			FlocaleDrawString(dpy, Ffont, FwinString, 0);
+			loop++;
+		}
 	}
 
 	if (FShapesSupported)
@@ -2042,54 +2153,60 @@ void SwitchToDesk(int Desk, struct fpmonitor *m)
 
 void SwitchToDeskAndPage(int Desk, XEvent *Event)
 {
-  char command[256];
-  int vx, vy;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
+	char command[256];
+	int vx, vy;
+	struct fpmonitor *fp = fpmonitor_this(NULL);
 
-  if (fp == NULL) {
-    fprintf(stderr, "%s: couldn't find monitor (fp is NULL)\n", __func__);
-    return;
-  }
+	if (fp == NULL) {
+		fprintf(stderr, "%s: couldn't find monitor (fp is NULL)\n",
+			 __func__);
+		return;
+	}
 
-  /* Determine which monitor occupied the clicked region. */
-  vx = (desk_w == 0) ? 0 : Event->xbutton.x * fp->virtual_scr.VWidth / desk_w;
-  vy = (desk_h == 0) ? 0 : Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
-  fp = fpmonitor_from_xy(vx, vy, true);
-  if (fp == NULL)
-    return;
+	/* Determine which monitor occupied the clicked region. */
+	Desk += desk1;
+	vx = (desk_w == 0) ? 0 :
+		Event->xbutton.x * fp->virtual_scr.VWidth / desk_w;
+	vy = (desk_h == 0) ? 0 :
+		Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
 
-  if (fp->m->virtual_scr.CurrentDesk != (Desk + desk1))
-  {
-    /* patch to let mouse button 3 change desks and do not cling to a page */
-    fp->m->virtual_scr.Vx = vx;
-    fp->m->virtual_scr.Vy = vy;
-    vx /= fpmonitor_get_all_widths();
-    vy /= fpmonitor_get_all_heights();
-    snprintf(command, sizeof(command), "GotoDeskAndPage screen %s %d %d %d",
-		fp->m->si->name, Desk + desk1, vx, vy);
-    SendText(fd, command, 0);
+	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
+		fp = fpmonitor_from_desk(Desk);
+	else
+		fp = fpmonitor_from_xy(vx, vy, true);
+	if (fp == NULL)
+		return;
 
-  }
-  else
-  {
-    /* Fix for buggy XFree86 servers that report button release events
-     * incorrectly when moving fast. Not perfect, but should at least prevent
-     * that we get a random page. */
-    if (vx < 0)
-      vx = 0;
-    if (vy < 0)
-      vy = 0;
-    if (vx > fp->virtual_scr.VxMax)
-      vx = fp->virtual_scr.VxMax;
-    if (vy > fp->virtual_scr.VyMax)
-      vy = fp->virtual_scr.VyMax;
-    vx /= fpmonitor_get_all_widths();
-    vy /= fpmonitor_get_all_heights();
+	/* Fix for buggy XFree86 servers that report button release
+	 * events incorrectly when moving fast. Not perfect, but
+	 * should at least prevent that we get a random page.
+	 */
+	if (vx < 0)
+		vx = 0;
+	if (vy < 0)
+		vy = 0;
+	if (vx > fp->virtual_scr.VxMax)
+		vx = fp->virtual_scr.VxMax;
+	if (vy > fp->virtual_scr.VyMax)
+		vy = fp->virtual_scr.VyMax;
+	vx /= fpmonitor_get_all_widths();
+	vy /= fpmonitor_get_all_heights();
 
-    snprintf(command, sizeof(command), "GotoPage screen %s %d %d", fp->m->si->name, vx, vy);
-    SendText(fd, command, 0);
-  }
-  Wait = 1;
+
+	if (fp->m->virtual_scr.CurrentDesk != Desk) {
+		/* patch to let mouse button 3 change desks and not cling */
+		fp->m->virtual_scr.Vx = vx;
+		fp->m->virtual_scr.Vy = vy;
+		snprintf(command, sizeof(command),
+			"GotoDeskAndPage screen %s %d %d %d",
+			fp->m->si->name, Desk, vx, vy);
+		SendText(fd, command, 0);
+	} else {
+		snprintf(command, sizeof(command),
+			"GotoPage screen %s %d %d", fp->m->si->name, vx, vy);
+		SendText(fd, command, 0);
+	}
+	Wait = 1;
 }
 
 void IconSwitchPage(XEvent *Event)
@@ -3498,7 +3615,8 @@ void change_colorset(int colorset)
       XSetForeground(dpy, Desks[i].rvGC, Colorset[colorset].fg);
       if (HilightDesks)
       {
-	if (uselabel && (i == fp->m->virtual_scr.CurrentDesk))
+	if ((uselabel || use_monitor_label) &&
+		(i == fp->m->virtual_scr.CurrentDesk))
 	{
 	  SetWindowBackground(
 	    dpy, Desks[i].title_w, desk_w, desk_h, &Colorset[colorset], Pdepth,
@@ -3519,13 +3637,13 @@ void change_colorset(int colorset)
       XSetWindowBorder(dpy, Desks[i].w, Colorset[colorset].fg);
       XSetForeground(dpy, Desks[i].NormalGC,Colorset[colorset].fg);
       XSetForeground(dpy, Desks[i].DashedGC,Colorset[colorset].fg);
-      if (uselabel)
+      if (uselabel || use_monitor_label)
       {
 	SetWindowBackground(
 	  dpy, Desks[i].title_w, desk_w, desk_h + label_h, &Colorset[colorset],
 	  Pdepth, Scr.NormalGC, True);
       }
-      if (label_h != 0 && uselabel && !LabelsBelow &&
+      if (label_h != 0 && (uselabel || use_monitor_label) && !LabelsBelow &&
 	  !CSET_IS_TRANSPARENT_PR(Desks[i].colorset))
       {
 	SetWindowBackgroundWithOffset(
@@ -3540,7 +3658,7 @@ void change_colorset(int colorset)
       }
       update_pr_transparent_subwindows(i);
     }
-    else if (Desks[i].highcolorset == colorset && uselabel)
+    else if (Desks[i].highcolorset == colorset && (uselabel || use_monitor_label))
     {
       SetWindowBackground(
 	dpy, Desks[i].title_w, 0, 0, &Colorset[Desks[i].colorset], Pdepth,

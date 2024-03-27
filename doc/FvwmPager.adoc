@@ -46,34 +46,34 @@ the position of all windows and pages within each visible desktop. If
 _DeskHilight_ is set, the location of each monitor within the
 desktop is also shown. The pager can be used as a quick reference of the
 location of windows and monitors, to change the current page/desk, and to
-focus or move windows.
+focus or move windows. The behavior of FvwmPager depends on the current
+'DesktopConfiguration'.
 
-When left clicked, FvwmPager will move the current desk/page to the location
-clicked. If 'DesktopConfiguration' is set to 'global' all monitors will move
-to the location you clicked, while if 'DesktopConfiguration' is set to
-'per-monitor', then only the monitor which occupies the area
-clicked is moved. This allows individual control of what each monitor is
-viewing. Note, when using 'per-monitor' mode, only clicks in areas occupied
-by a monitor will move it (ignoring clicks in dead space or desktop titles),
-while in 'global' mode (or showing a single monitor), clicks in dead space
-and desktop titles will move all monitors to the corresponding page/desk.
-Also note, if using 'shared' mode, it is best to run one pager per 'Monitor',
-as the pager will not function correctly otherwise.
+When clicked with button 1, FvwmPager will move the current desk/page to the
+location clicked. If using 'DesktopConfiguration global' all monitors will
+move to the location clicked, 'DesktopConfiguration per-monitor' moves the
+only the monitor which occupies the area clicked, and last
+'DesktopConfiguration shared' only allows changing pages of a monitor which
+occupies the clicked desk. If _MonitorLabels_ are showing, clicks on the
+monitor label will move that monitor to the clicked desk. Clicks in which it
+cannot be clearly determined which monitor to move will be ignored, such as
+clicks on desk labels or dead space in 'per-monitor' mode, clicking on a desk
+not occupied by any monitor in 'shared' mode. It is suggested to use
+_MonitorLabels_ with 'shared' mode.
 
-When right clicked, FvwmPager will move the current view port centered on
-the area you clicked. Unlike a left click, which always places the monitor(s)
+When clicked with button 3, FvwmPager will move the current view port centered
+on the area clicked. Unlike a left click, which always places the monitor(s)
 inside a single page's boundaries, left click will 'Scroll' between multiple
 pages. While right click is held down, moving the mouse will cause the view
 port to 'Scroll' to the mouse location. Note that 'Scroll' works best in
 'global' mode.
 
-If you middle click on a window in the pager, that window will gain focus.
+When button 2 clicks a window in the pager, that window will gain focus.
 Setting the _*FvwmPager: SloppyFocus_ option will give focus to the window
-under the mouse. Holding down middle click on a window in the pager can be
-used the move the window. The window can be placed at any location inside
-the pager, and when you move the window outside of the pager, the window
-will move to the mouses current location, and can continued to be moved to
-any location inside your screen.
+under the mouse without clicking. Holding down button 2 on a window in the
+pager can be used the move the window. The window can be placed at any
+location inside the pager, and when you move the window outside of the pager,
+the window will move to the current location, and can continued to be moved.
 
 When iconified, FvwmPager's icon on the desktop is a fully functional pager
 that only shows the current desk. This icon pager responds to all the same
@@ -349,7 +349,21 @@ done about this - except not using SloppyFocus in the pager.
 *FvwmPager: Monitor RandRName::
   Tells FvwmPager to display windows only on _RandRName_ monitor. This
   is especially meaningful when the _DesktopConfiguration_ command is
-  set to _per-monitor_.
+  set to _shared_.
+
+*FvwmPager: MonitorLabels::
+  Tells FvwmPager to display a row of monitor labels below each desktop
+  label. The monitor label on the desktop the monitor is currently viewing
+  will be highlighted using the hilight color. Clicking on a monitor
+  label will move that monitor to the selected desktop. This option is
+  best used with 'DesktopConfiguration shared' to be able to control
+  which monitor is moved to a selected desktop. Note that if this option
+  is on, the desktop and monitor labels will always be shown, even if
+  'Font' is set to 'none' (which falls back to the default font).
+
+*FvwmPager: NoMonitorLabels::
+  This turns off the row of monitor labels. Useful to negate
+  '*FvwmPager: MonitorLabels'.
 
 == AUTHOR
 
