@@ -749,7 +749,6 @@ void initialize_pager(void)
   XTextProperty name;
   unsigned long valuemask;
   XSetWindowAttributes attributes;
-  rectangle vp;
   int i = 0;
   XGCValues gcv;
   extern char *BalloonFont;
@@ -948,7 +947,6 @@ void initialize_pager(void)
 
   balloon_font = FlocaleLoadFont(dpy, BalloonFont, MyName);
 
-  vp = set_vp_size_and_loc(NULL, false);
   for(i=0;i<ndesks;i++)
   {
     /* create the GC for desk labels */
@@ -1021,16 +1019,12 @@ void initialize_pager(void)
       : Colorset[Desks[i].colorset].fg;
     attributes.event_mask = (ExposureMask | ButtonReleaseMask);
     Desks[i].title_w = XCreateWindow(
-      dpy, Scr.Pager_w, vp.x - 1, vp.y - 1, vp.width, vp.height, 1,
+      dpy, Scr.Pager_w, -1, -1, desk_w, desk_h + label_h, 1,
       CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
     attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			     ButtonPressMask |ButtonMotionMask);
-    /* or just: desk_h = h - label_h; */
-    desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
 
     valuemask &= ~(CWBackPixel);
-
-
     if (Desks[i].colorset > -1 &&
 	Colorset[Desks[i].colorset].pixmap)
     {
@@ -1060,8 +1054,8 @@ void initialize_pager(void)
     }
 
     Desks[i].w = XCreateWindow(
-	    dpy, Desks[i].title_w, vp.x - 1, LabelsBelow ? -1 : label_h - 1,
-	    vp.width, desk_h, 1, CopyFromParent, InputOutput, CopyFromParent,
+	    dpy, Desks[i].title_w, -1, LabelsBelow ? -1 : label_h - 1,
+	    desk_w, desk_h, 1, CopyFromParent, InputOutput, CopyFromParent,
 	    valuemask, &attributes);
 
     if (HilightDesks)
