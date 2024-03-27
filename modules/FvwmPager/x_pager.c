@@ -1445,6 +1445,16 @@ void HandleEnterNotify(XEvent *Event)
 
 }
 
+#if 0
+/* JS This code was getting in my way, and I'm not quite sure what
+ * it was doing. I believe it was meant to just redraw part of the
+ * desk label exposed, but with the addition of monitor labels, the
+ * logic is a bit more complicated. Just redraw the whole label since
+ * the rest of the grid is being redrawn anyways. This simplifies things
+ * drastically, and this optimization might not have noticeable gain.
+ * If this functionality is added back, DrawGrid needs to be correctly
+ * updated to deal with the bound logic.
+ */
 XRectangle get_expose_bound(XEvent *Event)
 {
 	XRectangle r;
@@ -1467,12 +1477,12 @@ XRectangle get_expose_bound(XEvent *Event)
 	r.height = ey2-ey;
 	return r;
 }
+#endif
 
 void HandleExpose(XEvent *Event)
 {
 	int i;
 	PagerWindow *t;
-	XRectangle r;
 
 	/* it will be good to have full "clipping redraw". Do that for
 	 * desk label only for now */
@@ -1482,8 +1492,9 @@ void HandleExpose(XEvent *Event)
 		if (Event->xany.window == Desks[i].w ||
 		    Event->xany.window == Desks[i].title_w)
 		{
-			r = get_expose_bound(Event);
-			DrawGrid(i, 0, Event->xany.window, &r);
+			//XRectangle r = get_expose_bound(Event);
+			//DrawGrid(i, 0, Event->xany.window, &r);
+			DrawGrid(i, 0, Event->xany.window, NULL);
 			return;
 		}
 	}
@@ -1829,11 +1840,9 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
  */
 void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 {
-	int y, y1, y2, x, x1, x2,d,w;
+	int y, y1, y2, x, x1, x2, d, w;
 	char str[15], *ptr;
 	int cs;
-	XRectangle bound;
-	Region region = 0;
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
 	if (fp == NULL)
@@ -1880,23 +1889,8 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		return;
 	}
 
-	/* desk label */
-	if (r)
-	{
-		bound.x = r->x;
-		bound.y = r->y;
-		bound.width = r->width;
-		bound.height = r->height;
-		region = XCreateRegion();
-		XUnionRectWithRegion (&bound, region, region);
-	}
-	else
-	{
-		bound.x = 0;
-		bound.y = (LabelsBelow ? desk_h : 0);
-		bound.width = desk_w;
-		bound.height = label_h;
-	}
+	/* desk label location */
+	y1 = (LabelsBelow) ? desk_h : 0;
 
 	if (FftSupport)
 	{
@@ -1906,18 +1900,17 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	{
 		if (uselabel)
 		{
-			XFillRectangle(
-				dpy,Desks[desk].title_w,Desks[desk].HiliteGC,
-				bound.x, bound.y, bound.width, bound.height);
+			XFillRectangle(dpy,
+				Desks[desk].title_w, Desks[desk].HiliteGC,
+				0, y1, desk_w, label_h);
 		}
 	}
 	else
 	{
 		if(uselabel && erase)
 		{
-			XClearArea(dpy,Desks[desk].title_w,
-				   bound.x, bound.y, bound.width, bound.height,
-				   False);
+			XClearArea(dpy, Desks[desk].title_w,
+				   0, y1, desk_w, label_h, False);
 		}
 	}
 
@@ -1954,29 +1947,13 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		FwinString->x = (desk_w - w)/2;
 		FwinString->y = (LabelsBelow ?
 				 desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
-		if (region)
-		{
-			FwinString->flags.has_clip_region = True;
-			FwinString->clip_region = region;
-			XSetRegion(dpy, FwinString->gc, region);
-		}
-		else
-		{
-			FwinString->flags.has_clip_region = False;
-		}
+		FwinString->flags.has_clip_region = False;
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
-		if (region)
-		{
-			XDestroyRegion(region);
-			FwinString->flags.has_clip_region = False;
-			FwinString->clip_region = None;
-			XSetClipMask(dpy, FwinString->gc, None);
-		}
 	}
 
 	if (FShapesSupported)
 	{
-		UpdateWindowShape ();
+		UpdateWindowShape();
 	}
 }
 
