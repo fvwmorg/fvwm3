@@ -133,14 +133,10 @@ void fvwmlib_keyboard_shortcuts(
 		int x_def_new = 0;
 		int y_def_new = 0;
 
-		if (FQueryPointer(
+		FQueryPointer(
 			    dpy, RootWindow(dpy, screen), &JunkRoot,
 			    &Event->xany.window, &x_root, &y_root, &x, &y,
-			    &JunkMask) == False)
-		{
-			/* pointer is on a different screen - do nothing */
-			return;
-		}
+			    &JunkMask);
 		if (x + x_move < 0)
 		{
 			x_def_new = x + x_move;

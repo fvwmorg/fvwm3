@@ -723,12 +723,6 @@ $TIME = 1410306754;
 		descr => q{Exit fvwm},
 	},
 	{
-		name => 'QuitScreen',
-		cursor => '',
-		window => 0,
-		descr => q{Stop managing the specified screen},
-	},
-	{
 		name => 'QuitSession',
 		cursor => '',
 		window => 0,

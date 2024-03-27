@@ -40,7 +40,6 @@ extern char NoClass[];
 extern char NoResource[];
 extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;
-extern int master_pid;
 extern Display *dpy;
 extern int x_fd;
 extern XContext FvwmContext;

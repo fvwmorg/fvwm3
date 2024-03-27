@@ -573,13 +573,9 @@ static MenuItem *find_entry(
 	/* get the pointer position */
 	if (p_rx < 0)
 	{
-		if (!FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &Child,
-			    &root_x, &root_y, &JunkX, &JunkY, &JunkMask))
-		{
-			/* pointer is on a different screen */
-			return NULL;
-		}
+			    &root_x, &root_y, &JunkX, &JunkY, &JunkMask);
 	}
 	else
 	{
@@ -2951,16 +2947,12 @@ static int pop_menu_up(
 			{
 				/* use current cx/cy */
 			}
-			else if (FQueryPointer(
-					 dpy, Scr.Root, &JunkRoot, &JunkChild,
-					 &cx, &cy, &JunkX, &JunkY, &JunkMask))
-			{
-				/* use pointer's position */
-			}
 			else
 			{
-				cx = -1;
-				cy = -1;
+				/* use pointer's position */
+				FQueryPointer(
+					 dpy, Scr.Root, &JunkRoot, &JunkChild,
+					 &cx, &cy, &JunkX, &JunkY, &JunkMask);
 			}
 			pops->pos_hints.screen_origin_x = cx;
 			pops->pos_hints.screen_origin_y = cy;
@@ -3553,14 +3545,9 @@ static void _mloop_init(
 	pmret->rc = MENU_NOP;
 	memset(pops, 0, sizeof(*pops));
 	/* remember where the pointer was so we can tell if it has moved */
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &(msi->x_init),
-		    &(msi->y_init), &JunkX, &JunkY, &JunkMask) == False)
-	{
-		/* pointer is on a different screen */
-		msi->x_init = 0;
-		msi->y_init = 0;
-	}
+		    &(msi->y_init), &JunkX, &JunkY, &JunkMask);
 	/* get the event mask right */
 	msi->event_mask = (pmp->tear_off_root_menu_window == NULL) ?
 		XEVMASK_MENU : XEVMASK_TEAR_OFF_MENU;
@@ -3703,15 +3690,10 @@ static mloop_ret_code_t _mloop_get_event(
 		{
 			/* since the pointer has been warped since the key was
 			 * pressed, fake a different key press position */
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &e.xkey.x_root, &e.xkey.y_root,
-				    &JunkX, &JunkY, &e.xkey.state) == False)
-			{
-				/* pointer is on a different screen */
-				e.xkey.x_root = 0;
-				e.xkey.y_root = 0;
-			}
+				    &JunkX, &JunkY, &e.xkey.state);
 			fev_fake_event(&e);
 			med->mi = MR_SELECTED_ITEM(pmp->menu);
 		}
@@ -4109,14 +4091,9 @@ static mloop_ret_code_t _mloop_handle_event(
 
 		if (in->mif.has_mouse_moved == False)
 		{
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &p_child, &p_rx,
-				    &p_ry, &JunkX, &JunkY, &JunkMask) == False)
-			{
-				/* pointer is on a different screen */
-				p_rx = 0;
-				p_ry = 0;
-			}
+				    &p_ry, &JunkX, &JunkY, &JunkMask);
 			if (p_rx - msi->x_init > Scr.MoveThreshold ||
 			    msi->x_init - p_rx > Scr.MoveThreshold ||
 			    p_ry - msi->y_init > Scr.MoveThreshold ||
@@ -4827,13 +4804,8 @@ static mloop_ret_code_t _mloop_handle_action_without_mi(
 		int x, y, mx, my;
 		int mw, mh;
 
-		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
-		}
+		FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+				  &x, &y, &JunkX, &JunkY, &JunkMask);
 		if (menu_get_geometry(
 			    pmp->menu, &JunkRoot, &mx, &my, &mw, &mh, &JunkBW,
 			    &JunkDepth) &&
@@ -5547,13 +5519,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
 	/* Try to pick a root-relative optimal x,y to
 	 * put the mouse right on the title w/o warping */
-	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-	{
-		/* pointer is on a different screen */
-		x = 0;
-		y = 0;
-	}
+	FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			  &x, &y, &JunkX, &JunkY, &JunkMask);
 	/* Save these - we want to warp back here if this is a top level
 	 * menu brought up by a keystroke */
 	if (!pmp->flags.is_submenu)
@@ -7065,15 +7032,9 @@ char *get_menu_options(
 				  &JunkChild)))
 		{
 			/* no window or could not get geometry */
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy,Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &JunkMask) == False)
-			{
-				/* pointer is on a different screen - that's
-				 * okay here */
-				x = 0;
-				y = 0;
-			}
+				    &y, &JunkX, &JunkY, &JunkMask);
 			width = height = 1;
 			if (!pops->pos_hints.has_screen_origin)
 			{

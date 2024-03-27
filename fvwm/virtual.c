@@ -149,15 +149,9 @@ static void _drag_viewport(const exec_context_t *exc, int scroll_speed)
 		return;
 	}
 
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y,
-		    &JunkX, &JunkY, &button_mask) == False)
-	{
-		/* pointer is on a different screen */
-		/* Is this the best thing to do? */
-		UngrabEm(GRAB_NORMAL);
-		return;
-	}
+		    &JunkX, &JunkY, &button_mask);
 	MyXGrabKeyboard(dpy);
 	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 	memset(&e, 0, sizeof(e));
@@ -200,25 +194,18 @@ static void _drag_viewport(const exec_context_t *exc, int scroll_speed)
 
 			/* Query the pointer to catch the latest information.
 			 * This *is* necessary. */
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &px,
-				    &py, &JunkX, &JunkY, &JunkMask) == True)
-			{
-				fev_make_null_event(&e2, dpy);
-				e2.type = MotionNotify;
-				e2.xmotion.time = fev_get_evtime();
-				e2.xmotion.x_root = px;
-				e2.xmotion.y_root = py;
-				e2.xmotion.state = JunkMask;
-				e2.xmotion.same_screen = True;
-				e = e2;
-				fev_fake_event(&e);
-			}
-			else
-			{
-				/* pointer is on a different screen,
-				 * ignore event */
-			}
+				    &py, &JunkX, &JunkY, &JunkMask);
+			fev_make_null_event(&e2, dpy);
+			e2.type = MotionNotify;
+			e2.xmotion.time = fev_get_evtime();
+			e2.xmotion.x_root = px;
+			e2.xmotion.y_root = py;
+			e2.xmotion.state = JunkMask;
+			e2.xmotion.same_screen = True;
+			e = e2;
+			fev_fake_event(&e);
 		}
 		/* Handle a limited number of key press events to allow
 		 * mouseless operation */
@@ -786,7 +773,6 @@ int HandlePaging(
 
 	do
 	{
-		int rc;
 		Window JunkW;
 		int JunkC;
 		unsigned int JunkM;
@@ -798,31 +784,10 @@ int HandlePaging(
 			return 0;
 		}
 		/* get pointer location */
-		rc = FQueryPointer(
+		FQueryPointer(
 			dpy, Scr.Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC,
 			&JunkM);
-		if (rc == False)
-		{
-			/* pointer is on a different screen */
-			x = 0;
-			y = 0;
-		}
 
-#if 0
-		/* check actual pointer location since PanFrames can get buried
-		 * under window being moved or resized - mab */
-		if (x >= edge_thickness &&
-		    x < mwidth - edge_thickness &&
-		    x <= (m->si->w) - edge_thickness &&
-		    y >= edge_thickness &&
-		    y < mheight - edge_thickness &&
-		    y >= (m->si->h) - edge_thickness)
-		{
-			is_timestamp_valid = False;
-			add_time = 0;
-			return 0;
-		}
-#endif
 		if (!fLoop && is_last_position_valid &&
 		    (x - last_x > MAX_PAGING_MOVE_DISTANCE ||
 		     x - last_x < -MAX_PAGING_MOVE_DISTANCE ||
@@ -854,17 +819,14 @@ int HandlePaging(
 
 	/* Get the latest pointer position.  This is necessary as XFree 4.1.0.1
 	 * sometimes does not report mouse movement when it should. */
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y, &JunkX,
-		    &JunkY, &JunkMask) == False)
-	{
-		/* pointer is on a different screen - ignore */
-	}
+		    &JunkY, &JunkMask);
+
 	/* Move the viewport */
 	/* and/or move the cursor back to the approximate correct location */
 	/* that is, the same place on the virtual desktop that it */
 	/* started at */
-
 	if (x <= (m->si->x + edge_thickness))
 	{
 		delta->x = -warp_size.x;
@@ -1001,14 +963,9 @@ int HandlePaging(
 	FWarpPointer(dpy,None,Scr.Root,0,0,0,0,p->x,p->y);
 	MoveViewport(m, m->virtual_scr.Vx + delta->x,
 			m->virtual_scr.Vy + delta->y,False);
-	if (FQueryPointer(
+	FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &(p->x), &(p->y),
-		    &JunkX, &JunkY, &JunkMask) == False)
-	{
-		/* pointer is on a different screen */
-		p->x = 0;
-		p->y = 0;
-	}
+		    &JunkX, &JunkY, &JunkMask);
 	if (Grab)
 	{
 		MyXUngrabServer(dpy);

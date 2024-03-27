@@ -1272,14 +1272,9 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 	}
 	else
 	{
-		if (FQueryPointer(
+		FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &my_g.x,
-			    &my_g.y, &JunkX, &JunkY, &JunkMask) == False)
-		{
-			/* pointer is on a different screen */
-			my_g.x = 0;
-			my_g.y = 0;
-		}
+			    &my_g.y, &JunkX, &JunkY, &JunkMask);
 		my_g.width = 1;
 		my_g.height = 1;
 		my_cx = my_g.x;
@@ -1703,7 +1698,6 @@ void CMD_WindowId(F_CMD_ARGS)
 {
 	FvwmWindow *t;
 	char *token;
-	char *naction;
 	unsigned long win;
 	Bool use_condition = False;
 	Bool use_screenroot = False;
@@ -1715,24 +1709,9 @@ void CMD_WindowId(F_CMD_ARGS)
 
 	if (token && StrEquals(token, "root"))
 	{
-		int screen = Scr.screen;
-
 		free(token);
-		token = PeekToken(action, &naction);
-		if (!token || GetIntegerArguments(token, NULL, &screen, 1) != 1)
-		{
-			screen = Scr.screen;
-		}
-		else
-		{
-			action = naction;
-		}
 		use_screenroot = True;
-		if (screen < 0 || screen >= Scr.NumberOfScreens)
-		{
-			screen = 0;
-		}
-		win = XRootWindow(dpy, screen);
+		win = XRootWindow(dpy, Scr.screen);
 		if (win == None)
 		{
 			if (cond_rc != NULL)
@@ -2265,15 +2244,10 @@ void CMD_Test(F_CMD_ARGS)
 
 			if (!error)
 			{
-				if (FQueryPointer(
+				FQueryPointer(
 					dpy, Scr.Root, &JunkRoot, &win,
-					&JunkX, &JunkY,	&x, &y, &JunkMask)
- 					== False)
-				{
-					/* pointer is on a different screen */
-					match = 0;
-				}
-				else if (is_pan_frame(win))
+					&JunkX, &JunkY,	&x, &y, &JunkMask);
+				if (is_pan_frame(win))
 				{
 					if (dir == DIR_NONE ||
 					    (dir == DIR_N &&

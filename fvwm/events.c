@@ -1372,18 +1372,18 @@ static Bool _test_for_motion(int x0, int y0)
 	/* However, some special mouse (e.g., a touchpad with the
 	 * synaptic driver) may handle a double click in a special way
 	 * (for dragging through short touching and holding down the
-	 * finger on the touchpad). Bascially, when you execute a
+	 * finger on the touchpad). Basically, when you execute a
 	 * double click the first button release is queued after the
-	 * second _physical_ mouse release happen. It seems that
-	 * FQueryPointer may not work as expected: it does not see
-	 * that the button is released on a double click.  So, we need
-	 * to check for a button press in the future to avoid a fvwm
+	 * second _physical_ mouse release happen. So, we need to
+	 * check for a button press in the future to avoid a fvwm
 	 * lockup! (olicha 2004-01-31) */
 
-	for (x = x0, y = y0; FQueryPointer(
-		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
-		     &x, &y, &mask) == True; usleep(20000))
+	for (x = x0, y = y0; True; usleep(20000))
 	{
+		FQueryPointer(
+		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+		     &x, &y, &mask);
+
 		if ((mask & DEFAULT_ALL_BUTTONS_MASK) == 0)
 		{
 			/* all buttons are released */
@@ -1408,7 +1408,7 @@ static Bool _test_for_motion(int x0, int y0)
 		}
 	}
 
-	/* pointer has moved off screen */
+	/* This won't happen */
 	return True;
 }
 
@@ -2254,28 +2254,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 
 	if (ewp->window == Scr.Root)
 	{
-		FvwmWindow *lf = get_last_screen_focus_window();
-
-		if (!Scr.flags.is_pointer_on_this_screen)
-		{
-			Scr.flags.is_pointer_on_this_screen = 1;
-			if (lf && lf != &Scr.FvwmRoot &&
-			    !FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(lf)))
-			{
-				SetFocusWindow(lf, True, FOCUS_SET_FORCE);
-			}
-			else if (lf != &Scr.FvwmRoot)
-			{
-				ForceDeleteFocus();
-			}
-			else
-			{
-				/* This was the first EnterNotify event for the
-				 * root window - ignore */
-			}
-			set_last_screen_focus_window(NULL);
-		}
-		else if (!(sf = get_focus_window()) ||
+		if (!(sf = get_focus_window()) ||
 			 FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 		{
 			DeleteFocus(True);
@@ -2290,7 +2269,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 		{
 			InstallWindowColormaps(NULL);
 		}
-		focus_grab_buttons(lf);
 
 		struct monitor *pfm, *this_m;
 		pfm = monitor_resolve_name(prev_focused_monitor);
@@ -2306,10 +2284,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 		toggle_prev_monitor_state(this_m, pfm, NULL);
 
 		return;
-	}
-	else
-	{
-		Scr.flags.is_pointer_on_this_screen = 1;
 	}
 
 	/* An EnterEvent in one of the PanFrameWindows activates the Paging or
@@ -2369,7 +2343,6 @@ void HandleEnterNotify(const evh_args_t *ea)
 				m = fw->m;
 
 			/* this was in the HandleMotionNotify before, HEDU */
-			Scr.flags.is_pointer_on_this_screen = 1;
 			e = *te;
 			HandlePaging(
 				&e, edge_scroll, &junk, &delta,
@@ -2917,42 +2890,8 @@ void HandleLeaveNotify(const evh_args_t *ea)
 	}
 
 
-	/* If we leave the root window, then we're really moving
-	 * another screen on a multiple screen display, and we
-	 * need to de-focus and unhighlight to make sure that we
-	 * don't end up with more than one highlighted window at a time */
-	if (lwp->window == Scr.Root &&
-	   /* domivogt (16-May-2000): added this test because somehow fvwm
-	    * sometimes gets a LeaveNotify on the root window although it is
-	    * single screen. */
-	    Scr.NumberOfScreens > 1)
-	{
-		if (lwp->mode == NotifyNormal)
-		{
-			if (lwp->detail != NotifyInferior)
-			{
-				FvwmWindow *sf = get_focus_window();
-
-				Scr.flags.is_pointer_on_this_screen = 0;
-				set_last_screen_focus_window(sf);
-				if (sf != NULL)
-				{
-					DeleteFocus(True);
-				}
-				if (Scr.Hilite != NULL)
-				{
-					border_draw_decorations(
-						Scr.Hilite, PART_ALL, False,
-						True, CLEAR_ALL, NULL, NULL);
-				}
-			}
-		}
-	}
-	else
-	{
-		/* handle a subwindow cmap */
-		LeaveSubWindowColormap(te->xany.window);
-	}
+	/* handle a subwindow cmap */
+	LeaveSubWindowColormap(te->xany.window);
 	if (fw != NULL &&
 	    (lwp->window == FW_W_FRAME(fw) ||
 	     lwp->window == FW_W_ICON_TITLE(fw) ||
@@ -4649,17 +4588,16 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 {
 	Window child;
 	Window root;
-	Bool f;
 	evh_args_t ea;
 	exec_context_changes_t ecc;
 	XEvent e;
 	FvwmWindow *fw;
 
-	f = FQueryPointer(
+	FQueryPointer(
 		dpy, Scr.Root, &root, &child, &e.xcrossing.x_root,
 		&e.xcrossing.y_root, &e.xcrossing.x, &e.xcrossing.y,
 		&JunkMask);
-	if (f == False || child == None)
+	if (child == None)
 	{
 		return;
 	}
@@ -4749,11 +4687,8 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	int use_wait_cursor;
 	XEvent e;
 
-	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
-			  &JunkX, &JunkY, &mask) == False)
-	{
-		/* pointer is on a different screen - that's okay here */
-	}
+	FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+			  &JunkX, &JunkY, &mask);
 	mask &= DEFAULT_ALL_BUTTONS_MASK;
 	if (mask == 0)
 	{
@@ -4790,14 +4725,9 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		}
 		else
 		{
-			if (FQueryPointer(
+			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
-				    &JunkX, &JunkY, &JunkX, &JunkY, &mask) ==
-			    False)
-			{
-				/* pointer is on a different screen - that's
-				 * okay here */
-			}
+				    &JunkX, &JunkY, &JunkX, &JunkY, &mask);
 			mask &= DEFAULT_ALL_BUTTONS_MASK;
 			usleep(1);
 		}

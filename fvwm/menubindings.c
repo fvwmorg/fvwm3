@@ -530,17 +530,10 @@ void menu_shortcuts(
 				&menu_height, &JunkBW, &JunkDepth))
 		{
 			is_geometry_known = 1;
-			if (
-				FQueryPointer(
+			FQueryPointer(
 					dpy, Scr.Root, &JunkRoot, &JunkChild,
-					&mx, &my, &JunkX, &JunkY, &JunkMask) ==
-				0)
-			{
-				/* pointer is on a different screen */
-				mx = 0;
-				my = 0;
-			}
-			else if (
+					&mx, &my, &JunkX, &JunkY, &JunkMask);
+			if (
 				mx >= menu_x && mx < menu_x + menu_width &&
 				my >= menu_y && my < menu_y + menu_height)
 			{
@@ -1024,16 +1017,9 @@ void menu_shortcuts(
 			pmret->rc = MENU_NEWITEM;
 			/* Have to work with relative positions or tear off
 			 * menus will be hard to reposition */
-			if (
-				FQueryPointer(
-					dpy, MR_WINDOW(mr), &JunkRoot,
-					&JunkChild, &JunkX, &JunkY, &mx, &my,
-					&JunkMask) ==  0)
-			{
-				/* This should not happen */
-			    	mx = 0;
-				my = 0;
-			}
+			FQueryPointer(
+				dpy, MR_WINDOW(mr), &JunkRoot,
+				&JunkChild, &JunkX, &JunkY, &mx, &my, &JunkMask);
 
 			if (MST_MOUSE_WHEEL(mr) == MMW_POINTER)
 			{

@@ -2250,12 +2250,8 @@ void CMD_CursorMove(F_CMD_ARGS)
 		fvwm_debug(__func__, "CursorMove needs 2 arguments");
 		return;
 	}
-	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-	{
-		/* pointer is on a different screen */
-		return;
-	}
+	FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			  &x, &y, &JunkX, &JunkY, &JunkMask);
 
 	m = monitor_get_current();
 
@@ -2708,17 +2704,6 @@ void CMD_Wait(F_CMD_ARGS)
 }
 
 void CMD_Quit(F_CMD_ARGS)
-{
-	if (master_pid != getpid())
-	{
-		kill(master_pid, SIGTERM);
-	}
-	Done(0,NULL);
-
-	return;
-}
-
-void CMD_QuitScreen(F_CMD_ARGS)
 {
 	Done(0,NULL);
 
@@ -3819,14 +3804,9 @@ static void _fake_event(F_CMD_ARGS, FakeEventType type)
 				 depth++)
 			{
 				w = child_w;
-				if (FQueryPointer(
+				FQueryPointer(
 						dpy, w, &root, &child_w,
-						&rx, &ry, &x, &y,
-						&JunkMask) == False)
-				{
-					/* pointer is on a different
-					 * screen - that's okay here */
-				}
+						&rx, &ry, &x, &y, &JunkMask);
 			}
 
 			if (type == FakeMouseEvent)
@@ -3911,14 +3891,9 @@ static void _fake_event(F_CMD_ARGS, FakeEventType type)
 			}
 
 			usleep(1000 * val);
-			if (FQueryPointer(
-					dpy, Scr.Root, &root, &JunkRoot,
-					&JunkX, &JunkY, &JunkX, &JunkY,
-					&mask) == False)
-			{
-				/* pointer is on a different screen -
-				 * that's okay here */
-			}
+			FQueryPointer(
+				dpy, Scr.Root, &root, &JunkRoot,
+				&JunkX, &JunkY, &JunkX, &JunkY, &mask);
 			break;
 		case 6:
 		case 7:

@@ -547,7 +547,6 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 	{
 		Scr.Hilite = NULL;
 	}
-	update_last_screen_focus_window(fw);
 	restore_focus_after_unmap(fw, False);
 	frame_destroyed_frame(FW_W(fw));
 	if (fw == Scr.StolenFocusFvwmWin)
