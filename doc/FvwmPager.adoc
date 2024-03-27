@@ -167,9 +167,29 @@ size may be slightly different than the specified size.
   Causes the pager to show the labels of all visible desks. Useful for
   canceling the effect of the _ShapeLabels_ option.
 
+*FvwmPager: DeskLabels::
+  Tells FvwmPager to display a label for each desk. This is the default
+  state, but this is useful for undoing _Font none_ or _NoDeskLabels_.
+
+*FvwmPager: NoDeskLabels::
+  Tells FvwmPager to not display desk labels.
+
+*FvwmPager: MonitorLabels::
+  Tells FvwmPager to display a row of monitor labels. The monitor label
+  on the desktop the monitor is currently viewing will be highlighted using
+  the hilight color. Clicking on a monitor label will move that monitor to
+  the selected desktop. This option is best used with
+  'DesktopConfiguration shared' to be able to control which monitor is moved
+  to a selected desktop.
+
+*FvwmPager: NoMonitorLabels::
+  Tells FvwmPager to not display monitor labels, the default state.
+
 *FvwmPager: Font font-name::
   Specified a font to use to label the desktops. If _font_name_ is
-  "none" then no desktop labels will be displayed.
+  "none" then no desktop or monitor labels will be displayed. Note,
+  if _MonitorLabels_ or _DeskLabels_ is used after _Font none_,
+  the labels will be shown with a default font.
 
 *FvwmPager: SmallFont font-name::
   Specified a font to use to label the window names in the pager. If not
@@ -350,20 +370,6 @@ done about this - except not using SloppyFocus in the pager.
   Tells FvwmPager to display windows only on _RandRName_ monitor. This
   is especially meaningful when the _DesktopConfiguration_ command is
   set to _shared_.
-
-*FvwmPager: MonitorLabels::
-  Tells FvwmPager to display a row of monitor labels below each desktop
-  label. The monitor label on the desktop the monitor is currently viewing
-  will be highlighted using the hilight color. Clicking on a monitor
-  label will move that monitor to the selected desktop. This option is
-  best used with 'DesktopConfiguration shared' to be able to control
-  which monitor is moved to a selected desktop. Note that if this option
-  is on, the desktop and monitor labels will always be shown, even if
-  'Font' is set to 'none' (which falls back to the default font).
-
-*FvwmPager: NoMonitorLabels::
-  This turns off the row of monitor labels. Useful to negate
-  '*FvwmPager: MonitorLabels'.
 
 == AUTHOR
 
