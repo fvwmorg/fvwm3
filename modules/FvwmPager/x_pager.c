@@ -1323,7 +1323,9 @@ void DispatchEvent(XEvent *Event)
     {
       /* Location of monitor labels. */
       int m_count = fpmonitor_count();
-      int ymin = label_h / 2, ymax = label_h;
+      int ymin = 0, ymax = label_h;
+      if (use_desk_label)
+	ymin = ymax / 2;
       if (LabelsBelow) {
 	ymin += desk_h;
 	ymax += desk_h;
@@ -1339,9 +1341,9 @@ void DispatchEvent(XEvent *Event)
 	/* Check for clicks on monitor labels first, since these clicks
 	 * always indicate what monitor to switch to in all modes.
 	 */
-	else if (Event->xany.window == Desks[i].title_w &&
-		use_monitor_label && Event->xbutton.y >= ymin &&
-		Event->xbutton.y <= ymax)
+	else if (use_monitor_label && monitor_to_track == NULL &&
+		Event->xany.window == Desks[i].title_w &&
+		Event->xbutton.y >= ymin && Event->xbutton.y <= ymax)
 	{
 		struct fpmonitor *fp2 = fpmonitor_from_n(
 				m_count * Event->xbutton.x / desk_w);
@@ -1974,6 +1976,15 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	/* desk label location */
 	y1 = (LabelsBelow) ? desk_h : 0;
 	d = desk1 + desk;
+	int m_count = 1;
+	int y_loc = y1;
+	int height = label_h;
+	if (use_desk_label) {
+		height /= 2;
+		y_loc += height;
+	}
+	if (use_monitor_label && monitor_to_track == NULL)
+		m_count = fpmonitor_count();
 
 	if (FftSupport)
 	{
@@ -1994,21 +2005,16 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 
 	/* Draw monitor labels grid lines. */
 	if (use_monitor_label) {
-		int count = fpmonitor_count();
-		int y_loc = y1;
-		int height = label_h;
-		if (use_desk_label) {
-			height /= 2;
-			y_loc += height;
-		}
 		XDrawLine(
 			dpy, Desks[desk].title_w, Desks[desk].NormalGC,
 			0, y_loc, desk_w, y_loc);
 
-		for (int i = 1; i < count; i++)
+		for (int i = 1; i < m_count; i++)
 			XDrawLine(dpy,
-				Desks[desk].title_w, Desks[desk].NormalGC,
-				i * desk_w / count, y_loc, i * desk_w / count,
+				Desks[desk].title_w,
+				Desks[desk].NormalGC,
+				i * desk_w / m_count,
+				y_loc, i * desk_w / m_count,
 				y_loc + height);
 	}
 
@@ -2049,18 +2055,15 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	if (use_monitor_label) {
 		struct fpmonitor *tm;
 		int loop = 0;
-		int count = fpmonitor_count();
-		int label_width = desk_w / count;
-		int y_loc = y1;
-		int height = label_h;
-		if (use_desk_label) {
-			height /= 2;
-			y_loc += height;
-		}
+		int label_width = desk_w / m_count;
 
+		fp = fpmonitor_this(NULL);
 		TAILQ_FOREACH(tm, &fp_monitor_q, entry) {
 			if (tm->disabled)
 				continue;
+			if (monitor_to_track != NULL && fp != tm)
+				continue;
+
 			snprintf(str, sizeof(str), "%s", tm->m->si->name);
 			ptr = str;
 			w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
