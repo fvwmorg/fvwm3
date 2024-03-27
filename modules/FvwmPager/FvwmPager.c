@@ -118,7 +118,9 @@ Window BalloonView = None;
 
 rectangle pwindow = {0, 0, 0, 0};
 rectangle icon = {-10000, -10000, 0, 0};
-int usposition = 0,uselabel = 1;
+int usposition = 0;
+Bool uselabel = True;
+Bool use_monitor_label = False;
 int xneg = 0, yneg = 0;
 int icon_xneg = 0, icon_yneg = 0;
 extern DeskInfo *Desks;
@@ -976,15 +978,18 @@ void list_new_desk(unsigned long *body)
   if (fp == NULL)
 	  return;
 
+  /* Best to update the desk, even if the monitor isn't being
+   * tracked, as this could change.
+   */
+  oldDesk = fp->m->virtual_scr.CurrentDesk;
+  fp->m->virtual_scr.CurrentDesk = (long)body[0];
+
   /* If the monitor for which the event was sent, does not match the monitor
    * itself, then don't change the FvwmPager's desk.  Only do this if we're
    * tracking a specific monitor though.
    */
   if (monitor_to_track != NULL && fp->m != mout)
 	  return;
-
-  oldDesk = fp->m->virtual_scr.CurrentDesk;
-  fp->m->virtual_scr.CurrentDesk = (long)body[0];
 
   if (monitor_mode == MONITOR_TRACKING_G)
     monitor_assign_virtual(fp->m);
@@ -1957,6 +1962,10 @@ ImagePath = NULL;
 	    }
 	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
 	    monitor_to_track = fxstrdup(m->m->si->name);
+    } else if(StrEquals(resource, "MonitorLabels")) {
+	    use_monitor_label = True;
+    } else if(StrEquals(resource, "NoMonitorLabels")) {
+	    use_monitor_label = False;
     }
     else if(StrEquals(resource,"Colorset"))
     {
@@ -2052,7 +2061,7 @@ ImagePath = NULL;
       CopyStringWithQuotes(&font_string, next);
       if(strncasecmp(font_string,"none",4) == 0)
       {
-	uselabel = 0;
+	uselabel = False;
 	free(font_string);
 	font_string = NULL;
       }
