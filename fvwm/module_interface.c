@@ -488,7 +488,8 @@ void BroadcastMonitorList(fmodule *this)
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
 		}
-		xasprintf(&name, "DesktopConfiguration %d", monitor_mode);
+		xasprintf(&name, "DesktopConfiguration %d %d",
+			monitor_mode, is_tracking_shared);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 		free(name);
 
