@@ -1620,9 +1620,9 @@ void list_config_info(unsigned long *body)
 			m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
 		}
 	} else if (StrEquals(token, "DesktopConfiguration")) {
-		int mmode;
+		int mmode, is_shared;
 
-		sscanf(tline, "%d", &mmode);
+		sscanf(tline, "%d %d", &mmode, &is_shared);
 
 		if (mmode > 0)
 			monitor_mode = mmode;
