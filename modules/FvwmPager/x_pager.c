@@ -1394,8 +1394,12 @@ void DispatchEvent(XEvent *Event)
 	  {
 	    /* pointer is on a different screen - that's okay here */
 	  }
-	  fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / desk_w,
+	  if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
+		fp = fpmonitor_from_desk(i + desk1);
+	  else
+		fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / desk_w,
 			   y * fp->virtual_scr.VHeight / desk_h, true);
+
 	  if (fp == NULL)
 	    break;
 	  /* Save initial virtual desk info. */
@@ -1418,8 +1422,18 @@ void DispatchEvent(XEvent *Event)
 	{
 	  /* pointer is on a different screen - that's okay here */
 	}
-	fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / icon.width,
-			 y * fp->virtual_scr.VHeight / icon.height, true);
+	struct fpmonitor *fp2 = fpmonitor_this(NULL);
+	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
+		fp = fp2;
+	else {
+		fp = fpmonitor_from_xy(
+			x * fp->virtual_scr.VWidth / icon.width,
+			y * fp->virtual_scr.VHeight / icon.height, true);
+		/* Make sure monitor is on current desk. */
+		if (fp->m->virtual_scr.CurrentDesk !=
+				fp2->m->virtual_scr.CurrentDesk)
+			break;
+	}
 	if (fp == NULL)
 	  break;
 	/* Save initial virtual desk info. */
@@ -2662,7 +2676,7 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 	}
 
 	/* center around mouse */
-	if (monitor_mode == MONITOR_TRACKING_G) {
+	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
 		adjx = window_w / fp->virtual_scr.VxPages;
 		adjy = window_h / fp->virtual_scr.VyPages;
 	} else {
