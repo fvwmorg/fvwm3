@@ -53,7 +53,7 @@ extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
 extern Bool win_pix_set, win_hi_pix_set;
 extern rectangle pwindow;
 extern int usposition, xneg, yneg;
-extern bool uselabel, use_monitor_label;
+extern bool use_desk_label, use_monitor_label;
 extern int StartIconic;
 extern int MiniIcons;
 extern int LabelsBelow;
@@ -131,6 +131,7 @@ static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null);
 static struct fpmonitor *fpmonitor_from_n(int n);
 static struct fpmonitor *fpmonitor_from_desk(int desk);
 static int fpmonitor_count(void);
+static void set_desk_size(bool);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
@@ -405,6 +406,22 @@ void initialize_viz_pager(void)
 	return;
 }
 
+void set_desk_size(bool update_label)
+{
+	if (update_label) {
+		label_h = 0;
+		if (use_desk_label)
+			label_h += Ffont->height + 2;
+		if (use_monitor_label)
+			label_h += Ffont->height + 2;
+	}
+
+	desk_w = (pwindow.width - Columns + 1) / Columns;
+	desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
+
+	return;
+}
+
 /* see also change colorset */
 void draw_desk_background(int i, int page_w, int page_h, struct fpmonitor *fp)
 {
@@ -418,7 +435,7 @@ void draw_desk_background(int i, int page_w, int page_h, struct fpmonitor *fp)
 			dpy, Desks[i].NormalGC,Colorset[Desks[i].colorset].fg);
 		XSetForeground(
 			dpy, Desks[i].DashedGC,Colorset[Desks[i].colorset].fg);
-		if (uselabel)
+		if (label_h > 0)
 		{
 			if (CSET_IS_TRANSPARENT(Desks[i].colorset))
 			{
@@ -438,7 +455,7 @@ void draw_desk_background(int i, int page_w, int page_h, struct fpmonitor *fp)
 					Scr.NormalGC, True);
 			}
 		}
-		if (label_h != 0 && uselabel && !LabelsBelow &&
+		if (label_h > 0 && !LabelsBelow &&
 		    !CSET_IS_TRANSPARENT(Desks[i].colorset))
 		{
 			SetWindowBackgroundWithOffset(
@@ -481,7 +498,7 @@ void draw_desk_background(int i, int page_w, int page_h, struct fpmonitor *fp)
 				Pdepth, Scr.NormalGC, True);
 		}
 	}
-	if (uselabel)
+	if (label_h > 0)
 	{
 		XClearArea(dpy,Desks[i].title_w, 0, 0, 0, 0,True);
 	}
@@ -664,10 +681,6 @@ void initialise_common_pager_fragments(void)
 	*/
 	Ffont = FlocaleLoadFont(dpy, font_string, MyName);
 
-	label_h = (uselabel || use_monitor_label) ? Ffont->height + 2 : 0;
-	if (use_monitor_label)
-		label_h *= 2;
-
 	/* init our Flocale window string */
 	FlocaleAllocateWinString(&FwinString);
 
@@ -758,6 +771,7 @@ void initialise_common_pager_fragments(void)
 		if (Rows*Columns < ndesks)
 			Rows++;
 	}
+	set_desk_size(true);
 }
 
 void initialize_fpmonitor_windows(struct fpmonitor *fp)
@@ -814,8 +828,7 @@ void initialize_pager(void)
 			  label_h * Rows + Rows;
 	  }
   }
-  desk_w = (pwindow.width - Columns + 1) / Columns;
-  desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
+  set_desk_size(false);
 
   if (is_transient)
   {
@@ -984,7 +997,7 @@ void initialize_pager(void)
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
-    if ((uselabel || use_monitor_label) && Ffont && Ffont->font) {
+    if (label_h > 0 && Ffont && Ffont->font) {
       gcv.font = Ffont->font->fid;
       Desks[i].NormalGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
@@ -1008,7 +1021,7 @@ void initialize_pager(void)
       gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
 	: Colorset[Desks[i].highcolorset].fg;
 
-    if ((uselabel || use_monitor_label) && Ffont && Ffont->font) {
+    if (label_h > 0 && Ffont && Ffont->font) {
       Desks[i].rvGC =
 	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
     } else {
@@ -1145,7 +1158,7 @@ void UpdateWindowShape(void)
     XRectangle *shape;
     struct fpmonitor *fp = fpmonitor_this(NULL);
 
-    if (!fp || !ShapeLabels || !uselabel || !use_monitor_label || label_h<=0)
+    if (!fp || !ShapeLabels || label_h == 0)
       return;
 
     shape_count =
@@ -1603,8 +1616,7 @@ void ReConfigure(void)
   {
     return;
   }
-  desk_w = (pwindow.width - Columns + 1) / Columns;
-  desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
+  set_desk_size(false);
 
   for(k=0;k<Rows;k++)
   {
@@ -1953,29 +1965,28 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	{
 		erase = True;
 	}
-	if (!ShapeLabels && !use_monitor_label &&
+	if (!ShapeLabels && use_desk_label && !use_monitor_label &&
 		(fp->m->virtual_scr.CurrentDesk == d))
 	{
-		if (uselabel)
-		{
-			XFillRectangle(dpy,
-				Desks[desk].title_w, Desks[desk].HiliteGC,
-				0, y1, desk_w, label_h);
-		}
+		XFillRectangle(dpy,
+			Desks[desk].title_w, Desks[desk].HiliteGC,
+			0, y1, desk_w, label_h);
 	}
-	else
+	else if (label_h > 0 && erase)
 	{
-		if((uselabel || use_monitor_label) && erase)
-		{
-			XClearArea(dpy, Desks[desk].title_w,
-				   0, y1, desk_w, label_h, False);
-		}
+		XClearArea(dpy, Desks[desk].title_w,
+			   0, y1, desk_w, label_h, False);
 	}
 
 	/* Draw monitor labels grid lines. */
 	if (use_monitor_label) {
 		int count = fpmonitor_count();
-		int y_loc = y1 + label_h / 2;
+		int y_loc = y1;
+		int height = label_h;
+		if (use_desk_label) {
+			height /= 2;
+			y_loc += height;
+		}
 		XDrawLine(
 			dpy, Desks[desk].title_w, Desks[desk].NormalGC,
 			0, y_loc, desk_w, y_loc);
@@ -1984,66 +1995,25 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 			XDrawLine(dpy,
 				Desks[desk].title_w, Desks[desk].NormalGC,
 				i * desk_w / count, y_loc, i * desk_w / count,
-				y_loc + label_h / 2);
+				y_loc + height);
 	}
 
-	ptr = Desks[desk].label;
-	w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
-	if (w > desk_w)
-	{
-		snprintf(str, sizeof(str), "Desk%d", d);
-		ptr = str;
+	if (use_desk_label) {
+		ptr = Desks[desk].label;
 		w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
-	}
-	if((w <= desk_w) && (uselabel || use_monitor_label))
-	{
-		FwinString->str = ptr;
-		FwinString->win = Desks[desk].title_w;
-		if (!use_monitor_label && fp->m->virtual_scr.CurrentDesk == d)
-		{
-			cs = Desks[desk].highcolorset;
-			FwinString->gc = Desks[desk].rvGC;
+		if (w > desk_w) {
+			snprintf(str, sizeof(str), "Desk%d", d);
+			ptr = str;
+			w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
 		}
-		else
-		{
-			cs = Desks[desk].colorset;
-			FwinString->gc = Desks[desk].NormalGC;
-		}
-
-		FwinString->flags.has_colorset = False;
-		if (cs >= 0)
-		{
-			FwinString->colorset = &Colorset[cs];
-			FwinString->flags.has_colorset = True;
-		}
-		FwinString->x = (desk_w - w)/2;
-		FwinString->y = y1 + Ffont->ascent + 1;
-		FwinString->flags.has_clip_region = False;
-		FlocaleDrawString(dpy, Ffont, FwinString, 0);
-	}
-
-	if (use_monitor_label) {
-		int loop = 0;
-		int count = fpmonitor_count();
-		int label_width = desk_w / count;
-		struct fpmonitor *tm;
-
-		TAILQ_FOREACH(tm, &fp_monitor_q, entry) {
-			if (tm->disabled)
-				continue;
-			snprintf(str, sizeof(str), "%s", tm->m->si->name);
-
-			FwinString->str = str;
+		if (w <= desk_w) {
+			FwinString->str = ptr;
 			FwinString->win = Desks[desk].title_w;
-			if (tm->m->virtual_scr.CurrentDesk == d) {
+			if (!use_monitor_label &&
+				fp->m->virtual_scr.CurrentDesk == d)
+			{
 				cs = Desks[desk].highcolorset;
 				FwinString->gc = Desks[desk].rvGC;
-				XFillRectangle(
-					dpy,Desks[desk].title_w,
-					Desks[desk].HiliteGC,
-					loop * label_width,
-					y1 + label_h / 2,
-					label_width, label_h / 2);
 			} else {
 				cs = Desks[desk].colorset;
 				FwinString->gc = Desks[desk].NormalGC;
@@ -2055,9 +2025,63 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 				FwinString->colorset = &Colorset[cs];
 				FwinString->flags.has_colorset = True;
 			}
-			FwinString->x = loop * label_width + (label_width - w)/2;
-			FwinString->y = y1 + Ffont->ascent + label_h / 2 + 1;
+			FwinString->x = (desk_w - w)/2;
+			FwinString->y = y1 + Ffont->ascent + 1;
+			FwinString->flags.has_clip_region = False;
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
+		}
+	}
+
+	if (use_monitor_label) {
+		struct fpmonitor *tm;
+		int loop = 0;
+		int count = fpmonitor_count();
+		int label_width = desk_w / count;
+		int y_loc = y1;
+		int height = label_h;
+		if (use_desk_label) {
+			height /= 2;
+			y_loc += height;
+		}
+
+		TAILQ_FOREACH(tm, &fp_monitor_q, entry) {
+			if (tm->disabled)
+				continue;
+			snprintf(str, sizeof(str), "%s", tm->m->si->name);
+			ptr = str;
+			w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
+			if (w > label_width) {
+				snprintf(str, sizeof(str), "Mon%d", loop + 1);
+				ptr = str;
+				w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
+			}
+			if (w <= label_width) {
+				FwinString->str = ptr;
+				FwinString->win = Desks[desk].title_w;
+				if (tm->m->virtual_scr.CurrentDesk == d) {
+					cs = Desks[desk].highcolorset;
+					FwinString->gc = Desks[desk].rvGC;
+					XFillRectangle(
+						dpy,Desks[desk].title_w,
+						Desks[desk].HiliteGC,
+						loop * label_width, y_loc,
+						label_width, height);
+				} else {
+					cs = Desks[desk].colorset;
+					FwinString->gc = Desks[desk].NormalGC;
+				}
+
+				FwinString->flags.has_colorset = False;
+				if (cs >= 0)
+				{
+					FwinString->colorset = &Colorset[cs];
+					FwinString->flags.has_colorset = True;
+				}
+				FwinString->x = loop * label_width +
+						(label_width - w)/2;
+				FwinString->y = y_loc + Ffont->ascent + 1;
+				FlocaleDrawString(dpy, Ffont, FwinString, 0);
+			}
 			loop++;
 		}
 	}
@@ -3615,8 +3639,7 @@ void change_colorset(int colorset)
       XSetForeground(dpy, Desks[i].rvGC, Colorset[colorset].fg);
       if (HilightDesks)
       {
-	if ((uselabel || use_monitor_label) &&
-		(i == fp->m->virtual_scr.CurrentDesk))
+	if (label_h > 0 && fp->m->virtual_scr.CurrentDesk == i)
 	{
 	  SetWindowBackground(
 	    dpy, Desks[i].title_w, desk_w, desk_h, &Colorset[colorset], Pdepth,
@@ -3637,13 +3660,13 @@ void change_colorset(int colorset)
       XSetWindowBorder(dpy, Desks[i].w, Colorset[colorset].fg);
       XSetForeground(dpy, Desks[i].NormalGC,Colorset[colorset].fg);
       XSetForeground(dpy, Desks[i].DashedGC,Colorset[colorset].fg);
-      if (uselabel || use_monitor_label)
+      if (label_h > 0)
       {
 	SetWindowBackground(
 	  dpy, Desks[i].title_w, desk_w, desk_h + label_h, &Colorset[colorset],
 	  Pdepth, Scr.NormalGC, True);
       }
-      if (label_h != 0 && (uselabel || use_monitor_label) && !LabelsBelow &&
+      if (label_h != 0 && label_h > 0 && !LabelsBelow &&
 	  !CSET_IS_TRANSPARENT_PR(Desks[i].colorset))
       {
 	SetWindowBackgroundWithOffset(
@@ -3658,7 +3681,7 @@ void change_colorset(int colorset)
       }
       update_pr_transparent_subwindows(i);
     }
-    else if (Desks[i].highcolorset == colorset && (uselabel || use_monitor_label))
+    else if (Desks[i].highcolorset == colorset && label_h > 0)
     {
       SetWindowBackground(
 	dpy, Desks[i].title_w, 0, 0, &Colorset[Desks[i].colorset], Pdepth,

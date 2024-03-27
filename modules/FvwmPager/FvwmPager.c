@@ -119,7 +119,7 @@ Window BalloonView = None;
 rectangle pwindow = {0, 0, 0, 0};
 rectangle icon = {-10000, -10000, 0, 0};
 int usposition = 0;
-Bool uselabel = True;
+Bool use_desk_label = True;
 Bool use_monitor_label = False;
 int xneg = 0, yneg = 0;
 int icon_xneg = 0, icon_yneg = 0;
@@ -1962,6 +1962,10 @@ ImagePath = NULL;
 	    }
 	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
 	    monitor_to_track = fxstrdup(m->m->si->name);
+    } else if(StrEquals(resource, "DeskLabels")) {
+	    use_desk_label = True;
+    } else if(StrEquals(resource, "NoDeskLabels")) {
+	    use_desk_label = False;
     } else if(StrEquals(resource, "MonitorLabels")) {
 	    use_monitor_label = True;
     } else if(StrEquals(resource, "NoMonitorLabels")) {
@@ -2061,7 +2065,8 @@ ImagePath = NULL;
       CopyStringWithQuotes(&font_string, next);
       if(strncasecmp(font_string,"none",4) == 0)
       {
-	uselabel = False;
+	use_desk_label = False;
+	use_monitor_label = False;
 	free(font_string);
 	font_string = NULL;
       }
