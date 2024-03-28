@@ -2028,7 +2028,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		ptr = Desks[desk].label;
 		w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
 		if (w > desk_w) {
-			snprintf(str, sizeof(str), "Desk%d", d);
+			snprintf(str, sizeof(str), "D%d", d);
 			ptr = str;
 			w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
 		}
@@ -2074,7 +2074,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 			ptr = str;
 			w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
 			if (w > label_width) {
-				snprintf(str, sizeof(str), "Mon%d", loop + 1);
+				snprintf(str, sizeof(str), "%d", loop + 1);
 				ptr = str;
 				w = FlocaleTextWidth(Ffont, ptr, strlen(ptr));
 			}
