@@ -613,13 +613,13 @@ out:
 		if (!(m->flags & (MONITOR_FOUND|MONITOR_NEW))) {
 			m->flags |= MONITOR_DISABLED;
 			m->emit |= MONITOR_DISABLED;
-		} else if (m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) {
+		} else if ((m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) ==
+			(MONITOR_FOUND|MONITOR_DISABLED)) {
 			m->flags &= ~MONITOR_DISABLED;
 		} else {
-			m->emit |= MONITOR_ENABLED;
+			m->flags |= MONITOR_ENABLED;
 		}
 		m->flags &= ~MONITOR_FOUND;
-
 	}
 	/* Now that all monitors have been inserted, assign them a number from
 	 * 0 -> n so that they can be referenced in order.
@@ -693,6 +693,22 @@ void FScreenInit(Display *dpy)
 randr_fail:
 	fprintf(stderr, "Unable to initialise RandR\n");
 	exit(101);
+}
+
+void
+monitor_refresh_module(Display *dpy)
+{
+	struct monitor	*m = NULL;
+
+	RB_FOREACH(m, monitors, &monitor_q)
+		m->flags &= ~MONITOR_NEW;
+
+	scan_screens(dpy);
+
+	RB_FOREACH(m, monitors, &monitor_q) {
+		if (m->flags & MONITOR_NEW)
+			fprintf(stderr, "MON: %s is NEW...\n", m->si->name);
+	}
 }
 
 void
@@ -785,17 +801,15 @@ struct monitor *
 FindScreenOfXY(int x, int y)
 {
 	struct monitor	*m;
-	int		 xa, ya;
-	int		 all_widths, all_heights;
+	int all_widths = monitor_get_all_widths();
+	int all_heights = monitor_get_all_heights();
 
-	all_widths =  monitor_get_all_widths();
-	all_heights = monitor_get_all_heights();
-
-	xa = abs(x);
-	ya = abs(y);
-
-	xa %= all_widths;
-	ya %= all_heights;
+	x %= all_widths;
+	y %= all_heights;
+	if (x < 0)
+		x += all_widths;
+	if (y < 0)
+		y += all_heights;
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		/* If we have more than one screen configured, then don't match
@@ -805,8 +819,8 @@ FindScreenOfXY(int x, int y)
 		if (monitor_get_count() > 0 &&
 		    strcmp(m->si->name, GLOBAL_SCREEN_NAME) == 0)
 			continue;
-		if (xa >= m->si->x && xa < m->si->x + m->si->w &&
-		    ya >= m->si->y && ya < m->si->y + m->si->h)
+		if (x >= m->si->x && x < m->si->x + m->si->w &&
+		    y >= m->si->y && y < m->si->y + m->si->h)
 			return (m);
 	}
 

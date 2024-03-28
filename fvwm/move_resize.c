@@ -556,6 +556,7 @@ static int GetOnePositionArgument(
 {
 	int final_pos;
 	int pos_change = 0;
+	int return_val = 1;
 	float wfactor;
 
 	if (s1 == 0 || *s1 == 0)
@@ -569,6 +570,12 @@ static int GetOnePositionArgument(
 	case 'w':
 	case 'W':
 		final_pos = window_pos;
+		s1++;
+		break;
+	case 'v':
+	case 'V':
+		final_pos = 0;
+		return_val = 2;
 		s1++;
 		break;
 	case 'm':
@@ -677,7 +684,7 @@ static int GetOnePositionArgument(
 	}
 	*pFinalPos = final_pos;
 
-	return 1;
+	return return_val;
 }
 
 /* GetMoveArguments is used for Move & AnimatedMove
@@ -688,6 +695,8 @@ static int GetOnePositionArgument(
  *   10p -0p         Absolute pixel position, from bottom
  *  w+5  w-10p       Relative position, right 5%, up ten pixels
  *  m+5  m-10p       Pointer relative position, right 5%, up ten pixels
+ *  v+5p v+10p       Virtual screen absolute position, place at position
+ *                   (5p,10p) in the virtual screen, with (0p,0p) top left.
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
 int GetMoveArguments(FvwmWindow *fw,
@@ -704,6 +713,8 @@ int GetMoveArguments(FvwmWindow *fw,
 	int scr_h = monitor_get_all_heights();
 	Bool use_working_area = True;
 	Bool global_flag_parsed = False;
+	Bool use_virt_x = False;
+	Bool use_virt_y = False;
 	int retval = 0;
 
 	if (!paction)
@@ -786,33 +797,56 @@ int GetMoveArguments(FvwmWindow *fw,
 
 	if (s1 != NULL && s2 != NULL)
 	{
+		int n;
 		retval = 0;
 		if (fKeep == True && StrEquals(s1, "keep"))
 		{
 			retval++;
 		}
-		else if (
-			GetOnePositionArgument(
-				s1, pFinal->x, s.width, &(pFinal->x),
-				(float)scr_w / 100, scr_w, scr_pos.x, True))
+		else
 		{
-			retval++;
+			n = GetOnePositionArgument(
+				s1, pFinal->x, s.width, &(pFinal->x),
+				(float)scr_w / 100, scr_w, scr_pos.x, True);
+			if (n > 0)
+			{
+				retval++;
+				if (n == 2)
+				{
+					use_virt_x = True;
+				}
+			}
 		}
 		if (fKeep == True && StrEquals(s2, "keep"))
 		{
 			retval++;
 		}
-		else if (
-			GetOnePositionArgument(
-				s2, pFinal->y, s.height, &(pFinal->y),
-				(float)scr_h / 100, scr_h, scr_pos.y, False))
+		else
 		{
-			retval++;
+			n = GetOnePositionArgument(
+				s2, pFinal->y, s.height, &(pFinal->y),
+				(float)scr_h / 100, scr_h, scr_pos.y, False);
+			if (n > 0)
+			{
+				retval++;
+				if (n == 2)
+				{
+					use_virt_y = True;
+				}
+			}
 		}
-		if (retval == 0)
+		if (retval < 2)
 		{
 			/* make sure warping is off for interactive moves */
 			*fWarp = False;
+		}
+		else if (use_virt_x || use_virt_y)
+		{
+			/* Adjust position when using virtual screen. */
+			struct monitor *m = FindScreenOfXY(
+					pFinal->x, pFinal->y);
+			pFinal->x -= (use_virt_x) ? m->virtual_scr.Vx : 0;
+			pFinal->y -= (use_virt_y) ? m->virtual_scr.Vy : 0;
 		}
 	}
 	else

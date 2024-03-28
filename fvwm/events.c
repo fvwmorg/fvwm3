@@ -1831,6 +1831,9 @@ void monitor_update_ewmh(void)
 			set_ewmhc_strut_values(m, ewbs);
 		}
 		EWMH_Init(m);
+
+		/* Clear the flag now that it's been registered. */
+		m->flags &= ~MONITOR_NEW;
 	}
 
 	TAILQ_FOREACH_SAFE(mo, &monitorsold_q, oentry, mo1) {

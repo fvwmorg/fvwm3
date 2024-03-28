@@ -468,21 +468,47 @@ void BroadcastName(
 void BroadcastMonitorList(fmodule *this)
 {
 	char		*name;
+	const char	*m_info;
 	struct monitor	*m;
 	fmodule_list_itr moditr;
 	fmodule *module;
 
 	module_list_itr_init(&moditr);
 
+	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d";
+
 	while ((module = module_list_itr_next(&moditr)) != NULL) {
 		RB_FOREACH(m, monitors, &monitor_q) {
-			if (m->flags & MONITOR_DISABLED)
-				continue;
-			xasprintf(&name, "Monitor %s", m->si->name);
+			xasprintf(&name, m_info, m->si->name, m->flags,
+			    m->dx, m->dy, m->virtual_scr.Vx,
+			    m->virtual_scr.Vy, m->virtual_scr.VxMax,
+			    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk,
+			    monitor_get_all_widths(), monitor_get_all_heights());
 
 			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 			free(name);
 		}
+		xasprintf(&name, "DesktopConfiguration %d %d",
+			monitor_mode, is_tracking_shared);
+		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
+		free(name);
+
+		/* Reissue the DesktopSize command here, rather than sending
+		 * down the DesktopSize -- we want FvwmPager in particular to
+		 * react to a M_NEW_PAGE event, which DesktopSize will do; and
+		 * this avoids duplication in FvwmPager as a result.
+		 */
+		char action[256];
+
+		/* Every monitor will have the same dx/dy values, so just take
+		 * the fist entry in our list.
+		 */
+		struct monitor *m = RB_MIN(monitors, &monitor_q);
+
+		snprintf(action, sizeof(action), "DesktopSize %dx%d",
+			m->dx, m->dy);
+		execute_function_override_window(NULL, NULL, action, NULL, 0,
+			NULL);
 	}
 }
 

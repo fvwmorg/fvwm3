@@ -118,7 +118,9 @@ Window BalloonView = None;
 
 rectangle pwindow = {0, 0, 0, 0};
 rectangle icon = {-10000, -10000, 0, 0};
-int usposition = 0,uselabel = 1;
+int usposition = 0;
+Bool use_desk_label = True;
+Bool use_monitor_label = False;
 int xneg = 0, yneg = 0;
 int icon_xneg = 0, icon_yneg = 0;
 extern DeskInfo *Desks;
@@ -146,12 +148,14 @@ Bool is_transient = False;
 Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 Bool Swallowed = False;
+Bool fp_new_block = False;
 
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 void list_monitor_focus(unsigned long *);
 struct fpmonitor *fpmonitor_new(struct monitor *);
+void fpmonitor_disable(struct fpmonitor *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -159,10 +163,20 @@ fpmonitor_new(struct monitor *m)
 	struct fpmonitor	*fp;
 
 	fp = fxcalloc(1, sizeof(*fp));
+	fp->CPagerWin = fxcalloc(1, ndesks * sizeof(*fp->CPagerWin));
 	fp->m = m;
+	fp->disabled = false;
 	TAILQ_INSERT_TAIL(&fp_monitor_q, fp, entry);
 
 	return (fp);
+}
+
+void fpmonitor_disable(struct fpmonitor *fp)
+{
+	fp->disabled = true;
+	for (int i = 0; i < ndesks; i++) {
+		XMoveWindow(dpy, fp->CPagerWin[i], -32768,-32768);
+	}
 }
 
 struct fpmonitor *
@@ -193,17 +207,15 @@ fpmonitor_this(struct monitor *m_find)
 	}
 	if (monitor_to_track == NULL)
 		m = monitor_get_current();
-
-	m = monitor_resolve_name(monitor_to_track);
+	else
+		m = monitor_resolve_name(monitor_to_track);
 
 	if (m == NULL)
 		m = monitor_get_current();
-	if (m == NULL)
-		return (NULL);
-	if (m->flags & MONITOR_DISABLED)
-		return (NULL);
 
 search:
+	if (m == NULL || m->flags & MONITOR_DISABLED)
+		return (NULL);
 	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
 		if (fp->m == m)
 			return (fp);
@@ -376,7 +388,6 @@ int main(int argc, char **argv)
   flib_init_graphics(dpy);
 
   x_fd = XConnectionNumber(dpy);
-  flib_init_graphics(dpy);
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
@@ -407,6 +418,9 @@ int main(int argc, char **argv)
 		 MX_VISIBLE_ICON_NAME|
 		 MX_PROPERTY_CHANGE|
 		 MX_MONITOR_FOCUS);
+
+  RB_FOREACH(mon, monitors, &monitor_q)
+	(void)fpmonitor_new(mon);
 
   ParseOptions();
   if (is_transient)
@@ -448,15 +462,13 @@ int main(int argc, char **argv)
   if (BalloonFormatString == NULL)
     BalloonFormatString = fxstrdup("%i");
 
-  RB_FOREACH(mon, monitors, &monitor_q)
-	(void)fpmonitor_new(mon);
-
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
   SendInfo(fd,"Send_WindowList",0);
 
   /* open a pager window */
+  initialise_common_pager_fragments();
   initialize_pager();
 
   if (is_transient)
@@ -766,14 +778,6 @@ void list_configure(unsigned long *body)
   t = Start;
   newm = monitor_by_output((int)cfgpacket->monitor_id);
 
-  if (newm == NULL) {
-	  fvwm_debug(__func__, "monitor was null with ID: %d\n",
-                     (int)cfgpacket->monitor_id);
-	  fvwm_debug(__func__, "using current montior\n");
-
-	  newm = monitor_get_current();
-  }
-
   while( (t != NULL) && (t->w != target_w))
   {
 	  if (t->m != newm) {
@@ -913,35 +917,39 @@ void list_new_page(unsigned long *body)
 	struct fpmonitor *fp;
 
 	m = monitor_by_output(mon_num);
+	/* Don't allow monitor_by_output to fallback to RB_MIN. */
+	if (m->si->rr_output != mon_num)
+		return;
 
 	if (monitor_to_track != NULL &&
 	    strcmp(m->si->name, monitor_to_track) != 0)
 		return;
 
 	if ((fp = fpmonitor_this(m)) == NULL)
-		fp = fpmonitor_new(m);
+		return;
 
-  fp->virtual_scr.Vx = body[0];
-  fp->virtual_scr.Vy = body[1];
-  if (fp->m->virtual_scr.CurrentDesk != body[2])
-  {
-      /* first handle the new desk */
-      body[0] = body[2];
-      list_new_desk(body);
-  }
-  if (fp->virtual_scr.VxPages != body[5] || fp->virtual_scr.VyPages != body[6])
-  {
-    fp->virtual_scr.VxPages = body[5];
-    fp->virtual_scr.VyPages = body[6];
-    fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
-    fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
-    fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - monitor_get_all_widths();
-    fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - monitor_get_all_heights();
-    ReConfigure();
-  }
-  MovePage(False);
-  MoveStickyWindow(True, False);
-  Hilight(FocusWin,True);
+	fp->virtual_scr.Vx = body[0];
+	fp->virtual_scr.Vy = body[1];
+	if (fp->m->virtual_scr.CurrentDesk != body[2]) {
+		/* first handle the new desk */
+		body[0] = body[2];
+		body[1] = mon_num;
+		list_new_desk(body);
+	}
+	if (fp->virtual_scr.VxPages != body[5] || fp->virtual_scr.VyPages != body[6])
+	{
+		fp->virtual_scr.VxPages = body[5];
+		fp->virtual_scr.VyPages = body[6];
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
+		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
+		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
+		ReConfigure();
+	}
+
+	MovePage(False);
+	MoveStickyWindow(True, False);
+	Hilight(FocusWin,True);
 }
 
 /*
@@ -956,14 +964,25 @@ void list_new_desk(unsigned long *body)
   int change_cs = -1;
   int change_ballooncs = -1;
   int change_highcs = -1;
+  int mon_num = body[1];
   struct monitor *mout;
   struct fpmonitor *fp;
 
-  mout = monitor_by_output((int)body[1]);
+  mout = monitor_by_output(mon_num);
+  /* Don't allow monitor_by_output to fallback to RB_MIN. */
+  if (mout->si->rr_output != mon_num)
+	  return;
+
   fp = fpmonitor_this(mout);
 
   if (fp == NULL)
 	  return;
+
+  /* Best to update the desk, even if the monitor isn't being
+   * tracked, as this could change.
+   */
+  oldDesk = fp->m->virtual_scr.CurrentDesk;
+  fp->m->virtual_scr.CurrentDesk = (long)body[0];
 
   /* If the monitor for which the event was sent, does not match the monitor
    * itself, then don't change the FvwmPager's desk.  Only do this if we're
@@ -972,8 +991,9 @@ void list_new_desk(unsigned long *body)
   if (monitor_to_track != NULL && fp->m != mout)
 	  return;
 
-  oldDesk = fp->m->virtual_scr.CurrentDesk;
-  fp->m->virtual_scr.CurrentDesk = (long)body[0];
+  if (monitor_mode == MONITOR_TRACKING_G)
+    monitor_assign_virtual(fp->m);
+
   if (fAlwaysCurrentDesk && oldDesk != fp->m->virtual_scr.CurrentDesk)
   {
     PagerWindow *t;
@@ -1151,6 +1171,7 @@ void list_lower(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
+  struct fpmonitor *m;
 
   target_w = body[0];
   t = Start;
@@ -1162,8 +1183,11 @@ void list_lower(unsigned long *body)
     {
       if(t->PagerView != None)
 	XLowerWindow(dpy,t->PagerView);
-      if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks))
-	XLowerWindow(dpy,Desks[t->desk - desk1].CPagerWin);
+      if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks)) {
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		XLowerWindow(dpy, m->CPagerWin[t->desk - desk1]);
+	}
+      }
       XLowerWindow(dpy,t->IconView);
     }
 }
@@ -1516,27 +1540,72 @@ void list_config_info(unsigned long *body)
 		}
 		DrawGrid(val, True, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
-		char	*mname;
-		struct monitor *tm;
+		int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
+		int		  scr_width, scr_height;
+		int		  flags;
+		char		 *mname;
+		struct monitor	 *tm;
 		struct fpmonitor *fp;
 
 		tline = GetNextToken(tline, &mname);
 
-		tm = monitor_resolve_name(mname);
+		sscanf(tline, "%d %d %d %d %d %d %d %d %d %d", &flags,
+		    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk,
+		    &scr_width, &scr_height);
 
-		if (tm == NULL) {
-			m = fxcalloc(1, sizeof(*m));
-			m->m = tm;
-			/* XXX: FIXME: Update virtual_scr??? */
-			TAILQ_INSERT_TAIL(&fp_monitor_q, m, entry);
-		}
-		fp = fpmonitor_this(tm);
-		if (fp == NULL)
+		monitor_refresh_module(dpy);
+
+		tm = monitor_resolve_name(mname);
+		if (tm == NULL)
 			return;
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
-		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - monitor_get_all_widths();
-		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - monitor_get_all_heights();
+
+		if (flags & MONITOR_DISABLED) {
+			fp = fpmonitor_by_name(mname);
+			if (fp != NULL) {
+				bool disabled = fp->disabled;
+				fpmonitor_disable(fp);
+				if (!disabled)
+					ReConfigure();
+			}
+			return;
+		}
+
+		if ((fp = fpmonitor_this(tm)) == NULL) {
+			if (fp_new_block)
+				return;
+			fp_new_block = True;
+			fp = fpmonitor_new(tm);
+			fp->m->flags |= MONITOR_NEW;
+		}
+
+		fp->disabled = false;
+		fp->scr_width = scr_width;
+		fp->scr_height = scr_height;
+		fp->m->dx = dx;
+		fp->m->dy = dy;
+		fp->m->virtual_scr.Vx = fp->virtual_scr.Vx = Vx;
+		fp->m->virtual_scr.Vy = fp->virtual_scr.Vy = Vy;
+		fp->m->virtual_scr.VxMax = fp->virtual_scr.VxMax = VxMax;
+		fp->m->virtual_scr.VyMax = fp->virtual_scr.VyMax = VyMax;
+		fp->m->virtual_scr.CurrentDesk = CurrentDesk;
+
+		fp->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+		fp->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
+		if (fp->virtual_scr.VxMax < 0)
+			fp->virtual_scr.VxMax = 0;
+		if (fp->virtual_scr.VyMax < 0)
+			fp->virtual_scr.VyMax = 0;
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxMax + fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyMax + fpmonitor_get_all_heights();
+		fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / fpmonitor_get_all_widths();
+		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / fpmonitor_get_all_heights();
+
+		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
+			fp->m->flags &= ~MONITOR_NEW;
+			initialize_fpmonitor_windows(fp);
+			fp_new_block = False;
+		}
+		ReConfigure();
 	} else if (StrEquals(token, "DesktopSize")) {
 		int dx, dy;
 		struct fpmonitor *m;
@@ -1544,17 +1613,28 @@ void list_config_info(unsigned long *body)
 		sscanf(tline, "%d %d", &dx, &dy);
 
 		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-			m->virtual_scr.VxMax = dx * monitor_get_all_widths() - monitor_get_all_widths();
-			m->virtual_scr.VyMax = dy * monitor_get_all_heights() - monitor_get_all_heights();
+			m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+			m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
 			if (m->virtual_scr.VxMax < 0)
 				m->virtual_scr.VxMax = 0;
 			if (m->virtual_scr.VyMax < 0)
 				m->virtual_scr.VyMax = 0;
-			m->virtual_scr.VWidth = m->virtual_scr.VxMax + monitor_get_all_widths();
-			m->virtual_scr.VHeight = m->virtual_scr.VyMax + monitor_get_all_heights();
-			m->virtual_scr.VxPages = m->virtual_scr.VWidth / monitor_get_all_widths();
-			m->virtual_scr.VyPages = m->virtual_scr.VHeight / monitor_get_all_heights();
+			m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
+			m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
+			m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
+			m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
 		}
+	} else if (StrEquals(token, "DesktopConfiguration")) {
+		int mmode, is_shared;
+
+		sscanf(tline, "%d %d", &mmode, &is_shared);
+
+		if (mmode > 0)
+			monitor_mode = mmode;
+		if (is_shared > 0)
+			is_tracking_shared = true;
+		else
+			is_tracking_shared = false;
 	}
 }
 
@@ -1826,13 +1906,15 @@ ImagePath = NULL;
       }
       continue;
     }
+	/* Why are we doing anything here? */
     else if (StrEquals(token, "Monitor")) {
 	    char		*mname;
-	    struct monitor	*m;
-	    struct fpmonitor	*fp;
+	    //struct monitor	*m;
+	    //struct fpmonitor	*fp;
 
 	    next = GetNextToken(next, &mname);
-
+#if 0
+		/* Why are we looping here? */
 	    RB_FOREACH(m, monitors, &monitor_q) {
 		if ((fp = fpmonitor_this(m)) == NULL)
 			fp = fpmonitor_new(m);
@@ -1840,9 +1922,10 @@ ImagePath = NULL;
 		fp->virtual_scr.Vy = m->virtual_scr.Vy;
 		fp->virtual_scr.VxMax = m->virtual_scr.VxMax;
 		fp->virtual_scr.VyMax = m->virtual_scr.VyMax;
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * monitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * monitor_get_all_heights();
+		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
 	    }
+#endif
 	    continue;
     }
 
@@ -1883,6 +1966,14 @@ ImagePath = NULL;
 	    }
 	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
 	    monitor_to_track = fxstrdup(m->m->si->name);
+    } else if(StrEquals(resource, "DeskLabels")) {
+	    use_desk_label = True;
+    } else if(StrEquals(resource, "NoDeskLabels")) {
+	    use_desk_label = False;
+    } else if(StrEquals(resource, "MonitorLabels")) {
+	    use_monitor_label = True;
+    } else if(StrEquals(resource, "NoMonitorLabels")) {
+	    use_monitor_label = False;
     }
     else if(StrEquals(resource,"Colorset"))
     {
@@ -1978,7 +2069,8 @@ ImagePath = NULL;
       CopyStringWithQuotes(&font_string, next);
       if(strncasecmp(font_string,"none",4) == 0)
       {
-	uselabel = 0;
+	use_desk_label = False;
+	use_monitor_label = False;
 	free(font_string);
 	font_string = NULL;
       }
@@ -2362,16 +2454,16 @@ ImagePath = NULL;
 
   struct fpmonitor *m;
   TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	  m->virtual_scr.VxMax = dx * monitor_get_all_widths() - monitor_get_all_widths();
-	  m->virtual_scr.VyMax = dy * monitor_get_all_heights() - monitor_get_all_heights();
+	  m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+	  m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
 	  if (m->virtual_scr.VxMax < 0)
 		  m->virtual_scr.VxMax = 0;
 	  if (m->virtual_scr.VyMax < 0)
 		  m->virtual_scr.VyMax = 0;
-	  m->virtual_scr.VWidth = m->virtual_scr.VxMax + monitor_get_all_widths();
-	  m->virtual_scr.VHeight = m->virtual_scr.VyMax + monitor_get_all_heights();
-	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / monitor_get_all_widths();
-	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / monitor_get_all_heights();
+	  m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
+	  m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
+	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
+	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
 
 	  fvwm_debug(__func__,
 			  "%s: VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "
@@ -2419,8 +2511,9 @@ void ExitPager(void)
   struct fpmonitor *fp, *fp1;
 
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
-    TAILQ_REMOVE(&fp_monitor_q, fp, entry);
-    free(fp);
+	TAILQ_REMOVE(&fp_monitor_q, fp, entry);
+	free(fp->CPagerWin);
+	free(fp);
   }
 
   if (is_transient)

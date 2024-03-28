@@ -16,6 +16,8 @@
 struct fpmonitor {
 	struct monitor *m;
 
+	Window *CPagerWin;
+
         struct {
                 int VxMax;
                 int VyMax;
@@ -27,6 +29,9 @@ struct fpmonitor {
 		int VHeight;
         } virtual_scr;
 
+	int scr_width; /* Size of DisplayWidth() */
+	int scr_height; /* Size of DisplayHeight() */
+	bool disabled;
 	TAILQ_ENTRY(fpmonitor) entry;
 };
 TAILQ_HEAD(fpmonitors, fpmonitor);
@@ -103,14 +108,8 @@ typedef struct pager_window
   char *res_class;
   char *window_label; /* This is displayed inside the mini window */
   FvwmPicture mini_icon;
-  int pager_view_x;
-  int pager_view_y;
-  int pager_view_width;
-  int pager_view_height;
-  int icon_view_x;
-  int icon_view_y;
-  int icon_view_width;
-  int icon_view_height;
+  rectangle pager_view;
+  rectangle icon_view;
 
   Window PagerView;
   Window IconView;
@@ -129,7 +128,6 @@ typedef struct desk_info
 {
   Window w;
   Window title_w;
-  Window CPagerWin;
   FvwmPicture *bgPixmap;                /* Pixmap used as background. */
   BalloonWindow balloon;
   int colorset;
@@ -138,9 +136,11 @@ typedef struct desk_info
   char *Dcolor;
   char *label;
   GC NormalGC;
-  GC DashedGC;                  /* used the the pages boundary lines */
+  GC DashedGC;                  /* used for the pages boundary lines */
   GC HiliteGC;                  /* used for hilighting the active desk */
   GC rvGC;                      /* used for drawing hilighted desk title */
+  unsigned long fp_mask;        /* used for the fpmonitor window */
+  XSetWindowAttributes fp_attr; /* used for the fpmonitor window */
 } DeskInfo;
 
 typedef struct pager_string_list
@@ -191,7 +191,9 @@ int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Stuff in x_pager.c */
 void change_colorset(int colorset);
+void initialise_common_pager_fragments(void);
 void initialize_pager(void);
+void initialize_fpmonitor_windows(struct fpmonitor *);
 void initialize_viz_pager(void);
 Pixel GetColor(char *name);
 void DispatchEvent(XEvent *Event);
@@ -201,7 +203,7 @@ void update_pr_transparent_windows(void);
 void MovePage(Bool is_new_desk);
 void DrawGrid(int desk,int erase,Window ew,XRectangle *r);
 void DrawIconGrid(int erase);
-void SwitchToDesk(int Desk);
+void SwitchToDesk(int Desk, struct fpmonitor *m);
 void SwitchToDeskAndPage(int Desk, XEvent *Event);
 void AddNewWindow(PagerWindow *prev);
 void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw);
@@ -225,5 +227,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(int i);
 void HandleScrollDone(void);
+int fpmonitor_get_all_widths(void);
+int fpmonitor_get_all_heights(void);
 
 #endif /* FVWMPAGER_H */

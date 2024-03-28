@@ -3927,7 +3927,7 @@ Move shuffle Up Left
 *Move* can be used to moved a window to a specified position:
 +
 
-> *Move* [screen _S_] \[w | m]_x_[p | w] \[w | m]_y_[p | w] [Warp] [ewmhiwa]
+> *Move* [screen _S_] \[w | m | v]_x_[p | w] \[w | m | v]_y_[p | w] [Warp] [ewmhiwa]
 
 +
 This will move the window to the _x_ and _y_ position (see below).
@@ -3950,8 +3950,11 @@ while a trailing '_w_' means percent of the window width/height. To move the
 window relative to its current position, add the '_w_' (for "window") prefix
 before the _x_ and/or _y_ value. To move the window to a position relative to
 the current location of the pointer, add the '_m_' (for "mouse") prefix. To
-leave either coordinate unchanged, "_keep_" can be specified in place of
-_x_ or _y_.
+move the window relative to the virtual screen coordinates, add the '_v_'
+(for "virtual screen") prefix. This is mostly for internal use with FvwmPager,
+but can be used to give exact coordinates on the virtual screen and is best
+used with the '_p_' suffix. To leave either coordinate unchanged, "_keep_"
+can be specified in place of _x_ or _y_.
 +
 For advanced uses, the arguments _x_ and _y_ can be used multiple
 times, but without the prefix '_m_' or '_w_'. (See complex examples
