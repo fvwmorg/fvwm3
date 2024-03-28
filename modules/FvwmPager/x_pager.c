@@ -307,6 +307,12 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 	rectangle rec = {0, 0, 0, 0};
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
+	/* If the monitor we expect to find is disabled, then
+	 * fpmonitor_this() will return NULL.
+	 */
+	if (fp == NULL)
+		return rec;
+
 	/* Only track windows on the appropriate monitor if per-monitor mode. */
 	if (monitor_to_track != NULL && t->m != fp->m)
 		return rec;
