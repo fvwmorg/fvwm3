@@ -127,7 +127,7 @@ static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 
 static rectangle CalcGeom(PagerWindow *, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
-static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null);
+static struct fpmonitor *fpmonitor_from_xy(int x, int y);
 static struct fpmonitor *fpmonitor_from_n(int n);
 static struct fpmonitor *fpmonitor_from_desk(int desk);
 static int fpmonitor_count(void);
@@ -281,25 +281,25 @@ static struct fpmonitor *fpmonitor_from_desk(int desk)
 	return NULL;
 }
 
-static struct fpmonitor *fpmonitor_from_xy(int x, int y, bool allow_null)
+static struct fpmonitor *fpmonitor_from_xy(int x, int y)
 {
-	struct fpmonitor *m;
-	struct fpmonitor *fp = fpmonitor_this(NULL);
+	struct fpmonitor *fp;
 
 	if (monitor_to_track == NULL && monitor_mode != MONITOR_TRACKING_G) {
-		if (allow_null)
-			fp = NULL;
 		x %= fpmonitor_get_all_widths();
 		y %= fpmonitor_get_all_heights();
 
-		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-		if (x >= m->m->si->x && x < m->m->si->x + m->m->si->w &&
-		    y >= m->m->si->y && y < m->m->si->y + m->m->si->h)
-			fp = m;
-		}
+		TAILQ_FOREACH(fp, &fp_monitor_q, entry)
+			if (x >= fp->m->si->x &&
+			    x < fp->m->si->x + fp->m->si->w &&
+			    y >= fp->m->si->y &&
+			    y < fp->m->si->y + fp->m->si->h)
+				return fp;
+	} else {
+		return fpmonitor_this(NULL);
 	}
 
-	return fp;
+	return NULL;
 }
 
 static rectangle CalcGeom(PagerWindow *t, bool is_icon)
@@ -1407,7 +1407,7 @@ void DispatchEvent(XEvent *Event)
 		fp = fpmonitor_from_desk(i + desk1);
 	  else
 		fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / desk_w,
-			   y * fp->virtual_scr.VHeight / desk_h, true);
+			   y * fp->virtual_scr.VHeight / desk_h);
 
 	  if (fp == NULL)
 	    break;
@@ -1437,7 +1437,7 @@ void DispatchEvent(XEvent *Event)
 	else {
 		fp = fpmonitor_from_xy(
 			x * fp->virtual_scr.VWidth / icon.width,
-			y * fp->virtual_scr.VHeight / icon.height, true);
+			y * fp->virtual_scr.VHeight / icon.height);
 		/* Make sure monitor is on current desk. */
 		if (fp->m->virtual_scr.CurrentDesk !=
 				fp2->m->virtual_scr.CurrentDesk)
@@ -2221,7 +2221,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
 		fp = fpmonitor_from_desk(Desk);
 	else
-		fp = fpmonitor_from_xy(vx, vy, true);
+		fp = fpmonitor_from_xy(vx, vy);
 	if (fp == NULL)
 		return;
 
@@ -2273,7 +2273,7 @@ void IconSwitchPage(XEvent *Event)
 	icon.width;
   vy = (icon.height == 0) ? 0 : Event->xbutton.y * fp->virtual_scr.VHeight /
 	icon.height;
-  fp = fpmonitor_from_xy(vx, vy, true);
+  fp = fpmonitor_from_xy(vx, vy);
   if (fp == NULL)
     return;
 
@@ -2917,7 +2917,9 @@ void MoveWindow(XEvent *Event)
 				      &dumwin);
 
 		fp = fpmonitor_from_xy(rec.x * fp->virtual_scr.VWidth / desk_w,
-			rec.y * fp->virtual_scr.VHeight / desk_h, false);
+			rec.y * fp->virtual_scr.VHeight / desk_h);
+		if (fp == NULL)
+			fp = fpmonitor_this(NULL);
 		pagerrec_to_fvwm(&rec, false, fp);
 
 		if (NewDesk + desk1 != t->desk &&
@@ -3317,8 +3319,9 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 			char buf[64];
 			fp = fpmonitor_from_xy(
 				rec.x * fp->virtual_scr.VWidth / icon.width,
-				rec.y * fp->virtual_scr.VHeight / icon.height,
-				false);
+				rec.y * fp->virtual_scr.VHeight / icon.height);
+			if (fp == NULL)
+				fp = fpmonitor_this(NULL);
 			pagerrec_to_fvwm(&rec, true, fp);
 			t->m = fp->m;
 			snprintf(buf, sizeof(buf),
