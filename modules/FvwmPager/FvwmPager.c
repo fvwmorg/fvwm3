@@ -1902,28 +1902,6 @@ ImagePath = NULL;
       }
       continue;
     }
-	/* Why are we doing anything here? */
-    else if (StrEquals(token, "Monitor")) {
-	    char		*mname;
-	    //struct monitor	*m;
-	    //struct fpmonitor	*fp;
-
-	    next = GetNextToken(next, &mname);
-#if 0
-		/* Why are we looping here? */
-	    RB_FOREACH(m, monitors, &monitor_q) {
-		if ((fp = fpmonitor_this(m)) == NULL)
-			fp = fpmonitor_new(m);
-		fp->virtual_scr.Vx = m->virtual_scr.Vx;
-		fp->virtual_scr.Vy = m->virtual_scr.Vy;
-		fp->virtual_scr.VxMax = m->virtual_scr.VxMax;
-		fp->virtual_scr.VyMax = m->virtual_scr.VyMax;
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
-	    }
-#endif
-	    continue;
-    }
 
     tline2 = GetModuleResource(tline, &resource, MyName);
     if (!resource)
