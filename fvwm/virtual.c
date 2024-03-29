@@ -2548,7 +2548,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
  */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
-	struct monitor  *m, *m_loop;
+	struct monitor  *m = NULL, *m_loop;
 	char		*token;
 	int		 new_desk;
 
@@ -2623,7 +2623,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	int current_desk;
 	Bool is_new_desk;
 	char *token;
-	struct monitor  *m;
+	struct monitor  *m = NULL;
 
 	token = PeekToken(action, NULL);
 	if (StrEquals(token, "screen")) {
