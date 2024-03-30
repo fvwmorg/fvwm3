@@ -305,7 +305,7 @@ static struct fpmonitor *fpmonitor_from_xy(int x, int y)
 static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 {
 	/* Place initial rectangle off screen. */
-	rectangle rec = {-32768, -32768, 0, 0};
+	rectangle rec = {-32768, -32768, MinSize, MinSize};
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
 	/* If the monitor we expect to find is disabled, then
