@@ -16,7 +16,8 @@ import (
 )
 
 var (
-	fmdSocket = os.Getenv("FVWMMFL_SOCKET")
+	fmdDisplay = os.Getenv("DISPLAY");
+	fmdSocket = os.Getenv("FVWMMFL_SOCKET_" + fmdDisplay)
 )
 
 // getopt parsing

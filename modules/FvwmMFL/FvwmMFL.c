@@ -797,8 +797,14 @@ fvwm_read(int efd, short ev, void *data)
 void
 set_socket_pathname(void)
 {
-	char		*mflsock_env, *tmpdir;
+	char		*mflsock_env, *mflsock_fmt, *tmpdir;
 	const char	*unrolled_path;
+	char		*dsp = getenv("DISPLAY");
+
+	if (dsp == NULL) {
+		fprintf(stderr, "%s: DISPLAY envvar is NULL\n", __func__);
+		exit(1);
+	}
 
 	/* Figure out if we are using default MFL socket path or we should
 	 * respect environment variable FVWMMFL_SOCKET for FvwmMFL socket path
@@ -811,11 +817,14 @@ set_socket_pathname(void)
 		 */
 		if ((tmpdir = getenv("TMPDIR")) == NULL)
 			tmpdir = "/tmp";
-		xasprintf(&sock_pathname, "%s/%s", tmpdir, MFL_SOCKET_DEFAULT);
+		xasprintf(&sock_pathname, "%s/%s.%s", tmpdir,
+			MFL_SOCKET_DEFAULT, dsp);
 		return;
 	}
 
-	unrolled_path = expand_path(mflsock_env);
+	xasprintf(&mflsock_fmt, "%s.%s", mflsock_env, dsp);
+
+	unrolled_path = expand_path(mflsock_fmt);
 	if (unrolled_path[0] == '/')
 		sock_pathname = fxstrdup(unrolled_path);
 	else {
@@ -823,14 +832,21 @@ set_socket_pathname(void)
 			unrolled_path);
 	}
 
+	free(mflsock_fmt);
 	free((void *)unrolled_path);
 }
 
 int main(int argc, char **argv)
 {
-	struct event_base     *base;
-	struct evconnlistener *fmd_cfd;
-	struct sockaddr_un    sin;
+	struct event_base	*base;
+	struct evconnlistener	*fmd_cfd;
+	struct sockaddr_un	 sin;
+	char			*dsp = getenv("DISPLAY");
+
+	if (dsp == NULL) {
+		fprintf(stderr, "%s: DISPLAY envvar is NULL\n", __func__);
+		exit(1);
+	}
 
 	TAILQ_INIT(&clientq);
 
@@ -879,10 +895,11 @@ int main(int argc, char **argv)
 	 * cannot use flib_putenv() here since this never reaches Fvwm3's
 	 * environment.
 	 */
-	if (getenv("FVWMMFL_SOCKET") == NULL) {
+	{
 		char	*pe;
 
-		xasprintf(&pe, "SetEnv FVWMMFL_SOCKET %s", sock_pathname);
+		xasprintf(&pe, "SetEnv FVWMMFL_SOCKET_%s %s", dsp,
+			sock_pathname);
 		SendText(fc.fd, pe, 0);
 		free(pe);
 	}
