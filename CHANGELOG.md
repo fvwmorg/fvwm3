@@ -1,5 +1,40 @@
 # Changelog
 
+## [1.1.0](https://github.com/fvwmorg/fvwm3/tree/1.1.0) (2024-03-30)
+
+## What's Changed
+### Breaking Changes
+* build: fix Xft/Freetype/Fontconfig check by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/956
+* Goto{Desk,Page,DeskAndPage}: use 'screen' keyword by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/967
+* FvwmPager: present overview of all monitors if "Monitor:" is not used by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/978
+* Remove single screen support, -s. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/977
+### Enhancements
+* Add CurrentAtEnd to Alt-Tab WindowList by @somiaj in https://github.com/fvwmorg/fvwm3/pull/938
+* Add DesktopNames to xdg desktop file. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/939
+* randr: allow geometry strings to include @n by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/940
+### Other Changes
+* Don't use google fonts when building html doc. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/932
+* Add index page for html manpages. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/934
+* randr: fix primary flag check by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/936
+* monitor: fix geometry parsing for window assignment by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/889
+* GotoPage: inject current screen if missing by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/942
+* Fix bug with fvwm-menu-directory --install-prefix option. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/943
+* FvwmPrompt: accept commands on stdin by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/951
+* Update default-config to check for FvwmPrompt. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/950
+* RandR: handle monitor {dis,}connection better by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/953
+* logging: minor tweaks by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/955
+* FvwmPager: honour screen focus rules by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/958
+* FvwmPager: use monitors from fvwm3lib by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/961
+* FvwmPager: remove debug by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/962
+* FvwmPager: remove list_focus handling by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/964
+* GotoDesk: fallback to current monitor if not given by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/966
+* Improve RandR Detection by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/963
+* RandR: don't unset a new monitor's enabled state by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/971
+* Stop fvwm-menu-desktop from informing users it cannot find icon %s. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/973
+* shared mode: fix internal commands by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/976
+
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.0.9...1.1.0
 ## [1.0.9](https://github.com/fvwmorg/fvwm3/tree/1.0.9) (2023-12-03)
 
 ## What's Changed
