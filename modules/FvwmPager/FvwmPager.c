@@ -2515,5 +2515,7 @@ void ExitPager(void)
     XSync(dpy,0);
   }
   XUngrabKeyboard(dpy, CurrentTime);
+  free(monitor_to_track);
+  free(preferred_monitor);
   exit(0);
 }
