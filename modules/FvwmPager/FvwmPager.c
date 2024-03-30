@@ -112,6 +112,7 @@ char *BalloonFont = NULL;
 char *BalloonBorderColor = NULL;
 char *BalloonFormatString = NULL;
 char *monitor_to_track = NULL;
+char *preferred_monitor = NULL;
 int BalloonBorderWidth = 1;
 int BalloonYOffset = 3;
 Window BalloonView = None;
@@ -176,6 +177,14 @@ void fpmonitor_disable(struct fpmonitor *fp)
 	fp->disabled = true;
 	for (int i = 0; i < ndesks; i++) {
 		XMoveWindow(dpy, fp->CPagerWin[i], -32768,-32768);
+	}
+
+	if (monitor_to_track != NULL &&
+		strcmp(monitor_to_track, fp->m->si->name) == 0)
+	{
+		free(monitor_to_track);
+		struct fpmonitor *tm = fpmonitor_this(NULL);
+		monitor_to_track = fxstrdup(tm->m->si->name);
 	}
 }
 
@@ -1573,6 +1582,17 @@ void list_config_info(unsigned long *body)
 			fp->m->flags |= MONITOR_NEW;
 		}
 
+		/* This ensures that if monitor_to_track gets disconnected
+		 * then reconnected, the pager can resume tracking it.
+		 */
+		if (preferred_monitor != NULL &&
+			strcmp(fp->m->si->name, preferred_monitor) == 0 &&
+			strcmp(preferred_monitor, monitor_to_track) != 0)
+		{
+			if (monitor_to_track != NULL)
+				free(monitor_to_track);
+			monitor_to_track = fxstrdup(preferred_monitor);
+		}
 		fp->disabled = false;
 		fp->scr_width = scr_width;
 		fp->scr_height = scr_height;
@@ -1935,6 +1955,9 @@ ImagePath = NULL;
 	    }
 	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
 	    monitor_to_track = fxstrdup(m->m->si->name);
+	    if (preferred_monitor != NULL)
+		free(preferred_monitor);
+	    preferred_monitor = fxstrdup(monitor_to_track);
     } else if(StrEquals(resource, "DeskLabels")) {
 	    use_desk_label = True;
     } else if(StrEquals(resource, "NoDeskLabels")) {
