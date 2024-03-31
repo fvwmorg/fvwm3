@@ -52,7 +52,8 @@ Generating documentation
 To generate `fvwm3`'s documentation:
 
 1. Install `asciidoctor`
-2. Pass `--enable-mandoc` to `./configure` (see below)
+2. To generate manpages:  pass `--enable-mandoc` to `./configure`
+3. To generate HTML docs: pass `--enable-htmldoc` to `./configure`
 
 `fvwm3` won't compile documentation by default, so it's opt-in.
 
