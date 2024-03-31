@@ -18,11 +18,11 @@ rewrite.  [Some notes on how fvwm3 parses commands exists](PARSING.md).
 Branch Workflows / Submitting Code Changes
 ==========================================
 
-The main FVWM3 repository treats the `master` branch as stable, in that it's the
+The main FVWM3 repository treats the `main` branch as stable, in that it's the
 branch which has the most tested code on it, and the branch from which releases
 are made.  Formal releases of FVWM3 are tagged, in the form `x.y.z`, historical
 versions of FVWM3 are tagged as `version-x_y_z`.  Untagged code may well
-accumulate on `master`, which will go to form the next release.
+accumulate on `main`, which will go to form the next release.
 
 Other branches in the repository will reflect on-going development from core
 fvwm-workers.   As such, these branches are often in a state of flux, and likely
@@ -64,8 +64,8 @@ Those wishing to submit code/bug-fixes should:
 * Create a topic-branch to house your work:
   * `git switch -b initial/mybranch`
   * [ hack, hack, hack... ] && commit
-* Rebase it against `fvwmorg/master`:
-  * `git fetch && git rebase -i fvwmorg/master`
+* Rebase it against `fvwmorg/main`:
+  * `git fetch && git rebase -i fvwmorg/main`
 * Push the latest changes to your fork:
   * If you've never pushed this branch before:  `git push -u origin HEAD`
   * Or, if updating an existing branch: `git push origin -f`
@@ -79,25 +79,25 @@ all the additional libraries FVWM could use, loaded in.  If a build fails this
 check, it is recommend to fix this by rebasing the commits with the additional
 fixes
 
-The FVWM3 repository also treats the `master` branch as protected.  This is a
+The FVWM3 repository also treats the `main` branch as protected.  This is a
 [GitHub feature](https://help.github.com/articles/about-protected-branches/)
-which means the `master` branch in this case cannot have changes merged into it
+which means the `main` branch in this case cannot have changes merged into it
 until Github Actions has verified the builds do not fail.
 
 This has merit since not every developer will be using the same operating
-systems (Linux versus BSD for instance), and that `master` is meant to try and
+systems (Linux versus BSD for instance), and that `main` is meant to try and
 be as release-worthy as can be.
 
-**NOTE**:  This means that no work can be committed to `master` directly.  ALL
-work that needs to appear on `master`---including the release
+**NOTE**:  This means that no work can be committed to `main` directly.  ALL
+work that needs to appear on `main`---including the release
 process---**MUST** go via a separate topic-branch, with a PR (pull-request).
 Not even fvwmorg owners are an exception to this.
 
 ### Merging changes / Pull Requests
 
-The history of `master` should be as linear as possible, therefore when
+The history of `main` should be as linear as possible, therefore when
 merging changes to it the branch(es) in question should be rebased against
-master first of all.  This will stop a merge commit from happening.
+main first of all.  This will stop a merge commit from happening.
 
 If using github this process is easy, since the `Merge pull request` button
 has an option to `Rebase and Merge`.  This is what should be used.  See also
@@ -109,8 +109,8 @@ passed), then:
 ```
 git checkout topic/branch
 git fetch --all
-git rebase -i origin/master
-git checkout master
+git rebase -i origin/main
+git checkout main
 git merge topic/branch
 git push
 ```
@@ -177,13 +177,13 @@ Creating a release
 
 Make sure you have all optional libraries installed.
 
-**NOTE:  as `master` is a protected branch, changes made to files during the
-release phase must be done on a separate branch, and not on master directly,
+**NOTE:  as `main` is a protected branch, changes made to files during the
+release phase must be done on a separate branch, and not on main directly,
 as pushes to this branch are not allowed until checks have been done on it.
 This means the end result of the release-phase must have these changes issued
-as a pull-request against `master`.**
+as a pull-request against `main`.**
 
-0. `git checkout master && git pull && git checkout -b release/x.y.z`
+0. `git checkout main && git pull && git checkout -b release/x.y.z`
    **Where: `x.y.z` will be the next release**.
 1. Change the dates in configure.ac and fill in the release dates.
 2. Set `ISRELEASED` to `"yes"`.
@@ -213,7 +213,7 @@ as a pull-request against `master`.**
 8. Push the tag out: `git push origin x.y.z` -- where `x.y.z` is the specific
    tag created in step 6.
 9. Set `ISRELEASED` to `"no"` in configure.ac and commit and push that out.
-10. Issue a PR (pull-request) against `master` and merge that in assuming all
+10. Issue a PR (pull-request) against `main` and merge that in assuming all
     checks pass.  If not, fix the problems, and repeat this step.
 11. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
    pushed.
