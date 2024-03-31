@@ -23,8 +23,8 @@ Items
 
 * Code auditing/security:
     * [ ] Remove SAFEFREE() macro;
-    * [ ] Add xasprintf() to libs/safemalloc.[ch]
-    * [ ] Audit xmalloc() use and consider xasprintf() wrapper
+    * [x] Add xasprintf() to libs/safemalloc.[ch]
+    * [x] Audit xmalloc() use and consider xasprintf() wrapper
 
 * Code cleanup:
     * [ ] Don't use typedefs for structs:
@@ -77,8 +77,8 @@ Items
         - This means rethinking how commands/lines/etc., are parsed.
 
 * RandR:
-    * [ ] Configuration:
-        * [ ] Enumerate outputs without requiring config file changes.  See:
+    * [x] Configuration:
+        * [x] Enumerate outputs without requiring config file changes.  See:
             http://www.mail-archive.com/fvwm-workers@fvwm.org/msg03649.html
     * [X] Separate desktops per monitor:
 	    * [X] PanWindows per-monitor inhibit moving windows across screen
