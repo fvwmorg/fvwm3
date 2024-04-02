@@ -783,8 +783,10 @@ void initialise_common_pager_fragments(void)
 
 void initialize_fpmonitor_windows(struct fpmonitor *fp)
 {
+	int i;
+
 	rectangle vp = set_vp_size_and_loc(fp, false);
-	for (int i = 0; i < ndesks; i++) {
+	for (i = 0; i < ndesks; i++) {
 		fp->CPagerWin[i] = XCreateWindow(dpy, Desks[i].w,
 				-32768, -32768, vp.width, vp.height, 0,
 				CopyFromParent, InputOutput,
@@ -2000,11 +2002,13 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 
 	/* Draw monitor labels grid lines. */
 	if (use_monitor_label) {
+		int i;
+
 		XDrawLine(
 			dpy, Desks[desk].title_w, Desks[desk].NormalGC,
 			0, y_loc, desk_w, y_loc);
 
-		for (int i = 1; i < m_count; i++)
+		for (i = 1; i < m_count; i++)
 			XDrawLine(dpy,
 				Desks[desk].title_w,
 				Desks[desk].NormalGC,
