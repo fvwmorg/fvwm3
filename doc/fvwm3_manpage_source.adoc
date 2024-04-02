@@ -1616,7 +1616,6 @@ $[screen.count]::
 +
 This is deprecated; use $[monitor.count] instead.
 
-
 $[fg.cs<n>] $[bg.cs<n>] $[hilight.cs<n>] $[shadow.cs<n>] $[fgsh.cs<n>]::
 	These parameters are replaced with the name of the foreground (fg),
 	background (bg), hilight (hilight), shadow (shadow), or the font shadow
@@ -1635,6 +1634,24 @@ If .hash is appened to the end the color output will use #rrggbb form
 $[bg.cs3.lighten15.hash].
 +
 Please refer to the *Colorsets* section for details about colorsets.
+
+$[math.+.<x>,<y>] $[math.-.<x>,<y>] $[math.*.<x>,<y>] $[math./.<x>,<y>] $[math.%.<x>,<y>] $[math.^.<x>,<y>]::
+	The math expansion variables can be used to do some basic arithmetic
+	on the integers <x> and <y>. These expressions can be used to add
+	({plus}), subtract (-), multiply ({asterisk}), divide (/), modulus
+	(%), and exponentiation ({caret}). This can be useful when computing
+	the size of panels or locations of windows relative to a monitor, for
+	example $[math.-.$[monitor.$[monitor.primary].height],200] will
+	subtract 200 pixels from the height of the primary monitor. These can
+	also be nested for more complex operations,
+	$[math.{plus}.$[math.{asterisk}.3,5],$[math.-.4,-2]]
+	is replaced with 21.
++
+The comma in "<x>,<y>" is to allow for a future possibility of using floats.
+All operations use C integer mathematics. The result of integer division is
+the quotient. The modulus can be used to get the remainder of the integer
+division. Note that the C modulus returns negative remainders for negative
+values. Finally the exponentiation operation returns 1 if <y> is negative.
 
 $[schedule.last]::
 	This is replaced by the id of the last command that was scheduled with
