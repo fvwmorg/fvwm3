@@ -73,6 +73,7 @@ static char *partial_function_vars[] =
 	"infostore.",
 	"monitor.",
 	"shadow.cs",
+	"math.",
 	NULL
 };
 
@@ -164,7 +165,8 @@ enum
 	VAR_HILIGHT_CS,
 	VAR_INFOSTORE_,
 	VAR_MONITOR_,
-	VAR_SHADOW_CS
+	VAR_SHADOW_CS,
+	VAR_MATH_,
 } partial_extended_vars;
 
 enum
@@ -672,6 +674,55 @@ static signed int expand_vars_extended(
 		}
 		break;
 	}
+	case VAR_MATH_:
+		if (rest == NULL || rest[0] == '\0' || rest[1] != '.')
+		{
+			/* parsing error */
+			return -1;
+		}
+		l = rest[0];
+		rest += 2;
+		if (sscanf(rest, "%d,%d%n", &x, &y, &n) < 2)
+		{
+			/* parsing error */
+			return -1;
+		}
+		if (*(rest + n) != 0)
+		{
+			/* trailing characters */
+			return -1;
+		}
+		switch (l) {
+			case '+':
+				val = x + y;
+				break;
+			case '-':
+				val = x - y;
+				break;
+			case '*':
+				val = x * y;
+				break;
+			case '/':
+				val = x / y;
+				break;
+			case '%':
+				val = x % y;
+				break;
+			case '^':
+				val = 1;
+				/* Should we limit the value of y here? */
+				for (i = 0; i < y; i++)
+				{
+					val *= x;
+				}
+				break;
+			default:
+				/* undefined operation */
+				return -1;
+		}
+
+		is_numeric = True;
+		goto GOT_STRING;
 	default:
 		break;
 	}
