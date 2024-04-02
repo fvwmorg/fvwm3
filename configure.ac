@@ -80,23 +80,13 @@ AC_ARG_ENABLE(golang,
 
 if test ! x"$with_golang" = xno; then
 	AC_CHECK_PROGS(GO, go)
-	if test -n "$GO" ; then
-	    GOVERSIONOPTION=version
-	    go_version=$($GO $GOVERSIONOPTION | sed -e 's/go version go//' | \
-		sed -e 's/ .*$//')
-	    AC_MSG_CHECKING([whether go version is >= 1.14.x ($go_version)])
-	    case "$go_version" in
-	     1.14*|1.15*|1.16*|1.17*|1.18*|1.19*|1.20*|1.21*|1.22*|1.23*)
-	      AC_MSG_RESULT([yes - version is: $go_version])
-	      with_golang="yes"
-	      GO=
-	      ;;
-	    *)
-	      AC_MSG_RESULT([no - version is: $go_version])
-	      with_golang="no"
-	      problem_golang=": version of go ($go_version) <= 1.14.x"
-	      ;;
-	    esac
+	if test -n "$GO"; then
+		GOVERSIONOPTION=version
+		go_version=$($GO $GOVERSIONOPTION | sed -e 's/go version go//' | sed -e 's/ .*$//')
+		AX_COMPARE_VERSION([$go_version], [ge], ["1.14.0"],
+							[with_golang="yes"; GO=],
+							[with_golang="no";
+							AC_MSG_ERROR([Go version ($go_version) is lower than the minimum required version ($REQUIRED_GO_VERSION)])])
 	fi
 fi
 AM_CONDITIONAL([FVWM_BUILD_GOLANG], [test x"$with_golang" = xyes])
