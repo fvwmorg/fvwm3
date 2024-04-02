@@ -174,8 +174,10 @@ fpmonitor_new(struct monitor *m)
 
 void fpmonitor_disable(struct fpmonitor *fp)
 {
+	int i;
+
 	fp->disabled = true;
-	for (int i = 0; i < ndesks; i++) {
+	for (i = 0; i < ndesks; i++) {
 		XMoveWindow(dpy, fp->CPagerWin[i], -32768,-32768);
 	}
 
