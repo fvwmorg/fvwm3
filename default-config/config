@@ -624,12 +624,12 @@ DestroyModuleConfig RightPanel:*
 *RightPanel: Font "xft:Sans:Bold:size=10:antialias=True"
 *RightPanel: (120x45, Icon "fvwm-logo-small.png", Frame 0)
 *RightPanel: (120x5, Frame 0)
-*RightPanel: (10x20, Frame 0)
-*RightPanel: (25x20, Id desk0, Title "0", Action (Mouse 1) GotoDesk 0 0, Colorset 11, ActiveColorset 12, Frame 0)
-*RightPanel: (25x20, Id desk1, Title "1", Action (Mouse 1) GotoDesk 0 1, ActiveColorset 12, Frame 0)
-*RightPanel: (25x20, Id desk2, Title "2", Action (Mouse 1) GotoDesk 0 2, ActiveColorset 12, Frame 0)
-*RightPanel: (25x20, Id desk3, Title "3", Action (Mouse 1) GotoDesk 0 3, ActiveColorset 12, Frame 0)
-*RightPanel: (10x20, Frame 0)
+*RightPanel: (10x25, Frame 0)
+*RightPanel: (25x25, Id desk0, Title "0", Action (Mouse 1) GotoDesk 0 0, Colorset 11, ActiveColorset 12, Frame 0)
+*RightPanel: (25x25, Id desk1, Title "1", Action (Mouse 1) GotoDesk 0 1, ActiveColorset 12, Frame 0)
+*RightPanel: (25x25, Id desk2, Title "2", Action (Mouse 1) GotoDesk 0 2, ActiveColorset 12, Frame 0)
+*RightPanel: (25x25, Id desk3, Title "3", Action (Mouse 1) GotoDesk 0 3, ActiveColorset 12, Frame 0)
+*RightPanel: (10x25, Frame 0)
 *RightPanel: (5x80, Frame 0)
 *RightPanel: (110x80, Swallow FvwmPager 'Module FvwmPager *', Frame 0)
 *RightPanel: (5x80, Frame 0)
@@ -637,9 +637,9 @@ DestroyModuleConfig RightPanel:*
 Test (x stalonetray) *RightPanel: (120x20, Swallow(NoClose,UseOld) \
     stalonetray 'Exec exec stalonetray --config \
     "$[FVWM_DATADIR]/default-config/stalonetrayrc"', Frame 0)
-Test (x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[monitor.$[monitor.primary].height]-225)), \
+Test (x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[monitor.$[monitor.primary].height]-230)), \
     Top, Swallow FvwmIconMan \'Module FvwmIconMan\', Frame 0)"'
-Test (!x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[monitor.$[monitor.primary].height]-205)),\
+Test (!x stalonetray) PipeRead 'echo "*RightPanel: (120x$(($[monitor.$[monitor.primary].height]-210)),\
     Top, Swallow FvwmIconMan \'Module FvwmIconMan\', Frame 0)"'
 *RightPanel: (120x45, Swallow DateTime 'Module FvwmScript FvwmScript-DateTime',\
     Frame 0)
