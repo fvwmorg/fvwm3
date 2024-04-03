@@ -84,7 +84,9 @@ if test ! x"$with_golang" = xno; then
 		GOVERSIONOPTION=version
 		go_version=$($GO $GOVERSIONOPTION | sed -e 's/go version go//' | sed -e 's/ .*$//')
 		AX_COMPARE_VERSION([$go_version], [ge], ["1.14.0"],
-							[with_golang="yes"; GO=],
+							[with_golang="yes";
+							 problem_golang=" ($go_version)";
+							 GO=],
 							[with_golang="no";
 							AC_MSG_ERROR([Go version ($go_version) is lower than the minimum required version ($REQUIRED_GO_VERSION)])])
 	fi
