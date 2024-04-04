@@ -34,6 +34,7 @@ if m_dep.found()
     add_project_link_arguments('-lm', language: 'c')
 endif
 
+bindir = get_option('bindir')
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
 prefix = get_option('prefix')
@@ -50,7 +51,7 @@ if host_machine.endian() == 'big'
 endif
 
 # Set static configuration.
-conf.set_quoted('VERSION', '1.1.0')
+conf.set_quoted('VERSION', '1.1.1')
 conf.set_quoted('VERSIONINFO', meson.project_version())
 conf.set_quoted('PACKAGE', meson.project_name())
 conf.set_quoted('FVWM2RC', '.fvwm2rc')
@@ -63,10 +64,7 @@ conf.set_quoted(
     'FVWM_MODULEDIR',
     fvwm_moduledir,
 )
-conf.set_quoted(
-    'FVWM_DATADIR',
-    get_option('datadir') + '/' + meson.project_name(),
-)
+conf.set_quoted('FVWM_DATADIR', datadir + '/' + meson.project_name())
 conf.set_quoted('LOCALEDIR', conf.get('FVWM_DATADIR') + '/' + 'locale')
 conf.set_quoted('FVWM_CONFDIR', get_option('sysconfdir'))
 conf.set('RETSIGTYPE', 'void')
@@ -351,6 +349,19 @@ if cc.has_header_symbol('libcharset.h', 'locale_charset')
     conf.set10('HAVE_LIBCHARSET', true)
 endif
 
+# Python is a required dependency, we generate shebangs at buildtime
+# This will error by default if there is no python interpreter found
+py_mod = import('python')
+py = py_mod.find_installation('python3')
+
+# Perl is a required dependency, we generate shebangs at buildtime
+perl = find_program('perl', required: true)
+
+# We currently detect go then configure our build to use one
+# of two paths. We should probably just default to golang and
+# hard fail if it is not available.
+golang = find_program('go', required: false)
+
 # Hard-coded
 non_configurable_ops = [
     'FMiniIconsSupported',
@@ -362,21 +373,20 @@ foreach nco : non_configurable_ops
     conf.set10(nco, true)
 endforeach
 
-asciidoctor = find_program('asciidoctor', required: false)
+# We should just error out if we can't find asciidoctor and it's been requested.
+asciidoctor = find_program(
+    'asciidoctor',
+    required: get_option('mandoc') or get_option('htmldoc'),
+)
 
-mandoc_explain = 'Yes'
-if get_option('mandoc') == true and not asciidoctor.found()
-    mandoc_explain = 'No (asciidoctor not found)'
-elif get_option('mandoc') == false
-    mandoc_explain = 'No'
-endif
-
-htmldoc_explain = 'Yes'
-if get_option('htmldoc') == true and not asciidoctor.found()
-    htmldoc_explain = 'No (asciidoctor not found)'
-elif get_option('htmldoc') == false
-    htmldoc_explain = 'No'
-endif
+mandoc_explain = (
+    get_option('mandoc') == true
+    and not asciidoctor.found() ? 'No (asciidoctor not found)' : 'Yes'
+)
+htmldoc_explain = (
+    get_option('htmldoc') == true
+    and not asciidoctor.found() ? 'No (asciidoctor not found)' : 'Yes'
+)
 
 conf_template = '@0@/config_defines.h'.format(meson.current_source_dir())
 
@@ -398,6 +408,7 @@ libraries = []
 install_mask_755 = 'rwxr-xr-x'
 lib_includes = include_directories('.')
 fvwm_includes = include_directories('fvwm')
+
 subdir('libs')
 
 subdir('po')
@@ -412,15 +423,21 @@ fvwm3 = executable(
     link_with: libraries,
 )
 
+# Core modules
 modules = {
     'FvwmAnimate': {'subdir': 'modules/FvwmAnimate'},
     'FvwmAuto': {'subdir': 'modules/FvwmAuto'},
     'FvwmBacker': {'subdir': 'modules/FvwmBacker'},
     'FvwmButtons': {'subdir': 'modules/FvwmButtons'},
-    #FvwmConsole (TODO)
     'FvwmEvent': {'subdir': 'modules/FvwmEvent'},
-
 }
+
+if not golang.found()
+    modules += {'FvwmConsole': {'subdir': 'modules/FvwmConsole'}}
+endif
+
+# FvwmPrompt and FvwmCommand
+subdir('bin')
 
 module_sources = []
 foreach m, _ : modules
