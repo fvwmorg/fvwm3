@@ -28,6 +28,7 @@
 
 #include <stdio.h>
 #include <signal.h>
+#include <stdbool.h>
 
 #include "libs/FScreen.h"
 #include "libs/fvwmlib.h"
@@ -50,7 +51,7 @@ Pixel focus_pix;
 Pixel focus_fore_pix;
 extern int windowcolorset, activecolorset;
 extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
-extern Bool win_pix_set, win_hi_pix_set;
+extern bool win_pix_set, win_hi_pix_set;
 extern rectangle pwindow;
 extern int usposition, xneg, yneg;
 extern bool use_desk_label, use_monitor_label;
@@ -66,9 +67,9 @@ extern char *BalloonFore, *BalloonBack, *BalloonBorderColor;
 extern Window BalloonView;
 extern unsigned int WindowBorderWidth;
 extern unsigned int MinSize;
-extern Bool WindowBorders3d;
-extern Bool UseSkipList;
-extern Bool HideSmallWindows;
+extern bool WindowBorders3d;
+extern bool UseSkipList;
+extern bool HideSmallWindows;
 extern FvwmPicture *PixmapBack;
 extern FvwmPicture *HilightPixmap;
 extern int HilightDesks;
@@ -98,10 +99,10 @@ int label_h = 0;
 DeskInfo *Desks;
 int Wait = 0;
 int FvwmErrorHandler(Display *, XErrorEvent *);
-extern Bool is_transient;
-extern Bool do_ignore_next_button_release;
-extern Bool use_dashed_separators;
-extern Bool use_no_separators;
+extern bool is_transient;
+extern bool do_ignore_next_button_release;
+extern bool use_dashed_separators;
+extern bool use_no_separators;
 extern int BalloonBorderWidth;
 
 
@@ -127,7 +128,7 @@ static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 
 static rectangle CalcGeom(PagerWindow *, bool);
 static void HideWindow(PagerWindow *, Window);
-static void MoveResizeWindow(PagerWindow *, Bool, Bool);
+static void MoveResizeWindow(PagerWindow *, bool, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 static struct fpmonitor *fpmonitor_from_xy(int x, int y);
 static struct fpmonitor *fpmonitor_from_n(int n);
@@ -142,12 +143,12 @@ extern void ExitPager(void);
 Pixmap default_pixmap = None;
 
 #define  MAX_UNPROCESSED_MESSAGES 1
-/* sums up pixels to scroll. If do_send_message is True a Scroll command is
+/* sums up pixels to scroll. If do_send_message is true a Scroll command is
  * sent back to fvwm. The function shall be called with is_message_recieved
- * True when the Scroll command has been processed by fvwm. This is checked
+ * true when the Scroll command has been processed by fvwm. This is checked
  * by talking to ourself. */
-static void do_scroll(int sx, int sy, Bool do_send_message,
-		      Bool is_message_recieved)
+static void do_scroll(int sx, int sy, bool do_send_message,
+		      bool is_message_recieved)
 {
 	static int psx = 0;
 	static int psy = 0;
@@ -186,7 +187,7 @@ static void do_scroll(int sx, int sy, Bool do_send_message,
 
 void HandleScrollDone(void)
 {
-	do_scroll(0, 0, True, True);
+	do_scroll(0, 0, true, true);
 	ScrollFp = NULL;
 }
 
@@ -491,7 +492,7 @@ void draw_desk_background(int i, int page_w, int page_h, struct fpmonitor *fp)
 			}
 		}
 	}
-	XClearArea(dpy,Desks[i].w, 0, 0, 0, 0,True);
+	XClearArea(dpy,Desks[i].w, 0, 0, 0, 0, True);
 	if (Desks[i].highcolorset > -1)
 	{
 		XSetForeground(
@@ -509,7 +510,7 @@ void draw_desk_background(int i, int page_w, int page_h, struct fpmonitor *fp)
 	}
 	if (label_h > 0)
 	{
-		XClearArea(dpy,Desks[i].title_w, 0, 0, 0, 0,True);
+		XClearArea(dpy,Desks[i].title_w, 0, 0, 0, 0, True);
 	}
 
 	return;
@@ -552,7 +553,7 @@ void initialize_balloon_window(void)
 	}
 	valuemask = CWOverrideRedirect | CWEventMask | CWColormap;
 	/* tell WM to ignore this window */
-	attributes.override_redirect = True;
+	attributes.override_redirect = true;
 	attributes.event_mask = ExposureMask;
 	attributes.colormap = Pcmap;
 	/* now create the window */
@@ -713,26 +714,26 @@ void initialise_common_pager_fragments(void)
 	{
 		win_back_pix = Colorset[windowcolorset].bg;
 		win_fore_pix = Colorset[windowcolorset].fg;
-		win_pix_set = True;
+		win_pix_set = true;
 	}
 	else if (WindowBack && WindowFore)
 	{
 		win_back_pix = GetColor(WindowBack);
 		win_fore_pix = GetColor(WindowFore);
-		win_pix_set = True;
+		win_pix_set = true;
 	}
 
 	if (activecolorset >= 0)
 	{
 		win_hi_back_pix = Colorset[activecolorset].bg;
 		win_hi_fore_pix = Colorset[activecolorset].fg;
-		win_hi_pix_set = True;
+		win_hi_pix_set = true;
 	}
 	else if (WindowHiBack && WindowHiFore)
 	{
 		win_hi_back_pix = GetColor(WindowHiBack);
 		win_hi_fore_pix = GetColor(WindowHiFore);
-		win_hi_pix_set = True;
+		win_hi_pix_set = true;
 	}
 
 	/* Load pixmaps for mono use */
@@ -971,7 +972,7 @@ void initialize_pager(void)
     wmhints.flags = IconPositionHint;
   }
   wmhints.icon_window = icon_win;
-  wmhints.input = False;
+  wmhints.input = True;
   wmhints.flags |= InputHint | StateHint | IconWindowHint;
 
   class1.res_name = MyName;
@@ -1229,7 +1230,7 @@ void DispatchEvent(XEvent *Event)
   unsigned JunkMask;
   char keychar;
   KeySym keysym;
-  Bool do_move_page = False;
+  bool do_move_page = false;
   short dx = 0;
   short dy = 0;
   struct fpmonitor *fp = fpmonitor_this(NULL);
@@ -1269,19 +1270,19 @@ void DispatchEvent(XEvent *Event)
       {
       case XK_Up:
 	dy = -100;
-	do_move_page = True;
+	do_move_page = true;
 	break;
       case XK_Down:
 	dy = 100;
-	do_move_page = True;
+	do_move_page = true;
 	break;
       case XK_Left:
 	dx = -100;
-	do_move_page = True;
+	do_move_page = true;
 	break;
       case XK_Right:
 	dx = 100;
-	do_move_page = True;
+	do_move_page = true;
 	break;
       default:
 	/* does not return */
@@ -1299,7 +1300,7 @@ void DispatchEvent(XEvent *Event)
   case ButtonRelease:
     if (do_ignore_next_button_release)
     {
-      do_ignore_next_button_release = False;
+      do_ignore_next_button_release = false;
       break;
     }
     if (Event->xbutton.button == 3)
@@ -1310,17 +1311,17 @@ void DispatchEvent(XEvent *Event)
 	{
 	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	  Scroll(x, y, i, False);
+	  Scroll(x, y, i, false);
 	}
       }
       if(Event->xany.window == icon_win)
       {
 	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 		  &JunkX, &JunkY,&x, &y, &JunkMask);
-	Scroll(x, y, -1, True);
+	Scroll(x, y, -1, true);
       }
       /* Flush any pending scroll operations */
-      do_scroll(0, 0, True, False);
+      do_scroll(0, 0, true, false);
       ScrollFp = NULL;
     }
     else if((Event->xbutton.button == 1)||
@@ -1380,7 +1381,7 @@ void DispatchEvent(XEvent *Event)
     }
     break;
   case ButtonPress:
-    do_ignore_next_button_release = False;
+    do_ignore_next_button_release = false;
     if ( ShowBalloons )
       UnmapBalloonWindow();
     if (((Event->xbutton.button == 2)||
@@ -1413,7 +1414,7 @@ void DispatchEvent(XEvent *Event)
 	  ScrollFp = fp;
 	  MyVx = fp->virtual_scr.Vx;
 	  MyVy = fp->virtual_scr.Vy;
-	  Scroll(x, y, fp->m->virtual_scr.CurrentDesk, False);
+	  Scroll(x, y, fp->m->virtual_scr.CurrentDesk, false);
 	  if (fp->m->virtual_scr.CurrentDesk != i + desk1)
 	  {
 	    Wait = 0;
@@ -1447,12 +1448,12 @@ void DispatchEvent(XEvent *Event)
 	ScrollFp = fp;
 	MyVx = fp->virtual_scr.Vx;
 	MyVy = fp->virtual_scr.Vy;
-	Scroll(x, y, -1, True);
+	Scroll(x, y, -1, true);
       }
     }
     break;
   case MotionNotify:
-    do_ignore_next_button_release = False;
+    do_ignore_next_button_release = false;
     while(FCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
       ;
 
@@ -1464,14 +1465,14 @@ void DispatchEvent(XEvent *Event)
 	{
 	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	  Scroll(x, y, i, False);
+	  Scroll(x, y, i, false);
 	}
       }
       if(Event->xany.window == icon_win)
       {
 	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask);
-	Scroll(x, y, -1, True);
+	Scroll(x, y, -1, true);
       }
 
     }
@@ -1492,8 +1493,8 @@ void HandleEnterNotify(XEvent *Event)
 
 {
   PagerWindow *t;
-  Bool is_icon_view = False;
-  extern Bool do_focus_on_enter;
+  bool is_icon_view = false;
+  extern bool do_focus_on_enter;
 
   if (!ShowBalloons && !do_focus_on_enter)
     /* nothing to do */
@@ -1508,7 +1509,7 @@ void HandleEnterNotify(XEvent *Event)
     }
     if ( t->IconView == Event->xcrossing.window )
     {
-      is_icon_view = True;
+      is_icon_view = true;
       break;
     }
   }
@@ -1800,7 +1801,7 @@ void update_pr_transparent_windows(void)
 	}
 }
 
-void MovePage(Bool is_new_desk)
+void MovePage(bool is_new_desk)
 {
   int i;
   rectangle vp;
@@ -1873,7 +1874,7 @@ void ReConfigureAll(void)
 
 	t = Start;
 	while(t != NULL) {
-		MoveResizePagerView(t, True);
+		MoveResizePagerView(t, true);
 		t = t->next;
 	}
 }
@@ -1949,7 +1950,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 
 	if (FftSupport)
 	{
-		erase = True;
+		erase = true;
 	}
 	if (!ShapeLabels && use_desk_label && !use_monitor_label &&
 		(fp->m->virtual_scr.CurrentDesk == d))
@@ -2256,7 +2257,7 @@ void HideWindow(PagerWindow *t, Window w)
 	return;
 }
 
-void MoveResizeWindow(PagerWindow *t, Bool do_force_redraw, Bool is_icon)
+void MoveResizeWindow(PagerWindow *t, bool do_force_redraw, bool is_icon)
 {
 	Window w = t->PagerView;
 	rectangle old_r = t->pager_view;
@@ -2329,8 +2330,8 @@ void AddNewWindow(PagerWindow *t)
 		valuemask, &attributes);
 	XMapRaised(dpy, t->IconView);
 
-	MoveResizePagerView(t, True);
-	Hilight(t, False);
+	MoveResizePagerView(t, true);
+	Hilight(t, false);
 
 	return;
 }
@@ -2350,13 +2351,13 @@ void ChangeDeskForWindow(PagerWindow *t, long newdesk)
 		int desk = newdesk - desk1;
 		XReparentWindow(dpy, t->PagerView, Desks[desk].w,
 			t->pager_view.x, t->pager_view.y);
-		MoveResizeWindow(t, True, False);
+		MoveResizeWindow(t, true, false);
 	}
 
 	return;
 }
 
-void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
+void MoveResizePagerView(PagerWindow *t, bool do_force_redraw)
 {
 	struct fpmonitor *fp = fpmonitor_this(t->m);
 
@@ -2370,10 +2371,10 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 	    t->m->virtual_scr.CurrentDesk > desk2)
 		HideWindow(t, t->PagerView);
 	else
-		MoveResizeWindow(t, do_force_redraw, False);
+		MoveResizeWindow(t, do_force_redraw, false);
 
 	if (fp->m->virtual_scr.CurrentDesk == t->desk)
-		MoveResizeWindow(t, do_force_redraw, True);
+		MoveResizeWindow(t, do_force_redraw, true);
 	else
 		HideWindow(t, t->IconView);
 
@@ -2381,7 +2382,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 }
 
 
-void MoveStickyWindow(Bool is_new_page, Bool is_new_desk)
+void MoveStickyWindow(bool is_new_page, bool is_new_desk)
 {
 	PagerWindow *t;
 	struct fpmonitor *fp;
@@ -2404,7 +2405,7 @@ void MoveStickyWindow(Bool is_new_page, Bool is_new_desk)
 			  IS_ICON_STICKY_ACROSS_PAGES(t)) ||
 			 IS_STICKY_ACROSS_PAGES(t)))
 		{
-			MoveResizePagerView(t, True);
+			MoveResizePagerView(t, true);
 		}
 	}
 }
@@ -2475,7 +2476,7 @@ void Hilight(PagerWindow *t, int on)
 }
 
 /* Use Desk == -1 to scroll the icon window */
-void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
+void Scroll(int x, int y, int Desk, bool do_scroll_icon)
 {
 	static int last_sx = -999999;
 	static int last_sy = -999999;
@@ -2544,7 +2545,7 @@ void Scroll(int x, int y, int Desk, Bool do_scroll_icon)
 	}
 	if (Wait == 0 || last_sx != sx || last_sy != sy)
 	{
-		do_scroll(sx, sy, True, False);
+		do_scroll(sx, sy, true, false);
 
 		/* Here we need to track the view offset on the desk. */
 		/* sx/y are are pixels on the screen to scroll. */
@@ -2756,7 +2757,7 @@ void MoveWindow(XEvent *Event)
 			XSync(dpy,0);
 			t->m = fp->m;
 		} else {
-			MoveResizePagerView(t, True);
+			MoveResizePagerView(t, true);
 		}
 		SendText(fd, "Silent Raise", t->w);
 
@@ -2791,8 +2792,8 @@ void MoveWindow(XEvent *Event)
 int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
 #if 1
-  extern Bool error_occured;
-  error_occured = True;
+  extern bool error_occured;
+  error_occured = true;
   return 0;
 #else
   /* really should just exit here... */
@@ -3133,7 +3134,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 			SendText(fd, buf, t->w);
 			XSync(dpy, 0);
 		} else {
-			MoveResizePagerView(t, True);
+			MoveResizePagerView(t, true);
 		}
 		SendText(fd, "Silent Raise", t->w);
 		SendText(fd, "Silent FlipFocus NoWarp", t->w);
@@ -3212,7 +3213,7 @@ void setup_balloon_gc(int i, PagerWindow *t)
 
 /* Just maps window ... draw stuff in it later after Expose event
    -- ric@giccs.georgetown.edu */
-void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
+void MapBalloonWindow(PagerWindow *t, bool is_icon_view)
 {
 	extern int BalloonYOffset;
 	Window view, dummy;
@@ -3529,7 +3530,7 @@ void change_colorset(int colorset)
     XSetForeground(dpy, Scr.wsGC, csetp->shadow);
     win_back_pix = csetp->bg;
     win_fore_pix = csetp->fg;
-    win_pix_set = True;
+    win_pix_set = true;
     for (t = Start; t != NULL; t = t->next)
     {
       t->text = Colorset[colorset].fg;
@@ -3548,7 +3549,7 @@ void change_colorset(int colorset)
     XSetForeground(dpy, Scr.asGC, csetp->shadow);
     win_hi_back_pix = csetp->bg;
     win_hi_fore_pix = csetp->fg;
-    win_hi_pix_set = True;
+    win_hi_pix_set = true;
     if (FocusWin)
     {
       set_window_colorset_background(FocusWin, csetp);
