@@ -48,116 +48,123 @@
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
 
-
-char *MyName;
-int fd[2];
-
-PagerStringList *FindDeskStrings(int desk);
-PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
-extern FlocaleFont *FwindowFont;
-extern Pixmap default_pixmap;
-
-struct fpmonitors fp_monitor_q;
-
 /*
  *
- * Screen, font, etc info
+ * Shared variables.
  *
  */
-ScreenInfo Scr;
-PagerWindow *Start = NULL;
-PagerWindow *FocusWin = NULL;
+/* Colors, Pixmaps, Fonts, etc. */
+char		*HilightC = NULL;
+char		*PagerFore = NULL;
+char		*PagerBack = NULL;
+char		*smallFont = NULL;
+char		*ImagePath = NULL;
+char		*WindowBack = NULL;
+char		*WindowFore = NULL;
+char		*font_string = NULL;
+char		*BalloonFore = NULL;
+char		*BalloonBack = NULL;
+char		*BalloonFont = NULL;
+char		*WindowHiFore = NULL;
+char		*WindowHiBack = NULL;
+char		*WindowLabelFormat = NULL;
+char		*BalloonTypeString = NULL;
+char		*BalloonBorderColor = NULL;
+char		*BalloonFormatString = NULL;
+Pixel		hi_pix;
+Pixel		back_pix;
+Pixel		fore_pix;
+Pixel		focus_pix;
+Pixel		win_back_pix;
+Pixel		win_fore_pix;
+Pixel		focus_fore_pix;
+Pixel		win_hi_back_pix;
+Pixel		win_hi_fore_pix;
+Pixmap		default_pixmap = None;
+FlocaleFont	*Ffont;
+FlocaleFont	*FwindowFont;
+FvwmPicture	*PixmapBack = NULL;
+FvwmPicture	*HilightPixmap = NULL;
+FlocaleWinString	*FwinString;
 
-Display *dpy;                   /* which display are we talking to */
-int x_fd;
-fd_set_size_t fd_width;
+/* Sizes / Dimensions */
+int		Rows = -1;
+int		desk1 = 0;
+int		desk2 = 0;
+int		ndesks = 0;
+int		Columns = -1;
+int		MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
+int		BalloonBorderWidth = DEFAULT_BALLOON_BORDER_WIDTH;
+int		BalloonYOffset = DEFAULT_BALLOON_Y_OFFSET;
+unsigned int	WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
+unsigned int	MinSize = 2 *  DEFAULT_PAGER_WINDOW_BORDER_WIDTH +
+				  DEFAULT_PAGER_WINDOW_MIN_SIZE;
+rectangle	pwindow = {0, 0, 0, 0};
+rectangle	icon = {-10000, -10000, 0, 0};
 
-char *PagerFore = NULL;
-char *PagerBack = NULL;
-char *font_string = NULL;
-char *smallFont = NULL;
-char *HilightC = NULL;
+/* Settings */
+int	windowcolorset = -1;
+int	activecolorset = -1;
+bool	xneg = false;
+bool	yneg = false;
+bool	icon_xneg = false;
+bool	icon_yneg = false;
+bool	MiniIcons = false;
+bool	Swallowed = false;
+bool	usposition = false;
+bool	UseSkipList = false;
+bool	StartIconic = false;
+bool	LabelsBelow = false;
+bool	ShapeLabels = false;
+bool	win_pix_set = false;
+bool	is_transient = false;
+bool	HilightDesks = true;
+bool	ShowBalloons = false;
+bool	error_occured = false;
+bool	use_desk_label = true;
+bool	win_hi_pix_set = false;
+bool	WindowBorders3d = false;
+bool	HideSmallWindows = false;
+bool	ShowIconBalloons = false;
+bool	use_no_separators = false;
+bool	use_monitor_label = false;
+bool	ShowPagerBalloons = false;
+bool	do_focus_on_enter = false;
+bool	fAlwaysCurrentDesk = false;
+bool	use_dashed_separators = true;
+bool	do_ignore_next_button_release = false;
 
-FvwmPicture *HilightPixmap = NULL;
-int HilightDesks = 1;
+/* Screen / Windows */
+int		fd[2];
+char		*MyName;
+Window		icon_win;
+Window		BalloonView = None;
+Display		*dpy;
+DeskInfo	*Desks;
+ScreenInfo	Scr;
+PagerWindow	*Start = NULL;
+PagerWindow	*FocusWin = NULL;
 
-char *WindowBack = NULL;
-char *WindowFore = NULL;
-char *WindowHiBack = NULL;
-char *WindowHiFore = NULL;
-char *WindowLabelFormat = NULL;
+/* Monitors */
+char			*monitor_to_track = NULL;
+char			*preferred_monitor = NULL;
+struct fpmonitors	fp_monitor_q;
 
-unsigned int WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
-unsigned int MinSize = (2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH +
-	DEFAULT_PAGER_WINDOW_MIN_SIZE);
-bool WindowBorders3d = false;
-
-bool UseSkipList = false;
-
-bool HideSmallWindows = false;
-
-FvwmPicture *PixmapBack = NULL;
-
-char *ImagePath = NULL;
-
-int MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
-
-int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
-bool do_focus_on_enter = false;
-bool use_dashed_separators = true;
-bool use_no_separators = false;
-char *BalloonTypeString = NULL;
-char *BalloonBack = NULL;
-char *BalloonFore = NULL;
-char *BalloonFont = NULL;
-char *BalloonBorderColor = NULL;
-char *BalloonFormatString = NULL;
-char *monitor_to_track = NULL;
-char *preferred_monitor = NULL;
-int BalloonBorderWidth = 1;
-int BalloonYOffset = 3;
-Window BalloonView = None;
-
-rectangle pwindow = {0, 0, 0, 0};
-rectangle icon = {-10000, -10000, 0, 0};
-int usposition = 0;
-bool use_desk_label = true;
-bool use_monitor_label = false;
-int xneg = 0, yneg = 0;
-int icon_xneg = 0, icon_yneg = 0;
-extern DeskInfo *Desks;
-int StartIconic = 0;
-int MiniIcons = 0;
-int LabelsBelow = 0;
-int ShapeLabels = 0;
-int Rows = -1, Columns = -1;
-int desk1=0, desk2 =0;
-int ndesks = 0;
-int windowcolorset = -1;
-int activecolorset = -1;
+static int x_fd;
+static fd_set_size_t fd_width;
 static int globalcolorset = -1;
 static int globalballooncolorset = -1;
 static int globalhighcolorset = -1;
-Pixel win_back_pix;
-Pixel win_fore_pix;
-bool win_pix_set = false;
-Pixel win_hi_back_pix;
-Pixel win_hi_fore_pix;
-bool win_hi_pix_set = false;
-char fAlwaysCurrentDesk = 0;
-PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
-bool is_transient = false;
-bool do_ignore_next_button_release = false;
-bool error_occured = false;
-bool Swallowed = false;
-bool fp_new_block = false;
+static PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
+static bool fp_new_block;
 
+static PagerStringList *FindDeskStrings(int desk);
+static PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
-void ExitPager(void);
-void list_monitor_focus(unsigned long *);
-struct fpmonitor *fpmonitor_new(struct monitor *);
-void fpmonitor_disable(struct fpmonitor *);
+static void list_monitor_focus(unsigned long *);
+static struct fpmonitor *fpmonitor_new(struct monitor *);
+static void fpmonitor_disable(struct fpmonitor *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -440,9 +447,9 @@ int main(int argc, char **argv)
     FQueryPointer(
 	  dpy, Scr.Root, &JunkRoot, &JunkChild, &pwindow.x, &pwindow.y, &JunkX,
 	  &JunkY, &JunkMask);
-    usposition = 1;
-    xneg = 0;
-    yneg = 0;
+    usposition = false;
+    xneg = false;
+    yneg = false;
   }
 
   if (PagerFore == NULL)
@@ -458,7 +465,7 @@ int main(int argc, char **argv)
     WindowLabelFormat = fxstrdup("%i");
 
   if ((HilightC == NULL) && (HilightPixmap == NULL))
-    HilightDesks = 0;
+    HilightDesks = false;
 
   if (BalloonBorderColor == NULL)
     BalloonBorderColor = fxstrdup("black");
@@ -1969,13 +1976,6 @@ ImagePath = NULL;
     }
     else if (StrEquals(resource, "Geometry"))
     {
-      pwindow.width = 0;
-      pwindow.height = 0;
-      pwindow.x = 0;
-      pwindow.y = 0;
-      xneg = 0;
-      yneg = 0;
-      usposition = 0;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
       {
@@ -1988,30 +1988,24 @@ ImagePath = NULL;
       if (flags & XValue)
       {
 	pwindow.x = g_x;
-	usposition = 1;
+	usposition = true;
 	if (flags & XNegative)
 	{
-	  xneg = 1;
+	  xneg = true;
 	}
       }
       if (flags & YValue)
       {
 	pwindow.y = g_y;
-	usposition = 1;
+	usposition = true;
 	if (flags & YNegative)
 	{
-	  yneg = 1;
+	  yneg = true;
 	}
       }
     }
     else if (StrEquals(resource, "IconGeometry"))
     {
-      icon.width = 0;
-      icon.height = 0;
-      icon.x = -10000;
-      icon.y = -10000;
-      icon_xneg = 0;
-      icon_yneg = 0;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
 	icon.width = width;
@@ -2022,7 +2016,7 @@ ImagePath = NULL;
 	icon.x = g_x;
 	if (flags & XNegative)
 	{
-	  icon_xneg = 1;
+	  icon_xneg = true;
 	}
       }
       if (flags & YValue)
@@ -2030,7 +2024,7 @@ ImagePath = NULL;
 	icon.y = g_y;
 	if (flags & YNegative)
 	{
-	  icon_yneg = 1;
+	  icon_yneg = true;
 	}
       }
     }
@@ -2195,11 +2189,11 @@ ImagePath = NULL;
     }
     else if (StrEquals(resource, "DeskHilight"))
     {
-      HilightDesks = 1;
+      HilightDesks = true;
     }
     else if (StrEquals(resource, "NoDeskHilight"))
     {
-      HilightDesks = 0;
+      HilightDesks = false;
     }
     else if (StrEquals(resource, "Hilight"))
     {
@@ -2221,31 +2215,31 @@ ImagePath = NULL;
     }
     else if (StrEquals(resource, "MiniIcons"))
     {
-      MiniIcons = 1;
+      MiniIcons = true;
     }
     else if (StrEquals(resource, "StartIconic"))
     {
-      StartIconic = 1;
+      StartIconic = true;
     }
     else if (StrEquals(resource, "NoStartIconic"))
     {
-      StartIconic = 0;
+      StartIconic = false;
     }
     else if (StrEquals(resource, "LabelsBelow"))
     {
-      LabelsBelow = 1;
+      LabelsBelow = true;
     }
     else if (StrEquals(resource, "LabelsAbove"))
     {
-      LabelsBelow = 0;
+      LabelsBelow = false;
     }
     else if (FHaveShapeExtension && StrEquals(resource, "ShapeLabels"))
     {
-      ShapeLabels = 1;
+      ShapeLabels = true;
     }
     else if (FHaveShapeExtension && StrEquals(resource, "NoShapeLabels"))
     {
-      ShapeLabels = 0;
+      ShapeLabels = false;
     }
     else if (StrEquals(resource, "Rows"))
     {
@@ -2344,22 +2338,22 @@ ImagePath = NULL;
       CopyString(&BalloonTypeString, arg1);
 
       if ( strncasecmp(BalloonTypeString, "Pager", 5) == 0 ) {
-	ShowPagerBalloons = 1;
-	ShowIconBalloons = 0;
+	ShowPagerBalloons = true;
+	ShowIconBalloons = false;
       }
       else if ( strncasecmp(BalloonTypeString, "Icon", 4) == 0 ) {
-	ShowPagerBalloons = 0;
-	ShowIconBalloons = 1;
+	ShowPagerBalloons = false;
+	ShowIconBalloons = true;
       }
       else {
-	ShowPagerBalloons = 1;
-	ShowIconBalloons = 1;
+	ShowPagerBalloons = true;
+	ShowIconBalloons = true;
       }
 
       /* turn this on initially so balloon window is created; later this
 	 variable is changed to match ShowPagerBalloons or ShowIconBalloons
 	 whenever we receive iconify or deiconify packets */
-      ShowBalloons = 1;
+      ShowBalloons = true;
     }
 
     else if (StrEquals(resource, "BalloonBack"))

@@ -12,6 +12,8 @@
 #define DEFAULT_PAGER_WINDOW_BORDER_WIDTH 1
 #define DEFAULT_PAGER_WINDOW_MIN_SIZE 3
 #define DEFAULT_PAGER_MOVE_THRESHOLD 3
+#define DEFAULT_BALLOON_BORDER_WIDTH 1
+#define DEFAULT_BALLOON_Y_OFFSET 3
 
 struct fpmonitor {
 	struct monitor *m;
@@ -153,6 +155,107 @@ typedef struct pager_string_list
 
 /*
  *
+ * Shared variables.
+ *
+ */
+/* Colors, Pixmaps, Fonts, etc. */
+extern char		*HilightC;
+extern char		*PagerFore;
+extern char		*PagerBack;
+extern char		*smallFont;
+extern char		*ImagePath;
+extern char		*WindowBack;
+extern char		*WindowFore;
+extern char		*font_string;
+extern char		*BalloonFore;
+extern char		*BalloonBack;
+extern char		*BalloonFont;
+extern char		*WindowHiFore;
+extern char		*WindowHiBack;
+extern char		*WindowLabelFormat;
+extern char		*BalloonTypeString;
+extern char		*BalloonBorderColor;
+extern char		*BalloonFormatString;
+extern Pixel		hi_pix;
+extern Pixel		back_pix;
+extern Pixel		fore_pix;
+extern Pixel		focus_pix;
+extern Pixel		win_back_pix;
+extern Pixel		win_fore_pix;
+extern Pixel		focus_fore_pix;
+extern Pixel		win_hi_back_pix;
+extern Pixel		win_hi_fore_pix;
+extern Pixmap		default_pixmap;
+extern FlocaleFont	*Ffont;
+extern FlocaleFont	*FwindowFont;
+extern FvwmPicture	*PixmapBack;
+extern FvwmPicture	*HilightPixmap;
+extern FlocaleWinString	*FwinString;
+
+/* Sizes / Dimensions */
+extern int		Rows;
+extern int		desk1;
+extern int		desk2;
+extern int		ndesks;
+extern int		Columns;
+extern int		MoveThreshold;
+extern int		BalloonBorderWidth;
+extern int		BalloonYOffset;
+extern unsigned int	WindowBorderWidth;
+extern unsigned int	MinSize;
+extern rectangle	pwindow;
+extern rectangle	icon;
+
+/* Settings */
+extern int	windowcolorset;
+extern int	activecolorset;
+extern bool	xneg;
+extern bool	yneg;
+extern bool	icon_xneg;
+extern bool	icon_yneg;
+extern bool	MiniIcons;
+extern bool	Swallowed;
+extern bool	usposition;
+extern bool	UseSkipList;
+extern bool	StartIconic;
+extern bool	LabelsBelow;
+extern bool	ShapeLabels;
+extern bool	win_pix_set;
+extern bool	is_transient;
+extern bool	HilightDesks;
+extern bool	ShowBalloons;
+extern bool	error_occured;
+extern bool	use_desk_label;
+extern bool	win_hi_pix_set;
+extern bool	WindowBorders3d;
+extern bool	HideSmallWindows;
+extern bool	ShowIconBalloons;
+extern bool	use_no_separators;
+extern bool	use_monitor_label;
+extern bool	ShowPagerBalloons;
+extern bool	do_focus_on_enter;
+extern bool	fAlwaysCurrentDesk;
+extern bool	use_dashed_separators;
+extern bool	do_ignore_next_button_release;
+
+/* Screen / Windows */
+extern int		fd[2];
+extern char		*MyName;
+extern Window		icon_win;
+extern Window		BalloonView;
+extern Display		*dpy;
+extern DeskInfo		*Desks;
+extern ScreenInfo	Scr;
+extern PagerWindow	*Start;
+extern PagerWindow	*FocusWin;
+
+/* Monitors */
+extern char			*monitor_to_track;
+extern char			*preferred_monitor;
+extern struct fpmonitors	fp_monitor_q;
+
+/*
+ *
  * Subroutine Prototypes
  *
  */
@@ -184,6 +287,7 @@ void list_property_change(unsigned long *body);
 void list_end(void);
 void list_reply(unsigned long *body);
 int My_XNextEvent(Display *dpy, XEvent *event);
+void ExitPager(void);
 
 /* Stuff in x_pager.c */
 void change_colorset(int colorset);
