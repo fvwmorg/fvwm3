@@ -41,70 +41,13 @@
 #include "libs/FEvent.h"
 #include "FvwmPager.h"
 
-
-extern ScreenInfo Scr;
-extern Display *dpy;
-extern char *monitor_to_track;
-
-Pixel back_pix, fore_pix, hi_pix;
-Pixel focus_pix;
-Pixel focus_fore_pix;
-extern int windowcolorset, activecolorset;
-extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
-extern bool win_pix_set, win_hi_pix_set;
-extern rectangle pwindow;
-extern int usposition, xneg, yneg;
-extern bool use_desk_label, use_monitor_label;
-extern int StartIconic;
-extern int MiniIcons;
-extern int LabelsBelow;
-extern int ShapeLabels;
-extern int ShowBalloons, ShowPagerBalloons, ShowIconBalloons;
-extern char *BalloonFormatString;
-extern char *WindowLabelFormat;
-extern char *PagerFore, *PagerBack, *HilightC;
-extern char *BalloonFore, *BalloonBack, *BalloonBorderColor;
-extern Window BalloonView;
-extern unsigned int WindowBorderWidth;
-extern unsigned int MinSize;
-extern bool WindowBorders3d;
-extern bool UseSkipList;
-extern bool HideSmallWindows;
-extern FvwmPicture *PixmapBack;
-extern FvwmPicture *HilightPixmap;
-extern int HilightDesks;
-extern char fAlwaysCurrentDesk;
-
-extern int MoveThreshold;
-
-extern rectangle icon;
-extern int icon_xneg, icon_yneg;
-FlocaleFont *Ffont, *FwindowFont;
-FlocaleWinString *FwinString;
-
-extern PagerWindow *Start;
-extern PagerWindow *FocusWin;
 static Atom wm_del_win;
-
-extern char *MyName;
-
-extern int desk1, desk2, ndesks;
-extern int Rows,Columns;
-extern int fd[2];
-
-int desk_w = 0;
-int desk_h = 0;
-int label_h = 0;
-
-DeskInfo *Desks;
-int Wait = 0;
-int FvwmErrorHandler(Display *, XErrorEvent *);
-extern bool is_transient;
-extern bool do_ignore_next_button_release;
-extern bool use_dashed_separators;
-extern bool use_no_separators;
-extern int BalloonBorderWidth;
-
+static int desk_w = 0;
+static int desk_h = 0;
+static int label_h = 0;
+static int Wait = 0;
+static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
+static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
 
 /* assorted gray bitmaps for decorative borders */
 #define g_width 2
@@ -121,11 +64,7 @@ static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 
 #define label_border g_width
 
-Window icon_win;	       /* icon window */
-
-static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
-static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
-
+static int FvwmErrorHandler(Display *, XErrorEvent *);
 static rectangle CalcGeom(PagerWindow *, bool);
 static void HideWindow(PagerWindow *, Window);
 static void MoveResizeWindow(PagerWindow *, bool, bool);
@@ -138,9 +77,6 @@ static void set_desk_size(bool);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
-extern void ExitPager(void);
-
-Pixmap default_pixmap = None;
 
 #define  MAX_UNPROCESSED_MESSAGES 1
 /* sums up pixels to scroll. If do_send_message is true a Scroll command is
@@ -857,12 +793,12 @@ void initialize_pager(void)
     if (pwindow.width + pwindow.x > screen_g.x + screen_g.width)
     {
       pwindow.x = screen_g.x + screen_g.width - fp->m->si->w; //fp->m->virtual_scr.MyDisplayWidth;
-      xneg = 1;
+      xneg = true;
     }
     if (pwindow.height + pwindow.y > screen_g.y + screen_g.height)
     {
       pwindow.y = screen_g.y + screen_g.height - fp->m->si->h; //fp->m->virtual_scr.MyDisplayHeight;
-      yneg = 1;
+      yneg = true;
     }
   }
   if (xneg)
@@ -965,8 +901,8 @@ void initialize_pager(void)
     {
       icon.y = 0;
     }
-    icon_xneg = 0;
-    icon_yneg = 0;
+    icon_xneg = false;
+    icon_yneg = false;
     wmhints.icon_x = icon.x;
     wmhints.icon_y = icon.y;
     wmhints.flags = IconPositionHint;
