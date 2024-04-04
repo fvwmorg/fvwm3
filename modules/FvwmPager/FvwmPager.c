@@ -22,6 +22,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <stdbool.h>
 #include <sys/wait.h>
 #include "libs/FScreen.h"
 #include "libs/ftime.h"
@@ -89,11 +90,11 @@ char *WindowLabelFormat = NULL;
 unsigned int WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
 unsigned int MinSize = (2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH +
 	DEFAULT_PAGER_WINDOW_MIN_SIZE);
-Bool WindowBorders3d = False;
+bool WindowBorders3d = false;
 
-Bool UseSkipList = False;
+bool UseSkipList = false;
 
-Bool HideSmallWindows = False;
+bool HideSmallWindows = false;
 
 FvwmPicture *PixmapBack = NULL;
 
@@ -102,9 +103,9 @@ char *ImagePath = NULL;
 int MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
-Bool do_focus_on_enter = False;
-Bool use_dashed_separators = True;
-Bool use_no_separators = False;
+bool do_focus_on_enter = false;
+bool use_dashed_separators = true;
+bool use_no_separators = false;
 char *BalloonTypeString = NULL;
 char *BalloonBack = NULL;
 char *BalloonFore = NULL;
@@ -120,8 +121,8 @@ Window BalloonView = None;
 rectangle pwindow = {0, 0, 0, 0};
 rectangle icon = {-10000, -10000, 0, 0};
 int usposition = 0;
-Bool use_desk_label = True;
-Bool use_monitor_label = False;
+bool use_desk_label = true;
+bool use_monitor_label = false;
 int xneg = 0, yneg = 0;
 int icon_xneg = 0, icon_yneg = 0;
 extern DeskInfo *Desks;
@@ -139,17 +140,17 @@ static int globalballooncolorset = -1;
 static int globalhighcolorset = -1;
 Pixel win_back_pix;
 Pixel win_fore_pix;
-Bool win_pix_set = False;
+bool win_pix_set = false;
 Pixel win_hi_back_pix;
 Pixel win_hi_fore_pix;
-Bool win_hi_pix_set = False;
+bool win_hi_pix_set = false;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
-Bool is_transient = False;
-Bool do_ignore_next_button_release = False;
-Bool error_occured = False;
-Bool Swallowed = False;
-Bool fp_new_block = False;
+bool is_transient = false;
+bool do_ignore_next_button_release = false;
+bool error_occured = false;
+bool Swallowed = false;
+bool fp_new_block = false;
 
 static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
@@ -326,8 +327,8 @@ int main(int argc, char **argv)
 		    StrEquals(argv[opt_num], "transient")))
   {
     opt_num++;
-    is_transient = True;
-      do_ignore_next_button_release = True;
+    is_transient = true;
+      do_ignore_next_button_release = true;
   }
 
   /* Check for an alias */
@@ -479,26 +480,26 @@ int main(int argc, char **argv)
 
   if (is_transient)
   {
-    Bool is_pointer_grabbed = False;
-    Bool is_keyboard_grabbed = False;
+    bool is_pointer_grabbed = false;
+    bool is_keyboard_grabbed = false;
     XSync(dpy,0);
     for (i = 0; i < 50 && !(is_pointer_grabbed && is_keyboard_grabbed); i++)
     {
       if (!is_pointer_grabbed &&
 	  XGrabPointer(
-	    dpy, Scr.Root, True,
+	    dpy, Scr.Root, true,
 	    ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
 	    PointerMotionMask|EnterWindowMask|LeaveWindowMask, GrabModeAsync,
 	    GrabModeAsync, None, None, CurrentTime) == GrabSuccess)
       {
-	is_pointer_grabbed = True;
+	is_pointer_grabbed = true;
       }
       if (!is_keyboard_grabbed &&
 	  XGrabKeyboard(
-	    dpy, Scr.Root, True, GrabModeAsync, GrabModeAsync, CurrentTime) ==
+	    dpy, Scr.Root, true, GrabModeAsync, GrabModeAsync, CurrentTime) ==
 	  GrabSuccess)
       {
-	is_keyboard_grabbed = True;
+	is_keyboard_grabbed = true;
       }
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
@@ -557,7 +558,7 @@ void Loop(int *fd)
 	/* does not return */
 	ExitPager();
       }
-      error_occured = False;
+      error_occured = false;
     }
   }
 }
@@ -777,7 +778,7 @@ void list_configure(unsigned long *body)
   PagerWindow *t;
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
-  Bool is_new_desk;
+  bool is_new_desk;
   struct monitor *newm;
 
   target_w = cfgpacket->w;
@@ -806,7 +807,7 @@ void list_configure(unsigned long *body)
   }
   else
   {
-    MoveResizePagerView(t, False);
+    MoveResizePagerView(t, false);
   }
 }
 
@@ -862,14 +863,14 @@ void list_focus(unsigned long *body)
   PagerWindow *t;
   Window target_w;
   extern Pixel focus_pix, focus_fore_pix;
-  Bool do_force_update = False;
+  bool do_force_update = false;
 
   target_w = body[0];
   if (win_hi_pix_set)
   {
     if (focus_pix != win_hi_back_pix || focus_fore_pix != win_hi_fore_pix)
     {
-      do_force_update = True;
+      do_force_update = true;
     }
     focus_pix = win_hi_back_pix;
     focus_fore_pix = win_hi_fore_pix;
@@ -878,7 +879,7 @@ void list_focus(unsigned long *body)
   {
     if (focus_pix != body[4] || focus_fore_pix != body[3])
     {
-      do_force_update = True;
+      do_force_update = true;
     }
     focus_pix = body[4];
     focus_fore_pix = body[3];
@@ -891,10 +892,10 @@ void list_focus(unsigned long *body)
   if (t != FocusWin || do_force_update)
   {
     if (FocusWin != NULL)
-      Hilight(FocusWin, False);
+      Hilight(FocusWin, false);
     FocusWin = t;
     if (FocusWin != NULL)
-      Hilight(FocusWin, True);
+      Hilight(FocusWin, true);
   }
 }
 
@@ -941,9 +942,9 @@ void list_new_page(unsigned long *body)
 		ReConfigure();
 	}
 
-	MovePage(False);
-	MoveStickyWindow(True, False);
-	Hilight(FocusWin,True);
+	MovePage(false);
+	MoveStickyWindow(true, false);
+	Hilight(FocusWin,true);
 }
 
 /*
@@ -1119,14 +1120,14 @@ void list_new_desk(unsigned long *body)
     XSetIconName(dpy, Scr.Pager_w, name);
   }
 
-  MovePage(True);
+  MovePage(true);
   DrawGrid(oldDesk - desk1, 1, None, NULL);
   DrawGrid(fp->m->virtual_scr.CurrentDesk - desk1, 1, None, NULL);
-  MoveStickyWindow(False, True);
+  MoveStickyWindow(false, true);
 /*
-  Hilight(FocusWin,False);
+  Hilight(FocusWin,false);
 */
-  Hilight(FocusWin,True);
+  Hilight(FocusWin,true);
 }
 
 /*
@@ -1210,7 +1211,7 @@ void list_iconify(unsigned long *body)
 		t->icon_y = body[4];
 		t->icon_width = body[5];
 		t->icon_height = body[6];
-		SET_ICONIFIED(t, True);
+		SET_ICONIFIED(t, true);
 		if (IS_ICON_SUPPRESSED(t) || t->icon_width == 0 ||
 		    t->icon_height == 0)
 		{
@@ -1229,7 +1230,7 @@ void list_iconify(unsigned long *body)
 		{
 			ShowBalloons = ShowIconBalloons;
 		}
-		MoveResizePagerView(t, True);
+		MoveResizePagerView(t, true);
 	}
 
 	return;
@@ -1260,7 +1261,7 @@ void list_deiconify(unsigned long *body, unsigned long length)
   }
   else
   {
-    SET_ICONIFIED(t, False);
+    SET_ICONIFIED(t, false);
     if (length >= 11 + FvwmPacketHeaderSize)
     {
       t->frame_x = body[7];
@@ -1277,7 +1278,7 @@ void list_deiconify(unsigned long *body, unsigned long length)
     if ( t->w == Scr.Pager_w )
       ShowBalloons = ShowPagerBalloons;
 
-    MoveResizePagerView(t, True);
+    MoveResizePagerView(t, true);
   }
 
   return;
@@ -1334,12 +1335,12 @@ void list_window_name(unsigned long *body,unsigned long type)
 	if (BalloonView == t->PagerView)
 	{
 	  UnmapBalloonWindow();
-	  MapBalloonWindow(t, False);
+	  MapBalloonWindow(t, false);
 	}
 	else if (BalloonView == t->IconView)
 	{
 	  UnmapBalloonWindow();
-	  MapBalloonWindow(t, True);
+	  MapBalloonWindow(t, true);
 	}
       }
     }
@@ -1520,7 +1521,7 @@ void list_config_info(unsigned long *body)
 		{
 			val = val - desk1;
 		}
-		DrawGrid(val, True, None, NULL);
+		DrawGrid(val, true, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
 		int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
 		int		  scr_width, scr_height;
@@ -1555,7 +1556,7 @@ void list_config_info(unsigned long *body)
 		if ((fp = fpmonitor_this(tm)) == NULL) {
 			if (fp_new_block)
 				return;
-			fp_new_block = True;
+			fp_new_block = true;
 			fp = fpmonitor_new(tm);
 			fp->m->flags |= MONITOR_NEW;
 		}
@@ -1596,7 +1597,7 @@ void list_config_info(unsigned long *body)
 		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
 			fp->m->flags &= ~MONITOR_NEW;
 			initialize_fpmonitor_windows(fp);
-			fp_new_block = False;
+			fp_new_block = false;
 		}
 		ReConfigure();
 	} else if (StrEquals(token, "DesktopSize")) {
@@ -1703,7 +1704,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
 			  void *offset_item, int *colorset_global)
 {
-  Bool all_desks = False;
+  bool all_desks = false;
   int colorset = 0;
   int i;
   int desk;
@@ -1718,7 +1719,7 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   AllocColorset(colorset);
   if (StrEquals(arg1, "*"))
   {
-    all_desks = True;
+    all_desks = true;
     desk = 0;
   }
   else
@@ -1837,7 +1838,7 @@ void ParseOptions(void)
     char *tline2;
     char *token;
     char *next;
-    Bool MoveThresholdSetForModule = False;
+    bool MoveThresholdSetForModule = false;
     struct fpmonitor	*m = NULL;
 
     arg1 = arg2 = NULL;
@@ -1937,13 +1938,13 @@ ImagePath = NULL;
 		free(preferred_monitor);
 	    preferred_monitor = fxstrdup(monitor_to_track);
     } else if(StrEquals(resource, "DeskLabels")) {
-	    use_desk_label = True;
+	    use_desk_label = true;
     } else if(StrEquals(resource, "NoDeskLabels")) {
-	    use_desk_label = False;
+	    use_desk_label = false;
     } else if(StrEquals(resource, "MonitorLabels")) {
-	    use_monitor_label = True;
+	    use_monitor_label = true;
     } else if(StrEquals(resource, "NoMonitorLabels")) {
-	    use_monitor_label = False;
+	    use_monitor_label = false;
     }
     else if(StrEquals(resource,"Colorset"))
     {
@@ -2039,8 +2040,8 @@ ImagePath = NULL;
       CopyStringWithQuotes(&font_string, next);
       if(strncasecmp(font_string,"none",4) == 0)
       {
-	use_desk_label = False;
-	use_monitor_label = False;
+	use_desk_label = false;
+	use_monitor_label = false;
 	free(font_string);
 	font_string = NULL;
       }
@@ -2295,7 +2296,7 @@ ImagePath = NULL;
     }
     else if (StrEquals(resource, "Window3dBorders"))
     {
-      WindowBorders3d = True;
+      WindowBorders3d = true;
     }
     else if (StrEquals(resource,"WindowColorsets"))
     {
@@ -2311,7 +2312,7 @@ ImagePath = NULL;
     }
     else if (StrEquals(resource,"UseSkipList"))
     {
-      UseSkipList = True;
+      UseSkipList = true;
     }
     else if (StrEquals(resource, "MoveThreshold"))
     {
@@ -2319,21 +2320,21 @@ ImagePath = NULL;
       if (GetIntegerArguments(next, NULL, &val, 1) > 0 && val >= 0)
       {
 	MoveThreshold = val;
-	MoveThresholdSetForModule = True;
+	MoveThresholdSetForModule = true;
       }
     }
     else if (StrEquals(resource, "SloppyFocus"))
     {
-      do_focus_on_enter = True;
+      do_focus_on_enter = true;
     }
     else if (StrEquals(resource, "SolidSeparators"))
     {
-      use_dashed_separators = False;
-      use_no_separators = False;
+      use_dashed_separators = false;
+      use_no_separators = false;
     }
     else if (StrEquals(resource, "NoSeparators"))
     {
-      use_no_separators = True;
+      use_no_separators = true;
     }
     /* ... and get Balloon config options ...
        -- ric@giccs.georgetown.edu */
