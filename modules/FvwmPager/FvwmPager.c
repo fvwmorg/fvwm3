@@ -777,7 +777,7 @@ void list_configure(unsigned long *body)
   PagerWindow *t;
   Window target_w;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
-  Bool is_new_desk, is_new_monitor;
+  Bool is_new_desk;
   struct monitor *newm;
 
   target_w = cfgpacket->w;
@@ -798,19 +798,8 @@ void list_configure(unsigned long *body)
     return;
   }
 
-  is_new_monitor = ((monitor_to_track != NULL) && (t->m != newm));
   is_new_desk = (t->desk != cfgpacket->desk);
-
-  /* If the monitor is different to the one the window was previously on,
-   * remove the window in the pager as it's no longer on that screen.
-   */
-  if (is_new_monitor) {
-	  XDestroyWindow(dpy, t->PagerView);
-	  t->PagerView = None;
-  }
-
   handle_config_win_package(t, cfgpacket);
-
   if (is_new_desk)
   {
     ChangeDeskForWindow(t, cfgpacket->desk);
@@ -845,8 +834,7 @@ void list_destroy(unsigned long *body)
       if(prev != NULL)
 	*prev = t->next;
       /* remove window from the chain */
-      if(t->PagerView != None)
-	XDestroyWindow(dpy,t->PagerView);
+      XDestroyWindow(dpy,t->PagerView);
       XDestroyWindow(dpy,t->IconView);
       if(FocusWin == t)
 	FocusWin = NULL;
@@ -1160,8 +1148,7 @@ void list_raise(unsigned long *body)
     }
   if(t!= NULL)
     {
-      if(t->PagerView != None)
-	XRaiseWindow(dpy,t->PagerView);
+      XRaiseWindow(dpy,t->PagerView);
       XRaiseWindow(dpy,t->IconView);
     }
 }
@@ -1187,8 +1174,7 @@ void list_lower(unsigned long *body)
     }
   if(t!= NULL)
     {
-      if(t->PagerView != None)
-	XLowerWindow(dpy,t->PagerView);
+      XLowerWindow(dpy,t->PagerView);
       if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks)) {
 	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
 		XLowerWindow(dpy, m->CPagerWin[t->desk - desk1]);
@@ -1339,10 +1325,8 @@ void list_window_name(unsigned long *body,unsigned long type)
       /* repaint by clearing window */
       if ((FwindowFont != NULL) && (t->icon_name != NULL)
 	   && !(MiniIcons && t->mini_icon.picture)) {
-	if (t->PagerView)
-	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-	if (t->IconView)
-	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
       }
       if (ShowBalloons && BalloonView)
       {
@@ -1385,10 +1369,8 @@ void list_icon_name(unsigned long *body)
       /* repaint by clearing window */
       if ((FwindowFont != NULL) && (t->icon_name != NULL)
 	   && !(MiniIcons && t->mini_icon.picture)) {
-	if (t->PagerView)
-	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-	if (t->IconView)
-	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
       }
     }
 }
@@ -1412,10 +1394,8 @@ void list_mini_icon(unsigned long *body)
     t->mini_icon.alpha   = mip->alpha;
     /* repaint by clearing window */
     if (MiniIcons && t->mini_icon.picture) {
-      if (t->PagerView)
-	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-      if (t->IconView)
-	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+      XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+      XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
     }
   }
 }
@@ -1459,10 +1439,7 @@ void list_restack(unsigned long *body, unsigned long length)
       }
       if (t != NULL)
       {
-	if (t->PagerView != None)
-	{
-	  wins[j++] = t->PagerView;
-	}
+	wins[j++] = t->PagerView;
       }
     }
     XRestackWindows(dpy, wins, j);
@@ -1495,8 +1472,7 @@ void list_end(void)
 	  if((ptr->frame == children[i])||(ptr->icon_w == children[i])||
 	     (ptr->icon_pixmap_w == children[i]))
 	    {
-	      if(ptr->PagerView != None)
-		XRaiseWindow(dpy,ptr->PagerView);
+	      XRaiseWindow(dpy,ptr->PagerView);
 	      XRaiseWindow(dpy,ptr->IconView);
 	    }
 	  ptr = ptr->next;
