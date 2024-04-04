@@ -347,7 +347,7 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 		if (rec.x > page_w - MinSize &&
 			(rec.x + rec.width)%page_w < MinSize)
 		{
-			rec.x = ((rec.x / page_w) + 1)*page_w - MinSize + 1;
+			rec.x = ((rec.x / page_w) + 1)*page_w - MinSize;
 		}
 	}
 	if (rec.height < MinSize)
@@ -364,7 +364,7 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 		if (rec.y > page_h - MinSize &&
 			(rec.y + rec.height)%page_h < MinSize)
 		{
-			rec.y = ((rec.y / page_h) + 1)*page_h - MinSize + 1;
+			rec.y = ((rec.y / page_h) + 1)*page_h - MinSize;
 		}
 	}
 	return rec;
