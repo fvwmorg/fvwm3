@@ -369,7 +369,17 @@ done about this - except not using SloppyFocus in the pager.
 *FvwmPager: Monitor RandRName::
   Tells FvwmPager to display windows only on _RandRName_ monitor. This
   is especially meaningful when the _DesktopConfiguration_ command is
-  set to _shared_.
+  set to _shared_. If _RandRName_ is *none*, the monitor is unset,
+  and the pager will show windows on all monitors.
+
+*FvwmPager: CurrentMonitor RandRName::
+  When always viewing the current desktop, either via the icon pager
+  or running *FvwmPager {asterisk}*, the current desktop is updated each
+  time any monitor changes desktops. This may not be preferable if using
+  _per-monitor_ or _shared_ mode. This option sets the current monitor
+  to _RandRName_, and the current desk is only updated when that monitor
+  changes desks, ignoring changes from any other monitor. If _RandRName_
+  is *none*, the current_monitor is unset, reverting to default behavior.
 
 == AUTHOR
 

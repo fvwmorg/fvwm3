@@ -147,6 +147,7 @@ PagerWindow	*Start = NULL;
 PagerWindow	*FocusWin = NULL;
 
 /* Monitors */
+char			*current_monitor = NULL;
 char			*monitor_to_track = NULL;
 char			*preferred_monitor = NULL;
 struct fpmonitors	fp_monitor_q;
@@ -207,7 +208,7 @@ fpmonitor_by_name(const char *name)
 {
 	struct fpmonitor *fm;
 
-	if (name == NULL)
+	if (name == NULL || StrEquals(name, "none"))
 		return (NULL);
 
 	TAILQ_FOREACH(fm, &fp_monitor_q, entry) {
@@ -372,7 +373,7 @@ int main(int argc, char **argv)
     {
       desk1 = 0;
       desk2 = 0;
-      fAlwaysCurrentDesk = 1;
+      fAlwaysCurrentDesk = true;
     }
   else
     {
@@ -967,7 +968,7 @@ void list_new_desk(unsigned long *body)
   int change_highcs = -1;
   int mon_num = body[1];
   struct monitor *mout;
-  struct fpmonitor *fp;
+  struct fpmonitor *fp, *tfp;
 
   mout = monitor_by_output(mon_num);
   /* Don't allow monitor_by_output to fallback to RB_MIN. */
@@ -988,9 +989,16 @@ void list_new_desk(unsigned long *body)
   /* If the monitor for which the event was sent, does not match the monitor
    * itself, then don't change the FvwmPager's desk.  Only do this if we're
    * tracking a specific monitor though.
+   *
+   * If always showing the current desktop, the current_monitor is set, and
+   * tracking is per-monitor, only change pager desk on the current_monitor.
    */
-  if (monitor_to_track != NULL &&
-      (strcmp(fp->m->si->name, monitor_to_track) != 0))
+  if ((monitor_to_track != NULL &&
+		(strcmp(mout->si->name, monitor_to_track) != 0)) ||
+		(current_monitor != NULL &&
+		monitor_to_track == NULL &&
+		(monitor_mode == MONITOR_TRACKING_M || is_tracking_shared) &&
+		(strcmp(mout->si->name, current_monitor) != 0)))
 	  return;
 
   /* Update the icon window to always track current desk. */
@@ -1839,6 +1847,8 @@ void ParseOptions(void)
   char *tline= NULL;
   char *mname;
   int desk;
+  bool MoveThresholdSetForModule = false;
+
   FvwmPictureAttributes fpa;
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
@@ -1859,15 +1869,11 @@ void ParseOptions(void)
     int g_x, g_y, flags;
     unsigned width,height;
     char *resource;
-    char *arg1;
-    char *arg2;
+    char *arg1 = NULL;
+    char *arg2 = NULL;
     char *tline2;
     char *token;
     char *next;
-    bool MoveThresholdSetForModule = false;
-    struct fpmonitor	*m = NULL;
-
-    arg1 = arg2 = NULL;
 
     token = PeekToken(tline, &next);
 
@@ -1914,10 +1920,12 @@ ImagePath = NULL;
     else if (StrEquals(token, "DesktopName"))
     {
       int val;
+      struct fpmonitor *fp;
+
       if (GetIntegerArguments(next, &next, &val, 1) > 0)
       {
-	      TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-		      SetDeskLabel(m, val, (const char *)next);
+	      TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+		      SetDeskLabel(fp, val, (const char *)next);
 	      }
       }
       continue;
@@ -1956,29 +1964,42 @@ ImagePath = NULL;
     }
 
     if (StrEquals(resource, "Monitor")) {
-	    struct monitor *tm = monitor_get_current();
+	    struct fpmonitor *fp;
 
 	    free(monitor_to_track);
+	    free(preferred_monitor);
 	    next = SkipSpaces(next, NULL, 0);
+	    fp = fpmonitor_by_name(next);
+	    if (fp == NULL) {
+		    monitor_to_track = NULL;
+		    preferred_monitor = NULL;
+		    if (!StrEquals(next, "none")) {
+			    /* Fallback to current monitor. */
+			    fp = fpmonitor_this(NULL);
+			    monitor_to_track = fxstrdup(fp->m->si->name);
+			    /* Set preferred_monitor to the bad name
+			     * in case it gets plugged in later.
+			     */
+			    preferred_monitor = fxstrdup(next);
+		    }
+	    } else {
+		    monitor_to_track = fxstrdup(fp->m->si->name);
+		    preferred_monitor = fxstrdup(monitor_to_track);
+	    }
+    } else if (StrEquals(resource, "CurrentMonitor")) {
+	    struct fpmonitor *fp;
 
-	    if (next == NULL) {
-		    fvwm_debug(__func__, "FvwmPager: no monitor name given "
-				    "using current monitor\n");
-		    /* m already set... */
-		    monitor_to_track = fxstrdup(tm->si->name);
-		    continue;
-	    }
-	    if ((m = fpmonitor_by_name(next)) == NULL) {
-		    fvwm_debug(__func__, "FvwmPager: monitor '%s' not found "
-                               "using current monitor", next);
-		    monitor_to_track = fxstrdup(tm->si->name);
-		    continue;
-	    }
-	    fvwm_debug(__func__, "Assigning monitor: %s\n", m->m->si->name);
-	    monitor_to_track = fxstrdup(m->m->si->name);
-	    if (preferred_monitor != NULL)
-		free(preferred_monitor);
-	    preferred_monitor = fxstrdup(monitor_to_track);
+	    free(current_monitor);
+	    next = SkipSpaces(next, NULL, 0);
+	    fp = fpmonitor_by_name(next);
+	    if (fp == NULL)
+		    /* No monitor found matching given name.
+		     * Could be "none" or a bad name.
+		     * In either case, just unset current monitor.
+		     */
+		    current_monitor = NULL;
+	    else
+		    current_monitor = fxstrdup(fp->m->si->name);
     } else if(StrEquals(resource, "DeskLabels")) {
 	    use_desk_label = true;
     } else if(StrEquals(resource, "NoDeskLabels")) {
@@ -2504,5 +2525,6 @@ void ExitPager(void)
   XUngrabKeyboard(dpy, CurrentTime);
   free(monitor_to_track);
   free(preferred_monitor);
+  free(current_monitor);
   exit(0);
 }
