@@ -3905,7 +3905,7 @@ Move shuffle Up Left
 *Move* can be used to moved a window to a specified position:
 +
 
-> *Move* [screen _S_] \[w | m | v]_x_[p | w] \[w | m | v]_y_[p | w] [Warp] [ewmhiwa]
+> *Move* [screen _S_] [desk _N_] \[w | m | v]_x_[p | w] \[w | m | v]_y_[p | w] [Warp] [ewmhiwa]
 
 +
 This will move the window to the _x_ and _y_ position (see below).
@@ -3919,6 +3919,13 @@ specified, the coordinates are interpreted as relative to the given
 screen. The width and height of the screen are used for the
 calculations instead of the display dimensions. The _screen_ is
 interpreted as in the *MoveToScreen* command.
++
+If the literal option _desk_ followed by a desk number _N_ is specified,
+place the window on the specified desk after it has been moved. This can
+serve two purposes, first you can move a window's position and desk in a
+single command. Second when a window is moved between monitors, its desk
+is updated to be the same as the new monitor. This option can override
+that behavior by specifying which desk the window should end up on.
 +
 The positional arguments _x_ and _y_ can specify an absolute or relative
 position from either the left/top or right/bottom of the screen. By default,
