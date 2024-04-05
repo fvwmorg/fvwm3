@@ -86,5 +86,3 @@ do { void *p; p = (void *)&x; (void)p; } while (0);
 int	asprintf(char **, const char *, ...);
 int vasprintf(char **, const char *, va_list);
 #endif
-
-//#include "libs/log.h"
