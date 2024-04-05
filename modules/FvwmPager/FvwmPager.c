@@ -146,9 +146,11 @@ PagerWindow	*Start = NULL;
 PagerWindow	*FocusWin = NULL;
 
 /* Monitors */
+bool			fp_is_tracking_shared = false;
 char			*monitor_to_track = NULL;
 char			*preferred_monitor = NULL;
 struct fpmonitors	fp_monitor_q;
+enum monitor_tracking	fp_monitor_mode = MONITOR_TRACKING_G;
 
 static int x_fd;
 static fd_set_size_t fd_width;
@@ -994,7 +996,7 @@ void list_new_desk(unsigned long *body)
       (strcmp(fp->m->si->name, monitor_to_track) != 0))
 	  return;
 
-  if (monitor_mode == MONITOR_TRACKING_G)
+  if (fp_monitor_mode == MONITOR_TRACKING_G)
     monitor_assign_virtual(fp->m);
 
   if (fAlwaysCurrentDesk && oldDesk != fp->m->virtual_scr.CurrentDesk)
@@ -1632,7 +1634,8 @@ void list_config_info(unsigned long *body)
 		sscanf(tline, "%d %d", &mmode, &is_shared);
 
 		if (mmode > 0)
-			monitor_mode = mmode;
+			fp_monitor_mode = mmode;
+		fp_is_tracking_shared = is_shared;
 	}
 }
 
