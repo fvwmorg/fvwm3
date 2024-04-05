@@ -1,28 +1,14 @@
 option(
-    'mandoc',
-    type: 'boolean',
-    value: false,
-    description: 'Enable generation of man pages',
+    'bidi',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable fribidi support',
 )
 option(
     'htmldoc',
     type: 'boolean',
     value: false,
     description: 'Enable generation of HTML man pages',
-)
-option('png', type: 'boolean', value: true, description: 'Enable png support')
-option('rsvg', type: 'boolean', value: false, description: 'Enable svg support')
-option(
-    'xent',
-    type: 'boolean',
-    value: false,
-    description: 'Enable shaped window support',
-)
-option(
-    'sm',
-    type: 'feature',
-    value: 'auto',
-    description: 'Enable session management support',
 )
 option(
     'iconv',
@@ -31,9 +17,29 @@ option(
     description: 'Enable iconv support',
 )
 option(
-    'bidi',
-    type: 'feature',
-    value: 'auto',
-    description: 'Enable fribidi support',
+    'mandoc',
+    type: 'boolean',
+    value: false,
+    description: 'Enable generation of man pages',
 )
 option('nls', type: 'feature', value: 'auto', description: 'Enable NLS')
+option('png', type: 'boolean', value: true, description: 'Enable png support')
+option('rsvg', type: 'boolean', value: false, description: 'Enable svg support')
+option(
+    'sm',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable session management support',
+)
+option(
+    'xent',
+    type: 'boolean',
+    value: false,
+    description: 'Enable shaped window support',
+)
+option(
+    'golang',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable Go support',
+)
