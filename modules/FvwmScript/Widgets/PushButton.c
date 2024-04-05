@@ -19,6 +19,7 @@
 #include "libs/ColorUtils.h"
 #include "libs/Graphics.h"
 #include "libs/FEvent.h"
+#include "libs/log.h"
 #include "Tools.h"
 
 /* left, center and right offsets */
