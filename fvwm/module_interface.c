@@ -492,24 +492,22 @@ void BroadcastMonitorList(fmodule *this)
 			monitor_mode, is_tracking_shared);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 		free(name);
-
-		/* Reissue the DesktopSize command here, rather than sending
-		 * down the DesktopSize -- we want FvwmPager in particular to
-		 * react to a M_NEW_PAGE event, which DesktopSize will do; and
-		 * this avoids duplication in FvwmPager as a result.
-		 */
-		char action[256];
-
-		/* Every monitor will have the same dx/dy values, so just take
-		 * the fist entry in our list.
-		 */
-		struct monitor *m = RB_MIN(monitors, &monitor_q);
-
-		snprintf(action, sizeof(action), "DesktopSize %dx%d",
-			m->dx, m->dy);
-		execute_function_override_window(NULL, NULL, action, NULL, 0,
-			NULL);
 	}
+
+	/* Reissue the DesktopSize command here, rather than sending
+	 * down the DesktopSize -- we want FvwmPager in particular to
+	 * react to a M_NEW_PAGE event, which DesktopSize will do; and
+	 * this avoids duplication in FvwmPager as a result.
+	 */
+	char action[256];
+
+	/* Every monitor will have the same dx/dy values, so just take
+	 * the fist entry in our list.
+	 */
+	m = RB_MIN(monitors, &monitor_q);
+
+	snprintf(action, sizeof(action), "DesktopSize %dx%d", m->dx, m->dy);
+	execute_function_override_window(NULL, NULL, action, NULL, 0, NULL);
 }
 
 void BroadcastWindowIconNames(FvwmWindow *fw, Bool window, Bool icon)
