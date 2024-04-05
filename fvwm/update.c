@@ -671,11 +671,43 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 	mnew = FindScreenOfXY(g.x, g.y);
 
 	/* Avoid unnecessary updates. */
-	if (mnew == fw->m)
+	if (mnew == fw->m && fw->UpdateDesk < 0)
 		return False;
-	fw->m_prev = fw->m;
-	fw->m = mnew;
-	fw->Desk = mnew->virtual_scr.CurrentDesk;
+
+	if (fw->UpdateDesk < 0) {
+		fw->Desk = mnew->virtual_scr.CurrentDesk;
+		goto out;
+	}
+
+	int old_desk, new_desk;
+	old_desk = new_desk = mnew->virtual_scr.CurrentDesk;
+	if (fw->m != mnew && fw->m != NULL)
+		old_desk = fw->m->virtual_scr.CurrentDesk;
+
+	/* Map/Unmap windows based on initial and final desk. */
+	if (fw->Desk == old_desk && fw->UpdateDesk != new_desk)
+	{
+		unmap_window(fw);
+		SET_FULLY_VISIBLE(fw, 0);
+		SET_PARTIALLY_VISIBLE(fw, 0);
+	}
+	else if (fw->Desk != old_desk && fw->UpdateDesk == new_desk)
+	{
+		/* If its an icon, auto-place it */
+		if (IS_ICONIFIED(fw))
+		{
+		AutoPlaceIcon(fw, NULL, True);
+		}
+		map_window(fw);
+	}
+	fw->Desk = fw->UpdateDesk;
+	fw->UpdateDesk = -1;
+
+out:
+	if (fw->m != mnew) {
+		fw->m_prev = fw->m;
+		fw->m = mnew;
+	}
 	EWMH_SetCurrentDesktop(fw->m);
 	desk_add_fw(fw);
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);

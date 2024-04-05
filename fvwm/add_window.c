@@ -2435,6 +2435,7 @@ FvwmWindow *AddWindow(
 	setup_key_and_button_grabs(fw);
 
 	/****** inform modules of new window ******/
+	fw->UpdateDesk = -1; /* Initialize to ensure desk update. */
 	update_fvwm_monitor(fw);
 	BroadcastConfig(M_ADD_WINDOW,fw);
 	BroadcastWindowIconNames(fw, True, False);

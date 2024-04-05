@@ -397,7 +397,7 @@ static int GetDeskNumber(struct monitor *mon, char *action, int current_desk)
  * Unmaps a window on transition to a new desktop
  *
  */
-static void unmap_window(FvwmWindow *t)
+void unmap_window(FvwmWindow *t)
 {
 	XWindowAttributes winattrs;
 	unsigned long eventMask = 0;
@@ -453,7 +453,7 @@ static void unmap_window(FvwmWindow *t)
  * Maps a window on transition to a new desktop
  *
  */
-static void map_window(FvwmWindow *t)
+void map_window(FvwmWindow *t)
 {
 	XWindowAttributes winattrs;
 	unsigned long eventMask = 0;

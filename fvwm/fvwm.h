@@ -831,6 +831,8 @@ typedef struct FvwmWindow
 	int FocusDesk;
 	/* Desk to deiconify to, for StubbornIcons */
 	int DeIconifyDesk;
+	/* If not negative, this is the desk update_fvwm_monitor will use. */
+	int UpdateDesk;
 
 	char *mini_pixmap_file;
 	FvwmPicture *mini_icon;
