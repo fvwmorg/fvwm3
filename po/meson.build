@@ -1,2 +1,4 @@
 i18n = import('i18n')
-i18n.gettext(meson.project_name(), data_dirs: '.')
+add_project_arguments('-DGETTEXT_PACKAGE="intltest"', language: 'c')
+i18n.gettext(meson.project_name())
+i18n.gettext('FvwmScript')

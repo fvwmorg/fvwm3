@@ -1,8 +1,6 @@
-module_sources = ['FvwmEvent.c']
-
 executable(
-    'FvwmEvent',
-    module_sources,
+    'FvwmRearrange',
+    sources: 'FvwmRearrange.c',
     dependencies: [all_found_deps],
     include_directories: includedirs,
     install_dir: fvwm_moduledir,
