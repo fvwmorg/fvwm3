@@ -397,7 +397,13 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	int match_len = 0;
 	fmodule *mod = exc->m.module;
 
-	send_monitor_list(mod);
+	/* Don't send the monitor list when a module asks for its
+	 * configuration... in this case, fvwm -> module could get in an
+	 * infinite loop, continually telling that module the same
+	 * information over and over.
+	 *
+	 * send_monitor_list(mod);
+	 */
 	send_desktop_geometry(mod);
 	/* send ImagePath and ColorLimit first */
 	send_image_path(mod);
