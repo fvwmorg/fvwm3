@@ -390,6 +390,9 @@ configure_file(
 )
 
 libraries = []
+# Configured files inherit the permissions of the template,
+# so we need to set the permissions explicitly for executable scripts.
+install_mask_755 = 'rwxr-xr-x'
 lib_includes = include_directories('.')
 fvwm_includes = include_directories('fvwm')
 subdir('libs')

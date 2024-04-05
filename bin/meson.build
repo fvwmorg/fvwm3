@@ -1,0 +1,93 @@
+perl_config = configuration_data()
+perl_config.set('PERL', perl.full_path())
+perl_config.set('VERSION', conf.get('VERSION'))
+perl_config.set('datadir', datadir + '/' + meson.project_name())
+perl_config.set('datarootdir', datadir)
+perl_config.set(
+    'FVWM_PERLLIBDIR',
+    datadir + '/' + meson.project_name() + '/perllib',
+)
+perl_config.set('prefix', prefix)
+perl_config.set('SED', find_program('sed').full_path())
+perl_config.set('VERSIONINFO', meson.project_version())
+
+python_config = configuration_data()
+# Since we only support python3 now anyway, we should consider dropping this.
+python_config.set('PYTHON', py.full_path())
+python_config.set('VERSION', conf.get('VERSION'))
+python_config.set('VERSIONINFO', meson.project_version())
+
+# We only install FvwmCommand for non-golang builds.
+# Since this isn't currently configurable, we'll just check for the presence of golang
+# at build time. Not ideal, but we should probably drop FvwmCommand anyway.
+if golang.found()
+    subdir('FvwmPrompt')
+else
+    FvwmCommand = configure_file(
+        input: 'FvwmCommand.in',
+        output: 'FvwmCommand',
+        configuration: python_config,
+        install: true,
+        install_dir: bindir,
+        install_mode: install_mask_755,
+    )
+endif
+
+# We should tighten up the dependencies here, but for now we'll just use all_found_deps.
+fvwm_root = executable(
+    'fvwm-root',
+    'fvwm-root.c',
+    include_directories: [lib_includes, fvwm_includes],
+    link_with: libraries,
+    dependencies: all_found_deps,
+)
+
+fvwm_perllib = configure_file(
+    input: 'fvwm-perllib.in',
+    output: 'fvwm-perllib',
+    configuration: perl_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+fvwm_convert = configure_file(
+    input: 'fvwm-convert-2.6.in',
+    output: 'fvwm-convert-2.6',
+    configuration: perl_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+fvwm_menu_xlock = configure_file(
+    input: 'fvwm-menu-xlock.in',
+    output: 'fvwm-menu-xlock',
+    configuration: perl_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+fvwm_menu_directory = configure_file(
+    input: 'fvwm-menu-directory.in',
+    output: 'fvwm-menu-directory',
+    configuration: perl_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+fvwm_menu_desktop = configure_file(
+    input: 'fvwm-menu-desktop.in',
+    output: 'fvwm-menu-desktop',
+    configuration: python_config,
+    install: true,
+    install_dir: bindir,
+    install_mode: install_mask_755,
+)
+
+config_data = install_data(
+    'fvwm-menu-desktop-config.fpl',
+    install_dir: datadir + '/' + meson.project_name(),
+)
