@@ -1,8 +1,13 @@
-module_sources = ['FvwmEvent.c']
+
+
+install_data(
+    'ConfigFvwmIdent',
+    install_dir: join_paths(datadir, meson.project_name()),
+)
 
 executable(
-    'FvwmEvent',
-    module_sources,
+    'FvwmIdent',
+    sources: 'FvwmIdent.c',
     dependencies: [all_found_deps],
     include_directories: includedirs,
     install_dir: fvwm_moduledir,

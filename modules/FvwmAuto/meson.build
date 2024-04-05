@@ -1,11 +1,11 @@
-module_sources = [
-  'FvwmAuto.c'
-]
+module_sources = ['FvwmAuto.c']
 
-fvwmauto = executable(
-  'FvwmAuto',
-  module_sources,
-  include_directories: [lib_includes, fvwm_includes],
-  dependencies: all_found_deps,
-  link_with: libraries,
+executable(
+    'FvwmAuto',
+    module_sources,
+    dependencies: all_found_deps,
+    include_directories: includedirs,
+    install_dir: fvwm_moduledir,
+    install: true,
+    link_with: libfvwm3,
 )
