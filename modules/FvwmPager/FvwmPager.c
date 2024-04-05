@@ -132,6 +132,7 @@ bool	use_monitor_label = false;
 bool	ShowPagerBalloons = false;
 bool	do_focus_on_enter = false;
 bool	fAlwaysCurrentDesk = false;
+bool	CurrentDeskPerMonitor = false;
 bool	use_dashed_separators = true;
 bool	do_ignore_next_button_release = false;
 
@@ -968,7 +969,7 @@ void list_new_desk(unsigned long *body)
   int change_highcs = -1;
   int mon_num = body[1];
   struct monitor *mout;
-  struct fpmonitor *fp, *tfp;
+  struct fpmonitor *fp;
 
   mout = monitor_by_output(mon_num);
   /* Don't allow monitor_by_output to fallback to RB_MIN. */
@@ -993,12 +994,12 @@ void list_new_desk(unsigned long *body)
    * If always showing the current desktop, the current_monitor is set, and
    * tracking is per-monitor, only change pager desk on the current_monitor.
    */
-  if ((monitor_to_track != NULL &&
+  if (!CurrentDeskPerMonitor && ((monitor_to_track != NULL &&
 		(strcmp(mout->si->name, monitor_to_track) != 0)) ||
 		(current_monitor != NULL &&
 		monitor_to_track == NULL &&
 		(monitor_mode == MONITOR_TRACKING_M || is_tracking_shared) &&
-		(strcmp(mout->si->name, current_monitor) != 0)))
+		(strcmp(mout->si->name, current_monitor) != 0))))
 	  return;
 
   /* Update the icon window to always track current desk. */
@@ -1139,8 +1140,8 @@ void list_new_desk(unsigned long *body)
   }
 
   MovePage(true);
-  DrawGrid(oldDesk - desk1, 1, None, NULL);
-  DrawGrid(fp->m->virtual_scr.CurrentDesk - desk1, 1, None, NULL);
+  DrawGrid(oldDesk - desk1, None, NULL);
+  DrawGrid(fp->m->virtual_scr.CurrentDesk - desk1, None, NULL);
   MoveStickyWindow(false, true);
 /*
   Hilight(FocusWin,false);
@@ -1540,7 +1541,7 @@ void list_config_info(unsigned long *body)
 		{
 			val = val - desk1;
 		}
-		DrawGrid(val, true, None, NULL);
+		DrawGrid(val, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
 		parse_monitor_line(tline);
 		ReConfigure();
@@ -2008,6 +2009,10 @@ ImagePath = NULL;
 	    use_monitor_label = true;
     } else if(StrEquals(resource, "NoMonitorLabels")) {
 	    use_monitor_label = false;
+    } else if(StrEquals(resource, "CurrentDeskPerMonitor")) {
+	    CurrentDeskPerMonitor = true;
+    } else if(StrEquals(resource, "CurrentDeskGlobal")) {
+	    CurrentDeskPerMonitor = false;
     }
     else if(StrEquals(resource,"Colorset"))
     {

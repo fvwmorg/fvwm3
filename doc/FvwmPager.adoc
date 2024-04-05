@@ -373,13 +373,27 @@ done about this - except not using SloppyFocus in the pager.
   and the pager will show windows on all monitors.
 
 *FvwmPager: CurrentMonitor RandRName::
-  When always viewing the current desktop, either via the icon pager
-  or running *FvwmPager {asterisk}*, the current desktop is updated each
+  When viewing only the current desktop, either via the icon pager or running
+  *FvwmPager {asterisk}*, the current desktop is updated each
   time any monitor changes desktops. This may not be preferable if using
   _per-monitor_ or _shared_ mode. This option sets the current monitor
   to _RandRName_, and the current desk is only updated when that monitor
   changes desks, ignoring changes from any other monitor. If _RandRName_
   is *none*, the current_monitor is unset, reverting to default behavior.
+
+*FvwmPager: CurrentDeskPerMonitor::
+  When viewing only the current desktop, either via the icon pager or running
+  *FvwmPager {asterisk}*, this option makes the pager show the windows on the
+  desktop each monitor is viewing independently. For example, the area of the
+  pager for monitor 0 would show its windows on desktop 2, while the area of
+  the pager for monitor 1 would show its windows on desktop 1, the desktop it
+  is currently viewing. When used with _DeskLabels_, there will be one desk
+  label per monitor stating the desk each monitor is viewing, and use
+  _MonitorLabels_ to get the monitor names associated with each desk.
+
+*FvwmPager: CurrentDeskGlobal::
+  This option cancels setting _CurrentDeskPerMonitor_, reverting to the
+  default.
 
 == AUTHOR
 

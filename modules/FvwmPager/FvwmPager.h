@@ -236,6 +236,7 @@ extern bool	use_monitor_label;
 extern bool	ShowPagerBalloons;
 extern bool	do_focus_on_enter;
 extern bool	fAlwaysCurrentDesk;
+extern bool	CurrentDeskPerMonitor;
 extern bool	use_dashed_separators;
 extern bool	do_ignore_next_button_release;
 
@@ -303,7 +304,7 @@ void ReConfigure(void);
 void ReConfigureAll(void);
 void update_pr_transparent_windows(void);
 void MovePage(bool is_new_desk);
-void DrawGrid(int desk,int erase,Window ew,XRectangle *r);
+void DrawGrid(int desk,Window ew,XRectangle *r);
 void DrawIconGrid(int erase);
 void SwitchToDesk(int Desk, struct fpmonitor *m);
 void SwitchToDeskAndPage(int Desk, XEvent *Event);
