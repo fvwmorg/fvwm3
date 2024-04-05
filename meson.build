@@ -16,7 +16,6 @@ project(
 
 add_project_arguments(
     [
-        '-Wno-implicit-int',
         '-fno-common',
         '-Wno-error=format-security',
         '-Wno-sign-compare',
