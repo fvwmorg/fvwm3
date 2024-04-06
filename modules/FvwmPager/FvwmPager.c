@@ -158,7 +158,7 @@ static int globalcolorset = -1;
 static int globalballooncolorset = -1;
 static int globalhighcolorset = -1;
 static PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
-static bool fp_new_block;
+static bool fp_new_block = false;
 
 static PagerStringList *FindDeskStrings(int desk);
 static PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
@@ -167,6 +167,9 @@ static RETSIGTYPE TerminateHandler(int);
 static void list_monitor_focus(unsigned long *);
 static struct fpmonitor *fpmonitor_new(struct monitor *);
 static void fpmonitor_disable(struct fpmonitor *);
+static void parse_monitor_line(char *);
+static void parse_desktop_size_line(char *);
+static void parse_desktop_configuration_line(char *);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -1499,12 +1502,13 @@ void list_config_info(unsigned long *body)
 {
 	struct fpmonitor *m;
 	char *tline, *token;
-	int color;
 
 	tline = (char*)&(body[3]);
 	token = PeekToken(tline, &tline);
 	if (StrEquals(token, "Colorset"))
 	{
+		int color;
+
 		color = LoadColorset(tline);
 		change_colorset(color);
 	}
@@ -1533,109 +1537,12 @@ void list_config_info(unsigned long *body)
 		}
 		DrawGrid(val, true, None, NULL);
 	} else if (StrEquals(token, "Monitor")) {
-		int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
-		int		  scr_width, scr_height;
-		int		  flags;
-		char		 *mname;
-		struct monitor	 *tm;
-		struct fpmonitor *fp;
-
-		tline = GetNextToken(tline, &mname);
-
-		sscanf(tline, "%d %d %d %d %d %d %d %d %d %d", &flags,
-		    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk,
-		    &scr_width, &scr_height);
-
-		monitor_refresh_module(dpy);
-
-		tm = monitor_resolve_name(mname);
-		if (tm == NULL)
-			return;
-
-		if (flags & MONITOR_DISABLED) {
-			fp = fpmonitor_by_name(mname);
-			if (fp != NULL) {
-				bool disabled = fp->disabled;
-				fpmonitor_disable(fp);
-				if (!disabled)
-					ReConfigure();
-			}
-			return;
-		}
-
-		if ((fp = fpmonitor_this(tm)) == NULL) {
-			if (fp_new_block)
-				return;
-			fp_new_block = true;
-			fp = fpmonitor_new(tm);
-			fp->m->flags |= MONITOR_NEW;
-		}
-
-		/* This ensures that if monitor_to_track gets disconnected
-		 * then reconnected, the pager can resume tracking it.
-		 */
-		if (preferred_monitor != NULL &&
-			strcmp(fp->m->si->name, preferred_monitor) == 0 &&
-			strcmp(preferred_monitor, monitor_to_track) != 0)
-		{
-			if (monitor_to_track != NULL)
-				free(monitor_to_track);
-			monitor_to_track = fxstrdup(preferred_monitor);
-		}
-		fp->disabled = false;
-		fp->scr_width = scr_width;
-		fp->scr_height = scr_height;
-		fp->m->dx = dx;
-		fp->m->dy = dy;
-		fp->m->virtual_scr.Vx = fp->virtual_scr.Vx = Vx;
-		fp->m->virtual_scr.Vy = fp->virtual_scr.Vy = Vy;
-		fp->m->virtual_scr.VxMax = fp->virtual_scr.VxMax = VxMax;
-		fp->m->virtual_scr.VyMax = fp->virtual_scr.VyMax = VyMax;
-		fp->m->virtual_scr.CurrentDesk = CurrentDesk;
-
-		fp->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
-		fp->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
-		if (fp->virtual_scr.VxMax < 0)
-			fp->virtual_scr.VxMax = 0;
-		if (fp->virtual_scr.VyMax < 0)
-			fp->virtual_scr.VyMax = 0;
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxMax + fpmonitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyMax + fpmonitor_get_all_heights();
-		fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / fpmonitor_get_all_widths();
-		fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / fpmonitor_get_all_heights();
-
-		if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
-			fp->m->flags &= ~MONITOR_NEW;
-			initialize_fpmonitor_windows(fp);
-			fp_new_block = false;
-		}
+		parse_monitor_line(tline);
 		ReConfigure();
 	} else if (StrEquals(token, "DesktopSize")) {
-		int dx, dy;
-		struct fpmonitor *m;
-
-		sscanf(tline, "%d %d", &dx, &dy);
-
-		TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-			m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
-			m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
-			if (m->virtual_scr.VxMax < 0)
-				m->virtual_scr.VxMax = 0;
-			if (m->virtual_scr.VyMax < 0)
-				m->virtual_scr.VyMax = 0;
-			m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
-			m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
-			m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
-			m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
-		}
+		parse_desktop_size_line(tline);
 	} else if (StrEquals(token, "DesktopConfiguration")) {
-		int mmode, is_shared;
-
-		sscanf(tline, "%d %d", &mmode, &is_shared);
-
-		if (mmode > 0)
-			fp_monitor_mode = mmode;
-		fp_is_tracking_shared = is_shared;
+		parse_desktop_configuration_line(tline);
 	}
 }
 
@@ -1812,6 +1719,119 @@ static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
   }
 }
 
+void parse_monitor_line(char *tline)
+{
+	int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
+	int		  scr_width, scr_height;
+	int		  flags;
+	char		 *mname;
+	struct monitor	 *tm;
+	struct fpmonitor *fp;
+
+	tline = GetNextToken(tline, &mname);
+
+	sscanf(tline, "%d %d %d %d %d %d %d %d %d %d", &flags,
+	    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk,
+	    &scr_width, &scr_height);
+
+	monitor_refresh_module(dpy);
+
+	tm = monitor_resolve_name(mname);
+	if (tm == NULL)
+		return;
+
+	if (flags & MONITOR_DISABLED) {
+		fp = fpmonitor_by_name(mname);
+		if (fp != NULL) {
+			bool disabled = fp->disabled;
+			fpmonitor_disable(fp);
+			if (!disabled)
+				ReConfigure();
+		}
+		return;
+	}
+
+	if ((fp = fpmonitor_this(tm)) == NULL) {
+		if (fp_new_block)
+			return;
+		fp_new_block = true;
+		fp = fpmonitor_new(tm);
+		fp->m->flags |= MONITOR_NEW;
+	}
+
+	/* This ensures that if monitor_to_track gets disconnected
+	 * then reconnected, the pager can resume tracking it.
+	 */
+	if (preferred_monitor != NULL &&
+		strcmp(fp->m->si->name, preferred_monitor) == 0 &&
+		strcmp(preferred_monitor, monitor_to_track) != 0)
+	{
+		if (monitor_to_track != NULL)
+			free(monitor_to_track);
+		monitor_to_track = fxstrdup(preferred_monitor);
+	}
+	fp->disabled = false;
+	fp->scr_width = scr_width;
+	fp->scr_height = scr_height;
+	fp->m->dx = dx;
+	fp->m->dy = dy;
+	fp->m->virtual_scr.Vx = fp->virtual_scr.Vx = Vx;
+	fp->m->virtual_scr.Vy = fp->virtual_scr.Vy = Vy;
+	fp->m->virtual_scr.VxMax = fp->virtual_scr.VxMax = VxMax;
+	fp->m->virtual_scr.VyMax = fp->virtual_scr.VyMax = VyMax;
+	fp->m->virtual_scr.CurrentDesk = CurrentDesk;
+
+	fp->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+	fp->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
+	if (fp->virtual_scr.VxMax < 0)
+		fp->virtual_scr.VxMax = 0;
+	if (fp->virtual_scr.VyMax < 0)
+		fp->virtual_scr.VyMax = 0;
+	fp->virtual_scr.VWidth = fp->virtual_scr.VxMax + fpmonitor_get_all_widths();
+	fp->virtual_scr.VHeight = fp->virtual_scr.VyMax + fpmonitor_get_all_heights();
+	fp->virtual_scr.VxPages = fp->virtual_scr.VWidth / fpmonitor_get_all_widths();
+	fp->virtual_scr.VyPages = fp->virtual_scr.VHeight / fpmonitor_get_all_heights();
+
+	if (fp->m != NULL && fp->m->flags & MONITOR_NEW) {
+		fp->m->flags &= ~MONITOR_NEW;
+		initialize_fpmonitor_windows(fp);
+	}
+	fp_new_block = false;
+}
+
+void parse_desktop_size_line(char *tline)
+{
+	int dx, dy;
+	struct fpmonitor *m;
+
+	sscanf(tline, "%d %d", &dx, &dy);
+
+	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
+		m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
+		m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
+		if (m->virtual_scr.VxMax < 0)
+			m->virtual_scr.VxMax = 0;
+		if (m->virtual_scr.VyMax < 0)
+			m->virtual_scr.VyMax = 0;
+		m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
+		m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
+		m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
+		m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
+	}
+}
+
+void parse_desktop_configuration_line(char *tline)
+{
+		int mmode, is_shared;
+
+		sscanf(tline, "%d %d", &mmode, &is_shared);
+
+		if (mmode > 0) {
+			fp_monitor_mode = mmode;
+			fp_is_tracking_shared = is_shared;
+		}
+}
+
 /*
  *
  * This routine is responsible for reading and parsing the config file
@@ -1822,8 +1842,6 @@ void ParseOptions(void)
   char *tline= NULL;
   char *mname;
   int desk;
-  int dx = 3;
-  int dy = 3;
   FvwmPictureAttributes fpa;
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
@@ -1856,21 +1874,21 @@ void ParseOptions(void)
 
     token = PeekToken(tline, &next);
 
-    if (StrEquals(token, "Colorset"))
+    /* Step 1: Initial configuration broadcasts are parsed here.
+     * This needs to match list_config_info(), along with having
+     * a few extra broadcasts that are only sent during initialization.
+     */
+    if (token[0] == '*') {
+        /* This is a module configuration item, skip to next step. */
+    }
+    else if (StrEquals(token, "Colorset"))
     {
       LoadColorset(next);
       continue;
     }
     else if (StrEquals(token, "DesktopSize"))
     {
-      token = PeekToken(next, &next);
-      if (token)
-      {
-	sscanf(token, "%d", &dx);
-	token = PeekToken(next, &next);
-	if (token)
-	  sscanf(token, "%d", &dy);
-      }
+      parse_desktop_size_line(next);
       continue;
     }
     else if (StrEquals(token, "ImagePath"))
@@ -1907,7 +1925,23 @@ ImagePath = NULL;
       }
       continue;
     }
+    else if (StrEquals(token, "Monitor"))
+    {
+	parse_monitor_line(next);
+	continue;
+    }
+    else if (StrEquals(token, "DesktopConfiguration"))
+    {
+	parse_desktop_configuration_line(next);
+	continue;
+    }
+    else
+    {
+      /* Module configuration lines have skipped this if block. */
+      continue;
+    }
 
+    /* Step 2: Parse module configuration options. */
     tline2 = GetModuleResource(tline, &resource, MyName);
     if (!resource)
       continue;
@@ -2419,27 +2453,6 @@ ImagePath = NULL;
     free(resource);
     free(arg1);
     free(arg2);
-  }
-
-  struct fpmonitor *m;
-  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	  m->virtual_scr.VxMax = dx * fpmonitor_get_all_widths() - fpmonitor_get_all_widths();
-	  m->virtual_scr.VyMax = dy * fpmonitor_get_all_heights() - fpmonitor_get_all_heights();
-	  if (m->virtual_scr.VxMax < 0)
-		  m->virtual_scr.VxMax = 0;
-	  if (m->virtual_scr.VyMax < 0)
-		  m->virtual_scr.VyMax = 0;
-	  m->virtual_scr.VWidth = m->virtual_scr.VxMax + fpmonitor_get_all_widths();
-	  m->virtual_scr.VHeight = m->virtual_scr.VyMax + fpmonitor_get_all_heights();
-	  m->virtual_scr.VxPages = m->virtual_scr.VWidth / fpmonitor_get_all_widths();
-	  m->virtual_scr.VyPages = m->virtual_scr.VHeight / fpmonitor_get_all_heights();
-
-	  fvwm_debug(__func__,
-			  "%s: VxMax: %d, VyMax: %d, VWidth: %d, Vheight: %d, "
-			  "VxPages: %d, VyPages: %d\n", m->m->si->name,
-			  m->virtual_scr.VxMax, m->virtual_scr.VyMax, m->virtual_scr.VWidth,
-			  m->virtual_scr.VHeight, m->virtual_scr.VxPages, m->virtual_scr.VyPages);
-
   }
 
   return;
