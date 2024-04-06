@@ -6,7 +6,7 @@ project(
         check: false,
     ).stdout().strip(),
     license: 'GPL',
-    meson_version: '>=0.62.0',
+    meson_version: '>=1.1.0', #feature_option.enable_if()
     default_options: [
         'c_std=c11',
         'warning_level=2',
@@ -171,23 +171,26 @@ golang = find_program('go', required: get_option('golang'))
 # Optional dependencies
 # First we check for things specified by the user (i.e. no automagic)
 # Then we check for automagic dependencies.
-# Tip: 'Feature' types can't be directly checked for truthiness
-# so we need to check via .enabled(), .disabled(), or ,auto().
+# Tip: 'Feature' types will always report 'not found' if disabled
 
-if get_option('bidi').enabled()
-    fribidi = dependency('fribidi', version: '>=0.19.2', required: true)
+fribidi = dependency(
+    'fribidi',
+    version: '>=0.19.2',
+    required: get_option('bidi'),
+)
+if fribidi.found()
     all_found_deps += fribidi
     conf.set10('HAVE_FRIBIDI', true)
 endif
 
-if get_option('iconv').enabled()
-    iconv = dependency('iconv', required: true)
+iconv = dependency('iconv', required: get_option('iconv'))
+if iconv.found()
     conf.set10('HAVE_ICONV', true)
     all_found_deps += iconv
 endif
 
-if get_option('nls').enabled()
-    libintl = dependency('intl', required: true)
+libintl = dependency('intl', required: get_option('nls'))
+if libintl.found()
     all_found_deps += libintl
     conf.set10('HAVE_NLS', true)
 endif
@@ -243,8 +246,8 @@ if get_option('rsvg')
     endif
 endif
 
-if get_option('sm').enabled()
-    sm = dependency('sm', required: true)
+sm = dependency('sm', required: get_option('sm'))
+if sm.found()
     all_found_deps += sm
     conf.set10('SESSION', true)
 endif
@@ -313,11 +316,21 @@ foreach nco : non_configurable_ops
     conf.set10(nco, true)
 endforeach
 
-# We should just error out if we can't find asciidoctor and it's been requested.
-asciidoctor = find_program(
-    'asciidoctor',
-    required: get_option('mandoc') or get_option('htmldoc'),
+build_docs = get_option(
+    'docs',
+).enable_if(
+    get_option('htmldoc') or get_option('mandoc'),
+    error_message: 'Docs is diabled but at least one of htmldoc, mandoc is enabled',
+).disable_if(
+    (not get_option('htmldoc') and not get_option('mandoc')),
+    error_message: 'Docs can\'t be enabled without at least one of: htmldoc, mandoc',
 )
+
+asciidoc = find_program('asciidoctor', required: build_docs)
+
+if asciidoc.found()
+    subdir('doc')
+endif
 
 conf_template = '@0@/config_defines.h'.format(meson.current_source_dir())
 
@@ -397,10 +410,12 @@ summary(
         'Python Path': py.full_path(),
         'Python Version': py.version(),
         'Perl': perl,
+        'asciidoctor': asciidoc.found() ? asciidoc.full_path() : 'No',
+        'asciidoctor version': asciidoc.found() ? asciidoc.version() : 'N/A',
+
     },
     section: 'Environment',
 )
-
 summary(
     {
         'Target': host,
@@ -410,9 +425,11 @@ summary(
         'bidi': get_option('bidi').enabled() ? fribidi : 'No',
         'iconv': get_option('iconv').enabled() ? iconv : 'No',
         'Go support': golang.found() ? golang : 'No',
-        'HTML pages': get_option('htmldoc') ? 'Yes' : 'No',
-        'Man pages': get_option('mandoc') ? 'Yes' : 'No',
-        'NLS': get_option('nls').enabled() ? libintl : 'No',
+        'Build Documentation': build_docs.enabled() ? 'Yes' : 'No',
+        'HTML pages': get_option('htmldoc'),
+        'Man pages': get_option('mandoc'),
+        'NLS': libintl.found() ? libintl : 'No',
+        'Session Management': sm.found() ? sm : 'No',
         'Shaped Windows': get_option('xent') ? xext : 'No',
         'PNG support': get_option('png') ? libpng : 'No',
         'SVG support': get_option('rsvg') ? librsvg : 'No',

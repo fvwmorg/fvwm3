@@ -5,6 +5,11 @@ option(
     description: 'Enable fribidi support',
 )
 option(
+    'docs',
+    type: 'feature',
+    value: 'auto',
+)
+option(
     'htmldoc',
     type: 'boolean',
     value: false,
