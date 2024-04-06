@@ -91,6 +91,7 @@ FlocaleWinString	*FwinString;
 int		Rows = -1;
 int		desk1 = 0;
 int		desk2 = 0;
+int		desk_i = 0;
 int		ndesks = 0;
 int		Columns = -1;
 int		MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
@@ -998,6 +999,9 @@ void list_new_desk(unsigned long *body)
   if (monitor_to_track != NULL &&
       (strcmp(fp->m->si->name, monitor_to_track) != 0))
 	  return;
+
+  /* Update the icon window to always track current desk. */
+  desk_i = fp->m->virtual_scr.CurrentDesk;
 
   if (fp_monitor_mode == MONITOR_TRACKING_G)
     monitor_assign_virtual(fp->m);
