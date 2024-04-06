@@ -35,8 +35,7 @@
 
 /* ---------------------------- local types -------------------------------- */
 
-struct _gravity_offset
-{
+struct _gravity_offset {
 	int x, y;
 };
 
@@ -45,18 +44,14 @@ struct _gravity_offset
 /* ---------------------------- local variables ---------------------------- */
 
 #define STRINGS_PER_DIR 7
-static char *gravity_dir_optlist[] = {
-	"-", "N",  "North",     "Top",         "t", "Up",         "u",
-	"]", "E",  "East",      "Right",       "r", "Right",      "r",
-	"_", "S",  "South",     "Bottom",      "b", "Down",       "d",
-	"[", "W",  "West",      "Left",        "l", "Left",       "l",
-	"^", "NE", "NorthEast", "TopRight",    "tr", "UpRight",   "ur",
-	">", "SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
-	"v", "SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
-	"<", "NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
-	".", "C",  "Center",    "Centre",      NULL, NULL,        NULL,
-	NULL
-};
+static char *gravity_dir_optlist[] = { "-", "N", "North", "Top", "t", "Up", "u",
+	"]", "E", "East", "Right", "r", "Right", "r", "_", "S", "South",
+	"Bottom", "b", "Down", "d", "[", "W", "West", "Left", "l", "Left", "l",
+	"^", "NE", "NorthEast", "TopRight", "tr", "UpRight", "ur", ">", "SE",
+	"SouthEast", "BottomRight", "br", "DownRight", "dr", "v", "SW",
+	"SouthWest", "BottomLeft", "bl", "DownLeft", "dl", "<", "NW",
+	"NorthWest", "TopLeft", "tl", "UpLeft", "ul", ".", "C", "Center",
+	"Centre", NULL, NULL, NULL, NULL };
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -66,28 +61,26 @@ static char *gravity_dir_optlist[] = {
 
 /* map gravity to (x,y) offset signs for adding to x and y when window is
  * mapped to get proper placement. */
-void gravity_get_offsets(int grav, int *xp,int *yp)
+void
+gravity_get_offsets(int grav, int *xp, int *yp)
 {
 	static struct _gravity_offset gravity_offsets[11] = {
-		{  0,  0 },     /* ForgetGravity */
-		{ -1, -1 },     /* NorthWestGravity */
-		{  0, -1 },     /* NorthGravity */
-		{  1, -1 },     /* NorthEastGravity */
-		{ -1,  0 },     /* WestGravity */
-		{  0,  0 },     /* CenterGravity */
-		{  1,  0 },     /* EastGravity */
-		{ -1,  1 },     /* SouthWestGravity */
-		{  0,  1 },     /* SouthGravity */
-		{  1,  1 },     /* SouthEastGravity */
-		{  0,  0 },     /* StaticGravity */
+		{0,   0 }, /* ForgetGravity */
+		{ -1, -1}, /* NorthWestGravity */
+		{ 0,  -1}, /* NorthGravity */
+		{ 1,  -1}, /* NorthEastGravity */
+		{ -1, 0 }, /* WestGravity */
+		{ 0,  0 }, /* CenterGravity */
+		{ 1,  0 }, /* EastGravity */
+		{ -1, 1 }, /* SouthWestGravity */
+		{ 0,  1 }, /* SouthGravity */
+		{ 1,  1 }, /* SouthEastGravity */
+		{ 0,  0 }, /* StaticGravity */
 	};
 
-	if (grav < ForgetGravity || grav > StaticGravity)
-	{
+	if (grav < ForgetGravity || grav > StaticGravity) {
 		*xp = *yp = 0;
-	}
-	else
-	{
+	} else {
 		*xp = (int)gravity_offsets[grav].x;
 		*yp = (int)gravity_offsets[grav].y;
 	}
@@ -96,7 +89,8 @@ void gravity_get_offsets(int grav, int *xp,int *yp)
 }
 
 /* Move a rectangle while taking gravity into account. */
-void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff)
+void
+gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff)
 {
 	int xoff;
 	int yoff;
@@ -109,7 +103,8 @@ void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff)
 }
 
 /* Resize rectangle while taking gravity into account. */
-void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff)
+void
+gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff)
 {
 	int xoff;
 	int yoff;
@@ -125,8 +120,9 @@ void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff)
 
 /* Moves a child rectangle taking its gravity into accout as if the parent
  * rectangle was moved and resized. */
-void gravity_move_resize_parent_child(
-	int child_gravity, rectangle *parent_diff_r, rectangle *child_r)
+void
+gravity_move_resize_parent_child(int child_gravity, rectangle *parent_diff_r,
+    rectangle *child_r)
 {
 	int xoff;
 	int yoff;
@@ -140,11 +136,10 @@ void gravity_move_resize_parent_child(
 	return;
 }
 
-direction_t gravity_grav_to_dir(
-	int grav)
+direction_t
+gravity_grav_to_dir(int grav)
 {
-	switch (grav)
-	{
+	switch (grav) {
 	case NorthWestGravity:
 		return DIR_NW;
 	case NorthGravity:
@@ -170,11 +165,10 @@ direction_t gravity_grav_to_dir(
 	}
 }
 
-int gravity_dir_to_grav(
-	direction_t dir)
+int
+gravity_dir_to_grav(direction_t dir)
 {
-	switch (dir)
-	{
+	switch (dir) {
 	case DIR_N:
 		return NorthGravity;
 	case DIR_E:
@@ -197,11 +191,10 @@ int gravity_dir_to_grav(
 	}
 }
 
-int gravity_combine_xy_grav(
-	int grav_x, int grav_y)
+int
+gravity_combine_xy_grav(int grav_x, int grav_y)
 {
-	switch (grav_x)
-	{
+	switch (grav_x) {
 	case NorthWestGravity:
 	case WestGravity:
 	case SouthWestGravity:
@@ -216,8 +209,7 @@ int gravity_combine_xy_grav(
 		grav_x = CenterGravity;
 		break;
 	}
-	switch (grav_y)
-	{
+	switch (grav_y) {
 	case NorthWestGravity:
 	case NorthGravity:
 	case NorthEastGravity:
@@ -232,18 +224,16 @@ int gravity_combine_xy_grav(
 		grav_y = CenterGravity;
 		break;
 	}
-	if (grav_x == CenterGravity)
-	{
+	if (grav_x == CenterGravity) {
 		return grav_y;
 	}
-	switch (grav_y)
-	{
+	switch (grav_y) {
 	case NorthGravity:
-		return (grav_x == WestGravity) ?
-			NorthWestGravity : NorthEastGravity;
+		return (grav_x == WestGravity) ? NorthWestGravity :
+						 NorthEastGravity;
 	case SouthGravity:
-		return (grav_x == WestGravity) ?
-			SouthWestGravity : SouthEastGravity;
+		return (grav_x == WestGravity) ? SouthWestGravity :
+						 SouthEastGravity;
 	case CenterGravity:
 	default:
 		return grav_x;
@@ -252,11 +242,10 @@ int gravity_combine_xy_grav(
 	return 0;
 }
 
-void gravity_split_xy_grav(
-	int *ret_grav_x, int *ret_grav_y, int in_grav)
+void
+gravity_split_xy_grav(int *ret_grav_x, int *ret_grav_y, int in_grav)
 {
-	switch (in_grav)
-	{
+	switch (in_grav) {
 	case NorthWestGravity:
 	case WestGravity:
 	case SouthWestGravity:
@@ -276,8 +265,7 @@ void gravity_split_xy_grav(
 		*ret_grav_x = CenterGravity;
 		break;
 	}
-	switch (in_grav)
-	{
+	switch (in_grav) {
 	case NorthWestGravity:
 	case NorthGravity:
 	case NorthEastGravity:
@@ -299,11 +287,10 @@ void gravity_split_xy_grav(
 	}
 }
 
-int gravity_combine_xy_dir(
-	int dir_x, int dir_y)
+int
+gravity_combine_xy_dir(int dir_x, int dir_y)
 {
-	switch (dir_x)
-	{
+	switch (dir_x) {
 	case DIR_W:
 	case DIR_NW:
 	case DIR_SW:
@@ -318,8 +305,7 @@ int gravity_combine_xy_dir(
 		dir_x = DIR_NONE;
 		break;
 	}
-	switch (dir_y)
-	{
+	switch (dir_y) {
 	case DIR_N:
 	case DIR_NW:
 	case DIR_NE:
@@ -334,12 +320,10 @@ int gravity_combine_xy_dir(
 		dir_y = DIR_NONE;
 		break;
 	}
-	if (dir_x == DIR_NONE)
-	{
+	if (dir_x == DIR_NONE) {
 		return dir_y;
 	}
-	switch (dir_y)
-	{
+	switch (dir_y) {
 	case DIR_N:
 		return (dir_x == DIR_W) ? DIR_NW : DIR_NE;
 	case DIR_S:
@@ -350,11 +334,10 @@ int gravity_combine_xy_dir(
 	}
 }
 
-void gravity_split_xy_dir(
-	int *ret_dir_x, int *ret_dir_y, int in_dir)
+void
+gravity_split_xy_dir(int *ret_dir_x, int *ret_dir_y, int in_dir)
 {
-	switch (in_dir)
-	{
+	switch (in_dir) {
 	case DIR_W:
 	case DIR_SW:
 	case DIR_NW:
@@ -372,8 +355,7 @@ void gravity_split_xy_dir(
 		*ret_dir_x = DIR_NONE;
 		break;
 	}
-	switch (in_dir)
-	{
+	switch (in_dir) {
 	case DIR_N:
 	case DIR_NW:
 	case DIR_NE:
@@ -393,24 +375,22 @@ void gravity_split_xy_dir(
 	}
 }
 
-static inline int __gravity_override_one_axis(int dir_orig, int dir_mod)
+static inline int
+__gravity_override_one_axis(int dir_orig, int dir_mod)
 {
 	int ret_dir;
 
-	if (dir_mod == DIR_NONE)
-	{
+	if (dir_mod == DIR_NONE) {
 		ret_dir = dir_orig;
-	}
-	else
-	{
+	} else {
 		ret_dir = dir_mod;
 	}
 
 	return ret_dir;
 }
 
-int gravity_override_dir(
-	int dir_orig, int dir_mod)
+int
+gravity_override_dir(int dir_orig, int dir_mod)
 {
 	int ret_dir;
 	int ret_x;
@@ -422,18 +402,17 @@ int gravity_override_dir(
 
 	gravity_split_xy_dir(&orig_x, &orig_y, dir_orig);
 	gravity_split_xy_dir(&mod_x, &mod_y, dir_mod);
-	ret_x = __gravity_override_one_axis(orig_x, mod_x);
-	ret_y = __gravity_override_one_axis(orig_y, mod_y);
+	ret_x	= __gravity_override_one_axis(orig_x, mod_x);
+	ret_y	= __gravity_override_one_axis(orig_y, mod_y);
 	ret_dir = gravity_combine_xy_dir(ret_x, ret_y);
 
 	return ret_dir;
 }
 
-int gravity_dir_to_sign_one_axis(
-	direction_t dir)
+int
+gravity_dir_to_sign_one_axis(direction_t dir)
 {
-	switch (dir)
-	{
+	switch (dir) {
 	case DIR_N:
 	case DIR_W:
 		return -1;
@@ -462,72 +441,62 @@ int gravity_dir_to_sign_one_axis(
  * through ret_action in this case. ret_action may be NULL. If the token
  * matches none of these strings the default_ret value is returned and the
  * action itself is passed back in ret_action. */
-direction_t gravity_parse_dir_argument(
-	char *action, char **ret_action, direction_t default_ret)
+direction_t
+gravity_parse_dir_argument(char *action, char **ret_action,
+    direction_t default_ret)
 {
-	int index;
-	int rc;
+	int   index;
+	int   rc;
 	char *next;
 
 	next = GetNextTokenIndex(action, gravity_dir_optlist, 0, &index);
-	if (index == -1)
-	{
+	if (index == -1) {
 		/* nothing selected, use default and don't modify action */
-		rc = default_ret;
+		rc   = default_ret;
 		next = action;
-	}
-	else
-	{
+	} else {
 		rc = index / STRINGS_PER_DIR;
 	}
-	if (ret_action)
-	{
+	if (ret_action) {
 		*ret_action = next;
 	}
 
 	return (direction_t)rc;
 }
 
-char *gravity_dir_to_string(direction_t dir, char *default_str)
+char *
+gravity_dir_to_string(direction_t dir, char *default_str)
 {
 	char *str = NULL;
-	int d = dir * STRINGS_PER_DIR;
+	int   d	  = dir * STRINGS_PER_DIR;
 
-	if (d >= sizeof(gravity_dir_optlist)/sizeof(gravity_dir_optlist[0]))
-	{
+	if (d >= sizeof(gravity_dir_optlist) / sizeof(gravity_dir_optlist[0])) {
 		return default_str;
 	}
 	str = gravity_dir_optlist[d];
 
-	if (str == NULL)
-	{
+	if (str == NULL) {
 		return default_str;
 	}
 
 	return str;
 }
 
-multi_direction_t gravity_parse_multi_dir_argument(
-	char *action, char **ret_action)
+multi_direction_t
+gravity_parse_multi_dir_argument(char *action, char **ret_action)
 {
-	int rc = MULTI_DIR_NONE;
-	char *token, *str;
+	int	    rc = MULTI_DIR_NONE;
+	char	   *token, *str;
 	direction_t dir = gravity_parse_dir_argument(action, ret_action, -1);
 
-	if (dir != -1)
-	{
+	if (dir != -1) {
 		rc = (1 << dir);
-	}
-	else
-	{
+	} else {
 		token = PeekToken(action, &str);
-		if (StrEquals(token, "all"))
-		{
-			rc = MULTI_DIR_ALL;
+		if (StrEquals(token, "all")) {
+			rc	    = MULTI_DIR_ALL;
 			*ret_action = str;
-		}
-		else
-		{
+		} else {
 			rc = MULTI_DIR_NONE;
 		}
 	}
@@ -535,21 +504,18 @@ multi_direction_t gravity_parse_multi_dir_argument(
 	return (multi_direction_t)rc;
 }
 
-void gravity_get_next_multi_dir(int dir_set, multi_direction_t *dir)
+void
+gravity_get_next_multi_dir(int dir_set, multi_direction_t *dir)
 {
-	if (*dir == MULTI_DIR_NONE)
-	{
+	if (*dir == MULTI_DIR_NONE) {
 		*dir = MULTI_DIR_FIRST;
-		if (dir_set & *dir)
-		{
+		if (dir_set & *dir) {
 			return;
 		}
 	}
-	while(*dir != MULTI_DIR_LAST)
-	{
+	while (*dir != MULTI_DIR_LAST) {
 		*dir = (*dir << 1);
-		if (dir_set & *dir)
-		{
+		if (dir_set & *dir) {
 			return;
 		}
 	}
@@ -558,29 +524,28 @@ void gravity_get_next_multi_dir(int dir_set, multi_direction_t *dir)
 	return;
 }
 
-direction_t gravity_multi_dir_to_dir(multi_direction_t mdir)
+direction_t
+gravity_multi_dir_to_dir(multi_direction_t mdir)
 {
 	direction_t dir = DIR_NONE;
 
-	for ( ; mdir != 0; dir++)
-	{
+	for (; mdir != 0; dir++) {
 		mdir = (mdir >> 1);
 	}
-	if (dir > DIR_ALL_MASK)
-	{
+	if (dir > DIR_ALL_MASK) {
 		dir = DIR_NONE;
 	}
 
 	return dir;
 }
 
-void gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y)
+void
+gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y)
 {
 	int tx;
 	int ty;
 
-	switch (rot)
-	{
+	switch (rot) {
 	case ROTATION_90:
 		/* CW */
 		tx = -y;
@@ -607,7 +572,8 @@ void gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y)
 	return;
 }
 
-rotation_t gravity_add_rotations(rotation_t rot1, rotation_t rot2)
+rotation_t
+gravity_add_rotations(rotation_t rot1, rotation_t rot2)
 {
 	rotation_t rot;
 

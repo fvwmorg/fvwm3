@@ -27,15 +27,12 @@ struct MenuParameters;
  * All functions in this file are to be used from menu*.c *only*
  */
 
-Bool menu_get_geometry(
-	struct MenuRoot *mr, Window *root_return, int *x_return, int *y_return,
-	int *width_return, int *height_return, int *border_width_return,
-	int *depth_return);
+Bool menu_get_geometry(struct MenuRoot *mr, Window *root_return, int *x_return,
+    int *y_return, int *width_return, int *height_return,
+    int *border_width_return, int *depth_return);
 
-Bool menu_get_outer_geometry(
-	struct MenuRoot *mr, struct MenuParameters *pmp, Window *root_return,
-	int *x_return, int *y_return, int *width_return, int *height_return,
-	int *border_width_return, int *depth_return);
-
+Bool menu_get_outer_geometry(struct MenuRoot *mr, struct MenuParameters *pmp,
+    Window *root_return, int *x_return, int *y_return, int *width_return,
+    int *height_return, int *border_width_return, int *depth_return);
 
 #endif /* FVWM_MENU_GEOMETRY_H */

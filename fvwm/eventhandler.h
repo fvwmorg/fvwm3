@@ -13,8 +13,7 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef struct
-{
+typedef struct {
 	const exec_context_t *exc;
 } evh_args_t;
 
@@ -32,9 +31,8 @@ void HandleFocusIn(const evh_args_t *ea);
 void HandleFocusOut(const evh_args_t *ea);
 void HandleDestroyNotify(const evh_args_t *ea);
 void HandleMapRequest(const evh_args_t *ea);
-void HandleMapRequestKeepRaised(
-	const evh_args_t *ea, Window KeepRaised, FvwmWindow *ReuseWin,
-	initial_window_options_t *win_opts);
+void HandleMapRequestKeepRaised(const evh_args_t *ea, Window KeepRaised,
+    FvwmWindow *ReuseWin, initial_window_options_t *win_opts);
 void HandleMapNotify(const evh_args_t *ea);
 void HandleUnmapNotify(const evh_args_t *ea);
 void HandleMotionNotify(const evh_args_t *ea);

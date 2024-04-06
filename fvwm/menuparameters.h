@@ -20,10 +20,9 @@ struct FvwmWindow;
 /* Return values for UpdateMenu, do_menu, menuShortcuts.  This is a lame
  * hack, in that "_BUTTON" is added to mean a button-release caused the
  * return-- the macros below help deal with the ugliness. */
-typedef enum MenuRC
-{
+typedef enum MenuRC {
 	MENU_ERROR = -1,
-	MENU_NOP = 0,
+	MENU_NOP   = 0,
 	MENU_DONE,
 	MENU_ABORTED,
 	MENU_SUBMENU_DONE,
@@ -44,12 +43,10 @@ typedef enum MenuRC
 	MENU_PROPAGATE_EVENT
 } MenuRC;
 
-typedef struct MenuReturn
-{
-	MenuRC rc;
+typedef struct MenuReturn {
+	MenuRC		 rc;
 	struct MenuRoot *target_menu;
-	struct
-	{
+	struct {
 		unsigned do_unpost_submenu : 1;
 		unsigned is_first_item_selected : 1;
 		unsigned is_key_press : 1;
@@ -57,8 +54,7 @@ typedef struct MenuReturn
 	} flags;
 } MenuReturn;
 
-typedef struct MenuPosHints
-{
+typedef struct MenuPosHints {
 	/* suggested x/y position */
 	int x;
 	int y;
@@ -72,8 +68,8 @@ typedef struct MenuPosHints
 	float context_x_factor;
 	/* same with height */
 	float y_factor;
-	int screen_origin_x;
-	int screen_origin_y;
+	int   screen_origin_x;
+	int   screen_origin_y;
 	/* False if referring to absolute screen position */
 	Bool is_relative;
 	/* True if referring to a part of a menu */
@@ -81,12 +77,10 @@ typedef struct MenuPosHints
 	Bool has_screen_origin;
 } MenuPosHints;
 
-typedef struct MenuOptions
-{
+typedef struct MenuOptions {
 	struct MenuPosHints pos_hints;
 	/* A position on the screen on which the menu should be started. */
-	struct
-	{
+	struct {
 		unsigned do_not_warp : 1;
 		unsigned do_warp_on_select : 1;
 		unsigned do_warp_title : 1;
@@ -97,21 +91,19 @@ typedef struct MenuOptions
 	} flags;
 } MenuOptions;
 
-typedef struct MenuParameters
-{
-	struct MenuRoot *menu;
-	struct MenuRoot *parent_menu;
-	struct MenuItem *parent_item;
+typedef struct MenuParameters {
+	struct MenuRoot	      *menu;
+	struct MenuRoot	      *parent_menu;
+	struct MenuItem	      *parent_item;
 	const exec_context_t **pexc;
-	struct FvwmWindow *tear_off_root_menu_window;
-	char **ret_paction;
-	XEvent *event_propagate_to_submenu;
-	struct MenuOptions *pops;
+	struct FvwmWindow     *tear_off_root_menu_window;
+	char		     **ret_paction;
+	XEvent		      *event_propagate_to_submenu;
+	struct MenuOptions    *pops;
 	/* A position on the screen on which the menu should be started. */
 	int screen_origin_x;
 	int screen_origin_y;
-	struct
-	{
+	struct {
 		unsigned has_default_action : 1;
 		unsigned is_already_mapped : 1;
 		unsigned is_first_root_menu : 1;
@@ -122,9 +114,8 @@ typedef struct MenuParameters
 	} flags;
 } MenuParameters;
 
-typedef struct MenuRepaintTransparentParameters
-{
-	struct MenuRoot *mr;
+typedef struct MenuRepaintTransparentParameters {
+	struct MenuRoot	  *mr;
 	struct FvwmWindow *fw;
 } MenuRepaintTransparentParameters;
 

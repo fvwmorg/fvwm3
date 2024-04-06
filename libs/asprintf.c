@@ -26,7 +26,7 @@
 int
 asprintf(char **ret, const char *fmt, ...)
 {
-	va_list	ap;
+	va_list ap;
 	int	n;
 
 	va_start(ap, fmt);
@@ -39,8 +39,8 @@ asprintf(char **ret, const char *fmt, ...)
 int
 vasprintf(char **ret, const char *fmt, va_list ap)
 {
-	int	 n;
-	va_list  ap2;
+	int	n;
+	va_list ap2;
 
 	va_copy(ap2, ap);
 

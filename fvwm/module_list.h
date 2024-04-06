@@ -12,44 +12,40 @@
 /* please don't use msg_masks_t and PipeMask outside of module_interface.c.
  * They are only global to allow to access the IS_MESSAGE_SELECTED macro without
  * having to call a function. */
-typedef struct msg_masks_t
-{
+typedef struct msg_masks_t {
 	unsigned long m1;
 	unsigned long m2;
 } msg_masks_t;
 
 /* module linked list record, only to be accessed by using the access macros
  * below */
-typedef struct fmodule
-{
-        struct
-        {
+typedef struct fmodule {
+	struct {
 		unsigned is_cmdline_module : 1;
-        } xflags;
-	int xreadPipe;
-	int xwritePipe;
-	fqueue xpipeQueue;
+	} xflags;
+	int	    xreadPipe;
+	int	    xwritePipe;
+	fqueue	    xpipeQueue;
 	msg_masks_t xPipeMask;
 	msg_masks_t xNoGrabMask;
 	msg_masks_t xSyncMask;
-	char *xname;
-	char *xalias;
+	char	   *xname;
+	char	   *xalias;
 } fmodule;
 
 #define MOD_IS_CMDLINE(m) ((m)->xflags.is_cmdline_module)
-#define MOD_SET_CMDLINE(m,on) ((m)->xflags.is_cmdline_module = !!(on))
+#define MOD_SET_CMDLINE(m, on) ((m)->xflags.is_cmdline_module = !!(on))
 
-typedef struct fmodule_store
-{
-	fmodule *module;
+typedef struct fmodule_store {
+	fmodule		     *module;
 	struct fmodule_store *next;
 } fmodule_store;
 
 /* This defines the module list object */
-typedef fmodule_store* fmodule_list;
+typedef fmodule_store *fmodule_list;
 
 /* this objects allows safe iteration over a module list */
-typedef fmodule_store* fmodule_list_itr;
+typedef fmodule_store *fmodule_list_itr;
 
 #define MOD_READFD(m) ((m)->xreadPipe)
 #define MOD_WRITEFD(m) ((m)->xwritePipe)
@@ -61,15 +57,15 @@ typedef fmodule_store* fmodule_list_itr;
 /* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
  * integer overflow with (1 << MAX_MESSAGES) and even with
  * (1<<(MAX_MESSAGES-1)) - 1 */
-#define DEFAULT_MASK   (MAX_MSG_MASK & ~(M_SENDCONFIG))
-#define DEFAULT_XMASK  (DEFAULT_XMSG_MASK)
+#define DEFAULT_MASK (MAX_MSG_MASK & ~(M_SENDCONFIG))
+#define DEFAULT_XMASK (DEFAULT_XMSG_MASK)
 
 /*
  * Returns zero if the msg is not selected by the mask. Takes care of normal
  * and extended messages.
  */
 #define IS_MESSAGE_IN_MASK(mask, msg) \
-	(((msg)&M_EXTENDED_MSG) ? ((mask)->m2 & (msg)) : ((mask)->m1 & (msg)))
+	(((msg) & M_EXTENDED_MSG) ? ((mask)->m2 & (msg)) : ((mask)->m1 & (msg)))
 
 /*
  * Returns non zero if one of the specified messages is selected for the module
@@ -85,13 +81,11 @@ typedef fmodule_store* fmodule_list_itr;
  */
 
 /* struct to store module input data */
-typedef struct fmodule_input
-{
-	Window window;
+typedef struct fmodule_input {
+	Window	 window;
 	fmodule *module;
-	char *command;
+	char	*command;
 } fmodule_input;
-
 
 /*
  *	Basic Module Handling Functions
@@ -105,7 +99,6 @@ void module_kill(fmodule *module);
 
 /* execute module wrapper, desperate mode */
 fmodule *executeModuleDesperate(F_CMD_ARGS);
-
 
 /*
  *	Basic Module Communication Functions
@@ -125,7 +118,6 @@ void module_input_discard(fmodule_input *input);
 /* returns true if received the "expect" string, false otherwise */
 Bool module_input_expect(fmodule_input *input, char *expect);
 
-
 /*
  *	Utility Functions
  */
@@ -138,8 +130,6 @@ fmodule *module_list_itr_next(fmodule_list_itr *itr);
 /* free modules in the deathrow */
 void module_cleanup(void);
 
-
-
 /*
  *	Message Queue Handling Functions
  */
@@ -147,7 +137,6 @@ void module_cleanup(void);
 /* message queues */
 void FlushAllMessageQueues(void);
 void FlushMessageQueue(fmodule *module);
-
 
 /*
  *	Misc Functions (should they be here?)
@@ -157,7 +146,6 @@ void FlushMessageQueue(fmodule *module);
  * exposed to be used by modconf.c
  */
 char *skipModuleAliasToken(const char *string);
-
 
 /* dead pipe signal handler - empty */
 RETSIGTYPE DeadPipe(int nonsense);

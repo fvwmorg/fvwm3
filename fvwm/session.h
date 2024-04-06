@@ -25,13 +25,13 @@ void DisableRestoringState(void);
 /*
 **  Load and save window states.
 */
-void LoadWindowStates (char *filename);
+void LoadWindowStates(char *filename);
 
 /*
 ** Save state to the named file, and if running under SM,
 ** make the SM properly restart fvwm.
 */
-void RestartInSession (char *filename, Bool isNative, Bool doPreserveState);
+void RestartInSession(char *filename, Bool isNative, Bool doPreserveState);
 
 /*
 **  Fill in the FvwmWindow struct with information saved from
@@ -45,17 +45,15 @@ void RestartInSession (char *filename, Bool isNative, Bool doPreserveState);
 **  The dimensions returned in x, y, w, h should be used when the
 **  window is to be maximized.
 */
-typedef struct
-{
-	int shade_dir;
+typedef struct {
+	int	 shade_dir;
 	unsigned do_shade : 1;
 	unsigned used_title_dir_for_shading : 1;
 	unsigned do_max : 1;
 } mwtsm_state_args;
 
-Bool MatchWinToSM(
-	FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
-	initial_window_options_t *win_opts);
+Bool MatchWinToSM(FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
+    initial_window_options_t *win_opts);
 
 void SetClientID(char *client_id);
 

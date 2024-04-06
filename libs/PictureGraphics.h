@@ -27,9 +27,8 @@
 
 /* return a pixmap of depth depth which is the copy of the src pixmap of depth
  * 1 using the gc for the bg and fg colors */
-Pixmap PictureBitmapToPixmap(
-	Display *dpy, Window win, Pixmap src, int depth, GC gc,
-	int src_x, int src_y, int src_w, int src_h);
+Pixmap PictureBitmapToPixmap(Display *dpy, Window win, Pixmap src, int depth,
+    GC gc, int src_x, int src_y, int src_w, int src_h);
 
 /*
  * <pubfunc>PGraphicsRenderPixmaps
@@ -39,12 +38,10 @@ Pixmap PictureBitmapToPixmap(
  * given position.
  * </description>
  */
-void PGraphicsRenderPixmaps(
-	Display *dpy, Window win, Pixmap pixmap, Pixmap mask, Pixmap alpha,
-	int depth, FvwmRenderAttributes *fra, Drawable d,
-	GC gc, GC mono_gc, GC alpha_gc,
-	int src_x, int src_y, int src_w, int src_h,
-	int dest_x, int dest_y, int dest_w, int dest_h, int do_repeat);
+void PGraphicsRenderPixmaps(Display *dpy, Window win, Pixmap pixmap,
+    Pixmap mask, Pixmap alpha, int depth, FvwmRenderAttributes *fra, Drawable d,
+    GC gc, GC mono_gc, GC alpha_gc, int src_x, int src_y, int src_w, int src_h,
+    int dest_x, int dest_y, int dest_w, int dest_h, int do_repeat);
 
 /*
  * <pubfunc>PGraphicsRenderPicture
@@ -54,11 +51,10 @@ void PGraphicsRenderPixmaps(
  * </description>
  * <arg>
  */
-void PGraphicsRenderPicture(
-	Display *dpy, Window win, FvwmPicture *p, FvwmRenderAttributes *fra,
-	Drawable d, GC gc, GC mono_gc, GC alpha_gc,
-	int src_x, int src_y, int src_w, int src_h,
-	int dest_x, int dest_y, int dest_w, int dest_h, int do_repeat);
+void PGraphicsRenderPicture(Display *dpy, Window win, FvwmPicture *p,
+    FvwmRenderAttributes *fra, Drawable d, GC gc, GC mono_gc, GC alpha_gc,
+    int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y,
+    int dest_w, int dest_h, int do_repeat);
 
 /*
  * <pubfunc>PGraphicsCopyPixmaps
@@ -75,10 +71,9 @@ void PGraphicsRenderPicture(
  * its use.
  * </note>
  */
-void PGraphicsCopyPixmaps(
-	Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha, int depth,
-	Drawable d, GC gc, int src_x, int src_y, int src_w, int src_h,
-	int dest_x, int dest_y);
+void PGraphicsCopyPixmaps(Display *dpy, Pixmap pixmap, Pixmap mask,
+    Pixmap alpha, int depth, Drawable d, GC gc, int src_x, int src_y, int src_w,
+    int src_h, int dest_x, int dest_y);
 
 /*
  * <pubfunc>PGraphicsCopyFvwmPicture
@@ -90,9 +85,8 @@ void PGraphicsCopyPixmaps(
  * mask, the alpha and the depth).
  * </description>
  */
-void PGraphicsCopyFvwmPicture(
-	Display *dpy, FvwmPicture *p, Drawable d, GC gc, int src_x, int src_y,
-	int src_w, int src_h, int dest_x, int dest_y);
+void PGraphicsCopyFvwmPicture(Display *dpy, FvwmPicture *p, Drawable d, GC gc,
+    int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y);
 
 /*
  * <pubfunc>PGraphicsTileRectangle
@@ -102,36 +96,33 @@ void PGraphicsCopyFvwmPicture(
  * the rectangle composed by the pixmap, its mask and its alpha channel.
  * </description>
  */
-void PGraphicsTileRectangle(
-	Display *dpy, Window win, Pixmap pixmap, Pixmap shape, Pixmap alpha,
-	int depth, Drawable d, GC gc, GC mono_gc,
-	int src_x, int src_y,  int src_w, int src_h,
-	int dest_x, int dest_y, int dest_w, int dest_h);
+void PGraphicsTileRectangle(Display *dpy, Window win, Pixmap pixmap,
+    Pixmap shape, Pixmap alpha, int depth, Drawable d, GC gc, GC mono_gc,
+    int src_x, int src_y, int src_w, int src_h, int dest_x, int dest_y,
+    int dest_w, int dest_h);
 
-FvwmPicture *PGraphicsCreateStretchPicture(
-	Display *dpy, Window win, FvwmPicture *src,
-	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc);
+FvwmPicture *PGraphicsCreateStretchPicture(Display *dpy, Window win,
+    FvwmPicture *src, int dest_width, int dest_height, GC gc, GC mono_gc,
+    GC alpha_gc);
 
-FvwmPicture *PGraphicsCreateTiledPicture(
-	Display *dpy, Window win, FvwmPicture *src,
-	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc);
+FvwmPicture *PGraphicsCreateTiledPicture(Display *dpy, Window win,
+    FvwmPicture *src, int dest_width, int dest_height, GC gc, GC mono_gc,
+    GC alpha_gc);
 
-Pixmap PGraphicsCreateTransparency(
-	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
-	int x, int y, int width, int height, Bool parent_relative);
+Pixmap PGraphicsCreateTransparency(Display *dpy, Window win,
+    FvwmRenderAttributes *fra, GC gc, int x, int y, int width, int height,
+    Bool parent_relative);
 
-void PGraphicsTintRectangle(
-	Display *dpy, Window win, Pixel tint, int tint_percent,
-	Drawable dest, Bool dest_is_a_window, GC gc, GC mono_gc, GC alpha_gc,
-	int dest_x, int dest_y, int dest_w, int dest_h);
+void PGraphicsTintRectangle(Display *dpy, Window win, Pixel tint,
+    int tint_percent, Drawable dest, Bool dest_is_a_window, GC gc, GC mono_gc,
+    GC alpha_gc, int dest_x, int dest_y, int dest_w, int dest_h);
 
-Pixmap PGraphicsCreateTranslucent(
-	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
-	int x, int y, int width, int height);
+Pixmap PGraphicsCreateTranslucent(Display *dpy, Window win,
+    FvwmRenderAttributes *fra, GC gc, int x, int y, int width, int height);
 
 /* never used ! */
-Pixmap PGraphicsCreateDitherPixmap(
-	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
-	int in_width, int in_height, int out_width, int out_height);
+Pixmap PGraphicsCreateDitherPixmap(Display *dpy, Window win, Drawable src,
+    Pixmap mask, int depth, GC gc, int in_width, int in_height, int out_width,
+    int out_height);
 
 #endif

@@ -39,22 +39,24 @@
 #include "Fsvg.h"
 #include "Strings.h"
 
-Bool Pdefault;
-Visual *Pvisual;
-static Visual *FvwmVisual;
-Colormap Pcmap;
-static Colormap FvwmCmap;
-unsigned int Pdepth;
+Bool		    Pdefault;
+Visual		   *Pvisual;
+static Visual	   *FvwmVisual;
+Colormap	    Pcmap;
+static Colormap	    FvwmCmap;
+unsigned int	    Pdepth;
 static unsigned int FvwmDepth;
-Display *Pdpy;            /* Save area for display pointer */
-Bool PUseDynamicColors;
+Display		   *Pdpy; /* Save area for display pointer */
+Bool		    PUseDynamicColors;
 
 Pixel PWhitePixel;
 Pixel PBlackPixel;
 Pixel FvwmWhitePixel;
 Pixel FvwmBlackPixel;
 
-void PictureInitCMap(Display *dpy) {
+void
+PictureInitCMap(Display *dpy)
+{
 	char *envp;
 
 	Pdpy = dpy;
@@ -62,22 +64,22 @@ void PictureInitCMap(Display *dpy) {
 	envp = getenv("FVWM_VISUALID");
 	if (envp != NULL && *envp > 0) {
 		/* convert the env-vars to a visual and colormap */
-		int viscount;
+		int	    viscount;
 		XVisualInfo vizinfo, *xvi;
 
 		sscanf(envp, "%lx", &vizinfo.visualid);
 		xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
 		Pvisual = xvi->visual;
-		Pdepth = xvi->depth;
+		Pdepth	= xvi->depth;
 		/* Note: if FVWM_VISUALID is set, FVWM_COLORMAP is set too */
 		sscanf(getenv("FVWM_COLORMAP"), "%lx", &Pcmap);
 		Pdefault = False;
 	} else {
 		int screen = DefaultScreen(dpy);
 
-		Pvisual = DefaultVisual(dpy, screen);
-		Pdepth = DefaultDepth(dpy, screen);
-		Pcmap = DefaultColormap(dpy, screen);
+		Pvisual	 = DefaultVisual(dpy, screen);
+		Pdepth	 = DefaultDepth(dpy, screen);
+		Pcmap	 = DefaultColormap(dpy, screen);
 		Pdefault = True;
 	}
 
@@ -90,45 +92,42 @@ void PictureInitCMap(Display *dpy) {
 	return;
 }
 
-void PictureInitCMapRoot(
-	Display *dpy, Bool init_color_limit, PictureColorLimitOption *opt,
-	Bool use_my_color_limit, Bool init_dither)
+void
+PictureInitCMapRoot(Display *dpy, Bool init_color_limit,
+    PictureColorLimitOption *opt, Bool use_my_color_limit, Bool init_dither)
 {
 	int screen = DefaultScreen(dpy);
 
 	Pdpy = dpy;
 
-	Pvisual = DefaultVisual(dpy, screen);
-	Pdepth = DefaultDepth(dpy, screen);
-	Pcmap = DefaultColormap(dpy, screen);
+	Pvisual	 = DefaultVisual(dpy, screen);
+	Pdepth	 = DefaultDepth(dpy, screen);
+	Pcmap	 = DefaultColormap(dpy, screen);
 	Pdefault = True;
 
 	PictureSetupWhiteAndBlack();
 	PictureSaveFvwmVisual();
 
 	/* initialise color limit */
-	PictureInitColors(
-		PICTURE_CALLED_BY_MODULE, init_color_limit, opt,
-		use_my_color_limit, init_dither);
+	PictureInitColors(PICTURE_CALLED_BY_MODULE, init_color_limit, opt,
+	    use_my_color_limit, init_dither);
 	return;
 }
 
-void PictureSetupWhiteAndBlack(void)
+void
+PictureSetupWhiteAndBlack(void)
 {
 	XColor c;
 
-	if (!Pdefault)
-	{
-		c.flags = DoRed|DoGreen|DoBlue;
+	if (!Pdefault) {
+		c.flags = DoRed | DoGreen | DoBlue;
 		c.red = c.green = c.blue = 65535;
 		XAllocColor(Pdpy, Pcmap, &c);
 		PWhitePixel = c.pixel;
 		c.red = c.green = c.blue = 0;
 		XAllocColor(Pdpy, Pcmap, &c);
 		PBlackPixel = c.pixel;
-	}
-	else
-	{
+	} else {
 		PWhitePixel = WhitePixel(Pdpy, DefaultScreen(Pdpy));
 		PBlackPixel = BlackPixel(Pdpy, DefaultScreen(Pdpy));
 	}
@@ -136,76 +135,82 @@ void PictureSetupWhiteAndBlack(void)
 	return;
 }
 
-void PictureUseDefaultVisual(void)
+void
+PictureUseDefaultVisual(void)
 {
 	int screen = DefaultScreen(Pdpy);
 
-	Pvisual = DefaultVisual(Pdpy, screen);
-	Pdepth = DefaultDepth(Pdpy, screen);
-	Pcmap = DefaultColormap(Pdpy, screen);
+	Pvisual	    = DefaultVisual(Pdpy, screen);
+	Pdepth	    = DefaultDepth(Pdpy, screen);
+	Pcmap	    = DefaultColormap(Pdpy, screen);
 	PWhitePixel = WhitePixel(Pdpy, DefaultScreen(Pdpy));
 	PBlackPixel = BlackPixel(Pdpy, DefaultScreen(Pdpy));
 	return;
 }
 
-void PictureUseFvwmVisual(void)
+void
+PictureUseFvwmVisual(void)
 {
-	Pvisual = FvwmVisual;
-	Pdepth = FvwmDepth;
-	Pcmap = FvwmCmap;
+	Pvisual	    = FvwmVisual;
+	Pdepth	    = FvwmDepth;
+	Pcmap	    = FvwmCmap;
 	PWhitePixel = FvwmWhitePixel;
 	PBlackPixel = FvwmBlackPixel;
 	return;
 }
 
-void PictureSaveFvwmVisual(void)
+void
+PictureSaveFvwmVisual(void)
 {
-	FvwmVisual = Pvisual;
-	FvwmDepth = Pdepth;
-	FvwmCmap = Pcmap;
+	FvwmVisual     = Pvisual;
+	FvwmDepth      = Pdepth;
+	FvwmCmap       = Pcmap;
 	FvwmWhitePixel = PWhitePixel;
 	FvwmBlackPixel = PBlackPixel;
 	return;
 }
 
-Pixel PictureWhitePixel(void)
+Pixel
+PictureWhitePixel(void)
 {
 	return PWhitePixel;
 }
 
-Pixel PictureBlackPixel(void)
+Pixel
+PictureBlackPixel(void)
 {
 	return PBlackPixel;
 }
 
-GC PictureDefaultGC(Display *dpy, Window win)
+GC
+PictureDefaultGC(Display *dpy, Window win)
 {
 	static GC gc = None;
 
-	if (Pdepth == DefaultDepth(dpy, DefaultScreen(dpy)))
-	{
+	if (Pdepth == DefaultDepth(dpy, DefaultScreen(dpy))) {
 		return DefaultGC(dpy, DefaultScreen(dpy));
 	}
-	if (gc == None)
-	{
+	if (gc == None) {
 		gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
 	}
 
 	return gc;
 }
 
-static char* imagePath = FVWM_IMAGEPATH;
+static char *imagePath = FVWM_IMAGEPATH;
 
-void PictureSetImagePath( const char* newpath )
+void
+PictureSetImagePath(const char *newpath)
 {
 	static int need_to_free = 0;
-	setPath( &imagePath, newpath, need_to_free );
+	setPath(&imagePath, newpath, need_to_free);
 	need_to_free = 1;
 
 	return;
 }
 
-char* PictureGetImagePath(void)
+char *
+PictureGetImagePath(void)
 {
 	return imagePath;
 }
@@ -219,19 +224,18 @@ char* PictureGetImagePath(void)
  * Oh well.
  *
  */
-char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
+char *
+PictureFindImageFile(const char *icon, const char *pathlist, int type)
 {
-	int length;
-	char *tmpbuf;
-	char *full_filename;
+	int	    length;
+	char	   *tmpbuf;
+	char	   *full_filename;
 	const char *render_opts;
 
-	if (pathlist == NULL)
-	{
+	if (pathlist == NULL) {
 		pathlist = imagePath;
 	}
-	if (icon == NULL)
-	{
+	if (icon == NULL) {
 		return NULL;
 	}
 
@@ -240,9 +244,7 @@ char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 	/* With USE_SVG, rendering options may be appended to the
 	   original filename, hence seachPath() won't find the file.
 	   So we hide any such appended options and try once more. */
-        if (USE_SVG && !full_filename &&
-	    (render_opts = strrchr(icon, ':')))
-	{
+	if (USE_SVG && !full_filename && (render_opts = strrchr(icon, ':'))) {
 		length = render_opts - icon;
 		/* TA:  FIXME!  asprintF() */
 		tmpbuf = fxmalloc(length + 1);
@@ -251,8 +253,7 @@ char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 
 		full_filename = searchPath(pathlist, tmpbuf, ".gz", type);
 		free(tmpbuf);
-		if (full_filename)
-		{
+		if (full_filename) {
 			/* Prepending (the previously appended) options
 			   will leave any file suffix exposed. Callers
 			   who want to access the file on disk will have

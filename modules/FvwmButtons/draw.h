@@ -14,10 +14,10 @@
  * by Robert Nation
  */
 
-#define DRAW_RELIEF      0
-#define DRAW_CLEAN       1
-#define DRAW_ALL         2
-#define DRAW_FORCE       3
+#define DRAW_RELIEF 0
+#define DRAW_CLEAN 1
+#define DRAW_ALL 2
+#define DRAW_FORCE 3
 #define DRAW_DESK_RELIEF 4
 
 void RelieveButton(Window, int, int, int, int, int, Pixel, Pixel, int);

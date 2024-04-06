@@ -23,14 +23,13 @@
 /*
  * Return the subwindow member of an event if the event type has one.
  */
-Window GetSubwindowFromEvent(Display *dpy, const XEvent *eventp)
+Window
+GetSubwindowFromEvent(Display *dpy, const XEvent *eventp)
 {
-	if (eventp == NULL)
-	{
+	if (eventp == NULL) {
 		return None;
 	}
-	switch (eventp->type)
-	{
+	switch (eventp->type) {
 	case ButtonPress:
 	case ButtonRelease:
 		return eventp->xbutton.subwindow;

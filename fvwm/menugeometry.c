@@ -51,39 +51,31 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-Bool menu_get_geometry(
-	struct MenuRoot *mr, Window *root_return, int *x_return, int *y_return,
-	int *width_return, int *height_return, int *border_width_return,
-	int *depth_return)
+Bool
+menu_get_geometry(struct MenuRoot *mr, Window *root_return, int *x_return,
+    int *y_return, int *width_return, int *height_return,
+    int *border_width_return, int *depth_return)
 {
 	Status rc;
-	Bool brc;
-	int root_x;
-	int root_y;
+	Bool   brc;
+	int    root_x;
+	int    root_y;
 
-	rc = XGetGeometry(
-		dpy, MR_WINDOW(mr), root_return, x_return, y_return,
-		(unsigned int*)width_return, (unsigned int*)height_return,
-		(unsigned int*)border_width_return,
-		(unsigned int*)depth_return);
-	if (rc == 0)
-	{
+	rc = XGetGeometry(dpy, MR_WINDOW(mr), root_return, x_return, y_return,
+	    (unsigned int *)width_return, (unsigned int *)height_return,
+	    (unsigned int *)border_width_return, (unsigned int *)depth_return);
+	if (rc == 0) {
 		return False;
 	}
-	if (!MR_IS_TEAR_OFF_MENU(mr))
-	{
+	if (!MR_IS_TEAR_OFF_MENU(mr)) {
 		return True;
 	}
-	brc = XTranslateCoordinates(
-		dpy, MR_WINDOW(mr), Scr.Root, *x_return, *y_return, &root_x,
-		&root_y, &JunkChild);
-	if (brc == True)
-	{
+	brc = XTranslateCoordinates(dpy, MR_WINDOW(mr), Scr.Root, *x_return,
+	    *y_return, &root_x, &root_y, &JunkChild);
+	if (brc == True) {
 		*x_return = root_x;
 		*y_return = root_y;
-	}
-	else
-	{
+	} else {
 		*x_return = 0;
 		*y_return = 0;
 	}
@@ -91,27 +83,21 @@ Bool menu_get_geometry(
 	return brc;
 }
 
-Bool menu_get_outer_geometry(
-	struct MenuRoot *mr, struct MenuParameters *pmp, Window *root_return,
-	int *x_return, int *y_return, int *width_return, int *height_return,
-	int *border_width_return, int *depth_return)
+Bool
+menu_get_outer_geometry(struct MenuRoot *mr, struct MenuParameters *pmp,
+    Window *root_return, int *x_return, int *y_return, int *width_return,
+    int *height_return, int *border_width_return, int *depth_return)
 {
-	if (MR_IS_TEAR_OFF_MENU(mr))
-	{
-		return XGetGeometry(
-			dpy,
-			FW_W_FRAME(pmp->tear_off_root_menu_window),
-			root_return,x_return,y_return,
-			(unsigned int*)width_return,
-			(unsigned int*)height_return,
-			(unsigned int*)border_width_return,
-			(unsigned int*)depth_return);
-	}
-	else
-	{
-	  	return menu_get_geometry(
-			mr,root_return,x_return,y_return,
-			width_return, height_return, border_width_return,
-			depth_return);
+	if (MR_IS_TEAR_OFF_MENU(mr)) {
+		return XGetGeometry(dpy,
+		    FW_W_FRAME(pmp->tear_off_root_menu_window), root_return,
+		    x_return, y_return, (unsigned int *)width_return,
+		    (unsigned int *)height_return,
+		    (unsigned int *)border_width_return,
+		    (unsigned int *)depth_return);
+	} else {
+		return menu_get_geometry(mr, root_return, x_return, y_return,
+		    width_return, height_return, border_width_return,
+		    depth_return);
 	}
 }

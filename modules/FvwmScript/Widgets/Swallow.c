@@ -26,60 +26,59 @@ extern int fd[2];
  * Function for Swallow
  */
 
-void DrawRelief(struct XObj *xobj)
+void
+DrawRelief(struct XObj *xobj)
 {
 	XSegment segm[2];
-	int i;
+	int	 i;
 
-	if (xobj->value!=0)
-	{
-		for (i=1;i<2;i++)
-		{
-			segm[0].x1=xobj->x-i;
-			segm[0].y1=xobj->y-i;
-			segm[0].x2=xobj->x+xobj->width+i-2;
-			segm[0].y2=xobj->y-i;
-			segm[1].x1=xobj->x-i;
-			segm[1].y1=xobj->y-i;
-			segm[1].x2=xobj->x-i;
-			segm[1].y2=xobj->y+xobj->height+i-2;
-			if (xobj->value==-1)
-				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[shad]);
+	if (xobj->value != 0) {
+		for (i = 1; i < 2; i++) {
+			segm[0].x1 = xobj->x - i;
+			segm[0].y1 = xobj->y - i;
+			segm[0].x2 = xobj->x + xobj->width + i - 2;
+			segm[0].y2 = xobj->y - i;
+			segm[1].x1 = xobj->x - i;
+			segm[1].y1 = xobj->y - i;
+			segm[1].x2 = xobj->x - i;
+			segm[1].y2 = xobj->y + xobj->height + i - 2;
+			if (xobj->value == -1)
+				XSetForeground(dpy, xobj->gc,
+				    xobj->TabColor[shad]);
 			else
-				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[hili]);
-			XDrawSegments(dpy,x11base->win,xobj->gc,segm,2);
+				XSetForeground(dpy, xobj->gc,
+				    xobj->TabColor[hili]);
+			XDrawSegments(dpy, x11base->win, xobj->gc, segm, 2);
 
-			segm[0].x1=xobj->x-i;
-			segm[0].y1=xobj->y+xobj->height+i-1;
-			segm[0].x2=xobj->x+xobj->width+i-1;
-			segm[0].y2=xobj->y+xobj->height+i-1;
-			segm[1].x1=xobj->x+xobj->width+i-1;
-			segm[1].y1=xobj->y-i;
-			segm[1].x2=xobj->x+xobj->width+i-1;
-			segm[1].y2=xobj->y+xobj->height+i-1;
-			if (xobj->value==-1)
-				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[hili]);
+			segm[0].x1 = xobj->x - i;
+			segm[0].y1 = xobj->y + xobj->height + i - 1;
+			segm[0].x2 = xobj->x + xobj->width + i - 1;
+			segm[0].y2 = xobj->y + xobj->height + i - 1;
+			segm[1].x1 = xobj->x + xobj->width + i - 1;
+			segm[1].y1 = xobj->y - i;
+			segm[1].x2 = xobj->x + xobj->width + i - 1;
+			segm[1].y2 = xobj->y + xobj->height + i - 1;
+			if (xobj->value == -1)
+				XSetForeground(dpy, xobj->gc,
+				    xobj->TabColor[hili]);
 			else
-				XSetForeground(
-					dpy,xobj->gc,xobj->TabColor[shad]);
-			XDrawSegments(dpy,x11base->win,xobj->gc,segm,2);
+				XSetForeground(dpy, xobj->gc,
+				    xobj->TabColor[shad]);
+			XDrawSegments(dpy, x11base->win, xobj->gc, segm, 2);
 		}
 	}
-
 }
 
-void InitSwallow(struct XObj *xobj)
+void
+InitSwallow(struct XObj *xobj)
 {
-	unsigned long mask;
+	unsigned long	     mask;
 	XSetWindowAttributes Attr;
-	static char *my_sm_env = NULL;
-	static char *orig_sm_env = NULL;
-	static Bool sm_initialized = False;
-	static Bool session_manager = False;
-	char *cmd;
+	static char	    *my_sm_env	     = NULL;
+	static char	    *orig_sm_env     = NULL;
+	static Bool	     sm_initialized  = False;
+	static Bool	     session_manager = False;
+	char		    *cmd;
 
 	/* Save colors and font */
 	if (xobj->colorset >= 0) {
@@ -94,124 +93,119 @@ void InitSwallow(struct XObj *xobj)
 		xobj->TabColor[shad] = GetColor(xobj->shadcolor);
 	}
 
-	mask=0;
-	xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
-				-1000,-1000,xobj->width,xobj->height,0,
-				CopyFromParent,InputOutput,CopyFromParent,
-				mask,&Attr);
+	mask	  = 0;
+	xobj->win = XCreateWindow(dpy, *xobj->ParentWin, -1000, -1000,
+	    xobj->width, xobj->height, 0, CopyFromParent, InputOutput,
+	    CopyFromParent, mask, &Attr);
 
 	/* Resize widget */
-	if (xobj->height<30)
-		xobj->height=30;
-	if (xobj->width<30)
-		xobj->width=30;
+	if (xobj->height < 30)
+		xobj->height = 30;
+	if (xobj->width < 30)
+		xobj->width = 30;
 
-	if (xobj->swallow == NULL)
-	{
+	if (xobj->swallow == NULL) {
 		fvwm_debug(__func__, "Error\n");
 		return;
 	}
 
-	if (!sm_initialized)
-	{
+	if (!sm_initialized) {
 		/* use sm only when needed */
 		sm_initialized = True;
-		orig_sm_env = getenv("SESSION_MANAGER");
-		if (orig_sm_env && !StrEquals("", orig_sm_env))
-		{
+		orig_sm_env    = getenv("SESSION_MANAGER");
+		if (orig_sm_env && !StrEquals("", orig_sm_env)) {
 			/* this set the new SESSION_MANAGER env */
 			session_manager = fsm_init(x11base->TabArg[0]);
 		}
 	}
 
-	if (!session_manager)
-	{
+	if (!session_manager) {
 		SendText(fd, xobj->swallow, 0);
 		return;
 	}
 
-	if (my_sm_env == NULL)
-	{
+	if (my_sm_env == NULL) {
 		my_sm_env = getenv("SESSION_MANAGER");
 	}
 
-	xasprintf(&cmd,
-		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
-		my_sm_env, xobj->swallow, orig_sm_env);
+	xasprintf(&cmd, "FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
+	    my_sm_env, xobj->swallow, orig_sm_env);
 	SendText(fd, cmd, 0);
-	free (cmd);
+	free(cmd);
 }
 
-void DestroySwallow(struct XObj *xobj)
+void
+DestroySwallow(struct XObj *xobj)
 {
 	/* Stop swallow program */
-	if (xobj->win!=None)
+	if (xobj->win != None)
 		XKillClient(dpy, xobj->win);
 	xobj->win = None;
 }
 
-void DrawSwallow(struct XObj *xobj, XEvent *evp)
+void
+DrawSwallow(struct XObj *xobj, XEvent *evp)
 {
 	DrawRelief(xobj);
 }
 
-void EvtMouseSwallow(struct XObj *xobj,XButtonEvent *EvtButton)
+void
+EvtMouseSwallow(struct XObj *xobj, XButtonEvent *EvtButton)
 {
 }
 
-void EvtKeySwallow(struct XObj *xobj,XKeyEvent *EvtKey)
+void
+EvtKeySwallow(struct XObj *xobj, XKeyEvent *EvtKey)
 {
 }
 
 /* Get the Swallow window pointer */
-void CheckForHangon(struct XObj *xobj,unsigned long *body)
+void
+CheckForHangon(struct XObj *xobj, unsigned long *body)
 {
 	char *cbody;
 
-	cbody=fxstrdup((char *)&body[3]);
-	if(strcmp(cbody,xobj->title)==0)
-	{
+	cbody = fxstrdup((char *)&body[3]);
+	if (strcmp(cbody, xobj->title) == 0) {
 		xobj->win = (Window)body[0];
 		free(xobj->title);
-		xobj->title=fxstrdup("No window");
-		XUnmapWindow(dpy,xobj->win);
-		XSetWindowBorderWidth(dpy,xobj->win,0);
+		xobj->title = fxstrdup("No window");
+		XUnmapWindow(dpy, xobj->win);
+		XSetWindowBorderWidth(dpy, xobj->win, 0);
 	}
 	free(cbody);
 }
 
-void swallow(struct XObj *xobj,unsigned long *body)
+void
+swallow(struct XObj *xobj, unsigned long *body)
 {
 	char cmd[256];
 
-	if(xobj->win == (Window)body[0])
-	{
-		XReparentWindow(
-			dpy,xobj->win,*xobj->ParentWin,xobj->x,xobj->y);
-		XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
-		XMapWindow(dpy,xobj->win);
-		snprintf(cmd, sizeof(cmd),
-			"PropertyChange %u %u %lu %lu",
-			MX_PROPERTY_CHANGE_SWALLOW, 1, xobj->win,
-			(x11base->swallower_win)?
-			x11base->swallower_win:x11base->win);
-		SendText(fd,cmd,0);
+	if (xobj->win == (Window)body[0]) {
+		XReparentWindow(dpy, xobj->win, *xobj->ParentWin, xobj->x,
+		    xobj->y);
+		XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
+		XMapWindow(dpy, xobj->win);
+		snprintf(cmd, sizeof(cmd), "PropertyChange %u %u %lu %lu",
+		    MX_PROPERTY_CHANGE_SWALLOW, 1, xobj->win,
+		    (x11base->swallower_win) ? x11base->swallower_win :
+					       x11base->win);
+		SendText(fd, cmd, 0);
 		fsm_proxy(dpy, xobj->win, getenv("SESSION_MANAGER"));
 	}
 }
 
-void ProcessMsgSwallow(
-	struct XObj *xobj,unsigned long type,unsigned long *body)
+void
+ProcessMsgSwallow(struct XObj *xobj, unsigned long type, unsigned long *body)
 {
-	switch(type)
-	{
+	switch (type) {
 	case M_MAP:
-		swallow(xobj,body);
+		swallow(xobj, body);
 		break;
 	case M_WINDOW_NAME:
 	case M_RES_NAME:
 	case M_RES_CLASS:
-		CheckForHangon(xobj,body);
+		CheckForHangon(xobj, body);
 		break;
 	}
 }

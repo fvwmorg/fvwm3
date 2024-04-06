@@ -9,12 +9,10 @@
  **/
 void CopyString(char **dest, const char *source);
 
-
 /**
  * Like CopyString, but strips leading and trailing (double) quotes if any.
  **/
 void CopyStringWithQuotes(char **dest, const char *src);
-
 
 /**
  * Copy string into newly-malloced memory, stripping leading and
@@ -23,19 +21,17 @@ void CopyStringWithQuotes(char **dest, const char *src);
  * CopyString() treats a newline as a string terminator (like the NUL
  * character.
  **/
-char *stripcpy( const char *source );
-
+char *stripcpy(const char *source);
 
 /**
  * Return 1 if the two strings are equal.  Case is ignored.
  **/
-int StrEquals( const char *s1, const char *s2 );
-
+int StrEquals(const char *s1, const char *s2);
 
 /**
  * Return 1 if the string has the given prefix.  Case is ignored.
  **/
-int StrHasPrefix( const char* string, const char* prefix );
+int StrHasPrefix(const char *string, const char *prefix);
 
 /**
  * Adds single quotes arround the string and escapes single quotes with
@@ -52,7 +48,7 @@ char *QuoteString(char *dest, const char *source);
  * Returns a pointer to the end of dest.
  **/
 char *QuoteEscapeString(char *dest, const char *source, char delim,
-			const char *escape, const char *escaper);
+    const char *escape, const char *escaper);
 
 /**
  * Calculates the lenght needed by a escaped by QuoteEscapeString

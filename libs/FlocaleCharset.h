@@ -24,9 +24,9 @@
 #endif
 
 #if FlocaleLibcharsetSupport
-#define Flocale_charset()   locale_charset()
+#define Flocale_charset() locale_charset()
 #else
-#define Flocale_charset()   NULL
+#define Flocale_charset() NULL
 #endif
 
 #if FlocaleCodesetSupport
@@ -50,16 +50,15 @@
  */
 void FlocaleCharsetInit(Display *dpy, const char *module);
 
-void FlocaleCharsetSetFlocaleCharset(
-	Display *dpy, FlocaleFont *flf, char *hints, char *encoding,
-	char *module);
+void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf,
+    char *hints, char *encoding, char *module);
 
 FlocaleCharset *FlocaleCharsetGetDefaultCharset(Display *dpy, char *module);
 FlocaleCharset *FlocaleCharsetGetFLCXOMCharset(void);
 FlocaleCharset *FlocaleCharsetGetUtf8Charset(void);
 FlocaleCharset *FlocaleCharsetGetLocaleCharset(void);
 FlocaleCharset *FlocaleCharsetGetUnknownCharset(void);
-const char *FlocaleGetBidiCharset(Display *dpy, FlocaleCharset *fc);
+const char     *FlocaleGetBidiCharset(Display *dpy, FlocaleCharset *fc);
 FlocaleCharset *FlocaleCharsetGetEUCJPCharset(void);
 Bool FlocaleCharsetIsCharsetXLocale(Display *dpy, char *charset, char *module);
 void FlocaleCharsetPrintXOMInfo(void);

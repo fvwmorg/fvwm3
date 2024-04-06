@@ -77,10 +77,9 @@ Bool FBidiIsApplicable(const char *charset);
 /*
  * Converts the given logical string to visual string for the given charset.
  */
-char *FBidiConvert(
-	const char *logical_str, const char *charset, int str_len,
-	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars,
-	int *pos_l_to_v);
+char *FBidiConvert(const char *logical_str, const char *charset, int str_len,
+    Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars,
+    int *pos_l_to_v);
 
 #else /* !HAVE_BIDI */
 

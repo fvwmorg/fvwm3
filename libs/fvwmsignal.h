@@ -22,25 +22,25 @@
  *    by a signal
  */
 
-#if !defined(HAVE_SIGACTION) \
-    && defined(HAVE_SIGBLOCK) && defined(HAVE_SIGSETMASK)
-#  define USE_BSD_SIGNALS
+#if !defined(HAVE_SIGACTION) && defined(HAVE_SIGBLOCK) && \
+    defined(HAVE_SIGSETMASK)
+#define USE_BSD_SIGNALS
 #endif
 
 #ifdef USE_BSD_SIGNALS
-#  define BSD_BLOCK_SIGNALS      int old_mask = sigblock( fvwmGetSignalMask() )
-#  define BSB_BLOCK_ALL_SIGNALS  int old_mask = sigblock( ~0 )
-#  define BSD_UNBLOCK_SIGNALS    sigsetmask( old_mask )
+#define BSD_BLOCK_SIGNALS int old_mask = sigblock(fvwmGetSignalMask())
+#define BSB_BLOCK_ALL_SIGNALS int old_mask = sigblock(~0)
+#define BSD_UNBLOCK_SIGNALS sigsetmask(old_mask)
 #else
-#  define BSD_BLOCK_SIGNALS
-#  define BSD_BLOCK_ALL_SIGNALS
-#  define BSD_UNBLOCK_SIGNALS
+#define BSD_BLOCK_SIGNALS
+#define BSD_BLOCK_ALL_SIGNALS
+#define BSD_UNBLOCK_SIGNALS
 #endif
 
 #include <signal.h>
 #include "ftime.h"
 #if HAVE_SYS_SELECT_H
-#  include <sys/select.h>
+#include <sys/select.h>
 #endif
 
 /*
@@ -48,22 +48,20 @@
  */
 extern volatile sig_atomic_t isTerminated;
 
-
 /*
  * Module prototypes
  */
-RETSIGTYPE fvwmReapChildren(int sig);
+RETSIGTYPE  fvwmReapChildren(int sig);
 extern void fvwmSetTerminate(int sig);
 
 #ifdef USE_BSD_SIGNALS
 extern void fvwmSetSignalMask(int);
-extern int fvwmGetSignalMask(void);
+extern int  fvwmGetSignalMask(void);
 #endif
 
-#ifdef  HAVE_SELECT
-extern int fvwmSelect(
-	fd_set_size_t nfds, fd_set *readfds, fd_set *writefds,
-	fd_set *exceptfds, struct timeval *timeout);
+#ifdef HAVE_SELECT
+extern int fvwmSelect(fd_set_size_t nfds, fd_set *readfds, fd_set *writefds,
+    fd_set *exceptfds, struct timeval *timeout);
 #endif
 
 #endif /* FVWMLIB_FVWMSIGNAL_H */

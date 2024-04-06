@@ -49,22 +49,21 @@
 #define USE_READLINE 0
 #endif
 
-static char cmd[MAX_COMMAND_SIZE];
-static char *line = (char *)NULL;
-static int done_init = 0;
+static char  cmd[MAX_COMMAND_SIZE];
+static char *line      = (char *)NULL;
+static int   done_init = 0;
 static char *h_file;
 
-char *get_line(void)
+char *
+get_line(void)
 {
 	char *prompt;
-	int len;
+	int   len;
 	char *home;
-	int fdh;
+	int   fdh;
 
-	if (USE_READLINE == 0)
-	{
-		if (fgets(cmd, MAX_COMMAND_SIZE, stdin) == NULL)
-		{
+	if (USE_READLINE == 0) {
+		if (fgets(cmd, MAX_COMMAND_SIZE, stdin) == NULL) {
 			return NULL;
 		}
 
@@ -73,60 +72,51 @@ char *get_line(void)
 	/* If initialization hasn't been done, do it now:
 	 *  - We don't want TAB completion
 	 */
-	if (!done_init)
-	{
+	if (!done_init) {
 		(void)fvwm_rl_bind_key('\t', rl_insert);
 		/* get history from file */
-		home = getenv("FVWM_USERDIR");
+		home   = getenv("FVWM_USERDIR");
 		h_file = fxmalloc(strlen(home) + sizeof(HISTFILE) + 1);
 		strcpy(h_file, home);
 		strcat(h_file, HISTFILE);
 		fvwm_stifle_history(HISTSIZE);
-		if (access(h_file, F_OK)  < 0)
-		{
+		if (access(h_file, F_OK) < 0) {
 			/* if it doesn't exist create it */
 			fdh = creat(h_file, S_IRUSR | S_IWUSR);
-			if (fdh != -1)
-			{
+			if (fdh != -1) {
 				close(fdh);
 			}
-		}
-		else
-		{
+		} else {
 			(void)fvwm_read_history(h_file);
 		}
 		done_init = 1;
 	}
 	/* Empty out the previous info */
-	len = 0;
-	*cmd = '\0';
+	len    = 0;
+	*cmd   = '\0';
 	prompt = PS1;
-	while (1)
-	{
+	while (1) {
 		int linelen = 0;
 
 		/* If the buffer has already been allocated, free the memory.
 		 */
-		if (line != (char *)NULL)
-		{
+		if (line != (char *)NULL) {
 			free(line);
 		}
 
 		/* Get a line from the user. */
 		SUPPRESS_UNUSED_VAR_WARNING(prompt);
-		line  = fvwm_readline(prompt);
-		if (line == NULL)
-		{
+		line = fvwm_readline(prompt);
+		if (line == NULL) {
 			return NULL;
 		}
 
 		/* Make sure we have enough space for the new line */
 		linelen = strlen(line);
-		if (len + linelen > MAX_COMMAND_SIZE-2)
-		{
+		if (len + linelen > MAX_COMMAND_SIZE - 2) {
 			fvwm_debug(__func__,
-				   "line too long %d chars max %d \a\n",
-				   len + linelen, MAX_COMMAND_SIZE - 2);
+			    "line too long %d chars max %d \a\n", len + linelen,
+			    MAX_COMMAND_SIZE - 2);
 			strncat(cmd, line, MAX_COMMAND_SIZE - len - 2);
 			fvwm_add_history(cmd);
 			break;
@@ -137,31 +127,27 @@ char *get_line(void)
 		/* If the current line doesn't end with a backslash, we're done
 		 */
 		len = strlen(cmd);
-		if (cmd[len-1] != '\\')
-		{
+		if (cmd[len - 1] != '\\') {
 			break;
 		}
 		/* Otherwise, remove it and wait for more (add a space if
 		 * needed) */
-		prompt = PS2;
-		cmd[len-1] =
-			(cmd[len-2] == ' ' || cmd[len-2] == '\t') ? '\0' : ' ';
+		prompt	     = PS2;
+		cmd[len - 1] = (cmd[len - 2] == ' ' || cmd[len - 2] == '\t') ?
+		    '\0' :
+		    ' ';
 	}
 	/* If the command has any text in it, save it on the history. */
-	if (*cmd != '\0')
-	{
+	if (*cmd != '\0') {
 		fvwm_add_history(cmd);
-		if (fvwm_append_history(1, h_file) == 0)
-		{
+		if (fvwm_append_history(1, h_file) == 0) {
 			(void)fvwm_history_truncate_file(h_file, HISTSIZE);
-		}
-		else
-		{
+		} else {
 			(void)fvwm_write_history(h_file);
 		}
 	}
-	cmd[len]   = '\n';
-	cmd[len+1] = '\0';
+	cmd[len]     = '\n';
+	cmd[len + 1] = '\0';
 
 	return cmd;
 }

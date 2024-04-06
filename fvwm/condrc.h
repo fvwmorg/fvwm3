@@ -11,18 +11,16 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef enum
-{
-	COND_RC_BREAK = -2,
-	COND_RC_ERROR = -1,
+typedef enum {
+	COND_RC_BREAK	 = -2,
+	COND_RC_ERROR	 = -1,
 	COND_RC_NO_MATCH = 0,
-	COND_RC_OK = 1
+	COND_RC_OK	 = 1
 } cond_rc_enum;
 
-typedef struct
-{
+typedef struct {
 	cond_rc_enum rc;
-	int break_levels;
+	int	     break_levels;
 } cond_rc_t;
 
 /* ---------------------------- forward declarations ----------------------- */

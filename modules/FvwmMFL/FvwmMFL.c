@@ -52,79 +52,79 @@ static char *sock_pathname;
 static char *pid_file;
 
 struct client {
-	struct bufferevent	*comms;
-	unsigned long		 flags_m;
-	unsigned long		 flags_mx;
-	struct fvwm_msg		*fm;
+	struct bufferevent *comms;
+	unsigned long	    flags_m;
+	unsigned long	    flags_mx;
+	struct fvwm_msg	   *fm;
 
-	TAILQ_ENTRY(client)	 entry;
+	TAILQ_ENTRY(client) entry;
 };
 
 TAILQ_HEAD(clients, client);
-struct clients  clientq;
+struct clients clientq;
 
 struct fvwm_comms {
-	int		 fd[2];
-	struct event	*read_ev;
-	ModuleArgs	*m;
+	int	      fd[2];
+	struct event *read_ev;
+	ModuleArgs   *m;
 };
-struct fvwm_comms	 fc;
+struct fvwm_comms fc;
 
 struct fvwm_msg {
-	cJSON	*j_obj;
-	char	*msg;
-	int	 fw;
+	cJSON *j_obj;
+	char  *msg;
+	int    fw;
 };
 
 struct event_flag {
-	const char	*event;
-	unsigned long	 flag;
+	const char   *event;
+	unsigned long flag;
 } etf[] = {
-	{"new_window", M_ADD_WINDOW},
-	{"configure_window", M_CONFIGURE_WINDOW},
-	{"new_page", M_NEW_PAGE},
-	{"new_desk", M_NEW_DESK},
-	{"raise_window", M_RAISE_WINDOW},
-	{"lower_window", M_LOWER_WINDOW},
-	{"focus_change", M_FOCUS_CHANGE},
-	{"destroy_window", M_DESTROY_WINDOW},
-	{"iconify", M_ICONIFY},
-	{"deiconify", M_DEICONIFY},
-	{"window_name", M_WINDOW_NAME},
-	{"visible_name", M_VISIBLE_NAME},
-	{"icon_name", M_ICON_NAME},
-	{"res_class", M_RES_CLASS},
-	{"res_name", M_RES_NAME},
-	{"icon_location", M_ICON_LOCATION},
-	{"map", M_MAP},
-	{"icon_file", M_ICON_FILE},
-	{"window_shade", M_WINDOWSHADE},
-	{"dewindow_shade", M_DEWINDOWSHADE},
-	{"restack", M_RESTACK},
-	{"leave_window", MX_LEAVE_WINDOW|M_EXTENDED_MSG},
-	{"enter_window", MX_ENTER_WINDOW|M_EXTENDED_MSG},
-	{"visible_icon_name", MX_VISIBLE_ICON_NAME|M_EXTENDED_MSG},
-	{"echo", MX_ECHO|M_EXTENDED_MSG},
+	{"new_window",		M_ADD_WINDOW			     },
+	{ "configure_window",  M_CONFIGURE_WINDOW			 },
+	{ "new_page",	      M_NEW_PAGE				 },
+	{ "new_desk",	      M_NEW_DESK				 },
+	{ "raise_window",	  M_RAISE_WINDOW			 },
+	{ "lower_window",	  M_LOWER_WINDOW			 },
+	{ "focus_change",	  M_FOCUS_CHANGE			 },
+	{ "destroy_window",    M_DESTROY_WINDOW		     },
+	{ "iconify",	     M_ICONIFY			       },
+	{ "deiconify",	       M_DEICONIFY			   },
+	{ "window_name",	 M_WINDOW_NAME			       },
+	{ "visible_name",	  M_VISIBLE_NAME			 },
+	{ "icon_name",	       M_ICON_NAME			   },
+	{ "res_class",	       M_RES_CLASS			   },
+	{ "res_name",	      M_RES_NAME				 },
+	{ "icon_location",	   M_ICON_LOCATION			   },
+	{ "map",		 M_MAP				},
+	{ "icon_file",	       M_ICON_FILE			   },
+	{ "window_shade",	  M_WINDOWSHADE			},
+	{ "dewindow_shade",    M_DEWINDOWSHADE			    },
+	{ "restack",	     M_RESTACK			       },
+	{ "leave_window",	  MX_LEAVE_WINDOW | M_EXTENDED_MSG	   },
+	{ "enter_window",	  MX_ENTER_WINDOW | M_EXTENDED_MSG	   },
+	{ "visible_icon_name", MX_VISIBLE_ICON_NAME | M_EXTENDED_MSG},
+	{ "echo",		  MX_ECHO | M_EXTENDED_MSG		   },
 };
 
-
-static void fvwm_read(int, short, void *);
-static void broadcast_to_client(FvwmPacket *);
-static void setup_signal_handlers(struct event_base *);
+static void		  fvwm_read(int, short, void *);
+static void		  broadcast_to_client(FvwmPacket *);
+static void		  setup_signal_handlers(struct event_base *);
 static inline const char *flag_to_event(unsigned long);
-static void HandleTerminate(int, short, void *);
-static int client_set_interest(struct client *, const char *);
-static struct fvwm_msg *handle_packet(unsigned long, unsigned long *, unsigned long);
-static struct fvwm_msg *fvwm_msg_new(void);
-static void fvwm_msg_free(struct fvwm_msg *);
-static void register_interest(void);
-static void send_version_info(struct client *);
-static void set_socket_pathname(void);
-static int check_pid(void);
-static void set_pid_file(void);
-static void create_pid_file(void);
-static void delete_pid_file(void);
-static void fm_to_json(struct fvwm_msg *);
+static void		  HandleTerminate(int, short, void *);
+static int		  client_set_interest(struct client *, const char *);
+static struct fvwm_msg	 *handle_packet(unsigned long, unsigned long *,
+      unsigned long);
+static struct fvwm_msg	 *fvwm_msg_new(void);
+static void		  fvwm_msg_free(struct fvwm_msg *);
+static void		  register_interest(void);
+static void		  send_version_info(struct client *);
+static void		  set_socket_pathname(void);
+static int		  check_pid(void);
+static void		  set_pid_file(void);
+static void		  create_pid_file(void);
+static void		  delete_pid_file(void);
+static void		  fm_to_json(struct fvwm_msg *);
 
 static void
 fm_to_json(struct fvwm_msg *fm)
@@ -147,8 +147,8 @@ delete_pid_file(void)
 static void
 set_pid_file(void)
 {
-	char	*fud = getenv("FVWM_USERDIR");
-	char	*dsp = getenv("DISPLAY");
+	char *fud = getenv("FVWM_USERDIR");
+	char *dsp = getenv("DISPLAY");
 
 	if (fud == NULL || dsp == NULL) {
 		fprintf(stderr,
@@ -163,18 +163,18 @@ set_pid_file(void)
 static void
 create_pid_file(void)
 {
-	FILE	*pf;
+	FILE *pf;
 
 	if ((pf = fopen(pid_file, "w")) == NULL) {
 		fprintf(stderr, "Couldn't open %s because: %s\n", pid_file,
-			strerror(errno));
+		    strerror(errno));
 		exit(1);
 	}
 	fprintf(pf, "%d", getpid());
 
 	if (fclose(pf) != 0) {
 		fprintf(stderr, "Couldn't close %s because: %s\n", pid_file,
-			strerror(errno));
+		    strerror(errno));
 		exit(1);
 	}
 
@@ -185,8 +185,8 @@ create_pid_file(void)
 static int
 check_pid(void)
 {
-	FILE	*pf;
-	int	 pid;
+	FILE *pf;
+	int   pid;
 
 	if (pid_file == NULL)
 		set_pid_file();
@@ -198,12 +198,12 @@ check_pid(void)
 
 	if ((pf = fopen(pid_file, "r")) == NULL) {
 		fprintf(stderr, "Couldn't open %s for reading: %s\n", pid_file,
-			strerror(errno));
+		    strerror(errno));
 		exit(1);
 	}
 	if (fscanf(pf, "%d", &pid) != 1) {
 		fprintf(stderr, "Error reading pid from %s: %s\n", pid_file,
-			strerror(errno));
+		    strerror(errno));
 		exit(1);
 	};
 
@@ -217,11 +217,10 @@ check_pid(void)
 	return (1);
 }
 
-
 static struct fvwm_msg *
 fvwm_msg_new(void)
 {
-	struct fvwm_msg		*fm;
+	struct fvwm_msg *fm;
 
 	fm = fxcalloc(1, sizeof *fm);
 
@@ -252,15 +251,15 @@ HandleTerminate(int fd, short what, void *arg)
 static void
 setup_signal_handlers(struct event_base *base)
 {
-	struct event	*hup, *term, *intrp, *quit, *child;
+	struct event *hup, *term, *intrp, *quit, *child;
 
 	signal(SIGPIPE, SIG_IGN);
 
-	hup   =  evsignal_new(base, SIGHUP,  HandleTerminate, NULL);
-	term  =  evsignal_new(base, SIGTERM, HandleTerminate, NULL);
-	quit  =  evsignal_new(base, SIGQUIT, HandleTerminate, NULL);
-	child =  evsignal_new(base, SIGCHLD, HandleTerminate, NULL);
-	intrp =  evsignal_new(base, SIGINT,  HandleTerminate, NULL);
+	hup   = evsignal_new(base, SIGHUP, HandleTerminate, NULL);
+	term  = evsignal_new(base, SIGTERM, HandleTerminate, NULL);
+	quit  = evsignal_new(base, SIGQUIT, HandleTerminate, NULL);
+	child = evsignal_new(base, SIGCHLD, HandleTerminate, NULL);
+	intrp = evsignal_new(base, SIGINT, HandleTerminate, NULL);
 
 	evsignal_add(hup, NULL);
 	evsignal_add(term, NULL);
@@ -272,9 +271,9 @@ setup_signal_handlers(struct event_base *base)
 static void
 send_version_info(struct client *c)
 {
-	struct fvwm_msg		*fm;
-	cJSON			*content;
-	char			*to_client;
+	struct fvwm_msg *fm;
+	cJSON		*content;
+	char		*to_client;
 
 	fm = fvwm_msg_new();
 
@@ -302,10 +301,10 @@ send_version_info(struct client *c)
 static struct fvwm_msg *
 handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 {
-	struct fvwm_msg		*fm = NULL;
-	const char		*type_name = flag_to_event(type);
-	char			 xwid[20];
-	cJSON			*content;
+	struct fvwm_msg *fm	   = NULL;
+	const char	*type_name = flag_to_event(type);
+	char		 xwid[20];
+	cJSON		*content;
 
 	if (type_name == NULL) {
 		fprintf(stderr, "Couldn't find type_name\n");
@@ -319,7 +318,7 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	if (debug)
 		fprintf(stderr, "%s: matched: <<%s>>\n", __func__, type_name);
 
-	switch(type) {
+	switch (type) {
 	case MX_ENTER_WINDOW:
 	case MX_LEAVE_WINDOW: {
 		if ((content = cJSON_CreateObject()) == NULL)
@@ -341,15 +340,17 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 	}
 	case M_ADD_WINDOW:
 	case M_CONFIGURE_WINDOW: {
-		struct ConfigWinPacket	*cwp = (void *)body;
-		cJSON			*hints, *ewmh, *frame;
+		struct ConfigWinPacket *cwp = (void *)body;
+		cJSON		       *hints, *ewmh, *frame;
 
 		if ((content = cJSON_CreateObject()) == NULL)
 			goto out;
 
 		cJSON_AddStringToObject(content, "window", xwid);
-		cJSON_AddNumberToObject(content, "title_height", cwp->title_height);
-		cJSON_AddNumberToObject(content, "border_width", cwp->border_width);
+		cJSON_AddNumberToObject(content, "title_height",
+		    cwp->title_height);
+		cJSON_AddNumberToObject(content, "border_width",
+		    cwp->border_width);
 
 		if ((frame = cJSON_CreateObject()) == NULL)
 			goto out;
@@ -362,23 +363,35 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 
 		if ((hints = cJSON_CreateObject()) == NULL)
 			goto out;
-		cJSON_AddNumberToObject(hints, "base_width", cwp->hints_base_width);
-		cJSON_AddNumberToObject(hints, "base_height", cwp->hints_base_height);
-		cJSON_AddNumberToObject(hints, "inc_width", cwp->hints_width_inc);
-		cJSON_AddNumberToObject(hints, "inc_height", cwp->hints_height_inc);
-		cJSON_AddNumberToObject(hints, "orig_inc_width", cwp->orig_hints_width_inc);
-		cJSON_AddNumberToObject(hints, "orig_inc_height", cwp->orig_hints_height_inc);
-		cJSON_AddNumberToObject(hints, "min_width", cwp->hints_min_width);
-		cJSON_AddNumberToObject(hints, "min_height", cwp->hints_min_height);
-		cJSON_AddNumberToObject(hints, "max_width", cwp->hints_max_width);
-		cJSON_AddNumberToObject(hints, "max_height", cwp->hints_max_height);
+		cJSON_AddNumberToObject(hints, "base_width",
+		    cwp->hints_base_width);
+		cJSON_AddNumberToObject(hints, "base_height",
+		    cwp->hints_base_height);
+		cJSON_AddNumberToObject(hints, "inc_width",
+		    cwp->hints_width_inc);
+		cJSON_AddNumberToObject(hints, "inc_height",
+		    cwp->hints_height_inc);
+		cJSON_AddNumberToObject(hints, "orig_inc_width",
+		    cwp->orig_hints_width_inc);
+		cJSON_AddNumberToObject(hints, "orig_inc_height",
+		    cwp->orig_hints_height_inc);
+		cJSON_AddNumberToObject(hints, "min_width",
+		    cwp->hints_min_width);
+		cJSON_AddNumberToObject(hints, "min_height",
+		    cwp->hints_min_height);
+		cJSON_AddNumberToObject(hints, "max_width",
+		    cwp->hints_max_width);
+		cJSON_AddNumberToObject(hints, "max_height",
+		    cwp->hints_max_height);
 		cJSON_AddItemToObject(content, "hints", hints);
 
 		if ((ewmh = cJSON_CreateObject()) == NULL)
 			goto out;
 		cJSON_AddNumberToObject(ewmh, "layer", cwp->ewmh_hint_layer);
-		cJSON_AddNumberToObject(ewmh, "desktop", cwp->ewmh_hint_desktop);
-		cJSON_AddNumberToObject(ewmh, "window_type", cwp->ewmh_window_type);
+		cJSON_AddNumberToObject(ewmh, "desktop",
+		    cwp->ewmh_hint_desktop);
+		cJSON_AddNumberToObject(ewmh, "window_type",
+		    cwp->ewmh_window_type);
 		cJSON_AddItemToObject(content, "ewmh", ewmh);
 
 		cJSON_AddItemToObject(fm->j_obj, type_name, content);
@@ -398,7 +411,7 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_FOCUS_CHANGE: {
-		cJSON	*hilight;
+		cJSON *hilight;
 
 		if ((content = cJSON_CreateObject()) == NULL)
 			goto out;
@@ -445,7 +458,7 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_NEW_PAGE: {
-		cJSON	*virtual, *display;
+		cJSON *virtual, *display;
 
 		if ((content = cJSON_CreateObject()) == NULL)
 			goto out;
@@ -486,7 +499,7 @@ handle_packet(unsigned long type, unsigned long *body, unsigned long len)
 		return (fm);
 	}
 	case M_ICONIFY: {
-		cJSON	*icon, *frame;
+		cJSON *icon, *frame;
 
 		if ((content = cJSON_CreateObject()) == NULL)
 			goto out;
@@ -524,8 +537,8 @@ out:
 static inline const char *
 flag_to_event(unsigned long flag)
 {
-	size_t	 i;
-	bool is_extended = (flag & M_EXTENDED_MSG);
+	size_t i;
+	bool   is_extended = (flag & M_EXTENDED_MSG);
 
 	for (i = 0; i < (sizeof(etf) / sizeof(etf[0])); i++) {
 		int f = etf[i].flag;
@@ -544,15 +557,15 @@ strsw(const char *pre, const char *str)
 	return (strncmp(pre, str, strlen(pre)) == 0);
 }
 
-#define EFLAGSET	0x1
-#define EFLAGUNSET	0x2
+#define EFLAGSET 0x1
+#define EFLAGUNSET 0x2
 
 static int
 client_set_interest(struct client *c, const char *event)
 {
-	size_t		 i;
-	int		 flag_type = 0;
-	bool		 changed = false;
+	size_t i;
+	int    flag_type = 0;
+	bool   changed	 = false;
 #define PRESET "set"
 #define PREUNSET "unset"
 
@@ -573,19 +586,19 @@ client_set_interest(struct client *c, const char *event)
 
 	for (i = 0; i < (sizeof(etf) / sizeof(etf[0])); i++) {
 		if (strcmp(etf[i].event, event) == 0) {
-			unsigned long	 f = etf[i].flag;
+			unsigned long f = etf[i].flag;
 
 			changed = true;
 			if (flag_type == EFLAGSET) {
 				if (f & M_EXTENDED_MSG) {
 					if (debug)
-						fprintf(stderr,
-						    "Setting %s\n", event);
+						fprintf(stderr, "Setting %s\n",
+						    event);
 					c->flags_mx |= f;
 				} else {
 					if (debug)
-						fprintf(stderr,
-						    "Setting %s\n", event);
+						fprintf(stderr, "Setting %s\n",
+						    event);
 					c->flags_m |= f;
 				}
 			} else {
@@ -597,7 +610,7 @@ client_set_interest(struct client *c, const char *event)
 				} else {
 					if (debug)
 						fprintf(stderr,
-						   "Unsetting %s\n", event);
+						    "Unsetting %s\n", event);
 					c->flags_m &= ~f;
 				}
 			}
@@ -609,15 +622,15 @@ client_set_interest(struct client *c, const char *event)
 static void
 register_interest(void)
 {
-	size_t		i;
-	unsigned long	f_m = 0, f_mx = 0;
+	size_t	      i;
+	unsigned long f_m = 0, f_mx = 0;
 
 	for (i = 0; i < (sizeof(etf) / sizeof(etf[0])); i++) {
 		unsigned long f = etf[i].flag;
 		if (f & M_EXTENDED_MSG)
 			f_mx |= f;
 		else
-			f_m |=f;
+			f_m |= f;
 	}
 
 	if (debug) {
@@ -631,16 +644,16 @@ register_interest(void)
 static void
 broadcast_to_client(FvwmPacket *packet)
 {
-	struct client		*c;
-	struct fvwm_msg		*fm;
-	char			*to_client;
-	unsigned long		*body = packet->body;
-	unsigned long		 type =	packet->type;
-	unsigned long		 length = packet->size;
-	bool			 is_extended = (type & M_EXTENDED_MSG);
-	bool			 enact_change = false;
+	struct client	*c;
+	struct fvwm_msg *fm;
+	char		*to_client;
+	unsigned long	*body	      = packet->body;
+	unsigned long	 type	      = packet->type;
+	unsigned long	 length	      = packet->size;
+	bool		 is_extended  = (type & M_EXTENDED_MSG);
+	bool		 enact_change = false;
 
-	TAILQ_FOREACH(c, &clientq, entry) {
+	TAILQ_FOREACH (c, &clientq, entry) {
 		if (is_extended) {
 			if (c->flags_mx == type)
 				enact_change = true;
@@ -685,16 +698,17 @@ broadcast_to_client(FvwmPacket *packet)
 static void
 client_read_cb(struct bufferevent *bev, void *ctx)
 {
-	struct evbuffer	*input = bufferevent_get_input(bev);
-	struct client	*c =	 ctx;
-	size_t		 len = evbuffer_get_length(input);
-	char		 *data = fxcalloc(len + 1, sizeof (char));
-	char		 *split;
+	struct evbuffer *input = bufferevent_get_input(bev);
+	struct client	*c     = ctx;
+	size_t		 len   = evbuffer_get_length(input);
+	char		*data  = fxcalloc(len + 1, sizeof(char));
+	char		*split;
 
 	evbuffer_remove(input, data, len);
 
 	if (debug)
-		fprintf(stderr, "%s: DATA: <%s>, LEN: <%zu>\n", __func__, data, len);
+		fprintf(stderr, "%s: DATA: <%s>, LEN: <%zu>\n", __func__, data,
+		    len);
 
 	/* Remove the newline if there is one. */
 	if (data[strlen(data) - 1] == '\n')
@@ -719,18 +733,19 @@ out:
 static void
 client_write_cb(struct bufferevent *bev, void *ctx)
 {
-	struct client	*c = ctx;
+	struct client *c = ctx;
 
 	if (debug)
 		fprintf(stderr, "Writing... (client %p)...\n", c);
 }
 
-static void client_err_cb(struct bufferevent *bev, short events, void *ctx)
+static void
+client_err_cb(struct bufferevent *bev, short events, void *ctx)
 {
-	struct client	*c = (struct client *)ctx, *clook;
+	struct client *c = (struct client *)ctx, *clook;
 
-	if (events & (BEV_EVENT_EOF|BEV_EVENT_ERROR)) {
-		TAILQ_FOREACH(clook, &clientq, entry) {
+	if (events & (BEV_EVENT_EOF | BEV_EVENT_ERROR)) {
+		TAILQ_FOREACH (clook, &clientq, entry) {
 			if (c == clook) {
 				TAILQ_REMOVE(&clientq, c, entry);
 				bufferevent_free(bev);
@@ -739,37 +754,39 @@ static void client_err_cb(struct bufferevent *bev, short events, void *ctx)
 	}
 }
 
-
 static void
 accept_conn_cb(struct evconnlistener *l, evutil_socket_t fd,
-		struct sockaddr *add, int socklen, void *ctx)
+    struct sockaddr *add, int socklen, void *ctx)
 {
 	/* We got a new connection! Set up a bufferevent for it. */
-	struct client		*c;
-	struct event_base	*base = evconnlistener_get_base(l);
+	struct client	  *c;
+	struct event_base *base = evconnlistener_get_base(l);
 
 	c = fxmalloc(sizeof *c);
 
-	c->comms = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
-	c->flags_m = 0;
+	c->comms    = bufferevent_socket_new(base, fd, BEV_OPT_CLOSE_ON_FREE);
+	c->flags_m  = 0;
 	c->flags_mx = 0;
-	c->fm = NULL;
+	c->fm	    = NULL;
 
 	bufferevent_setcb(c->comms, client_read_cb, client_write_cb,
 	    client_err_cb, c);
-	bufferevent_enable(c->comms, EV_READ|EV_WRITE|EV_PERSIST);
+	bufferevent_enable(c->comms, EV_READ | EV_WRITE | EV_PERSIST);
 
 	send_version_info(c);
 
 	TAILQ_INSERT_TAIL(&clientq, c, entry);
 }
 
-static void accept_error_cb(struct evconnlistener *listener, void *ctx)
+static void
+accept_error_cb(struct evconnlistener *listener, void *ctx)
 {
 	struct event_base *base = evconnlistener_get_base(listener);
-	int err = EVUTIL_SOCKET_ERROR();
-	fprintf(stderr, "Got an error %d (%s) on the listener. "
-		"Shutting down.\n", err, evutil_socket_error_to_string(err));
+	int		   err	= EVUTIL_SOCKET_ERROR();
+	fprintf(stderr,
+	    "Got an error %d (%s) on the listener. "
+	    "Shutting down.\n",
+	    err, evutil_socket_error_to_string(err));
 
 	event_base_loopexit(base, NULL);
 }
@@ -777,7 +794,7 @@ static void accept_error_cb(struct evconnlistener *listener, void *ctx)
 static void
 fvwm_read(int efd, short ev, void *data)
 {
-	FvwmPacket	*packet;
+	FvwmPacket *packet;
 
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
 		if (debug)
@@ -792,8 +809,8 @@ fvwm_read(int efd, short ev, void *data)
 void
 set_socket_pathname(void)
 {
-	char		*mflsock_env, *tmpdir;
-	const char	*unrolled_path;
+	char	   *mflsock_env, *tmpdir;
+	const char *unrolled_path;
 
 	/* Figure out if we are using default MFL socket path or we should
 	 * respect environment variable FVWMMFL_SOCKET for FvwmMFL socket path
@@ -815,17 +832,18 @@ set_socket_pathname(void)
 		sock_pathname = fxstrdup(unrolled_path);
 	else {
 		xasprintf(&sock_pathname, "%s/%s", getenv("FVWM_USERDIR"),
-			unrolled_path);
+		    unrolled_path);
 	}
 
 	free((void *)unrolled_path);
 }
 
-int main(int argc, char **argv)
+int
+main(int argc, char **argv)
 {
 	struct event_base     *base;
 	struct evconnlistener *fmd_cfd;
-	struct sockaddr_un    sin;
+	struct sockaddr_un     sin;
 
 	TAILQ_INIT(&clientq);
 
@@ -854,8 +872,7 @@ int main(int argc, char **argv)
 
 	/* Create a new listener */
 	fmd_cfd = evconnlistener_new_bind(base, accept_conn_cb, NULL,
-		  LEV_OPT_CLOSE_ON_FREE, -1,
-		  (struct sockaddr *)&sin, sizeof(sin));
+	    LEV_OPT_CLOSE_ON_FREE, -1, (struct sockaddr *)&sin, sizeof(sin));
 	if (fmd_cfd == NULL) {
 		perror("Couldn't create listener");
 		return 1;
@@ -875,7 +892,7 @@ int main(int argc, char **argv)
 	 * environment.
 	 */
 	if (getenv("FVWMMFL_SOCKET") == NULL) {
-		char	*pe;
+		char *pe;
 
 		xasprintf(&pe, "SetEnv FVWMMFL_SOCKET %s", sock_pathname);
 		SendText(fc.fd, pe, 0);
@@ -887,7 +904,8 @@ int main(int argc, char **argv)
 	if (evutil_make_socket_nonblocking(fc.fd[1]) < 0)
 		fprintf(stderr, "fvwm to_fvwm socket non-blocking failed");
 
-	fc.read_ev = event_new(base, fc.fd[1], EV_READ|EV_PERSIST, fvwm_read, NULL);
+	fc.read_ev = event_new(base, fc.fd[1], EV_READ | EV_PERSIST, fvwm_read,
+	    NULL);
 	event_add(fc.read_ev, NULL);
 
 	register_interest();

@@ -8,8 +8,7 @@
 /* Ipmortant not:  All the flags below must have a positive syntax.  If a flag
  * is set, this indicates that something has to happen with the window. */
 
-typedef struct
-{
+typedef struct {
 	unsigned do_broadcast_focus : 1;
 	unsigned do_redecorate : 1;
 	unsigned do_redecorate_transient : 1;

@@ -35,11 +35,11 @@ Atom _XA_WM_SX;
 Atom _XA_MANAGER;
 Atom _XA_ATOM_PAIR;
 Atom _XA_WM_COLORMAP_NOTIFY;
-#define _XA_TARGETS   conversion_targets[0]
-#define _XA_MULTIPLE  conversion_targets[1]
+#define _XA_TARGETS conversion_targets[0]
+#define _XA_MULTIPLE conversion_targets[1]
 #define _XA_TIMESTAMP conversion_targets[2]
-#define _XA_VERSION   conversion_targets[3]
-#define MAX_TARGETS                      4
+#define _XA_VERSION conversion_targets[3]
+#define MAX_TARGETS 4
 
 long conversion_targets[MAX_TARGETS];
 
@@ -48,38 +48,36 @@ long icccm_version[] = { 2, 0 };
 void
 SetupICCCM2(Bool replace_wm)
 {
-	Window running_wm_win;
+	Window		     running_wm_win;
 	XSetWindowAttributes attr;
-	XEvent xev;
-	XClientMessageEvent ev;
-	char wm_sx[25];
+	XEvent		     xev;
+	XClientMessageEvent  ev;
+	char		     wm_sx[25];
 
 	snprintf(wm_sx, sizeof(wm_sx), "WM_S%lu", Scr.screen);
-	_XA_WM_SX =     XInternAtom(dpy, wm_sx, False);
-	_XA_MANAGER =   XInternAtom(dpy, "MANAGER", False);
-	_XA_ATOM_PAIR = XInternAtom(dpy, "ATOM_PAIR", False);
-	_XA_TARGETS =   XInternAtom(dpy, "TARGETS", False);
-	_XA_MULTIPLE =  XInternAtom(dpy, "MULTIPLE", False);
-	_XA_TIMESTAMP = XInternAtom(dpy, "TIMESTAMP", False);
-	_XA_VERSION =   XInternAtom(dpy, "VERSION", False);
+	_XA_WM_SX	       = XInternAtom(dpy, wm_sx, False);
+	_XA_MANAGER	       = XInternAtom(dpy, "MANAGER", False);
+	_XA_ATOM_PAIR	       = XInternAtom(dpy, "ATOM_PAIR", False);
+	_XA_TARGETS	       = XInternAtom(dpy, "TARGETS", False);
+	_XA_MULTIPLE	       = XInternAtom(dpy, "MULTIPLE", False);
+	_XA_TIMESTAMP	       = XInternAtom(dpy, "TIMESTAMP", False);
+	_XA_VERSION	       = XInternAtom(dpy, "VERSION", False);
 	_XA_WM_COLORMAP_NOTIFY = XInternAtom(dpy, "WM_COLORMAP_NOTIFY", False);
 
 	/* Check for a running ICCCM 2.0 compliant WM */
 	running_wm_win = XGetSelectionOwner(dpy, _XA_WM_SX);
-	if (running_wm_win != None)
-	{
-		if (!replace_wm)
-		{
+	if (running_wm_win != None) {
+		if (!replace_wm) {
 			fvwm_debug(__func__,
-				   "another ICCCM 2.0 compliant WM is running,"
-				   " try -replace");
+			    "another ICCCM 2.0 compliant WM is running,"
+			    " try -replace");
 			exit(1);
 		}
 		/* We need to know when the old manager is gone.
 		   Thus we wait until it destroys running_wm_win. */
 		attr.event_mask = StructureNotifyMask;
-		XChangeWindowAttributes(
-			dpy, running_wm_win, CWEventMask, &attr);
+		XChangeWindowAttributes(dpy, running_wm_win, CWEventMask,
+		    &attr);
 	}
 
 	/* We are not yet in the event loop, thus fev_get_evtime() will not
@@ -88,28 +86,26 @@ SetupICCCM2(Bool replace_wm)
 	managing_since = get_server_time();
 
 	XSetSelectionOwner(dpy, _XA_WM_SX, Scr.NoFocusWin, managing_since);
-	if (XGetSelectionOwner(dpy, _XA_WM_SX) != Scr.NoFocusWin)
-	{
-		fvwm_debug(__func__,
-			   "failed to acquire selection ownership");
+	if (XGetSelectionOwner(dpy, _XA_WM_SX) != Scr.NoFocusWin) {
+		fvwm_debug(__func__, "failed to acquire selection ownership");
 		exit(1);
 	}
 
 	/* Announce ourself as the new wm */
-	ev.type = ClientMessage;
-	ev.window = Scr.Root;
+	ev.type		= ClientMessage;
+	ev.window	= Scr.Root;
 	ev.message_type = _XA_MANAGER;
-	ev.format = 32;
-	ev.data.l[0] = managing_since;
-	ev.data.l[1] = _XA_WM_SX;
-	FSendEvent(dpy, Scr.Root, False, StructureNotifyMask,(XEvent*)&ev);
+	ev.format	= 32;
+	ev.data.l[0]	= managing_since;
+	ev.data.l[1]	= _XA_WM_SX;
+	FSendEvent(dpy, Scr.Root, False, StructureNotifyMask, (XEvent *)&ev);
 
 	if (running_wm_win != None) {
 		/* Wait for the old wm to finish. */
 		/* FIXME: need a timeout here. */
 		do {
-			FWindowEvent(
-				dpy, running_wm_win, StructureNotifyMask, &xev);
+			FWindowEvent(dpy, running_wm_win, StructureNotifyMask,
+			    &xev);
 		} while (xev.type != DestroyNotify);
 	}
 
@@ -136,29 +132,19 @@ CloseICCCM2(void)
 static Bool
 convertProperty(Window w, Atom target, Atom property)
 {
-	if (target == _XA_TARGETS)
-	{
-		XChangeProperty(
-			dpy, w, property, XA_ATOM, 32, PropModeReplace,
-			(unsigned char *)conversion_targets, MAX_TARGETS);
-	}
-	else if (target == _XA_TIMESTAMP)
-	{
+	if (target == _XA_TARGETS) {
+		XChangeProperty(dpy, w, property, XA_ATOM, 32, PropModeReplace,
+		    (unsigned char *)conversion_targets, MAX_TARGETS);
+	} else if (target == _XA_TIMESTAMP) {
 		long local_managing_since;
 
 		local_managing_since = managing_since;
-		XChangeProperty(
-			dpy, w, property, XA_INTEGER, 32, PropModeReplace,
-			(unsigned char *)&local_managing_since, 1);
-	}
-	else if (target == _XA_VERSION)
-	{
-		XChangeProperty(
-			dpy, w, property, XA_INTEGER, 32, PropModeReplace,
-			(unsigned char *)icccm_version, 2);
-	}
-	else
-	{
+		XChangeProperty(dpy, w, property, XA_INTEGER, 32,
+		    PropModeReplace, (unsigned char *)&local_managing_since, 1);
+	} else if (target == _XA_VERSION) {
+		XChangeProperty(dpy, w, property, XA_INTEGER, 32,
+		    PropModeReplace, (unsigned char *)icccm_version, 2);
+	} else {
 		return False;
 	}
 	/* FIXME: This is ugly. We should rather select for
@@ -174,63 +160,52 @@ convertProperty(Window w, Atom target, Atom property)
 void
 icccm2_handle_selection_request(const XEvent *e)
 {
-	Atom type;
-	unsigned long *adata;
-	int i, format;
-	unsigned long num, rest;
-	unsigned char *data;
+	Atom		       type;
+	unsigned long	      *adata;
+	int		       i, format;
+	unsigned long	       num, rest;
+	unsigned char	      *data;
 	XSelectionRequestEvent ev = e->xselectionrequest;
-	XSelectionEvent reply;
+	XSelectionEvent	       reply;
 
-	reply.type = SelectionNotify;
-	reply.display = dpy;
+	reply.type	= SelectionNotify;
+	reply.display	= dpy;
 	reply.requestor = ev.requestor;
 	reply.selection = ev.selection;
-	reply.target = ev.target;
-	reply.property = None;
-	reply.time = ev.time;
+	reply.target	= ev.target;
+	reply.property	= None;
+	reply.time	= ev.time;
 
-	if (ev.target == _XA_MULTIPLE)
-	{
-		if (ev.property != None)
-		{
-			XGetWindowProperty(
-				dpy, ev.requestor, ev.property, 0L, 256L, False,
-				_XA_ATOM_PAIR, &type, &format, &num, &rest,
-				&data);
+	if (ev.target == _XA_MULTIPLE) {
+		if (ev.property != None) {
+			XGetWindowProperty(dpy, ev.requestor, ev.property, 0L,
+			    256L, False, _XA_ATOM_PAIR, &type, &format, &num,
+			    &rest, &data);
 			/* FIXME: to be 100% correct, should deal with
 			 * rest > 0, but since we have 4 possible targets, we
 			 * will hardly ever meet multiple requests with a
 			 * length > 8
 			 */
 			adata = (unsigned long *)data;
-			for(i = 0; i < num; i += 2)
-			{
-				if (!convertProperty(
-					    ev.requestor, adata[i],
-					    adata[i+1]))
-				{
-					adata[i+1] = None;
+			for (i = 0; i < num; i += 2) {
+				if (!convertProperty(ev.requestor, adata[i],
+					adata[i + 1])) {
+					adata[i + 1] = None;
 				}
 			}
-			XChangeProperty(
-				dpy, ev.requestor, ev.property, _XA_ATOM_PAIR,
-				32, PropModeReplace, data, num);
+			XChangeProperty(dpy, ev.requestor, ev.property,
+			    _XA_ATOM_PAIR, 32, PropModeReplace, data, num);
 			XFree(data);
 		}
-	}
-	else
-	{
-		if (ev.property == None)
-		{
+	} else {
+		if (ev.property == None) {
 			ev.property = ev.target;
 		}
-		if (convertProperty(ev.requestor, ev.target, ev.property))
-		{
+		if (convertProperty(ev.requestor, ev.target, ev.property)) {
 			reply.property = ev.property;
 		}
 	}
-	FSendEvent(dpy, ev.requestor, False, 0L,(XEvent*)&reply);
+	FSendEvent(dpy, ev.requestor, False, 0L, (XEvent *)&reply);
 	XFlush(dpy);
 
 	return;

@@ -46,19 +46,19 @@ extern ewmh_atom ewmh_atom_wm_state[];
 /*
  * root
  */
-int ewmh_CurrentDesktop(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_CurrentDesktop(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	struct monitor	*m = monitor_get_current();
-	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff)
-	{
+	struct monitor *m = monitor_get_current();
+	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff) {
 		fvwm_debug(__func__,
-			   "The application window (id %#lx)\n"
-			   "  \"%s\" tried to switch to an invalid desktop (%ld)\n"
-			   "  using an EWMH client message.\n"
-			   "    fvwm is ignoring this request.\n",
-			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			   ev->xclient.data.l[0]);
+		    "The application window (id %#lx)\n"
+		    "  \"%s\" tried to switch to an invalid desktop (%ld)\n"
+		    "  using an EWMH client message.\n"
+		    "    fvwm is ignoring this request.\n",
+		    fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+		    ev->xclient.data.l[0]);
 		fvwm_msg_report_app_and_workers();
 
 		return -1;
@@ -68,26 +68,26 @@ int ewmh_CurrentDesktop(
 	return -1;
 }
 
-int ewmh_DesktopGeometry(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_DesktopGeometry(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 	char action[256];
-	long width = ev->xclient.data.l[0];
+	long width  = ev->xclient.data.l[0];
 	long height = ev->xclient.data.l[1];
 
-	width = width / monitor_get_all_widths();
+	width  = width / monitor_get_all_widths();
 	height = height / monitor_get_all_heights();
 
-	if (width <= 0 || height <= 0)
-	{
+	if (width <= 0 || height <= 0) {
 		fvwm_debug(__func__,
-			   "The application window (id %#lx)\n"
-			   "  \"%s\" tried to set an invalid desktop geometry"
-			   " (%ldx%ld)\n"
-			   "  using an EWMH client message.\n"
-			   "    fvwm is ignoring this request.\n",
-			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			   ev->xclient.data.l[0], ev->xclient.data.l[1]);
+		    "The application window (id %#lx)\n"
+		    "  \"%s\" tried to set an invalid desktop geometry"
+		    " (%ldx%ld)\n"
+		    "  using an EWMH client message.\n"
+		    "    fvwm is ignoring this request.\n",
+		    fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+		    ev->xclient.data.l[0], ev->xclient.data.l[1]);
 		fvwm_msg_report_app_and_workers();
 
 		return -1;
@@ -98,25 +98,22 @@ int ewmh_DesktopGeometry(
 	return -1;
 }
 
-int ewmh_DesktopViewPort(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_DesktopViewPort(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
+	struct monitor *m = (fw && fw->m) ? fw->m : monitor_get_current();
 
-	if (
-		ev->xclient.data.l[0] < 0 ||
-		ev->xclient.data.l[0] > 0x7fffffff ||
-		ev->xclient.data.l[1] < 0 ||
-		ev->xclient.data.l[1] > 0x7fffffff)
-	{
+	if (ev->xclient.data.l[0] < 0 || ev->xclient.data.l[0] > 0x7fffffff ||
+	    ev->xclient.data.l[1] < 0 || ev->xclient.data.l[1] > 0x7fffffff) {
 		fvwm_debug(__func__,
-			   "The application window (id %#lx)\n"
-			   "  \"%s\" tried to switch to an invalid page"
-			   " (%ldx%ld)\n"
-			   "  using an EWMH client message.\n"
-			   "    fvwm is ignoring this request.\n",
-			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			   ev->xclient.data.l[0], ev->xclient.data.l[1]);
+		    "The application window (id %#lx)\n"
+		    "  \"%s\" tried to switch to an invalid page"
+		    " (%ldx%ld)\n"
+		    "  using an EWMH client message.\n"
+		    "    fvwm is ignoring this request.\n",
+		    fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+		    ev->xclient.data.l[0], ev->xclient.data.l[1]);
 		fvwm_msg_report_app_and_workers();
 
 		return -1;
@@ -125,32 +122,29 @@ int ewmh_DesktopViewPort(
 	return -1;
 }
 
-int ewmh_NumberOfDesktops(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_NumberOfDesktops(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	int d = ev->xclient.data.l[0];
-	struct monitor	*m;
+	int		d = ev->xclient.data.l[0];
+	struct monitor *m;
 
 	/* not a lot of sinification for fvwm */
-	TAILQ_FOREACH(m, &monitor_q, entry) {
+	TAILQ_FOREACH (m, &monitor_q, entry) {
 		EWMH_SetNumberOfDesktops(m);
 
 		if (d > 0 &&
-		    (d <= m->ewmhc.MaxDesktops || m->ewmhc.MaxDesktops == 0))
-		{
+		    (d <= m->ewmhc.MaxDesktops || m->ewmhc.MaxDesktops == 0)) {
 			m->ewmhc.NumberOfDesktops = d;
-		}
-		else
-		{
+		} else {
 			fvwm_debug(__func__,
-				   "The application window (id %#lx)\n"
-				   "  \"%s\" tried to set an invalid number of desktops"
-				   " (%ld)\n"
-				   "  using an EWMH client message.\n"
-				   "    fvwm is ignoring this request.\n",
-				   fw ? FW_W(fw) : 0,
-				   fw ? fw->name.name : "(none)",
-				   ev->xclient.data.l[0]);
+			    "The application window (id %#lx)\n"
+			    "  \"%s\" tried to set an invalid number of desktops"
+			    " (%ld)\n"
+			    "  using an EWMH client message.\n"
+			    "    fvwm is ignoring this request.\n",
+			    fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+			    ev->xclient.data.l[0]);
 			fvwm_msg_report_app_and_workers();
 		}
 	}
@@ -162,28 +156,27 @@ int ewmh_NumberOfDesktops(
  * window
  */
 
-int ewmh_ActiveWindow(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_ActiveWindow(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		return 0;
 	}
-	execute_function_override_window(
-		NULL, NULL, "EWMHActivateWindowFunc", NULL, 0, fw);
+	execute_function_override_window(NULL, NULL, "EWMHActivateWindowFunc",
+	    NULL, 0, fw);
 
 	return 0;
 }
 
-int ewmh_CloseWindow(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_CloseWindow(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		return 0;
 	}
-	if (!is_function_allowed(F_CLOSE, NULL, fw, RQORIG_PROGRAM_US, False))
-	{
+	if (!is_function_allowed(F_CLOSE, NULL, fw, RQORIG_PROGRAM_US, False)) {
 		return 0;
 	}
 	execute_function_override_window(NULL, NULL, "Close", NULL, 0, fw);
@@ -191,184 +184,157 @@ int ewmh_CloseWindow(
 	return 0;
 }
 
-int ewmh_MoveResizeWindow(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_MoveResizeWindow(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 	int do_reconfigure;
 	int win_gravity;
 	int value_mask;
 
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		return 0;
 	}
 	win_gravity = ev->xclient.data.l[0] & 0xff;
-	value_mask = (ev->xclient.data.l[0] >> 8) & 0xf;
-	if (fw == NULL)
-	{
+	value_mask  = (ev->xclient.data.l[0] >> 8) & 0xf;
+	if (fw == NULL) {
 		/* unmanaged window */
 		do_reconfigure = 1;
-	}
-	else
-	{
+	} else {
 		int func;
 
-		if (
-			((value_mask & CWWidth) == 0 ||
-			 ev->xclient.data.l[3] == fw->g.normal.width) &&
-			((value_mask & CWHeight) == 0 ||
-			 ev->xclient.data.l[4] == fw->g.normal.height))
-		{
+		if (((value_mask & CWWidth) == 0 ||
+			ev->xclient.data.l[3] == fw->g.normal.width) &&
+		    ((value_mask & CWHeight) == 0 ||
+			ev->xclient.data.l[4] == fw->g.normal.height)) {
 			func = F_MOVE;
-		}
-		else
-		{
+		} else {
 			func = F_RESIZE;
 		}
-		do_reconfigure = !!is_function_allowed(
-			func, NULL, fw, RQORIG_PROGRAM, False);
+		do_reconfigure = !!is_function_allowed(func, NULL, fw,
+		    RQORIG_PROGRAM, False);
 	}
-	if (do_reconfigure == 1)
-	{
-		XEvent e;
+	if (do_reconfigure == 1) {
+		XEvent			e;
 		XConfigureRequestEvent *cre = &e.xconfigurerequest;
 
 		cre->value_mask = value_mask;
-		cre->x = ev->xclient.data.l[1];
-		cre->y = ev->xclient.data.l[2];
-		cre->width = ev->xclient.data.l[3];
-		cre->height = ev->xclient.data.l[4];
-		cre->window = ev->xclient.window;
+		cre->x		= ev->xclient.data.l[1];
+		cre->y		= ev->xclient.data.l[2];
+		cre->width	= ev->xclient.data.l[3];
+		cre->height	= ev->xclient.data.l[4];
+		cre->window	= ev->xclient.window;
 		events_handle_configure_request(&e, fw, True, win_gravity);
 	}
 
 	return 0;
 }
 
-int ewmh_RestackWindow(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_RestackWindow(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 	int do_restack;
 
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		return 0;
 	}
-	if (fw == NULL)
-	{
+	if (fw == NULL) {
 		/* unmanaged window */
 		do_restack = 1;
-	}
-	else
-	{
+	} else {
 		do_restack = !!DO_EWMH_USE_STACKING_HINTS(fw);
 	}
-	if (do_restack == 1)
-	{
-		XEvent e;
+	if (do_restack == 1) {
+		XEvent			e;
 		XConfigureRequestEvent *cre = &e.xconfigurerequest;
 
 		cre->value_mask = CWSibling | CWStackMode;
-		cre->above = ev->xclient.data.l[1];
-		cre->detail = ev->xclient.data.l[2];
-		cre->window = ev->xclient.window;
+		cre->above	= ev->xclient.data.l[1];
+		cre->detail	= ev->xclient.data.l[2];
+		cre->window	= ev->xclient.window;
 		events_handle_configure_request(&e, fw, True, ForgetGravity);
 	}
 
 	return 0;
 }
 
-int ewmh_WMDesktop(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMDesktop(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev != NULL && style == NULL)
-	{
+	if (ev != NULL && style == NULL) {
 		/* client message */
 		unsigned long d = (unsigned long)ev->xclient.data.l[0];
 
 		/* the spec says that if d = 0xFFFFFFFF then we have to Stick
 		 * the window however KDE use 0xFFFFFFFE :o) */
-		if (d == (unsigned long)-2 || d == (unsigned long)-1)
-		{
-			execute_function_override_window(
-				NULL, NULL, "Stick on", NULL, 0, fw);
-		}
-		else if (d >= 0)
-		{
+		if (d == (unsigned long)-2 || d == (unsigned long)-1) {
+			execute_function_override_window(NULL, NULL, "Stick on",
+			    NULL, 0, fw);
+		} else if (d >= 0) {
 			if (IS_STICKY_ACROSS_PAGES(fw) ||
-			    IS_STICKY_ACROSS_DESKS(fw))
-			{
-				execute_function_override_window(
-					NULL, NULL, "Stick off", NULL, 0, fw);
+			    IS_STICKY_ACROSS_DESKS(fw)) {
+				execute_function_override_window(NULL, NULL,
+				    "Stick off", NULL, 0, fw);
 			}
-			if (fw->Desk != d)
-			{
+			if (fw->Desk != d) {
 				do_move_window_to_desk(fw, (int)d);
 			}
-		}
-		else
-		{
+		} else {
 			fvwm_debug(__func__,
-				   "The application window (id %#lx)\n"
-				   "  \"%s\" tried to move to an invalid desk"
-				   " (%ld)\n"
-				   "  using an EWMH client message.\n"
-				   "    fvwm is ignoring this request.\n",
-				   fw ? FW_W(fw) : 0,
-				   fw ? fw->name.name : "(none)",
-				   ev->xclient.data.l[0]);
+			    "The application window (id %#lx)\n"
+			    "  \"%s\" tried to move to an invalid desk"
+			    " (%ld)\n"
+			    "  using an EWMH client message.\n"
+			    "    fvwm is ignoring this request.\n",
+			    fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+			    ev->xclient.data.l[0]);
 			fvwm_msg_report_app_and_workers();
 		}
 
 		return 0;
 	}
 
-	if (style != NULL && ev == NULL)
-	{
+	if (style != NULL && ev == NULL) {
 		/* start on desk */
 		CARD32 *val;
-		int size = 0;
+		int	size = 0;
 
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_WM_DESKTOP(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_WM_DESKTOP(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 
 			return 0;
 		}
-		if (HAS_EWMH_INIT_WM_DESKTOP(fw) != EWMH_STATE_UNDEFINED_HINT)
-		{
+		if (HAS_EWMH_INIT_WM_DESKTOP(fw) != EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		val = ewmh_AtomGetByName(
-			FW_W(fw), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
-			&size);
-		if (val == NULL)
-		{
+		val = ewmh_AtomGetByName(FW_W(fw), "_NET_WM_DESKTOP",
+		    EWMH_ATOM_LIST_CLIENT_WIN, &size);
+		if (val == NULL) {
 			SET_HAS_EWMH_INIT_WM_DESKTOP(fw, EWMH_STATE_NO_HINT);
 
 			return 0;
 		}
 #if DEBUG_EWMH_INIT_STATE
-		fvwm_debug(__func__, "ewmh WM_DESKTOP hint for window 0x%lx  "
-			   "(%i,%lu,%u)\n", FW_W(fw),
-			   HAS_EWMH_INIT_WM_DESKTOP(fw),
-			   fw->ewmh_hint_desktop, val[0]);
+		fvwm_debug(__func__,
+		    "ewmh WM_DESKTOP hint for window 0x%lx  "
+		    "(%i,%lu,%u)\n",
+		    FW_W(fw), HAS_EWMH_INIT_WM_DESKTOP(fw),
+		    fw->ewmh_hint_desktop, val[0]);
 #endif
-		if (val[0] == (CARD32)-2 || val[0] == (CARD32)-1)
-		{
+		if (val[0] == (CARD32)-2 || val[0] == (CARD32)-1) {
 			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
 			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
 			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
 			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
-		}
-		else if (val[0] < 256)
-		{
+		} else if (val[0] < 256) {
 			/* prevent crazy hints ?? */
-			style->flags.use_start_on_desk = 1;
-			style->flag_mask.use_start_on_desk = 1;
+			style->flags.use_start_on_desk	     = 1;
+			style->flag_mask.use_start_on_desk   = 1;
 			style->change_mask.use_start_on_desk = 1;
 			SSET_START_DESK(*style, val[0]);
 		}
@@ -379,23 +345,22 @@ int ewmh_WMDesktop(
 	return 0;
 }
 
-int ewmh_MoveResize(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_MoveResize(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	int dir = -1;
-	int x_warp = 0;
-	int y_warp = 0;
-	Bool move = False;
+	int  dir    = -1;
+	int  x_warp = 0;
+	int  y_warp = 0;
+	Bool move   = False;
 	char cmd[256];
 
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		return 0;
 	}
 
 	dir = ev->xclient.data.l[2];
-	switch(dir)
-	{
+	switch (dir) {
 	case _NET_WM_MOVERESIZE_SIZE_TOPLEFT:
 		break;
 	case _NET_WM_MOVERESIZE_SIZE_TOP:
@@ -405,14 +370,17 @@ int ewmh_MoveResize(
 		x_warp = 100;
 		break;
 	case _NET_WM_MOVERESIZE_SIZE_RIGHT:
-		x_warp = 100; y_warp = 50;
+		x_warp = 100;
+		y_warp = 50;
 		break;
 	case _NET_WM_MOVERESIZE_SIZE_KEYBOARD:
 	case _NET_WM_MOVERESIZE_SIZE_BOTTOMRIGHT:
-		x_warp = 100; y_warp = 100;
+		x_warp = 100;
+		y_warp = 100;
 		break;
 	case _NET_WM_MOVERESIZE_SIZE_BOTTOM:
-		x_warp = 50; y_warp = 100;
+		x_warp = 50;
+		y_warp = 100;
 		break;
 	case _NET_WM_MOVERESIZE_SIZE_BOTTOMLEFT:
 		y_warp = 100;
@@ -428,40 +396,30 @@ int ewmh_MoveResize(
 		return 0;
 	}
 
-	if (move)
-	{
-		if (
-			!is_function_allowed(
-				F_MOVE, NULL, fw, RQORIG_PROGRAM_US, False))
-		{
+	if (move) {
+		if (!is_function_allowed(F_MOVE, NULL, fw, RQORIG_PROGRAM_US,
+			False)) {
 			return 0;
 		}
-	}
-	else
-	{
-		if (
-			!is_function_allowed(
-				F_RESIZE, NULL, fw, RQORIG_PROGRAM_US, False))
-		{
+	} else {
+		if (!is_function_allowed(F_RESIZE, NULL, fw, RQORIG_PROGRAM_US,
+			False)) {
 			return 0;
 		}
 	}
 
-	if (!move)
-	{
-		snprintf(cmd, sizeof(cmd), "WarpToWindow %i %i",x_warp,y_warp);
+	if (!move) {
+		snprintf(cmd, sizeof(cmd), "WarpToWindow %i %i", x_warp,
+		    y_warp);
 		execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
 	}
 
-	if (move)
-	{
-		execute_function_override_window(
-			NULL, NULL, "Move", NULL, 0, fw);
-	}
-	else
-	{
-		execute_function_override_window(
-			NULL, NULL, "Resize", NULL, 0, fw);
+	if (move) {
+		execute_function_override_window(NULL, NULL, "Move", NULL, 0,
+		    fw);
+	} else {
+		execute_function_override_window(NULL, NULL, "Resize", NULL, 0,
+		    fw);
 	}
 
 	return 0;
@@ -470,194 +428,166 @@ int ewmh_MoveResize(
 /*
  * WM_STATE*
  */
-int ewmh_WMState(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMState(FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
 	unsigned long maximize = 0;
 
-	if (ev != NULL)
-	{
-		ewmh_atom *a1,*a2;
+	if (ev != NULL) {
+		ewmh_atom *a1, *a2;
 
-		a1 = ewmh_GetEwmhAtomByAtom(
-			ev->xclient.data.l[1], EWMH_ATOM_LIST_WM_STATE);
-		a2 = ewmh_GetEwmhAtomByAtom(
-			ev->xclient.data.l[2], EWMH_ATOM_LIST_WM_STATE);
+		a1 = ewmh_GetEwmhAtomByAtom(ev->xclient.data.l[1],
+		    EWMH_ATOM_LIST_WM_STATE);
+		a2 = ewmh_GetEwmhAtomByAtom(ev->xclient.data.l[2],
+		    EWMH_ATOM_LIST_WM_STATE);
 
-		if (a1 != NULL)
-		{
+		if (a1 != NULL) {
 			maximize |= a1->action(fw, ev, NULL, 0);
 		}
-		if (a2 != NULL)
-		{
+		if (a2 != NULL) {
 			maximize |= a2->action(fw, ev, NULL, 0);
 		}
-	}
-	else if (style != NULL)
-	{
-		CARD32 *val;
+	} else if (style != NULL) {
+		CARD32	    *val;
 		unsigned int nitems;
-		int size = 0;
-		int i;
-		ewmh_atom *list = ewmh_atom_wm_state;
-		int has_hint = 0;
+		int	     size = 0;
+		int	     i;
+		ewmh_atom   *list     = ewmh_atom_wm_state;
+		int	     has_hint = 0;
 
-		val = ewmh_AtomGetByName(
-			FW_W(fw), "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN,
-			&size);
+		val = ewmh_AtomGetByName(FW_W(fw), "_NET_WM_STATE",
+		    EWMH_ATOM_LIST_CLIENT_WIN, &size);
 
-		if (val == NULL)
-		{
+		if (val == NULL) {
 			size = 0;
 		}
 
 #if DEBUG_EWMH_INIT_STATE
-		if (size != 0)
-		{
-			fvwm_debug(__func__, "Window 0x%lx has an init"
-				   " _NET_WM_STATE hint\n",FW_W(fw));
+		if (size != 0) {
+			fvwm_debug(__func__,
+			    "Window 0x%lx has an init"
+			    " _NET_WM_STATE hint\n",
+			    FW_W(fw));
 		}
 #endif
 		nitems = size / sizeof(CARD32);
-		while(list->name != NULL)
-		{
+		while (list->name != NULL) {
 			has_hint = 0;
-			for(i = 0; i < nitems; i++)
-			{
-				if (list->atom == val[i])
-				{
+			for (i = 0; i < nitems; i++) {
+				if (list->atom == val[i]) {
 					has_hint = 1;
 				}
 			}
 			list->action(fw, NULL, style, has_hint);
 			list++;
 		}
-		if (val != NULL)
-		{
+		if (val != NULL) {
 			free(val);
 		}
 		return 0;
 	}
 
-	if (maximize != 0)
-	{
-		int max_vert = (maximize & EWMH_MAXIMIZE_VERT)? 100:0;
-		int max_horiz = (maximize & EWMH_MAXIMIZE_HORIZ)? 100:0;
+	if (maximize != 0) {
+		int  max_vert  = (maximize & EWMH_MAXIMIZE_VERT) ? 100 : 0;
+		int  max_horiz = (maximize & EWMH_MAXIMIZE_HORIZ) ? 100 : 0;
 		char cmd[256];
 
-		if (maximize & EWMH_MAXIMIZE_REMOVE)
-		{
+		if (maximize & EWMH_MAXIMIZE_REMOVE) {
 			strlcpy(cmd, "Maximize off", sizeof(cmd));
-		}
-		else
-		{
-			if (!is_function_allowed(
-				    F_MAXIMIZE, NULL, fw, RQORIG_PROGRAM_US,
-				    False))
-			{
+		} else {
+			if (!is_function_allowed(F_MAXIMIZE, NULL, fw,
+				RQORIG_PROGRAM_US, False)) {
 				return 0;
 			}
-			snprintf(cmd, sizeof(cmd), "Maximize on %i %i", max_horiz, max_vert);
+			snprintf(cmd, sizeof(cmd), "Maximize on %i %i",
+			    max_horiz, max_vert);
 		}
 		execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
 	}
 	return 0;
 }
 
-int ewmh_WMStateFullScreen(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateFullScreen(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		return (IS_EWMH_FULLSCREEN(fw));
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		/* start full screen */
 		unsigned long has_hint = any;
 
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\tFullscreen\n");
 		}
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,
+			    EWMH_STATE_NO_HINT);
 			return 0;
 		}
-		SET_EWMH_FULLSCREEN(fw,True);
+		SET_EWMH_FULLSCREEN(fw, True);
 		SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw, EWMH_STATE_HAS_HINT);
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int bool_arg = ev->xclient.data.l[0];
 		int is_full_screen;
 
 		is_full_screen = IS_EWMH_FULLSCREEN(fw);
 		if ((bool_arg == NET_WM_STATE_TOGGLE && !is_full_screen) ||
-		    bool_arg == NET_WM_STATE_ADD)
-		{
+		    bool_arg == NET_WM_STATE_ADD) {
 			EWMH_fullscreen(fw);
-		}
-		else
-		{
+		} else {
 			if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				/* the application started fullscreen */
-				SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
-					fw, EWMH_STATE_NO_HINT);
+				SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,
+				    EWMH_STATE_NO_HINT);
 			}
 			/* unmaximize will restore is_ewmh_fullscreen,
 			 * layer and apply_decor_change */
-			execute_function_override_window(
-				NULL, NULL, "Maximize off", NULL, 0, fw);
+			execute_function_override_window(NULL, NULL,
+			    "Maximize off", NULL, 0, fw);
 		}
 		if ((IS_EWMH_FULLSCREEN(fw) &&
-		     !DO_EWMH_USE_STACKING_HINTS(fw)) ||
+			!DO_EWMH_USE_STACKING_HINTS(fw)) ||
 		    (!IS_EWMH_FULLSCREEN(fw) &&
-		     DO_EWMH_USE_STACKING_HINTS(fw)))
-		{
+			DO_EWMH_USE_STACKING_HINTS(fw))) {
 			/* On: if not raised by a layer cmd raise
 			 * Off: if lowered by a layer cmd raise */
-			execute_function_override_window(
-				NULL, NULL, "Raise", NULL, 0, fw);
+			execute_function_override_window(NULL, NULL, "Raise",
+			    NULL, 0, fw);
 		}
 	}
 
 	return 0;
 }
 
-int ewmh_WMStateHidden(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateHidden(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
+		if (do_restore) {
 			if (HAS_EWMH_INIT_HIDDEN_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				return True;
 			}
 			return False;
@@ -665,8 +595,7 @@ int ewmh_WMStateHidden(
 		return IS_ICONIFIED(fw);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		/* start iconified */
 		unsigned long has_hint = any;
 
@@ -674,50 +603,40 @@ int ewmh_WMStateHidden(
 		if (has_hint)
 			fvwm_debug(__func__, "\tHidden\n");
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_HIDDEN_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_HIDDEN_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_HIDDEN_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
+		if (!has_hint) {
 			SET_HAS_EWMH_INIT_HIDDEN_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
-		style->flags.do_start_iconic = 1;
-		style->flag_mask.do_start_iconic = 1;
+		style->flags.do_start_iconic	   = 1;
+		style->flag_mask.do_start_iconic   = 1;
 		style->change_mask.do_start_iconic = 1;
 		SET_HAS_EWMH_INIT_HIDDEN_STATE(fw, EWMH_STATE_HAS_HINT);
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		char cmd[16];
-		int bool_arg = ev->xclient.data.l[0];
+		int  bool_arg = ev->xclient.data.l[0];
 
 		if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_ICONIFIED(fw)) ||
-		    bool_arg == NET_WM_STATE_ADD)
-		{
+		    bool_arg == NET_WM_STATE_ADD) {
 			/* iconify */
-			if (
-				!is_function_allowed(
-					F_ICONIFY, NULL, fw, RQORIG_PROGRAM_US,
-					False))
-			{
+			if (!is_function_allowed(F_ICONIFY, NULL, fw,
+				RQORIG_PROGRAM_US, False)) {
 				return 0;
 			}
 			strlcpy(cmd, "Iconify on", sizeof(cmd));
-		}
-		else
-		{
+		} else {
 			/* deiconify */
 			strlcpy(cmd, "Iconify off", sizeof(cmd));
 		}
@@ -726,75 +645,64 @@ int ewmh_WMStateHidden(
 	return 0;
 }
 
-int ewmh_WMStateMaxHoriz(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateMaxHoriz(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		/* If the window is maximized, but without any style, still
 		 * set the maximized status flag.
 		 */
 		bool maximized = (IS_MAXIMIZED(fw) && !IS_EWMH_FULLSCREEN(fw));
 
 		if (maximized)
-			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw, EWMH_STATE_UNDEFINED_HINT);
+			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 
 		return (maximized);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\t Maxhoriz %i\n",
-				   HAS_EWMH_INIT_MAXHORIZ_STATE(fw));
+			    HAS_EWMH_INIT_MAXHORIZ_STATE(fw));
 		}
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 
-                /* If the initial state is STATE_NO_HINT we still want to
-                 * override it, since having just one of MAXIMIZED_HORIZ or
-                 * MAXIMIZED_HORZ is enough to make the window maximized.
-                 */
-		if (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) ==
-		    EWMH_STATE_HAS_HINT)
-		{
+		/* If the initial state is STATE_NO_HINT we still want to
+		 * override it, since having just one of MAXIMIZED_HORIZ or
+		 * MAXIMIZED_HORZ is enough to make the window maximized.
+		 */
+		if (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,
+			    EWMH_STATE_NO_HINT);
 			return 0;
 		}
 		SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw, EWMH_STATE_HAS_HINT);
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int cmd_arg = ev->xclient.data.l[0];
-		if (
-			!IS_MAXIMIZED(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_ADD))
-		{
+		if (!IS_MAXIMIZED(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_ADD)) {
 			return EWMH_MAXIMIZE_HORIZ;
-		}
-		else if (
-			IS_MAXIMIZED(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_REMOVE))
-		{
+		} else if (IS_MAXIMIZED(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_REMOVE)) {
 			return EWMH_MAXIMIZE_REMOVE;
 		}
 	}
@@ -802,69 +710,58 @@ int ewmh_WMStateMaxHoriz(
 	return 0;
 }
 
-int ewmh_WMStateMaxVert(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateMaxVert(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		/* If the window is maximized, but without any style, still
 		 * set the maximized status flag.
 		 */
 		bool maximized = (IS_MAXIMIZED(fw) && !IS_EWMH_FULLSCREEN(fw));
 
 		if (maximized)
-			SET_HAS_EWMH_INIT_MAXVERT_STATE(fw, EWMH_STATE_UNDEFINED_HINT);
+			SET_HAS_EWMH_INIT_MAXVERT_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 		return (maximized);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\t Maxvert %i\n",
-				   HAS_EWMH_INIT_MAXVERT_STATE(fw));
+			    HAS_EWMH_INIT_MAXVERT_STATE(fw));
 		}
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_MAXVERT_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_MAXVERT_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_MAXVERT_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_MAXVERT_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_MAXVERT_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
 		SET_HAS_EWMH_INIT_MAXVERT_STATE(fw, EWMH_STATE_HAS_HINT);
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int cmd_arg = ev->xclient.data.l[0];
-		if (
-			!IS_MAXIMIZED(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_ADD))
-		{
+		if (!IS_MAXIMIZED(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_ADD)) {
 			return EWMH_MAXIMIZE_VERT;
-		}
-		else if (
-			IS_MAXIMIZED(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_REMOVE))
-		{
+		} else if (IS_MAXIMIZED(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_REMOVE)) {
 			return EWMH_MAXIMIZE_REMOVE;
 		}
 	}
@@ -872,18 +769,16 @@ int ewmh_WMStateMaxVert(
 	return 0;
 }
 
-int ewmh_WMStateModal(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateModal(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
+		if (do_restore) {
 			if (HAS_EWMH_INIT_MODAL_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				return True;
 			}
 			return False;
@@ -891,106 +786,92 @@ int ewmh_WMStateModal(
 		return IS_EWMH_MODAL(fw);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\t Modal %i\n",
-				   HAS_EWMH_INIT_MODAL_STATE(fw));
+			    HAS_EWMH_INIT_MODAL_STATE(fw));
 		}
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_MODAL_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_MODAL_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
-		if (HAS_EWMH_INIT_MODAL_STATE(fw) != EWMH_STATE_UNDEFINED_HINT)
-		{
+		if (HAS_EWMH_INIT_MODAL_STATE(fw) !=
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
+		if (!has_hint) {
 			SET_HAS_EWMH_INIT_MODAL_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
 
 		/* the window map or had mapped with a modal hint */
-		if (IS_TRANSIENT(fw))
-		{
+		if (IS_TRANSIENT(fw)) {
 			SET_EWMH_MODAL(fw, True);
 			/* the window is a modal transient window so we grab
 			 * the focus it will be good to raise it but ... */
-			FPS_GRAB_FOCUS_TRANSIENT(
-				S_FOCUS_POLICY(SCF(*style)), 1);
-			FPS_GRAB_FOCUS_TRANSIENT(
-				S_FOCUS_POLICY(SCM(*style)), 1);
-			FPS_GRAB_FOCUS_TRANSIENT(
-				S_FOCUS_POLICY(SCC(*style)), 1);
-			SET_HAS_EWMH_INIT_MODAL_STATE(
-				fw, EWMH_STATE_HAS_HINT);
-		}
-		else
-		{
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*style)),
+			    1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*style)),
+			    1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*style)),
+			    1);
+			SET_HAS_EWMH_INIT_MODAL_STATE(fw, EWMH_STATE_HAS_HINT);
+		} else {
 			SET_EWMH_MODAL(fw, False);
 			if (!FP_DO_GRAB_FOCUS_TRANSIENT(
-				    S_FOCUS_POLICY(SCF(*style))))
-			{
-				FPS_GRAB_FOCUS_TRANSIENT(
-					S_FOCUS_POLICY(SCF(*style)), 0);
-				FPS_GRAB_FOCUS_TRANSIENT(
-					S_FOCUS_POLICY(SCM(*style)), 1);
-				FPS_GRAB_FOCUS_TRANSIENT(
-					S_FOCUS_POLICY(SCC(*style)), 1);
+				S_FOCUS_POLICY(SCF(*style)))) {
+				FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(
+							     SCF(*style)),
+				    0);
+				FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(
+							     SCM(*style)),
+				    1);
+				FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(
+							     SCC(*style)),
+				    1);
 			}
 		}
 		return 0;
 	}
 
-	if (ev != NULL && fw != NULL)
-	{
+	if (ev != NULL && fw != NULL) {
 		/* client message: I do not think we can get such message */
-	    	/* java sends this message */
+		/* java sends this message */
 		int cmd_arg = ev->xclient.data.l[0];
-		if (
-			!IS_EWMH_MODAL(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_ADD))
-		{
-		    /* ON */
+		if (!IS_EWMH_MODAL(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_ADD)) {
+			/* ON */
+		} else if (IS_EWMH_MODAL(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_REMOVE)) {
+			/* OFF */
 		}
-		else if (
-			IS_EWMH_MODAL(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_REMOVE))
-		{
-		    /* OFF */
-		}
-	/* 			!MODAL			MODAL
-	 * CMD
-	 * STATE_ADD		  ON			do nothing
-	 * STATE_TOGGLE		  ON			  OFF
-	 * STATE_REMOVE		  do nothing		  OFF
-	 */
+		/* 			!MODAL			MODAL
+		 * CMD
+		 * STATE_ADD		  ON			do nothing
+		 * STATE_TOGGLE		  ON			  OFF
+		 * STATE_REMOVE		  do nothing		  OFF
+		 */
 	}
 	return 0;
 }
 
-int ewmh_WMStateShaded(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateShaded(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
+		if (do_restore) {
 			if (HAS_EWMH_INIT_SHADED_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				return True;
 			}
 			return False;
@@ -998,32 +879,26 @@ int ewmh_WMStateShaded(
 		return IS_SHADED(fw);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		/* start shaded */
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\t Shaded %i\n",
-				   HAS_EWMH_INIT_SHADED_STATE(fw));
+			    HAS_EWMH_INIT_SHADED_STATE(fw));
 		}
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_SHADED_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_SHADED_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_SHADED_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_SHADED_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_SHADED_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
 
@@ -1033,42 +908,34 @@ int ewmh_WMStateShaded(
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int cmd_arg = ev->xclient.data.l[0];
-		if (
-			!IS_SHADED(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_ADD))
-		{
-			execute_function_override_window(
-				NULL, NULL, "Windowshade on", NULL, 0, fw);
-		}
-		else if (
-			IS_SHADED(fw) &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_REMOVE))
-		{
-			execute_function_override_window(
-				NULL, NULL, "Windowshade off", NULL, 0, fw);
+		if (!IS_SHADED(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_ADD)) {
+			execute_function_override_window(NULL, NULL,
+			    "Windowshade on", NULL, 0, fw);
+		} else if (IS_SHADED(fw) &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_REMOVE)) {
+			execute_function_override_window(NULL, NULL,
+			    "Windowshade off", NULL, 0, fw);
 		}
 	}
 	return 0;
 }
 
-int ewmh_WMStateSkipPager(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateSkipPager(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
+		if (do_restore) {
 			if (HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				return True;
 			}
 			return False;
@@ -1076,30 +943,26 @@ int ewmh_WMStateSkipPager(
 		return DO_SKIP_WINDOW_LIST(fw);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
 		/*if (has_hint)*/
 		fvwm_debug(__func__, "\t Skip_Pager %lu, %i, %i\n", has_hint,
-			   HAS_EWMH_INIT_SKIP_PAGER_STATE(fw),
-			   DO_EWMH_IGNORE_STATE_HINTS(style));
+		    HAS_EWMH_INIT_SKIP_PAGER_STATE(fw),
+		    DO_EWMH_IGNORE_STATE_HINTS(style));
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fw,
+			    EWMH_STATE_NO_HINT);
 			return 0;
 		}
 
@@ -1110,35 +973,29 @@ int ewmh_WMStateSkipPager(
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* I do not think we can get such client message */
 		int bool_arg = ev->xclient.data.l[0];
 
 		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     !DO_SKIP_WINDOW_LIST(fw)) ||
-		    bool_arg == NET_WM_STATE_ADD)
-		{
-		}
-		else
-		{
+			!DO_SKIP_WINDOW_LIST(fw)) ||
+		    bool_arg == NET_WM_STATE_ADD) {
+		} else {
 		}
 	}
 	return 0;
 }
 
-int ewmh_WMStateSkipTaskBar(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateSkipTaskBar(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
+		if (do_restore) {
 			if (HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				return True;
 			}
 			return False;
@@ -1146,280 +1003,234 @@ int ewmh_WMStateSkipTaskBar(
 		return DO_SKIP_WINDOW_LIST(fw);
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
 		/*if (has_hint)*/
-		fvwm_debug(__func__, "\t Skip_Taskbar %lu, %i, %i\n",
-			   has_hint,
-			   HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw),
-			   DO_EWMH_IGNORE_STATE_HINTS(style));
+		fvwm_debug(__func__, "\t Skip_Taskbar %lu, %i, %i\n", has_hint,
+		    HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw),
+		    DO_EWMH_IGNORE_STATE_HINTS(style));
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw,
+			    EWMH_STATE_NO_HINT);
 			return 0;
 		}
 
 		S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
 		S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
 		S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
-		SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(
-			fw, EWMH_STATE_HAS_HINT);
+		SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw, EWMH_STATE_HAS_HINT);
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* I do not think we can get such client message */
 		int bool_arg = ev->xclient.data.l[0];
 
 		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     !DO_SKIP_WINDOW_LIST(fw)) ||
-		    bool_arg == NET_WM_STATE_ADD)
-		{
-		}
-		else
-		{
+			!DO_SKIP_WINDOW_LIST(fw)) ||
+		    bool_arg == NET_WM_STATE_ADD) {
+		} else {
 		}
 	}
 	return 0;
 }
 
-int ewmh_WMStateStaysOnTop(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateStaysOnTop(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
-			if (fw->ewmh_hint_layer == Scr.TopLayer)
-			{
+		if (do_restore) {
+			if (fw->ewmh_hint_layer == Scr.TopLayer) {
 				return True;
 			}
 			return False;
 		}
-		if (fw->layer >= Scr.TopLayer)
-		{
+		if (fw->layer >= Scr.TopLayer) {
 			return True;
 		}
 		return False;
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\tStaysOnTop\n");
 		}
 #endif
-		if (!DO_EWMH_USE_STACKING_HINTS(style))
-		{
+		if (!DO_EWMH_USE_STACKING_HINTS(style)) {
 			return 0;
 		}
-		if (!has_hint && fw->ewmh_hint_layer == 0)
-		{
+		if (!has_hint && fw->ewmh_hint_layer == 0) {
 			fw->ewmh_hint_layer = -1;
 			return 0;
 		}
-		if (fw->ewmh_hint_layer == -1)
-		{
+		if (fw->ewmh_hint_layer == -1) {
 			return 0;
 		}
 
 		fw->ewmh_hint_layer = Scr.TopLayer;
 		SSET_LAYER(*style, Scr.TopLayer);
-		style->flags.use_layer = 1;
-		style->flag_mask.use_layer = 1;
+		style->flags.use_layer	     = 1;
+		style->flag_mask.use_layer   = 1;
 		style->change_mask.use_layer = 1;
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int cmd_arg = ev->xclient.data.l[0];
 
-		if (!DO_EWMH_USE_STACKING_HINTS(fw))
-		{
-		    	/* if we don't pay attention to the hints,
+		if (!DO_EWMH_USE_STACKING_HINTS(fw)) {
+			/* if we don't pay attention to the hints,
 			 * I don't think we should honor this request also
 			 */
 			return 0;
 		}
 		if (fw->layer < Scr.TopLayer &&
 		    (cmd_arg == NET_WM_STATE_TOGGLE ||
-		     cmd_arg == NET_WM_STATE_ADD))
-		{
+			cmd_arg == NET_WM_STATE_ADD)) {
 			new_layer(fw, Scr.TopLayer);
-		}
-		else if (
-			fw->layer == Scr.TopLayer &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_REMOVE))
-		{
+		} else if (fw->layer == Scr.TopLayer &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_REMOVE)) {
 			new_layer(fw, Scr.DefaultLayer);
 		}
-	/* 			layer < TopLayer	layer == TopLayer
-	 * CMD
-	 * STATE_ADD		new_layer(TOP)		   do nothing
-	 * STATE_TOGGLE		new_layer(TOP)		new_layer(DEFAULT)
-	 * STATE_REMOVE		  do nothing		new_layer(DEFAULT)
-	 */
+		/* 			layer < TopLayer	layer ==
+		 * TopLayer CMD STATE_ADD		new_layer(TOP)
+		 * do nothing STATE_TOGGLE		new_layer(TOP)
+		 * new_layer(DEFAULT) STATE_REMOVE		  do nothing
+		 * new_layer(DEFAULT)
+		 */
 	}
 	return 0;
 }
 
-int ewmh_WMStateStaysOnBottom(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateStaysOnBottom(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
-			if (fw->ewmh_hint_layer == Scr.BottomLayer)
-			{
+		if (do_restore) {
+			if (fw->ewmh_hint_layer == Scr.BottomLayer) {
 				return True;
 			}
 			return False;
 		}
-		if (fw->layer <= Scr.BottomLayer)
-		{
+		if (fw->layer <= Scr.BottomLayer) {
 			return True;
 		}
 		return False;
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
 		if (has_hint)
 			fvwm_debug(__func__, "\tStaysOnBottom\n");
 #endif
-		if (!DO_EWMH_USE_STACKING_HINTS(style))
-		{
+		if (!DO_EWMH_USE_STACKING_HINTS(style)) {
 			return 0;
 		}
-		if (!has_hint && fw->ewmh_hint_layer == 0)
-		{
+		if (!has_hint && fw->ewmh_hint_layer == 0) {
 			fw->ewmh_hint_layer = -1;
 			return 0;
 		}
-		if (fw->ewmh_hint_layer == -1)
-		{
+		if (fw->ewmh_hint_layer == -1) {
 			return 0;
 		}
 
 		fw->ewmh_hint_layer = Scr.BottomLayer;
 		SSET_LAYER(*style, Scr.BottomLayer);
-		style->flags.use_layer = 1;
-		style->flag_mask.use_layer = 1;
+		style->flags.use_layer	     = 1;
+		style->flag_mask.use_layer   = 1;
 		style->change_mask.use_layer = 1;
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int cmd_arg = ev->xclient.data.l[0];
 
-		if (!DO_EWMH_USE_STACKING_HINTS(fw))
-		{
-		    	/* if we don't pay attention to the hints,
+		if (!DO_EWMH_USE_STACKING_HINTS(fw)) {
+			/* if we don't pay attention to the hints,
 			 * I don't think we should honor this request also
 			 */
 			return 0;
 		}
-		if (
-			fw->layer > Scr.BottomLayer &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_ADD))
-		{
+		if (fw->layer > Scr.BottomLayer &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_ADD)) {
 			new_layer(fw, Scr.BottomLayer);
-		}
-		else if (
-			fw->layer == Scr.BottomLayer &&
-			(cmd_arg == NET_WM_STATE_TOGGLE ||
-			 cmd_arg == NET_WM_STATE_REMOVE))
-		{
+		} else if (fw->layer == Scr.BottomLayer &&
+		    (cmd_arg == NET_WM_STATE_TOGGLE ||
+			cmd_arg == NET_WM_STATE_REMOVE)) {
 			new_layer(fw, Scr.DefaultLayer);
 		}
-	/* 			layer > BottomLayer	layer == BottomLayer
-	 * CMD
-	 * STATE_ADD		new_layer(BOTTOM)	   do nothing
-	 * STATE_TOGGLE		new_layer(BOTTOM)	new_layer(DEFAULT)
-	 * STATE_REMOVE		  do nothing		new_layer(DEFAULT)
-	 */
+		/* 			layer > BottomLayer	layer ==
+		 * BottomLayer CMD STATE_ADD		new_layer(BOTTOM)
+		 * do nothing STATE_TOGGLE		new_layer(BOTTOM)
+		 * new_layer(DEFAULT) STATE_REMOVE		  do nothing
+		 * new_layer(DEFAULT)
+		 */
 	}
 	return 0;
 }
 
-int ewmh_WMStateSticky(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStateSticky(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
 
-	if (ev == NULL && style == NULL)
-	{
+	if (ev == NULL && style == NULL) {
 		unsigned long do_restore = any;
 
-		if (do_restore)
-		{
+		if (do_restore) {
 			if (HAS_EWMH_INIT_STICKY_STATE(fw) ==
-			    EWMH_STATE_HAS_HINT)
-			{
+			    EWMH_STATE_HAS_HINT) {
 				return True;
 			}
 			return False;
 		}
-		return (IS_STICKY_ACROSS_PAGES(fw) &&
-			IS_STICKY_ACROSS_DESKS(fw));
+		return (
+		    IS_STICKY_ACROSS_PAGES(fw) && IS_STICKY_ACROSS_DESKS(fw));
 	}
 
-	if (ev == NULL && style != NULL)
-	{
+	if (ev == NULL && style != NULL) {
 		/* start sticky */
 		unsigned long has_hint = any;
 #if DEBUG_EWMH_INIT_STATE
-		if (has_hint)
-		{
+		if (has_hint) {
 			fvwm_debug(__func__, "\t Sticky\n");
 		}
 #endif
-		if (DO_EWMH_IGNORE_STATE_HINTS(style))
-		{
-			SET_HAS_EWMH_INIT_STICKY_STATE(
-				fw, EWMH_STATE_UNDEFINED_HINT);
+		if (DO_EWMH_IGNORE_STATE_HINTS(style)) {
+			SET_HAS_EWMH_INIT_STICKY_STATE(fw,
+			    EWMH_STATE_UNDEFINED_HINT);
 			return 0;
 		}
 		if (HAS_EWMH_INIT_STICKY_STATE(fw) !=
-		    EWMH_STATE_UNDEFINED_HINT)
-		{
+		    EWMH_STATE_UNDEFINED_HINT) {
 			return 0;
 		}
-		if (!has_hint)
-		{
-			SET_HAS_EWMH_INIT_STICKY_STATE(
-				fw, EWMH_STATE_NO_HINT);
+		if (!has_hint) {
+			SET_HAS_EWMH_INIT_STICKY_STATE(fw, EWMH_STATE_NO_HINT);
 			return 0;
 		}
 		S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
@@ -1432,25 +1243,21 @@ int ewmh_WMStateSticky(
 		return 0;
 	}
 
-	if (ev != NULL)
-	{
+	if (ev != NULL) {
 		/* client message */
 		int bool_arg = ev->xclient.data.l[0];
 		if ((bool_arg == NET_WM_STATE_TOGGLE &&
-		     (!IS_STICKY_ACROSS_PAGES(fw) ||
-		      !IS_STICKY_ACROSS_DESKS(fw))) ||
-		    bool_arg == NET_WM_STATE_ADD)
-		{
-			execute_function_override_window(
-				NULL, NULL, "Stick on", NULL, 0, fw);
-		}
-		else if ((IS_STICKY_ACROSS_PAGES(fw) ||
-			  IS_STICKY_ACROSS_DESKS(fw)) &&
-			 (bool_arg == NET_WM_STATE_TOGGLE ||
-			  bool_arg == NET_WM_STATE_REMOVE))
-		{
-			execute_function_override_window(
-				NULL, NULL, "Stick off", NULL, 1, fw);
+			(!IS_STICKY_ACROSS_PAGES(fw) ||
+			    !IS_STICKY_ACROSS_DESKS(fw))) ||
+		    bool_arg == NET_WM_STATE_ADD) {
+			execute_function_override_window(NULL, NULL, "Stick on",
+			    NULL, 0, fw);
+		} else if ((IS_STICKY_ACROSS_PAGES(fw) ||
+			       IS_STICKY_ACROSS_DESKS(fw)) &&
+		    (bool_arg == NET_WM_STATE_TOGGLE ||
+			bool_arg == NET_WM_STATE_REMOVE)) {
+			execute_function_override_window(NULL, NULL,
+			    "Stick off", NULL, 1, fw);
 		}
 	}
 	return 0;
@@ -1460,44 +1267,42 @@ int ewmh_WMStateSticky(
  * Property Notify (_NET_WM_ICON is in ewmh_icon.c, _NET_WM_*NAME are in
  * ewmh_name)                        *
  */
-int ewmh_WMIconGeometry(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMIconGeometry(FvwmWindow *fw, XEvent *ev, window_style *style,
+    unsigned long any)
 {
-	int size;
+	int	size;
 	CARD32 *val;
 
 	/* FIXME: After a (un)slide of kicker the geometry are wrong (not
 	 * because we set the geometry just after the property notify).  This
 	 * does not happen with kwin */
-	val = ewmh_AtomGetByName(
-		FW_W(fw), "_NET_WM_ICON_GEOMETRY",
-		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
+	val = ewmh_AtomGetByName(FW_W(fw), "_NET_WM_ICON_GEOMETRY",
+	    EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
-	if (val != NULL && size < 4 * sizeof(CARD32))
-	{
+	if (val != NULL && size < 4 * sizeof(CARD32)) {
 		fvwm_debug(__func__,
-			   "The application window (id %#lx)\n"
-			   "  \"%s\" tried to set to an icon geometry via EWMH\n"
-			   "  but provided only %d of the 4 values required.\n"
-			   "    fvwm is ignoring this request.\n",
-			   fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
-			   (int)(size / sizeof(CARD32)));
+		    "The application window (id %#lx)\n"
+		    "  \"%s\" tried to set to an icon geometry via EWMH\n"
+		    "  but provided only %d of the 4 values required.\n"
+		    "    fvwm is ignoring this request.\n",
+		    fw ? FW_W(fw) : 0, fw ? fw->name.name : "(none)",
+		    (int)(size / sizeof(CARD32)));
 		fvwm_msg_report_app_and_workers();
 		free(val);
 		val = NULL;
 	}
-	if (val == NULL)
-	{
-		fw->ewmh_icon_geometry.x = 0;
-		fw->ewmh_icon_geometry.y = 0;
-		fw->ewmh_icon_geometry.width = 0;
+	if (val == NULL) {
+		fw->ewmh_icon_geometry.x      = 0;
+		fw->ewmh_icon_geometry.y      = 0;
+		fw->ewmh_icon_geometry.width  = 0;
 		fw->ewmh_icon_geometry.height = 0;
 
 		return 0;
 	}
-	fw->ewmh_icon_geometry.x = val[0];
-	fw->ewmh_icon_geometry.y = val[1];
-	fw->ewmh_icon_geometry.width = val[2];
+	fw->ewmh_icon_geometry.x      = val[0];
+	fw->ewmh_icon_geometry.y      = val[1];
+	fw->ewmh_icon_geometry.width  = val[2];
 	fw->ewmh_icon_geometry.height = val[3];
 	free(val);
 
@@ -1505,66 +1310,57 @@ int ewmh_WMIconGeometry(
 }
 
 /**** for animation ****/
-void EWMH_GetIconGeometry(FvwmWindow *fw, rectangle *icon_rect)
+void
+EWMH_GetIconGeometry(FvwmWindow *fw, rectangle *icon_rect)
 {
 	if (!IS_ICON_SUPPRESSED(fw) ||
-	    (fw->ewmh_icon_geometry.x == 0 &&
-	     fw->ewmh_icon_geometry.y == 0 &&
-	     fw->ewmh_icon_geometry.width == 0 &&
-	     fw->ewmh_icon_geometry.height == 0))
-	{
+	    (fw->ewmh_icon_geometry.x == 0 && fw->ewmh_icon_geometry.y == 0 &&
+		fw->ewmh_icon_geometry.width == 0 &&
+		fw->ewmh_icon_geometry.height == 0)) {
 		return;
 	}
-	icon_rect->x = fw->ewmh_icon_geometry.x;
-	icon_rect->y = fw->ewmh_icon_geometry.y;
-	icon_rect->width = fw->ewmh_icon_geometry.width;
+	icon_rect->x	  = fw->ewmh_icon_geometry.x;
+	icon_rect->y	  = fw->ewmh_icon_geometry.y;
+	icon_rect->width  = fw->ewmh_icon_geometry.width;
 	icon_rect->height = fw->ewmh_icon_geometry.height;
 
 	return;
 }
 
-int ewmh_WMStrut(
-	FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
+int
+ewmh_WMStrut(FvwmWindow *fw, XEvent *ev, window_style *style, unsigned long any)
 {
-	int size = 0;
-	CARD32 *val;
-	struct monitor	*m;
+	int		size = 0;
+	CARD32	       *val;
+	struct monitor *m;
 
 	m = (fw && fw->m) ? fw->m : monitor_get_current();
 
-	if (ev == NULL)
-	{
+	if (ev == NULL) {
 		fw->dyn_strut.left = fw->strut.left = 0;
 		fw->dyn_strut.right = fw->strut.right = 0;
 		fw->dyn_strut.top = fw->strut.top = 0;
 		fw->dyn_strut.bottom = fw->strut.bottom = 0;
 	}
 
-	val = ewmh_AtomGetByName(
-		FW_W(fw), "_NET_WM_STRUT",
-		EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
+	val = ewmh_AtomGetByName(FW_W(fw), "_NET_WM_STRUT",
+	    EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
-	if (val == NULL)
-	{
+	if (val == NULL) {
 		return 0;
 	}
 
-	if ((val[0] > 0 || val[1] > 0 || val[2] > 0 || val[3] > 0)
-	    &&
-	    (val[0] !=  fw->strut.left || val[1] != fw->strut.right ||
-	     val[2] != fw->strut.top   || val[3] !=  fw->strut.bottom))
-	{
-		fw->strut.left   = val[0];
-		fw->strut.right  = val[1];
-		fw->strut.top    = val[2];
+	if ((val[0] > 0 || val[1] > 0 || val[2] > 0 || val[3] > 0) &&
+	    (val[0] != fw->strut.left || val[1] != fw->strut.right ||
+		val[2] != fw->strut.top || val[3] != fw->strut.bottom)) {
+		fw->strut.left	 = val[0];
+		fw->strut.right	 = val[1];
+		fw->strut.top	 = val[2];
 		fw->strut.bottom = val[3];
 		ewmh_ComputeAndSetWorkArea(m);
 	}
-	if (val[0] !=  fw->dyn_strut.left ||
-	    val[1] != fw->dyn_strut.right ||
-	    val[2] != fw->dyn_strut.top ||
-	    val[3] !=  fw->dyn_strut.bottom)
-	{
+	if (val[0] != fw->dyn_strut.left || val[1] != fw->dyn_strut.right ||
+	    val[2] != fw->dyn_strut.top || val[3] != fw->dyn_strut.bottom) {
 		fw->dyn_strut.left   = val[0];
 		fw->dyn_strut.right  = val[1];
 		fw->dyn_strut.top    = val[2];
@@ -1576,55 +1372,47 @@ int ewmh_WMStrut(
 	return 0;
 }
 
-Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
+Bool
+EWMH_ProcessClientMessage(const exec_context_t *exc)
 {
-	ewmh_atom *ewmh_a = NULL;
-	FvwmWindow *fw = exc->w.fw;
-	XEvent *ev = exc->x.elast;
+	ewmh_atom  *ewmh_a = NULL;
+	FvwmWindow *fw	   = exc->w.fw;
+	XEvent	   *ev	   = exc->x.elast;
 
 	if ((ewmh_a = (ewmh_atom *)ewmh_GetEwmhAtomByAtom(
-		     ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_ROOT)) !=
-	    NULL)
-	{
-		if (ewmh_a->action != None)
-		{
+		 ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_ROOT)) !=
+	    NULL) {
+		if (ewmh_a->action != None) {
 			ewmh_a->action(fw, ev, NULL, 0);
 		}
 		return True;
 	}
 
 	if ((ewmh_a = (ewmh_atom *)ewmh_GetEwmhAtomByAtom(
-		     ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_WIN))
-	    == NULL)
-	{
+		 ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_WIN)) ==
+	    NULL) {
 		return False;
 	}
 
-	if (ev->xclient.window == None)
-	{
+	if (ev->xclient.window == None) {
 		return False;
 	}
 
 	/* these one are special: we can get it on an unamaged window */
 	if (StrEquals(ewmh_a->name, "_NET_MOVERESIZE_WINDOW") ||
-	    StrEquals(ewmh_a->name, "_NET_RESTACK_WINDOW"))
-	{
+	    StrEquals(ewmh_a->name, "_NET_RESTACK_WINDOW")) {
 		ewmh_a->action(fw, ev, NULL, 0);
 		return True;
 	}
 
-	if (fw == NULL)
-	{
+	if (fw == NULL) {
 		return False;
 	}
 
-
 	if ((ewmh_a = (ewmh_atom *)ewmh_GetEwmhAtomByAtom(
-		     ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_WIN)) !=
-	    NULL)
-	{
-		if (ewmh_a->action != None)
-		{
+		 ev->xclient.message_type, EWMH_ATOM_LIST_CLIENT_WIN)) !=
+	    NULL) {
+		if (ewmh_a->action != None) {
 			ewmh_a->action(fw, ev, NULL, 0);
 		}
 		return True;
@@ -1633,32 +1421,27 @@ Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
 	return False;
 }
 
-void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
+void
+EWMH_ProcessPropertyNotify(const exec_context_t *exc)
 {
-	ewmh_atom *ewmh_a = NULL;
-	FvwmWindow *fw = exc->w.fw;
-	XEvent *ev = exc->x.elast;
+	ewmh_atom  *ewmh_a = NULL;
+	FvwmWindow *fw	   = exc->w.fw;
+	XEvent	   *ev	   = exc->x.elast;
 
-	if ((ewmh_a = (ewmh_atom *)ewmh_GetEwmhAtomByAtom(
-		     ev->xproperty.atom, EWMH_ATOM_LIST_PROPERTY_NOTIFY)) !=
-	    NULL)
-	{
-		if (ewmh_a->action != None)
-		{
+	if ((ewmh_a = (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xproperty.atom,
+		 EWMH_ATOM_LIST_PROPERTY_NOTIFY)) != NULL) {
+		if (ewmh_a->action != None) {
 			flush_property_notify_stop_at_event_type(
-				ev->xproperty.atom, FW_W(fw), 0, 0);
-			if (XGetGeometry(
-				    dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-				    (unsigned int*)&JunkWidth,
-				    (unsigned int*)&JunkHeight,
-				    (unsigned int*)&JunkBW,
-				    (unsigned int*)&JunkDepth) == 0)
-			{
+			    ev->xproperty.atom, FW_W(fw), 0, 0);
+			if (XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX,
+				&JunkY, (unsigned int *)&JunkWidth,
+				(unsigned int *)&JunkHeight,
+				(unsigned int *)&JunkBW,
+				(unsigned int *)&JunkDepth) == 0) {
 				/* Window does not exist anymore. */
 				return;
 			}
 			ewmh_a->action(fw, ev, NULL, 0);
 		}
 	}
-
 }

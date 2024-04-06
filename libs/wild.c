@@ -28,66 +28,54 @@
  *      It is public domain, no strings attached. No guarantees either.
  *
  */
-int matchWildcards(const char *pattern, const char *string)
+int
+matchWildcards(const char *pattern, const char *string)
 {
-	if(string == NULL)
-	{
-		if(pattern == NULL)
+	if (string == NULL) {
+		if (pattern == NULL)
 			return 1;
-		else if(strcmp(pattern,"*")==0)
+		else if (strcmp(pattern, "*") == 0)
 			return 1;
 		else
 			return 0;
 	}
-	if(pattern == NULL)
+	if (pattern == NULL)
 		return 1;
 
-	while (*string && *pattern)
-	{
-		if (*pattern == '?')
-		{
+	while (*string && *pattern) {
+		if (*pattern == '?') {
 			/* match any character */
 			pattern += 1;
 			string += 1;
-		}
-		else if (*pattern == '*')
-		{
+		} else if (*pattern == '*') {
 			/* see if the rest of the pattern matches any trailing
 			 * substring of the string. */
 			pattern += 1;
-			if (*pattern == 0)
-			{
+			if (*pattern == 0) {
 				return 1; /* trailing * must match rest */
 			}
-			while (*string)
-			{
-				if (matchWildcards(pattern,string))
-				{
+			while (*string) {
+				if (matchWildcards(pattern, string)) {
 					return 1;
 				}
 				string++;
 			}
 			return 0;
-		}
-		else
-		{
-			if (*pattern == '\\')
-			{
+		} else {
+			if (*pattern == '\\') {
 				/* has strange, but harmless effects if the
 				 * last character is a '\\' */
-				pattern ++;
+				pattern++;
 			}
-			if  (*pattern++ != *string++)
-			{
+			if (*pattern++ != *string++) {
 				return 0;
 			}
 		}
 	}
-	if((*pattern == 0)&&(*string == 0))
+	if ((*pattern == 0) && (*string == 0))
 		return 1;
-	if((*string == 0)&&(strcmp(pattern,"*")==0))
+	if ((*string == 0) && (strcmp(pattern, "*") == 0))
 		return 1;
 
 	return 0;
 }
-

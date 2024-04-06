@@ -55,16 +55,15 @@ static MenuStyle *default_menu_style;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static void parse_vertical_spacing_line(
-	char *args, signed char *above, signed char *below,
-	signed char above_default, signed char below_default)
+static void
+parse_vertical_spacing_line(char *args, signed char *above, signed char *below,
+    signed char above_default, signed char below_default)
 {
 	int val[2];
 
 	if (GetIntegerArguments(args, NULL, val, 2) != 2 ||
 	    val[0] < MIN_VERTICAL_SPACING || val[0] > MAX_VERTICAL_SPACING ||
-	    val[1] < MIN_VERTICAL_SPACING || val[1] > MAX_VERTICAL_SPACING)
-	{
+	    val[1] < MIN_VERTICAL_SPACING || val[1] > MAX_VERTICAL_SPACING) {
 		/* illegal or missing parameters, return to default */
 		*above = above_default;
 		*below = below_default;
@@ -76,79 +75,56 @@ static void parse_vertical_spacing_line(
 	return;
 }
 
-static void parse_vertical_margins_line(
-	char *args, unsigned char *top, unsigned char *bottom,
-	signed char top_default, signed char bottom_default)
+static void
+parse_vertical_margins_line(char *args, unsigned char *top,
+    unsigned char *bottom, signed char top_default, signed char bottom_default)
 {
 	int val[2];
 
-	if (GetIntegerArguments(args, NULL, val, 2) != 2 ||
-	    val[0] < 0 || val[0] > MAX_MENU_MARGIN ||
-	    val[1] < 0 || val[1] > MAX_MENU_MARGIN)
-	{
+	if (GetIntegerArguments(args, NULL, val, 2) != 2 || val[0] < 0 ||
+	    val[0] > MAX_MENU_MARGIN || val[1] < 0 ||
+	    val[1] > MAX_MENU_MARGIN) {
 		/* invalid or missing parameters, return to default */
-		*top = top_default;
+		*top	= top_default;
 		*bottom = bottom_default;
 		return;
 	}
-	*top = val[0];
+	*top	= val[0];
 	*bottom = val[1];
 
 	return;
 }
 
-static int menustyle_get_styleopt_index(char *option)
+static int
+menustyle_get_styleopt_index(char *option)
 {
-	char *optlist[] = {
-		"fvwm", "mwm", "win",
-		"HilightBack", "ActiveFore",
-		"Hilight3DThick", "Hilight3DThin", "Hilight3DOff",
-		"Animation",
-		"Font",
-		"PopupDelay", "PopupOffset",
-		"TitleWarp",
+	char *optlist[] = { "fvwm", "mwm", "win", "HilightBack", "ActiveFore",
+		"Hilight3DThick", "Hilight3DThin", "Hilight3DOff", "Animation",
+		"Font", "PopupDelay", "PopupOffset", "TitleWarp",
 		"TitleUnderlines0", "TitleUnderlines1", "TitleUnderlines2",
-		"SeparatorsLong", "SeparatorsShort",
-		"TrianglesSolid", "TrianglesRelief",
-		"PopupImmediately", "PopupDelayed",
-		"DoubleClickTime",
-		"SidePic", "SideColor",
-		"PopupAsRootmenu", "PopupAsSubmenu",
-		"RemoveSubmenus", "HoldSubmenus",
-		"SubmenusRight", "SubmenusLeft",
-		"BorderWidth",
-		"Hilight3DThickness",
-		"ItemFormat",
-		"AutomaticHotkeys",
-		"VerticalItemSpacing",
-		"VerticalTitleSpacing",
-		"MenuColorset", "ActiveColorset", "GreyedColorset",
-		"SelectOnRelease",
-		"PopdownImmediately", "PopdownDelayed",
-		"PopdownDelay",
-		"PopupActiveArea",
-		"PopupIgnore", "PopupClose",
-		"MouseWheel", "ScrollOffPage",
-		"TrianglesUseFore",
-		"TitleColorset", "HilightTitleBack",
-		"TitleFont",
-		"VerticalMargins",
-		"UniqueHotkeyActivatesImmediate",
-		"Translucent",
-		NULL
-	};
+		"SeparatorsLong", "SeparatorsShort", "TrianglesSolid",
+		"TrianglesRelief", "PopupImmediately", "PopupDelayed",
+		"DoubleClickTime", "SidePic", "SideColor", "PopupAsRootmenu",
+		"PopupAsSubmenu", "RemoveSubmenus", "HoldSubmenus",
+		"SubmenusRight", "SubmenusLeft", "BorderWidth",
+		"Hilight3DThickness", "ItemFormat", "AutomaticHotkeys",
+		"VerticalItemSpacing", "VerticalTitleSpacing", "MenuColorset",
+		"ActiveColorset", "GreyedColorset", "SelectOnRelease",
+		"PopdownImmediately", "PopdownDelayed", "PopdownDelay",
+		"PopupActiveArea", "PopupIgnore", "PopupClose", "MouseWheel",
+		"ScrollOffPage", "TrianglesUseFore", "TitleColorset",
+		"HilightTitleBack", "TitleFont", "VerticalMargins",
+		"UniqueHotkeyActivatesImmediate", "Translucent", NULL };
 
 	return GetTokenIndex(option, optlist, 0, NULL);
 }
 
-static void change_or_make_gc(GC *gc, unsigned long gcm, XGCValues *gcv)
+static void
+change_or_make_gc(GC *gc, unsigned long gcm, XGCValues *gcv)
 {
-	if (*gc != None)
-	{
+	if (*gc != None) {
 		XChangeGC(dpy, *gc, gcm, gcv);
-	}
-	else
-	{
+	} else {
 		*gc = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, gcv);
 	}
 
@@ -157,90 +133,73 @@ static void change_or_make_gc(GC *gc, unsigned long gcm, XGCValues *gcv)
 
 /* ---------------------------- interface functions ------------------------ */
 
-MenuStyle *menustyle_get_default_style(void)
+MenuStyle *
+menustyle_get_default_style(void)
 {
 	return default_menu_style;
 }
 
-void menustyle_free(MenuStyle *ms)
+void
+menustyle_free(MenuStyle *ms)
 {
 	MenuStyle *before = default_menu_style;
 
-	if (!ms)
-	{
+	if (!ms) {
 		return;
 	}
-	if (FORE_GC(ST_MENU_INACTIVE_GCS(ms)))
-	{
+	if (FORE_GC(ST_MENU_INACTIVE_GCS(ms))) {
 		XFreeGC(dpy, FORE_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
-	if (FORE_GC(ST_MENU_ACTIVE_GCS(ms)))
-	{
+	if (FORE_GC(ST_MENU_ACTIVE_GCS(ms))) {
 		XFreeGC(dpy, FORE_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (BACK_GC(ST_MENU_ACTIVE_GCS(ms)))
-	{
+	if (BACK_GC(ST_MENU_ACTIVE_GCS(ms))) {
 		XFreeGC(dpy, BACK_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)))
-	{
+	if (HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms))) {
 		XFreeGC(dpy, HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)))
-	{
+	if (SHADOW_GC(ST_MENU_ACTIVE_GCS(ms))) {
 		XFreeGC(dpy, SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)));
 	}
-	if (HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)))
-	{
+	if (HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms))) {
 		XFreeGC(dpy, HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
-	if (SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)))
-	{
+	if (SHADOW_GC(ST_MENU_INACTIVE_GCS(ms))) {
 		XFreeGC(dpy, SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)));
 	}
-	if (FORE_GC(ST_MENU_STIPPLE_GCS(ms)))
-	{
+	if (FORE_GC(ST_MENU_STIPPLE_GCS(ms))) {
 		XFreeGC(dpy, FORE_GC(ST_MENU_STIPPLE_GCS(ms)));
 	}
-	if (FORE_GC(ST_MENU_TITLE_GCS(ms)))
-	{
+	if (FORE_GC(ST_MENU_TITLE_GCS(ms))) {
 		XFreeGC(dpy, FORE_GC(ST_MENU_TITLE_GCS(ms)));
 	}
-	if (BACK_GC(ST_MENU_TITLE_GCS(ms)))
-	{
+	if (BACK_GC(ST_MENU_TITLE_GCS(ms))) {
 		XFreeGC(dpy, BACK_GC(ST_MENU_TITLE_GCS(ms)));
 	}
-	if (HILIGHT_GC(ST_MENU_TITLE_GCS(ms)))
-	{
+	if (HILIGHT_GC(ST_MENU_TITLE_GCS(ms))) {
 		XFreeGC(dpy, HILIGHT_GC(ST_MENU_TITLE_GCS(ms)));
 	}
-	if (SHADOW_GC(ST_MENU_TITLE_GCS(ms)))
-	{
+	if (SHADOW_GC(ST_MENU_TITLE_GCS(ms))) {
 		XFreeGC(dpy, SHADOW_GC(ST_MENU_TITLE_GCS(ms)));
 	}
-	if (ST_SIDEPIC(ms))
-	{
+	if (ST_SIDEPIC(ms)) {
 		PDestroyFvwmPicture(dpy, ST_SIDEPIC(ms));
 	}
-	if (ST_HAS_SIDE_COLOR(ms) == 1)
-	{
+	if (ST_HAS_SIDE_COLOR(ms) == 1) {
 		fvwmlib_free_colors(dpy, &ST_SIDE_COLOR(ms), 1, True);
 	}
-	if (ST_PSTDFONT(ms) && !ST_USING_DEFAULT_FONT(ms))
-	{
+	if (ST_PSTDFONT(ms) && !ST_USING_DEFAULT_FONT(ms)) {
 		FlocaleUnloadFont(dpy, ST_PSTDFONT(ms));
 	}
-	if (ST_PTITLEFONT(ms) && !ST_USING_DEFAULT_TITLEFONT(ms))
-	{
+	if (ST_PTITLEFONT(ms) && !ST_USING_DEFAULT_TITLEFONT(ms)) {
 		FlocaleUnloadFont(dpy, ST_PTITLEFONT(ms));
 	}
-	if (ST_ITEM_FORMAT(ms))
-	{
+	if (ST_ITEM_FORMAT(ms)) {
 		free(ST_ITEM_FORMAT(ms));
 	}
 
-	while (ST_NEXT_STYLE(before) != ms)
-	{
+	while (ST_NEXT_STYLE(before) != ms) {
 		/* Not too many checks, may segfault in race conditions */
 		before = ST_NEXT_STYLE(before);
 	}
@@ -252,14 +211,13 @@ void menustyle_free(MenuStyle *ms)
 	return;
 }
 
-MenuStyle *menustyle_find(char *name)
+MenuStyle *
+menustyle_find(char *name)
 {
 	MenuStyle *ms = default_menu_style;
 
-	while (ms)
-	{
-		if (strcasecmp(ST_NAME(ms),name)==0)
-		{
+	while (ms) {
+		if (strcasecmp(ST_NAME(ms), name) == 0) {
 			return ms;
 		}
 		ms = ST_NEXT_STYLE(ms);
@@ -268,146 +226,127 @@ MenuStyle *menustyle_find(char *name)
 	return NULL;
 }
 
-void menustyle_update(MenuStyle *ms)
+void
+menustyle_update(MenuStyle *ms)
 {
-	XGCValues gcv;
+	XGCValues     gcv;
 	unsigned long gcm;
-	colorset_t *menu_cs = &Colorset[ST_CSET_MENU(ms)];
-	colorset_t *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
-	colorset_t *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
-	colorset_t *title_cs = &Colorset[ST_CSET_TITLE(ms)];
+	colorset_t   *menu_cs	= &Colorset[ST_CSET_MENU(ms)];
+	colorset_t   *active_cs = &Colorset[ST_CSET_ACTIVE(ms)];
+	colorset_t   *greyed_cs = &Colorset[ST_CSET_GREYED(ms)];
+	colorset_t   *title_cs	= &Colorset[ST_CSET_TITLE(ms)];
 
-	if (ST_USAGE_COUNT(ms) != 0)
-	{
-		fvwm_debug(__func__, "menu style %s is in use",
-			   ST_NAME(ms));
+	if (ST_USAGE_COUNT(ms) != 0) {
+		fvwm_debug(__func__, "menu style %s is in use", ST_NAME(ms));
 		return;
 	}
 	ST_IS_UPDATED(ms) = 1;
-	if (ST_USING_DEFAULT_FONT(ms))
-	{
+	if (ST_USING_DEFAULT_FONT(ms)) {
 		ST_PSTDFONT(ms) = Scr.DefaultFont;
 	}
-	if (ST_USING_DEFAULT_TITLEFONT(ms))
-	{
+	if (ST_USING_DEFAULT_TITLEFONT(ms)) {
 		ST_PTITLEFONT(ms) = ST_PSTDFONT(ms);
 	}
 	/* make GC's */
-	gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
-	if (ST_PSTDFONT(ms)->font != NULL)
-	{
+	gcm = GCFunction | GCLineWidth | GCForeground | GCBackground;
+	if (ST_PSTDFONT(ms)->font != NULL) {
 		gcm |= GCFont;
 		gcv.font = ST_PSTDFONT(ms)->font->fid;
 	}
-	gcv.function = GXcopy;
+	gcv.function   = GXcopy;
 	gcv.line_width = 0;
 	/* update inactive menu gcs */
 	gcv.foreground = menu_cs->fg;
 	gcv.background = menu_cs->bg;
 	change_or_make_gc(&FORE_GC(ST_MENU_INACTIVE_GCS(ms)), gcm, &gcv);
 	BACK_GC(ST_MENU_INACTIVE_GCS(ms)) = FORE_GC(ST_MENU_INACTIVE_GCS(ms));
-	gcv.foreground = menu_cs->hilite;
-	gcv.background = menu_cs->shadow;
+	gcv.foreground			  = menu_cs->hilite;
+	gcv.background			  = menu_cs->shadow;
 	change_or_make_gc(&HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms)), gcm, &gcv);
 	gcv.foreground = menu_cs->shadow;
 	gcv.background = menu_cs->hilite;
 	change_or_make_gc(&SHADOW_GC(ST_MENU_INACTIVE_GCS(ms)), gcm, &gcv);
 	/* update active menu gcs */
-	gcv.foreground = (ST_DO_HILIGHT_FORE(ms)) ? active_cs->fg
-						  : menu_cs->fg;
-	gcv.background = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->bg
-						  : menu_cs->bg;
+	gcv.foreground = (ST_DO_HILIGHT_FORE(ms)) ? active_cs->fg : menu_cs->fg;
+	gcv.background = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->bg : menu_cs->bg;
 	change_or_make_gc(&FORE_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
-	gcv.foreground = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->bg
-						  : menu_cs->bg;
-	gcv.background = (ST_DO_HILIGHT_FORE(ms)) ? active_cs->fg
-						  : menu_cs->fg;
+	gcv.foreground = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->bg : menu_cs->bg;
+	gcv.background = (ST_DO_HILIGHT_FORE(ms)) ? active_cs->fg : menu_cs->fg;
 
-	if (active_cs->pixmap && active_cs->pixmap_type == PIXMAP_TILED)
-	{
-		gcv.tile = active_cs->pixmap;
+	if (active_cs->pixmap && active_cs->pixmap_type == PIXMAP_TILED) {
+		gcv.tile       = active_cs->pixmap;
 		gcv.fill_style = FillTiled;
 		change_or_make_gc(&BACK_GC(ST_MENU_ACTIVE_GCS(ms)),
-				  gcm | GCFillStyle | GCTile , &gcv);
-	}
-	else
-	{
+		    gcm | GCFillStyle | GCTile, &gcv);
+	} else {
 		gcv.fill_style = FillSolid;
 		change_or_make_gc(&BACK_GC(ST_MENU_ACTIVE_GCS(ms)),
-				  gcm | GCFillStyle , &gcv);
+		    gcm | GCFillStyle, &gcv);
 	}
 
-	gcv.foreground = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->hilite
-						  : menu_cs->hilite;
-	gcv.background = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->shadow
-						  : menu_cs->shadow;
+	gcv.foreground = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->hilite :
+						    menu_cs->hilite;
+	gcv.background = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->shadow :
+						    menu_cs->shadow;
 	change_or_make_gc(&HILIGHT_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
-	gcv.foreground = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->shadow
-						  : menu_cs->shadow;
-	gcv.background = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->hilite
-						  : menu_cs->hilite;
+	gcv.foreground = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->shadow :
+						    menu_cs->shadow;
+	gcv.background = (ST_DO_HILIGHT_BACK(ms)) ? active_cs->hilite :
+						    menu_cs->hilite;
 	change_or_make_gc(&SHADOW_GC(ST_MENU_ACTIVE_GCS(ms)), gcm, &gcv);
 	/* update title gcs */
-	if (ST_PTITLEFONT(ms)->font != NULL && ST_PSTDFONT(ms)->font == NULL)
-	{
-		if (ST_PSTDFONT(ms)->font == NULL)
-		{
+	if (ST_PTITLEFONT(ms)->font != NULL && ST_PSTDFONT(ms)->font == NULL) {
+		if (ST_PSTDFONT(ms)->font == NULL) {
 			gcm |= GCFont;
 		}
 		gcv.font = ST_PTITLEFONT(ms)->font->fid;
 	}
-	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->fg
-							: menu_cs->fg;
-	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->bg
-							: menu_cs->bg;
+	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->fg :
+							  menu_cs->fg;
+	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->bg :
+							  menu_cs->bg;
 	change_or_make_gc(&FORE_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
-	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->bg
-							: menu_cs->bg;
-	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->fg
-							: menu_cs->fg;
+	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->bg :
+							  menu_cs->bg;
+	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->fg :
+							  menu_cs->fg;
 
-	if (title_cs->pixmap && title_cs->pixmap_type == PIXMAP_TILED)
-	{
-		gcv.tile = title_cs->pixmap;
+	if (title_cs->pixmap && title_cs->pixmap_type == PIXMAP_TILED) {
+		gcv.tile       = title_cs->pixmap;
 		gcv.fill_style = FillTiled;
 		change_or_make_gc(&BACK_GC(ST_MENU_TITLE_GCS(ms)),
-				  gcm | GCFillStyle | GCTile , &gcv);
-	}
-	else
-	{
+		    gcm | GCFillStyle | GCTile, &gcv);
+	} else {
 		gcv.fill_style = FillSolid;
 		change_or_make_gc(&BACK_GC(ST_MENU_TITLE_GCS(ms)),
-				  gcm | GCFillStyle , &gcv);
+		    gcm | GCFillStyle, &gcv);
 	}
 
-	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->hilite
-							: menu_cs->hilite;
-	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->shadow
-							: menu_cs->shadow;
+	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->hilite :
+							  menu_cs->hilite;
+	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->shadow :
+							  menu_cs->shadow;
 	change_or_make_gc(&HILIGHT_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
-	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->shadow
-							: menu_cs->shadow;
-	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->hilite
-							: menu_cs->hilite;
+	gcv.foreground = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->shadow :
+							  menu_cs->shadow;
+	gcv.background = (ST_DO_HILIGHT_TITLE_BACK(ms)) ? title_cs->hilite :
+							  menu_cs->hilite;
 	change_or_make_gc(&SHADOW_GC(ST_MENU_TITLE_GCS(ms)), gcm, &gcv);
 	/* update stipple menu gcs */
-	SHADOW_GC(ST_MENU_STIPPLE_GCS(ms)) =
-		SHADOW_GC(ST_MENU_INACTIVE_GCS(ms));
-	if (Pdepth < 2)
-	{
+	SHADOW_GC(ST_MENU_STIPPLE_GCS(ms)) = SHADOW_GC(
+	    ST_MENU_INACTIVE_GCS(ms));
+	if (Pdepth < 2) {
 		gcv.fill_style = FillStippled;
-		gcv.stipple = Scr.gray_bitmap;
+		gcv.stipple    = Scr.gray_bitmap;
 		/* no need to reset fg/bg, FillStipple wins */
 		gcm |= GCStipple | GCFillStyle;
-		HILIGHT_GC(ST_MENU_STIPPLE_GCS(ms)) =
-			SHADOW_GC(ST_MENU_INACTIVE_GCS(ms));
-	}
-	else
-	{
-		gcv.foreground = greyed_cs->fg;
-		gcv.background = greyed_cs->bg;
-		HILIGHT_GC(ST_MENU_STIPPLE_GCS(ms)) =
-			HILIGHT_GC(ST_MENU_INACTIVE_GCS(ms));
+		HILIGHT_GC(ST_MENU_STIPPLE_GCS(ms)) = SHADOW_GC(
+		    ST_MENU_INACTIVE_GCS(ms));
+	} else {
+		gcv.foreground			    = greyed_cs->fg;
+		gcv.background			    = greyed_cs->bg;
+		HILIGHT_GC(ST_MENU_STIPPLE_GCS(ms)) = HILIGHT_GC(
+		    ST_MENU_INACTIVE_GCS(ms));
 	}
 	change_or_make_gc(&FORE_GC(ST_MENU_STIPPLE_GCS(ms)), gcm, &gcv);
 	BACK_GC(ST_MENU_STIPPLE_GCS(ms)) = BACK_GC(ST_MENU_INACTIVE_GCS(ms));
@@ -415,49 +354,44 @@ void menustyle_update(MenuStyle *ms)
 	return;
 }
 
-MenuStyle *menustyle_parse_style(F_CMD_ARGS)
+MenuStyle *
+menustyle_parse_style(F_CMD_ARGS)
 {
-	char *name;
-	char *option = NULL;
-	char *poption = NULL;
-	char *optstring = NULL;
-	char *args = NULL;
-	char *arg1;
-	int on;
-	MenuStyle *ms;
-	MenuStyle *tmpms;
-	Bool is_initialised = True;
-	Bool has_gc_changed = False;
-	int val[2];
-	int n;
-	FlocaleFont *new_font = NULL;
-	int i;
-	KeyCode keycode;
+	char		     *name;
+	char		     *option	= NULL;
+	char		     *poption	= NULL;
+	char		     *optstring = NULL;
+	char		     *args	= NULL;
+	char		     *arg1;
+	int		      on;
+	MenuStyle	     *ms;
+	MenuStyle	     *tmpms;
+	Bool		      is_initialised = True;
+	Bool		      has_gc_changed = False;
+	int		      val[2];
+	int		      n;
+	FlocaleFont	     *new_font = NULL;
+	int		      i;
+	KeyCode		      keycode;
 	FvwmPictureAttributes fpa;
 
 	action = GetNextToken(action, &name);
-	if (!name)
-	{
-		fvwm_debug(__func__,
-			   "error in %s style specification",action);
+	if (!name) {
+		fvwm_debug(__func__, "error in %s style specification", action);
 		return NULL;
 	}
 
 	ms = menustyle_find(name);
-	if (ms && ST_USAGE_COUNT(ms) != 0)
-	{
+	if (ms && ST_USAGE_COUNT(ms) != 0) {
 		fvwm_debug(__func__, "menu style %s is in use", name);
 		return ms;
 	}
 	tmpms = fxmalloc(sizeof(MenuStyle));
-	if (ms)
-	{
+	if (ms) {
 		/* copy the structure over our temporary menu face. */
 		memcpy(tmpms, ms, sizeof(MenuStyle));
 		free(name);
-	}
-	else
-	{
+	} else {
 		memset(tmpms, 0, sizeof(MenuStyle));
 		ST_NAME(tmpms) = name;
 		is_initialised = False;
@@ -465,124 +399,112 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 	ST_IS_UPDATED(tmpms) = 1;
 
 	/* Parse the options. */
-	while (!is_initialised || (action && *action))
-	{
+	while (!is_initialised || (action && *action)) {
 		on = 1;
-		if (!is_initialised)
-		{
+		if (!is_initialised) {
 			/* some default configuration goes here for the new
 			 * menu style */
-			ST_CSET_MENU(tmpms) = 0;
-			ST_CSET_ACTIVE(tmpms) = 0;
-			ST_CSET_TITLE(tmpms) = 0;
-			ST_CSET_GREYED(tmpms) = 0;
-			ST_PSTDFONT(tmpms) = Scr.DefaultFont;
+			ST_CSET_MENU(tmpms)	     = 0;
+			ST_CSET_ACTIVE(tmpms)	     = 0;
+			ST_CSET_TITLE(tmpms)	     = 0;
+			ST_CSET_GREYED(tmpms)	     = 0;
+			ST_PSTDFONT(tmpms)	     = Scr.DefaultFont;
 			ST_USING_DEFAULT_FONT(tmpms) = True;
-			ST_HAS_ACTIVE_FORE(tmpms) = 0;
-			ST_HAS_ACTIVE_BACK(tmpms) = 0;
-			ST_DO_POPUP_AS(tmpms) = MDP_POST_MENU;
-			ST_DOUBLE_CLICK_TIME(tmpms) = DEFAULT_MENU_CLICKTIME;
-			ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
-			ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
-			ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
-			ST_SCROLL_OFF_PAGE(tmpms) = 1;
-			ST_DO_HILIGHT_TITLE_BACK(tmpms) = 0;
+			ST_HAS_ACTIVE_FORE(tmpms)    = 0;
+			ST_HAS_ACTIVE_BACK(tmpms)    = 0;
+			ST_DO_POPUP_AS(tmpms)	     = MDP_POST_MENU;
+			ST_DOUBLE_CLICK_TIME(tmpms)  = DEFAULT_MENU_CLICKTIME;
+			ST_POPUP_DELAY(tmpms)	     = DEFAULT_POPUP_DELAY;
+			ST_POPDOWN_DELAY(tmpms)	     = DEFAULT_POPDOWN_DELAY;
+			ST_MOUSE_WHEEL(tmpms)	     = MMW_POINTER;
+			ST_SCROLL_OFF_PAGE(tmpms)    = 1;
+			ST_DO_HILIGHT_TITLE_BACK(tmpms)	  = 0;
 			ST_USING_DEFAULT_TITLEFONT(tmpms) = True;
-			ST_TRANSLUCENT_PERCENT(tmpms) = 100;
-			has_gc_changed = True;
-			option = "fvwm";
-		}
-		else
-		{
+			ST_TRANSLUCENT_PERCENT(tmpms)	  = 100;
+			has_gc_changed			  = True;
+			option				  = "fvwm";
+		} else {
 			/* Read next option specification (delimited by a comma
 			 * or \0). */
-			args = action;
-			action = GetQuotedString(
-				action, &optstring, ",", NULL, NULL, NULL);
-			if (!optstring)
-			{
+			args   = action;
+			action = GetQuotedString(action, &optstring, ",", NULL,
+			    NULL, NULL);
+			if (!optstring) {
 				break;
 			}
 			args = GetNextToken(optstring, &option);
-			if (!option)
-			{
+			if (!option) {
 				free(optstring);
 				break;
 			}
 			(void)GetNextToken(args, &arg1);
 		}
 		poption = option;
-		while (poption[0] == '!')
-		{
+		while (poption[0] == '!') {
 			on ^= 1;
 			poption++;
 		}
-		switch((i = menustyle_get_styleopt_index(poption)))
-		{
+		switch ((i = menustyle_get_styleopt_index(poption))) {
 		case 0: /* fvwm */
 		case 1: /* mwm */
 		case 2: /* win */
-			if (i == 0)
-			{
-				ST_POPUP_OFFSET_PERCENT(tmpms) = 67;
-				ST_POPUP_OFFSET_ADD(tmpms) = 0;
-				ST_DO_POPUP_IMMEDIATELY(tmpms) = 0;
-				ST_DO_WARP_TO_TITLE(tmpms) = 1;
+			if (i == 0) {
+				ST_POPUP_OFFSET_PERCENT(tmpms)	      = 67;
+				ST_POPUP_OFFSET_ADD(tmpms)	      = 0;
+				ST_DO_POPUP_IMMEDIATELY(tmpms)	      = 0;
+				ST_DO_WARP_TO_TITLE(tmpms)	      = 1;
 				ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
-				ST_RELIEF_THICKNESS(tmpms) = 1;
-				ST_TITLE_UNDERLINES(tmpms) = 1;
-				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
-				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
-				ST_DO_HILIGHT_BACK(tmpms) = 0;
-				ST_DO_HILIGHT_FORE(tmpms) = 0;
-			}
-			else if (i == 1)
+				ST_RELIEF_THICKNESS(tmpms)	      = 1;
+				ST_TITLE_UNDERLINES(tmpms)	      = 1;
+				ST_HAS_LONG_SEPARATORS(tmpms)	      = 0;
+				ST_HAS_TRIANGLE_RELIEF(tmpms)	      = 1;
+				ST_DO_HILIGHT_BACK(tmpms)	      = 0;
+				ST_DO_HILIGHT_FORE(tmpms)	      = 0;
+			} else if (i == 1) {
+				ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
+				ST_POPUP_OFFSET_ADD(
+				    tmpms) = -DEFAULT_MENU_BORDER_WIDTH - 1;
+				ST_DO_POPUP_IMMEDIATELY(tmpms)	      = 1;
+				ST_DO_WARP_TO_TITLE(tmpms)	      = 0;
+				ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
+				ST_RELIEF_THICKNESS(tmpms)	      = 2;
+				ST_TITLE_UNDERLINES(tmpms)	      = 2;
+				ST_HAS_LONG_SEPARATORS(tmpms)	      = 1;
+				ST_HAS_TRIANGLE_RELIEF(tmpms)	      = 1;
+				ST_DO_HILIGHT_BACK(tmpms)	      = 0;
+				ST_DO_HILIGHT_FORE(tmpms)	      = 0;
+			} else /* i == 2 */
 			{
 				ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
-				ST_POPUP_OFFSET_ADD(tmpms) =
-					-DEFAULT_MENU_BORDER_WIDTH - 1;
-				ST_DO_POPUP_IMMEDIATELY(tmpms) = 1;
-				ST_DO_WARP_TO_TITLE(tmpms) = 0;
-				ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 0;
-				ST_RELIEF_THICKNESS(tmpms) = 2;
-				ST_TITLE_UNDERLINES(tmpms) = 2;
-				ST_HAS_LONG_SEPARATORS(tmpms) = 1;
-				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
-				ST_DO_HILIGHT_BACK(tmpms) = 0;
-				ST_DO_HILIGHT_FORE(tmpms) = 0;
-			}
-			else /* i == 2 */
-			{
-				ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
-				ST_POPUP_OFFSET_ADD(tmpms) =
-					-DEFAULT_MENU_BORDER_WIDTH - 3;
-				ST_DO_POPUP_IMMEDIATELY(tmpms) = 1;
-				ST_DO_WARP_TO_TITLE(tmpms) = 0;
+				ST_POPUP_OFFSET_ADD(
+				    tmpms) = -DEFAULT_MENU_BORDER_WIDTH - 3;
+				ST_DO_POPUP_IMMEDIATELY(tmpms)	      = 1;
+				ST_DO_WARP_TO_TITLE(tmpms)	      = 0;
 				ST_DO_UNMAP_SUBMENU_ON_POPDOWN(tmpms) = 1;
-				ST_RELIEF_THICKNESS(tmpms) = 0;
-				ST_TITLE_UNDERLINES(tmpms) = 1;
-				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
-				ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
-				ST_DO_HILIGHT_BACK(tmpms) = 1;
-				ST_DO_HILIGHT_FORE(tmpms) = 1;
+				ST_RELIEF_THICKNESS(tmpms)	      = 0;
+				ST_TITLE_UNDERLINES(tmpms)	      = 1;
+				ST_HAS_LONG_SEPARATORS(tmpms)	      = 0;
+				ST_HAS_TRIANGLE_RELIEF(tmpms)	      = 0;
+				ST_DO_HILIGHT_BACK(tmpms)	      = 1;
+				ST_DO_HILIGHT_FORE(tmpms)	      = 1;
 			}
 
 			/* common settings */
-			ST_VERTICAL_MARGIN_TOP(tmpms) = 0;
+			ST_VERTICAL_MARGIN_TOP(tmpms)	 = 0;
 			ST_VERTICAL_MARGIN_BOTTOM(tmpms) = 0;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
-			ST_ACTIVE_AREA_PERCENT(tmpms) =
-				DEFAULT_MENU_POPUP_NOW_RATIO;
-			ST_ITEM_GAP_ABOVE(tmpms) =
-				DEFAULT_MENU_ITEM_TEXT_Y_OFFSET;
-			ST_ITEM_GAP_BELOW(tmpms) =
-				DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2;
-			ST_TITLE_GAP_ABOVE(tmpms) =
-				DEFAULT_MENU_TITLE_TEXT_Y_OFFSET;
-			ST_TITLE_GAP_BELOW(tmpms) =
-				DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2;
-			ST_USE_LEFT_SUBMENUS(tmpms) = 0;
-			ST_IS_ANIMATED(tmpms) = 0;
+			ST_ACTIVE_AREA_PERCENT(
+			    tmpms) = DEFAULT_MENU_POPUP_NOW_RATIO;
+			ST_ITEM_GAP_ABOVE(
+			    tmpms) = DEFAULT_MENU_ITEM_TEXT_Y_OFFSET;
+			ST_ITEM_GAP_BELOW(
+			    tmpms) = DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2;
+			ST_TITLE_GAP_ABOVE(
+			    tmpms) = DEFAULT_MENU_TITLE_TEXT_Y_OFFSET;
+			ST_TITLE_GAP_BELOW(
+			    tmpms) = DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2;
+			ST_USE_LEFT_SUBMENUS(tmpms)	= 0;
+			ST_IS_ANIMATED(tmpms)		= 0;
 			ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
 			/* Pressing a hotkey on an item which only has a
 			 * single entry will activate that action; turning
@@ -591,28 +513,25 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			 * always close the menu and run the action.
 			 */
 			ST_HOTKEY_ACTIVATES_IMMEDIATE(tmpms) = 1;
-			if (ST_PSTDFONT(tmpms) && !ST_USING_DEFAULT_FONT(tmpms))
-			{
+			if (ST_PSTDFONT(tmpms) &&
+			    !ST_USING_DEFAULT_FONT(tmpms)) {
 				FlocaleUnloadFont(dpy, ST_PSTDFONT(tmpms));
 			}
-			ST_PSTDFONT(tmpms) = Scr.DefaultFont;
+			ST_PSTDFONT(tmpms)	     = Scr.DefaultFont;
 			ST_USING_DEFAULT_FONT(tmpms) = True;
-			has_gc_changed = True;
-			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
-			{
-				fvwmlib_free_colors(
-					dpy, &ST_SIDE_COLOR(tmpms), 1, True);
+			has_gc_changed		     = True;
+			if (ST_HAS_SIDE_COLOR(tmpms) == 1) {
+				fvwmlib_free_colors(dpy, &ST_SIDE_COLOR(tmpms),
+				    1, True);
 				ST_HAS_SIDE_COLOR(tmpms) = 0;
 			}
 			ST_HAS_SIDE_COLOR(tmpms) = 0;
-			if (ST_SIDEPIC(tmpms))
-			{
+			if (ST_SIDEPIC(tmpms)) {
 				PDestroyFvwmPicture(dpy, ST_SIDEPIC(tmpms));
 				ST_SIDEPIC(tmpms) = NULL;
 			}
 
-			if (is_initialised == False)
-			{
+			if (is_initialised == False) {
 				/* now begin the real work */
 				is_initialised = True;
 				continue;
@@ -621,12 +540,12 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 3: /* HilightBack */
 			ST_DO_HILIGHT_BACK(tmpms) = on;
-			has_gc_changed = True;
+			has_gc_changed		  = True;
 			break;
 
 		case 4: /* ActiveFore */
 			ST_DO_HILIGHT_FORE(tmpms) = on;
-			has_gc_changed = True;
+			has_gc_changed		  = True;
 			break;
 
 		case 5: /* Hilight3DThick */
@@ -647,25 +566,21 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 9: /* Font */
 			if (arg1 != NULL &&
-			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
-			{
+			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm"))) {
 				fvwm_debug(__func__,
-					   "Couldn't load font '%s'\n", arg1);
+				    "Couldn't load font '%s'\n", arg1);
 				break;
 			}
-			if (ST_PSTDFONT(tmpms) && !ST_USING_DEFAULT_FONT(tmpms))
-			{
+			if (ST_PSTDFONT(tmpms) &&
+			    !ST_USING_DEFAULT_FONT(tmpms)) {
 				FlocaleUnloadFont(dpy, ST_PSTDFONT(tmpms));
 			}
-			if (arg1 == NULL)
-			{
+			if (arg1 == NULL) {
 				/* reset to screen font */
-				ST_PSTDFONT(tmpms) = Scr.DefaultFont;
+				ST_PSTDFONT(tmpms)	     = Scr.DefaultFont;
 				ST_USING_DEFAULT_FONT(tmpms) = True;
-			}
-			else
-			{
-				ST_PSTDFONT(tmpms) = new_font;
+			} else {
+				ST_PSTDFONT(tmpms)	     = new_font;
 				ST_USING_DEFAULT_FONT(tmpms) = False;
 			}
 			has_gc_changed = True;
@@ -673,32 +588,24 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 10: /* PopupDelay */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
+			    *val < 0) {
 				ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
-			}
-			else
-			{
-				ST_POPUP_DELAY(tmpms) = (*val+9)/10;
+			} else {
+				ST_POPUP_DELAY(tmpms) = (*val + 9) / 10;
 			}
 			break;
 
 		case 11: /* PopupOffset */
-			if ((n = GetIntegerArguments(args, NULL, val, 2)) == 0)
-			{
+			if ((n = GetIntegerArguments(args, NULL, val, 2)) ==
+			    0) {
 				fvwm_debug(__func__,
-					   "PopupOffset requires one or two"
-					   " arguments");
-			}
-			else
-			{
+				    "PopupOffset requires one or two"
+				    " arguments");
+			} else {
 				ST_POPUP_OFFSET_ADD(tmpms) = val[0];
-				if (n == 2 && val[1] <= 100 && val[1] >= 0)
-				{
+				if (n == 2 && val[1] <= 100 && val[1] >= 0) {
 					ST_POPUP_OFFSET_PERCENT(tmpms) = val[1];
-				}
-				else
-				{
+				} else {
 					ST_POPUP_OFFSET_PERCENT(tmpms) = 100;
 				}
 			}
@@ -746,47 +653,38 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 22: /* DoubleClickTime */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
-				ST_DOUBLE_CLICK_TIME(tmpms) =
-					DEFAULT_MENU_CLICKTIME;
-			}
-			else
-			{
+			    *val < 0) {
+				ST_DOUBLE_CLICK_TIME(
+				    tmpms) = DEFAULT_MENU_CLICKTIME;
+			} else {
 				ST_DOUBLE_CLICK_TIME(tmpms) = *val;
 			}
 			break;
 
 		case 23: /* SidePic */
-			if (ST_SIDEPIC(tmpms))
-			{
+			if (ST_SIDEPIC(tmpms)) {
 				PDestroyFvwmPicture(dpy, ST_SIDEPIC(tmpms));
 				ST_SIDEPIC(tmpms) = NULL;
 			}
-			if (arg1)
-			{
-				fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
-				ST_SIDEPIC(tmpms) = PCacheFvwmPicture(
-					dpy, Scr.NoFocusWin, NULL, arg1, fpa);
-				if (!ST_SIDEPIC(tmpms))
-				{
+			if (arg1) {
+				fpa.mask = (Pdepth <= 8) ? FPAM_DITHER : 0;
+				ST_SIDEPIC(tmpms) = PCacheFvwmPicture(dpy,
+				    Scr.NoFocusWin, NULL, arg1, fpa);
+				if (!ST_SIDEPIC(tmpms)) {
 					fvwm_debug(__func__,
-						   "Couldn't find pixmap %s",
-						   arg1);
+					    "Couldn't find pixmap %s", arg1);
 				}
 			}
 			break;
 
 		case 24: /* SideColor */
-			if (ST_HAS_SIDE_COLOR(tmpms) == 1)
-			{
-				fvwmlib_free_colors(
-					dpy, &ST_SIDE_COLOR(tmpms), 1, True);
+			if (ST_HAS_SIDE_COLOR(tmpms) == 1) {
+				fvwmlib_free_colors(dpy, &ST_SIDE_COLOR(tmpms),
+				    1, True);
 				ST_HAS_SIDE_COLOR(tmpms) = 0;
 			}
-			if (arg1)
-			{
-				ST_SIDE_COLOR(tmpms) = GetColor(arg1);
+			if (arg1) {
+				ST_SIDE_COLOR(tmpms)	 = GetColor(arg1);
 				ST_HAS_SIDE_COLOR(tmpms) = 1;
 			}
 			break;
@@ -817,27 +715,20 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 31: /* BorderWidth */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0 || *val > MAX_MENU_BORDER_WIDTH)
-			{
-				ST_BORDER_WIDTH(tmpms) =
-					DEFAULT_MENU_BORDER_WIDTH;
-			}
-			else
-			{
+			    *val < 0 || *val > MAX_MENU_BORDER_WIDTH) {
+				ST_BORDER_WIDTH(
+				    tmpms) = DEFAULT_MENU_BORDER_WIDTH;
+			} else {
 				ST_BORDER_WIDTH(tmpms) = *val;
 			}
 			break;
 
 		case 32: /* Hilight3DThickness */
-			if (GetIntegerArguments(args, NULL, val, 1) > 0)
-			{
-				if (*val < 0)
-				{
+			if (GetIntegerArguments(args, NULL, val, 1) > 0) {
+				if (*val < 0) {
 					*val = -*val;
 					ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 1;
-				}
-				else
-				{
+				} else {
 					ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 0;
 				}
 				if (*val > MAX_MENU_ITEM_RELIEF_THICKNESS)
@@ -847,13 +738,11 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 33: /* ItemFormat */
-			if (ST_ITEM_FORMAT(tmpms))
-			{
+			if (ST_ITEM_FORMAT(tmpms)) {
 				free(ST_ITEM_FORMAT(tmpms));
 				ST_ITEM_FORMAT(tmpms) = NULL;
 			}
-			if (arg1)
-			{
+			if (arg1) {
 				ST_ITEM_FORMAT(tmpms) = fxstrdup(arg1);
 			}
 			break;
@@ -863,29 +752,26 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 35: /* VerticalItemSpacing */
-			parse_vertical_spacing_line(
-				args, &ST_ITEM_GAP_ABOVE(tmpms),
-				&ST_ITEM_GAP_BELOW(tmpms),
-				DEFAULT_MENU_ITEM_TEXT_Y_OFFSET,
-				DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2);
+			parse_vertical_spacing_line(args,
+			    &ST_ITEM_GAP_ABOVE(tmpms),
+			    &ST_ITEM_GAP_BELOW(tmpms),
+			    DEFAULT_MENU_ITEM_TEXT_Y_OFFSET,
+			    DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2);
 			break;
 
 		case 36: /* VerticalTitleSpacing */
-			parse_vertical_spacing_line(
-				args, &ST_TITLE_GAP_ABOVE(tmpms),
-				&ST_TITLE_GAP_BELOW(tmpms),
-				DEFAULT_MENU_TITLE_TEXT_Y_OFFSET,
-				DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2);
+			parse_vertical_spacing_line(args,
+			    &ST_TITLE_GAP_ABOVE(tmpms),
+			    &ST_TITLE_GAP_BELOW(tmpms),
+			    DEFAULT_MENU_TITLE_TEXT_Y_OFFSET,
+			    DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2);
 			break;
 
 		case 37: /* MenuColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
+			    *val < 0) {
 				ST_CSET_MENU(tmpms) = 0;
-			}
-			else
-			{
+			} else {
 				ST_CSET_MENU(tmpms) = *val;
 				alloc_colorset(*val);
 			}
@@ -894,12 +780,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 38: /* ActiveColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
+			    *val < 0) {
 				ST_CSET_ACTIVE(tmpms) = 0;
-			}
-			else
-			{
+			} else {
 				ST_CSET_ACTIVE(tmpms) = *val;
 				alloc_colorset(*val);
 			}
@@ -908,12 +791,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 39: /* GreyedColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
+			    *val < 0) {
 				ST_CSET_GREYED(tmpms) = 0;
-			}
-			else
-			{
+			} else {
 				ST_CSET_GREYED(tmpms) = *val;
 				alloc_colorset(*val);
 			}
@@ -922,10 +802,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 40: /* SelectOnRelease */
 			keycode = 0;
-			if (arg1)
-			{
-				keycode = XKeysymToKeycode(
-					dpy, FvwmStringToKeysym(dpy, arg1));
+			if (arg1) {
+				keycode = XKeysymToKeycode(dpy,
+				    FvwmStringToKeysym(dpy, arg1));
 			}
 			ST_SELECT_ON_RELEASE_KEY(tmpms) = keycode;
 			break;
@@ -940,25 +819,19 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 43: /* PopdownDelay */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
+			    *val < 0) {
 				ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
-			}
-			else
-			{
-				ST_POPDOWN_DELAY(tmpms) = (*val+9)/10;
+			} else {
+				ST_POPDOWN_DELAY(tmpms) = (*val + 9) / 10;
 			}
 			break;
 
 		case 44: /* PopupActiveArea */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val <= 50 || *val > 100)
-			{
-				ST_ACTIVE_AREA_PERCENT(tmpms) =
-					DEFAULT_MENU_POPUP_NOW_RATIO;
-			}
-			else
-			{
+			    *val <= 50 || *val > 100) {
+				ST_ACTIVE_AREA_PERCENT(
+				    tmpms) = DEFAULT_MENU_POPUP_NOW_RATIO;
+			} else {
 				ST_ACTIVE_AREA_PERCENT(tmpms) = *val;
 			}
 			break;
@@ -972,39 +845,27 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 47: /* MouseWheel */
-			if (arg1)
-			{
-				if (StrEquals(arg1, "ActivatesItem"))
-				{
+			if (arg1) {
+				if (StrEquals(arg1, "ActivatesItem")) {
 					ST_MOUSE_WHEEL(tmpms) = MMW_OFF;
-				}
-				else if (StrEquals(arg1,
-						   "ScrollsMenuBackwards"))
-				{
-					ST_MOUSE_WHEEL(tmpms) =
-						MMW_MENU_BACKWARDS;
-				}
-				else if (StrEquals(arg1, "ScrollsMenu"))
-				{
+				} else if (StrEquals(arg1,
+					       "ScrollsMenuBackwards")) {
+					ST_MOUSE_WHEEL(
+					    tmpms) = MMW_MENU_BACKWARDS;
+				} else if (StrEquals(arg1, "ScrollsMenu")) {
 					ST_MOUSE_WHEEL(tmpms) = MMW_MENU;
-				}
-				else if (StrEquals(arg1, "ScrollsPointer"))
-				{
+				} else if (StrEquals(arg1, "ScrollsPointer")) {
 					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
-				}
-				else
-				{
+				} else {
 					fvwm_debug(__func__,
-						   "unknown argument to"
-						   " MouseWheel '%s'",
-						   arg1);
+					    "unknown argument to"
+					    " MouseWheel '%s'",
+					    arg1);
 					ST_MOUSE_WHEEL(tmpms) = MMW_POINTER;
 				}
-			}
-			else
-			{
-				ST_MOUSE_WHEEL(tmpms) =
-					(on) ? MMW_POINTER : MMW_OFF;
+			} else {
+				ST_MOUSE_WHEEL(tmpms) = (on) ? MMW_POINTER :
+							       MMW_OFF;
 			}
 			break;
 
@@ -1018,12 +879,9 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 50: /* TitleColorset */
 			if (GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0)
-			{
+			    *val < 0) {
 				ST_CSET_TITLE(tmpms) = 0;
-			}
-			else
-			{
+			} else {
 				ST_CSET_TITLE(tmpms) = *val;
 				alloc_colorset(*val);
 			}
@@ -1032,42 +890,35 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 
 		case 51: /* TitleHilightBack */
 			ST_DO_HILIGHT_TITLE_BACK(tmpms) = on;
-			has_gc_changed = True;
+			has_gc_changed			= True;
 			break;
 
 		case 52: /* TitleFont */
 			if (arg1 != NULL &&
-			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm")))
-			{
+			    !(new_font = FlocaleLoadFont(dpy, arg1, "fvwm"))) {
 				fvwm_debug(__func__,
-					   "Couldn't load font '%s'\n", arg1);
+				    "Couldn't load font '%s'\n", arg1);
 				break;
 			}
-			if (
-				ST_PTITLEFONT(tmpms) &&
-				!ST_USING_DEFAULT_TITLEFONT(tmpms))
-			{
+			if (ST_PTITLEFONT(tmpms) &&
+			    !ST_USING_DEFAULT_TITLEFONT(tmpms)) {
 				FlocaleUnloadFont(dpy, ST_PTITLEFONT(tmpms));
 			}
-			if (arg1 == NULL)
-			{
+			if (arg1 == NULL) {
 				/* reset to screen font */
 				ST_PTITLEFONT(tmpms) = Scr.DefaultFont;
 				ST_USING_DEFAULT_TITLEFONT(tmpms) = True;
-			}
-			else
-			{
-				ST_PTITLEFONT(tmpms) = new_font;
+			} else {
+				ST_PTITLEFONT(tmpms)		  = new_font;
 				ST_USING_DEFAULT_TITLEFONT(tmpms) = False;
 			}
 			has_gc_changed = True;
 			break;
 
 		case 53: /* VerticalMargins */
-			parse_vertical_margins_line(
-				args, &ST_VERTICAL_MARGIN_TOP(tmpms),
-				&ST_VERTICAL_MARGIN_BOTTOM(tmpms),
-				0, 0);
+			parse_vertical_margins_line(args,
+			    &ST_VERTICAL_MARGIN_TOP(tmpms),
+			    &ST_VERTICAL_MARGIN_BOTTOM(tmpms), 0, 0);
 			break;
 
 		case 54: /* UniqueHotKeyActivatesImmediate */
@@ -1077,8 +928,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 		case 55: /* Translucent */
 			if (!on ||
 			    GetIntegerArguments(args, NULL, val, 1) == 0 ||
-			    *val < 0 || *val > 100)
-			{
+			    *val < 0 || *val > 100) {
 				/* 100 percent means not translucent */
 				ST_TRANSLUCENT_PERCENT(tmpms) = 100;
 			} else {
@@ -1093,45 +943,36 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 #endif
 
 		default:
-			fvwm_debug(__func__, "unknown option '%s'",
-				   poption);
+			fvwm_debug(__func__, "unknown option '%s'", poption);
 			break;
 		} /* switch */
 
-		if (option)
-		{
+		if (option) {
 			free(option);
 			option = NULL;
 		}
 		free(optstring);
 		optstring = NULL;
-		if (arg1)
-		{
+		if (arg1) {
 			free(arg1);
 			arg1 = NULL;
 		}
 	} /* while */
 
-	if (has_gc_changed)
-	{
+	if (has_gc_changed) {
 		menustyle_update(tmpms);
 	}
 
-	if (default_menu_style == NULL)
-	{
+	if (default_menu_style == NULL) {
 		/* First MenuStyle MUST be the default style */
-		default_menu_style = tmpms;
+		default_menu_style   = tmpms;
 		ST_NEXT_STYLE(tmpms) = NULL;
-	}
-	else if (ms)
-	{
+	} else if (ms) {
 		/* copy our new menu face over the old one */
 		memcpy(ms, tmpms, sizeof(MenuStyle));
 		free(tmpms);
 		return ms;
-	}
-	else
-	{
+	} else {
 		MenuStyle *before = default_menu_style;
 
 		/* add a new menu face to list */
@@ -1144,7 +985,8 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 	return tmpms;
 }
 
-void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
+void
+menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 {
 	FvwmPictureAttributes fpa;
 	/* Copy origms to destms, be aware of all pointers in the MenuStyle
@@ -1160,64 +1002,49 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	ST_IS_ANIMATED(destms) = ST_IS_ANIMATED(origms);
 
 	/* font */
-	if (ST_PSTDFONT(destms) &&  !ST_USING_DEFAULT_FONT(destms))
-	{
+	if (ST_PSTDFONT(destms) && !ST_USING_DEFAULT_FONT(destms)) {
 		FlocaleUnloadFont(dpy, ST_PSTDFONT(destms));
 	}
-	if (ST_PSTDFONT(origms) && !ST_USING_DEFAULT_FONT(origms))
-	{
-		if (!(ST_PSTDFONT(destms) =
-		      FlocaleLoadFont(dpy, ST_PSTDFONT(origms)->name, "fvwm")))
-		{
-			ST_PSTDFONT(destms) = Scr.DefaultFont;
+	if (ST_PSTDFONT(origms) && !ST_USING_DEFAULT_FONT(origms)) {
+		if (!(ST_PSTDFONT(destms) = FlocaleLoadFont(dpy,
+			  ST_PSTDFONT(origms)->name, "fvwm"))) {
+			ST_PSTDFONT(destms)	      = Scr.DefaultFont;
 			ST_USING_DEFAULT_FONT(destms) = True;
 			fvwm_debug(__func__,
-				   "Couldn't load font '%s' use Default Font\n",
-				   ST_PSTDFONT(origms)->name);
-		}
-		else
-		{
+			    "Couldn't load font '%s' use Default Font\n",
+			    ST_PSTDFONT(origms)->name);
+		} else {
 			ST_USING_DEFAULT_FONT(destms) = False;
 		}
-	}
-	else
-	{
+	} else {
 		ST_USING_DEFAULT_FONT(destms) = True;
-		ST_PSTDFONT(destms) = Scr.DefaultFont;
+		ST_PSTDFONT(destms)	      = Scr.DefaultFont;
 	}
 	/* TitleFont */
-	if (ST_PTITLEFONT(destms) &&  !ST_USING_DEFAULT_TITLEFONT(destms))
-	{
+	if (ST_PTITLEFONT(destms) && !ST_USING_DEFAULT_TITLEFONT(destms)) {
 		FlocaleUnloadFont(dpy, ST_PTITLEFONT(destms));
 	}
-	if (ST_PTITLEFONT(origms) && !ST_USING_DEFAULT_TITLEFONT(origms))
-	{
-		if (
-			!(ST_PTITLEFONT(destms) = FlocaleLoadFont(
-				  dpy, ST_PTITLEFONT(origms)->name, "fvwm")))
-		{
-			ST_PTITLEFONT(destms) = Scr.DefaultFont;
+	if (ST_PTITLEFONT(origms) && !ST_USING_DEFAULT_TITLEFONT(origms)) {
+		if (!(ST_PTITLEFONT(destms) = FlocaleLoadFont(dpy,
+			  ST_PTITLEFONT(origms)->name, "fvwm"))) {
+			ST_PTITLEFONT(destms)		   = Scr.DefaultFont;
 			ST_USING_DEFAULT_TITLEFONT(destms) = True;
 			fvwm_debug(__func__,
-				   "Couldn't load font '%s' use Default Font\n",
-				   ST_PTITLEFONT(origms)->name);
-		}
-		else
-		{
+			    "Couldn't load font '%s' use Default Font\n",
+			    ST_PTITLEFONT(origms)->name);
+		} else {
 			ST_USING_DEFAULT_TITLEFONT(destms) = False;
 		}
-	}
-	else
-	{
+	} else {
 		ST_USING_DEFAULT_TITLEFONT(destms) = True;
-		ST_PTITLEFONT(destms) = Scr.DefaultFont;
+		ST_PTITLEFONT(destms)		   = Scr.DefaultFont;
 	}
 
 	/* PopupDelay */
 	ST_POPUP_DELAY(destms) = ST_POPUP_DELAY(origms);
 	/* PopupOffset */
 	ST_POPUP_OFFSET_PERCENT(destms) = ST_POPUP_OFFSET_PERCENT(origms);
-	ST_POPUP_OFFSET_ADD(destms) = ST_POPUP_OFFSET_ADD(origms);
+	ST_POPUP_OFFSET_ADD(destms)	= ST_POPUP_OFFSET_ADD(origms);
 	/* TitleWarp */
 	ST_DO_WARP_TO_TITLE(destms) = ST_DO_WARP_TO_TITLE(origms);
 	/* TitleUnderlines */
@@ -1231,67 +1058,60 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	/* DoubleClickTime */
 	ST_DOUBLE_CLICK_TIME(destms) = ST_DOUBLE_CLICK_TIME(origms);
 	/* VerticalMargins */
-	ST_VERTICAL_MARGIN_TOP(destms) = ST_VERTICAL_MARGIN_TOP(origms);
+	ST_VERTICAL_MARGIN_TOP(destms)	  = ST_VERTICAL_MARGIN_TOP(origms);
 	ST_VERTICAL_MARGIN_BOTTOM(destms) = ST_VERTICAL_MARGIN_BOTTOM(origms);
 
 	/* SidePic */
-	if (ST_SIDEPIC(destms))
-	{
+	if (ST_SIDEPIC(destms)) {
 		PDestroyFvwmPicture(dpy, ST_SIDEPIC(destms));
 		ST_SIDEPIC(destms) = NULL;
 	}
-	if (ST_SIDEPIC(origms))
-	{
-		fpa.mask = (Pdepth <= 8)?  FPAM_DITHER:0;
-		ST_SIDEPIC(destms) = PCacheFvwmPicture(
-			dpy, Scr.NoFocusWin, NULL, ST_SIDEPIC(origms)->name,
-			fpa);
+	if (ST_SIDEPIC(origms)) {
+		fpa.mask	   = (Pdepth <= 8) ? FPAM_DITHER : 0;
+		ST_SIDEPIC(destms) = PCacheFvwmPicture(dpy, Scr.NoFocusWin,
+		    NULL, ST_SIDEPIC(origms)->name, fpa);
 	}
 
 	/* side color */
-	fvwmlib_copy_color(
-		dpy, &ST_SIDE_COLOR(destms), &ST_SIDE_COLOR(origms),
-		ST_HAS_SIDE_COLOR(destms), ST_HAS_SIDE_COLOR(origms));
+	fvwmlib_copy_color(dpy, &ST_SIDE_COLOR(destms), &ST_SIDE_COLOR(origms),
+	    ST_HAS_SIDE_COLOR(destms), ST_HAS_SIDE_COLOR(origms));
 	ST_HAS_SIDE_COLOR(destms) = ST_HAS_SIDE_COLOR(origms);
 
 	/* PopupAsRootmenu */
 	ST_DO_POPUP_AS(destms) = ST_DO_POPUP_AS(origms);
 	/* RemoveSubmenus */
-	ST_DO_UNMAP_SUBMENU_ON_POPDOWN(destms) =
-		ST_DO_UNMAP_SUBMENU_ON_POPDOWN(origms);
+	ST_DO_UNMAP_SUBMENU_ON_POPDOWN(destms) = ST_DO_UNMAP_SUBMENU_ON_POPDOWN(
+	    origms);
 	/* SubmenusRight */
 	ST_USE_LEFT_SUBMENUS(destms) = ST_USE_LEFT_SUBMENUS(origms);
 	/* BorderWidth */
 	ST_BORDER_WIDTH(destms) = ST_BORDER_WIDTH(origms);
 	/* Hilight3DThickness */
-	ST_IS_ITEM_RELIEF_REVERSED(destms) =
-		ST_IS_ITEM_RELIEF_REVERSED(origms);
+	ST_IS_ITEM_RELIEF_REVERSED(destms) = ST_IS_ITEM_RELIEF_REVERSED(origms);
 
 	/* ItemFormat */
-	if (ST_ITEM_FORMAT(destms))
-	{
+	if (ST_ITEM_FORMAT(destms)) {
 		free(ST_ITEM_FORMAT(destms));
 		ST_ITEM_FORMAT(destms) = NULL;
 	}
-	if (ST_ITEM_FORMAT(origms))
-	{
+	if (ST_ITEM_FORMAT(origms)) {
 		ST_ITEM_FORMAT(destms) = fxstrdup(ST_ITEM_FORMAT(origms));
 	}
 
 	/* AutomaticHotkeys */
 	ST_USE_AUTOMATIC_HOTKEYS(destms) = ST_USE_AUTOMATIC_HOTKEYS(origms);
-	ST_HOTKEY_ACTIVATES_IMMEDIATE(destms) =
-		ST_HOTKEY_ACTIVATES_IMMEDIATE(origms);
+	ST_HOTKEY_ACTIVATES_IMMEDIATE(destms) = ST_HOTKEY_ACTIVATES_IMMEDIATE(
+	    origms);
 	/* Item and Title Spacing */
-	ST_ITEM_GAP_ABOVE(destms) =  ST_ITEM_GAP_ABOVE(origms);
-	ST_ITEM_GAP_BELOW(destms) = ST_ITEM_GAP_BELOW(origms);
+	ST_ITEM_GAP_ABOVE(destms)  = ST_ITEM_GAP_ABOVE(origms);
+	ST_ITEM_GAP_BELOW(destms)  = ST_ITEM_GAP_BELOW(origms);
 	ST_TITLE_GAP_ABOVE(destms) = ST_TITLE_GAP_ABOVE(origms);
 	ST_TITLE_GAP_BELOW(destms) = ST_TITLE_GAP_BELOW(origms);
 	/* MenuColorsets */
-	ST_CSET_MENU(destms) = ST_CSET_MENU(origms);
+	ST_CSET_MENU(destms)   = ST_CSET_MENU(origms);
 	ST_CSET_ACTIVE(destms) = ST_CSET_ACTIVE(origms);
 	ST_CSET_GREYED(destms) = ST_CSET_GREYED(origms);
-	ST_CSET_TITLE(destms) = ST_CSET_TITLE(origms);
+	ST_CSET_TITLE(destms)  = ST_CSET_TITLE(origms);
 	/* SelectOnRelease */
 	ST_SELECT_ON_RELEASE_KEY(destms) = ST_SELECT_ON_RELEASE_KEY(origms);
 	/* PopdownImmediately */
@@ -1314,78 +1134,66 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_CopyMenuStyle(F_CMD_ARGS)
+void
+CMD_CopyMenuStyle(F_CMD_ARGS)
 {
-	char *origname = NULL;
-	char *destname = NULL;
-	char *buffer;
+	char	  *origname = NULL;
+	char	  *destname = NULL;
+	char	  *buffer;
 	MenuStyle *origms;
 	MenuStyle *destms;
 
 	origname = PeekToken(action, &action);
-	if (origname == NULL)
-	{
+	if (origname == NULL) {
 		fvwm_debug(__func__, "need two arguments");
 		return;
 	}
 
 	origms = menustyle_find(origname);
-	if (!origms)
-	{
-		fvwm_debug(__func__, "%s: no such menu style",
-			   origname);
+	if (!origms) {
+		fvwm_debug(__func__, "%s: no such menu style", origname);
 		return;
 	}
 
 	destname = PeekToken(action, &action);
-	if (destname == NULL)
-	{
+	if (destname == NULL) {
 		fvwm_debug(__func__, "need two arguments");
 		return;
 	}
 
-	if (action && *action)
-	{
+	if (action && *action) {
 		fvwm_debug(__func__, "too many arguments");
 		return;
 	}
 
 	destms = menustyle_find(destname);
-	if (!destms)
-	{
+	if (!destms) {
 		/* create destms menu style */
 		xasprintf(&buffer, "\"%s\"", destname);
 		action = buffer;
 		destms = menustyle_parse_style(F_PASS_ARGS);
 		free(buffer);
-		if (!destms)
-		{
+		if (!destms) {
 			/* this must never happen */
 			fvwm_debug(__func__,
-				   "impossible to create %s menu style",
-				   destname);
+			    "impossible to create %s menu style", destname);
 			return;
 		}
 	}
 
-	if (strcasecmp("*",destname) == 0)
-	{
+	if (strcasecmp("*", destname) == 0) {
 		fvwm_debug(__func__,
-			   "You cannot copy on the default menu style");
+		    "You cannot copy on the default menu style");
 		return;
 	}
-	if (strcasecmp(ST_NAME(origms),destname) == 0)
-	{
-		fvwm_debug(__func__,
-			   "%s and %s identify the same menu style",
-			   ST_NAME(origms),destname);
+	if (strcasecmp(ST_NAME(origms), destname) == 0) {
+		fvwm_debug(__func__, "%s and %s identify the same menu style",
+		    ST_NAME(origms), destname);
 		return;
 	}
 
-	if (ST_USAGE_COUNT(destms) != 0)
-	{
-		fvwm_debug(__func__, "menu style %s is in use",
-			   destname);
+	if (ST_USAGE_COUNT(destms) != 0) {
+		fvwm_debug(__func__, "menu style %s is in use", destname);
 		return;
 	}
 
@@ -1394,7 +1202,8 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	return;
 }
 
-void CMD_MenuStyle(F_CMD_ARGS)
+void
+CMD_MenuStyle(F_CMD_ARGS)
 {
 	(void)menustyle_parse_style(F_PASS_ARGS);
 	return;

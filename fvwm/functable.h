@@ -17,17 +17,16 @@
 typedef unsigned int func_flags_t;
 
 /* used for parsing commands*/
-typedef struct
-{
+typedef struct {
 	char *keyword;
 #ifdef __STDC__
 	void (*action)(F_CMD_ARGS);
 #else
 	void (*action)();
 #endif
-	short func_c;
+	short	     func_c;
 	func_flags_t flags;
-	int cursor;
+	int	     cursor;
 } func_t;
 
 /* ---------------------------- exported variables (globals) --------------- */

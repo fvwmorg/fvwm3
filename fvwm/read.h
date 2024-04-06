@@ -12,7 +12,6 @@
 extern const char *get_current_read_file(void);
 extern const char *get_current_read_dir(void);
 
-
 /**
  * Read and execute each line from stream.
  *
@@ -20,9 +19,7 @@ extern const char *get_current_read_dir(void);
  * for executing the commands.
  * cond_rc_t is passed thru in case piperead is running in a function.
  **/
-void run_command_stream(
-	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc);
-
+void run_command_stream(cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc);
 
 /**
  * Given a filename, open it and execute the commands therein.
@@ -31,7 +28,7 @@ void run_command_stream(
  * fvwm_userdir (set in main()) or in FVWM_DATADIR.  Return 1
  * if the file was found and executed.
  **/
-int run_command_file(
-	char *filename, const exec_context_t *exc, cmdparser_context_t *pc);
+int run_command_file(char *filename, const exec_context_t *exc,
+    cmdparser_context_t *pc);
 
 #endif

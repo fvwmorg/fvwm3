@@ -47,64 +47,56 @@
 
 /* ---------------------------- local functions ---------------------------- */
 
-FvwmFunction *NewFvwmFunction(const char *name)
+FvwmFunction *
+NewFvwmFunction(const char *name)
 {
 	FvwmFunction *tmp;
 
-	tmp = fxcalloc(1, sizeof *tmp);
+	tmp	       = fxcalloc(1, sizeof *tmp);
 	tmp->next_func = Scr.functions;
-	tmp->name = stripcpy(name);
-	Scr.functions = tmp;
+	tmp->name      = stripcpy(name);
+	Scr.functions  = tmp;
 
 	return tmp;
 }
 
-void DestroyFunction(FvwmFunction *func)
+void
+DestroyFunction(FvwmFunction *func)
 {
-	FunctionItem *fi,*tmp2;
+	FunctionItem *fi, *tmp2;
 	FvwmFunction *tmp, *prev;
 
-	if (func == NULL)
-	{
+	if (func == NULL) {
 		return;
 	}
-	if (func->use_depth != 0)
-	{
-		fvwm_debug(
-			__func__, "Function is in use (depth %d): '%s'",
-			func->use_depth, func->name);
+	if (func->use_depth != 0) {
+		fvwm_debug(__func__, "Function is in use (depth %d): '%s'",
+		    func->use_depth, func->name);
 		return;
 	}
 
-	tmp = Scr.functions;
+	tmp  = Scr.functions;
 	prev = NULL;
-	while (tmp && tmp != func)
-	{
+	while (tmp && tmp != func) {
 		prev = tmp;
-		tmp = tmp->next_func;
+		tmp  = tmp->next_func;
 	}
-	if (tmp != func)
-	{
+	if (tmp != func) {
 		return;
 	}
 
-	if (prev == NULL)
-	{
+	if (prev == NULL) {
 		Scr.functions = func->next_func;
-	}
-	else
-	{
+	} else {
 		prev->next_func = func->next_func;
 	}
 
 	free(func->name);
 
 	fi = func->first_item;
-	while (fi != NULL)
-	{
+	while (fi != NULL) {
 		tmp2 = fi->next_item;
-		if (fi->action != NULL)
-		{
+		if (fi->action != NULL) {
 			free(fi->action);
 		}
 		free(fi);
@@ -119,21 +111,18 @@ void DestroyFunction(FvwmFunction *func)
 
 /* find_complex_function expects a token as the input. Make sure you have used
  * GetNextToken before passing a function name to remove quotes */
-FvwmFunction *find_complex_function(const char *function_name)
+FvwmFunction *
+find_complex_function(const char *function_name)
 {
 	FvwmFunction *func;
 
-	if (function_name == NULL || *function_name == 0)
-	{
+	if (function_name == NULL || *function_name == 0) {
 		return NULL;
 	}
 	func = Scr.functions;
-	while (func != NULL)
-	{
-		if (func->name != NULL)
-		{
-			if (strcasecmp(function_name, func->name) == 0)
-			{
+	while (func != NULL) {
+		if (func->name != NULL) {
+			if (strcasecmp(function_name, func->name) == 0) {
 				return func;
 			}
 		}
@@ -142,10 +131,10 @@ FvwmFunction *find_complex_function(const char *function_name)
 
 	return NULL;
 }
-Bool functions_is_complex_function(const char *function_name)
+Bool
+functions_is_complex_function(const char *function_name)
 {
-	if (find_complex_function(function_name) != NULL)
-	{
+	if (find_complex_function(function_name) != NULL) {
 		return True;
 	}
 

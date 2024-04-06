@@ -16,10 +16,10 @@
 #define FVWMLIB_GETPWUID_H
 
 #ifdef HAVE_GETPWUID
-#  include <pwd.h>
+#include <pwd.h>
 #endif
 
-const char	*find_home_dir(void);
-char	*expand_path(const char *);
+const char *find_home_dir(void);
+char	   *expand_path(const char *);
 
 #endif

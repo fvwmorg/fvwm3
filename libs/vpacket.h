@@ -15,13 +15,12 @@
   This is the same packet as the M_ADD_WINDOW packet, the
   only difference being the type.
 */
-typedef struct ConfigWinPacket
-{
+typedef struct ConfigWinPacket {
 	/*** Alignment notes ***/
 	/*** Note that this packet format will break on future 128 bit
 	 *** platforms. ***/
 	/*** Put long, Window, and pointers  here ***/
-	unsigned long  w;      /* Window */
+	unsigned long  w;     /* Window */
 	unsigned long  frame; /* Window */
 	unsigned long *fvwmwin;
 	signed long    frame_x;
@@ -42,7 +41,7 @@ typedef struct ConfigWinPacket
 	unsigned long  hints_min_height;
 	unsigned long  hints_max_width;
 	unsigned long  hints_max_height;
-	unsigned long  icon_w;        /* Window */
+	unsigned long  icon_w;	      /* Window */
 	unsigned long  icon_pixmap_w; /* Window */
 	unsigned long  hints_win_gravity;
 	unsigned long  TextPixel;
@@ -60,23 +59,22 @@ typedef struct ConfigWinPacket
 	unsigned short short_dummy_4;
 
 	/*** Put structures here ***/
-	window_flags   flags;
-	action_flags   allowed_actions;
+	window_flags flags;
+	action_flags allowed_actions;
 
 } ConfigWinPacket;
 
-typedef struct MiniIconPacket
-{
-	Window         w;
-	Window         frame;
-	void          *fvwmwin;
-	unsigned long  width;
-	unsigned long  height;
-	unsigned long  depth;
-	Pixmap         picture;
-	Pixmap         mask;
-	Pixmap         alpha;
-	char           name[1];
+typedef struct MiniIconPacket {
+	Window	      w;
+	Window	      frame;
+	void	     *fvwmwin;
+	unsigned long width;
+	unsigned long height;
+	unsigned long depth;
+	Pixmap	      picture;
+	Pixmap	      mask;
+	Pixmap	      alpha;
+	char	      name[1];
 } MiniIconPacket;
 
 #endif /* FVWMLIB_VPACKET_H */

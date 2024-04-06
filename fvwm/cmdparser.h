@@ -15,17 +15,15 @@
 /* ---------------------------- type definitions --------------------------- */
 
 /* Enum for all the possible prefixes. */
-typedef enum
-{
-	CP_PREFIX_NONE = 0,
-	CP_PREFIX_MINUS = 0x1,
+typedef enum {
+	CP_PREFIX_NONE	 = 0,
+	CP_PREFIX_MINUS	 = 0x1,
 	CP_PREFIX_SILENT = 0x2,
 	CP_PREFIX_KEEPRC = 0x4
 } cmdparser_prefix_flags_t;
 
 /* Enum for types of things to execute. */
-typedef enum
-{
+typedef enum {
 	CP_EXECTYPE_UNKNOWN = 0,
 	CP_EXECTYPE_BUILTIN_FUNCTION,
 	CP_EXECTYPE_COMPLEX_FUNCTION,
@@ -35,8 +33,7 @@ typedef enum
 
 /* move this to the implementation file and use void* instead??? */
 
-typedef struct
-{
+typedef struct {
 	/* !!!note: need to define which bits in here may be accessed by the
 	 * user and which are internal */
 	unsigned char is_created : 1;
@@ -45,7 +42,7 @@ typedef struct
 	/* the current command line */
 	char *cline;
 	/* the expanded command line */
-	char *expline;
+	char	     *expline;
 	unsigned char do_free_expline : 1;
 	/* the command name */
 	char *command;

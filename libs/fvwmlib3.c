@@ -46,7 +46,8 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-void flib_init_graphics(Display *dpy)
+void
+flib_init_graphics(Display *dpy)
 {
 	PictureInitCMap(dpy);
 	FScreenInit(dpy);

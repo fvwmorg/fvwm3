@@ -19,9 +19,8 @@
  * ImagePath.. If ImagePath is NULL the default image path is used.
  * </description>
  */
-FvwmPicture* PGetFvwmPicture(
-	Display* dpy, Window win, char* ImagePath, const char* pictureName,
-	FvwmPictureAttributes fpa);
+FvwmPicture *PGetFvwmPicture(Display *dpy, Window win, char *ImagePath,
+    const char *pictureName, FvwmPictureAttributes fpa);
 
 /* <pubfunc>PFreeFvwmPictureData
  * <description>
@@ -41,19 +40,17 @@ void PFreeFvwmPictureData(FvwmPicture *p);
  * If ImagePath is NULL the default image path is used.
  * </description>
  */
-FvwmPicture* PCacheFvwmPicture(
-	Display *dpy, Window win, char* ImagePath, const char* pictureName,
-	FvwmPictureAttributes fpa);
+FvwmPicture *PCacheFvwmPicture(Display *dpy, Window win, char *ImagePath,
+    const char *pictureName, FvwmPictureAttributes fpa);
 
 /* <pubfunc>PLoadFvwmPictureFromPixmap
  * <description>
  * Return a FvwmPicture from the given data.
  * </description>
  */
-FvwmPicture *PLoadFvwmPictureFromPixmap(
-	Display *dpy, Window win, char *name, Pixmap pixmap, Pixmap mask,
-	Pixmap alpha, int width, int height, int nalloc_pixels,
-	Pixel *alloc_pixels, int no_limit);
+FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window win, char *name,
+    Pixmap pixmap, Pixmap mask, Pixmap alpha, int width, int height,
+    int nalloc_pixels, Pixel *alloc_pixels, int no_limit);
 
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
@@ -62,10 +59,9 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
  * to really cache a picture from the given data.
  * </description>
  */
-FvwmPicture *PCacheFvwmPictureFromPixmap(
-	Display *dpy, Window win, char *name, Pixmap pixmap,
-	Pixmap mask, Pixmap alpha, int width, int height, int nalloc_pixels,
-	Pixel *alloc_pixels, int no_limit);
+FvwmPicture *PCacheFvwmPictureFromPixmap(Display *dpy, Window win, char *name,
+    Pixmap pixmap, Pixmap mask, Pixmap alpha, int width, int height,
+    int nalloc_pixels, Pixel *alloc_pixels, int no_limit);
 
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
@@ -82,7 +78,6 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p);
  * </description>
  */
 FvwmPicture *PCloneFvwmPicture(FvwmPicture *pic);
-
 
 void PicturePrintImageCache(int verbose);
 

@@ -13,8 +13,7 @@
  * fvwm sends packets of this type to modules.
  **/
 
-typedef struct
-{
+typedef struct {
 	/* always holds START_FLAG value */
 	unsigned long start_pattern;
 	/* one of the M_xxx values, below */
@@ -27,85 +26,80 @@ typedef struct
 	unsigned long body[1];
 } FvwmPacket;
 
-typedef struct
-{
+typedef struct {
 	Window w;
 	Window frame;
-	void *fvwmwin;
+	void  *fvwmwin;
 } FvwmWinPacketBodyHeader;
 
 /*
  * If you modify constants here, please regenerate Constants.pm in perllib.
  */
 
-
 /** All size values in units of "unsigned long" **/
-#define FvwmPacketHeaderSize        4
-#define FvwmPacketBodySize(p)       ((p).size - FvwmPacketHeaderSize)
-#define FvwmPacketMaxSize           256
-#define FvwmPacketBodyMaxSize       (FvwmPacketMaxSize - FvwmPacketHeaderSize)
+#define FvwmPacketHeaderSize 4
+#define FvwmPacketBodySize(p) ((p).size - FvwmPacketHeaderSize)
+#define FvwmPacketMaxSize 256
+#define FvwmPacketBodyMaxSize (FvwmPacketMaxSize - FvwmPacketHeaderSize)
 
 /** There seems to be some movement afoot to measure packet sizes in bytes.
     See fvwm/module_interface.c **/
-#define FvwmPacketHeaderSize_byte  \
-	(FvwmPacketHeaderSize * sizeof(unsigned long))
+#define FvwmPacketHeaderSize_byte (FvwmPacketHeaderSize * sizeof(unsigned long))
 #define FvwmPacketBodySize_byte(p) \
 	(FvwmPacketBodySize(p) * sizeof(unsigned long))
-#define FvwmPacketMaxSize_byte \
-	(FvwmPacketMaxSize * sizeof(unsigned long))
+#define FvwmPacketMaxSize_byte (FvwmPacketMaxSize * sizeof(unsigned long))
 #define FvwmPacketBodyMaxSize_byte \
 	(FvwmPacketBodyMaxSize * sizeof(unsigned long))
-
 
 /* Value of start_pattern */
 #define START_FLAG 0xffffffff
 
 #define ModuleFinishedStartupResponse "NOP FINISHED STARTUP"
-#define ModuleUnlockResponse          "NOP UNLOCK"
+#define ModuleUnlockResponse "NOP UNLOCK"
 
 /* Possible values of type */
-#define M_NEW_PAGE               (1)
-#define M_NEW_DESK               (1<<1)
-#define M_OLD_ADD_WINDOW         (1<<2)
-#define M_RAISE_WINDOW           (1<<3)
-#define M_LOWER_WINDOW           (1<<4)
-#define M_OLD_CONFIGURE_WINDOW   (1<<5)
-#define M_FOCUS_CHANGE           (1<<6)
-#define M_DESTROY_WINDOW         (1<<7)
-#define M_ICONIFY                (1<<8)
-#define M_DEICONIFY              (1<<9)
-#define M_WINDOW_NAME            (1<<10)
-#define M_ICON_NAME              (1<<11)
-#define M_RES_CLASS              (1<<12)
-#define M_RES_NAME               (1<<13)
-#define M_END_WINDOWLIST         (1<<14)
-#define M_ICON_LOCATION          (1<<15)
-#define M_MAP                    (1<<16)
+#define M_NEW_PAGE (1)
+#define M_NEW_DESK (1 << 1)
+#define M_OLD_ADD_WINDOW (1 << 2)
+#define M_RAISE_WINDOW (1 << 3)
+#define M_LOWER_WINDOW (1 << 4)
+#define M_OLD_CONFIGURE_WINDOW (1 << 5)
+#define M_FOCUS_CHANGE (1 << 6)
+#define M_DESTROY_WINDOW (1 << 7)
+#define M_ICONIFY (1 << 8)
+#define M_DEICONIFY (1 << 9)
+#define M_WINDOW_NAME (1 << 10)
+#define M_ICON_NAME (1 << 11)
+#define M_RES_CLASS (1 << 12)
+#define M_RES_NAME (1 << 13)
+#define M_END_WINDOWLIST (1 << 14)
+#define M_ICON_LOCATION (1 << 15)
+#define M_MAP (1 << 16)
 
 /* It turns out this is defined by <sys/stream.h> on Solaris 2.6.
    I suspect that simply redefining this will lead to trouble;
    at some point, these should probably be renamed (FVWM_MSG_ERROR?). */
 #ifdef M_ERROR
-#  undef M_ERROR
+#undef M_ERROR
 #endif
-#define M_ERROR              (1<<17)
+#define M_ERROR (1 << 17)
 
-#define M_CONFIG_INFO        (1<<18)
-#define M_END_CONFIG_INFO    (1<<19)
-#define M_ICON_FILE          (1<<20)
-#define M_DEFAULTICON        (1<<21)
-#define M_STRING             (1<<22)
-#define M_MINI_ICON          (1<<23)
-#define M_WINDOWSHADE        (1<<24)
-#define M_DEWINDOWSHADE      (1<<25)
-#define M_VISIBLE_NAME       (1<<26)
-#define M_SENDCONFIG         (1<<27)
-#define M_RESTACK            (1<<28)
-#define M_ADD_WINDOW         (1<<29)
-#define M_CONFIGURE_WINDOW   (1<<30)
-#define M_EXTENDED_MSG       (1<<31)
-#define MAX_MESSAGES         31
-#define MAX_MSG_MASK         0x7fffffff
+#define M_CONFIG_INFO (1 << 18)
+#define M_END_CONFIG_INFO (1 << 19)
+#define M_ICON_FILE (1 << 20)
+#define M_DEFAULTICON (1 << 21)
+#define M_STRING (1 << 22)
+#define M_MINI_ICON (1 << 23)
+#define M_WINDOWSHADE (1 << 24)
+#define M_DEWINDOWSHADE (1 << 25)
+#define M_VISIBLE_NAME (1 << 26)
+#define M_SENDCONFIG (1 << 27)
+#define M_RESTACK (1 << 28)
+#define M_ADD_WINDOW (1 << 29)
+#define M_CONFIGURE_WINDOW (1 << 30)
+#define M_EXTENDED_MSG (1 << 31)
+#define MAX_MESSAGES 31
+#define MAX_MSG_MASK 0x7fffffff
 
 /* to get more than the old maximum of 32 messages, the 32nd bit is reserved to
  * mark another 31 messages that have this bit and another one set.
@@ -114,26 +108,26 @@ typedef struct
  * separate call has to be made that ors the MX_... macros.  The normal
  * M_... and MX_... macros must *never* be or'ed in one of these operations'
  */
-#define MX_VISIBLE_ICON_NAME      ((1<<0) | M_EXTENDED_MSG)
-#define MX_ENTER_WINDOW           ((1<<1) | M_EXTENDED_MSG)
-#define MX_LEAVE_WINDOW           ((1<<2) | M_EXTENDED_MSG)
-#define MX_PROPERTY_CHANGE        ((1<<3) | M_EXTENDED_MSG)
-#define MX_MONITOR_ENABLED        ((1<<4) | M_EXTENDED_MSG)
-#define MX_MONITOR_DISABLED       ((1<<5) | M_EXTENDED_MSG)
-#define MX_MONITOR_CHANGED        ((1<<6) | M_EXTENDED_MSG)
-#define MX_MONITOR_FOCUS	  ((1<<7) | M_EXTENDED_MSG)
-#define MX_ECHO			  ((1<<8) | M_EXTENDED_MSG)
-#define MX_REPLY		  ((1<<9) | M_EXTENDED_MSG)
-#define MAX_EXTENDED_MESSAGES     10
-#define DEFAULT_XMSG_MASK         0x00000000
-#define MAX_XMSG_MASK             0x0000001f
+#define MX_VISIBLE_ICON_NAME ((1 << 0) | M_EXTENDED_MSG)
+#define MX_ENTER_WINDOW ((1 << 1) | M_EXTENDED_MSG)
+#define MX_LEAVE_WINDOW ((1 << 2) | M_EXTENDED_MSG)
+#define MX_PROPERTY_CHANGE ((1 << 3) | M_EXTENDED_MSG)
+#define MX_MONITOR_ENABLED ((1 << 4) | M_EXTENDED_MSG)
+#define MX_MONITOR_DISABLED ((1 << 5) | M_EXTENDED_MSG)
+#define MX_MONITOR_CHANGED ((1 << 6) | M_EXTENDED_MSG)
+#define MX_MONITOR_FOCUS ((1 << 7) | M_EXTENDED_MSG)
+#define MX_ECHO ((1 << 8) | M_EXTENDED_MSG)
+#define MX_REPLY ((1 << 9) | M_EXTENDED_MSG)
+#define MAX_EXTENDED_MESSAGES 10
+#define DEFAULT_XMSG_MASK 0x00000000
+#define MAX_XMSG_MASK 0x0000001f
 
-#define MAX_TOTAL_MESSAGES   (MAX_MESSAGES + MAX_EXTENDED_MESSAGES)
+#define MAX_TOTAL_MESSAGES (MAX_MESSAGES + MAX_EXTENDED_MESSAGES)
 
 /* for MX_PROPERTY_CHANGE */
-#define MX_PROPERTY_CHANGE_NONE        0
-#define MX_PROPERTY_CHANGE_BACKGROUND  1
-#define MX_PROPERTY_CHANGE_SWALLOW     2
+#define MX_PROPERTY_CHANGE_NONE 0
+#define MX_PROPERTY_CHANGE_BACKGROUND 1
+#define MX_PROPERTY_CHANGE_SWALLOW 2
 
 /**
  * Reads a single packet of info from fvwm.
@@ -141,8 +135,7 @@ typedef struct
  * the next call to ReadFvwmPacket.  Callers, therefore, must copy
  * needed data before the next call to ReadFvwmPacket.
  **/
-FvwmPacket* ReadFvwmPacket( int fd );
-
+FvwmPacket *ReadFvwmPacket(int fd);
 
 /*
  *
@@ -158,7 +151,6 @@ void SendFinishedStartupNotification(int *fd);
  *
  */
 void SendText(int *fd, const char *message, unsigned long window);
-
 
 /** Compatibility **/
 #define SendInfo SendText
@@ -224,9 +216,8 @@ void InitGetConfigLine(int *fd, char *match);
 void GetConfigLine(int *fd, char **line);
 
 /* expands certain variables in a command to be sent by a module */
-char *module_expand_action(
-	Display *dpy, int screen , char *in_action, rectangle *r,
-	char *forecolor, char *backcolor);
+char *module_expand_action(Display *dpy, int screen, char *in_action,
+    rectangle *r, char *forecolor, char *backcolor);
 
 /**
  * Parse the command line arguments given to the module by fvwm.
@@ -237,10 +228,9 @@ char *module_expand_action(
  * is not kosher.  The returned memory is a static buffer.
  **/
 
-typedef struct
-{
+typedef struct {
 	/* module name */
-	char* name;
+	char *name;
 	/* length of the module name */
 	int namelen;
 	/* file descriptor to send info back to fvwm */
@@ -254,9 +244,9 @@ typedef struct
 	/* number of user-specified arguments */
 	int user_argc;
 	/* vector of user-specified arguments */
-	char** user_argv;
+	char **user_argv;
 } ModuleArgs;
 
-ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias );
+ModuleArgs *ParseModuleArgs(int argc, char *argv[], int use_arg6_as_alias);
 
 #endif

@@ -26,17 +26,17 @@ static FILE *console = NULL;
    to zero.  I fixed some of them, until I grew tired of the game.
    If you want to turn these back on, be prepared for lots of core
    dumps.  dje 11/15/98. */
-int CORE = 0;
+int CORE      = 0;
 int FUNCTIONS = 0;
-int X11 = 0;
-int FVWM = 0;
-int CONFIG = 0;
-int WINLIST = 0;
+int X11	      = 0;
+int FVWM      = 0;
+int CONFIG    = 0;
+int WINLIST   = 0;
 
 void
 ConsoleMessage(const char *fmt, ...)
 {
-	char *mfmt;
+	char   *mfmt;
 	va_list args;
 
 	assert(console != NULL);
@@ -58,12 +58,9 @@ ConsoleMessage(const char *fmt, ...)
 int
 OpenConsole(const char *filenm)
 {
-	if (!filenm)
-	{
+	if (!filenm) {
 		console = stderr;
-	}
-	else if ((console = fopen(filenm, "w")) == NULL)
-	{
+	} else if ((console = fopen(filenm, "w")) == NULL) {
 		fvwm_debug(__func__, "%s: cannot open %s\n", MyName, filenm);
 		return 0;
 	}
@@ -77,8 +74,7 @@ ConsoleDebug(int flag, const char *fmt, ...)
 	assert(console != NULL);
 
 #ifdef FVWM_DEBUG_MSGS
-	if (flag)
-	{
+	if (flag) {
 		va_list args;
 
 		va_start(args, fmt);

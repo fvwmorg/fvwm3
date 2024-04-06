@@ -15,7 +15,7 @@
 #define HaveNLSSupport 1
 
 /* Get declarations of GNU message catalog functions.  */
-# include <libintl.h>
+#include <libintl.h>
 
 #else
 
@@ -28,7 +28,7 @@
    and also including <libintl.h> would fail on SunOS 4, whereas <locale.h>
    is OK.  */
 #if defined(__sun)
-# include <locale.h>
+#include <locale.h>
 #endif
 
 /* Disabled NLS.
@@ -37,19 +37,18 @@
    On pre-ANSI systems without 'const', the config.h file is supposed to
    contain "#define const".  */
 
-# define gettext(Msgid) ((const char *) (Msgid))
-# define dgettext(Domainname, Msgid) ((const char *) (Msgid))
-# define dcgettext(Domainname, Msgid, Category) ((const char *) (Msgid))
-# define ngettext(Msgid1, Msgid2, N) \
-    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))
-# define dngettext(Domainname, Msgid1, Msgid2, N) \
-    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))
-# define dcngettext(Domainname, Msgid1, Msgid2, N, Category) \
-    ((N) == 1 ? (const char *) (Msgid1) : (const char *) (Msgid2))
-# define textdomain(Domainname) ((const char *) (Domainname))
-# define bindtextdomain(Domainname, Dirname) ((const char *) (Dirname))
-# define bind_textdomain_codeset(Domainname, Codeset) ((const char *) (Codeset))
-
+#define gettext(Msgid) ((const char *)(Msgid))
+#define dgettext(Domainname, Msgid) ((const char *)(Msgid))
+#define dcgettext(Domainname, Msgid, Category) ((const char *)(Msgid))
+#define ngettext(Msgid1, Msgid2, N) \
+	((N) == 1 ? (const char *)(Msgid1) : (const char *)(Msgid2))
+#define dngettext(Domainname, Msgid1, Msgid2, N) \
+	((N) == 1 ? (const char *)(Msgid1) : (const char *)(Msgid2))
+#define dcngettext(Domainname, Msgid1, Msgid2, N, Category) \
+	((N) == 1 ? (const char *)(Msgid1) : (const char *)(Msgid2))
+#define textdomain(Domainname) ((const char *)(Domainname))
+#define bindtextdomain(Domainname, Dirname) ((const char *)(Dirname))
+#define bind_textdomain_codeset(Domainname, Codeset) ((const char *)(Codeset))
 
 #endif
 
@@ -64,8 +63,8 @@
 
 void FGettextInit(const char *domain, const char *dir, const char *module);
 const char *FGettext(char *str);
-char *FGettextCopy(char *str);
-void FGettextSetLocalePath(const char *path);
-void FGettextPrintLocalePath(int verbose);
+char	   *FGettextCopy(char *str);
+void	    FGettextSetLocalePath(const char *path);
+void	    FGettextPrintLocalePath(int verbose);
 
 #endif /* FVWMLIB_LIBGETTEXT_H */

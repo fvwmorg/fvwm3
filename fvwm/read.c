@@ -35,23 +35,22 @@
 #include "misc.h"
 #include "screen.h"
 
-static char *curr_read_file = NULL;
-static char *curr_read_dir = NULL;
-static int curr_read_depth = 0;
+static char *curr_read_file  = NULL;
+static char *curr_read_dir   = NULL;
+static int   curr_read_depth = 0;
 static char *prev_read_files[MAX_READ_DEPTH];
 
-static int push_read_file(const char *file)
+static int
+push_read_file(const char *file)
 {
-	if (curr_read_depth >= MAX_READ_DEPTH)
-	{
+	if (curr_read_depth >= MAX_READ_DEPTH) {
 		fvwm_debug(__func__, "Nested Read limit %d is reached",
-			   MAX_READ_DEPTH);
+		    MAX_READ_DEPTH);
 		return 0;
 	}
 	prev_read_files[curr_read_depth++] = curr_read_file;
-	curr_read_file = fxstrdup(file);
-	if (curr_read_dir)
-	{
+	curr_read_file			   = fxstrdup(file);
+	if (curr_read_dir) {
 		free(curr_read_dir);
 	}
 	curr_read_dir = NULL;
@@ -59,19 +58,17 @@ static int push_read_file(const char *file)
 	return 1;
 }
 
-static void pop_read_file(void)
+static void
+pop_read_file(void)
 {
-	if (curr_read_depth == 0)
-	{
+	if (curr_read_depth == 0) {
 		return;
 	}
-	if (curr_read_file)
-	{
+	if (curr_read_file) {
 		free(curr_read_file);
 	}
 	curr_read_file = prev_read_files[--curr_read_depth];
-	if (curr_read_dir)
-	{
+	if (curr_read_dir) {
 		free(curr_read_dir);
 	}
 	curr_read_dir = NULL;
@@ -79,45 +76,43 @@ static void pop_read_file(void)
 	return;
 }
 
-const char *get_current_read_file(void)
+const char *
+get_current_read_file(void)
 {
 	return curr_read_file;
 }
 
-const char *get_current_read_dir(void)
+const char *
+get_current_read_dir(void)
 {
-	if (!curr_read_dir)
-	{
+	if (!curr_read_dir) {
 		char *dir_end;
-		if (!curr_read_file)
-		{
+		if (!curr_read_file) {
 			return ".";
 		}
 		/* it should be a library function parse_file_dir() */
 		dir_end = strrchr(curr_read_file, '/');
-		if (!dir_end)
-		{
+		if (!dir_end) {
 			dir_end = curr_read_file;
 		}
 		curr_read_dir = fxmalloc(dir_end - curr_read_file + 1);
 		strncpy(curr_read_dir, curr_read_file,
-			dir_end - curr_read_file);
+		    dir_end - curr_read_file);
 		curr_read_dir[dir_end - curr_read_file] = '\0';
 	}
 	return curr_read_dir;
 }
 
-
 /*
  * Read and execute each line from stream.
  */
-void run_command_stream(
-	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc,
-	cmdparser_context_t *pc)
+void
+run_command_stream(cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc,
+    cmdparser_context_t *pc)
 {
 	char *tline;
-	char line[1024];
-	int count;
+	char  line[1024];
+	int   count;
 
 	/* Set close-on-exec flag */
 	fcntl(fileno(f), F_SETFD, 1);
@@ -127,37 +122,30 @@ void run_command_stream(
 	handle_all_expose();
 
 	tline = fgets(line, (sizeof line) - 1, f);
-	for (count = 0; tline && count < MAX_READ_ITEMS; count++)
-	{
+	for (count = 0; tline && count < MAX_READ_ITEMS; count++) {
 		int l;
 		while (tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
-		      line[l-2]=='\\' && line[l-1]=='\n')
-		{
-			tline = fgets(line+l-2,sizeof(line)-l+1,f);
+		    line[l - 2] == '\\' && line[l - 1] == '\n') {
+			tline = fgets(line + l - 2, sizeof(line) - l + 1, f);
 		}
-		tline=line;
-		while (isspace((unsigned char)*tline))
-		{
+		tline = line;
+		while (isspace((unsigned char)*tline)) {
 			tline++;
 		}
 		l = strlen(tline);
-		if (l > 0 && tline[l - 1] == '\n')
-		{
+		if (l > 0 && tline[l - 1] == '\n') {
 			tline[l - 1] = '\0';
 		}
 		execute_function(cond_rc, exc, tline, pc, 0);
 		tline = fgets(line, (sizeof line) - 1, f);
 	}
-	if (tline)
-	{
-		fvwm_debug(
-			__func__, "Too many lines in inpup (> %d).",
-			MAX_READ_ITEMS);
+	if (tline) {
+		fvwm_debug(__func__, "Too many lines in inpup (> %d).",
+		    MAX_READ_ITEMS);
 	}
 
 	return;
 }
-
 
 /**
  * Parse the action string.  We expect a filename, and optionally,
@@ -168,8 +156,8 @@ void run_command_stream(
  * The filename and the presence of the quiet flag are returned
  * using the pointer arguments.
  **/
-static int parse_filename(
-	char *cmdname, char *action, char **filename, int *quiet_flag)
+static int
+parse_filename(char *cmdname, char *action, char **filename, int *quiet_flag)
 {
 	char *rest;
 	char *option;
@@ -177,17 +165,15 @@ static int parse_filename(
 	/*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
 
 	/* read file name arg */
-	rest = GetNextToken(action,filename);
-	if (*filename == NULL)
-	{
+	rest = GetNextToken(action, filename);
+	if (*filename == NULL) {
 		fvwm_debug(__func__, "missing filename parameter");
 		return 0;
 	}
 	/* optional "Quiet" argument -- flag defaults to `off' (noisy) */
 	*quiet_flag = 0;
-	rest = GetNextToken(rest,&option);
-	if (option != NULL)
-	{
+	rest	    = GetNextToken(rest, &option);
+	if (option != NULL) {
 		*quiet_flag = strncasecmp(option, "Quiet", 5) == 0;
 		free(option);
 	}
@@ -195,12 +181,12 @@ static int parse_filename(
 	return 1;
 }
 
-
 /**
  * Returns 0 if file not found
  **/
-int run_command_file(
-	char *filename, const exec_context_t *exc, cmdparser_context_t *pc)
+int
+run_command_file(char *filename, const exec_context_t *exc,
+    cmdparser_context_t *pc)
 {
 	char *full_filename;
 	FILE *f = NULL;
@@ -226,10 +212,9 @@ int run_command_file(
 	 */
 	full_filename = fxstrdup(filename);
 
-	if (full_filename[0] == '/')
-	{
+	if (full_filename[0] == '/') {
 		/* It's an absolute path */
-		f = fopen(full_filename,"r");
+		f = fopen(full_filename, "r");
 	} else {
 		/* It's a relative path.  Check in either FVWM_USERDIR or
 		 * FVWM_DATADIR.
@@ -237,24 +222,22 @@ int run_command_file(
 		free(full_filename);
 		xasprintf(&full_filename, "%s/%s", fvwm_userdir, filename);
 
-		if((f = fopen(full_filename, "r")) == NULL)
-		{
+		if ((f = fopen(full_filename, "r")) == NULL) {
 			free(full_filename);
-			xasprintf(&full_filename, "%s/%s", FVWM_DATADIR, filename);
+			xasprintf(&full_filename, "%s/%s", FVWM_DATADIR,
+			    filename);
 			f = fopen(full_filename, "r");
 		}
 	}
 
-	if ((f == NULL) &&
-		(f = fopen(filename, "r")) == NULL) {
+	if ((f == NULL) && (f = fopen(filename, "r")) == NULL) {
 
 		/* We really couldn't open the file. */
 		free(full_filename);
 		return 0;
 	}
 
-	if (push_read_file(full_filename) == 0)
-	{
+	if (push_read_file(full_filename) == 0) {
 		free(full_filename);
 		fclose(f);
 		return 0;
@@ -271,79 +254,64 @@ int run_command_file(
 /**
  * Busy Cursor Stuff for Read
  **/
-static void cursor_control(Bool grab)
+static void
+cursor_control(Bool grab)
 {
-	static int read_depth = 0;
+	static int  read_depth	= 0;
 	static Bool need_ungrab = False;
 
-	if (!(Scr.BusyCursor & BUSY_READ) && !need_ungrab)
-	{
+	if (!(Scr.BusyCursor & BUSY_READ) && !need_ungrab) {
 		return;
 	}
-	if (grab)
-	{
-		if (!read_depth && GrabEm(CRS_WAIT, GRAB_BUSY))
-		{
+	if (grab) {
+		if (!read_depth && GrabEm(CRS_WAIT, GRAB_BUSY)) {
 			need_ungrab = True;
 		}
-		if (need_ungrab)
-		{
+		if (need_ungrab) {
 			read_depth++;
 		}
-	}
-	else if (need_ungrab)
-	{
+	} else if (need_ungrab) {
 		read_depth--;
-		if (!read_depth || !(Scr.BusyCursor & BUSY_READ))
-		{
+		if (!read_depth || !(Scr.BusyCursor & BUSY_READ)) {
 			UngrabEm(GRAB_BUSY);
 			need_ungrab = False;
-			read_depth = 0;
+			read_depth  = 0;
 		}
 	}
 
 	return;
 }
 
-void CMD_Read(F_CMD_ARGS)
+void
+CMD_Read(F_CMD_ARGS)
 {
-	char* filename;
-	int read_quietly;
+	char *filename;
+	int   read_quietly;
 
 	DoingCommandLine = False;
 
-	if (cond_rc != NULL)
-	{
+	if (cond_rc != NULL) {
 		cond_rc->rc = COND_RC_OK;
 	}
-	if (!parse_filename("Read", action, &filename, &read_quietly))
-	{
-		if (cond_rc != NULL)
-		{
+	if (!parse_filename("Read", action, &filename, &read_quietly)) {
+		if (cond_rc != NULL) {
 			cond_rc->rc = COND_RC_ERROR;
 		}
 		return;
 	}
 	cursor_control(True);
-	if (!run_command_file(filename, exc, pc))
-	{
-		if (!read_quietly)
-		{
-			if (filename[0] == '/')
-			{
+	if (!run_command_file(filename, exc, pc)) {
+		if (!read_quietly) {
+			if (filename[0] == '/') {
+				fvwm_debug(__func__, "file '%s' not found",
+				    filename);
+			} else {
 				fvwm_debug(__func__,
-					   "file '%s' not found", filename);
-			}
-			else
-			{
-				fvwm_debug(__func__,
-					   "file '%s' not found in %s or "
-					   FVWM_DATADIR, filename,
-					   fvwm_userdir);
+				    "file '%s' not found in %s or " FVWM_DATADIR,
+				    filename, fvwm_userdir);
 			}
 		}
-		if (cond_rc != NULL)
-		{
+		if (cond_rc != NULL) {
 			cond_rc->rc = COND_RC_ERROR;
 		}
 	}
@@ -353,38 +321,32 @@ void CMD_Read(F_CMD_ARGS)
 	return;
 }
 
-void CMD_PipeRead(F_CMD_ARGS)
+void
+CMD_PipeRead(F_CMD_ARGS)
 {
-	char* command;
-	int read_quietly;
-	FILE* f;
+	char *command;
+	int   read_quietly;
+	FILE *f;
 
 	DoingCommandLine = False;
 
-	if (cond_rc != NULL)
-	{
+	if (cond_rc != NULL) {
 		cond_rc->rc = COND_RC_OK;
 	}
-	if (!parse_filename("PipeRead", action, &command, &read_quietly))
-	{
-		if (cond_rc != NULL)
-		{
+	if (!parse_filename("PipeRead", action, &command, &read_quietly)) {
+		if (cond_rc != NULL) {
 			cond_rc->rc = COND_RC_ERROR;
 		}
 		return;
 	}
 	cursor_control(True);
 	f = popen(command, "r");
-	if (f == NULL)
-	{
-		if (cond_rc != NULL)
-		{
+	if (f == NULL) {
+		if (cond_rc != NULL) {
 			cond_rc->rc = COND_RC_ERROR;
 		}
-		if (!read_quietly)
-		{
-			fvwm_debug(__func__, "command '%s' not run",
-				   command);
+		if (!read_quietly) {
+			fvwm_debug(__func__, "command '%s' not run", command);
 		}
 		free(command);
 		cursor_control(False);

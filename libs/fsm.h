@@ -12,11 +12,10 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef struct
-{
-	FSmsConn	 	smsConn;
-	FIceConn		ice_conn;
-	char 		*clientId;
+typedef struct {
+	FSmsConn smsConn;
+	FIceConn ice_conn;
+	char	*clientId;
 } fsm_client_t;
 
 /* ---------------------------- forward declarations ----------------------- */
@@ -25,7 +24,7 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------ */
 
-int fsm_init(char *module);
+int  fsm_init(char *module);
 void fsm_fdset(fd_set *in_fdset);
 Bool fsm_process(fd_set *in_fdset);
 void fsm_proxy(Display *dpy, Window win, char *sm);

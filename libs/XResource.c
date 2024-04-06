@@ -29,15 +29,13 @@
 #include "fvwmlib.h"
 #include "XResource.h"
 
-
-
 /*
  * If you have a module MyModule and want to parse X resources as well as
  * command line options and a config file:
  *
  *** EXAMPLE */
 #if 0
-    #include <fvwmlib.h>
+#include <fvwmlib.h>
 
     void main(int argc, char **argv)
     {
@@ -96,32 +94,27 @@
 
 /*** END OF EXAMPLE ***/
 
-
-
-
 /* Default option table */
-static XrmOptionDescRec default_opts[] =
-{
-  { "-fg",       "*Foreground", XrmoptionSepArg, NULL },
-  { "-bg",       "*Background", XrmoptionSepArg, NULL },
-  { "-fn",       "*Font",       XrmoptionSepArg, NULL },
-  { "-geometry", "*Geometry",   XrmoptionSepArg, NULL },
-  { "-title",    "*Title",      XrmoptionSepArg, NULL }
-  /* Remember to update NUM_DEFAULT_OPTIONS if you change this list! */
+static XrmOptionDescRec default_opts[] = {
+	{"-fg",	 "*Foreground", XrmoptionSepArg, NULL},
+	{ "-bg",	 "*Background", XrmoptionSepArg, NULL},
+	{ "-fn",	 "*Font",	  XrmoptionSepArg, NULL},
+	{ "-geometry", "*Geometry",   XrmoptionSepArg, NULL},
+	{ "-title",    "*Title",      XrmoptionSepArg, NULL}
+	/* Remember to update NUM_DEFAULT_OPTIONS if you change this list! */
 };
 #define NUM_DEFAULT_OPTS 5
 
-
-
 /* internal function */
-static void DoMergeString(char *resource, XrmDatabase *ptarget, Bool override)
+static void
+DoMergeString(char *resource, XrmDatabase *ptarget, Bool override)
 {
-  XrmDatabase db;
+	XrmDatabase db;
 
-  if (!resource)
-    return;
-  db = XrmGetStringDatabase(resource);
-  XrmCombineDatabase(db, ptarget, override);
+	if (!resource)
+		return;
+	db = XrmGetStringDatabase(resource);
+	XrmCombineDatabase(db, ptarget, override);
 }
 
 /*
@@ -134,14 +127,15 @@ static void DoMergeString(char *resource, XrmDatabase *ptarget, Bool override)
  * if you do not need it amymore.
  *
  */
-void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override)
+void
+MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override)
 {
-  if (!*pdb)
-    /* create new database */
-    XrmPutStringResource(pdb, "", "");
-  DoMergeString(XResourceManagerString(dpy), pdb, override);
-  DoMergeString(XScreenResourceString(DefaultScreenOfDisplay(dpy)), pdb,
-		override);
+	if (!*pdb)
+		/* create new database */
+		XrmPutStringResource(pdb, "", "");
+	DoMergeString(XResourceManagerString(dpy), pdb, override);
+	DoMergeString(XScreenResourceString(DefaultScreenOfDisplay(dpy)), pdb,
+	    override);
 }
 
 /*
@@ -161,17 +155,17 @@ void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override)
  * if you do not need it amymore.
  *
  */
-void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
-			   int num_opts, char *name, int *pargc, char **argv,
-			   Bool fNoDefaults)
+void
+MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts, int num_opts,
+    char *name, int *pargc, char **argv, Bool fNoDefaults)
 {
-  if (!name)
-    return;
-  if (opts && num_opts > 0)
-    XrmParseCommand(pdb, opts, num_opts, name, pargc, argv);
-  if (!fNoDefaults)
-    XrmParseCommand(pdb, default_opts, NUM_DEFAULT_OPTS,
-		    name, pargc, argv);
+	if (!name)
+		return;
+	if (opts && num_opts > 0)
+		XrmParseCommand(pdb, opts, num_opts, name, pargc, argv);
+	if (!fNoDefaults)
+		XrmParseCommand(pdb, default_opts, NUM_DEFAULT_OPTS, name,
+		    pargc, argv);
 }
 
 /*
@@ -196,54 +190,55 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
  * if you do not need it amymore.
  *
  */
-Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
-			     char *bindstr)
+Bool
+MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
+    char *bindstr)
 {
-  int len;
-  char *end;
-  char *value;
-  char *myvalue;
-  char *resource;
+	int   len;
+	char *end;
+	char *value;
+	char *myvalue;
+	char *resource;
 
-  /* translate "*(prefix)(suffix)" to "(prefix)(binding)(suffix)",
-   * e.g. "*FvwmPagerGeometry" to "FvwmPager.Geometry" */
-  if (!line || *line != '*')
-    return False;
+	/* translate "*(prefix)(suffix)" to "(prefix)(binding)(suffix)",
+	 * e.g. "*FvwmPagerGeometry" to "FvwmPager.Geometry" */
+	if (!line || *line != '*')
+		return False;
 
-  line++;
-  len = (prefix) ? strlen(prefix) : 0;
-  if (!prefix || strncasecmp(line, prefix, len))
-    return False;
+	line++;
+	len = (prefix) ? strlen(prefix) : 0;
+	if (!prefix || strncasecmp(line, prefix, len))
+		return False;
 
-  line += len;
-  end = line;
-  while (*end && !isspace((unsigned char)*end))
-    end++;
-  if (line == end)
-    return False;
-  value = end;
-  while (*value && isspace((unsigned char)*value))
-    value++;
+	line += len;
+	end = line;
+	while (*end && !isspace((unsigned char)*end))
+		end++;
+	if (line == end)
+		return False;
+	value = end;
+	while (*value && isspace((unsigned char)*value))
+		value++;
 
-  /* prefix*suffix: value */
-  /* TA:  FIXME!  xasprintf() */
-  resource = fxmalloc(len + (end - line) + 2);
-  strcpy(resource, prefix);
-  strcat(resource, bindstr);
-  strncat(resource, line, end - line);
+	/* prefix*suffix: value */
+	/* TA:  FIXME!  xasprintf() */
+	resource = fxmalloc(len + (end - line) + 2);
+	strcpy(resource, prefix);
+	strcat(resource, bindstr);
+	strncat(resource, line, end - line);
 
-  len = strlen(value);
-  myvalue = fxmalloc(len + 1);
-  strcpy(myvalue, value);
-  for (len--; len >= 0 && isspace((unsigned char)myvalue[len]); len--)
-    myvalue[len] = 0;
+	len	= strlen(value);
+	myvalue = fxmalloc(len + 1);
+	strcpy(myvalue, value);
+	for (len--; len >= 0 && isspace((unsigned char)myvalue[len]); len--)
+		myvalue[len] = 0;
 
-  /* merge string into database */
-  XrmPutStringResource(pdb, resource, myvalue);
+	/* merge string into database */
+	XrmPutStringResource(pdb, resource, myvalue);
 
-  free(resource);
-  free(myvalue);
-  return True;
+	free(resource);
+	free(myvalue);
+	return True;
 }
 
 /*
@@ -263,42 +258,42 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
  * returns the resource value of the "Geometry" resource for MyModule in r.
  *
  */
-Bool GetResourceString(
-  XrmDatabase db, const char *resource, const char *prefix, XrmValue *xval)
+Bool
+GetResourceString(XrmDatabase db, const char *resource, const char *prefix,
+    XrmValue *xval)
 {
-  char *str_type;
-  char *name;
-  char *Name;
-  int i;
+	char *str_type;
+	char *name;
+	char *Name;
+	int   i;
 
-  /* TA:  FIXME!  xasprintf() */
-  name = fxmalloc(strlen(resource) + strlen(prefix) + 2);
-  Name = fxmalloc(strlen(resource) + strlen(prefix) + 2);
-  strcpy(name, prefix);
-  strcat(name, ".");
-  strcat(name, resource);
-  strcpy(Name, name);
-  if (isupper(name[0]))
-    name[0] = tolower(name[0]);
-  if (islower(Name[0]))
-    Name[0] = toupper(Name[0]);
-  i = strlen(prefix) + 1;
-  if (isupper(name[i]))
-    name[i] = tolower(name[i]);
-  if (islower(Name[i]))
-    Name[i] = toupper(Name[i]);
-  if (!XrmGetResource(db, name, Name, &str_type, xval) ||
-      xval->addr == NULL || xval->size == 0)
-  {
-    free(name);
-    free(Name);
-    xval->size = 0;
-    xval->addr = NULL;
+	/* TA:  FIXME!  xasprintf() */
+	name = fxmalloc(strlen(resource) + strlen(prefix) + 2);
+	Name = fxmalloc(strlen(resource) + strlen(prefix) + 2);
+	strcpy(name, prefix);
+	strcat(name, ".");
+	strcat(name, resource);
+	strcpy(Name, name);
+	if (isupper(name[0]))
+		name[0] = tolower(name[0]);
+	if (islower(Name[0]))
+		Name[0] = toupper(Name[0]);
+	i = strlen(prefix) + 1;
+	if (isupper(name[i]))
+		name[i] = tolower(name[i]);
+	if (islower(Name[i]))
+		Name[i] = toupper(Name[i]);
+	if (!XrmGetResource(db, name, Name, &str_type, xval) ||
+	    xval->addr == NULL || xval->size == 0) {
+		free(name);
+		free(Name);
+		xval->size = 0;
+		xval->addr = NULL;
 
-    return False;
-  }
-  free(name);
-  free(Name);
+		return False;
+	}
+	free(name);
+	free(Name);
 
-  return True;
+	return True;
 }

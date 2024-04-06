@@ -66,7 +66,7 @@ char *envDupExpand(const char *s, int extra);
  *                returns "/home/username" and beg=5, end=10.
  *
  */
-const char* getFirstEnv(const char *s, int *beg, int *end);
+const char *getFirstEnv(const char *s, int *beg, int *end);
 
 /* This function keeps a list of all strings that were set in the environment.
  * If a variable is written again, the old memory is freed.  This function
@@ -82,6 +82,5 @@ void flib_putenv(char *var, char *env);
 
 /* Replacement for unsetenv(). */
 void flib_unsetenv(const char *name);
-
 
 #endif

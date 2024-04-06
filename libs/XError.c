@@ -32,9 +32,10 @@
 static char *error_name(unsigned char code);
 #endif
 static char *request_name(unsigned char code);
-static char unknown[32];
+static char  unknown[32];
 
-void do_coredump(void)
+void
+do_coredump(void)
 {
 	fvwm_debug(__func__, " Leaving a core dump now\n");
 	{
@@ -45,7 +46,8 @@ void do_coredump(void)
 }
 
 #define USE_GET_ERROR_TEXT 1
-void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
+void
+PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 {
 	char msg[256];
 	Bool suc = False;
@@ -55,8 +57,7 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 	/* can't call this from within an error handler! */
 	/* DV (21-Nov-2000): Well, actually we *can* call it in an error
 	 * handler since it does not trigger a protocol request. */
-	if (error->error_code >= FirstExtensionError)
-	{
+	if (error->error_code >= FirstExtensionError) {
 		suc = FRenderGetErrorText(error->error_code, msg);
 	}
 	if (!suc)
@@ -65,25 +66,24 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 	fvwm_debug(__func__, "   Error: %d (%s)\n", error->error_code, msg);
 #else
 	fvwm_debug(__func__, "%s: Cause of next X Error.\n", MyName);
-	if (error->error_code >= FirstExtensionError)
-	{
+	if (error->error_code >= FirstExtensionError) {
 		suc = FRenderGetErrorText(error->error_code, msg);
 	}
 	if (suc)
-		fvwm_debug(__func__, "   Error: %d (%s)\n",
-			   error->error_code, msg);
+		fvwm_debug(__func__, "   Error: %d (%s)\n", error->error_code,
+		    msg);
 	else
-		fvwm_debug(__func__, "   Error: %d (%s)\n",
-			   error->error_code, error_name(error->error_code));
+		fvwm_debug(__func__, "   Error: %d (%s)\n", error->error_code,
+		    error_name(error->error_code));
 #endif
 	fvwm_debug(__func__, "   Major opcode of failed request:  %d (%s)\n",
-		   error->request_code, request_name(error->request_code));
+	    error->request_code, request_name(error->request_code));
 	fvwm_debug(__func__, "   Minor opcode of failed request:  %d \n",
-		   error->minor_code);
+	    error->minor_code);
 	/* error->resourceid may be uninitialised. This is no proble since we
 	 * are dumping core anyway. */
 	fvwm_debug(__func__, "   Resource id of failed request:  0x%lx \n",
-		   error->resourceid);
+	    error->resourceid);
 
 	/* leave a coredump */
 	do_coredump();
@@ -111,12 +111,11 @@ static char *error_names[] = {
 	"BadImplementation",
 };
 
-static char *error_name(unsigned char code)
+static char *
+error_name(unsigned char code)
 {
-	if (code == 0 || code > (sizeof(error_names) / sizeof(char *)))
-	{
-		snprintf(unknown, sizeof(unknown),
-			"Unknown: %d", (int)code);
+	if (code == 0 || code > (sizeof(error_names) / sizeof(char *))) {
+		snprintf(unknown, sizeof(unknown), "Unknown: %d", (int)code);
 		return unknown;
 	}
 	return error_names[code - 1];
@@ -246,17 +245,15 @@ static char *code_names[] = {
 	"GetModifierMapping",
 };
 
-static char *request_name(unsigned char code)
+static char *
+request_name(unsigned char code)
 {
-	if (code == 0 || code > (sizeof(code_names) / sizeof(char *)))
-	{
-		if (code == FRenderGetMajorOpCode())
-		{
+	if (code == 0 || code > (sizeof(code_names) / sizeof(char *))) {
+		if (code == FRenderGetMajorOpCode()) {
 			snprintf(unknown, sizeof(unknown), "XRender");
-		}
-		else
-		{
-			snprintf(unknown, sizeof(unknown), "Unknown: %d", (int)code);
+		} else {
+			snprintf(unknown, sizeof(unknown), "Unknown: %d",
+			    (int)code);
 		}
 		return unknown;
 	}
@@ -267,10 +264,10 @@ static char *request_name(unsigned char code)
 
 static ferror_handler_t old_handler = NULL;
 
-void ferror_set_temp_error_handler(ferror_handler_t new_handler)
+void
+ferror_set_temp_error_handler(ferror_handler_t new_handler)
 {
-	if (old_handler != NULL)
-	{
+	if (old_handler != NULL) {
 		do_coredump();
 	}
 	old_handler = XSetErrorHandler(old_handler);
@@ -278,10 +275,10 @@ void ferror_set_temp_error_handler(ferror_handler_t new_handler)
 	return;
 }
 
-void ferror_reset_temp_error_handler(void)
+void
+ferror_reset_temp_error_handler(void)
 {
-	if (old_handler == NULL)
-	{
+	if (old_handler == NULL) {
 		do_coredump();
 	}
 	XSetErrorHandler(old_handler);
@@ -290,12 +287,12 @@ void ferror_reset_temp_error_handler(void)
 	return;
 }
 
-int ferror_call_next_error_handler(Display *dpy, XErrorEvent *error)
+int
+ferror_call_next_error_handler(Display *dpy, XErrorEvent *error)
 {
 	int rc;
 
-	if (old_handler == NULL)
-	{
+	if (old_handler == NULL) {
 		do_coredump();
 	}
 	rc = old_handler(dpy, error);

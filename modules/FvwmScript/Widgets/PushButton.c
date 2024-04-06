@@ -22,17 +22,18 @@
 #include "Tools.h"
 
 /* left, center and right offsets */
-#define PUSH_BUTTON_LCR_OFFSETS 4,0,4
+#define PUSH_BUTTON_LCR_OFFSETS 4, 0, 4
 
 /*
  * Function for PushButton
  */
-void InitPushButton(struct XObj *xobj)
+void
+InitPushButton(struct XObj *xobj)
 {
-	unsigned long mask;
+	unsigned long	     mask;
 	XSetWindowAttributes Attr;
-	int i;
-	char *str;
+	int		     i;
+	char		    *str;
 
 	/* Save colors and font */
 	if (xobj->colorset >= 0) {
@@ -49,26 +50,23 @@ void InitPushButton(struct XObj *xobj)
 
 	mask = 0;
 	if (!x11base->cursor) {
-		Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-		mask |= CWCursor;  /* Window cursor */
+		Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
+		mask |= CWCursor; /* Window cursor */
 	}
 	Attr.background_pixel = xobj->TabColor[back];
 	mask |= CWBackPixel;
 
-
 	/* Window thickness = 0 */
-	xobj->win = XCreateWindow(
-		dpy, *xobj->ParentWin, xobj->x, xobj->y, xobj->width,
-		xobj->height, 0, CopyFromParent, InputOutput, CopyFromParent,
-		mask, &Attr);
-	xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
+	xobj->win = XCreateWindow(dpy, *xobj->ParentWin, xobj->x, xobj->y,
+	    xobj->width, xobj->height, 0, CopyFromParent, InputOutput,
+	    CopyFromParent, mask, &Attr);
+	xobj->gc  = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
 	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-	if ((xobj->Ffont = FlocaleLoadFont(
-		     dpy, xobj->font, ScriptName)) == NULL)
-	{
+	if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) ==
+	    NULL) {
 		fvwm_debug(__func__, "%s: Couldn't load font. Exiting!\n",
-			   ScriptName);
+		    ScriptName);
 		exit(1);
 	}
 	if (xobj->Ffont->font != NULL)
@@ -77,175 +75,139 @@ void InitPushButton(struct XObj *xobj)
 	XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
 	/* Resize widget */
-	str = (char*)GetMenuTitle(xobj->title, 1);
-	if (xobj->icon == NULL)
-	{
+	str = (char *)GetMenuTitle(xobj->title, 1);
+	if (xobj->icon == NULL) {
 		i = xobj->Ffont->height + 12;
 		if (xobj->height < i)
 			xobj->height = i;
 		i = FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + 16;
 		if (xobj->width < i)
 			xobj->width = i;
-	}
-	else if (strlen(str) == 0)
-	{
+	} else if (strlen(str) == 0) {
 		if (xobj->height < xobj->icon_h + 10)
 			xobj->height = xobj->icon_h + 10;
 		if (xobj->width < xobj->icon_w + 10)
 			xobj->width = xobj->icon_w + 10;
-	}
-	else
-	{
-		if (xobj->icon_w + 10 > FlocaleTextWidth(
-			    xobj->Ffont, str, strlen(str)) + 16)
+	} else {
+		if (xobj->icon_w + 10 >
+		    FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + 16)
 			i = xobj->icon_w + 10;
 		else
-			i = FlocaleTextWidth(
-				xobj->Ffont, str, strlen(str)) + 16;
+			i = FlocaleTextWidth(xobj->Ffont, str, strlen(str)) +
+			    16;
 		if (xobj->width < i)
 			xobj->width = i;
-		i = xobj->icon_h+ 2 * (xobj->Ffont->height + 10);
+		i = xobj->icon_h + 2 * (xobj->Ffont->height + 10);
 		if (xobj->height < i)
 			xobj->height = i;
 	}
 	XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
 	if (xobj->colorset >= 0)
 		SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
-				    &Colorset[xobj->colorset], Pdepth,
-				    xobj->gc, True);
+		    &Colorset[xobj->colorset], Pdepth, xobj->gc, True);
 	xobj->value3 = CountOption(xobj->title);
 	XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
-void DestroyPushButton(struct XObj *xobj)
+void
+DestroyPushButton(struct XObj *xobj)
 {
 	FlocaleUnloadFont(dpy, xobj->Ffont);
 	XFreeGC(dpy, xobj->gc);
 	XDestroyWindow(dpy, xobj->win);
 }
 
-
-void DrawPushButton(struct XObj *xobj, XEvent *evp)
+void
+DrawPushButton(struct XObj *xobj, XEvent *evp)
 {
 	DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
 	DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, evp);
 }
 
-void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
+void
+EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 {
-	static XEvent event;
-	int End = 1;
-	unsigned int modif;
-	int x1,x2,y1,y2,i;
-	Window Win1,Win2,WinPop;
-	Window WinBut = 0;
-	int In = 0;
-	char *str;
-	int x,y,hOpt,yMenu,hMenu,wMenu;
-	int oldvalue = 0,newvalue;
-	unsigned long mask;
+	static XEvent	     event;
+	int		     End = 1;
+	unsigned int	     modif;
+	int		     x1, x2, y1, y2, i;
+	Window		     Win1, Win2, WinPop;
+	Window		     WinBut = 0;
+	int		     In	    = 0;
+	char		    *str;
+	int		     x, y, hOpt, yMenu, hMenu, wMenu;
+	int		     oldvalue = 0, newvalue;
+	unsigned long	     mask;
 	XSetWindowAttributes Attr;
 
-	if (EvtButton->button == Button1)
-	{
+	if (EvtButton->button == Button1) {
 		i = (xobj->width -
-		     FlocaleTextWidth(
-			     xobj->Ffont, xobj->title, strlen(xobj->title)))/2;
+			FlocaleTextWidth(xobj->Ffont, xobj->title,
+			    strlen(xobj->title))) /
+		    2;
 
-		while (End)
-		{
+		while (End) {
 			FNextEvent(dpy, &event);
-			switch (event.type)
-			{
+			switch (event.type) {
 			case EnterNotify:
-				FQueryPointer(
-					dpy, *xobj->ParentWin,
-					&Win1, &Win2, &x1, &y1, &x2, &y2,
-					&modif);
-				if (WinBut == 0)
-				{
+				FQueryPointer(dpy, *xobj->ParentWin, &Win1,
+				    &Win2, &x1, &y1, &x2, &y2, &modif);
+				if (WinBut == 0) {
 					WinBut = Win2;
-					DrawReliefRect(
-						0, 0, xobj->width,
-						xobj->height, xobj, shad,
-						hili);
-					DrawIconStr(
-						0,xobj, True,
-						PUSH_BUTTON_LCR_OFFSETS, NULL,
-						NULL, NULL);
+					DrawReliefRect(0, 0, xobj->width,
+					    xobj->height, xobj, shad, hili);
+					DrawIconStr(0, xobj, True,
+					    PUSH_BUTTON_LCR_OFFSETS, NULL, NULL,
+					    NULL);
 					In = 1;
-				}
-				else
-				{
-					if (Win2 == WinBut)
-					{
-						DrawReliefRect(
-							0, 0, xobj->width,
-							xobj->height, xobj,
-							shad, hili);
-						DrawIconStr(
-							1, xobj, True,
-							PUSH_BUTTON_LCR_OFFSETS,
-							NULL, NULL, NULL);
+				} else {
+					if (Win2 == WinBut) {
+						DrawReliefRect(0, 0,
+						    xobj->width, xobj->height,
+						    xobj, shad, hili);
+						DrawIconStr(1, xobj, True,
+						    PUSH_BUTTON_LCR_OFFSETS,
+						    NULL, NULL, NULL);
 						In = 1;
-					}
-					else if (In)
-					{
+					} else if (In) {
 						In = 0;
-						DrawReliefRect(
-							0, 0, xobj->width,
-							xobj->height, xobj,
-							hili, shad);
-						DrawIconStr(
-							0, xobj, True,
-							PUSH_BUTTON_LCR_OFFSETS,
-							NULL, NULL, NULL);
+						DrawReliefRect(0, 0,
+						    xobj->width, xobj->height,
+						    xobj, hili, shad);
+						DrawIconStr(0, xobj, True,
+						    PUSH_BUTTON_LCR_OFFSETS,
+						    NULL, NULL, NULL);
 					}
 				}
 				break;
 			case LeaveNotify:
-				FQueryPointer(
-					dpy, *xobj->ParentWin,
-					&Win1, &Win2, &x1, &y1, &x2, &y2,
-					&modif);
-				if (Win2 == WinBut)
-				{
+				FQueryPointer(dpy, *xobj->ParentWin, &Win1,
+				    &Win2, &x1, &y1, &x2, &y2, &modif);
+				if (Win2 == WinBut) {
 					In = 1;
-					DrawReliefRect(
-						0, 0, xobj->width,
-						xobj->height, xobj, shad,
-						hili);
-					DrawIconStr(
-						1, xobj, True,
-						PUSH_BUTTON_LCR_OFFSETS, NULL,
-						NULL, NULL);
-				}
-				else if (In)
-				{
-					DrawReliefRect(
-						0, 0, xobj->width,
-						xobj->height, xobj, hili,
-						shad);
-					DrawIconStr(
-						0, xobj, True,
-						PUSH_BUTTON_LCR_OFFSETS, NULL,
-						NULL, NULL);
+					DrawReliefRect(0, 0, xobj->width,
+					    xobj->height, xobj, shad, hili);
+					DrawIconStr(1, xobj, True,
+					    PUSH_BUTTON_LCR_OFFSETS, NULL, NULL,
+					    NULL);
+				} else if (In) {
+					DrawReliefRect(0, 0, xobj->width,
+					    xobj->height, xobj, hili, shad);
+					DrawIconStr(0, xobj, True,
+					    PUSH_BUTTON_LCR_OFFSETS, NULL, NULL,
+					    NULL);
 					In = 0;
 				}
 				break;
 			case ButtonRelease:
 				End = 0;
-				DrawReliefRect(
-					0, 0, xobj->width, xobj->height, xobj,
-					hili, shad);
-				DrawIconStr(
-					0, xobj, True,
-					PUSH_BUTTON_LCR_OFFSETS, NULL, NULL,
-					NULL);
-				if (In)
-				{
-					/* Send an empty message of SingleClick type
-					 * for a mouse click */
+				DrawReliefRect(0, 0, xobj->width, xobj->height,
+				    xobj, hili, shad);
+				DrawIconStr(0, xobj, True,
+				    PUSH_BUTTON_LCR_OFFSETS, NULL, NULL, NULL);
+				if (In) {
+					/* Send an empty message of SingleClick
+					 * type for a mouse click */
 					xobj->value = 1;
 					SendMsg(xobj, SingleClic);
 					xobj->value = 0;
@@ -255,70 +217,65 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 		}
 	}
 	/* Drawing the popup menu */
-	else if (EvtButton->button == Button3)
-	{
-		if (xobj->value3 > 1)
-		{
+	else if (EvtButton->button == Button3) {
+		if (xobj->value3 > 1) {
 			hOpt = xobj->Ffont->height + 10;
 			/* Total height of the menu */
 			hMenu = (xobj->value3 - 1) * hOpt;
 			yMenu = xobj->y + xobj->height;
 			wMenu = 0;
-			for (i = 2 ; i <= xobj->value3; i++)
-			{
-				str = (char*)GetMenuTitle(xobj->title, i);
-				if (wMenu < FlocaleTextWidth(
-					    xobj->Ffont, str, strlen(str))+34)
-					wMenu = FlocaleTextWidth(
-						xobj->Ffont, str,
-						strlen(str))+34;
+			for (i = 2; i <= xobj->value3; i++) {
+				str = (char *)GetMenuTitle(xobj->title, i);
+				if (wMenu < FlocaleTextWidth(xobj->Ffont, str,
+						strlen(str)) +
+					34)
+					wMenu = FlocaleTextWidth(xobj->Ffont,
+						    str, strlen(str)) +
+					    34;
 				free(str);
 			}
 
 			/* create the menu window */
 			XTranslateCoordinates(dpy, *xobj->ParentWin, Root,
-					      xobj->x, yMenu, &x, &y, &Win1);
-			if (x<0) x = 0;
-			if (y<0) y = 0;
-			if (x + wMenu > XDisplayWidth(dpy, screen))
-			{
+			    xobj->x, yMenu, &x, &y, &Win1);
+			if (x < 0)
+				x = 0;
+			if (y < 0)
+				y = 0;
+			if (x + wMenu > XDisplayWidth(dpy, screen)) {
 				x = XDisplayWidth(dpy, screen) - wMenu;
 			}
-			if (y + hMenu > XDisplayHeight(dpy, screen))
-			{
-				y = y-hMenu-xobj->height;
+			if (y + hMenu > XDisplayHeight(dpy, screen)) {
+				y = y - hMenu - xobj->height;
 			}
 
-			mask = 0;
+			mask		      = 0;
 			Attr.background_pixel = xobj->TabColor[back];
 			mask |= CWBackPixel;
-			Attr.border_pixel  =  0;
+			Attr.border_pixel = 0;
 			mask |= CWBorderPixel;
 			Attr.colormap = Pcmap;
 			mask |= CWColormap;
 			if (!x11base->cursor) {
-				Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-				mask |= CWCursor;  /* Window cursor */
+				Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
+				mask |= CWCursor; /* Window cursor */
 			}
 			Attr.override_redirect = True;
 			mask |= CWOverrideRedirect;
-			WinPop = XCreateWindow(
-				dpy, Root, x, y, wMenu-5, hMenu, 0,
-				Pdepth, InputOutput, Pvisual, mask, &Attr);
+			WinPop = XCreateWindow(dpy, Root, x, y, wMenu - 5,
+			    hMenu, 0, Pdepth, InputOutput, Pvisual, mask,
+			    &Attr);
 			if (xobj->colorset >= 0)
-				SetWindowBackground(
-					dpy, WinPop, wMenu - 5, hMenu,
-					&Colorset[xobj->colorset], Pdepth,
-					xobj->gc, True);
+				SetWindowBackground(dpy, WinPop, wMenu - 5,
+				    hMenu, &Colorset[xobj->colorset], Pdepth,
+				    xobj->gc, True);
 			XMapRaised(dpy, WinPop);
 
 			/* Draw the menu */
 			DrawPMenu(xobj, WinPop, hOpt, 1);
-			do
-			{
-				FQueryPointer(
-					dpy, Root, &Win1, &Win2, &x1, &y1,
-					&x2, &y2, &modif);
+			do {
+				FQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1,
+				    &x2, &y2, &modif);
 				/* Find current option */
 				y2 = y2 - y;
 				x2 = x2 - x;
@@ -326,52 +283,45 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 					/* Compute xobj->value */
 					if ((x2 > 0) && (x2 < wMenu) &&
 					    (y2 > 0) && (y2 < hMenu))
-						newvalue = y2 / hOpt+1;
+						newvalue = y2 / hOpt + 1;
 					else
 						newvalue = 0;
-					if (newvalue!=oldvalue)
-					{
-						UnselectMenu(
-							xobj, WinPop, hOpt,
-							oldvalue, wMenu-5,
-							xobj->Ffont->ascent,
-							1);
-						SelectMenu(
-							xobj, WinPop, hOpt,
-							newvalue);
+					if (newvalue != oldvalue) {
+						UnselectMenu(xobj, WinPop, hOpt,
+						    oldvalue, wMenu - 5,
+						    xobj->Ffont->ascent, 1);
+						SelectMenu(xobj, WinPop, hOpt,
+						    newvalue);
 						oldvalue = newvalue;
 					}
 				}
-			}
-			while (!FCheckTypedEvent(dpy, ButtonRelease, &event));
+			} while (!FCheckTypedEvent(dpy, ButtonRelease, &event));
 			XDestroyWindow(dpy, WinPop);
-			if (newvalue != 0)
-			{
+			if (newvalue != 0) {
 				xobj->value = newvalue;
 				SendMsg(xobj, SingleClic);
 				xobj->value = 0;
 			}
 			xobj->DrawObj(xobj, NULL);
 		} /* xobj->value3 > 1 */
-	} /* EvtButton->button == Button3 */
+	}	  /* EvtButton->button == Button3 */
 }
 
-void EvtKeyPushButton(struct XObj *xobj, XKeyEvent *EvtKey)
+void
+EvtKeyPushButton(struct XObj *xobj, XKeyEvent *EvtKey)
 {
-	char car[11];
-	char *carks2;
-	char *carks;
+	char   car[11];
+	char  *carks2;
+	char  *carks;
 	KeySym ks;
-	int Size;
+	int    Size;
 
-	Size = XLookupString(EvtKey, car, 10, &ks, NULL);
+	Size	  = XLookupString(EvtKey, car, 10, &ks, NULL);
 	car[Size] = '\0';
-	carks2 = XKeysymToString(ks);
-	if (carks2 != NULL)
-	{
+	carks2	  = XKeysymToString(ks);
+	if (carks2 != NULL) {
 		carks = fxstrdup(carks2);
-		if (strcmp(carks, "Return") == 0)
-		{
+		if (strcmp(carks, "Return") == 0) {
 			xobj->value = 1;
 			SendMsg(xobj, SingleClic);
 			xobj->value = 0;
@@ -380,7 +330,7 @@ void EvtKeyPushButton(struct XObj *xobj, XKeyEvent *EvtKey)
 	}
 }
 
-void ProcessMsgPushButton(
-	struct XObj *xobj, unsigned long type, unsigned long *body)
+void
+ProcessMsgPushButton(struct XObj *xobj, unsigned long type, unsigned long *body)
 {
 }

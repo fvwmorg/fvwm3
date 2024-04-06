@@ -33,116 +33,116 @@
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     STR = 258,
-     GSTR = 259,
-     VAR = 260,
-     FONT = 261,
-     NUMBER = 262,
-     WINDOWTITLE = 263,
-     WINDOWLOCALETITLE = 264,
-     WINDOWSIZE = 265,
-     WINDOWPOSITION = 266,
-     USEGETTEXT = 267,
-     FORECOLOR = 268,
-     BACKCOLOR = 269,
-     SHADCOLOR = 270,
-     LICOLOR = 271,
-     COLORSET = 272,
-     OBJECT = 273,
-     INIT = 274,
-     PERIODICTASK = 275,
-     QUITFUNC = 276,
-     MAIN = 277,
-     END = 278,
-     PROP = 279,
-     TYPE = 280,
-     SIZE = 281,
-     POSITION = 282,
-     VALUE = 283,
-     VALUEMIN = 284,
-     VALUEMAX = 285,
-     TITLE = 286,
-     SWALLOWEXEC = 287,
-     ICON = 288,
-     FLAGS = 289,
-     WARP = 290,
-     WRITETOFILE = 291,
-     LOCALETITLE = 292,
-     HIDDEN = 293,
-     NOFOCUS = 294,
-     NORELIEFSTRING = 295,
-     CENTER = 296,
-     LEFT = 297,
-     RIGHT = 298,
-     CASE = 299,
-     SINGLECLIC = 300,
-     DOUBLECLIC = 301,
-     BEG = 302,
-     POINT = 303,
-     EXEC = 304,
-     HIDE = 305,
-     SHOW = 306,
-     CHFONT = 307,
-     CHFORECOLOR = 308,
-     CHBACKCOLOR = 309,
-     CHCOLORSET = 310,
-     CHWINDOWTITLE = 311,
-     CHWINDOWTITLEFARG = 312,
-     KEY = 313,
-     GETVALUE = 314,
-     GETMINVALUE = 315,
-     GETMAXVALUE = 316,
-     GETFORE = 317,
-     GETBACK = 318,
-     GETHILIGHT = 319,
-     GETSHADOW = 320,
-     CHVALUE = 321,
-     CHVALUEMAX = 322,
-     CHVALUEMIN = 323,
-     ADD = 324,
-     DIV = 325,
-     MULT = 326,
-     GETTITLE = 327,
-     GETOUTPUT = 328,
-     STRCOPY = 329,
-     NUMTOHEX = 330,
-     HEXTONUM = 331,
-     QUIT = 332,
-     LAUNCHSCRIPT = 333,
-     GETSCRIPTFATHER = 334,
-     SENDTOSCRIPT = 335,
-     RECEIVFROMSCRIPT = 336,
-     GET = 337,
-     SET = 338,
-     SENDSIGN = 339,
-     REMAINDEROFDIV = 340,
-     GETTIME = 341,
-     GETSCRIPTARG = 342,
-     GETPID = 343,
-     SENDMSGANDGET = 344,
-     PARSE = 345,
-     LASTSTRING = 346,
-     GETTEXT = 347,
-     IF = 348,
-     THEN = 349,
-     ELSE = 350,
-     FOR = 351,
-     TO = 352,
-     DO = 353,
-     WHILE = 354,
-     BEGF = 355,
-     ENDF = 356,
-     EQUAL = 357,
-     INFEQ = 358,
-     SUPEQ = 359,
-     INF = 360,
-     SUP = 361,
-     DIFF = 362
-   };
+#define YYTOKENTYPE
+/* Put the tokens into the symbol table, so that GDB and other debuggers
+   know about them.  */
+enum yytokentype {
+	STR		  = 258,
+	GSTR		  = 259,
+	VAR		  = 260,
+	FONT		  = 261,
+	NUMBER		  = 262,
+	WINDOWTITLE	  = 263,
+	WINDOWLOCALETITLE = 264,
+	WINDOWSIZE	  = 265,
+	WINDOWPOSITION	  = 266,
+	USEGETTEXT	  = 267,
+	FORECOLOR	  = 268,
+	BACKCOLOR	  = 269,
+	SHADCOLOR	  = 270,
+	LICOLOR		  = 271,
+	COLORSET	  = 272,
+	OBJECT		  = 273,
+	INIT		  = 274,
+	PERIODICTASK	  = 275,
+	QUITFUNC	  = 276,
+	MAIN		  = 277,
+	END		  = 278,
+	PROP		  = 279,
+	TYPE		  = 280,
+	SIZE		  = 281,
+	POSITION	  = 282,
+	VALUE		  = 283,
+	VALUEMIN	  = 284,
+	VALUEMAX	  = 285,
+	TITLE		  = 286,
+	SWALLOWEXEC	  = 287,
+	ICON		  = 288,
+	FLAGS		  = 289,
+	WARP		  = 290,
+	WRITETOFILE	  = 291,
+	LOCALETITLE	  = 292,
+	HIDDEN		  = 293,
+	NOFOCUS		  = 294,
+	NORELIEFSTRING	  = 295,
+	CENTER		  = 296,
+	LEFT		  = 297,
+	RIGHT		  = 298,
+	CASE		  = 299,
+	SINGLECLIC	  = 300,
+	DOUBLECLIC	  = 301,
+	BEG		  = 302,
+	POINT		  = 303,
+	EXEC		  = 304,
+	HIDE		  = 305,
+	SHOW		  = 306,
+	CHFONT		  = 307,
+	CHFORECOLOR	  = 308,
+	CHBACKCOLOR	  = 309,
+	CHCOLORSET	  = 310,
+	CHWINDOWTITLE	  = 311,
+	CHWINDOWTITLEFARG = 312,
+	KEY		  = 313,
+	GETVALUE	  = 314,
+	GETMINVALUE	  = 315,
+	GETMAXVALUE	  = 316,
+	GETFORE		  = 317,
+	GETBACK		  = 318,
+	GETHILIGHT	  = 319,
+	GETSHADOW	  = 320,
+	CHVALUE		  = 321,
+	CHVALUEMAX	  = 322,
+	CHVALUEMIN	  = 323,
+	ADD		  = 324,
+	DIV		  = 325,
+	MULT		  = 326,
+	GETTITLE	  = 327,
+	GETOUTPUT	  = 328,
+	STRCOPY		  = 329,
+	NUMTOHEX	  = 330,
+	HEXTONUM	  = 331,
+	QUIT		  = 332,
+	LAUNCHSCRIPT	  = 333,
+	GETSCRIPTFATHER	  = 334,
+	SENDTOSCRIPT	  = 335,
+	RECEIVFROMSCRIPT  = 336,
+	GET		  = 337,
+	SET		  = 338,
+	SENDSIGN	  = 339,
+	REMAINDEROFDIV	  = 340,
+	GETTIME		  = 341,
+	GETSCRIPTARG	  = 342,
+	GETPID		  = 343,
+	SENDMSGANDGET	  = 344,
+	PARSE		  = 345,
+	LASTSTRING	  = 346,
+	GETTEXT		  = 347,
+	IF		  = 348,
+	THEN		  = 349,
+	ELSE		  = 350,
+	FOR		  = 351,
+	TO		  = 352,
+	DO		  = 353,
+	WHILE		  = 354,
+	BEGF		  = 355,
+	ENDF		  = 356,
+	EQUAL		  = 357,
+	INFEQ		  = 358,
+	SUPEQ		  = 359,
+	INF		  = 360,
+	SUP		  = 361,
+	DIFF		  = 362
+};
 #endif
 /* Tokens.  */
 #define STR 258
@@ -251,22 +251,19 @@
 #define SUP 361
 #define DIFF 362
 
-
-
-
-#if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
+#if !defined YYSTYPE && !defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 #line 368 "script.y"
-{  char *str;
-          int number;
-       }
+{
+	char *str;
+	int   number;
+}
 /* Line 1489 of yacc.c.  */
 #line 267 "y.tab.h"
-	YYSTYPE;
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
-# define YYSTYPE_IS_DECLARED 1
-# define YYSTYPE_IS_TRIVIAL 1
+YYSTYPE;
+#define yystype YYSTYPE /* obsolescent; will be withdrawn */
+#define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
 #endif
 
 extern YYSTYPE yylval;
-

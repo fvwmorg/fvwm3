@@ -31,23 +31,20 @@
 #include "getpwuid.h"
 #include "log.h"
 
-static char	*log_file_name;
-static FILE	*log_file;
-int	lib_log_level = 0;
+static char *log_file_name;
+static FILE *log_file;
+int	     lib_log_level = 0;
 
 void
 set_log_file(char *name)
 {
-	if (log_file_name != NULL)
-	{
+	if (log_file_name != NULL) {
 		free(log_file_name);
 		log_file_name = NULL;
 	}
-	if (name != NULL)
-	{
+	if (name != NULL) {
 		log_file_name = fxstrdup(name);
 	}
-
 }
 
 /* Open logging to file. */
@@ -61,28 +58,22 @@ log_open(const char *fvwm_userdir)
 		return;
 	/* determine file name or file path to use */
 	file_name = log_file_name;
-	if (file_name == NULL)
-	{
+	if (file_name == NULL) {
 		file_name = getenv("FVWM3_LOGFILE");
 	}
-	if (file_name == NULL)
-	{
+	if (file_name == NULL) {
 		file_name = FVWM3_LOGFILE_DEFAULT;
 	}
 	/* handle stderr logging */
-	if (file_name[0] == '-' && file_name[1] == 0)
-	{
+	if (file_name[0] == '-' && file_name[1] == 0) {
 		log_file = stderr;
 		return;
 	}
 	/* handle file logging */
 	expanded_path = expand_path(file_name);
-	if (expanded_path[0] == '/')
-	{
+	if (expanded_path[0] == '/') {
 		path = expanded_path;
-	}
-	else
-	{
+	} else {
 		xasprintf(&path, "%s/%s", fvwm_userdir, expanded_path);
 		free((char *)expanded_path);
 	}
@@ -127,15 +118,15 @@ log_close(void)
 static void
 log_vwrite(const char *func, const char *msg, va_list ap)
 {
-	char		*fmt, *sep = ":";
-	struct timeval	 tv;
+	char	      *fmt, *sep = ":";
+	struct timeval tv;
 
 	if (log_file == NULL)
 		return;
 
 	if (func == NULL) {
 		func = "";
-		sep = "";
+		sep  = "";
 	}
 
 	if (vasprintf(&fmt, msg, ap) == -1)
@@ -143,7 +134,7 @@ log_vwrite(const char *func, const char *msg, va_list ap)
 
 	gettimeofday(&tv, NULL);
 	if (fprintf(log_file, "[%lld.%06d] %s%s %s", (long long)tv.tv_sec,
-	    (int)tv.tv_usec, func, sep, fmt) == -1)
+		(int)tv.tv_usec, func, sep, fmt) == -1)
 		exit(1);
 	/* Compat: some callers from conversion of printf(stderr, ...) most
 	 * likely add a newline.  But we don't want to double-up on newlines
@@ -163,7 +154,7 @@ log_vwrite(const char *func, const char *msg, va_list ap)
 void
 fvwm_debug(const char *func, const char *msg, ...)
 {
-	va_list	ap;
+	va_list ap;
 
 	va_start(ap, msg);
 	log_vwrite(func, msg, ap);

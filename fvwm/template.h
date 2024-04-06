@@ -17,5 +17,4 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-
 #endif /* FVWM_TEMPLATE_H */

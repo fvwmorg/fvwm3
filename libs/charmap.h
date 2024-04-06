@@ -11,8 +11,7 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef struct
-{
+typedef struct {
 	char key;
 	int  value;
 } charmap_t;
@@ -23,8 +22,8 @@ typedef struct
 
 /* ---------------------------- interface functions ------------------------ */
 
-int charmap_string_to_mask(
-	int *ret, const char *string, charmap_t *table, char *errstring);
+int  charmap_string_to_mask(int *ret, const char *string, charmap_t *table,
+     char *errstring);
 char charmap_mask_to_char(int mask, charmap_t *table);
 
 char *charmap_table_to_string(int mask, charmap_t *table);

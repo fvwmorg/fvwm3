@@ -12,8 +12,7 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-enum
-{
+enum {
 	F_UNDEFINED = -1,
 
 	/* functions that need no window */

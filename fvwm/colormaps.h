@@ -80,7 +80,7 @@ void UninstallFvwmColormap(void);
  *
  * This property typically doesn't exist, but a few applications
  * use it. These seem to occur mostly on SGI machines. */
-void FetchWmColormapWindows (FvwmWindow *tmp);
+void FetchWmColormapWindows(FvwmWindow *tmp);
 
 /* clasen@mathematik.uni-freiburg.de - 03/01/1999 - new
  * boolean for handling of client-side InstallColormap

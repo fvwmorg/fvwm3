@@ -11,16 +11,17 @@
 #define FEV_IS_EVENT_INVALID(e) \
 	(fev_is_invalid_event_type_set && (e).type == fev_invalid_event_type)
 
-#define FEV_HAS_EVENT_WINDOW(type) \
-	(( \
-		 (type) != GraphicsExpose && \
-		 (type) != NoExpose && \
-		 (type) != SelectionNotify && \
-		 (type) != SelectionRequest) ? 1 : 0)
+#define FEV_HAS_EVENT_WINDOW(type)                                      \
+	(((type) != GraphicsExpose && (type) != NoExpose &&             \
+	     (type) != SelectionNotify && (type) != SelectionRequest) ? \
+		1 :                                                     \
+		0)
 
 /* invalidate event by setting a bogus event type */
-#define FEV_INVALIDATE_EVENT(e) \
-	do { (e)->type = fev_invalid_event_type; } while (0)
+#define FEV_INVALIDATE_EVENT(e)                     \
+	do {                                        \
+		(e)->type = fev_invalid_event_type; \
+	} while (0)
 
 /* ---------------------------- global macros ------------------------------ */
 
@@ -38,7 +39,7 @@ extern int fev_invalid_event_type;
 /* ---------------------------- interface functions (privileged access) ---- */
 
 #ifdef FEVENT_PRIVILEGED_ACCESS
-void fev_copy_last_event(XEvent *dest);
+void	fev_copy_last_event(XEvent *dest);
 XEvent *fev_get_last_event_address(void);
 #endif
 
@@ -55,8 +56,8 @@ Time fev_get_evtime(void);
  * if possible, if not it queries the X server. Returns False if it had to
  * query the server and the call failed because the pointer was on a
  * different screen. */
-Bool fev_get_evpos_or_query(
-	Display *dpy, Window w, const XEvent *e, int *ret_x, int *ret_y);
+Bool fev_get_evpos_or_query(Display *dpy, Window w, const XEvent *e, int *ret_x,
+    int *ret_y);
 
 /* Sets the x_root/y_root position in the given event if it's of the proper
  * type.  Returns True if the position was set. */
@@ -108,103 +109,80 @@ void fev_sanitize_size_hints(XSizeHints *sh);
  * If the weed_predicate is a NULL pointer, no call is made and the result for
  * all events is assumed to be 1.
  */
-int FWeedIfEvents(
-	Display *display,
-	int (*weed_predicate) (
-		Display *display, XEvent *current_event, XPointer arg),
-	XPointer arg);
+int FWeedIfEvents(Display *display,
+    int (
+	*weed_predicate)(Display *display, XEvent *current_event, XPointer arg),
+    XPointer arg);
 
 /* Same as FWeedIfEvents but with a second callback out of XLockDisplay()
  * to handle events in a lock-safe manner */
-int FWeedAndHandleIfEvents(
-	Display *display,
-	int (*weed_predicate) (Display *display, XEvent *event, XPointer arg),
-	int (*handler) (Display *display, XEvent *event, XPointer arg),
-	XPointer arg);
+int FWeedAndHandleIfEvents(Display *display,
+    int (*weed_predicate)(Display *display, XEvent *event, XPointer arg),
+    int (*handler)(Display *display, XEvent *event, XPointer arg),
+    XPointer arg);
 
 /* Same as FWeedIfEvents but weeds only events for the given window.  The
  * weed_predicate is only called for events with a matching window.  */
-int FWeedIfWindowEvents(
-	Display *display, Window window,
-	int (*weed_predicate) (
-		Display *display, XEvent *current_event, XPointer arg),
-	XPointer arg);
+int FWeedIfWindowEvents(Display *display, Window window,
+    int (
+	*weed_predicate)(Display *display, XEvent *current_event, XPointer arg),
+    XPointer arg);
 
 /* Same as FWeedIfEvents but weeds only events of the given type for the given
  * window.  If last_event is not NULL, a copy of the last weeded event is
  * returned through *last_event (valid if a value > 0 is treturned). */
-int FCheckWeedTypedWindowEvents(
-	Display *display, Window window, int event_type, XEvent *last_event);
+int FCheckWeedTypedWindowEvents(Display *display, Window window, int event_type,
+    XEvent *last_event);
 
 /* Like FCheckIfEvent but does not remove the event from the queue. */
-int FCheckPeekIfEvent(
-        Display *display, XEvent *event_return,
-        Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
-        XPointer arg);
+int FCheckPeekIfEvent(Display *display, XEvent *event_return,
+    Bool (*predicate)(Display *display, XEvent *event, XPointer arg),
+    XPointer arg);
 
 /* ---------------------------- X event replacements ----------------------- */
 
 /* Replacements for X functions */
-XTimeCoord *FGetMotionEvents(
-	Display *display, Window w, Time start, Time stop, int *nevents_return);
-int FAllowEvents(
-	Display *display, int event_mode, Time time);
-Bool FCheckIfEvent(
-	Display *display, XEvent *event_return,
-	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
-	XPointer arg);
-Bool FCheckMaskEvent(
-	Display *display, long event_mask, XEvent *event_return);
-Bool FCheckTypedEvent(
-	Display *display, int event_type, XEvent *event_return);
-Bool FCheckTypedWindowEvent(
-	Display *display, Window w, int event_type, XEvent *event_return);
-Bool FCheckWindowEvent(
-	Display *display, Window w, long event_mask, XEvent *event_return);
-int FEventsQueued(
-	Display *display, int mode);
-int FIfEvent(
-	Display *display, XEvent *event_return,
-	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
-	XPointer arg);
-int FMaskEvent(
-	Display *display, long event_mask, XEvent *event_return);
-int FNextEvent(
-	Display *display, XEvent *event_return);
-int FPeekEvent(
-	Display *display, XEvent *event_return);
-int FPeekIfEvent(
-	Display *display, XEvent *event_return,
-	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
-	XPointer arg);
-int FPending(
-	Display *display);
-int FPutBackEvent(
-	Display *display, XEvent *event);
-int FQLength(
-	Display *display);
-Bool FQueryPointer(
-	Display *display, Window w, Window *root_return, Window *child_return,
-	int *root_x_return, int *root_y_return, int *win_x_return,
-	int *win_y_return, unsigned int *mask_return);
-int FSelectInput(
-	Display *display, Window w, long event_mask);
-Status FSendEvent(
-	Display *display, Window w, Bool propagate, long event_mask,
-	XEvent *event_send);
-int FWarpPointer(
-	Display *display, Window src_w, Window dest_w, int src_x, int src_y,
-	unsigned int src_width, unsigned int src_height, int dest_x,
-	int dest_y);
-int FWarpPointerUpdateEvpos(
-	XEvent *ev, Display *display, Window src_w, Window dest_w, int src_x,
-	int src_y, unsigned int src_width, unsigned int src_height,
-	int dest_x, int dest_y);
-int FWindowEvent(
-	Display *display, Window w, long event_mask, XEvent *event_return);
-Status FGetWMNormalHints(
-	Display *display, Window w, XSizeHints *hints_return,
-	long *supplied_return);
+XTimeCoord *FGetMotionEvents(Display *display, Window w, Time start, Time stop,
+    int *nevents_return);
+int	    FAllowEvents(Display *display, int event_mode, Time time);
+Bool	    FCheckIfEvent(Display *display, XEvent *event_return,
+	   Bool (*predicate)(Display *display, XEvent *event, XPointer arg),
+	   XPointer arg);
+Bool   FCheckMaskEvent(Display *display, long event_mask, XEvent *event_return);
+Bool   FCheckTypedEvent(Display *display, int event_type, XEvent *event_return);
+Bool   FCheckTypedWindowEvent(Display *display, Window w, int event_type,
+      XEvent *event_return);
+Bool   FCheckWindowEvent(Display *display, Window w, long event_mask,
+      XEvent *event_return);
+int    FEventsQueued(Display *display, int mode);
+int    FIfEvent(Display *display, XEvent *event_return,
+       Bool (*predicate)(Display *display, XEvent *event, XPointer arg),
+       XPointer arg);
+int    FMaskEvent(Display *display, long event_mask, XEvent *event_return);
+int    FNextEvent(Display *display, XEvent *event_return);
+int    FPeekEvent(Display *display, XEvent *event_return);
+int    FPeekIfEvent(Display *display, XEvent *event_return,
+       Bool (*predicate)(Display *display, XEvent *event, XPointer arg),
+       XPointer arg);
+int    FPending(Display *display);
+int    FPutBackEvent(Display *display, XEvent *event);
+int    FQLength(Display *display);
+Bool   FQueryPointer(Display *display, Window w, Window *root_return,
+      Window *child_return, int *root_x_return, int *root_y_return,
+      int *win_x_return, int *win_y_return, unsigned int *mask_return);
+int    FSelectInput(Display *display, Window w, long event_mask);
+Status FSendEvent(Display *display, Window w, Bool propagate, long event_mask,
+    XEvent *event_send);
+int    FWarpPointer(Display *display, Window src_w, Window dest_w, int src_x,
+       int src_y, unsigned int src_width, unsigned int src_height, int dest_x,
+       int dest_y);
+int    FWarpPointerUpdateEvpos(XEvent *ev, Display *display, Window src_w,
+       Window dest_w, int src_x, int src_y, unsigned int src_width,
+       unsigned int src_height, int dest_x, int dest_y);
+int    FWindowEvent(Display *display, Window w, long event_mask,
+       XEvent *event_return);
+Status FGetWMNormalHints(Display *display, Window w, XSizeHints *hints_return,
+    long *supplied_return);
 
 /* ---------------------------- disable X symbols -------------------------- */
 

@@ -9,9 +9,9 @@
 #include "fvwm_x11.h"
 
 void FRenderInit(Display *dpy);
-int FRenderGetAlphaDepth(void);
-int FRenderGetErrorCodeBase(void);
-int FRenderGetMajorOpCode(void);
+int  FRenderGetAlphaDepth(void);
+int  FRenderGetErrorCodeBase(void);
+int  FRenderGetMajorOpCode(void);
 Bool FRenderGetErrorText(int code, char *msg);
 Bool FRenderGetExtensionSupported(void);
 

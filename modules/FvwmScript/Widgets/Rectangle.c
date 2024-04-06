@@ -23,9 +23,10 @@
 /*
  * Function for Rectangle
  */
-void InitRectangle(struct XObj *xobj)
+void
+InitRectangle(struct XObj *xobj)
 {
-	unsigned long mask;
+	unsigned long	     mask;
 	XSetWindowAttributes Attr;
 
 	/* Save colors and font */
@@ -41,86 +42,87 @@ void InitRectangle(struct XObj *xobj)
 		xobj->TabColor[shad] = GetColor(xobj->shadcolor);
 	}
 
-	xobj->gc=fvwmlib_XCreateGC(dpy,*xobj->ParentWin,0,NULL);
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
-	XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
-	XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+	xobj->gc = fvwmlib_XCreateGC(dpy, *xobj->ParentWin, 0, NULL);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
+	XSetBackground(dpy, xobj->gc, xobj->TabColor[back]);
+	XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
-	mask=0;
-	xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
-				-1000,-1000,xobj->width,xobj->height,0,
-				CopyFromParent,InputOutput,CopyFromParent,
-				mask,&Attr);
+	mask	  = 0;
+	xobj->win = XCreateWindow(dpy, *xobj->ParentWin, -1000, -1000,
+	    xobj->width, xobj->height, 0, CopyFromParent, InputOutput,
+	    CopyFromParent, mask, &Attr);
 }
 
-void DestroyRectangle(struct XObj *xobj)
+void
+DestroyRectangle(struct XObj *xobj)
 {
-	XFreeGC(dpy,xobj->gc);
-	XDestroyWindow(dpy,xobj->win);
+	XFreeGC(dpy, xobj->gc);
+	XDestroyWindow(dpy, xobj->win);
 }
 
-void DrawRectangle(struct XObj *xobj, XEvent *evp)
+void
+DrawRectangle(struct XObj *xobj, XEvent *evp)
 {
 	XSegment segm[4];
 
-	segm[0].x1=xobj->x;
-	segm[0].y1=xobj->y;
-	segm[0].x2=xobj->width+xobj->x-1;
-	segm[0].y2=xobj->y;
+	segm[0].x1 = xobj->x;
+	segm[0].y1 = xobj->y;
+	segm[0].x2 = xobj->width + xobj->x - 1;
+	segm[0].y2 = xobj->y;
 
-	segm[1].x1=xobj->x;
-	segm[1].y1=xobj->y;
-	segm[1].x2=xobj->x;
-	segm[1].y2=xobj->height+xobj->y-1;
+	segm[1].x1 = xobj->x;
+	segm[1].y1 = xobj->y;
+	segm[1].x2 = xobj->x;
+	segm[1].y2 = xobj->height + xobj->y - 1;
 
-	segm[2].x1=2+xobj->x;
-	segm[2].y1=xobj->height-2+xobj->y;
-	segm[2].x2=xobj->width-2+xobj->x;
-	segm[2].y2=xobj->height-2+xobj->y;
+	segm[2].x1 = 2 + xobj->x;
+	segm[2].y1 = xobj->height - 2 + xobj->y;
+	segm[2].x2 = xobj->width - 2 + xobj->x;
+	segm[2].y2 = xobj->height - 2 + xobj->y;
 
-	segm[3].x1=xobj->width-2+xobj->x;
-	segm[3].y1=2+xobj->y;
-	segm[3].x2=xobj->width-2+xobj->x;
-	segm[3].y2=xobj->height-2+xobj->y;
+	segm[3].x1 = xobj->width - 2 + xobj->x;
+	segm[3].y1 = 2 + xobj->y;
+	segm[3].x2 = xobj->width - 2 + xobj->x;
+	segm[3].y2 = xobj->height - 2 + xobj->y;
 
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
-	XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,4);
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[shad]);
+	XDrawSegments(dpy, *xobj->ParentWin, xobj->gc, segm, 4);
 
+	segm[0].x1 = 1 + xobj->x;
+	segm[0].y1 = 1 + xobj->y;
+	segm[0].x2 = xobj->width - 1 + xobj->x;
+	segm[0].y2 = 1 + xobj->y;
 
-	segm[0].x1=1+xobj->x;
-	segm[0].y1=1+xobj->y;
-	segm[0].x2=xobj->width-1+xobj->x;
-	segm[0].y2=1+xobj->y;
+	segm[1].x1 = 1 + xobj->x;
+	segm[1].y1 = 1 + xobj->y;
+	segm[1].x2 = 1 + xobj->x;
+	segm[1].y2 = xobj->height - 1 + xobj->y;
 
-	segm[1].x1=1+xobj->x;
-	segm[1].y1=1+xobj->y;
-	segm[1].x2=1+xobj->x;
-	segm[1].y2=xobj->height-1+xobj->y;
+	segm[2].x1 = 1 + xobj->x;
+	segm[2].y1 = xobj->height - 1 + xobj->y;
+	segm[2].x2 = xobj->width - 1 + xobj->x;
+	segm[2].y2 = xobj->height - 1 + xobj->y;
 
-	segm[2].x1=1+xobj->x;
-	segm[2].y1=xobj->height-1+xobj->y;
-	segm[2].x2=xobj->width-1+xobj->x;
-	segm[2].y2=xobj->height-1+xobj->y;
+	segm[3].x1 = xobj->width - 1 + xobj->x;
+	segm[3].y1 = 1 + xobj->y;
+	segm[3].x2 = xobj->width - 1 + xobj->x;
+	segm[3].y2 = xobj->height - 1 + xobj->y;
 
-	segm[3].x1=xobj->width-1+xobj->x;
-	segm[3].y1=1+xobj->y;
-	segm[3].x2=xobj->width-1+xobj->x;
-	segm[3].y2=xobj->height-1+xobj->y;
-
-	XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
-	XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,4);
-
+	XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
+	XDrawSegments(dpy, *xobj->ParentWin, xobj->gc, segm, 4);
 }
 
-void EvtMouseRectangle(struct XObj *xobj,XButtonEvent *EvtButton)
+void
+EvtMouseRectangle(struct XObj *xobj, XButtonEvent *EvtButton)
 {
 }
 
-void EvtKeyRectangle(struct XObj *xobj,XKeyEvent *EvtKey)
+void
+EvtKeyRectangle(struct XObj *xobj, XKeyEvent *EvtKey)
 {
 }
 
-void ProcessMsgRectangle(
-	struct XObj *xobj,unsigned long type,unsigned long *body)
+void
+ProcessMsgRectangle(struct XObj *xobj, unsigned long type, unsigned long *body)
 {
 }

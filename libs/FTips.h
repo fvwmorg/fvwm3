@@ -14,8 +14,7 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef enum
-{
+typedef enum {
 	FTIPS_PLACEMENT_UP,
 	FTIPS_PLACEMENT_DOWN,
 	FTIPS_PLACEMENT_LEFT,
@@ -24,27 +23,25 @@ typedef enum
 	FTIPS_PLACEMENT_AUTO_LEFTRIGHT
 } ftips_placement_t;
 
-typedef enum
-{
+typedef enum {
 	FTIPS_JUSTIFICATION_CENTER,
 	FTIPS_JUSTIFICATION_LEFT_UP,
 	FTIPS_JUSTIFICATION_RIGHT_DOWN
 } ftips_position_t;
 
-typedef struct
-{
-	int colorset;
-	Pixel fg;
-	Pixel bg;
-	Pixel border_pixel;
-	int border_width;
-	FlocaleFont *Ffont;
+typedef struct {
+	int		  colorset;
+	Pixel		  fg;
+	Pixel		  bg;
+	Pixel		  border_pixel;
+	int		  border_width;
+	FlocaleFont	 *Ffont;
 	ftips_placement_t placement;
-	ftips_position_t justification;
-	unsigned int placement_offset; /* pixel */
-	unsigned int justification_offset; /* pixel */
-	unsigned long delay; /* ms */
-	unsigned long mapped_delay; /* ms */
+	ftips_position_t  justification;
+	unsigned int	  placement_offset;	/* pixel */
+	unsigned int	  justification_offset; /* pixel */
+	unsigned long	  delay;		/* ms */
+	unsigned long	  mapped_delay;		/* ms */
 } ftips_config;
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -55,9 +52,8 @@ Bool FTipsInit(Display *dpy);
 
 ftips_config *FTipsNewConfig(void);
 
-void FTipsOn(
-	Display *dpy, Window win_f, ftips_config *fc, void *id, char *str,
-	int x, int y, int w, int h);
+void FTipsOn(Display *dpy, Window win_f, ftips_config *fc, void *id, char *str,
+    int x, int y, int w, int h);
 
 void FTipsCancel(Display *dpy);
 

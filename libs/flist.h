@@ -11,9 +11,8 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef struct _flist
-{
-	void *object;
+typedef struct _flist {
+	void	      *object;
 	struct _flist *next;
 	struct _flist *prev;
 } flist;
