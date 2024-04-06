@@ -196,6 +196,7 @@ extern FlocaleWinString	*FwinString;
 extern int		Rows;
 extern int		desk1;
 extern int		desk2;
+extern int		desk_i;
 extern int		ndesks;
 extern int		Columns;
 extern int		MoveThreshold;

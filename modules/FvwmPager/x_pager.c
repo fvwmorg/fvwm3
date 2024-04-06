@@ -2012,7 +2012,7 @@ void DrawIconGrid(int erase)
 	if (fp == NULL)
 		return;
 
-	int i, tmp = (fp->m->virtual_scr.CurrentDesk - desk1);
+	int i, tmp = (fp->m->virtual_scr.CurrentDesk - desk_i);
 
 	if (tmp < 0 || tmp >= ndesks)
 		tmp = 0;
@@ -2052,7 +2052,7 @@ void DrawIconGrid(int erase)
 	if (HilightDesks) {
 		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
 			if (fp->disabled ||
-			   fp->m->virtual_scr.CurrentDesk != tmp + desk1 ||
+			   fp->m->virtual_scr.CurrentDesk != tmp + desk_i ||
 			   (monitor_to_track != NULL &&
 			   strcmp(fp->m->si->name, monitor_to_track) != 0))
 				continue;
@@ -2302,7 +2302,7 @@ void MoveResizePagerView(PagerWindow *t, bool do_force_redraw)
 	else
 		MoveResizeWindow(t, do_force_redraw, false);
 
-	if (t->desk == desk1)
+	if (t->desk == desk_i)
 		MoveResizeWindow(t, do_force_redraw, true);
 	else
 		HideWindow(t, t->IconView);
