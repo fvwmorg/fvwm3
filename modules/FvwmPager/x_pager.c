@@ -1335,9 +1335,6 @@ void DispatchEvent(XEvent *Event)
 	{
 	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	  {
-	    /* pointer is on a different screen - that's okay here */
-	  }
 	  if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
 		fp = fpmonitor_from_desk(i + desk1);
 	  else
@@ -1363,9 +1360,6 @@ void DispatchEvent(XEvent *Event)
       {
 	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask);
-	{
-	  /* pointer is on a different screen - that's okay here */
-	}
 	struct fpmonitor *fp2 = fpmonitor_this(NULL);
 	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
 		fp = fp2;
@@ -2058,7 +2052,7 @@ void DrawIconGrid(int erase)
 	if (HilightDesks) {
 		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
 			if (fp->disabled ||
-			   fp->m->virtual_scr.CurrentDesk != tmp ||
+			   fp->m->virtual_scr.CurrentDesk != tmp + desk1 ||
 			   (monitor_to_track != NULL &&
 			   strcmp(fp->m->si->name, monitor_to_track) != 0))
 				continue;
@@ -2287,7 +2281,7 @@ void ChangeDeskForWindow(PagerWindow *t, long newdesk)
 		int desk = newdesk - desk1;
 		XReparentWindow(dpy, t->PagerView, Desks[desk].w,
 			t->pager_view.x, t->pager_view.y);
-		MoveResizeWindow(t, true, false);
+		MoveResizeWindow(t, true, true);
 	}
 
 	return;
@@ -2303,13 +2297,12 @@ void MoveResizePagerView(PagerWindow *t, bool do_force_redraw)
 		return;
 	}
 
-	if (t->m->virtual_scr.CurrentDesk < desk1 ||
-	    t->m->virtual_scr.CurrentDesk > desk2)
+	if (t->desk < desk1 || t->desk > desk2)
 		HideWindow(t, t->PagerView);
 	else
 		MoveResizeWindow(t, do_force_redraw, false);
 
-	if (fp->m->virtual_scr.CurrentDesk == t->desk)
+	if (t->desk == desk1)
 		MoveResizeWindow(t, do_force_redraw, true);
 	else
 		HideWindow(t, t->IconView);

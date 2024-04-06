@@ -930,8 +930,8 @@ void list_new_page(unsigned long *body)
 	if ((fp = fpmonitor_this(m)) == NULL)
 		return;
 
-	fp->virtual_scr.Vx = body[0];
-	fp->virtual_scr.Vy = body[1];
+	fp->virtual_scr.Vx = fp->m->virtual_scr.Vx = body[0];
+	fp->virtual_scr.Vy = fp->m->virtual_scr.Vy = body[1];
 	if (fp->m->virtual_scr.CurrentDesk != body[2]) {
 		/* first handle the new desk */
 		body[0] = body[2];
@@ -990,7 +990,8 @@ void list_new_desk(unsigned long *body)
    * itself, then don't change the FvwmPager's desk.  Only do this if we're
    * tracking a specific monitor though.
    */
-  if (monitor_to_track != NULL && fp->m != mout)
+  if (monitor_to_track != NULL &&
+      (strcmp(fp->m->si->name, monitor_to_track) != 0))
 	  return;
 
   if (monitor_mode == MONITOR_TRACKING_G)
