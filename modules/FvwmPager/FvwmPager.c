@@ -815,13 +815,8 @@ void list_configure(unsigned long *body)
   is_new_desk = (t->desk != cfgpacket->desk);
   handle_config_win_package(t, cfgpacket);
   if (is_new_desk)
-  {
     ChangeDeskForWindow(t, cfgpacket->desk);
-  }
-  else
-  {
-    MoveResizePagerView(t, false);
-  }
+  MoveResizePagerView(t, true);
 }
 
 /*
