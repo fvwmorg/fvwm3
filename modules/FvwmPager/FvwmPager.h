@@ -253,8 +253,8 @@ extern PagerWindow	*Start;
 extern PagerWindow	*FocusWin;
 
 /* Monitors */
-extern char			*current_monitor;
-extern char			*monitor_to_track;
+extern struct fpmonitor		*current_monitor;
+extern struct fpmonitor		*monitor_to_track;
 extern char			*preferred_monitor;
 extern struct fpmonitors	fp_monitor_q;
 

@@ -110,7 +110,7 @@ static void do_scroll(int sx, int sy, bool do_send_message,
 	{
 		if (monitor_to_track != NULL)
 			snprintf(screen, sizeof(screen), "screen %s",
-				 monitor_to_track);
+				 monitor_to_track->m->si->name);
 		else if (ScrollFp != NULL)
 			snprintf(screen, sizeof(screen), "screen %s",
 				 ScrollFp->m->si->name);
@@ -1592,8 +1592,7 @@ void ReConfigure(void)
 		m->m->virtual_scr.CurrentDesk : desk1;
 
 	    if (i == m->m->virtual_scr.CurrentDesk - desk &&
-		(monitor_to_track == NULL ||
-		strcmp(m->m->si->name, monitor_to_track) == 0))
+		(monitor_to_track == NULL || m == monitor_to_track))
 	    {
 	      XMoveResizeWindow(dpy, m->CPagerWin[i],
 				vp.x, vp.y, vp.width, vp.height);
@@ -1764,8 +1763,7 @@ void MovePage(bool is_new_desk)
 		m->m->virtual_scr.CurrentDesk : desk1;
 
 	if (!m->disabled && i == m->m->virtual_scr.CurrentDesk - desk &&
-		(monitor_to_track == NULL ||
-		strcmp(m->m->si->name, monitor_to_track) == 0))
+		(monitor_to_track == NULL || m == monitor_to_track))
 	{
 		vp = set_vp_size_and_loc(m, false);
 		XMoveResizeWindow(dpy, m->CPagerWin[i],
@@ -2074,7 +2072,7 @@ void DrawIconGrid(int erase)
 			if (fp->disabled ||
 			   fp->m->virtual_scr.CurrentDesk != tmp + desk ||
 			   (monitor_to_track != NULL &&
-			   strcmp(fp->m->si->name, monitor_to_track) != 0))
+			   fp != monitor_to_track))
 				continue;
 			rec = set_vp_size_and_loc(fp, true);
 			if (HilightPixmap) {
@@ -2392,8 +2390,7 @@ void Hilight(PagerWindow *t, int on)
 	if (!t)
 		return;
 
-	if (monitor_to_track != NULL &&
-	    strcmp(t->m->si->name, monitor_to_track) != 0)
+	if (monitor_to_track != NULL && t->m != monitor_to_track->m)
 		return;
 
 	if(Pdepth < 2)

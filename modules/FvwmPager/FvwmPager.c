@@ -149,8 +149,8 @@ PagerWindow	*Start = NULL;
 PagerWindow	*FocusWin = NULL;
 
 /* Monitors */
-char			*current_monitor = NULL;
-char			*monitor_to_track = NULL;
+struct fpmonitor	*current_monitor = NULL;
+struct fpmonitor	*monitor_to_track = NULL;
 char			*preferred_monitor = NULL;
 struct fpmonitors	fp_monitor_q;
 
@@ -196,13 +196,8 @@ void fpmonitor_disable(struct fpmonitor *fp)
 		XMoveWindow(dpy, fp->CPagerWin[i], -32768,-32768);
 	}
 
-	if (monitor_to_track != NULL &&
-		strcmp(monitor_to_track, fp->m->si->name) == 0)
-	{
-		free(monitor_to_track);
-		struct fpmonitor *tm = fpmonitor_this(NULL);
-		monitor_to_track = fxstrdup(tm->m->si->name);
-	}
+	if (fp == monitor_to_track)
+		monitor_to_track = fpmonitor_this(NULL);
 }
 
 struct fpmonitor *
@@ -223,23 +218,18 @@ fpmonitor_by_name(const char *name)
 struct fpmonitor *
 fpmonitor_this(struct monitor *m_find)
 {
-	struct monitor *m = NULL;
+	struct monitor *m;
 	struct fpmonitor *fp = NULL;
 
 	if (m_find != NULL) {
 		/* We've been asked to find a specific monitor. */
 		m = m_find;
-		goto search;
+	} else if (monitor_to_track != NULL) {
+		return (monitor_to_track);
+	} else {
+		m = monitor_get_current();
 	}
-	if (monitor_to_track == NULL)
-		m = monitor_get_current();
-	else
-		m = monitor_resolve_name(monitor_to_track);
 
-	if (m == NULL)
-		m = monitor_get_current();
-
-search:
 	if (m == NULL || m->flags & MONITOR_DISABLED)
 		return (NULL);
 	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
@@ -925,12 +915,15 @@ void list_new_page(unsigned long *body)
 	if (m->si->rr_output != mon_num)
 		return;
 
-	if (monitor_to_track != NULL &&
-	    strcmp(m->si->name, monitor_to_track) != 0)
-		return;
-
-	if ((fp = fpmonitor_this(m)) == NULL)
-		return;
+	if (monitor_to_track != NULL) {
+		if (monitor_to_track->m != m)
+			return;
+		fp = monitor_to_track;
+	} else {
+		fp = fpmonitor_this(m);
+		if (fp == NULL)
+			return;
+	}
 
 	fp->virtual_scr.Vx = fp->m->virtual_scr.Vx = body[0];
 	fp->virtual_scr.Vy = fp->m->virtual_scr.Vy = body[1];
@@ -996,11 +989,12 @@ void list_new_desk(unsigned long *body)
    * tracking is per-monitor, only change pager desk on the current_monitor.
    */
   if (!CurrentDeskPerMonitor && ((monitor_to_track != NULL &&
-		(strcmp(mout->si->name, monitor_to_track) != 0)) ||
+		mout != monitor_to_track->m) ||
 		(current_monitor != NULL &&
 		monitor_to_track == NULL &&
-		(monitor_mode == MONITOR_TRACKING_M || is_tracking_shared) &&
-		(strcmp(mout->si->name, current_monitor) != 0))))
+		mout != current_monitor->m &&
+		(monitor_mode == MONITOR_TRACKING_M ||
+			is_tracking_shared))))
 	  return;
 
   /* Update the icon window to always track current desk. */
@@ -1314,7 +1308,7 @@ void list_window_name(unsigned long *body,unsigned long type)
   if (fp == NULL)
     return;
 
-  if (monitor_to_track != NULL && strcmp(fp->m->si->name, monitor_to_track) != 0)
+  if (monitor_to_track != NULL && fp != monitor_to_track)
 	  return;
 
   target_w = body[0];
@@ -1770,12 +1764,9 @@ void parse_monitor_line(char *tline)
 	 * then reconnected, the pager can resume tracking it.
 	 */
 	if (preferred_monitor != NULL &&
-		strcmp(fp->m->si->name, preferred_monitor) == 0 &&
-		strcmp(preferred_monitor, monitor_to_track) != 0)
+	    strcmp(fp->m->si->name, preferred_monitor) == 0)
 	{
-		if (monitor_to_track != NULL)
-			free(monitor_to_track);
-		monitor_to_track = fxstrdup(preferred_monitor);
+		monitor_to_track = fp;
 	}
 	fp->disabled = false;
 	fp->scr_width = scr_width;
@@ -1966,42 +1957,24 @@ ImagePath = NULL;
     }
 
     if (StrEquals(resource, "Monitor")) {
-	    struct fpmonitor *fp;
-
-	    free(monitor_to_track);
 	    free(preferred_monitor);
 	    next = SkipSpaces(next, NULL, 0);
-	    fp = fpmonitor_by_name(next);
-	    if (fp == NULL) {
+	    if (StrEquals(next, "none")) {
 		    monitor_to_track = NULL;
 		    preferred_monitor = NULL;
-		    if (!StrEquals(next, "none")) {
-			    /* Fallback to current monitor. */
-			    fp = fpmonitor_this(NULL);
-			    monitor_to_track = fxstrdup(fp->m->si->name);
-			    /* Set preferred_monitor to the bad name
-			     * in case it gets plugged in later.
-			     */
-			    preferred_monitor = fxstrdup(next);
-		    }
 	    } else {
-		    monitor_to_track = fxstrdup(fp->m->si->name);
-		    preferred_monitor = fxstrdup(monitor_to_track);
+		    monitor_to_track = fpmonitor_by_name(next);
+		    /* Fallback to current monitor. */
+		    if (monitor_to_track == NULL)
+			    monitor_to_track = fpmonitor_this(NULL);
+		    preferred_monitor = fxstrdup(next);
 	    }
     } else if (StrEquals(resource, "CurrentMonitor")) {
-	    struct fpmonitor *fp;
-
-	    free(current_monitor);
 	    next = SkipSpaces(next, NULL, 0);
-	    fp = fpmonitor_by_name(next);
-	    if (fp == NULL)
-		    /* No monitor found matching given name.
-		     * Could be "none" or a bad name.
-		     * In either case, just unset current monitor.
-		     */
+	    if (StrEquals(next, "none"))
 		    current_monitor = NULL;
 	    else
-		    current_monitor = fxstrdup(fp->m->si->name);
+		    current_monitor = fpmonitor_by_name(next);
     } else if(StrEquals(resource, "DeskLabels")) {
 	    use_desk_label = true;
     } else if(StrEquals(resource, "NoDeskLabels")) {
@@ -2533,8 +2506,6 @@ void ExitPager(void)
     XSync(dpy,0);
   }
   XUngrabKeyboard(dpy, CurrentTime);
-  free(monitor_to_track);
   free(preferred_monitor);
-  free(current_monitor);
   exit(0);
 }
