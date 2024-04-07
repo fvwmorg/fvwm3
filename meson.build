@@ -384,8 +384,19 @@ configure_file(
 # Configured files inherit the permissions of the template,
 # so we need to set the permissions explicitly for executable scripts.
 install_mask_755 = 'rwxr-xr-x'
+
+includedirs = []
+# To be consistent with the autotools build, we need to add /usr/local/include
+# to the include path on *BSD.
+if host in ['freebsd', 'openbsd']
+  usrlocal_includes = include_directories('/usr/local/include')
+  includedirs += usrlocal_includes
+endif
 lib_includes = include_directories('.')
 fvwm_includes = include_directories('fvwm')
+
+includedirs += lib_includes
+includedirs += fvwm_includes
 
 # These are used to configure files in 'bin' and 'perllib'
 perl_config = configuration_data()
@@ -416,7 +427,7 @@ subdir('perllib')
 fvwm3 = executable(
     meson.project_name(),
     fvwm_sources,
-    include_directories: [lib_includes, fvwm_includes],
+    include_directories: includedirs,
     dependencies: all_found_deps,
     link_with: libfvwm3,
 )

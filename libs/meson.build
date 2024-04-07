@@ -63,7 +63,7 @@ libfvwm3 = library(
         'wcontext.c',
         'wild.c',
     ],
-    include_directories: [lib_includes, fvwm_includes],
+    include_directories: includedirs,
     dependencies: all_found_deps,
     install: true,
 )

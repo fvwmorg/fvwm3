@@ -18,7 +18,7 @@ endif
 fvwm_root = executable(
     'fvwm-root',
     'fvwm-root.c',
-    include_directories: [lib_includes, fvwm_includes],
+    include_directories: includedirs,
     link_with: libfvwm3,
     dependencies: all_found_deps,
 )
