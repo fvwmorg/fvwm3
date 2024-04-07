@@ -9,10 +9,11 @@ module_sources = [
     'parse.c',
 ]
 
-fvwmauto = executable(
+executable(
     'FvwmButtons',
     module_sources,
     include_directories: [lib_includes, fvwm_includes],
     dependencies: all_found_deps,
     link_with: libraries,
+    install_dir: fvwm_moduledir,
 )

@@ -1,6 +1,6 @@
 module_sources = ['FvwmEvent.c']
 
-fvwmauto = executable(
+executable(
     'FvwmEvent',
     module_sources,
     include_directories: [lib_includes, fvwm_includes],

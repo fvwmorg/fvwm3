@@ -7,6 +7,7 @@ if not golang.found()
         include_directories: [lib_includes, fvwm_includes],
         install: true,
         link_with: libraries,
+        install_dir: fvwm_moduledir,
     )
     executable(
         'FvwmConsoleC',
@@ -15,5 +16,6 @@ if not golang.found()
         include_directories: [lib_includes, fvwm_includes],
         install: true,
         link_with: libraries,
+        install_dir: fvwm_moduledir,
     )
 endif

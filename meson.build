@@ -37,6 +37,9 @@ endif
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
 prefix = get_option('prefix')
+fvwm_moduledir = (
+    get_option('libexecdir') + '/' + meson.project_name() + '/' + meson.project_version()
+)
 
 syslibs = []
 
@@ -58,7 +61,7 @@ conf.set_quoted(
 )
 conf.set_quoted(
     'FVWM_MODULEDIR',
-    get_option('libexecdir') + '/' + meson.project_name() + '/' + meson.project_version(),
+    fvwm_moduledir,
 )
 conf.set_quoted(
     'FVWM_DATADIR',
