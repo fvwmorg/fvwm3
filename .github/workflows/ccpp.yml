@@ -10,13 +10,22 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    container:
+      image: fvwmorg/fvwm3-build:latest
+      env:
+        GOROOT: "/usr/lib/go-1.14/"
+        GO111MODULE: "on"
     steps:
-    - uses: actions/checkout@v2
-    - name: Pulling docker image
-      run: docker pull fvwmorg/fvwm3-build:latest
-    - name: Build Package
-      run: 'docker build -t fvwm3 .'
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: set git safe directory
+        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
+      - name: Set Golang Path
+        run: export PATH=${GOROOT}/bin:${PATH}
+      - name: Autotools configure
+        run: ./autogen.sh && ./configure --enable-mandoc --enable-golang
+      - name: Autotools build
+        run: make -j
 
   build-meson-default:
     runs-on: ubuntu-latest
@@ -62,7 +71,6 @@ jobs:
         run:  CC=clang CC_LD=lld meson setup builddir -Dhtmldoc=true -Dmandoc=true -Dxent=true -Drsvg=true -Dpng=true -Dauto_features=enabled
       - name: run build
         run: ninja -C builddir
-
 
   notification:
     runs-on: ubuntu-20.04
