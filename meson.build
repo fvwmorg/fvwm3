@@ -165,7 +165,16 @@ endforeach
 # Python is a required dependency, we generate shebangs at buildtime
 # This will error by default if there is no python interpreter found
 py_mod = import('python')
-py = py_mod.find_installation('python3')
+if get_option('python') == ''
+    # Just look for a python3 impl using standard logic, we weren't given a value
+    # as an option
+    py = py_mod.find_installation('python3')
+else
+    # Try and find python by provided version or path
+    message('Trying to find python3: ' + get_option('python'))
+    py = py_mod.find_installation(get_option('python'))
+endif
+
 
 # Perl is a required dependency, we generate shebangs at buildtime
 perl = find_program('perl', required: true)
@@ -373,7 +382,6 @@ perl_config.set('SED', find_program('sed').full_path())
 perl_config.set('VERSIONINFO', fvwm_vcs_versioninfo)
 
 python_config = configuration_data()
-# Since we only support python3 now anyway, we should consider dropping this.
 python_config.set('PYTHON', py.full_path())
 python_config.set('VERSION', meson.project_version())
 python_config.set('VERSIONINFO', fvwm_vcs_versioninfo)

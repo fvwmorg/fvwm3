@@ -48,3 +48,8 @@ option(
     value: 'auto',
     description: 'Enable Go support',
 )
+option(
+    'python',
+    type: 'string',
+    description: 'Select python implementation',
+)
