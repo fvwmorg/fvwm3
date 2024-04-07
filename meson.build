@@ -374,6 +374,7 @@ modules = {
     'FvwmButtons': {'subdir': 'modules/FvwmButtons'},
     'FvwmEvent': {'subdir': 'modules/FvwmEvent'},
     'FvwmForm': {'subdir': 'modules/FvwmForm'},
+    'FvwmIdent': {'subdir': 'modules/FvwmIdent'},
 }
 
 if not golang.found()
