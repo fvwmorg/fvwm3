@@ -377,6 +377,7 @@ modules = {
     'FvwmIconMan': {'subdir': 'modules/FvwmIconMan'},
     'FvwmIdent': {'subdir': 'modules/FvwmIdent'},
     'FvwmMFL': {'subdir': 'modules/FvwmMFL'},
+    'FvwmPager': {'subdir': 'modules/FvwmPager'},
 }
 
 if not golang.found()
