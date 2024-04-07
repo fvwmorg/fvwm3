@@ -1,22 +1,3 @@
-perl_config = configuration_data()
-perl_config.set('PERL', perl.full_path())
-perl_config.set('VERSION', conf.get('VERSION'))
-perl_config.set('datadir', datadir + '/' + meson.project_name())
-perl_config.set('datarootdir', datadir)
-perl_config.set(
-    'FVWM_PERLLIBDIR',
-    datadir + '/' + meson.project_name() + '/perllib',
-)
-perl_config.set('prefix', prefix)
-perl_config.set('SED', find_program('sed').full_path())
-perl_config.set('VERSIONINFO', meson.project_version())
-
-python_config = configuration_data()
-# Since we only support python3 now anyway, we should consider dropping this.
-python_config.set('PYTHON', py.full_path())
-python_config.set('VERSION', conf.get('VERSION'))
-python_config.set('VERSIONINFO', meson.project_version())
-
 # We only install FvwmCommand for non-golang builds.
 # Since this isn't currently configurable, we'll just check for the presence of golang
 # at build time. Not ideal, but we should probably drop FvwmCommand anyway.
@@ -89,5 +70,5 @@ fvwm_menu_desktop = configure_file(
 
 config_data = install_data(
     'fvwm-menu-desktop-config.fpl',
-    install_dir: datadir + '/' + meson.project_name(),
+    install_dir: fvwm_datadir,
 )
