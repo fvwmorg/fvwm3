@@ -2269,18 +2269,25 @@ void AddNewWindow(PagerWindow *t)
 void ChangeDeskForWindow(PagerWindow *t, long newdesk)
 {
 	t->desk = newdesk;
+	newdesk -= desk1;
 
 	/* Hide windows outside of desk range on desk 0. */
-	if (newdesk < desk1 || newdesk > desk2)
+	if (newdesk < 0 || newdesk >= ndesks)
 	{
-		XReparentWindow(dpy, t->PagerView, Desks[0].w, -32768, -32768);
+		XReparentWindow(dpy, t->PagerView,
+				Desks[0].w, -32768, -32768);
+		HideWindow(t, t->IconView);
+	}
+	else if (UseSkipList && DO_SKIP_WINDOW_LIST(t))
+	{
+		XReparentWindow(dpy, t->PagerView,
+				Desks[newdesk].w, -32768, -32768);
 		HideWindow(t, t->IconView);
 	}
 	else
 	{
-		int desk = newdesk - desk1;
-		XReparentWindow(dpy, t->PagerView, Desks[desk].w,
-			t->pager_view.x, t->pager_view.y);
+		XReparentWindow(dpy, t->PagerView, Desks[newdesk].w,
+				t->pager_view.x, t->pager_view.y);
 		MoveResizeWindow(t, true, true);
 	}
 
@@ -2291,7 +2298,7 @@ void MoveResizePagerView(PagerWindow *t, bool do_force_redraw)
 {
 	struct fpmonitor *fp = fpmonitor_this(t->m);
 
-	if (fp == NULL)
+	if (fp == NULL || (UseSkipList && DO_SKIP_WINDOW_LIST(t)))
 	{
 		HideWindow(t, None);
 		return;
