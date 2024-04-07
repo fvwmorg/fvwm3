@@ -21,4 +21,4 @@ executable(
     install_dir: fvwm_moduledir,
 )
 
-install_data('ConfigFvwmIconMan', install_dir: datadir / meson.project_name())
+install_data('ConfigFvwmIconMan', install_dir: fvwm_datadir)

@@ -1,4 +1,6 @@
-libraries += static_library(
+# While this is a static library in autotools, we can let the user
+# decide how to link it based on the `default_library` user option.
+libraries += library(
     'fvwm3',
     sources: [
         'BidiJoin.c',
@@ -63,4 +65,5 @@ libraries += static_library(
     ],
     include_directories: [lib_includes, fvwm_includes],
     dependencies: all_found_deps,
+    install: true,
 )
