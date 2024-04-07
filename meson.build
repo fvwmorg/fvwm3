@@ -235,6 +235,12 @@ else
     warning(png_msg)
 endif
 
+readline = dependency('readline', required: get_option('readline'))
+if readline.found()
+    all_found_deps += readline
+    conf.set10('HAVE_READLINE', true)
+endif
+
 if get_option('rsvg')
     librsvg = dependency('librsvg-2.0', version: '>=2.13.92', required: true)
     all_found_deps += librsvg
@@ -311,7 +317,7 @@ if xpm.found()
     conf.set10('HAVE_XPM', true)
 endif
 
-automagic_opt_deps = ['readline', 'xcursor', 'xrender']
+automagic_opt_deps = ['xcursor', 'xrender']
 foreach ad : automagic_opt_deps
     this_dep = dependency(ad, required: true)
     conf.set10('HAVE_' + ad.to_upper().underscorify(), true)
@@ -471,6 +477,7 @@ summary(
         'Session Management': sm.found() ? sm : 'No',
         'Shaped Windows': get_option('xent') ? xext : 'No',
         'PNG support': get_option('png') ? libpng : 'No',
+        'Readline support': readline.found() ? readline : 'No',
         'SVG support': get_option('rsvg') ? librsvg : 'No',
         'VCS Version': fvwm_vcs_versioninfo,
     },

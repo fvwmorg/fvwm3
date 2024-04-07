@@ -10,6 +10,12 @@ option(
     value: 'auto',
 )
 option(
+    'golang',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable Go support',
+)
+option(
     'htmldoc',
     type: 'boolean',
     value: false,
@@ -29,6 +35,17 @@ option(
 )
 option('nls', type: 'feature', value: 'auto', description: 'Enable NLS')
 option('png', type: 'boolean', value: true, description: 'Enable png support')
+option(
+    'python',
+    type: 'string',
+    description: 'Select python implementation',
+)
+option(
+    'readline',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable readline support',
+)
 option('rsvg', type: 'boolean', value: false, description: 'Enable svg support')
 option(
     'sm',
@@ -41,15 +58,4 @@ option(
     type: 'boolean',
     value: false,
     description: 'Enable shaped window support',
-)
-option(
-    'golang',
-    type: 'feature',
-    value: 'auto',
-    description: 'Enable Go support',
-)
-option(
-    'python',
-    type: 'string',
-    description: 'Select python implementation',
 )
