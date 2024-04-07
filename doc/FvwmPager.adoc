@@ -276,6 +276,10 @@ does not get the input focus. This may happen if you drag the pointer
 over one of the mini windows in the pager. There is nothing that can be
 done about this - except not using SloppyFocus in the pager.
 
+*FvwmPager: FocusAfterMove::
+  After moving a window using the pager (using mouse button 2), give the
+  window focus if it is moved to the same desktop as the current monitor.
+
 *FvwmPager: SolidSeparators::
   By default the pages of the virtual desktop are separated by dashed
   lines in the pager window. This option causes FvwmPager to use solid

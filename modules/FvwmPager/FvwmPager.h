@@ -226,6 +226,7 @@ extern bool	is_transient;
 extern bool	HilightDesks;
 extern bool	ShowBalloons;
 extern bool	error_occured;
+extern bool	FocusAfterMove;
 extern bool	use_desk_label;
 extern bool	win_hi_pix_set;
 extern bool	WindowBorders3d;

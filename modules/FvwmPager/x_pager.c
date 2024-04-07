@@ -2736,29 +2736,30 @@ void MoveWindow(XEvent *Event)
 	 * "ewmhiwa" disables clipping to monitor/ewmh boundaries.
 	 */
 	pagerrec_to_fvwm(&rec, false, fp);
-	if (CurrentDeskPerMonitor && fAlwaysCurrentDesk)
+	if (CurrentDeskPerMonitor && fAlwaysCurrentDesk) {
+		NewDesk = fp->m->virtual_scr.CurrentDesk;
 		/* Let fvwm handle any desk changes in this case. */
 		snprintf(buf, sizeof(buf), "Silent Move v+%dp v+%dp ewmhiwa",
 			 rec.x, rec.y);
-	else
+	} else {
+		NewDesk += desk1;
 		snprintf(buf, sizeof(buf),
 			 "Silent Move desk %d v+%dp v+%dp ewmhiwa",
-			 NewDesk + desk1, rec.x, rec.y);
+			 NewDesk, rec.x, rec.y);
+	}
 	SendText(fd, buf, t->w);
 	XSync(dpy,0);
 	SendText(fd, "Silent Raise", t->w);
 
-done_moving:
-#if 0
-	/* Disabling for now, unsure how useful this feature is. */
-	if (fp->m->virtual_scr.CurrentDesk == t->desk) {
+	if (FocusAfterMove && fp->m->virtual_scr.CurrentDesk == NewDesk) {
 		XSync(dpy,0);
 		usleep(5000);
 		XSync(dpy,0);
 
 		SendText(fd, "Silent FlipFocus NoWarp", t->w);
 	}
-#endif
+
+done_moving:
 	if (is_transient)
 		ExitPager(); /* does not return */
 }
@@ -3121,7 +3122,8 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		SendText(fd, buf, t->w);
 		XSync(dpy, 0);
 		SendText(fd, "Silent Raise", t->w);
-		//SendText(fd, "Silent FlipFocus NoWarp", t->w);
+		if (FocusAfterMove)
+			SendText(fd, "Silent FlipFocus NoWarp", t->w);
 	} else {
 		MoveResizePagerView(t, true);
 	}
