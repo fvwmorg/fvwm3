@@ -32,15 +32,16 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
-#include "libs/Module.h"
-#include "libs/fvwmlib.h"
-#include "libs/FShape.h"
-#include "libs/FRenderInit.h"
-#include "libs/FEvent.h"
 #include "libs/Colorset.h"
+#include "libs/FEvent.h"
 #include "libs/Flocale.h"
+#include "libs/FRenderInit.h"
+#include "libs/FShape.h"
+#include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Grab.h"
+#include "libs/log.h"
+#include "libs/Module.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "libs/System.h"
