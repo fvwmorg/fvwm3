@@ -1,10 +1,7 @@
 project(
     'fvwm3',
     'c',
-    version: run_command(
-        './utils/fvwm-version-str.sh',
-        check: false,
-    ).stdout().strip(),
+    version: '1.1.1',
     license: 'GPL',
     meson_version: '>=1.1.0', #feature_option.enable_if()
     default_options: [
@@ -33,6 +30,7 @@ if m_dep.found()
     add_project_link_arguments('-lm', language: 'c')
 endif
 
+# Convenience helpers for things we might refer to a few times.
 bindir = get_option('bindir')
 datadir = get_option('datadir')
 sysconfdir = get_option('sysconfdir')
@@ -41,6 +39,11 @@ fvwm_datadir = join_paths(datadir, meson.project_name())
 fvwm_moduledir = (
     get_option('libexecdir') + '/' + meson.project_name() + '/' + meson.project_version()
 )
+fvwm_vcs_versioninfo = run_command(
+    './utils/fvwm-version-str.sh',
+    check: false,
+).stdout().strip()
+
 
 syslibs = []
 
@@ -51,8 +54,8 @@ if host_machine.endian() == 'big'
 endif
 
 # Set static configuration.
-conf.set_quoted('VERSION', '1.1.1')
-conf.set_quoted('VERSIONINFO', meson.project_version())
+conf.set_quoted('VERSION', meson.project_version())
+conf.set_quoted('VERSIONINFO', fvwm_vcs_versioninfo)
 conf.set_quoted('PACKAGE', meson.project_name())
 conf.set_quoted('FVWM2RC', '.fvwm2rc')
 conf.set_quoted('FVWM_CONFIG', 'config')
@@ -357,7 +360,7 @@ fvwm_includes = include_directories('fvwm')
 # These are used to configure files in 'bin' and 'perllib'
 perl_config = configuration_data()
 perl_config.set('PERL', perl.full_path())
-perl_config.set('VERSION', conf.get('VERSION'))
+perl_config.set('VERSION', meson.project_version())
 perl_config.set('datadir', fvwm_datadir)
 perl_config.set('FVWM_DATADIR', fvwm_datadir)
 perl_config.set('datarootdir', datadir)
@@ -367,13 +370,13 @@ perl_config.set(
 )
 perl_config.set('prefix', prefix)
 perl_config.set('SED', find_program('sed').full_path())
-perl_config.set('VERSIONINFO', meson.project_version())
+perl_config.set('VERSIONINFO', fvwm_vcs_versioninfo)
 
 python_config = configuration_data()
 # Since we only support python3 now anyway, we should consider dropping this.
 python_config.set('PYTHON', py.full_path())
-python_config.set('VERSION', conf.get('VERSION'))
-python_config.set('VERSIONINFO', meson.project_version())
+python_config.set('VERSION', meson.project_version())
+python_config.set('VERSIONINFO', fvwm_vcs_versioninfo)
 
 subdir('po')
 subdir('libs')
@@ -441,7 +444,6 @@ summary(
         'Perl': perl,
         'asciidoctor': asciidoc.found() ? asciidoc.full_path() : 'No',
         'asciidoctor version': asciidoc.found() ? asciidoc.version() : 'N/A',
-
     },
     section: 'Environment',
 )
@@ -462,6 +464,7 @@ summary(
         'Shaped Windows': get_option('xent') ? xext : 'No',
         'PNG support': get_option('png') ? libpng : 'No',
         'SVG support': get_option('rsvg') ? librsvg : 'No',
+        'VCS Version': fvwm_vcs_versioninfo,
     },
     section: 'Configuration',
 )
