@@ -13,56 +13,21 @@ jobs:
     container:
       image: fvwmorg/fvwm3-build:latest
       env:
-        GOROOT: "/usr/lib/go-1.14/"
         GO111MODULE: "on"
     steps:
       - name: checkout
         uses: actions/checkout@v4
       - name: set git safe directory
         run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
-      - name: Set Golang Path
-        run: export PATH=${GOROOT}/bin:${PATH}
       - name: Autotools configure
         run: ./autogen.sh && ./configure --enable-mandoc --enable-golang
       - name: Autotools build
         run: make -j
 
-  build-meson-default:
+  build-meson:
     runs-on: ubuntu-latest
     container: fvwmorg/fvwm3-build:latest
     steps:
-      - name: install golang
-        run: apt install -y golang-go
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: set git safe directory
-        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
-      - name: configure meson build
-        run:  meson setup builddir
-      - name: run build
-        run: ninja -C builddir
-
-  build-meson-full:
-    runs-on: ubuntu-latest
-    container: fvwmorg/fvwm3-build:latest
-    steps:
-      - name: Install golang
-        run: apt install -y golang-go librsvg2-dev
-      - name: checkout
-        uses: actions/checkout@v4
-      - name: set git safe directory
-        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
-      - name: configure meson build
-        run:  meson setup builddir -Dhtmldoc=true -Dmandoc=true -Dxent=true -Drsvg=true -Dpng=true -Dauto_features=enabled
-      - name: run build
-        run: ninja -C builddir
-
-  build-meson-full-clang:
-    runs-on: ubuntu-latest
-    container: fvwmorg/fvwm3-build:latest
-    steps:
-      - name: Install golang
-        run: apt install -y golang-go librsvg2-dev clang lld
       - name: checkout
         uses: actions/checkout@v4
       - name: set git safe directory
