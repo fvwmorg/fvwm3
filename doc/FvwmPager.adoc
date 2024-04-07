@@ -59,7 +59,8 @@ monitor label will move that monitor to the clicked desk. Clicks in which it
 cannot be clearly determined which monitor to move will be ignored, such as
 clicks on desk labels or dead space in 'per-monitor' mode, clicking on a desk
 not occupied by any monitor in 'shared' mode. It is suggested to use
-_MonitorLabels_ with 'shared' mode.
+_MonitorLabels_ with 'shared' mode. There is also a special mode _IsShared_
+to better view the shared desktops in 'shared' mode.
 
 When clicked with button 3, FvwmPager will move the current view port centered
 on the area clicked. Unlike a left click, which always places the monitor(s)
@@ -398,6 +399,16 @@ done about this - except not using SloppyFocus in the pager.
 *FvwmPager: CurrentDeskGlobal::
   This option cancels setting _CurrentDeskPerMonitor_, reverting to the
   default.
+
+*FvwmPager: IsShared::
+  Setting this option tells fvwm to use shared mode, which is designed to
+  work best with _DesktopConfiguration shared_. In this mode, each desktop
+  shows only the windows and area occupied by the last monitor to view that
+  desktop. Pair this with _MonitorLabels_ to change the desktop of each
+  monitor by clicking on their label.
+
+*FvwmPager: IsNotShared:
+  This setting turns off the previous, _IsShared_, setting.
 
 == AUTHOR
 

@@ -71,7 +71,6 @@ static void MoveResizeWindow(PagerWindow *, bool, bool);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 static struct fpmonitor *fpmonitor_from_xy(int x, int y);
 static struct fpmonitor *fpmonitor_from_n(int n);
-static struct fpmonitor *fpmonitor_from_desk(int desk);
 static int fpmonitor_count(void);
 static void set_desk_size(bool);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
@@ -212,7 +211,7 @@ static struct fpmonitor *fpmonitor_from_n(int n)
 	return fp;
 }
 
-static struct fpmonitor *fpmonitor_from_desk(int desk)
+struct fpmonitor *fpmonitor_from_desk(int desk)
 {
 	struct fpmonitor *fp;
 
@@ -248,20 +247,24 @@ static rectangle CalcGeom(PagerWindow *t, bool is_icon)
 {
 	/* Place initial rectangle off screen. */
 	rectangle rec = {-32768, -32768, MinSize, MinSize};
-	struct fpmonitor *fp = fpmonitor_this(NULL);
+	struct fpmonitor *fp;
 
-	/* If the monitor we expect to find is disabled, then
-	 * fpmonitor_this() will return NULL.
-	 */
-	if (fp == NULL)
-		return rec;
-
-	/* Only track windows on the appropriate monitor if per-monitor mode. */
-	if (monitor_to_track != NULL && t->m != fp->m)
-		return rec;
-	else
+	/* Determine what monitor to use. */
+	if (monitor_to_track != NULL) {
+		fp = monitor_to_track;
+		if (t->m != fp->m)
+			return rec;
+	} else if (IsShared && !is_icon && monitor_to_track == NULL) {
+		int desk = t->desk - desk1;
+		if (desk >= 0 && desk < ndesks)
+			fp = Desks[desk].fp;
+		else
+			return rec;
+		if (fp == NULL || fp->m != t->m)
+			return rec;
+	} else {
 		fp = fpmonitor_this(t->m);
-
+	}
 	if (fp == NULL)
 		return rec;
 
@@ -517,10 +520,12 @@ fvwmrec_to_pager(rectangle *rec, bool is_icon, struct fpmonitor *fp)
 	int m_width = fpmonitor_get_all_widths();
 	int m_height = fpmonitor_get_all_heights();
 
-	if (monitor_to_track != NULL) {
+	if (monitor_to_track != NULL || (IsShared && !is_icon)) {
 		/* Offset window location based on monitor location. */
-		rec->x -= (m_width - fp->m->si->w) * (rec->x / m_width) + fp->m->si->x;
-		rec->y -= (m_height - fp->m->si->h) * (rec->y / m_height) + fp->m->si->y;
+		rec->x -= (m_width - fp->m->si->w) *
+			  (rec->x / m_width) + fp->m->si->x;
+		rec->y -= (m_height - fp->m->si->h) *
+			  (rec->y / m_height) + fp->m->si->y;
 		m_width = fp->m->si->w;
 		m_height = fp->m->si->h;
 	}
@@ -560,11 +565,13 @@ pagerrec_to_fvwm(rectangle *rec, bool is_icon, struct fpmonitor *fp)
 		scale_h = icon.height;
 	}
 
-	if (monitor_to_track != NULL) {
-		offset_x = (m_width - fp->m->si->w) * ((fp->virtual_scr.VxPages *
-			rec->x) / scale_w) + fp->m->si->x;
-		offset_y = (m_height - fp->m->si->h) * ((fp->virtual_scr.VyPages *
-			rec->y) / scale_h) + fp->m->si->y;
+	if (monitor_to_track != NULL || (IsShared && !is_icon)) {
+		offset_x = (m_width - fp->m->si->w) *
+			   ((fp->virtual_scr.VxPages *
+			   rec->x) / scale_w) + fp->m->si->x;
+		offset_y = (m_height - fp->m->si->h) *
+			   ((fp->virtual_scr.VyPages *
+			   rec->y) / scale_h) + fp->m->si->y;
 		m_width = fp->m->si->w;
 		m_height = fp->m->si->h;
 	}
@@ -593,7 +600,8 @@ set_vp_size_and_loc(struct fpmonitor *m, bool is_icon)
 	Vy = fp->virtual_scr.Vy;
 	vp_w = fp->virtual_scr.VWidth / fp->virtual_scr.VxPages;
 	vp_h = fp->virtual_scr.VHeight / fp->virtual_scr.VyPages;
-	if (m != NULL && monitor_to_track == NULL) {
+	if (m != NULL && monitor_to_track == NULL &&
+	   !(IsShared && !is_icon)) {
 		Vx += fp->m->si->x;
 		Vy += fp->m->si->y;
 		vp_w = fp->m->si->w;
@@ -761,7 +769,7 @@ void initialize_pager(void)
   if ( pwindow.width == 0 || pwindow.height == 0 ) {
 	  int vWidth  = fpmonitor_get_all_widths();
 	  int vHeight = fpmonitor_get_all_heights();
-	  if (monitor_to_track != NULL) {
+	  if (monitor_to_track != NULL || IsShared) {
 		  vWidth = fp->m->si->w;
 		  vHeight = fp->m->si->h;
 	  }
@@ -1300,12 +1308,12 @@ void DispatchEvent(XEvent *Event)
 	 * of the DesktopConfiguration setting, there is only one monitor in
 	 * use.
 	 */
-	else if(Event->xany.window == Desks[i].title_w &&
-		((monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) ||
-		 (monitor_to_track != NULL) || (m_count == 1)))
+	else if (Event->xany.window == Desks[i].title_w &&
+		((monitor_mode == MONITOR_TRACKING_G &&
+		!is_tracking_shared) ||
+		monitor_to_track != NULL || m_count == 1))
 	{
 		SwitchToDesk(i, NULL);
-		break;
 	}
       }
       if(Event->xany.window == icon_win)
@@ -1592,7 +1600,8 @@ void ReConfigure(void)
 		m->m->virtual_scr.CurrentDesk : desk1;
 
 	    if (i == m->m->virtual_scr.CurrentDesk - desk &&
-		(monitor_to_track == NULL || m == monitor_to_track))
+		(monitor_to_track == NULL || m == monitor_to_track) &&
+		(!IsShared || Desks[i].fp == m))
 	    {
 	      XMoveResizeWindow(dpy, m->CPagerWin[i],
 				vp.x, vp.y, vp.width, vp.height);
@@ -2107,7 +2116,7 @@ void SwitchToDesk(int Desk, struct fpmonitor *m)
 void SwitchToDeskAndPage(int Desk, XEvent *Event)
 {
 	char command[256];
-	int vx, vy;
+	int x, y;
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
 	if (fp == NULL) {
@@ -2116,17 +2125,33 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 		return;
 	}
 
-	/* Determine which monitor occupied the clicked region. */
-	Desk += desk1;
-	vx = (desk_w == 0) ? 0 :
-		Event->xbutton.x * fp->virtual_scr.VWidth / desk_w;
-	vy = (desk_h == 0) ? 0 :
-		Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
+	/* If tracking / showing a single monitor, just need to find page. */
+	if (IsShared || monitor_to_track != NULL || fpmonitor_count() == 1) {
+		if (monitor_to_track != NULL)
+			fp = monitor_to_track;
+		else if (IsShared)
+			fp = Desks[Desk].fp;
 
-	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
+		/* Ignore clicks if the monitor is not occupying the desk. */
+		Desk += desk1;
+		if (IsShared && fp->m->virtual_scr.CurrentDesk != Desk)
+			return;
+
+		x = Event->xbutton.x * fp->virtual_scr.VxPages / desk_w;
+		y = Event->xbutton.y * fp->virtual_scr.VyPages / desk_h;
+		goto send_cmd;
+	}
+
+	/* Determine which monitor was in the region clicked. */
+	Desk += desk1;
+	x = Event->xbutton.x * fp->virtual_scr.VWidth / desk_w;
+	y = Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
+	if (is_tracking_shared)
 		fp = fpmonitor_from_desk(Desk);
 	else
-		fp = fpmonitor_from_xy(vx, vy);
+		fp = fpmonitor_from_xy(x, y);
+
+	/* No monitor found, ignore click. */
 	if (fp == NULL)
 		return;
 
@@ -2134,28 +2159,27 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 	 * events incorrectly when moving fast. Not perfect, but
 	 * should at least prevent that we get a random page.
 	 */
-	if (vx < 0)
-		vx = 0;
-	if (vy < 0)
-		vy = 0;
-	if (vx > fp->virtual_scr.VxMax)
-		vx = fp->virtual_scr.VxMax;
-	if (vy > fp->virtual_scr.VyMax)
-		vy = fp->virtual_scr.VyMax;
-	vx /= fpmonitor_get_all_widths();
-	vy /= fpmonitor_get_all_heights();
+	if (x < 0)
+		x = 0;
+	if (y < 0)
+		y = 0;
+	if (x > fp->virtual_scr.VxMax)
+		x = fp->virtual_scr.VxMax;
+	if (y > fp->virtual_scr.VyMax)
+		y = fp->virtual_scr.VyMax;
+	x /= fpmonitor_get_all_widths();
+	y /= fpmonitor_get_all_heights();
 
+send_cmd:
 	if (desk1 != desk2 && fp->m->virtual_scr.CurrentDesk != Desk) {
 		/* patch to let mouse button 3 change desks and not cling */
-		fp->m->virtual_scr.Vx = vx;
-		fp->m->virtual_scr.Vy = vy;
 		snprintf(command, sizeof(command),
 			"GotoDeskAndPage screen %s %d %d %d",
-			fp->m->si->name, Desk, vx, vy);
+			fp->m->si->name, Desk, x, y);
 		SendText(fd, command, 0);
 	} else {
 		snprintf(command, sizeof(command),
-			"GotoPage screen %s %d %d", fp->m->si->name, vx, vy);
+			"GotoPage screen %s %d %d", fp->m->si->name, x, y);
 		SendText(fd, command, 0);
 	}
 	Wait = 1;
@@ -2253,8 +2277,16 @@ void AddNewWindow(PagerWindow *t)
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 
-	if (t->desk >= desk1 && t->desk <= desk2)
+	if (t->desk >= desk1 && t->desk <= desk2) {
 		desk = t->desk - desk1;
+
+		/* Initialize monitors for desks that did not start with
+		 * a monitor by using windows to best guess which monitor
+		 * was last viewing the desk.
+		 */
+		if (Desks[desk].fp == NULL)
+			Desks[desk].fp = fpmonitor_this(t->m);
+	}
 
 	valuemask = CWBackPixel | CWEventMask;
 	attributes.background_pixel = t->back;
@@ -2304,6 +2336,13 @@ int is_window_visible(PagerWindow *t)
 				do_show_window |= SHOW_PAGER_VIEW;
 			do_show_window |= SHOW_ICON_VIEW;
 		}
+	} else if (IsShared && monitor_to_track == NULL) {
+		int desk = t->desk - desk1;
+
+		if (desk >= 0 && desk < ndesks && Desks[desk].fp == fp)
+			do_show_window |= SHOW_PAGER_VIEW;
+		if (t->desk == desk_i)
+			do_show_window |= SHOW_ICON_VIEW;
 	} else {
 		if (t->desk >= desk1 && t->desk <= desk2)
 			do_show_window |= SHOW_PAGER_VIEW;
