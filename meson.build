@@ -184,7 +184,9 @@ if golang.found()
     gover = run_command('go', 'version', check: true).stdout().split(' ')
     gover = gover[2].replace('go', '')
     if gover.version_compare('<1.20.0')
-        error('Go version 1.20.0 or later is required to build with meson (try autotools!)')
+        error(
+            'Go version 1.20.0 or later is required to build with meson (try autotools!)',
+        )
     endif
 endif
 
@@ -372,7 +374,6 @@ configure_file(
     command: [conf_cmd, conf_out, conf_template, build_dir],
 )
 
-libraries = []
 # Configured files inherit the permissions of the template,
 # so we need to set the permissions explicitly for executable scripts.
 install_mask_755 = 'rwxr-xr-x'
@@ -410,7 +411,7 @@ fvwm3 = executable(
     fvwm_sources,
     include_directories: [lib_includes, fvwm_includes],
     dependencies: all_found_deps,
-    link_with: libraries,
+    link_with: libfvwm3,
 )
 
 # Core modules

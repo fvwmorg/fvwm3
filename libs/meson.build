@@ -1,6 +1,6 @@
 # While this is a static library in autotools, we can let the user
 # decide how to link it based on the `default_library` user option.
-libraries += library(
+libfvwm3 = library(
     'fvwm3',
     sources: [
         'BidiJoin.c',

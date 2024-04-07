@@ -19,7 +19,7 @@ fvwm_root = executable(
     'fvwm-root',
     'fvwm-root.c',
     include_directories: [lib_includes, fvwm_includes],
-    link_with: libraries,
+    link_with: libfvwm3,
     dependencies: all_found_deps,
 )
 

@@ -24,7 +24,7 @@ libWidgets = static_library(
     'Widgets',
     sources: libwidget_sources,
     include_directories: [lib_includes, fvwm_includes],
-    link_with: libraries,
+    link_with: libfvwm3,
     dependencies: all_found_deps,
     install_dir: get_option('libdir'),
 )
@@ -43,7 +43,7 @@ executable(
     sources: fvwmscript_sources,
     include_directories: [lib_includes, fvwm_includes],
     dependencies: all_found_deps,
-    link_with: [libraries, libWidgets],
+    link_with: [libfvwm3, libWidgets],
     #c_args: c_args,
     install_dir: fvwm_moduledir,
 )
