@@ -27,6 +27,7 @@
 #include "libs/Module.h"
 #include "libs/ColorUtils.h"
 #include "libs/Strings.h"
+#include "libs/log.h"
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif
