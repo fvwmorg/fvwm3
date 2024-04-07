@@ -180,6 +180,13 @@ endif
 perl = find_program('perl', required: true)
 
 golang = find_program('go', required: get_option('golang'))
+if golang.found()
+    gover = run_command('go', 'version', check: true).stdout().split(' ')
+    gover = gover[2].replace('go', '')
+    if gover.version_compare('<1.20.0')
+        error('Go version 1.20.0 or later is required to build with meson (try autotools!)')
+    endif
+endif
 
 # Optional dependencies
 # First we check for things specified by the user (i.e. no automagic)
@@ -452,6 +459,7 @@ summary(
         'Endianness': build_machine.endian(),
         'C Compiler': cc.get_id(),
         'C Compiler Version': cc.version(),
+        'Go Version': golang.found() ? gover : 'N/A',
         'Linker': cc.get_linker_id(),
         'Python Path': py.full_path(),
         'Python Version': py.version(),
@@ -469,7 +477,7 @@ summary(
         'Cross-compiling': meson.is_cross_build(),
         'bidi': get_option('bidi').enabled() ? fribidi : 'No',
         'iconv': get_option('iconv').enabled() ? iconv : 'No',
-        'Go support': golang.found() ? golang : 'No',
+        'Go Modules': golang.found() ? 'Yes' : 'No',
         'Build Documentation': build_docs.enabled() ? 'Yes' : 'No',
         'HTML pages': get_option('htmldoc'),
         'Man pages': get_option('mandoc'),
