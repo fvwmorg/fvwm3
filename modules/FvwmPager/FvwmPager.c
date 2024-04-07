@@ -108,6 +108,7 @@ int	windowcolorset = -1;
 int	activecolorset = -1;
 bool	xneg = false;
 bool	yneg = false;
+bool	IsShared = false;
 bool	icon_xneg = false;
 bool	icon_yneg = false;
 bool	MiniIcons = false;
@@ -383,16 +384,6 @@ int main(int argc, char **argv)
     }
   ndesks = desk2 - desk1 + 1;
 
-  Desks = fxcalloc(1, ndesks*sizeof(DeskInfo));
-  for(i=0;i<ndesks;i++)
-    {
-      snprintf(line,sizeof(line),"Desk %d",i+desk1);
-      CopyString(&Desks[i].label,line);
-      Desks[i].colorset = -1;
-      Desks[i].highcolorset = -1;
-      Desks[i].ballooncolorset = -1;
-    }
-
   /* Initialize X connection */
   if (!(dpy = XOpenDisplay(display_name)))
     {
@@ -437,6 +428,17 @@ int main(int argc, char **argv)
 
   RB_FOREACH(mon, monitors, &monitor_q)
 	(void)fpmonitor_new(mon);
+
+  Desks = fxcalloc(1, ndesks*sizeof(DeskInfo));
+  for(i=0;i<ndesks;i++)
+  {
+	snprintf(line,sizeof(line),"Desk %d",i+desk1);
+	CopyString(&Desks[i].label,line);
+	Desks[i].colorset = -1;
+	Desks[i].highcolorset = -1;
+	Desks[i].ballooncolorset = -1;
+	Desks[i].fp = fpmonitor_from_desk(i + desk1);
+  }
 
   ParseOptions();
   if (is_transient)
@@ -906,6 +908,7 @@ void list_focus(unsigned long *body)
  */
 void list_new_page(unsigned long *body)
 {
+	bool do_reconfigure = false;
 	int mon_num = body[7];
 	struct monitor *m;
 	struct fpmonitor *fp;
@@ -915,14 +918,17 @@ void list_new_page(unsigned long *body)
 	if (m->si->rr_output != mon_num)
 		return;
 
-	if (monitor_to_track != NULL) {
-		if (monitor_to_track->m != m)
-			return;
+	/* Still need to update the monitors when tracking a single
+	 * monitor, but don't need to reconfigure anything.
+	 */
+	if (monitor_to_track != NULL && m == monitor_to_track->m) {
 		fp = monitor_to_track;
+		do_reconfigure = true;
 	} else {
 		fp = fpmonitor_this(m);
 		if (fp == NULL)
 			return;
+		do_reconfigure = true;
 	}
 
 	fp->virtual_scr.Vx = fp->m->virtual_scr.Vx = body[0];
@@ -941,12 +947,15 @@ void list_new_page(unsigned long *body)
 		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
 		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
 		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
-		ReConfigure();
+		if (do_reconfigure)
+			ReConfigure();
 	}
 
-	MovePage(false);
-	MoveStickyWindow(true, false);
-	Hilight(FocusWin,true);
+	if (do_reconfigure) {
+		MovePage(false);
+		MoveStickyWindow(true, false);
+		Hilight(FocusWin,true);
+	}
 }
 
 /*
@@ -957,7 +966,7 @@ void list_new_page(unsigned long *body)
  */
 void list_new_desk(unsigned long *body)
 {
-  int oldDesk;
+  int oldDesk, newDesk;
   int change_cs = -1;
   int change_ballooncs = -1;
   int change_highcs = -1;
@@ -979,7 +988,9 @@ void list_new_desk(unsigned long *body)
    * tracked, as this could change.
    */
   oldDesk = fp->m->virtual_scr.CurrentDesk;
-  fp->m->virtual_scr.CurrentDesk = (long)body[0];
+  newDesk = fp->m->virtual_scr.CurrentDesk = (long)body[0];
+  if (newDesk >= desk1 && newDesk <= desk2)
+	  Desks[newDesk - desk1].fp = fp;
 
   /* If the monitor for which the event was sent, does not match the monitor
    * itself, then don't change the FvwmPager's desk.  Only do this if we're
@@ -1987,6 +1998,10 @@ ImagePath = NULL;
 	    CurrentDeskPerMonitor = true;
     } else if(StrEquals(resource, "CurrentDeskGlobal")) {
 	    CurrentDeskPerMonitor = false;
+    } else if(StrEquals(resource, "IsShared")) {
+	    IsShared = true;
+    } else if(StrEquals(resource, "IsNotShared")) {
+	    IsShared = false;
     }
     else if(StrEquals(resource,"Colorset"))
     {

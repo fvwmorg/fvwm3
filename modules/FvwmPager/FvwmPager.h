@@ -139,6 +139,7 @@ typedef struct desk_info
   GC rvGC;                      /* used for drawing hilighted desk title */
   unsigned long fp_mask;        /* used for the fpmonitor window */
   XSetWindowAttributes fp_attr; /* used for the fpmonitor window */
+  struct fpmonitor *fp;         /* most recent monitor viewing desk. */
 } DeskInfo;
 
 typedef struct pager_string_list
@@ -212,6 +213,7 @@ extern int	windowcolorset;
 extern int	activecolorset;
 extern bool	xneg;
 extern bool	yneg;
+extern bool	IsShared;
 extern bool	icon_xneg;
 extern bool	icon_yneg;
 extern bool	MiniIcons;
@@ -333,5 +335,6 @@ void DrawInBalloonWindow(int i);
 void HandleScrollDone(void);
 int fpmonitor_get_all_widths(void);
 int fpmonitor_get_all_heights(void);
+struct fpmonitor *fpmonitor_from_desk(int desk);
 
 #endif /* FVWMPAGER_H */
