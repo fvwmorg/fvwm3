@@ -122,6 +122,7 @@ bool	is_transient = false;
 bool	HilightDesks = true;
 bool	ShowBalloons = false;
 bool	error_occured = false;
+bool	FocusAfterMove = false;
 bool	use_desk_label = true;
 bool	win_hi_pix_set = false;
 bool	WindowBorders3d = false;
@@ -2381,6 +2382,10 @@ ImagePath = NULL;
     else if (StrEquals(resource, "SloppyFocus"))
     {
       do_focus_on_enter = true;
+    }
+    else if (StrEquals(resource, "FocusAfterMove"))
+    {
+      FocusAfterMove = true;
     }
     else if (StrEquals(resource, "SolidSeparators"))
     {
