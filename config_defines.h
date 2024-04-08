@@ -82,8 +82,9 @@ do { void *p; p = (void *)&x; (void)p; } while (0);
 #endif
 
 #ifndef HAVE_ASPRINTF
+#   include <stdarg.h>
 int	asprintf(char **, const char *, ...);
-int     vasprintf(char **, const char *, va_list);
+int vasprintf(char **, const char *, va_list);
 #endif
 
 //#include "libs/log.h"
