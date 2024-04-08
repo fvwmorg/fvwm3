@@ -19,6 +19,7 @@
 #include <assert.h>
 
 #include "FvwmIconMan.h"
+#include "libs/log.h"
 
 static FILE *console = NULL;
 

@@ -27,6 +27,7 @@
 #include "libs/Rectangles.h"
 #include "libs/Grab.h"
 #include "libs/Graphics.h"
+#include "libs/log.h"
 #include "libs/Strings.h"
 #include "libs/wild.h"
 

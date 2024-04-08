@@ -22,6 +22,7 @@
 #include "libs/Picture.h"
 #include "libs/Graphics.h"
 #include "libs/Fsvg.h"
+#include "libs/log.h"
 
 int save_colors = 0;
 Display *dpy;

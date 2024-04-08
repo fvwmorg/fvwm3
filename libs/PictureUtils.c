@@ -23,6 +23,7 @@
 #include <signal.h>
 #include <ctype.h>
 #include <math.h>
+#include <time.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>

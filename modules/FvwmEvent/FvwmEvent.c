@@ -27,6 +27,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <time.h>
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"

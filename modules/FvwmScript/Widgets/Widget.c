@@ -19,6 +19,7 @@
 
 #include "config.h"
 
+#include "libs/log.h"
 #include "Tools.h"
 
 extern void InitPushButton(struct XObj *xobj);

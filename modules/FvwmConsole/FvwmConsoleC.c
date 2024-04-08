@@ -19,6 +19,7 @@
 
 #include "FvwmConsole.h"
 #include "libs/fio.h"
+#include "libs/log.h"
 
 int  s;    /* socket handle */
 FILE *sp;
