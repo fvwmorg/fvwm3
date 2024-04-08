@@ -89,6 +89,7 @@ headers = [
     'stdint.h',
     'stdlib.h',
     'string.h',
+    'strings.h',
     'sys/select.h',
     'sys/systeminfo.h',
     'sys/time.h',
