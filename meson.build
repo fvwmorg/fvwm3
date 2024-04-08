@@ -430,6 +430,7 @@ fvwm3 = executable(
     include_directories: includedirs,
     dependencies: all_found_deps,
     link_with: libfvwm3,
+    install: true
 )
 
 # Core modules

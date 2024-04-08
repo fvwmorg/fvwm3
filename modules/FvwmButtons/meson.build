@@ -12,8 +12,9 @@ module_sources = [
 executable(
     'FvwmButtons',
     module_sources,
-    include_directories: includedirs,
     dependencies: all_found_deps,
-    link_with: libfvwm3,
+    include_directories: includedirs,
     install_dir: fvwm_moduledir,
+    install: true,
+    link_with: libfvwm3,
 )

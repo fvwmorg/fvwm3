@@ -21,6 +21,7 @@ fvwm_root = executable(
     include_directories: includedirs,
     link_with: libfvwm3,
     dependencies: all_found_deps,
+    install: true,
 )
 
 fvwm_perllib = configure_file(
