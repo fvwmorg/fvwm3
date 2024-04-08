@@ -78,7 +78,8 @@ conf.set('EXECUTABLE_EXTENSION', 'NULL')
 
 # Enable FTMs
 if host_machine.system() == 'linux'
-    conf.set10('_DEFAULT_SOURCE', true)
+    conf.set10('_DEFAULT_SOURCE', true) # usleep
+    conf.set('_POSIX_C_SOURCE', '200112L') # fileno
 endif
 
 # Header checks.
