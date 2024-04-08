@@ -16,6 +16,7 @@
 #include "config.h"
 
 #include "FvwmConsole.h"
+#include "libs/log.h"
 
 #ifdef HAVE_READLINE
 #include <readline/readline.h>
