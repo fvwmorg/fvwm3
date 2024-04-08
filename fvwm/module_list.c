@@ -20,6 +20,9 @@
 #include <fcntl.h>
 #endif
 
+/* for time(); difftime() */
+#include <time.h>
+
 /* for F_CMD_ARGS */
 #include "fvwm/fvwm.h"
 #include "execcontext.h"

@@ -15,6 +15,7 @@
 #include "config.h"
 #include "types.h"
 #include "libs/FGettext.h"
+#include "libs/log.h"
 
 #define MAX_VARS 5120
 extern int numligne;

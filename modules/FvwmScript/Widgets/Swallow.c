@@ -17,8 +17,10 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/ColorUtils.h"
+#include "libs/log.h"
 #include "libs/Strings.h"
 #include "Tools.h"
+
 
 extern int fd[2];
 
