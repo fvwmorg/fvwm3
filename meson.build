@@ -367,6 +367,7 @@ build_docs = get_option(
 asciidoc = find_program('asciidoctor', required: build_docs)
 
 if asciidoc.found()
+    grep = find_program('grep')
     subdir('doc')
 endif
 
