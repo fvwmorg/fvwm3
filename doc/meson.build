@@ -36,7 +36,6 @@ if get_option('htmldoc')
         'html',
     )
 
-    sed = find_program('sed', required: true)
     # We need to configure index.html here to strip out whichever modules are unused.
     # This is done by using sed to remove the lines that contain the module names.
     index_src = 'index.adoc.in'

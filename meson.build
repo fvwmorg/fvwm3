@@ -197,6 +197,9 @@ if golang.found()
     endif
 endif
 
+# Sed is used for substitution in several configure_file calls
+sed = find_program('sed', required: true)
+
 # Optional dependencies
 # First we check for things specified by the user (i.e. no automagic)
 # Then we check for automagic dependencies.
@@ -410,7 +413,7 @@ perl_config.set(
     fvwm_datadir + '/perllib',
 )
 perl_config.set('prefix', prefix)
-perl_config.set('SED', find_program('sed').full_path())
+perl_config.set('SED', sed.full_path())
 perl_config.set('VERSIONINFO', fvwm_vcs_versioninfo)
 
 python_config = configuration_data()
