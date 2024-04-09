@@ -52,3 +52,5 @@ fvwm_sources = [
     'fvwm/windowlist.c',
     'fvwm/windowshade.c',
 ]
+
+install_data('ConfigFvwmDefaults', install_dir: fvwm_datadir)

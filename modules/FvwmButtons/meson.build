@@ -18,3 +18,5 @@ executable(
     install: true,
     link_with: libfvwm3,
 )
+
+install_data('ConfigFvwmButtons', install_dir: fvwm_datadir)
