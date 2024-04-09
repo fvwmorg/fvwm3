@@ -143,6 +143,7 @@ functions = {
     'intl': {},
     'uname': {},
     'waitpid': {},
+    'XOpenOM': { 'have': 'HAVE_XOUTPUT_METHOD' },
 }
 
 foreach f, v : functions
