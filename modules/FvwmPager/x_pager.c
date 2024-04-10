@@ -224,7 +224,7 @@ static struct fpmonitor *fpmonitor_from_xy(int x, int y)
 {
 	struct fpmonitor *fp;
 
-	if (monitor_to_track == NULL && fp_monitor_mode != MONITOR_TRACKING_G) {
+	if (monitor_to_track == NULL && monitor_mode != MONITOR_TRACKING_G) {
 		x %= fpmonitor_get_all_widths();
 		y %= fpmonitor_get_all_heights();
 
@@ -1298,7 +1298,7 @@ void DispatchEvent(XEvent *Event)
 	 * use.
 	 */
 	else if(Event->xany.window == Desks[i].title_w &&
-		((fp_monitor_mode == MONITOR_TRACKING_G && !fp_is_tracking_shared) ||
+		((monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) ||
 		 (monitor_to_track != NULL) || (m_count == 1)))
 	{
 		SwitchToDesk(i, NULL);
@@ -1335,7 +1335,7 @@ void DispatchEvent(XEvent *Event)
 	{
 	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	  if (fp_monitor_mode == MONITOR_TRACKING_G && fp_is_tracking_shared)
+	  if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
 		fp = fpmonitor_from_desk(i + desk1);
 	  else
 		fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / desk_w,
@@ -1361,7 +1361,7 @@ void DispatchEvent(XEvent *Event)
 	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask);
 	struct fpmonitor *fp2 = fpmonitor_this(NULL);
-	if (fp_monitor_mode == MONITOR_TRACKING_G && fp_is_tracking_shared)
+	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
 		fp = fp2;
 	else {
 		fp = fpmonitor_from_xy(
@@ -2105,7 +2105,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 	vy = (desk_h == 0) ? 0 :
 		Event->xbutton.y * fp->virtual_scr.VHeight / desk_h;
 
-	if (fp_monitor_mode == MONITOR_TRACKING_G && fp_is_tracking_shared)
+	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
 		fp = fpmonitor_from_desk(Desk);
 	else
 		fp = fpmonitor_from_xy(vx, vy);
@@ -2434,7 +2434,7 @@ void Scroll(int x, int y, int Desk, bool do_scroll_icon)
 	}
 
 	/* center around mouse */
-	if (fp_monitor_mode == MONITOR_TRACKING_G && !fp_is_tracking_shared) {
+	if (monitor_mode == MONITOR_TRACKING_G && !is_tracking_shared) {
 		adjx = window_w / fp->virtual_scr.VxPages;
 		adjy = window_h / fp->virtual_scr.VyPages;
 	} else {
