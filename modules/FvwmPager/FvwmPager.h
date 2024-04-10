@@ -238,8 +238,6 @@ extern bool	do_focus_on_enter;
 extern bool	fAlwaysCurrentDesk;
 extern bool	use_dashed_separators;
 extern bool	do_ignore_next_button_release;
-extern bool	fp_is_tracking_shared;
-extern enum monitor_tracking fp_monitor_mode;
 
 /* Screen / Windows */
 extern int		fd[2];
