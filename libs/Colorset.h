@@ -32,8 +32,6 @@ typedef struct Colorset
 	unsigned int tint_percent : 7;
 	unsigned int icon_alpha_percent : 7;
 	unsigned int icon_tint_percent : 7;
-#ifdef FVWM_COLORSET_PRIVATE
-	/* fvwm/colorset.c use only */
 	Pixel fg_tint;
 	Pixel fg_saved;
 	Pixel bg_tint;
@@ -53,7 +51,6 @@ typedef struct Colorset
 	Bool dither;
 	Bool allows_buffered_transparency;
 	Bool is_maybe_root_transparent;
-#endif
 } colorset_t;
 
 #define PIXMAP_TILED 0
@@ -68,7 +65,6 @@ typedef struct Colorset
 #define SHAPE_STRETCH 1
 #define SHAPE_STRETCH_ASPECT 2
 
-#ifdef FVWM_COLORSET_PRIVATE
 #define FG_SUPPLIED 0x1
 #define BG_SUPPLIED 0x2
 #define HI_SUPPLIED 0x4
@@ -80,7 +76,6 @@ typedef struct Colorset
 #define FG_TINT_SUPPLIED  0x100
 #define BG_TINT_SUPPLIED  0x200
 #define ICON_TINT_SUPPLIED 0x400
-#endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_t *Colorset;
@@ -155,11 +150,9 @@ extern colorset_t *Colorset;
     (cset != NULL && cset->pixmap == ParentRelative && \
      cset->tint_percent > 0)
 
-#ifdef FVWM_COLORSET_PRIVATE
 /* Create n new colorsets, fvwm/colorset.c does its own thing (different size)
  */
 void AllocColorset(int n);
-#endif
 
 /* dump one */
 char *DumpColorset(int n, colorset_t *colorset);
