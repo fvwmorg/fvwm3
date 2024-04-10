@@ -347,7 +347,6 @@ endforeach
 non_configurable_ops = [
     'FMiniIconsSupported',
     'HAVE_XSM',
-    'FVWM_COLORSET_PRIVATE',
 ]
 
 foreach nco : non_configurable_ops
