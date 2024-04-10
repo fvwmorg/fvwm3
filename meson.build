@@ -75,6 +75,7 @@ conf.set('SIGNAL_RETURN', 'return')
 conf.set('ICONV_ARG_CONST', '')
 conf.set('fd_set_size_t', 'int')
 conf.set('EXECUTABLE_EXTENSION', 'NULL')
+conf.set10('HAVE_XOUTPUT_METHOD', true)
 
 # Enable FTMs
 if host_machine.system() == 'linux'
