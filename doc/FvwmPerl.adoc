@@ -8,15 +8,8 @@ FvwmPerl - the fvwm perl manipulator and preprocessor
 
 FvwmPerl should be spawned by _fvwm_ (1) for normal functionality.
 
-To run this module, place this command somewhere in the configuration:
-
-Module FvwmPerl [params]
-
-or:
-
-ModuleSynchronize FvwmPerl [params]
-
-if you want to immediately start to send commands to FvwmPerl.
+To run this module, place the command `Module FvwmPerl [params]` in fvwm's
+configuration file to start sending commands to FvwmPerl.
 
 == DESCRIPTION
 
@@ -41,45 +34,57 @@ There are several command line switches:
 
 Long switches may be abbreviated to short one-letter switches.
 
-**-e**|*--eval* line - evaluate the given perl code
+**-e**|*--eval* _line_::
+	evaluate the given perl code
 
-**-l**|*--load* file - evaluate perl code in the given file
+**-l**|*--load* _file_::
+	evaluate perl code in the given file
 
-**-p**|*--preprocess* [ file ] - preprocess the given fvwm config file
-
+**-p**|*--preprocess* [ _file_ ]::
+	preprocess the given fvwm config file
++
 The following 5 options are only valid together with *--preprocess*
 option.
++
+--
+**-c**|*--cmd* _line_::
+	An fvwm command to be preprocessed instead of file.
 
-**-c**|*--cmd* line - an fvwm command to be preprocessed instead of file
+**-q**|*--quote* _char_::
+	Change the default '%' quote.
 
-**-q**|*--quote* char - change the default '%' quote
+**-w**|*--winid* _wid_::
+	Set explicit window context (should begin with
+	digit, may be in oct or hex form; this window id overwrites implicit
+	window context if any).
 
-**-w**|*--winid* wid - set explicit window context (should begin with
-digit, may be in oct or hex form; this window id overwrites implicit
-window context if any)
+*--nosend*::
+	Do not send the preprocessed file to _fvwm_ for **Read**ing, the
+	default is send. Useful for preprocessing non fvwm config files.
 
-*--nosend* - do not send the preprocessed file to _fvwm_ for
-**Read**ing, the default is send. Useful for preprocessing non fvwm
-config files.
+*--noremove*::
+	Do not remove the preprocessed file after sending it to
+	_fvwm_ for **Read**ing, the default is remove. Useful for debugging.
+--
+**-x**|*--export* [_names_]::
+	Define fvwm shortcut functions (by default,
+	two functions named Eval and .). This option implies *--stay*.
 
-*--noremove* - do not remove the preprocessed file after sending it to
-_fvwm_ for **Read**ing, the default is remove. Useful for debugging.
+**-s**|*--stay*::
+	Continues an execution after *--eval*, *--load* or
+	*--preprocess* are processed. By default, the module is not persistent
+	in this case, i.e. *--nostay* is assumed.
 
-**-x**|*--export* [names] - define fvwm shortcut functions (by default,
-two functions named Eval and .). This option implies *--stay*.
-
-**-s**|*--stay* - continues an execution after *--eval*, *--load* or
-*--preprocess* are processed. By default, the module is not persistent
-in this case, i.e. *--nostay* is assumed.
-
-*--nolock* - when one of the 3 action options is given, this option
-causes unlocking _fvwm_ immediately. By default the requested action is
-executed synchronously; this only makes difference when invoked like:
-
+*--nolock*::
+	When one of the 3 action options is given, this option
+	causes unlocking _fvwm_ immediately. By default the requested action
+	is executed synchronously; this only makes difference when invoked
+	like:
++
 ....
 ModuleSynchronous FvwmPerl --preprocess someconfig.ppp
 ....
-
++
 If *--nolock* is added here, *ModuleSynchronous* returns immediately.
 Note that *Module* returns immediately regardless of this option.
 

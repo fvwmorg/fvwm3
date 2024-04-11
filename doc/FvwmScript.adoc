@@ -124,8 +124,14 @@ WindowLocaleTitle string::
 == INITIALISATION
 
 This part contains instructions which will be executed at the startup.
-For example: Init Begin Do "Exec cat tada.voc > /dev/dsp" WarpPointer 1
-Set $ToDo=Restart End
+For example:
+
+....
+Init
+Begin
+  Do "Exec cat tada.voc > /dev/dsp" WarpPointer 1
+  Set $ToDo=Restart End
+....
 
 These instructions are used to play a sound, move the pointer to widget
 1 and to initialize $ToDo to "Restart" at every startup.
@@ -239,7 +245,7 @@ There is fifteen types of widgets.
   *Title*: title of the check box.
 +
 *Value*: if Value is equal to 1, the box is checked else it is not.
-
++
 The *Size* property is ignored.
 
 *HDipstick*: Display a horizontal dipstick.::
@@ -250,7 +256,7 @@ The *Size* property is ignored.
 *MinValue*: specify the minimum value of the dipstick.
 +
 *MaxValue*: specify the maximum value of the dipstick.
-
++
 A minimum size of 30x11 is imposed.
 
 *HScrollBar*: Display an horizontal scrollbar.::

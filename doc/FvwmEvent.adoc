@@ -206,9 +206,7 @@ parameter.
 
 == AUTHORS
 
-....
-1994  FvwmSound  Mark Boyns       (boyns@sdsu.edu)
-1994  FvwmAudio  Mark Scott       (mscott@mcd.mot.com)
-1996  FvwmAudio  Albrecht Kadlec
-1998  FvwmEvent  Albrecht Kadlec  (albrecht@auto.tuwien.ac.at)
-....
+* 1994  FvwmSound  Mark Boyns       (boyns@sdsu.edu)
+* 1994  FvwmAudio  Mark Scott       (mscott@mcd.mot.com)
+* 1996  FvwmAudio  Albrecht Kadlec
+* 1998  FvwmEvent  Albrecht Kadlec  (albrecht@auto.tuwien.ac.at)

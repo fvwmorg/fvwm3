@@ -13,9 +13,7 @@ FvwmButtons - the fvwm buttonbox module
 
 == SYNOPSIS
 
-....
-Module FvwmButtons [-g geometry] [-transient | -transientpanel] [name[configfile]]
-....
+**Module FvwmButtons [-g geometry] [-transient | -transientpanel] [name[configfile]]**
 
 _FvwmButtons_ can only be invoked by fvwm. Command line invocation of
 the _FvwmButtons_ module will not work.

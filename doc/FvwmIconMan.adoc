@@ -80,62 +80,63 @@ dislike of paging though a long man page, so here is a terse reference
 chart describing the available options. They are described in more
 detail in the next section.
 
-....
-Name            Description                Default
+[cols="<,<,<"]
+|===
+|Name              |Description                |Default
 
-NumManagers     number of managers         1
-Action          binds command to event     Mouse 0 N sendcommand Iconify
-Background      default background         gray
-ButtonGeometry  size of button in pixels
-Colorset        default colorset
-DontShow        list of windows to ignore
-DrawIcons       use mini icons             false
-FocusAndSelectButton                       flat grey black
-FocusAndSelectColorset
-FocusButton     style for focused buttons  up grey black
-FocusColorset
-FollowFocus     show which win has focus   false
-Font                                       8x13
-Foreground      default text color         white
-Format          describes button label     "%c: %i"
-IconName        manager icon name          FvwmIconMan
-IconAndSelectButton                        up black grey
-IconAndSelectColorset
-IconButton      style for icon buttons     up black grey
-IconColorset
-ManagerGeometry size of manager in buttons 0x1
-MaxButtonWidth  max width of a button
-MaxButtonWidthByColumns
-NoIconAction    animate iconification      NOP
-PlainButton     style for normal buttons   up black grey
-PlainColorset
-ReliefThickness size of button relief      2
-Resolution      window filters             desk page
-Reverse         normal, icon or none       none
-SelectButton    style for selected buttons flat black grey
-SelectColorset
-Shape           use shape extension        false
-Show            list of windows to show
-ShowOnlyIcons   only icons visible         false
-ShowNoIcons     icons are not displayed    false
-ShowTransient   transient windows visible  false
-ShowOnlyFocused only focused visible       false
-Sort            keep managers sorted       name
-SortWeight      weight for sorting
-Tips            Tool Tips mode             none
-TipsDelays      Tool Tips mapping delays   1000 300
-TipsFont        Font for Tool Tips         default fvwm font
-TipsColorset    Tool Tips Colorset         0
-TipsFormat      describes Tips label       the Format value
-TipsBorderWidth Tool Tips border size      1
-TipsPlacement   Tips placement vs button   updown
-TipsJustification Tips Just vs button      leftup
-TipsOffsets     Tips placement Offsets     3 2
-Title           manager title              FvwmIconMan
-TitleButton     style for title button     raisededge black grey
-TitleColorset
-UseWinList      honor WinListSkip?         true
-....
+|NumManagers       |number of managers         |1
+|Action            |binds command to event     |Mouse 0 N sendcommand Iconify
+|Background        |default background         |gray
+|ButtonGeometry    |size of button in pixels   |
+|Colorset          |default colorset           |
+|DontShow          |list of windows to ignore  |
+|DrawIcons         |use mini icons             |false
+|FocusAndSelectButton|                         |flat grey black
+|FocusAndSelectColorset|                       |
+|FocusButton       |style for focused buttons  |up grey black
+|FocusColorset     |                           |
+|FollowFocus       |show which win has focus   |false
+|Font              |                           |8x13
+|Foreground        |default text color         |white
+|Format            |describes button label     |"%c: %i"
+|IconName          |manager icon name          |FvwmIconMan
+|IconAndSelectButton|                          |up black grey
+|IconAndSelectColorset|                        |
+|IconButton        |style for icon buttons     |up black grey
+|IconColorset      |                           |
+|ManagerGeometry   |size of manager in buttons |0x1
+|MaxButtonWidth    |max width of a button      |
+|MaxButtonWidthByColumns|                      |
+|NoIconAction      |animate iconification      |NOP
+|PlainButton       |style for normal buttons   |up black grey
+|PlainColorset     |                           |
+|ReliefThickness   |size of button relief      |2
+|Resolution        |window filters             |desk page
+|Reverse           |normal, icon or none       |none
+|SelectButton      |style for selected buttons |flat black grey
+|SelectColorset    |                           |
+|Shape             |use shape extension        |false
+|Show              |list of windows to show    |
+|ShowOnlyIcons     |only icons visible         |false
+|ShowNoIcons       |icons are not displayed    |false
+|ShowTransient     |transient windows visible  |false
+|ShowOnlyFocused   |only focused visible       |false
+|Sort              |keep managers sorted       |name
+|SortWeight        |weight for sorting         |
+|Tips              |Tool Tips mode             |none
+|TipsDelays        |Tool Tips mapping delays   |1000 300
+|TipsFont          |Font for Tool Tips         |default fvwm font
+|TipsColorset      |Tool Tips Colorset         |0
+|TipsFormat        |describes Tips label       |the Format value
+|TipsBorderWidth   |Tool Tips border size      |1
+|TipsPlacement     |Tips placement vs button   |updown
+|TipsJustification |Tips Just vs button        |leftup
+|TipsOffsets       |Tips placement Offsets     |3 2
+|Title             |manager title              |FvwmIconMan
+|TitleButton       |style for title button     |raisededge black grey
+|TitleColorset     |                           |
+|UseWinList        |honor WinListSkip?         |true
+|===
 
 == CONFIGURATION OPTIONS
 
@@ -298,13 +299,12 @@ only show windows (not) on the stated page.
 +
 _[!]screen [S]_ shows windows (not) on monitor _S_, which can be:
 +
-> _NAME_: The "NAME" of the specific RandR monitor.
-+
-> _c_: The current RandR monitor (containing the pointer)
-+
-> _p_: The primary RandR monitor
-+
-> _g_: The global monitor
+--
+* _NAME_: The "NAME" of the specific RandR monitor.
+* _c_: The current RandR monitor (containing the pointer)
+* _p_: The primary RandR monitor
+* _g_: The global monitor
+--
 +
 Since all windows are on the global monitor, _screen g_ effectively does
 nothing. _c_ is the current monitor at the time resolution is issued, and
@@ -373,7 +373,7 @@ the sort type is set to _weighted_.
   If _true_, then honor the WinListSkip style flag. Otherwise, all
   windows are subject to possible management according to the show and
   dontshow lists.
-
++
 The two following options control which windows get handled by which
 managers. A manager can get two lists, one of windows to show, and one
 of windows to ignore. If only the _show_ list is given, then that
@@ -403,7 +403,7 @@ than one manager, then the manager with the lowest id gets it.
   Only windows that are not iconified are shown if _boolean_ is true.
 *FvwmIconMan: [id] ShowOnlyFocused boolean::
   Only window with the focus is shown if _boolean_ is true.
-
++
 The following two options control tips.
 
 *FvwmIconMan: [id] Tips value::
@@ -577,53 +577,72 @@ sendcommand Command::
 warp::
   Warps cursor to current button, if any.
 
-*Examples:* gotobutton select, gotobutton Down, select
+*Examples:*
+
+....
+gotobutton select, gotobutton Down, select
+....
 
 Selects the button below the currently selected button. Since the
 current button is already initialized to the selected button, this may
 be shortened to "gotobutton Down, select".
 
+....
 gotobutton Up, select
+....
 
 Selects the button above the currently selected button.
 
+....
 gotobutton 0, select
+....
 
 Selects the first button of the current manager. If there is no current
 manager, which is the case when no button is selected, then this does
 nothing.
 
+....
 gotobutton -1, select
+....
 
 Selects the last button of the current manager.
 
+....
 gotobutton focus, select
+....
 
 Selects the button corresponding to the focused window.
 
+....
 gotobutton focus, Iconify
+....
 
 Sends the fvwm command Iconify to the focused window. Note that this
 does not change the selected button.
 
+....
 bif Next 3, gotobutton 0, select, ret, gotobutton Next, select
+....
 
 If a button is selected, and it's the last button, go to button 0. If
 it's not the last button, go to the next button. Otherwise, do nothing.
 Basically, this action cycles through all buttons in the current
 manager.
 
-bif select 7, bif focus 3, gotomanager 0, select, ret, gotobutton focus,
-\ select, ret, gotobutton down, select
+....
+bif select 7, bif focus 3, gotomanager 0, select, ret, gotobutton focus, \
+select, ret, gotobutton down, select
+....
 
 This is good for sending to FvwmIconMan with a SendToModule command. If
 there is a selected button, it moves down. Otherwise, if there is a
 focused button, it is selected. Otherwise, button 0 of manager 0 gets
 selected.
 
-bif select Select, bif focus Focus, gotomanager 0, select, ret, label
-Focus, \ gotobutton focus, select, ret, label Select, gotobutton down,
-select
+....
+bif select Select, bif focus Focus, gotomanager 0, select, ret, label Focus, \
+gotobutton focus, select, ret, label Select, gotobutton down, select
+....
 
 Same as previous, but using the label instruction.
 
@@ -744,17 +763,14 @@ Brady Montz (bradym@cs.arizona.edu).
 
 == THANKS
 
-....
 Thanks to:
-	David Berson <berson@cs.pitt.edu>,
-	Gren Klanderman <greg@alphatech.com>,
-	David Goldberg <dsg@mitre.org>,
-	Pete Forman <gsez020@compo.bedford.waii.com>,
-	Neil Moore <amethyst@maxwell.ml.org>,
-	Josh M. Osborne <stripes@va.pubnix.com,
-	Adam Rice <wysiwyg@glympton.airtime.co.uk>,
-	Chris Siebenmann <cks@hawkwind.utcs.toronto.edu>,
-	Bjorn Victor <victor@delial.docs.uu.se>.
-
+David Berson <berson@cs.pitt.edu>,
+Gren Klanderman <greg@alphatech.com>,
+David Goldberg <dsg@mitre.org>,
+Pete Forman <gsez020@compo.bedford.waii.com>,
+Neil Moore <amethyst@maxwell.ml.org>,
+Josh M. Osborne <stripes@va.pubnix.com,
+Adam Rice <wysiwyg@glympton.airtime.co.uk>,
+Chris Siebenmann <cks@hawkwind.utcs.toronto.edu>,
+Bjorn Victor <victor@delial.docs.uu.se>,
 for contributing either code or truly keen ideas.
-....

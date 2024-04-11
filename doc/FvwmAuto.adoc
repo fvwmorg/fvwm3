@@ -13,9 +13,7 @@ FvwmAuto - the fvwm auto-raise module
 
 == SYNOPSIS
 
-....
-Module FvwmAuto Timeout [-passid] [-menter|-menterleave|-mfocus] [EnterCommand [LeaveCommand]]
-....
+**Module FvwmAuto Timeout [-passid] [-menter|-menterleave|-mfocus] [EnterCommand [LeaveCommand]]**
 
 _FvwmAuto_ can only be invoked by fvwm. Command line invocation of the
 _FvwmAuto_ will not work.
@@ -147,7 +145,5 @@ powerful. There is a short example in the _fvwm_ man page.
 
 == AUTHOR
 
-....
 FvwmAuto just appeared one day, nobody knows how.
 FvwmAuto was simply rewritten 09/96, nobody knows by whom.
-....

@@ -1569,8 +1569,7 @@ $[pointer.screen]::
 +
 This is deprecated; use $[monitor.current] instead.
 
-$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width],
-$[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.number] $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
+$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.number] $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
 	Returns information about the selected monitor. These can be nested, for
 	example: $[monitor.$[monitor.primary].width]
 +
@@ -3755,26 +3754,34 @@ consider the windows with _WindowListSkip_ style.)
 	of the geometry window. Multiple options can be set at once separated
 	by spaces. Details of each option are described below.
 +
-> *GeometryWindow* Hide [Never | Move | Resize]
+....
+*GeometryWindow* Hide [Never | Move | Resize]
+....
 +
 Hides or switches off the geometry window. If the optional parameters _Move_
 or _Resize_ are given, it will only hide the geometry window during the
 respective operation. The parameter _Never_ will switch the geometry back on
 again (equivalent to _Show_).
 +
-> *GeometryWindow* Show [Never | Move | Resize]
+....
+*GeometryWindow* Show [Never | Move | Resize]
+....
 +
 Shows or switches on the geometry window (equivalent to _Hide Never_). If
 the optional parameters _Move_ or _Resize_ are given, it will only show the
 geometry window during the respective operation. The parameter _Never_ will
 switch the geometry window off (equivalent to _Hide_).
 +
-> *GeometryWindow* Colorset _cset_
+....
+*GeometryWindow* Colorset _cset_
+....
 +
 Sets colorset of the gometry window to _cset_. Use the literal option
 _default_ for _cset_ to use the default colorset.
 +
-> *GeometryWindow* Position \[\+|-]_x_[p] \[+|-]_y_[p]
+....
+*GeometryWindow* Position \[\+|-]_x_[p] \[+|-]_y_[p]
+....
 +
 Configures the position the geometry window appears. _x_ and _y_ are the
 relative coordinates as a percentage of the screen size. If a leading '-'
@@ -3784,7 +3791,9 @@ as the number of pixels from the respective screen edge. If no position
 arguments are given, the geometry window's position will return to its default
 state of the upper left corner or the center if emulating MWM.
 +
-> *GeometryWindow* Screen _RANDRNAME_
+....
+*GeometryWindow* Screen _RANDRNAME_
+....
 +
 Configure which screen the geometry window is shown on. By default the
 geometry window is shown on the current screen. If a valid _RANDRNAME_
@@ -3859,16 +3868,16 @@ If the single argument _pointer_ is given, the top left corner of the
 window is moved to the pointer position before starting an interactive
 move; this is mainly intended for internal use by modules like *FvwmPager*.
 +
-
-> *Move* pointer
-
+....
+*Move* pointer
+....
 +
 To move a window in a given direction until it hits another window, icon,
 or screen boundary use:
 +
-
-> *Move* shuffle [Warp] [ewmhiwa] [snap _type_] [layers _min_ _max_] _direction_(s)
-
+....
+*Move* shuffle [Warp] [ewmhiwa] [snap _type_] [layers _min_ _max_] _direction_(s)
+....
 +
 The _direction_ can be _North_/_N_/_Up_/_U_, _East_/_E_/_Right_/_R_,
 _South_/_S_/_Down_/_D_, or _West_/_W_/_Left_/_L_. The window will move
@@ -3904,9 +3913,9 @@ Move shuffle Up Left
 +
 *Move* can be used to moved a window to a specified position:
 +
-
-> *Move* [screen _S_] [desk _N_] \[w | m | v]_x_[p | w] \[w | m | v]_y_[p | w] [Warp] [ewmhiwa]
-
+....
+*Move* [screen _S_] [desk _N_] \[w | m | v]_x_[p | w] \[w | m | v]_y_[p | w] [Warp] [ewmhiwa]
+....
 +
 This will move the window to the _x_ and _y_ position (see below).
 By default, the EWMH working area is honoured. If he trailing option
@@ -4289,9 +4298,7 @@ of the main motion. The above settings are the default.
 This command has been removed and must be replaced by *MoveToDesk*,
 the arguments for which are the same as for the *GotoDesk* command.
 +
- +
 *Important*
-+
 You cannot simply change the name of the command: the syntax has
 changed. If you used:
 +
@@ -5320,7 +5327,7 @@ The border is split up into the following definitions, and is the same order as
 the colorsets which will be applied to the border.
 +
 ....
-    North, North East, East, South East, South, South West, West, North West
+BorderColorset North, North East, East, South East, South, South West, West, North West
 ....
 +
 _North_, _East_, _South_, and _West_ refer to the top, left, bottom, and right
@@ -5457,6 +5464,7 @@ TitleFormat %z
 +
 Simply because the placeholder '%z' isn't supported. This is not a
 bug but rather a facet of how the formatting parser works.
+
 +
 _IconTitleFormat_ describes what the visible icon name of a window
 should look like, with the options being the same as _TitleFormat_.
@@ -5508,11 +5516,11 @@ disabled again with the _FirmBorder_ style.
 	icon bitmap or pixmap to use. Icons specified this way override
 	pixmap icons, but not icon windows or the ewmh icon, provided by the
 	client in the application (with the WM_HINTS property or with the
-	ewmh _NET_WM_ICON property). The _IconOverride_ style changes the
-	behavior to override any client-provided icons; the _NoIconOverride_
+	ewmh _NET_WM_ICON property). The __IconOverride__ style changes the
+	behavior to override any client-provided icons; the __NoIconOverride__
 	style changes the behavior to not override any client-provided
 	icons; the default overriding behavior can be activated with the
-	_NoActiveIconOverride_ style. With this style, fvwm uses application
+	__NoActiveIconOverride__ style. With this style, fvwm uses application
 	provided icons if the icon is changed but uses the icon provided in
 	the configuration file until then.
 +
@@ -5952,22 +5960,21 @@ against the screen edges. The default behavior is _All_.
 The third and last optional argument may be set to one of the four
 following values:
 +
+--
 * With _Screen_ the already snapping icons or windows, which is
 controlled by the second argument, will snap now also to the screen
 edges.
-+
 * _ScreenWindows_ snaps only windows to the screen edges.
-+
 * _ScreenIcons_ snaps only icons to the screen edges.
-+
 * _ScreenAll_ snaps windows and icons to the screen edges.
-
+--
++
 The option _SnapGrid_ defines an invisible grid on the screen. During
 an interactive move a window or icon is positioned such that its
 location (top left corner) is coincident with the nearest grid point.
 The default _x-grid-size_ and _y-grid-size_ setting are both 1, which
 is effectively no grid all.
-
++
 An interactive move with both _SnapGrid_ and _SnapAttraction_ results
 in the window being moved to be adjacent to the nearest window border
 (if within snap proximity) or grid position. The window moves the
@@ -5976,7 +5983,7 @@ _SnapAttraction_. Note that the x and y coordinates are not coupled.
 For example, a window may snap to another window on the x axis while
 snapping to a grid point on the y axis. Using this style without
 arguments reinstates the default settings.
-
++
 The styles _EdgeMoveDelay_ and _EdgeResizeDelay_ define how hard it
 is to change the desktop viewport by moving or resizing a
 window over the edge of the screen. The parameter tells how many
@@ -5986,14 +5993,14 @@ viewport is scrolled. If -1 is given as the delay, page flipping is
 disabled completely. The defaults are no delay for moving (0) and no
 flipping for resizing (-1). Using these styles without any argument
 restores the default settings. Note that, with
-
++
 ....
 EdgeScroll 0 0
 ....
-
++
 it is still possible to move or resize windows across the edge of the
 current screen. See also *EdgeThickness*.
-
++
 The option _EdgeMoveResistance_ makes it easier to place a window
 directly adjacent to a RandR screen's edge. It takes one or two parameters.
 The first parameter tells how many pixels over an outside edge of the
@@ -6004,24 +6011,23 @@ there is no resistance between inside edges. Note that the center of the
 window being moved determines the screen on which the window should be
 kept. Both values are 0 (no resistance) by default. To restore the defaults,
 the option _EdgeMoveResistance_ can be used without any parameters.
-
++
 The option _InitialMapCommand_ allows for any valid fvwm command or
 function to run when the window is initially mapped by fvwm. Example:
-
++
 ....
 Style MyWindow StartsOnPage 0 0, InitialMapCommand Iconify
 ....
-
-
++
 This would hence place the window called _MyWindow_ on page 0 0 for
 the current desk, and immediately run the *Iconify* command on that
 window.
-
++
 Note that should _InitialMapCommand_ be used as a global option for
 all windows, but there is a need that some windows should not have
 this command applied, then an action of *Nop* can be used on those
 windows, as in the following example:
-
++
 ....
 Style * InitialMapCommand Iconify
 Style XTeddy InitialMapCommand Nop
@@ -6554,7 +6560,7 @@ For historical reasons, the conditional commands understand the names
 of these styles as condition names. Take care not to confuse them.
 
 *Examples*::
-
++
 ....
 # Change default fvwm behavior to no title-
 # bars on windows! Also define a default icon.
@@ -6600,7 +6606,7 @@ Style signal      StartsOnDesk 3
 Style Netscape* SkipMapping,              \
           StartsOnPage 1 1 1
 ....
-
++
 Note that all properties for a window are or'ed together. In the above
 example "FvwmPager" gets the property _StaysOnTop_ via an exact window
 name match but also gets _!Handles_, _Sticky_ and _WindowListSkip_ by
@@ -7248,6 +7254,7 @@ colorsets or colors for different parts of the titlebar. Some of them
 are tiled or stretched to fit a particular space; others are discrete
 "transition" images. The definable _sections_ are:
 +
+--
 _Main_:::
 	The full titlebar
 +
@@ -7280,19 +7287,20 @@ _LeftButtons_:::
 +
 _RightButtons_:::
 	under right buttons in case of _UseTitleStyle_
-
+--
++
 None of these are mandatory except for _Main_ (or, if you do not
 define _Main_ you must define both _LeftMain_ and _RightMain_). If no
 _Buttons_ pixmaps are defined and _UseTitleStyle_ is specified for one
 or more buttons, _Main_, _LeftMain_ or _RightMain_ are used as
 appropriate.
-
++
 The syntax for this style type is:
-
++
 ....
 MultiPixmap section style arg, ...
 ....
-
++
 continuing for whatever you want to define. The _style_ can be either
 _TiledPixmap_, _AdjustedPixmap_, _Colorset_ or _Solid_. See the
 *ButtonStyle* command for the description of these styles. In the case
@@ -7300,27 +7308,26 @@ of a transition section, _LeftEnd_, _LeftOfText_, _RightOfText_ or
 _RightEnd_, _AdjustedPixmap_ only resize the pixmap in the "y"
 direction. For the _Colorset_ and _Solid_ styles a width of the half
 of the title bar height is assumed for the transition sections.
-
++
 An example:
-
++
 ....
 MultiPixmap Main AdjustedPixmap foo.xpm, \
       UnderText TiledPixmap bar.xpm, \
       Buttons Colorset 2
 ....
-
-
++
 Note that the old syntax is still supported: if the style is omitted,
 _TiledPixmap_ is assumed and adding "(stretched)" between the section
 and the file name implies _AdjustedPixmap_.
 *UpdateDecor* [_decor_]::
 This command is deprecated and will be removed in the future. There
 are plans to replace it with a more flexible solution in fvwm-3.0.
-
++
 This command is kept mainly for backward compatibility. Since all
 elements of a decor are updated immediately when they are changed,
 this command is mostly useless.
-
++
 Updates window decorations. _decor_ is an optional argument which
 specifies the _decor_ to update. If given, only windows which are
 assigned to that particular _decor_ are updated. This command is
@@ -7375,10 +7382,12 @@ This concept is similar to how spectrwm or xmonad handles desktops.
 +
 **Note:** these each *DesktopConfiguration* mode can be changed on-the-fly.
 
-*DesktopSize* __Horizontal__x_Vertical_::
+*DesktopSize* __Horizontal__x__Vertical__::
 	Defines the virtual desktop size in units of the physical screen size.
 
-*EdgeResistance* __delay__**EdgeResistance** _scrolling_ _moving_ [_screen-scrolling_]::
+*EdgeResistance* __delay__::
++
+**EdgeResistance** _scrolling_ _moving_ [_screen-scrolling_]::
 	Tells how hard it should be to change the desktop viewport by moving
 	the mouse over the edge of the screen. The parameter tells how many
 	milliseconds the pointer must spend on the screen edge before fvwm
@@ -9138,19 +9147,19 @@ than or equal to 8 (a screen with 256 colors or less). In depth 15
 however this effect can be useful with images which contain a lot of
 close colors. For example a fine gradient looks more smooth.
 +
-_IconTint_ takes 2 arguments, a color and a percentage between 0 and
-100. It causes fvwm or a module to tint the "icons" which are rendered
+_IconTint_ takes 2 arguments, a color and a percentage between 0 and 100.
+It causes fvwm or a module to tint the "icons" which are rendered
 into the colorset background with the specified color using a
 percentage. Here "icons" means, fvwm Icons, fvwm menu icons, MiniIcons
 which represent applications in various modules, images loaded by
 modules (e.g., images specified by the _Icon_ *FvwmButtons* button
 option) ...etc. With no arguments this option removes the icon tint.
-
++
 _IconAlpha_ takes a percentage between 0 and 100 as an argument. It
 causes fvwm to merge the "icons" which are rendered into the colorset
 background using this percentage. The default is 100 and it is
 restored if no argument is given.
-
++
 _Note_: It is equivalent to use "Tint a_color rate" and "Alpha a" if a
 = 100 and the bg color is a_color. This equivalence does not hold for
 IconAlpha and IconTint as the background can be an image or a gradient
@@ -9158,49 +9167,48 @@ IconAlpha and IconTint as the background can be an image or a gradient
 achieve (almost) the same effect by using IconTint in the place of
 IconAlpha. This is preferable as, in general, IconAlpha generates more
 redrawing than IconTint.
-
++
 _NoShape_ removes the shape mask from the colorset while _Plain_
 removes the background pixmap or gradient.
-
++
 Examples
-
++
 ....
 Colorset 3 fg tan, bg navy
 ....
-
-
++
 If necessary this creates colorsets 0, 1, 2 and 3 and then changes
 colorset 3 to have a foreground of tan, a background of navy.
-
++
 ....
 Colorset 3 bg "navy blue"
 ....
-
++
 changes the background color of colorset 3 to navy blue. The
 foreground and pixmap are unchanged.
-
++
 ....
 Colorset 3 AspectPixmap large_murky_dungeon.xpm
 ....
-
++
 causes depression.
-
++
 ....
 Colorset 3 bg Average
 ....
-
++
 Sets the background color and the relief colors to match the
 background pixmap. This is the default setting but it must be used if
 a background color was specified and is now not required.
-
++
 ....
 Colorset 3 YGradient 200 3 blue 1000 navy 1 blue 1000 navy
 ....
-
++
 Adds a Yin Yang gradient background pixmap to colorset 3. If the
 background is set to average it is recomputed along with the
 foreground if that is set to contrast.
-
++
 ....
 #!/bin/sh
 FvwmCommand "Colorset 7 fg navy, bg gray"
@@ -9212,18 +9220,17 @@ do
 	sleep 1
 done
 ....
-
++
 Makes colorset 7 blink.
-
++
 The color names used in colorsets are saved as fvwm variables which
 can be substituted in any fvwm command. For example:
-
-
++
 ....
 AddToFunc InitFunction
 + I Exec exec xterm -fg $[fg.cs0] -bg $[bg.cs0]
 ....
-
++
 Where $[fg.cs0] is the foreground color of colorset zero. Please refer
 to the *Command Expansion* section for more information.
 
@@ -9284,7 +9291,7 @@ Colorset 0 DGradient 100 3 Red 20 Blue 30 Black 50 Grey
 # 50% from yellow to red
 Colorset 0 HGradient 128 3 Blue 1000 Green 1 Yellow 1000 Red
 ....
-
++
 Note: Some gradient styles may be slow and consume huge amounts of
 memory, so if you encounter performance problems with them you may be
 better off by not using them. To improve performance you can try one
