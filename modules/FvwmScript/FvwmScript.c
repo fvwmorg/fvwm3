@@ -339,7 +339,7 @@ void Xinit(int IsFather)
 
   if (IsFather)
   {
-    size_t len = strlen("FvwmScript") + 5;
+    size_t len = strlen("FvwmScript") + 10;
     name = fxcalloc(sizeof(char), len);
     do
     {

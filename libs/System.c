@@ -321,7 +321,7 @@ int fvwm_mkstemp (char *template)
 	gettimeofday (&tv, NULL);
 	value = ((unsigned long) tv.tv_usec << 16) ^ tv.tv_sec ^ getpid ();
 
-	for (count = 0; count < TMP_MAX; value = 7777, count)
+	for (count = 0; count < TMP_MAX; value = 7777)
 	{
 		unsigned long v = value;
 

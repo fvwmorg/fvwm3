@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "libs/ftime.h"
 
@@ -190,8 +191,8 @@ typedef struct win_data {
 	window_flags flags;
 	struct win_data *win_prev, *win_next;
 	struct win_manager *manager;
-	int app_id_set : 1;
-	int geometry_set : 1;
+	bool app_id_set;
+	bool geometry_set;
 	Uchar complete;
 
 	/* this data must be freed */
