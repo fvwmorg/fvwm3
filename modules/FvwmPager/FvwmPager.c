@@ -173,6 +173,7 @@ static void fpmonitor_disable(struct fpmonitor *);
 static void parse_monitor_line(char *);
 static void parse_desktop_size_line(char *);
 static void parse_desktop_configuration_line(char *);
+static PagerWindow *find_pager_window(Window target_w);
 
 struct fpmonitor *
 fpmonitor_new(struct monitor *m)
@@ -571,105 +572,111 @@ void Loop(int *fd)
 
 
 /*
- *
  *  Procedure:
  *      Process message - examines packet types, and takes appropriate action
- *
  */
-void process_message( FvwmPacket* packet )
+void process_message(FvwmPacket* packet)
 {
-  unsigned long type = packet->type;
-  unsigned long length = packet->size;
-  unsigned long* body = packet->body;
+	unsigned long type = packet->type;
+	unsigned long length = packet->size;
+	unsigned long* body = packet->body;
 
-  switch (type)
-    {
-    case M_ADD_WINDOW:
-      list_configure(body);
-      break;
-    case M_CONFIGURE_WINDOW:
-      list_configure(body);
-      break;
-    case M_DESTROY_WINDOW:
-      list_destroy(body);
-      break;
-    case M_FOCUS_CHANGE:
-      list_focus(body);
-      break;
-    case M_NEW_PAGE:
-      list_new_page(body);
-      break;
-    case M_NEW_DESK:
-      list_new_desk(body);
-      break;
-    case M_RAISE_WINDOW:
-      list_raise(body);
-      break;
-    case M_LOWER_WINDOW:
-      list_lower(body);
-      break;
-    case M_ICONIFY:
-    case M_ICON_LOCATION:
-      list_iconify(body);
-      break;
-    case M_DEICONIFY:
-      list_deiconify(body, length);
-      break;
-    case M_RES_CLASS:
-    case M_RES_NAME:
-    case M_VISIBLE_NAME:
-      list_window_name(body,type);
-      break;
-    case MX_VISIBLE_ICON_NAME:
-      list_icon_name(body);
-      break;
-    case M_MINI_ICON:
-      list_mini_icon(body);
-      break;
-    case M_END_WINDOWLIST:
-      list_end();
-      break;
-    case M_RESTACK:
-      list_restack(body,length);
-      break;
-    case M_CONFIG_INFO:
-      list_config_info(body);
-      break;
-    case MX_PROPERTY_CHANGE:
-      list_property_change(body);
-      break;
-    case MX_MONITOR_FOCUS:
-      list_monitor_focus(body);
-      break;
-    case MX_REPLY:
-	    list_reply(body);
-	    break;
-    default:
-      /* ignore unknown packet */
-      break;
-    }
+	switch (type)
+	{
+		case M_ADD_WINDOW:
+			list_configure(body);
+			break;
+		case M_CONFIGURE_WINDOW:
+			list_configure(body);
+			break;
+		case M_DESTROY_WINDOW:
+			list_destroy(body);
+			break;
+		case M_FOCUS_CHANGE:
+			list_focus(body);
+			break;
+		case M_NEW_PAGE:
+			list_new_page(body);
+			break;
+		case M_NEW_DESK:
+			list_new_desk(body);
+			break;
+		case M_RAISE_WINDOW:
+			list_raise(body);
+			break;
+		case M_LOWER_WINDOW:
+			list_lower(body);
+			break;
+		case M_ICONIFY:
+		case M_ICON_LOCATION:
+			list_iconify(body);
+			break;
+		case M_DEICONIFY:
+			list_deiconify(body, length);
+			break;
+		case M_RES_CLASS:
+		case M_RES_NAME:
+		case M_VISIBLE_NAME:
+			list_window_name(body, type);
+			break;
+		case MX_VISIBLE_ICON_NAME:
+			list_icon_name(body);
+			break;
+		case M_MINI_ICON:
+			list_mini_icon(body);
+			break;
+		case M_END_WINDOWLIST:
+			list_end();
+			break;
+		case M_RESTACK:
+			list_restack(body, length);
+			break;
+		case M_CONFIG_INFO:
+			list_config_info(body);
+			break;
+		case MX_PROPERTY_CHANGE:
+			list_property_change(body);
+			break;
+		case MX_MONITOR_FOCUS:
+			list_monitor_focus(body);
+			break;
+		case MX_REPLY:
+			list_reply(body);
+			break;
+		default:
+			/* ignore unknown packet */
+			break;
+	}
 }
 
 
 /*
- *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
- *
  */
-static RETSIGTYPE
-TerminateHandler(int sig)
+static RETSIGTYPE TerminateHandler(int sig)
 {
-  fvwmSetTerminate(sig);
-  SIGNAL_RETURN;
+	fvwmSetTerminate(sig);
+	SIGNAL_RETURN;
 }
 
 RETSIGTYPE DeadPipe(int nonsense)
 {
-  exit(0);
-  SIGNAL_RETURN;
+	exit(0);
+	SIGNAL_RETURN;
 }
 
+/* Convince method to find target window. */
+PagerWindow *find_pager_window(Window target_w)
+{
+	PagerWindow *t;
+
+	t = Start;
+	while(t != NULL && t->w != target_w)
+		t = t->next;
+
+	return t;
+}
 
 /*
  *  Procedure:
@@ -742,16 +749,10 @@ void handle_config_win_package(PagerWindow *t,
 	}
 }
 
-/*
- *
- *  Procedure:
- *      list_add - displays packet contents to stderr
- *
- */
 void list_add(unsigned long *body)
 {
-	PagerWindow *t,**prev;
-	struct ConfigWinPacket  *cfgpacket = (void *) body;
+	PagerWindow *t, **prev;
+	struct ConfigWinPacket  *cfgpacket = (void *)body;
 
 	t = Start;
 	prev = &Start;
@@ -773,79 +774,57 @@ void list_add(unsigned long *body)
 	return;
 }
 
-/*
- *
- *  Procedure:
- *      list_configure - displays packet contents to stderr
- *
- */
 void list_configure(unsigned long *body)
 {
-  PagerWindow *t;
-  Window target_w;
-  struct ConfigWinPacket  *cfgpacket = (void *) body;
-  bool is_new_desk;
-  struct monitor *newm;
+	PagerWindow *t;
+	struct ConfigWinPacket  *cfgpacket = (void *)body;
+	bool is_new_desk;
 
-  target_w = cfgpacket->w;
-  t = Start;
-  newm = monitor_by_output((int)cfgpacket->monitor_id);
+	t = find_pager_window(cfgpacket->w);
+	if (t == NULL)
+	{
+		list_add(body);
+		return;
+	}
 
-  while( (t != NULL) && (t->w != target_w))
-  {
-	  if (t->m != newm) {
-		  t = t->next;
-		  continue;
-	  }
-    t = t->next;
-  }
-  if(t== NULL)
-  {
-    list_add(body);
-    return;
-  }
-
-  is_new_desk = (t->desk != cfgpacket->desk);
-  handle_config_win_package(t, cfgpacket);
-  if (is_new_desk)
-    ChangeDeskForWindow(t, cfgpacket->desk);
-  MoveResizePagerView(t, true);
+	is_new_desk = (t->desk != cfgpacket->desk);
+	handle_config_win_package(t, cfgpacket);
+	if (is_new_desk)
+		ChangeDeskForWindow(t, cfgpacket->desk);
+	MoveResizePagerView(t, true);
 }
 
-/*
- *
- *  Procedure:
- *      list_destroy - displays packet contents to stderr
- *
- */
 void list_destroy(unsigned long *body)
 {
-  PagerWindow *t,**prev;
-  Window target_w;
+	PagerWindow *t, **prev;
+	Window target_w;
 
-  target_w = body[0];
-  t = Start;
-  prev = &Start;
-  while((t!= NULL)&&(t->w != target_w))
-    {
-      prev = &(t->next);
-      t = t->next;
-    }
-  if(t!= NULL)
-    {
-      if(prev != NULL)
-	*prev = t->next;
-      /* remove window from the chain */
-      XDestroyWindow(dpy,t->PagerView);
-      XDestroyWindow(dpy,t->IconView);
-      if(FocusWin == t)
-	FocusWin = NULL;
-      free(t->res_class);
-      free(t->res_name);
-      free(t->window_name);
-      free(t->icon_name);
-      free(t);
-    }
+	target_w = body[0];
+	t = Start;
+	prev = &Start;
+	while(t != NULL && t->w != target_w)
+	{
+		prev = &(t->next);
+		t = t->next;
+	}
+
+	if(t != NULL)
+	{
+		if(prev != NULL)
+			*prev = t->next;
+			/* remove window from the chain */
+
+		XDestroyWindow(dpy, t->PagerView);
+		XDestroyWindow(dpy, t->IconView);
+		if(FocusWin == t)
+			FocusWin = NULL;
+
+		free(t->res_class);
+		free(t->res_name);
+		free(t->window_name);
+		free(t->icon_name);
+		free(t);
+	}
 }
 
 void list_monitor_focus(unsigned long *body)
@@ -853,59 +832,38 @@ void list_monitor_focus(unsigned long *body)
 	return;
 }
 
-/*
- *
- *  Procedure:
- *      list_focus - displays packet contents to stderr
- *
- */
 void list_focus(unsigned long *body)
 {
-  PagerWindow *t;
-  Window target_w;
-  extern Pixel focus_pix, focus_fore_pix;
-  bool do_force_update = false;
+	PagerWindow *t = find_pager_window(body[0]);
+	extern Pixel focus_pix, focus_fore_pix;
+	bool do_force_update = false;
 
-  target_w = body[0];
-  if (win_hi_pix_set)
-  {
-    if (focus_pix != win_hi_back_pix || focus_fore_pix != win_hi_fore_pix)
-    {
-      do_force_update = true;
-    }
-    focus_pix = win_hi_back_pix;
-    focus_fore_pix = win_hi_fore_pix;
-  }
-  else
-  {
-    if (focus_pix != body[4] || focus_fore_pix != body[3])
-    {
-      do_force_update = true;
-    }
-    focus_pix = body[4];
-    focus_fore_pix = body[3];
-  }
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-  {
-    t = t->next;
-  }
-  if (t != FocusWin || do_force_update)
-  {
-    if (FocusWin != NULL)
-      Hilight(FocusWin, false);
-    FocusWin = t;
-    if (FocusWin != NULL)
-      Hilight(FocusWin, true);
-  }
+	if (win_hi_pix_set)
+	{
+		if (focus_pix != win_hi_back_pix ||
+		    focus_fore_pix != win_hi_fore_pix)
+			do_force_update = true;
+		focus_pix = win_hi_back_pix;
+		focus_fore_pix = win_hi_fore_pix;
+	}
+	else
+	{
+		if (focus_pix != body[4] || focus_fore_pix != body[3])
+			do_force_update = true;
+		focus_pix = body[4];
+		focus_fore_pix = body[3];
+	}
+
+	if (t != FocusWin || do_force_update)
+	{
+		if (FocusWin != NULL)
+			Hilight(FocusWin, false);
+		FocusWin = t;
+		if (FocusWin != NULL)
+			Hilight(FocusWin, true);
+	}
 }
 
-/*
- *
- *  Procedure:
- *      list_new_page - displays packet contents to stderr
- *
- */
 void list_new_page(unsigned long *body)
 {
 	bool do_reconfigure = false;
@@ -958,556 +916,426 @@ void list_new_page(unsigned long *body)
 	}
 }
 
-/*
- *
- *  Procedure:
- *      list_new_desk - displays packet contents to stderr
- *
- */
 void list_new_desk(unsigned long *body)
 {
-  int oldDesk, newDesk;
-  int change_cs = -1;
-  int change_ballooncs = -1;
-  int change_highcs = -1;
-  int mon_num = body[1];
-  struct monitor *mout;
-  struct fpmonitor *fp;
+	int oldDesk, newDesk;
+	int change_cs = -1;
+	int change_ballooncs = -1;
+	int change_highcs = -1;
+	int mon_num = body[1];
+	struct monitor *mout;
+	struct fpmonitor *fp;
 
-  mout = monitor_by_output(mon_num);
-  /* Don't allow monitor_by_output to fallback to RB_MIN. */
-  if (mout->si->rr_output != mon_num)
-	  return;
+	mout = monitor_by_output(mon_num);
+	/* Don't allow monitor_by_output to fallback to RB_MIN. */
+	if (mout->si->rr_output != mon_num)
+		return;
 
-  fp = fpmonitor_this(mout);
+	fp = fpmonitor_this(mout);
+	if (fp == NULL)
+		return;
 
-  if (fp == NULL)
-	  return;
+	/* Best to update the desk, even if the monitor isn't being
+	 * tracked, as this could change.
+	 */
+	oldDesk = fp->m->virtual_scr.CurrentDesk;
+	newDesk = fp->m->virtual_scr.CurrentDesk = (long)body[0];
+	if (newDesk >= desk1 && newDesk <= desk2)
+		Desks[newDesk - desk1].fp = fp;
 
-  /* Best to update the desk, even if the monitor isn't being
-   * tracked, as this could change.
-   */
-  oldDesk = fp->m->virtual_scr.CurrentDesk;
-  newDesk = fp->m->virtual_scr.CurrentDesk = (long)body[0];
-  if (newDesk >= desk1 && newDesk <= desk2)
-	  Desks[newDesk - desk1].fp = fp;
+	/* Only update FvwmPager's desk for the monitors being tracked.
+	 * Exceptions:
+	 *   + If CurrentDeskPerMonitor is set, always update desk.
+	 *   + If current_monitor is set, only update if that monitor changes
+	 *     and tracking is per-monitor or shared.
+	 */
+	if (!CurrentDeskPerMonitor && ((monitor_to_track != NULL &&
+	    mout != monitor_to_track->m) ||
+	    (current_monitor != NULL &&
+	    monitor_to_track == NULL &&
+	    mout != current_monitor->m &&
+	    (monitor_mode == MONITOR_TRACKING_M ||
+	    is_tracking_shared))))
+		return;
 
-  /* If the monitor for which the event was sent, does not match the monitor
-   * itself, then don't change the FvwmPager's desk.  Only do this if we're
-   * tracking a specific monitor though.
-   *
-   * If always showing the current desktop, the current_monitor is set, and
-   * tracking is per-monitor, only change pager desk on the current_monitor.
-   */
-  if (!CurrentDeskPerMonitor && ((monitor_to_track != NULL &&
-		mout != monitor_to_track->m) ||
-		(current_monitor != NULL &&
-		monitor_to_track == NULL &&
-		mout != current_monitor->m &&
-		(monitor_mode == MONITOR_TRACKING_M ||
-			is_tracking_shared))))
-	  return;
+	/* Update the icon window to always track current desk. */
+	desk_i = newDesk;
 
-  /* Update the icon window to always track current desk. */
-  desk_i = fp->m->virtual_scr.CurrentDesk;
+	/* Keep monitors in sync when tracking is global. */
+	if (monitor_mode == MONITOR_TRACKING_G)
+		monitor_assign_virtual(fp->m);
 
-  if (monitor_mode == MONITOR_TRACKING_G)
-    monitor_assign_virtual(fp->m);
-
-  if (fAlwaysCurrentDesk && oldDesk != fp->m->virtual_scr.CurrentDesk)
-  {
-    PagerWindow *t;
-    PagerStringList *item;
-    char line[100];
-
-    desk1 = fp->m->virtual_scr.CurrentDesk;
-    desk2 = fp->m->virtual_scr.CurrentDesk;
-    for (t = Start; t != NULL; t = t->next)
-    {
-      if (t->desk == oldDesk || t->desk == fp->m->virtual_scr.CurrentDesk)
-	ChangeDeskForWindow(t, t->desk);
-    }
-    item = FindDeskStrings(fp->m->virtual_scr.CurrentDesk);
-    free(Desks[0].label);
-    Desks[0].label = NULL;
-    if (item->next != NULL && item->next->label != NULL)
-    {
-      CopyString(&Desks[0].label, item->next->label);
-    }
-    else
-    {
-      snprintf(line, sizeof(line), "Desk %d", desk1);
-      CopyString(&Desks[0].label, line);
-    }
-    XStoreName(dpy, Scr.Pager_w, Desks[0].label);
-    XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
-
-    if (Desks[0].bgPixmap != NULL)
-    {
-      PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
-      Desks[0].bgPixmap = NULL;
-    }
-    free (Desks[0].Dcolor);
-    Desks[0].Dcolor = NULL;
-
-    if (item->next != NULL)
-    {
-      change_cs = item->next->colorset;
-      change_ballooncs = item->next->ballooncolorset;
-      change_highcs = item->next->highcolorset;
-    }
-    if (change_cs < 0)
-    {
-      change_cs = globalcolorset;
-    }
-    Desks[0].colorset = change_cs;
-    if (change_cs > -1)
-    {
-      /* use our colour set if we have one */
-      change_colorset(change_cs);
-    }
-    else if (item->next != NULL && item->next->bgPixmap != NULL)
-    {
-      Desks[0].bgPixmap = item->next->bgPixmap;
-      Desks[0].bgPixmap->count++;
-      XSetWindowBackgroundPixmap(dpy, Desks[0].w,
-				 Desks[0].bgPixmap->picture);
-    }
-    else if (item->next != NULL && item->next->Dcolor != NULL)
-    {
-      CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-      XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-    }
-    else if (PixmapBack != NULL)
-    {
-      Desks[0].bgPixmap = PixmapBack;
-      Desks[0].bgPixmap->count++;
-      XSetWindowBackgroundPixmap(dpy, Desks[0].w,
-				 Desks[0].bgPixmap->picture);
-    }
-    else
-    {
-      CopyString(&Desks[0].Dcolor, PagerBack);
-      XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-    }
-
-    if (item->next != NULL && item->next->Dcolor != NULL)
-    {
-      CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-    }
-    else
-    {
-      CopyString(&Desks[0].Dcolor, PagerBack);
-    }
-    if (change_cs < 0 || Colorset[change_cs].pixmap != ParentRelative)
-      XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
-
-    /* update the colour sets for the desk */
-    if (change_ballooncs < 0)
-    {
-      change_ballooncs = globalballooncolorset;
-    }
-    Desks[0].ballooncolorset = change_ballooncs;
-    if (change_highcs < 0)
-    {
-      change_highcs = globalhighcolorset;
-    }
-    Desks[0].highcolorset = change_highcs;
-    if (change_ballooncs > -1 && change_ballooncs != change_cs)
-    {
-      change_colorset(change_ballooncs);
-    }
-    if (change_highcs > -1 && change_highcs != change_cs &&
-	change_highcs != change_ballooncs)
-    {
-      change_colorset(change_highcs);
-    }
-    XClearWindow(dpy, Desks[0].w);
-    XClearWindow(dpy, Desks[0].title_w);
-  } /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
-  else if (!fAlwaysCurrentDesk)
-  {
-    int i;
-    char *name;
-    char line[100];
-
-    i = fp->m->virtual_scr.CurrentDesk - desk1;
-    if (i >= 0 && i < ndesks && Desks[i].label != NULL)
-    {
-      name = Desks[i].label;
-    }
-    else
-    {
-      snprintf(line, sizeof(line), "Desk %d", fp->m->virtual_scr.CurrentDesk);
-      name = &(line[0]);
-    }
-    XStoreName(dpy, Scr.Pager_w, name);
-    XSetIconName(dpy, Scr.Pager_w, name);
-  }
-
-  MovePage(true);
-  DrawGrid(oldDesk - desk1, None, NULL);
-  DrawGrid(fp->m->virtual_scr.CurrentDesk - desk1, None, NULL);
-  MoveStickyWindow(false, true);
-/*
-  Hilight(FocusWin,false);
-*/
-  Hilight(FocusWin,true);
-}
-
-/*
- *
- *  Procedure:
- *      list_raise - displays packet contents to stderr
- *
- */
-void list_raise(unsigned long *body)
-{
-  PagerWindow *t;
-  Window target_w;
-
-  target_w = body[0];
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
-  if(t!= NULL)
-    {
-      XRaiseWindow(dpy,t->PagerView);
-      XRaiseWindow(dpy,t->IconView);
-    }
-}
-
-
-/*
- *
- *  Procedure:
- *      list_lower - displays packet contents to stderr
- *
- */
-void list_lower(unsigned long *body)
-{
-  PagerWindow *t;
-  Window target_w;
-  struct fpmonitor *m;
-
-  target_w = body[0];
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
-  if(t!= NULL)
-    {
-      XLowerWindow(dpy,t->PagerView);
-      if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks)) {
-	TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-		XLowerWindow(dpy, m->CPagerWin[t->desk - desk1]);
-	}
-      }
-      XLowerWindow(dpy,t->IconView);
-    }
-}
-
-
-/*
- *
- *  Procedure:
- *      list_iconify - displays packet contents to stderr
- *
- */
-void list_iconify(unsigned long *body)
-{
-	PagerWindow *t;
-	Window target_w;
-
-	target_w = body[0];
-	t = Start;
-	while (t != NULL && t->w != target_w)
+	if (fAlwaysCurrentDesk && oldDesk != newDesk)
 	{
-		t = t->next;
-	}
-	if (t != NULL)
-	{
-		t->t = (char *)body[2];
-		t->frame = body[1];
-		t->icon_x = body[3];
-		t->icon_y = body[4];
-		t->icon_width = body[5];
-		t->icon_height = body[6];
-		SET_ICONIFIED(t, true);
-		if (IS_ICON_SUPPRESSED(t) || t->icon_width == 0 ||
-		    t->icon_height == 0)
+		PagerWindow *t;
+		PagerStringList *item;
+		char line[100];
+
+		desk1 = desk2 = newDesk;
+		for (t = Start; t != NULL; t = t->next)
 		{
-			t->x = -32768;
-			t->y = -32768;
+			if (t->desk == oldDesk || t->desk == newDesk)
+				ChangeDeskForWindow(t, t->desk);
+		}
+
+		/* Update Desk Label -- This code should not be here. */
+		item = FindDeskStrings(fp->m->virtual_scr.CurrentDesk);
+		free(Desks[0].label);
+		Desks[0].label = NULL;
+		if (item->next != NULL && item->next->label != NULL) {
+			CopyString(&Desks[0].label, item->next->label);
+		} else {
+			snprintf(line, sizeof(line), "Desk %d", desk1);
+			CopyString(&Desks[0].label, line);
+		}
+		XStoreName(dpy, Scr.Pager_w, Desks[0].label);
+		XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
+
+		/* Update pixmaps -- this should be a common method. */
+		if (Desks[0].bgPixmap != NULL)
+		{
+			PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
+			Desks[0].bgPixmap = NULL;
+		}
+		free(Desks[0].Dcolor);
+		Desks[0].Dcolor = NULL;
+
+		if (item->next != NULL)
+		{
+			change_cs = item->next->colorset;
+			change_ballooncs = item->next->ballooncolorset;
+			change_highcs = item->next->highcolorset;
+		}
+		if (change_cs < 0)
+			change_cs = globalcolorset;
+
+		Desks[0].colorset = change_cs;
+
+		if (change_cs > -1) {
+			/* use our colour set if we have one */
+			change_colorset(change_cs);
+		}
+		else if (item->next != NULL && item->next->bgPixmap != NULL)
+		{
+			Desks[0].bgPixmap = item->next->bgPixmap;
+			Desks[0].bgPixmap->count++;
+			XSetWindowBackgroundPixmap(
+				dpy, Desks[0].w, Desks[0].bgPixmap->picture);
+		}
+		else if (item->next != NULL && item->next->Dcolor != NULL)
+		{
+			CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+			XSetWindowBackground(
+				dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
+		}
+		else if (PixmapBack != NULL)
+		{
+			Desks[0].bgPixmap = PixmapBack;
+			Desks[0].bgPixmap->count++;
+			XSetWindowBackgroundPixmap(
+				dpy, Desks[0].w, Desks[0].bgPixmap->picture);
 		}
 		else
 		{
-			t->x = t->icon_x;
-			t->y = t->icon_y;
+			CopyString(&Desks[0].Dcolor, PagerBack);
+			XSetWindowBackground(
+				dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
 		}
-		t->width = t->icon_width;
-		t->height = t->icon_height;
-		/* if iconifying main pager window turn balloons on or off */
-		if ( t->w == Scr.Pager_w )
-		{
-			ShowBalloons = ShowIconBalloons;
+
+		if (item->next != NULL && item->next->Dcolor != NULL)
+			CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+		else
+			CopyString(&Desks[0].Dcolor, PagerBack);
+
+		if (change_cs < 0 ||
+		    Colorset[change_cs].pixmap != ParentRelative)
+			XSetWindowBackground(dpy, Desks[0].title_w,
+					     GetColor(Desks[0].Dcolor));
+
+		/* update the colour sets for the desk */
+		if (change_ballooncs < 0)
+			change_ballooncs = globalballooncolorset;
+		Desks[0].ballooncolorset = change_ballooncs;
+		if (change_highcs < 0)
+			change_highcs = globalhighcolorset;
+		Desks[0].highcolorset = change_highcs;
+
+		if (change_ballooncs > -1 && change_ballooncs != change_cs)
+			change_colorset(change_ballooncs);
+		if (change_highcs > -1 && change_highcs != change_cs &&
+		    change_highcs != change_ballooncs)
+			change_colorset(change_highcs);
+
+		XClearWindow(dpy, Desks[0].w);
+		XClearWindow(dpy, Desks[0].title_w);
+	} /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
+	else if (!fAlwaysCurrentDesk)
+	{
+		int i = newDesk - desk1;
+		char *name;
+		char line[100];
+
+		if (i >= 0 && i < ndesks && Desks[i].label != NULL) {
+			name = Desks[i].label;
+		} else {
+			snprintf(line, sizeof(line), "Desk %d", fp->m->virtual_scr.CurrentDesk);
+			name = &(line[0]);
 		}
-		MoveResizePagerView(t, true);
+		XStoreName(dpy, Scr.Pager_w, name);
+		XSetIconName(dpy, Scr.Pager_w, name);
 	}
 
-	return;
+	MovePage(true);
+	DrawGrid(oldDesk - desk1, None, NULL);
+	DrawGrid(newDesk - desk1, None, NULL);
+	MoveStickyWindow(false, true);
+	Hilight(FocusWin, true);
 }
 
+void list_raise(unsigned long *body)
+{
+	PagerWindow *t = find_pager_window(body[0]);
 
-/*
- *
- *  Procedure:
- *      list_deiconify - displays packet contents to stderr
- *
- */
+	if (t == NULL)
+		return;
+
+	XRaiseWindow(dpy, t->PagerView);
+	XRaiseWindow(dpy, t->IconView);
+}
+
+void list_lower(unsigned long *body)
+{
+	struct fpmonitor *fp;
+	PagerWindow *t = find_pager_window(body[0]);
+
+	if (t == NULL)
+		return;
+
+	XLowerWindow(dpy, t->PagerView);
+	if (HilightDesks && t->desk >= desk1 && t->desk <= desk2) {
+		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+			XLowerWindow(dpy, fp->CPagerWin[t->desk - desk1]);
+		}
+	}
+	XLowerWindow(dpy, t->IconView);
+}
+
+void list_iconify(unsigned long *body)
+{
+	PagerWindow *t = find_pager_window(body[0]);
+
+	if (t == NULL)
+		return;
+
+	t->t = (char *)body[2];
+	t->frame = body[1];
+	t->icon_x = body[3];
+	t->icon_y = body[4];
+	t->icon_width = body[5];
+	t->icon_height = body[6];
+	SET_ICONIFIED(t, true);
+	if (IS_ICON_SUPPRESSED(t) || t->icon_width == 0 ||
+	    t->icon_height == 0)
+	{
+		t->x = -32768;
+		t->y = -32768;
+	}
+	else
+	{
+		t->x = t->icon_x;
+		t->y = t->icon_y;
+	}
+	t->width = t->icon_width;
+	t->height = t->icon_height;
+
+	/* if iconifying main pager window turn balloons on or off */
+	if (t->w == Scr.Pager_w)
+	{
+		ShowBalloons = ShowIconBalloons;
+	}
+	MoveResizePagerView(t, true);
+}
 
 void list_deiconify(unsigned long *body, unsigned long length)
 {
-  PagerWindow *t;
-  Window target_w;
+	PagerWindow *t = find_pager_window(body[0]);
 
-  target_w = body[0];
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-  {
-    t = t->next;
-  }
-  if (t == NULL)
-  {
-    return;
-  }
-  else
-  {
-    SET_ICONIFIED(t, false);
-    if (length >= 11 + FvwmPacketHeaderSize)
-    {
-      t->frame_x = body[7];
-      t->frame_y = body[8];
-      t->frame_width = body[9];
-      t->frame_height = body[10];
-    }
-    t->x = t->frame_x;
-    t->y = t->frame_y;
-    t->width = t->frame_width;
-    t->height = t->frame_height;
+	if (t == NULL)
+		return;
 
-    /* if deiconifying main pager window turn balloons on or off */
-    if ( t->w == Scr.Pager_w )
-      ShowBalloons = ShowPagerBalloons;
+	SET_ICONIFIED(t, false);
+	if (length >= 11 + FvwmPacketHeaderSize)
+	{
+		t->frame_x = body[7];
+		t->frame_y = body[8];
+		t->frame_width = body[9];
+		t->frame_height = body[10];
+	}
+	t->x = t->frame_x;
+	t->y = t->frame_y;
+	t->width = t->frame_width;
+	t->height = t->frame_height;
 
-    MoveResizePagerView(t, true);
-  }
+	/* if deiconifying main pager window turn balloons on or off */
+	if ( t->w == Scr.Pager_w )
+		ShowBalloons = ShowPagerBalloons;
 
-  return;
+	MoveResizePagerView(t, true);
 }
 
-
-void list_window_name(unsigned long *body,unsigned long type)
+void list_window_name(unsigned long *body, unsigned long type)
 {
-  PagerWindow *t;
-  Window target_w;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
+	PagerWindow *t = find_pager_window(body[0]);
 
-  if (fp == NULL)
-    return;
+	if (t == NULL)
+		return;
 
-  if (monitor_to_track != NULL && fp != monitor_to_track)
-	  return;
-
-  target_w = body[0];
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-    {
-	    if (fp->m != NULL && t->m != fp->m) {
-		    t = t->next;
-		    continue;
-	    }
-      t = t->next;
-    }
-  if(t!= NULL)
-    {
-      switch (type) {
-      case M_RES_CLASS:
-	free(t->res_class);
-	CopyString(&t->res_class,(char *)(&body[3]));
-	break;
-      case M_RES_NAME:
-	free(t->res_name);
-	CopyString(&t->res_name,(char *)(&body[3]));
-	break;
-      case M_VISIBLE_NAME:
-	free(t->window_name);
-	CopyString(&t->window_name,(char *)(&body[3]));
-	break;
-      }
-      /* repaint by clearing window */
-      if ((FwindowFont != NULL) && (t->icon_name != NULL)
-	   && !(MiniIcons && t->mini_icon.picture)) {
-	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
-      }
-      if (ShowBalloons && BalloonView)
-      {
-	/* update balloons */
-	if (BalloonView == t->PagerView)
-	{
-	  UnmapBalloonWindow();
-	  MapBalloonWindow(t, false);
+	switch (type) {
+		case M_RES_CLASS:
+			free(t->res_class);
+			CopyString(&t->res_class, (char *)(&body[3]));
+			break;
+		case M_RES_NAME:
+			free(t->res_name);
+			CopyString(&t->res_name, (char *)(&body[3]));
+			break;
+		case M_VISIBLE_NAME:
+			free(t->window_name);
+			CopyString(&t->window_name, (char *)(&body[3]));
+			break;
 	}
-	else if (BalloonView == t->IconView)
+
+	/* repaint by clearing window */
+	if (FwindowFont != NULL && t->icon_name != NULL &&
+	    !(MiniIcons && t->mini_icon.picture))
 	{
-	  UnmapBalloonWindow();
-	  MapBalloonWindow(t, true);
+		XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+		XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
 	}
-      }
-    }
+	if (ShowBalloons && BalloonView)
+	{
+		/* update balloons */
+		if (BalloonView == t->PagerView)
+		{
+			UnmapBalloonWindow();
+			MapBalloonWindow(t, false);
+		}
+		else if (BalloonView == t->IconView)
+		{
+			UnmapBalloonWindow();
+			MapBalloonWindow(t, true);
+		}
+	}
 }
 
-/*
- *
- *  Procedure:
- *      list_icon_name - displays packet contents to stderr
- *
- */
 void list_icon_name(unsigned long *body)
 {
-  PagerWindow *t;
-  Window target_w;
+	PagerWindow *t = find_pager_window(body[0]);
 
-  target_w = body[0];
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
-  if(t!= NULL)
-    {
-      free(t->icon_name);
-      CopyString(&t->icon_name,(char *)(&body[3]));
-      /* repaint by clearing window */
-      if ((FwindowFont != NULL) && (t->icon_name != NULL)
-	   && !(MiniIcons && t->mini_icon.picture)) {
-	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-	XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
-      }
-    }
+	if (t == NULL)
+		return;
+
+	free(t->icon_name);
+	CopyString(&t->icon_name, (char *)(&body[3]));
+	/* repaint by clearing window */
+	if (FwindowFont != NULL && t->icon_name != NULL &&
+	    !(MiniIcons && t->mini_icon.picture))
+	{
+		XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+		XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+	}
 }
-
 
 void list_mini_icon(unsigned long *body)
 {
-  PagerWindow   *t;
-  MiniIconPacket *mip = (MiniIconPacket *) body;
+	MiniIconPacket *mip = (MiniIconPacket *) body;
+	PagerWindow *t = find_pager_window(mip->w);
 
-  t = Start;
-  while (t && (t->w != mip->w))
-    t = t->next;
-  if (t)
-  {
-    t->mini_icon.width   = mip->width;
-    t->mini_icon.height  = mip->height;
-    t->mini_icon.depth   = mip->depth;
-    t->mini_icon.picture = mip->picture;
-    t->mini_icon.mask    = mip->mask;
-    t->mini_icon.alpha   = mip->alpha;
-    /* repaint by clearing window */
-    if (MiniIcons && t->mini_icon.picture) {
-      XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
-      XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
-    }
-  }
+	if (t == NULL)
+		return;
+
+	t->mini_icon.width   = mip->width;
+	t->mini_icon.height  = mip->height;
+	t->mini_icon.depth   = mip->depth;
+	t->mini_icon.picture = mip->picture;
+	t->mini_icon.mask    = mip->mask;
+	t->mini_icon.alpha   = mip->alpha;
+	/* repaint by clearing window */
+	if (MiniIcons && t->mini_icon.picture) {
+		XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+		XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+	}
 }
 
 void list_restack(unsigned long *body, unsigned long length)
 {
-  PagerWindow *t;
-  Window target_w;
-  Window *wins;
-  int i, j, d;
+	PagerWindow *t;
+	PagerWindow *pager_wins[length];
+	Window *wins;
+	int i, j, desk;
 
-  wins = fxmalloc(length * sizeof (Window));
-  /* first restack in the icon view */
-  j = 0;
-  for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
-  {
-    target_w = body[i];
-    t = Start;
-    while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
-    if (t != NULL)
-    {
-      wins[j++] = t->IconView;
-    }
-  }
-  XRestackWindows(dpy, wins, j);
+	wins = fxmalloc(length * sizeof (Window));
 
-  /* now restack each desk separately, since they have separate roots */
-  for (d = 0; d < ndesks; d++)
-  {
-    j = 0;
-    for (i = 0; i < (length - 4); i+=3)
-    {
-      target_w = body[i];
-      t = Start;
-      while((t!= NULL)&&((t->w != target_w)||(t->desk != d+desk1)))
-      {
-	t = t->next;
-      }
-      if (t != NULL)
-      {
-	wins[j++] = t->PagerView;
-      }
-    }
-    XRestackWindows(dpy, wins, j);
-  }
-  free (wins);
+	/* Should figure out how to do this with a single loop of the list,
+	 * not one per desk + icon window.
+	 */
+
+	/* first restack in the icon view */
+	j = 0;
+	for (i = 0; i < (length - FvwmPacketHeaderSize); i += 3)
+	{
+		t = find_pager_window(body[i]);
+		if (t != NULL) {
+			pager_wins[j] = t;
+			wins[j++] = t->IconView;
+		}
+	}
+	XRestackWindows(dpy, wins, j);
+	length = j;
+
+	/* now restack each desk separately, since they have separate roots */
+	for (desk = 0; desk < ndesks; desk++)
+	{
+		j = 0;
+		for (i = 0; i < length; i++)
+		{
+			t = pager_wins[i];
+			if (t != NULL && t->desk == desk + desk1)
+				wins[j++] = t->PagerView;
+		}
+		XRestackWindows(dpy, wins, j);
+	}
+
+	free(wins);
 }
 
-
-/*
- *
- *  Procedure:
- *      list_end - displays packet contents to stderr
- *
- */
 void list_end(void)
 {
-  unsigned int nchildren,i;
-  Window root, parent, *children;
-  PagerWindow *ptr;
+	unsigned int nchildren, i;
+	Window root, parent, *children;
+	PagerWindow *ptr;
 
-  if(!XQueryTree(dpy, Scr.Root, &root, &parent, &children,
-		 &nchildren))
-    return;
+	if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
+		return;
 
-  for(i=0; i<nchildren;i++)
-    {
-      ptr = Start;
-      while(ptr != NULL)
+	for(i = 0; i < nchildren; i++)
 	{
-	  if((ptr->frame == children[i])||(ptr->icon_w == children[i])||
-	     (ptr->icon_pixmap_w == children[i]))
-	    {
-	      XRaiseWindow(dpy,ptr->PagerView);
-	      XRaiseWindow(dpy,ptr->IconView);
-	    }
-	  ptr = ptr->next;
+		ptr = Start;
+		while(ptr != NULL)
+		{
+			if (ptr->frame == children[i] ||
+			    ptr->icon_w == children[i] ||
+			    ptr->icon_pixmap_w == children[i])
+			{
+				XRaiseWindow(dpy, ptr->PagerView);
+				XRaiseWindow(dpy, ptr->IconView);
+			}
+			ptr = ptr->next;
+		}
 	}
-    }
 
-
-  if(nchildren > 0)
-    XFree((char *)children);
+	if (nchildren > 0)
+		XFree((char *)children);
 }
 
 void list_config_info(unsigned long *body)
@@ -1560,18 +1388,17 @@ void list_config_info(unsigned long *body)
 
 void list_property_change(unsigned long *body)
 {
-  if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
-  {
-
-    if (((!Swallowed && body[2] == 0) || (Swallowed && body[2] == Scr.Pager_w)))
-    {
-	    update_pr_transparent_windows();
-    }
-  }
-  else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == Scr.Pager_w)
-  {
-    Swallowed = body[1];
-  }
+	if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
+	{
+		if (((!Swallowed && body[2] == 0) ||
+		    (Swallowed && body[2] == Scr.Pager_w)))
+			update_pr_transparent_windows();
+	}
+	else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW &&
+		  body[2] == Scr.Pager_w)
+	{
+		Swallowed = body[1];
+	}
 }
 
 
@@ -1579,10 +1406,9 @@ void list_reply(unsigned long *body)
 {
 	char *tline;
 	tline = (char*)&(body[3]);
+
 	if (strcmp(tline, "ScrollDone") == 0)
-	{
 		HandleScrollDone();
-	}
 }
 
 /*
