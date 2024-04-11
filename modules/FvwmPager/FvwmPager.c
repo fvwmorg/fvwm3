@@ -964,7 +964,12 @@ void list_new_desk(unsigned long *body)
 	    mout != current_monitor->m &&
 	    (monitor_mode == MONITOR_TRACKING_M ||
 	    is_tracking_shared))))
+	{
+		/* Still need to update monitor location of other monitors. */
+		if (current_monitor != NULL && oldDesk != newDesk)
+			goto update_grid;
 		return;
+	}
 
 	/* Update the current desk. */
 	desk_i = newDesk;
@@ -1003,6 +1008,8 @@ void list_new_desk(unsigned long *body)
 
 	XStoreName(dpy, Scr.pager_w, style->label);
 	XSetIconName(dpy, Scr.pager_w, style->label);
+
+update_grid:
 	MovePage();
 	draw_desk_grid(oldDesk - desk1);
 	draw_desk_grid(newDesk - desk1);
