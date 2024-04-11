@@ -2036,7 +2036,7 @@ static int style_set_border_colorset(window_style *ps, char *rest, int type)
 		this_many = BP_SIZE;
 	}
 
-	if (this_many < 2 && this_many > 8)
+	if (this_many < 2 || this_many > 8)
 		return 1;
 
 	for (upto = 0; upto < this_many; upto++) {
