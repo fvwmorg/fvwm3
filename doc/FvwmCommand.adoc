@@ -34,6 +34,7 @@ FvwmCommand accepts the following command-line arguments:
 	Use unix socket (__filename__) to connect to __FvwmMFL__
 
 -i [infolevel]::
++
 ----
 0 - default
 >0 - print output from FvwmMFL

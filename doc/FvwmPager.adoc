@@ -407,7 +407,7 @@ done about this - except not using SloppyFocus in the pager.
   desktop. Pair this with _MonitorLabels_ to change the desktop of each
   monitor by clicking on their label.
 
-*FvwmPager: IsNotShared:
+*FvwmPager: IsNotShared::
   This setting turns off the previous, _IsShared_, setting.
 
 == AUTHOR

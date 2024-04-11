@@ -6,7 +6,7 @@ FvwmRearrange - rearrange fvwm windows
 
 == SYNOPSIS
 
-Module FvwmRearrange [-cascade | -tile] [options] [bounding box]
+**Module FvwmRearrange [-cascade | -tile] [options] [bounding box]**
 
 FvwmRearrange is spawned by fvwm, so no command line invocation will
 work.
@@ -101,7 +101,7 @@ will be resized to the given constrained width and height.
 -nostretch::
   If tiling: inhibits window growth to fit tile. Windows are shrunk to
   fit the tile but not expanded.
-
++
 If cascading: inhibits window expansion when using the -resize option.
 Windows will only shrink to fit the maximal width and height (if given).
 

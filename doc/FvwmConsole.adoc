@@ -40,17 +40,17 @@ bound to a menu or mouse button or keystroke to invoke it later.
 FvwmConsole uses _xterm_(1). All resources set for xterm are inherited
 unless overridden by command line options.
 
-____
+....
 Module FvwmConsole -g 40x10 -fg black -bg green3
-____
+....
 
 A different terminal emulator can be specified with the -terminal
 option. However, only terminal programs that understand the options
 -name, -title and -e can be used.
 
-____
+....
 Module FvwmConsole -terminal rxvt
-____
+....
 
 Previous versions of FvwmConsole supported a -e option to choose a
 different front-end. Although this option is still provided for
@@ -59,10 +59,10 @@ what you are doing.
 
 Also X resources can be set in your ~/.Xdefaults file:
 
-____
+....
 FvwmConsole*VT100*geometry: 40x4 +
 FvwmConsole*font: 7x14
-____
+....
 
 == COMMAND EDITING
 
@@ -71,7 +71,7 @@ Overwise a simple input reading function which
 doesn't have editing capabilities is used.
 For more details, refer GNU readline man and info pages.
 
-____
+....
 Ctrl-A::
   - beginning of line
 Ctrl-B::
@@ -102,7 +102,7 @@ Esc <::
   - beginning of history
 Esc >::
   - end of history
-____
+....
 
 == EXITING
 
