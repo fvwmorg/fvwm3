@@ -122,17 +122,25 @@ typedef struct balloon_window
   int desk;
 } BalloonWindow;
 
+typedef struct desk_style
+{
+	int desk;
+	int colorset;
+	int highcolorset;
+	int ballooncolorset;
+	char *label;
+	char *Dcolor;
+	FvwmPicture *bgPixmap;		/* Pixmap used as background. */
+	TAILQ_ENTRY(desk_style) entry;
+} DeskStyle;
+TAILQ_HEAD(desk_styles, desk_style);
+
 typedef struct desk_info
 {
   Window w;
   Window title_w;
-  FvwmPicture *bgPixmap;                /* Pixmap used as background. */
   BalloonWindow balloon;
-  int colorset;
-  int highcolorset;
-  int ballooncolorset;
-  char *Dcolor;
-  char *label;
+  DeskStyle *style;
   GC NormalGC;
   GC DashedGC;                  /* used for the pages boundary lines */
   GC HiliteGC;                  /* used for hilighting the active desk */
@@ -141,18 +149,6 @@ typedef struct desk_info
   XSetWindowAttributes fp_attr; /* used for the fpmonitor window */
   struct fpmonitor *fp;         /* most recent monitor viewing desk. */
 } DeskInfo;
-
-typedef struct pager_string_list
-{
-  struct pager_string_list *next;
-  int desk;
-  int colorset;
-  int highcolorset;
-  int ballooncolorset;
-  char *Dcolor;
-  char *label;
-  FvwmPicture *bgPixmap;                /* Pixmap used as background. */
-} PagerStringList;
 
 /*
  *
@@ -293,6 +289,7 @@ void list_property_change(unsigned long *body);
 void list_end(void);
 void list_reply(unsigned long *body);
 int My_XNextEvent(Display *dpy, XEvent *event);
+DeskStyle *FindDeskStyle(int desk);
 void ExitPager(void);
 
 /* Stuff in x_pager.c */
@@ -333,6 +330,7 @@ void MapBalloonWindow(PagerWindow *t, bool is_icon_view);
 void UnmapBalloonWindow(void);
 void DrawInBalloonWindow(int i);
 void HandleScrollDone(void);
+void set_desk_background(int desk);
 int fpmonitor_get_all_widths(void);
 int fpmonitor_get_all_heights(void);
 struct fpmonitor *fpmonitor_from_desk(int desk);

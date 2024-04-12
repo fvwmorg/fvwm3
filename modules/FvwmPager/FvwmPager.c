@@ -157,15 +157,10 @@ struct fpmonitors	fp_monitor_q;
 
 static int x_fd;
 static fd_set_size_t fd_width;
-static int globalcolorset = -1;
-static int globalballooncolorset = -1;
-static int globalhighcolorset = -1;
-static PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
 static bool fp_new_block = false;
+static struct desk_styles desk_style_q;
 
-static PagerStringList *FindDeskStrings(int desk);
-static PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
-static void SetDeskLabel(struct fpmonitor *, int desk, const char *label);
+static void SetDeskLabel(int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 static void list_monitor_focus(unsigned long *);
 static struct fpmonitor *fpmonitor_new(struct monitor *);
@@ -252,7 +247,6 @@ int main(int argc, char **argv)
 {
   char *display_name = NULL;
   int itemp,i;
-  char line[100];
   short opt_num;
   Window JunkRoot, JunkChild;
   int JunkX, JunkY;
@@ -276,6 +270,21 @@ int main(int argc, char **argv)
     }
 
   TAILQ_INIT(&fp_monitor_q);
+  TAILQ_INIT(&desk_style_q);
+  /* Default desk=-1 stores any all desk (*) settings. */
+  {
+	DeskStyle *default_style;
+
+	default_style = fxcalloc(1, sizeof(DeskStyle));
+	default_style->desk = -1;
+	default_style->colorset = -1;
+	default_style->highcolorset = -1;
+	default_style->ballooncolorset = -1;
+	default_style->label = NULL;
+	default_style->Dcolor = NULL;
+	default_style->bgPixmap = NULL;
+	TAILQ_INSERT_TAIL(&desk_style_q, default_style, entry);
+  }
 
 #ifdef HAVE_SIGACTION
   {
@@ -431,13 +440,9 @@ int main(int argc, char **argv)
 	(void)fpmonitor_new(mon);
 
   Desks = fxcalloc(1, ndesks*sizeof(DeskInfo));
-  for(i=0;i<ndesks;i++)
+  for(i = 0; i < ndesks; i++)
   {
-	snprintf(line,sizeof(line),"Desk %d",i+desk1);
-	CopyString(&Desks[i].label,line);
-	Desks[i].colorset = -1;
-	Desks[i].highcolorset = -1;
-	Desks[i].ballooncolorset = -1;
+	Desks[i].style = FindDeskStyle(i);
 	Desks[i].fp = fpmonitor_from_desk(i + desk1);
   }
 
@@ -919,12 +924,10 @@ void list_new_page(unsigned long *body)
 void list_new_desk(unsigned long *body)
 {
 	int oldDesk, newDesk;
-	int change_cs = -1;
-	int change_ballooncs = -1;
-	int change_highcs = -1;
 	int mon_num = body[1];
 	struct monitor *mout;
 	struct fpmonitor *fp;
+	DeskStyle *style;
 
 	mout = monitor_by_output(mon_num);
 	/* Don't allow monitor_by_output to fallback to RB_MIN. */
@@ -958,18 +961,18 @@ void list_new_desk(unsigned long *body)
 	    is_tracking_shared))))
 		return;
 
-	/* Update the icon window to always track current desk. */
+	/* Update the current desk. */
 	desk_i = newDesk;
+	style = FindDeskStyle(newDesk);
 
 	/* Keep monitors in sync when tracking is global. */
 	if (monitor_mode == MONITOR_TRACKING_G)
 		monitor_assign_virtual(fp->m);
 
+	/* If always tracking current desk. Update Desks[0]. */
 	if (fAlwaysCurrentDesk && oldDesk != newDesk)
 	{
 		PagerWindow *t;
-		PagerStringList *item;
-		char line[100];
 
 		desk1 = desk2 = newDesk;
 		for (t = Start; t != NULL; t = t->next)
@@ -978,113 +981,13 @@ void list_new_desk(unsigned long *body)
 				ChangeDeskForWindow(t, t->desk);
 		}
 
-		/* Update Desk Label -- This code should not be here. */
-		item = FindDeskStrings(fp->m->virtual_scr.CurrentDesk);
-		free(Desks[0].label);
-		Desks[0].label = NULL;
-		if (item->next != NULL && item->next->label != NULL) {
-			CopyString(&Desks[0].label, item->next->label);
-		} else {
-			snprintf(line, sizeof(line), "Desk %d", desk1);
-			CopyString(&Desks[0].label, line);
-		}
-		XStoreName(dpy, Scr.Pager_w, Desks[0].label);
-		XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
-
-		/* Update pixmaps -- this should be a common method. */
-		if (Desks[0].bgPixmap != NULL)
-		{
-			PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
-			Desks[0].bgPixmap = NULL;
-		}
-		free(Desks[0].Dcolor);
-		Desks[0].Dcolor = NULL;
-
-		if (item->next != NULL)
-		{
-			change_cs = item->next->colorset;
-			change_ballooncs = item->next->ballooncolorset;
-			change_highcs = item->next->highcolorset;
-		}
-		if (change_cs < 0)
-			change_cs = globalcolorset;
-
-		Desks[0].colorset = change_cs;
-
-		if (change_cs > -1) {
-			/* use our colour set if we have one */
-			change_colorset(change_cs);
-		}
-		else if (item->next != NULL && item->next->bgPixmap != NULL)
-		{
-			Desks[0].bgPixmap = item->next->bgPixmap;
-			Desks[0].bgPixmap->count++;
-			XSetWindowBackgroundPixmap(
-				dpy, Desks[0].w, Desks[0].bgPixmap->picture);
-		}
-		else if (item->next != NULL && item->next->Dcolor != NULL)
-		{
-			CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-			XSetWindowBackground(
-				dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-		}
-		else if (PixmapBack != NULL)
-		{
-			Desks[0].bgPixmap = PixmapBack;
-			Desks[0].bgPixmap->count++;
-			XSetWindowBackgroundPixmap(
-				dpy, Desks[0].w, Desks[0].bgPixmap->picture);
-		}
-		else
-		{
-			CopyString(&Desks[0].Dcolor, PagerBack);
-			XSetWindowBackground(
-				dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-		}
-
-		if (item->next != NULL && item->next->Dcolor != NULL)
-			CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-		else
-			CopyString(&Desks[0].Dcolor, PagerBack);
-
-		if (change_cs < 0 ||
-		    Colorset[change_cs].pixmap != ParentRelative)
-			XSetWindowBackground(dpy, Desks[0].title_w,
-					     GetColor(Desks[0].Dcolor));
-
-		/* update the colour sets for the desk */
-		if (change_ballooncs < 0)
-			change_ballooncs = globalballooncolorset;
-		Desks[0].ballooncolorset = change_ballooncs;
-		if (change_highcs < 0)
-			change_highcs = globalhighcolorset;
-		Desks[0].highcolorset = change_highcs;
-
-		if (change_ballooncs > -1 && change_ballooncs != change_cs)
-			change_colorset(change_ballooncs);
-		if (change_highcs > -1 && change_highcs != change_cs &&
-		    change_highcs != change_ballooncs)
-			change_colorset(change_highcs);
-
-		XClearWindow(dpy, Desks[0].w);
-		XClearWindow(dpy, Desks[0].title_w);
-	} /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
-	else if (!fAlwaysCurrentDesk)
-	{
-		int i = newDesk - desk1;
-		char *name;
-		char line[100];
-
-		if (i >= 0 && i < ndesks && Desks[i].label != NULL) {
-			name = Desks[i].label;
-		} else {
-			snprintf(line, sizeof(line), "Desk %d", fp->m->virtual_scr.CurrentDesk);
-			name = &(line[0]);
-		}
-		XStoreName(dpy, Scr.Pager_w, name);
-		XSetIconName(dpy, Scr.Pager_w, name);
+		/* Update DeskStyle */
+		Desks[0].style = style;
+		set_desk_background(0);
 	}
 
+	XStoreName(dpy, Scr.Pager_w, style->label);
+	XSetIconName(dpy, Scr.Pager_w, style->label);
 	MovePage(true);
 	DrawGrid(oldDesk - desk1, None, NULL);
 	DrawGrid(newDesk - desk1, None, NULL);
@@ -1357,8 +1260,7 @@ void list_config_info(unsigned long *body)
 		int val;
 		if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
 		{
-			TAILQ_FOREACH(m, &fp_monitor_q, entry)
-				SetDeskLabel(m, val, (const char *)tline);
+			SetDeskLabel(val, (const char *)tline);
 		}
 		else
 		{
@@ -1454,107 +1356,40 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 
 
-/* This function is really tricky. The two offsets are the offsets of the
- * colorset members of the DeskInfo and PagerSringList structures to be
- * modified. The lines accessing this info look very ugly, but they work. */
-static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
-			  void *offset_item, int *colorset_global)
+/* This function is really tricky. An offset of the colorset members
+ * in the DeskStyle strut is used to set the desired colorset.
+ * The lines accessing this info look very ugly, but they work.
+ */
+static void ParseColorset(char *arg1, char *arg2, void *offset_style)
 {
-  bool all_desks = false;
   int colorset = 0;
-  int i;
   int desk;
-  unsigned long colorset_offset = (unsigned long)offset_deskinfo;
-  unsigned long item_colorset_offset = (unsigned long)offset_item;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
-
-  if (fp == NULL)
-    return;
+  unsigned long offset = (unsigned long)offset_style;
+  DeskStyle *style;
 
   sscanf(arg2, "%d", &colorset);
   AllocColorset(colorset);
-  if (StrEquals(arg1, "*"))
-  {
-    all_desks = true;
-    desk = 0;
-  }
-  else
-  {
-    desk = desk1;
-    sscanf(arg1,"%d",&desk);
-  }
-  if (fAlwaysCurrentDesk)
-  {
-    if (all_desks)
-    {
-      *colorset_global = colorset;
-    }
-    else
-    {
-      PagerStringList *item;
+  if (arg1[0] == '*') {
+	  TAILQ_FOREACH(style, &desk_style_q, entry) {
+		  *(int *)(((char *)style) + offset) = colorset;
+	  }
+  } else {
+	  desk = desk1;
+	  sscanf(arg1, "%d", &desk);
 
-      item = FindDeskStrings(desk);
-      if (item->next != NULL)
-      {
-	*(int *)(((char *)(item->next)) + item_colorset_offset) = colorset;
-      }
-      else
-      {
-	/* new Dcolor and desktop */
-	item = NewPagerStringItem(item, desk);
-	*(int *)(((char *)item) + item_colorset_offset) = colorset;
-      }
-    }
-    if (desk == fp->m->virtual_scr.CurrentDesk || all_desks)
-    {
-      *(int *)(((char *)&Desks[0]) + colorset_offset) = colorset;
-    }
-  }
-  else if (all_desks)
-  {
-    for (i = 0; i < ndesks; i++)
-    {
-      *(int *)(((char *)&Desks[i]) + colorset_offset) = colorset;
-    }
-  }
-  else if((desk >= desk1)&&(desk <=desk2))
-  {
-    *(int *)(((char *)&Desks[desk - desk1]) + colorset_offset) = colorset;
+	  style = FindDeskStyle(desk);
+	  *(int *)(((char *)style) + offset) = colorset;
   }
 
   return;
 }
 
-static void SetDeskLabel(struct fpmonitor *m, int desk, const char *label)
+static void SetDeskLabel(int desk, const char *label)
 {
-  PagerStringList *item;
+	DeskStyle *style = FindDeskStyle(desk);
 
-  if (fAlwaysCurrentDesk)
-  {
-    item = FindDeskStrings(desk);
-    if (item->next != NULL)
-    {
-      free(item->next->label);
-      item->next->label = NULL;
-      CopyString(&(item->next->label), label);
-    }
-    else
-    {
-      /* new Dcolor and desktop */
-      item = NewPagerStringItem(item, desk);
-      CopyString(&(item->label), label);
-    }
-    if (desk == m->m->virtual_scr.CurrentDesk)
-    {
-      free(Desks[0].label);
-      CopyString(&Desks[0].label, label);
-    }
-  }
-  else if((desk >= desk1)&&(desk <=desk2))
-  {
-    free(Desks[desk - desk1].label);
-    CopyString(&Desks[desk - desk1].label, label);
-  }
+	free(style->label);
+	CopyString(&(style->label), label);
 }
 
 void parse_monitor_line(char *tline)
@@ -1750,13 +1585,10 @@ ImagePath = NULL;
     else if (StrEquals(token, "DesktopName"))
     {
       int val;
-      struct fpmonitor *fp;
 
       if (GetIntegerArguments(next, &next, &val, 1) > 0)
       {
-	      TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
-		      SetDeskLabel(fp, val, (const char *)next);
-	      }
+		SetDeskLabel(val, (const char *)next);
       }
       continue;
     }
@@ -1832,23 +1664,17 @@ ImagePath = NULL;
     else if(StrEquals(resource,"Colorset"))
     {
       ParseColorset(arg1, arg2,
-		    &(((DeskInfo *)(NULL))->colorset),
-		    &(((PagerStringList *)(NULL))->colorset),
-		    &globalcolorset);
+		    &(((DeskStyle *)(NULL))->colorset));
     }
     else if(StrEquals(resource,"BalloonColorset"))
     {
       ParseColorset(arg1, arg2,
-		    &(((DeskInfo *)(NULL))->ballooncolorset),
-		    &(((PagerStringList *)(NULL))->ballooncolorset),
-		    &globalballooncolorset);
+		    &(((DeskStyle *)(NULL))->ballooncolorset));
     }
     else if(StrEquals(resource,"HilightColorset"))
     {
       ParseColorset(arg1, arg2,
-		    &(((DeskInfo *)(NULL))->highcolorset),
-		    &(((PagerStringList *)(NULL))->highcolorset),
-		    &globalhighcolorset);
+		    &(((DeskStyle *)(NULL))->highcolorset));
     }
     else if (StrEquals(resource, "Geometry"))
     {
@@ -1934,6 +1760,8 @@ ImagePath = NULL;
     }
     else if (StrEquals(resource, "DeskColor"))
     {
+      DeskStyle *style;
+
       if (StrEquals(arg1, "*"))
       {
 	desk = 0;
@@ -1943,39 +1771,17 @@ ImagePath = NULL;
 	desk = desk1;
 	sscanf(arg1,"%d",&desk);
       }
-      if (fAlwaysCurrentDesk)
-      {
-	PagerStringList *item;
 
-	item = FindDeskStrings(desk);
-	if (item->next != NULL)
-	{
-	  free(item->next->Dcolor);
-	  item->next->Dcolor = NULL;
-	  CopyString(&(item->next->Dcolor), arg2);
-	}
-	else
-	{
-	  /* new Dcolor and desktop */
-	  item = NewPagerStringItem(item, desk);
-	  CopyString(&(item->Dcolor), arg2);
-	}
-	struct fpmonitor *fp = fpmonitor_this(NULL);
-
-	if (desk == fp->m->virtual_scr.CurrentDesk)
-	{
-	  free(Desks[0].Dcolor);
-	  CopyString(&Desks[0].Dcolor, arg2);
-	}
-      }
-      else if((desk >= desk1)&&(desk <=desk2))
-      {
-	free(Desks[desk - desk1].Dcolor);
-	CopyString(&Desks[desk - desk1].Dcolor, arg2);
-      }
+      style = FindDeskStyle(desk);
+      if (style->Dcolor)
+	free(style->Dcolor);
+      style->Dcolor = NULL;
+      CopyString(&(style->Dcolor), arg2);
     }
     else if (StrEquals(resource, "DeskPixmap"))
     {
+      DeskStyle *style;
+
       if (StrEquals(arg1, "*"))
       {
 	desk = 0;
@@ -1985,54 +1791,16 @@ ImagePath = NULL;
 	desk = desk1;
 	sscanf(arg1,"%d",&desk);
       }
-      if (fAlwaysCurrentDesk)
+
+      style = FindDeskStyle(desk);
+      if (style->bgPixmap != NULL)
       {
-	PagerStringList *item;
-
-	item = FindDeskStrings(desk);
-
-	if (item->next != NULL)
-	{
-	  if (item->next->bgPixmap != NULL)
-	  {
-	    PDestroyFvwmPicture(dpy, item->next->bgPixmap);
-	    item->next->bgPixmap = NULL;
-	  }
-	  item->next->bgPixmap = PCacheFvwmPicture(
-		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
-	}
-	else
-	{
-	  /* new Dcolor and desktop */
-	  item = NewPagerStringItem(item, desk);
-	  item->bgPixmap = PCacheFvwmPicture(
-		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
-	}
-	struct fpmonitor *fp = fpmonitor_this(NULL);
-	if (desk == fp->m->virtual_scr.CurrentDesk)
-	{
-	  if (Desks[0].bgPixmap != NULL)
-	  {
-	    PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
-	    Desks[0].bgPixmap = NULL;
-	  }
-
-	  Desks[0].bgPixmap = PCacheFvwmPicture(
-		  dpy, Scr.Pager_w, ImagePath, arg2, fpa);
-	}
+	PDestroyFvwmPicture(dpy, style->bgPixmap);
+	style->bgPixmap = NULL;
       }
-      else if((desk >= desk1)&&(desk <=desk2))
-      {
-	int dNr = desk - desk1;
 
-	if (Desks[dNr].bgPixmap != NULL)
-	{
-	  PDestroyFvwmPicture(dpy, Desks[dNr].bgPixmap);
-	  Desks[dNr].bgPixmap = NULL;
-	}
-	Desks[dNr].bgPixmap = PCacheFvwmPicture(
+      style->bgPixmap = PCacheFvwmPicture(
 		dpy, Scr.Pager_w, ImagePath, arg2, fpa);
-      }
 
     }
     else if (StrEquals(resource, "Pixmap"))
@@ -2300,38 +2068,41 @@ ImagePath = NULL;
   return;
 }
 
-/* Returns the item in the sring list that has item->next->desk == desk or
- * the last item (item->next == NULL) if no entry matches the desk number. */
-PagerStringList *FindDeskStrings(int desk)
+/* Returns the DeskStyle for inputted desk. */
+DeskStyle *FindDeskStyle(int desk)
 {
-  PagerStringList *item;
+	DeskStyle *style;
 
-  item = &string_list;
-  while (item->next != NULL)
-  {
-    if (item->next->desk == desk)
-      break;
-    item = item->next;
-  }
-  return item;
-}
+	/* Find matching style to return. */
+	TAILQ_FOREACH(style, &desk_style_q, entry) {
+		if (style->desk == desk)
+			return style;
+	}
 
-PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
-{
-  PagerStringList *newitem;
+	/* No matching style found. Create new style and return it. */
+	DeskStyle *new_style;
+	DeskStyle *default_style = TAILQ_FIRST(&desk_style_q);
+	char label[10];
 
-  newitem = fxcalloc(1, sizeof(PagerStringList));
-  last->next = newitem;
-  newitem->colorset = -1;
-  newitem->highcolorset = -1;
-  newitem->ballooncolorset = -1;
-  newitem->desk = desk;
+	new_style = fxcalloc(1, sizeof(DeskStyle));
+	new_style->desk = desk;
+	new_style->colorset = default_style->colorset;;
+	new_style->highcolorset = default_style->highcolorset;
+	new_style->ballooncolorset = default_style->ballooncolorset;
+	snprintf(label, sizeof(label), "Desk %d", desk);
+	new_style->label = fxstrdup(label);
+	new_style->Dcolor = NULL;
+	if (default_style->Dcolor)
+		new_style->Dcolor = fxstrdup(default_style->Dcolor);
+	new_style->bgPixmap = default_style->bgPixmap;
+	TAILQ_INSERT_TAIL(&desk_style_q, new_style, entry);
 
-  return newitem;
+	return new_style;
 }
 
 void ExitPager(void)
 {
+  DeskStyle *style, *style2;
   struct fpmonitor *fp, *fp1;
 
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
@@ -2339,6 +2110,16 @@ void ExitPager(void)
 	free(fp->CPagerWin);
 	free(fp);
   }
+
+  TAILQ_FOREACH_SAFE(style, &desk_style_q, entry, style2) {
+	TAILQ_REMOVE(&desk_style_q, style, entry);
+	if (style->label)
+		free(style->label);
+	if (style->Dcolor)
+		free(style->Dcolor);
+	free(style);
+  }
+  free(Desks);
 
   if (is_transient)
   {
