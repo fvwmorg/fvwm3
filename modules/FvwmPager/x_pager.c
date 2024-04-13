@@ -79,6 +79,7 @@ static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 static int is_window_visible(PagerWindow *t);
 static void draw_grid_label(const char *label, const char *small, int desk,
 			int x, int y, int width, int height, bool hilight);
+static void initialize_desk_colors(int desk);
 
 #define  MAX_UNPROCESSED_MESSAGES 1
 /* sums up pixels to scroll. If do_send_message is true a Scroll command is
@@ -619,6 +620,7 @@ void initialise_common_pager_fragments(void)
 {
 	extern char *WindowBack, *WindowFore, *WindowHiBack, *WindowHiFore;
 	extern char *font_string, *smallFont;
+	DeskStyle *style = FindDeskStyle(-1);
 
 	/* I don't think that this is necessary - just let pager die */
 	/* domivogt (07-mar-1999): But it is! A window being moved in the pager
@@ -652,11 +654,7 @@ void initialise_common_pager_fragments(void)
 		FwindowFont = FlocaleLoadFont(dpy, smallFont, MyName);
 	}
 
-	/* Load the colors */
-	fore_pix = GetColor(PagerFore);
-	back_pix = GetColor(PagerBack);
-	hi_pix = GetColor(HilightC);
-
+	/* Load the window colors */
 	if (windowcolorset >= 0)
 	{
 		win_back_pix = Colorset[windowcolorset].bg;
@@ -684,16 +682,20 @@ void initialise_common_pager_fragments(void)
 	}
 
 	/* Load pixmaps for mono use */
-	if(Pdepth<2)
+	if (Pdepth < 2)
 	{
-		Scr.gray_pixmap = XCreatePixmapFromBitmapData(dpy, Scr.Pager_w,
-			g_bits, g_width,g_height, fore_pix,back_pix,Pdepth);
-		Scr.light_gray_pixmap = XCreatePixmapFromBitmapData(dpy,
-			Scr.Pager_w,l_g_bits,l_g_width, l_g_height,
-			fore_pix,back_pix,Pdepth);
-		Scr.sticky_gray_pixmap = XCreatePixmapFromBitmapData(dpy,
-			Scr.Pager_w,s_g_bits,s_g_width, s_g_height,
-			fore_pix,back_pix,Pdepth);
+		Pixel fore_pix = GetColor(style->fgColor);
+		Pixel back_pix = GetColor(style->bgColor);
+
+		Scr.gray_pixmap = XCreatePixmapFromBitmapData(
+			dpy, Scr.Pager_w, g_bits, g_width, g_height,
+			fore_pix, back_pix, Pdepth);
+		Scr.light_gray_pixmap = XCreatePixmapFromBitmapData(
+			dpy, Scr.Pager_w, l_g_bits, l_g_width, l_g_height,
+			fore_pix, back_pix, Pdepth);
+		Scr.sticky_gray_pixmap = XCreatePixmapFromBitmapData(
+			dpy, Scr.Pager_w, s_g_bits, s_g_width, s_g_height,
+			fore_pix, back_pix, Pdepth);
 	}
 
 	/* Size the window */
@@ -747,6 +749,69 @@ void initialize_fpmonitor_windows(struct fpmonitor *fp)
 	}
 }
 
+void initialize_desk_colors(int desk)
+{
+	XGCValues gcv;
+	char dash_list[2];
+	DeskStyle *style = Desks[desk].style;
+	Pixel fore_pix = GetColor(style->fgColor);
+	Pixel back_pix = GetColor(style->bgColor);
+	Pixel hi_pix = GetColor(style->hiColor);
+
+	/* create the GC for desk labels */
+	gcv.foreground = (style->colorset < 0) ? fore_pix
+			 : Colorset[style->colorset].fg;
+	if (label_h > 0 && Ffont && Ffont->font) {
+		gcv.font = Ffont->font->fid;
+		Desks[desk].NormalGC = fvwmlib_XCreateGC(
+			dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+	} else {
+		Desks[desk].NormalGC = fvwmlib_XCreateGC(
+			dpy, Scr.Pager_w, GCForeground, &gcv);
+	}
+
+	/* create the active desk hilite GC */
+	if (Pdepth < 2)
+		gcv.foreground = fore_pix;
+	else
+		gcv.foreground = (style->highcolorset < 0) ? hi_pix :
+				 Colorset[style->highcolorset].bg;
+	Desks[desk].HiliteGC = fvwmlib_XCreateGC(
+		dpy, Scr.Pager_w, GCForeground, &gcv);
+
+	/* create the hilight desk title drawing GC */
+	if (Pdepth < 2 || fore_pix == hi_pix)
+		gcv.foreground = (style->highcolorset < 0) ? back_pix :
+				 Colorset[style->highcolorset].fg;
+	else
+		gcv.foreground = (style->highcolorset < 0) ? fore_pix :
+				 Colorset[Desks[desk].style->highcolorset].fg;
+
+	if (label_h > 0 && Ffont && Ffont->font)
+		Desks[desk].rvGC = fvwmlib_XCreateGC(
+			dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+	else
+		Desks[desk].rvGC = fvwmlib_XCreateGC(
+			dpy, Scr.Pager_w, GCForeground, &gcv);
+
+	/* create the virtual page boundary GC */
+	gcv.foreground = (style->colorset < 0) ? fore_pix :
+			 Colorset[style->colorset].fg;
+	gcv.line_width = 1;
+	gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
+	Desks[desk].DashedGC = fvwmlib_XCreateGC(dpy,
+		Scr.Pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
+	if (use_dashed_separators) {
+		/* Although this should already be the default for a freshly
+		 * created GC, some X servers do not draw properly dashed
+		 * lines if the dash style is not set explicitly.
+		 */
+		dash_list[0] = 4;
+		dash_list[1] = 4;
+		XSetDashes(dpy, Desks[desk].DashedGC, 0, dash_list, 2);
+	}
+}
+
 void initialize_pager(void)
 {
   XWMHints wmhints;
@@ -757,7 +822,6 @@ void initialize_pager(void)
   int i = 0;
   XGCValues gcv;
   extern char *BalloonFont;
-  char dash_list[2];
   FlocaleFont *balloon_font;
   struct fpmonitor *fp = fpmonitor_this(NULL);
   struct fpmonitor *m;
@@ -941,57 +1005,7 @@ void initialize_pager(void)
 
   for(i=0;i<ndesks;i++)
   {
-    /* create the GC for desk labels */
-    gcv.foreground = (Desks[i].style->colorset < 0) ? fore_pix
-      : Colorset[Desks[i].style->colorset].fg;
-    if (label_h > 0 && Ffont && Ffont->font) {
-      gcv.font = Ffont->font->fid;
-      Desks[i].NormalGC =
-	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
-    } else {
-      Desks[i].NormalGC =
-	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
-    }
-    /* create the active desk hilite GC */
-    if(Pdepth < 2)
-      gcv.foreground = fore_pix;
-    else
-      gcv.foreground = (Desks[i].style->highcolorset < 0) ? hi_pix
-	: Colorset[Desks[i].style->highcolorset].bg;
-    Desks[i].HiliteGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
-
-    /* create the hilight desk title drawing GC */
-    if ((Pdepth < 2) || (fore_pix == hi_pix))
-      gcv.foreground = (Desks[i].style->highcolorset < 0) ? back_pix
-	: Colorset[Desks[i].style->highcolorset].fg;
-    else
-      gcv.foreground = (Desks[i].style->highcolorset < 0) ? fore_pix
-	: Colorset[Desks[i].style->highcolorset].fg;
-
-    if (label_h > 0 && Ffont && Ffont->font) {
-      Desks[i].rvGC =
-	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
-    } else {
-      Desks[i].rvGC =
-	fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
-    }
-    /* create the virtual page boundary GC */
-    gcv.foreground = (Desks[i].style->colorset < 0) ? fore_pix
-      : Colorset[Desks[i].style->colorset].fg;
-    gcv.line_width = 1;
-    gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
-    Desks[i].DashedGC =
-      fvwmlib_XCreateGC(
-	dpy, Scr.Pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
-    if (use_dashed_separators)
-    {
-      /* Although this should already be the default for a freshly created GC,
-       * some X servers do not draw properly dashed lines if the dash style is
-       * not set explicitly. */
-      dash_list[0] = 4;
-      dash_list[1] = 4;
-      XSetDashes(dpy, Desks[i].DashedGC, 0, dash_list, 2);
-    }
+    initialize_desk_colors(i);
 
     valuemask = (CWBorderPixel | CWColormap | CWEventMask);
     if (Desks[i].style->colorset >= 0 &&
@@ -1005,13 +1019,13 @@ void initialize_pager(void)
     {
 	valuemask |= CWBackPixel;
 	attributes.background_pixel = (Desks[i].style->colorset < 0) ?
-	    (Desks[i].style->Dcolor ? GetColor(Desks[i].style->Dcolor)
-	    : back_pix)
-	    : Colorset[Desks[i].style->colorset].bg;
+				      GetColor(Desks[i].style->bgColor) :
+				      Colorset[Desks[i].style->colorset].bg;
     }
 
-    attributes.border_pixel = (Desks[i].style->colorset < 0) ? fore_pix
-      : Colorset[Desks[i].style->colorset].fg;
+    attributes.border_pixel = (Desks[i].style->colorset < 0) ?
+			      GetColor(Desks[i].style->fgColor) :
+			      Colorset[Desks[i].style->colorset].fg;
     attributes.event_mask = (ExposureMask | ButtonReleaseMask);
     Desks[i].title_w = XCreateWindow(
       dpy, Scr.Pager_w, -1, -1, desk_w, desk_h + label_h, 1,
@@ -1031,21 +1045,10 @@ void initialize_pager(void)
       valuemask |= CWBackPixmap;
       attributes.background_pixmap = Desks[i].style->bgPixmap->picture;
     }
-    else if (Desks[i].style->Dcolor)
-    {
-      valuemask |= CWBackPixel;
-      attributes.background_pixel = GetColor(Desks[i].style->Dcolor);
-    }
-    else if (PixmapBack)
-    {
-      valuemask |= CWBackPixmap;
-      attributes.background_pixmap = PixmapBack->picture;
-    }
     else
     {
       valuemask |= CWBackPixel;
-      attributes.background_pixel = (Desks[i].style->colorset < 0) ? back_pix
-	: Colorset[Desks[i].style->colorset].bg;
+      attributes.background_pixel = GetColor(Desks[i].style->bgColor);
     }
 
     Desks[i].w = XCreateWindow(
@@ -1065,16 +1068,17 @@ void initialize_pager(void)
 	valuemask |= CWBackPixmap;
 	attributes.background_pixmap = None; /* set later */
       }
-      else if (HilightPixmap)
+      else if (Desks[i].style->hiPixmap)
       {
 	valuemask |= CWBackPixmap;
-	attributes.background_pixmap = HilightPixmap->picture;
+	attributes.background_pixmap = Desks[i].style->hiPixmap->picture;
       }
       else
       {
 	valuemask |= CWBackPixel;
-	attributes.background_pixel = (Desks[i].style->highcolorset < 0)
-	  ? hi_pix : Colorset[Desks[i].style->highcolorset].bg;
+	attributes.background_pixel = (Desks[i].style->highcolorset < 0) ?
+				      GetColor(Desks[i].style->hiColor) :
+				      Colorset[Desks[i].style->highcolorset].bg;
       }
     }
     else
@@ -2038,19 +2042,14 @@ void DrawIconGrid(int erase)
 		if (style->bgPixmap)
 			XSetWindowBackgroundPixmap(dpy, icon_win,
 				style->bgPixmap->picture);
-		else if (style->Dcolor)
-			XSetWindowBackground(dpy, icon_win,
-				GetColor(style->Dcolor));
-		else if (PixmapBack)
-			XSetWindowBackgroundPixmap(dpy, icon_win,
-				PixmapBack->picture);
 		else if (style->colorset > 0)
 			XSetWindowBackground(dpy, icon_win,
 				Colorset[style->colorset].bg);
-		else
-			XSetWindowBackground(dpy, icon_win, back_pix);
+		else if (style->bgColor)
+			XSetWindowBackground(dpy, icon_win,
+				GetColor(style->bgColor));
 
-		XClearWindow(dpy,icon_win);
+		XClearWindow(dpy, icon_win);
 	}
 
 	rec.x = fp->virtual_scr.VxPages;
@@ -2069,16 +2068,18 @@ void DrawIconGrid(int erase)
 	if (HilightDesks) {
 		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
 			int desk = (CurrentDeskPerMonitor) ?
-				fp->m->virtual_scr.CurrentDesk : desk1;
+				fp->m->virtual_scr.CurrentDesk : desk_i;
 
 			if (fp->disabled ||
 			   fp->m->virtual_scr.CurrentDesk != tmp + desk ||
 			   (monitor_to_track != NULL &&
 			   fp != monitor_to_track))
 				continue;
+
+			DeskStyle *style = FindDeskStyle(tmp + desk1);
 			rec = set_vp_size_and_loc(fp, true);
-			if (HilightPixmap) {
-				XCopyArea(dpy, HilightPixmap->picture, icon_win,
+			if (style->hiPixmap) {
+				XCopyArea(dpy, style->hiPixmap->picture, icon_win,
 					Scr.NormalGC, 0, 0, rec.width, rec.height,
 					rec.x, rec.y);
 			} else {
@@ -3173,10 +3174,12 @@ void setup_balloon_window(int i)
 	XUnmapWindow(dpy, Scr.balloon_w);
 	if (Desks[i].style->ballooncolorset < 0)
 	{
-		xswa.border_pixel = (!BalloonBorderColor) ?
-			fore_pix : GetColor(BalloonBorderColor);
-		xswa.background_pixel =
-			(!BalloonBack) ? back_pix : GetColor(BalloonBack);
+		xswa.border_pixel = (BalloonBorderColor) ?
+				    GetColor(BalloonBorderColor) :
+				    GetColor(Desks[i].style->fgColor);
+		xswa.background_pixel = (BalloonBack) ?
+					GetColor(BalloonBack) :
+					GetColor(Desks[i].style->bgColor);
 		valuemask = CWBackPixel | CWBorderPixel;
 	}
 	else
@@ -3207,8 +3210,8 @@ void setup_balloon_gc(int i, PagerWindow *t)
 	valuemask = GCForeground;
 	if (Desks[i].style->ballooncolorset < 0)
 	{
-		xgcv.foreground =
-			(!BalloonFore) ? fore_pix : GetColor(BalloonFore);
+		xgcv.foreground = (BalloonFore) ? GetColor(BalloonFore) :
+				  GetColor(Desks[i].style->fgColor);
 		if (BalloonFore == NULL)
 		{
 			XSetForeground(dpy, Scr.balloon_gc, t->text);
@@ -3468,26 +3471,19 @@ static void set_window_colorset_background(PagerWindow *t, colorset_t *csetp)
  */
 void set_desk_background(int desk)
 {
-	if (Desks[desk].style->colorset > -1) {
+	DeskStyle *style = Desks[desk].style;
+
+	if (style->colorset > -1) {
 		/* use our colour set if we have one */
-		change_colorset(Desks[desk].style->colorset);
-	} else if (Desks[desk].style->bgPixmap != NULL) {
-		Desks[desk].style->bgPixmap->count++;
+		change_colorset(style->colorset);
+	} else if (style->bgPixmap != NULL) {
+		style->bgPixmap->count++;
 		XSetWindowBackgroundPixmap(dpy, Desks[desk].w,
-					Desks[desk].style->bgPixmap->picture);
-	} else if (Desks[desk].style->Dcolor != NULL) {
-		XSetWindowBackground(dpy,
-			Desks[desk].w, GetColor(Desks[desk].style->Dcolor));
-	} else if (PixmapBack != NULL) {
-		PixmapBack->count++;
-		XSetWindowBackgroundPixmap(dpy, Desks[desk].w,
-					   PixmapBack->picture);
+					   style->bgPixmap->picture);
 	} else {
-		XSetWindowBackground(dpy, Desks[desk].w, GetColor(PagerBack));
+		XSetWindowBackground(dpy,
+			Desks[desk].w, GetColor(style->bgColor));
 	}
-	if (Desks[desk].style->colorset < 0)
-		XSetWindowBackground(dpy, Desks[desk].title_w,
-				     GetColor(Desks[desk].style->Dcolor));
 
 	XClearWindow(dpy, Desks[0].w);
 	XClearWindow(dpy, Desks[0].title_w);

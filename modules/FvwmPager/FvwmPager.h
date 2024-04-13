@@ -129,8 +129,11 @@ typedef struct desk_style
 	int highcolorset;
 	int ballooncolorset;
 	char *label;
-	char *Dcolor;
+	char *fgColor;
+	char *bgColor;
+	char *hiColor;
 	FvwmPicture *bgPixmap;		/* Pixmap used as background. */
+	FvwmPicture *hiPixmap;		/* Hilighted background pixmap. */
 	TAILQ_ENTRY(desk_style) entry;
 } DeskStyle;
 TAILQ_HEAD(desk_styles, desk_style);
@@ -156,9 +159,6 @@ typedef struct desk_info
  *
  */
 /* Colors, Pixmaps, Fonts, etc. */
-extern char		*HilightC;
-extern char		*PagerFore;
-extern char		*PagerBack;
 extern char		*smallFont;
 extern char		*ImagePath;
 extern char		*WindowBack;
@@ -173,9 +173,6 @@ extern char		*WindowLabelFormat;
 extern char		*BalloonTypeString;
 extern char		*BalloonBorderColor;
 extern char		*BalloonFormatString;
-extern Pixel		hi_pix;
-extern Pixel		back_pix;
-extern Pixel		fore_pix;
 extern Pixel		focus_pix;
 extern Pixel		win_back_pix;
 extern Pixel		win_fore_pix;
@@ -185,8 +182,6 @@ extern Pixel		win_hi_fore_pix;
 extern Pixmap		default_pixmap;
 extern FlocaleFont	*Ffont;
 extern FlocaleFont	*FwindowFont;
-extern FvwmPicture	*PixmapBack;
-extern FvwmPicture	*HilightPixmap;
 extern FlocaleWinString	*FwinString;
 
 /* Sizes / Dimensions */
