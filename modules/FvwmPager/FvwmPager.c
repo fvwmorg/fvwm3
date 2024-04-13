@@ -1731,16 +1731,14 @@ void ParseOptions(void)
 			DeskStyle *style;
 			if (arg1[0] == '*') {
 				TAILQ_FOREACH(style, &desk_style_q, entry) {
-					if (style->fgColor)
-						free(style->fgColor);
+					free(style->fgColor);
 					CopyString(&(style->fgColor), arg2);
 				}
 			} else {
 				int desk = 0;
 				sscanf(arg1, "%d", &desk);
 				style = FindDeskStyle(desk);
-				if (style->fgColor)
-					free(style->fgColor);
+				free(style->fgColor);
 				CopyString(&(style->fgColor), arg2);
 			}
 		} else if (StrEquals(resource, "Back") ||
@@ -1752,16 +1750,14 @@ void ParseOptions(void)
 			DeskStyle *style;
 			if (arg1[0] == '*') {
 				TAILQ_FOREACH(style, &desk_style_q, entry) {
-					if (style->bgColor)
-						free(style->bgColor);
+					free(style->bgColor);
 					CopyString(&(style->bgColor), arg2);
 				}
 			} else {
 				int desk = 0;
 				sscanf(arg1, "%d", &desk);
 				style = FindDeskStyle(desk);
-				if (style->bgColor)
-					free(style->bgColor);
+				free(style->bgColor);
 				CopyString(&(style->bgColor), arg2);
 			}
 		} else if (StrEquals(resource, "Hilight")) {
@@ -1771,16 +1767,14 @@ void ParseOptions(void)
 			DeskStyle *style;
 			if (arg1[0] == '*') {
 				TAILQ_FOREACH(style, &desk_style_q, entry) {
-					if (style->hiColor)
-						free(style->hiColor);
+					free(style->hiColor);
 					CopyString(&(style->hiColor), arg2);
 				}
 			} else {
 				int desk = 0;
 				sscanf(arg1, "%d", &desk);
 				style = FindDeskStyle(desk);
-				if (style->hiColor)
-					free(style->hiColor);
+				free(style->hiColor);
 				CopyString(&(style->hiColor), arg2);
 			}
 		} else if (StrEquals(resource, "Pixmap") ||
