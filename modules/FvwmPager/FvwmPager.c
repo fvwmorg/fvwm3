@@ -230,6 +230,22 @@ fpmonitor_this(struct monitor *m_find)
 
 }
 
+void initialize_colorsets(void)
+{
+	DeskStyle *style;
+
+	TAILQ_FOREACH(style, &desk_style_q, entry) {
+		if (style->cs >= 0) {
+			style->fg = Colorset[style->cs].fg;
+			style->bg = Colorset[style->cs].bg;
+		}
+		if (style->hi_cs >= 0) {
+			style->hi_fg = Colorset[style->hi_cs].fg;
+			style->hi_bg = Colorset[style->hi_cs].bg;
+		}
+	}
+}
+
 /*
  *
  *  Procedure:
@@ -264,23 +280,6 @@ int main(int argc, char **argv)
 
   TAILQ_INIT(&fp_monitor_q);
   TAILQ_INIT(&desk_style_q);
-  /* Default desk=-1 stores any all desk (*) settings. */
-  {
-	DeskStyle *default_style;
-
-	default_style = fxcalloc(1, sizeof(DeskStyle));
-	default_style->desk = -1;
-	default_style->colorset = -1;
-	default_style->highcolorset = -1;
-	default_style->ballooncolorset = -1;
-	default_style->label = fxstrdup("-");
-	default_style->fgColor = fxstrdup("black");
-	default_style->bgColor = fxstrdup("white");
-	default_style->hiColor = fxstrdup("grey");
-	default_style->bgPixmap = NULL;
-	default_style->hiPixmap = NULL;
-	TAILQ_INSERT_TAIL(&desk_style_q, default_style, entry);
-  }
 
 #ifdef HAVE_SIGACTION
   {
@@ -407,6 +406,25 @@ int main(int argc, char **argv)
   /* make a temp window for any pixmaps, deleted later */
   initialize_viz_pager();
 
+  /* Initialize default DeskStyle, stored on desk -1. */
+  {
+	DeskStyle *default_style;
+
+	default_style = fxcalloc(1, sizeof(DeskStyle));
+	default_style->desk = -1;
+	default_style->cs = -1;
+	default_style->hi_cs = -1;
+	default_style->balloon_cs = -1;
+	default_style->label = fxstrdup("-");
+	default_style->fg = GetSimpleColor("black");
+	default_style->bg = GetSimpleColor("white");
+	default_style->hi_fg = GetSimpleColor("black");
+	default_style->hi_bg = GetSimpleColor("grey");
+	default_style->bgPixmap = NULL;
+	default_style->hiPixmap = NULL;
+	TAILQ_INSERT_TAIL(&desk_style_q, default_style, entry);
+  }
+
   SetMessageMask(fd,
 		 M_VISIBLE_NAME |
 		 M_ADD_WINDOW|
@@ -471,6 +489,7 @@ int main(int argc, char **argv)
   SendInfo(fd,"Send_WindowList",0);
 
   /* open a pager window */
+  initialize_colorsets();
   initialise_common_pager_fragments();
   initialize_pager();
 
@@ -1344,7 +1363,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
  * in the DeskStyle strut is used to set the desired colorset.
  * The lines accessing this info look very ugly, but they work.
  */
-static void ParseColorset(char *arg1, char *arg2, void *offset_style)
+static void SetDeskStyleColorset(char *arg1, char *arg2, void *offset_style)
 {
   int colorset = 0;
   int desk;
@@ -1363,6 +1382,29 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_style)
 
 	  style = FindDeskStyle(desk);
 	  *(int *)(((char *)style) + offset) = colorset;
+  }
+
+  return;
+}
+
+static void SetDeskStylePixel(char *arg1, char *arg2, void *offset_style)
+{
+  int desk;
+  unsigned long offset = (unsigned long)offset_style;
+  DeskStyle *style;
+  Pixel pix;
+
+  pix = GetSimpleColor(arg2);
+  if (arg1[0] == '*') {
+	  TAILQ_FOREACH(style, &desk_style_q, entry) {
+		  *(unsigned long *)(((char *)style) + offset) = pix;
+	  }
+  } else {
+	  desk = desk1;
+	  sscanf(arg1, "%d", &desk);
+
+	  style = FindDeskStyle(desk);
+	  *(unsigned long *)(((char *)style) + offset) = pix;
   }
 
   return;
@@ -1671,14 +1713,34 @@ void ParseOptions(void)
 			current_monitor = (StrEquals(next, "none")) ?
 				NULL : fpmonitor_by_name(next);
 		} else if(StrEquals(resource,"Colorset")) {
-			ParseColorset(arg1, arg2,
-				&(((DeskStyle *)(NULL))->colorset));
+			SetDeskStyleColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->cs));
 		} else if(StrEquals(resource,"BalloonColorset")) {
-			ParseColorset(arg1, arg2,
-				&(((DeskStyle *)(NULL))->ballooncolorset));
+			SetDeskStyleColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->balloon_cs));
 		} else if(StrEquals(resource,"HilightColorset")) {
-			ParseColorset(arg1, arg2,
-				&(((DeskStyle *)(NULL))->highcolorset));
+			SetDeskStyleColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->hi_cs));
+		} else if (StrEquals(resource, "Fore")) {
+			if (Pdepth > 0)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->fg));
+		} else if (StrEquals(resource, "Back") ||
+			   StrEquals(resource, "DeskColor"))
+		{
+			if (Pdepth > 0)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->bg));
+		} else if (StrEquals(resource, "HiFore")) {
+			if (Pdepth > 0)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->hi_fg));
+		} else if (StrEquals(resource, "HiBack") ||
+			   StrEquals(resource, "Hilight"))
+		{
+			if (Pdepth > 0)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->hi_bg));
 		} else if (StrEquals(resource, "Geometry")) {
 			flags = FScreenParseGeometry(
 					next, &g_x, &g_y, &width, &height);
@@ -1723,59 +1785,6 @@ void ParseOptions(void)
 				use_monitor_label = false;
 				free(font_string);
 				font_string = NULL;
-			}
-		} else if (StrEquals(resource, "Fore")) {
-			if (Pdepth == 0)
-				goto free_vars;
-
-			DeskStyle *style;
-			if (arg1[0] == '*') {
-				TAILQ_FOREACH(style, &desk_style_q, entry) {
-					free(style->fgColor);
-					CopyString(&(style->fgColor), arg2);
-				}
-			} else {
-				int desk = 0;
-				sscanf(arg1, "%d", &desk);
-				style = FindDeskStyle(desk);
-				free(style->fgColor);
-				CopyString(&(style->fgColor), arg2);
-			}
-		} else if (StrEquals(resource, "Back") ||
-			   StrEquals(resource, "DeskColor"))
-		{
-			if (Pdepth == 0)
-				goto free_vars;
-
-			DeskStyle *style;
-			if (arg1[0] == '*') {
-				TAILQ_FOREACH(style, &desk_style_q, entry) {
-					free(style->bgColor);
-					CopyString(&(style->bgColor), arg2);
-				}
-			} else {
-				int desk = 0;
-				sscanf(arg1, "%d", &desk);
-				style = FindDeskStyle(desk);
-				free(style->bgColor);
-				CopyString(&(style->bgColor), arg2);
-			}
-		} else if (StrEquals(resource, "Hilight")) {
-			if (Pdepth == 0)
-				goto free_vars;
-
-			DeskStyle *style;
-			if (arg1[0] == '*') {
-				TAILQ_FOREACH(style, &desk_style_q, entry) {
-					free(style->hiColor);
-					CopyString(&(style->hiColor), arg2);
-				}
-			} else {
-				int desk = 0;
-				sscanf(arg1, "%d", &desk);
-				style = FindDeskStyle(desk);
-				free(style->hiColor);
-				CopyString(&(style->hiColor), arg2);
 			}
 		} else if (StrEquals(resource, "Pixmap") ||
 			   StrEquals(resource, "DeskPixmap"))
@@ -1980,13 +1989,14 @@ DeskStyle *FindDeskStyle(int desk)
 
 	style = fxcalloc(1, sizeof(DeskStyle));
 	style->desk = desk;
-	style->colorset = default_style->colorset;;
-	style->highcolorset = default_style->highcolorset;
-	style->ballooncolorset = default_style->ballooncolorset;
+	style->cs = default_style->cs;;
+	style->hi_cs = default_style->hi_cs;
+	style->balloon_cs = default_style->balloon_cs;
 	xasprintf(&style->label, "Desk %d", desk);
-	style->fgColor = fxstrdup(default_style->fgColor);
-	style->bgColor = fxstrdup(default_style->bgColor);
-	style->hiColor = fxstrdup(default_style->hiColor);
+	style->fg = default_style->fg;
+	style->bg = default_style->bg;
+	style->hi_fg = default_style->hi_fg;
+	style->hi_bg = default_style->hi_bg;
 	style->bgPixmap = default_style->bgPixmap;
 	style->hiPixmap = default_style->hiPixmap;
 	TAILQ_INSERT_TAIL(&desk_style_q, style, entry);
@@ -2008,9 +2018,6 @@ void ExitPager(void)
   TAILQ_FOREACH_SAFE(style, &desk_style_q, entry, style2) {
 	TAILQ_REMOVE(&desk_style_q, style, entry);
 	free(style->label);
-	free(style->fgColor);
-	free(style->bgColor);
-	free(style->hiColor);
 	free(style);
   }
   free(Desks);
