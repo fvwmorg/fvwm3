@@ -1503,569 +1503,425 @@ void parse_desktop_configuration_line(char *tline)
 }
 
 /*
- *
  * This routine is responsible for reading and parsing the config file
- *
  */
 void ParseOptions(void)
 {
-  char *tline= NULL;
-  char *mname;
-  int desk;
-  bool MoveThresholdSetForModule = false;
+	char *tline= NULL;
+	char *mname;
+	int desk;
+	bool MoveThresholdSetForModule = false;
 
-  FvwmPictureAttributes fpa;
-  Scr.FvwmRoot = NULL;
-  Scr.Hilite = NULL;
-  Scr.VScale = 32;
+	FvwmPictureAttributes fpa;
+	Scr.FvwmRoot = NULL;
+	Scr.Hilite = NULL;
+	Scr.VScale = 32;
 
-  fpa.mask = 0;
-  if (Pdepth <= 8)
-  {
-	  fpa.mask |= FPAM_DITHER;
-  }
-
-  xasprintf(&mname, "*%s", MyName);
-  InitGetConfigLine(fd, mname);
-  free(mname);
-
-  for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline))
-  {
-    int g_x, g_y, flags;
-    unsigned width,height;
-    char *resource;
-    char *arg1 = NULL;
-    char *arg2 = NULL;
-    char *tline2;
-    char *token;
-    char *next;
-
-    token = PeekToken(tline, &next);
-
-    /* Step 1: Initial configuration broadcasts are parsed here.
-     * This needs to match list_config_info(), along with having
-     * a few extra broadcasts that are only sent during initialization.
-     */
-    if (token[0] == '*') {
-        /* This is a module configuration item, skip to next step. */
-    }
-    else if (StrEquals(token, "Colorset"))
-    {
-      LoadColorset(next);
-      continue;
-    }
-    else if (StrEquals(token, "DesktopSize"))
-    {
-      parse_desktop_size_line(next);
-      continue;
-    }
-    else if (StrEquals(token, "ImagePath"))
-    {
-      free(ImagePath);
-ImagePath = NULL;
-      GetNextToken(next, &ImagePath);
-
-      continue;
-    }
-    else if (StrEquals(token, "MoveThreshold"))
-    {
-      if (!MoveThresholdSetForModule)
-      {
-	int val;
-	if (GetIntegerArguments(next, NULL, &val, 1) > 0)
+	fpa.mask = 0;
+	if (Pdepth <= 8)
 	{
-	  if (val >= 0)
-	    MoveThreshold = val;
-	  else
-	    MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
+		fpa.mask |= FPAM_DITHER;
 	}
-      }
-      continue;
-    }
-    else if (StrEquals(token, "DesktopName"))
-    {
-      int val;
 
-      if (GetIntegerArguments(next, &next, &val, 1) > 0)
-      {
-		SetDeskLabel(val, (const char *)next);
-      }
-      continue;
-    }
-    else if (StrEquals(token, "Monitor"))
-    {
-	parse_monitor_line(next);
-	continue;
-    }
-    else if (StrEquals(token, "DesktopConfiguration"))
-    {
-	parse_desktop_configuration_line(next);
-	continue;
-    }
-    else
-    {
-      /* Module configuration lines have skipped this if block. */
-      continue;
-    }
+	xasprintf(&mname, "*%s", MyName);
+	InitGetConfigLine(fd, mname);
+	free(mname);
 
-    /* Step 2: Parse module configuration options. */
-    tline2 = GetModuleResource(tline, &resource, MyName);
-    if (!resource)
-      continue;
-    tline2 = GetNextToken(tline2, &arg1);
-    if (!arg1)
-    {
-      arg1 = fxmalloc(1);
-      arg1[0] = 0;
-    }
-    tline2 = GetNextToken(tline2, &arg2);
-    if (!arg2)
-    {
-      arg2 = fxmalloc(1);
-      arg2[0] = 0;
-    }
-
-    if (StrEquals(resource, "Monitor")) {
-	    free(preferred_monitor);
-	    next = SkipSpaces(next, NULL, 0);
-	    if (StrEquals(next, "none")) {
-		    monitor_to_track = NULL;
-		    preferred_monitor = NULL;
-	    } else {
-		    monitor_to_track = fpmonitor_by_name(next);
-		    /* Fallback to current monitor. */
-		    if (monitor_to_track == NULL)
-			    monitor_to_track = fpmonitor_this(NULL);
-		    preferred_monitor = fxstrdup(next);
-	    }
-    } else if (StrEquals(resource, "CurrentMonitor")) {
-	    next = SkipSpaces(next, NULL, 0);
-	    if (StrEquals(next, "none"))
-		    current_monitor = NULL;
-	    else
-		    current_monitor = fpmonitor_by_name(next);
-    } else if(StrEquals(resource, "DeskLabels")) {
-	    use_desk_label = true;
-    } else if(StrEquals(resource, "NoDeskLabels")) {
-	    use_desk_label = false;
-    } else if(StrEquals(resource, "MonitorLabels")) {
-	    use_monitor_label = true;
-    } else if(StrEquals(resource, "NoMonitorLabels")) {
-	    use_monitor_label = false;
-    } else if(StrEquals(resource, "CurrentDeskPerMonitor")) {
-	    CurrentDeskPerMonitor = true;
-    } else if(StrEquals(resource, "CurrentDeskGlobal")) {
-	    CurrentDeskPerMonitor = false;
-    } else if(StrEquals(resource, "IsShared")) {
-	    IsShared = true;
-    } else if(StrEquals(resource, "IsNotShared")) {
-	    IsShared = false;
-    }
-    else if(StrEquals(resource,"Colorset"))
-    {
-      ParseColorset(arg1, arg2,
-		    &(((DeskStyle *)(NULL))->colorset));
-    }
-    else if(StrEquals(resource,"BalloonColorset"))
-    {
-      ParseColorset(arg1, arg2,
-		    &(((DeskStyle *)(NULL))->ballooncolorset));
-    }
-    else if(StrEquals(resource,"HilightColorset"))
-    {
-      ParseColorset(arg1, arg2,
-		    &(((DeskStyle *)(NULL))->highcolorset));
-    }
-    else if (StrEquals(resource, "Geometry"))
-    {
-      flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
-      if (flags & WidthValue)
-      {
-	pwindow.width = width;
-      }
-      if (flags & HeightValue)
-      {
-	pwindow.height = height;
-      }
-      if (flags & XValue)
-      {
-	pwindow.x = g_x;
-	usposition = true;
-	if (flags & XNegative)
+	for (GetConfigLine(fd, &tline); tline != NULL;
+	     GetConfigLine(fd, &tline))
 	{
-	  xneg = true;
+		int g_x, g_y, flags;
+		unsigned width, height;
+		char *resource;
+		char *arg1 = NULL;
+		char *arg2 = NULL;
+		char *tline2;
+		char *token;
+		char *next;
+
+		token = PeekToken(tline, &next);
+
+		/* Step 1: Initial configuration broadcasts are parsed here.
+		 * This needs to match list_config_info(), along with having
+		 * a few extra broadcasts that are sent during initialization.
+		 */
+		if (token[0] == '*') {
+			/* Module configuration item, skip to next step. */
+		} else if (StrEquals(token, "Colorset")) {
+			LoadColorset(next);
+			continue;
+		} else if (StrEquals(token, "DesktopSize")) {
+			parse_desktop_size_line(next);
+			continue;
+		} else if (StrEquals(token, "ImagePath")) {
+			free(ImagePath);
+			ImagePath = NULL;
+			GetNextToken(next, &ImagePath);
+			continue;
+		} else if (StrEquals(token, "MoveThreshold")) {
+			if (MoveThresholdSetForModule)
+				continue;
+
+			int val;
+			if (GetIntegerArguments(next, NULL, &val, 1) > 0)
+				MoveThreshold = (val => 0) ? val :
+						DEFAULT_PAGER_MOVE_THRESHOLD;
+			continue;
+		} else if (StrEquals(token, "DesktopName")) {
+			int val;
+
+			if (GetIntegerArguments(next, &next, &val, 1) > 0)
+				SetDeskLabel(val, (const char *)next);
+			continue;
+		} else if (StrEquals(token, "Monitor")) {
+			parse_monitor_line(next);
+			continue;
+		} else if (StrEquals(token, "DesktopConfiguration")) {
+			parse_desktop_configuration_line(next);
+			continue;
+		} else {
+			/* Module configuration lines have skipped this. */
+			continue;
+		}
+
+		/* Step 2: Parse module configuration options. */
+		tline2 = GetModuleResource(tline, &resource, MyName);
+		if (!resource)
+			continue;
+		tline2 = GetNextToken(tline2, &arg1);
+		if (!arg1)
+		{
+			arg1 = fxmalloc(1);
+			arg1[0] = 0;
+		}
+		tline2 = GetNextToken(tline2, &arg2);
+		if (!arg2)
+		{
+			arg2 = fxmalloc(1);
+			arg2[0] = 0;
+		}
+
+		if (StrEquals(resource, "Monitor")) {
+			free(preferred_monitor);
+			next = SkipSpaces(next, NULL, 0);
+			if (StrEquals(next, "none")) {
+				monitor_to_track = NULL;
+				preferred_monitor = NULL;
+				continue;
+			}
+			monitor_to_track = fpmonitor_by_name(next);
+			/* Fallback to current monitor. */
+			if (monitor_to_track == NULL)
+				monitor_to_track = fpmonitor_this(NULL);
+			preferred_monitor = fxstrdup(next);
+		} else if (StrEquals(resource, "CurrentMonitor")) {
+			next = SkipSpaces(next, NULL, 0);
+			current_monitor = (StrEquals(next, "none")) ?
+				NULL : fpmonitor_by_name(next);
+		} else if (StrEquals(resource, "DeskLabels")) {
+			use_desk_label = true;
+		} else if (StrEquals(resource, "NoDeskLabels")) {
+			use_desk_label = false;
+		} else if (StrEquals(resource, "MonitorLabels")) {
+			use_monitor_label = true;
+		} else if (StrEquals(resource, "NoMonitorLabels")) {
+			use_monitor_label = false;
+		} else if (StrEquals(resource, "CurrentDeskPerMonitor")) {
+			CurrentDeskPerMonitor = true;
+		} else if (StrEquals(resource, "CurrentDeskGlobal")) {
+			CurrentDeskPerMonitor = false;
+		} else if (StrEquals(resource, "IsShared")) {
+			IsShared = true;
+		} else if (StrEquals(resource, "IsNotShared")) {
+			IsShared = false;
+		} else if(StrEquals(resource,"Colorset")) {
+			ParseColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->colorset));
+		} else if(StrEquals(resource,"BalloonColorset")) {
+			ParseColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->ballooncolorset));
+		} else if(StrEquals(resource,"HilightColorset")) {
+			ParseColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->highcolorset));
+		} else if (StrEquals(resource, "Geometry")) {
+			flags = FScreenParseGeometry(
+					arg1, &g_x, &g_y, &width, &height);
+			if (flags & WidthValue)
+				pwindow.width = width;
+			if (flags & HeightValue)
+				pwindow.height = height;
+			if (flags & XValue) {
+				pwindow.x = g_x;
+				usposition = true;
+				if (flags & XNegative)
+					xneg = true;
+			}
+			if (flags & YValue) {
+				pwindow.y = g_y;
+				usposition = true;
+				if (flags & YNegative)
+					yneg = true;
+			}
+		} else if (StrEquals(resource, "IconGeometry")) {
+			flags = FScreenParseGeometry(
+					arg1, &g_x, &g_y, &width, &height);
+			if (flags & WidthValue)
+				icon.width = width;
+			if (flags & HeightValue)
+				icon.height = height;
+			if (flags & XValue) {
+				icon.x = g_x;
+				if (flags & XNegative)
+					icon_xneg = true;
+			}
+			if (flags & YValue) {
+				icon.y = g_y;
+				if (flags & YNegative)
+					icon_yneg = true;
+			}
+		} else if (StrEquals(resource, "Font")) {
+			free(font_string);
+			CopyStringWithQuotes(&font_string, next);
+			if(strncasecmp(font_string, "none", 4) == 0) {
+				use_desk_label = false;
+				use_monitor_label = false;
+				free(font_string);
+				font_string = NULL;
+			}
+		} else if (StrEquals(resource, "Fore")) {
+			if (Pdepth > 1) {
+				free(PagerFore);
+				CopyString(&PagerFore,arg1);
+			}
+		} else if (StrEquals(resource, "Back")) {
+			if (Pdepth > 1) {
+				free(PagerBack);
+				CopyString(&PagerBack,arg1);
+			}
+		} else if (StrEquals(resource, "DeskColor")) {
+			DeskStyle *style;
+
+			if (StrEquals(arg1, "*")) {
+				desk = 0;
+			} else {
+				desk = desk1;
+				sscanf(arg1, "%d", &desk);
+			}
+
+			style = FindDeskStyle(desk);
+			if (style->Dcolor)
+				free(style->Dcolor);
+			style->Dcolor = NULL;
+			CopyString(&(style->Dcolor), arg2);
+		} else if (StrEquals(resource, "DeskPixmap")) {
+			DeskStyle *style;
+
+			if (StrEquals(arg1, "*")) {
+				desk = 0;
+			}
+			else
+			{
+				desk = desk1;
+				sscanf(arg1, "%d", &desk);
+			}
+
+			style = FindDeskStyle(desk);
+			if (style->bgPixmap != NULL)
+			{
+				PDestroyFvwmPicture(dpy, style->bgPixmap);
+				style->bgPixmap = NULL;
+			}
+
+			style->bgPixmap = PCacheFvwmPicture(
+				dpy, Scr.Pager_w, ImagePath, arg2, fpa);
+		} else if (StrEquals(resource, "Pixmap")) {
+			if(Pdepth > 1)
+			{
+				if (PixmapBack) {
+					PDestroyFvwmPicture(dpy, PixmapBack);
+					PixmapBack = NULL;
+				}
+
+				PixmapBack = PCacheFvwmPicture(dpy,
+					Scr.Pager_w, ImagePath, arg1, fpa);
+			}
+		} else if (StrEquals(resource, "HilightPixmap")) {
+			if(Pdepth > 1)
+			{
+				if (HilightPixmap) {
+					PDestroyFvwmPicture(
+						dpy, HilightPixmap);
+					HilightPixmap = NULL;
+				}
+
+				HilightPixmap = PCacheFvwmPicture(dpy,
+					Scr.Pager_w, ImagePath, arg1, fpa);
+			}
+		} else if (StrEquals(resource, "DeskHilight")) {
+			HilightDesks = true;
+		} else if (StrEquals(resource, "NoDeskHilight")) {
+			HilightDesks = false;
+		} else if (StrEquals(resource, "Hilight")) {
+			if(Pdepth > 1) {
+				free(HilightC);
+				CopyString(&HilightC,arg1);
+			}
+		} else if (StrEquals(resource, "SmallFont")) {
+			free(smallFont);
+			CopyStringWithQuotes(&smallFont, next);
+			if (strncasecmp(smallFont,"none",4) == 0) {
+				free(smallFont);
+				smallFont = NULL;
+			}
+		} else if (StrEquals(resource, "MiniIcons")) {
+			MiniIcons = true;
+		} else if (StrEquals(resource, "StartIconic")) {
+			StartIconic = true;
+		} else if (StrEquals(resource, "NoStartIconic")) {
+			StartIconic = false;
+		} else if (StrEquals(resource, "LabelsBelow")) {
+			LabelsBelow = true;
+		} else if (StrEquals(resource, "LabelsAbove")) {
+			LabelsBelow = false;
+		} else if (FHaveShapeExtension &&
+			   StrEquals(resource, "ShapeLabels"))
+		{
+			ShapeLabels = true;
+		} else if (StrEquals(resource, "NoShapeLabels")) {
+			ShapeLabels = false;
+		} else if (StrEquals(resource, "Rows")) {
+			sscanf(arg1, "%d", &Rows);
+		} else if (StrEquals(resource, "Columns")) {
+			sscanf(arg1, "%d", &Columns);
+		} else if (StrEquals(resource, "DeskTopScale")) {
+			sscanf(arg1,"%d",&Scr.VScale);
+		} else if (StrEquals(resource, "WindowColors")) {
+			if (Pdepth > 1)
+			{
+				free(WindowFore);
+				free(WindowBack);
+				free(WindowHiFore);
+				free(WindowHiBack);
+				CopyString(&WindowFore, arg1);
+				CopyString(&WindowBack, arg2);
+				tline2 = GetNextToken(tline2, &WindowHiFore);
+				GetNextToken(tline2, &WindowHiBack);
+			}
+		} else if (StrEquals(resource, "WindowBorderWidth")) {
+			MinSize = MinSize - 2*WindowBorderWidth;
+			sscanf(arg1, "%d", &WindowBorderWidth);
+			if (WindowBorderWidth > 0)
+				MinSize = 2 * WindowBorderWidth + MinSize;
+			else
+				MinSize = MinSize + 2 *
+					  DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
+		} else if (StrEquals(resource, "WindowMinSize")) {
+			sscanf(arg1, "%d", &MinSize);
+			if (MinSize > 0)
+				MinSize = 2 * WindowBorderWidth + MinSize;
+			else
+				MinSize = 2 * WindowBorderWidth +
+					  DEFAULT_PAGER_WINDOW_MIN_SIZE;
+		} else if (StrEquals(resource, "HideSmallWindows")) {
+			HideSmallWindows = true;
+		} else if (StrEquals(resource, "Window3dBorders")) {
+			WindowBorders3d = true;
+		} else if (StrEquals(resource,"WindowColorsets")) {
+			sscanf(arg1,"%d",&windowcolorset);
+			AllocColorset(windowcolorset);
+			sscanf(arg2,"%d",&activecolorset);
+			AllocColorset(activecolorset);
+		} else if (StrEquals(resource,"WindowLabelFormat")) {
+			free(WindowLabelFormat);
+			CopyString(&WindowLabelFormat,arg1);
+		} else if (StrEquals(resource,"UseSkipList")) {
+			UseSkipList = true;
+		} else if (StrEquals(resource, "MoveThreshold")) {
+			int val;
+			if (GetIntegerArguments(next, NULL, &val, 1) > 0 &&
+			    val >= 0)
+			{
+				MoveThreshold = val;
+				MoveThresholdSetForModule = true;
+			}
+		} else if (StrEquals(resource, "SloppyFocus")) {
+			do_focus_on_enter = true;
+		} else if (StrEquals(resource, "FocusAfterMove")) {
+			FocusAfterMove = true;
+		} else if (StrEquals(resource, "SolidSeparators")) {
+			use_dashed_separators = false;
+			use_no_separators = false;
+		} else if (StrEquals(resource, "NoSeparators")) {
+			use_no_separators = true;
+		} else if (StrEquals(resource, "Balloons")) {
+			free(BalloonTypeString);
+			CopyString(&BalloonTypeString, arg1);
+
+			if (StrEquals(BalloonTypeString, "Pager")) {
+				ShowPagerBalloons = true;
+				ShowIconBalloons = false;
+			}
+			else if (StrEquals(BalloonTypeString, "Icon")) {
+				ShowPagerBalloons = false;
+				ShowIconBalloons = true;
+			} else {
+				ShowPagerBalloons = true;
+				ShowIconBalloons = true;
+			}
+
+			/* turn this on initially so balloon window is
+			 * created; later this variable is changed to
+			 * match ShowPagerBalloons or ShowIconBalloons
+			 * whenever we receive iconify or deiconify packets
+			 */
+			ShowBalloons = true;
+		} else if (StrEquals(resource, "BalloonBack")) {
+			if (Pdepth > 1)
+			{
+				free(BalloonBack);
+				CopyString(&BalloonBack, arg1);
+			}
+		} else if (StrEquals(resource, "BalloonFore")) {
+			if (Pdepth > 1)
+			{
+				free(BalloonFore);
+				CopyString(&BalloonFore, arg1);
+			}
+		} else if (StrEquals(resource, "BalloonFont")) {
+			free(BalloonFont);
+			CopyStringWithQuotes(&BalloonFont, next);
+		} else if (StrEquals(resource, "BalloonBorderColor")) {
+			free(BalloonBorderColor);
+			CopyString(&BalloonBorderColor, arg1);
+		} else if (StrEquals(resource, "BalloonBorderWidth")) {
+			sscanf(arg1, "%d", &BalloonBorderWidth);
+		} else if (StrEquals(resource, "BalloonYOffset")) {
+			sscanf(arg1, "%d", &BalloonYOffset);
+			if (BalloonYOffset == 0)
+			{
+				fvwm_debug(__func__,
+					"%s: Warning: You're not allowed "
+					"BalloonYOffset 0; "
+					"defaulting to +3\n",
+					MyName);
+				/* we don't allow yoffset of 0 because it
+				 * allows direct transit from pager window
+				 * to balloon window, setting up a
+				 * LeaveNotify/EnterNotify event loop
+				 */
+				BalloonYOffset = 3;
+			}
+		} else if (StrEquals(resource,"BalloonStringFormat")) {
+			free(BalloonFormatString);
+			CopyString(&BalloonFormatString,arg1);
+		}
+
+		free(resource);
+		free(arg1);
+		free(arg2);
 	}
-      }
-      if (flags & YValue)
-      {
-	pwindow.y = g_y;
-	usposition = true;
-	if (flags & YNegative)
-	{
-	  yneg = true;
-	}
-      }
-    }
-    else if (StrEquals(resource, "IconGeometry"))
-    {
-      flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
-      if (flags & WidthValue)
-	icon.width = width;
-      if (flags & HeightValue)
-	icon.height = height;
-      if (flags & XValue)
-      {
-	icon.x = g_x;
-	if (flags & XNegative)
-	{
-	  icon_xneg = true;
-	}
-      }
-      if (flags & YValue)
-      {
-	icon.y = g_y;
-	if (flags & YNegative)
-	{
-	  icon_yneg = true;
-	}
-      }
-    }
-    else if (StrEquals(resource, "Font"))
-    {
-      free(font_string);
-      CopyStringWithQuotes(&font_string, next);
-      if(strncasecmp(font_string,"none",4) == 0)
-      {
-	use_desk_label = false;
-	use_monitor_label = false;
-	free(font_string);
-	font_string = NULL;
-      }
-    }
-    else if (StrEquals(resource, "Fore"))
-    {
-      if(Pdepth > 1)
-      {
-	free(PagerFore);
-	CopyString(&PagerFore,arg1);
-      }
-    }
-    else if (StrEquals(resource, "Back"))
-    {
-      if(Pdepth > 1)
-      {
-	free(PagerBack);
-	CopyString(&PagerBack,arg1);
-      }
-    }
-    else if (StrEquals(resource, "DeskColor"))
-    {
-      DeskStyle *style;
 
-      if (StrEquals(arg1, "*"))
-      {
-	desk = 0;
-      }
-      else
-      {
-	desk = desk1;
-	sscanf(arg1,"%d",&desk);
-      }
-
-      style = FindDeskStyle(desk);
-      if (style->Dcolor)
-	free(style->Dcolor);
-      style->Dcolor = NULL;
-      CopyString(&(style->Dcolor), arg2);
-    }
-    else if (StrEquals(resource, "DeskPixmap"))
-    {
-      DeskStyle *style;
-
-      if (StrEquals(arg1, "*"))
-      {
-	desk = 0;
-      }
-      else
-      {
-	desk = desk1;
-	sscanf(arg1,"%d",&desk);
-      }
-
-      style = FindDeskStyle(desk);
-      if (style->bgPixmap != NULL)
-      {
-	PDestroyFvwmPicture(dpy, style->bgPixmap);
-	style->bgPixmap = NULL;
-      }
-
-      style->bgPixmap = PCacheFvwmPicture(
-		dpy, Scr.Pager_w, ImagePath, arg2, fpa);
-
-    }
-    else if (StrEquals(resource, "Pixmap"))
-    {
-      if(Pdepth > 1)
-      {
-	if (PixmapBack) {
-	  PDestroyFvwmPicture (dpy, PixmapBack);
-	  PixmapBack = NULL;
-	}
-
-	PixmapBack = PCacheFvwmPicture(
-		dpy, Scr.Pager_w, ImagePath, arg1, fpa);
-
-      }
-    }
-    else if (StrEquals(resource, "HilightPixmap"))
-    {
-      if(Pdepth > 1)
-      {
-	if (HilightPixmap) {
-	  PDestroyFvwmPicture (dpy, HilightPixmap);
-	  HilightPixmap = NULL;
-	}
-
-	HilightPixmap = PCacheFvwmPicture (
-		dpy, Scr.Pager_w, ImagePath, arg1, fpa);
-
-      }
-    }
-    else if (StrEquals(resource, "DeskHilight"))
-    {
-      HilightDesks = true;
-    }
-    else if (StrEquals(resource, "NoDeskHilight"))
-    {
-      HilightDesks = false;
-    }
-    else if (StrEquals(resource, "Hilight"))
-    {
-      if(Pdepth > 1)
-      {
-	free(HilightC);
-	CopyString(&HilightC,arg1);
-      }
-    }
-    else if (StrEquals(resource, "SmallFont"))
-    {
-      free(smallFont);
-      CopyStringWithQuotes(&smallFont, next);
-      if (strncasecmp(smallFont,"none",4) == 0)
-      {
-	free(smallFont);
-	smallFont = NULL;
-      }
-    }
-    else if (StrEquals(resource, "MiniIcons"))
-    {
-      MiniIcons = true;
-    }
-    else if (StrEquals(resource, "StartIconic"))
-    {
-      StartIconic = true;
-    }
-    else if (StrEquals(resource, "NoStartIconic"))
-    {
-      StartIconic = false;
-    }
-    else if (StrEquals(resource, "LabelsBelow"))
-    {
-      LabelsBelow = true;
-    }
-    else if (StrEquals(resource, "LabelsAbove"))
-    {
-      LabelsBelow = false;
-    }
-    else if (FHaveShapeExtension && StrEquals(resource, "ShapeLabels"))
-    {
-      ShapeLabels = true;
-    }
-    else if (FHaveShapeExtension && StrEquals(resource, "NoShapeLabels"))
-    {
-      ShapeLabels = false;
-    }
-    else if (StrEquals(resource, "Rows"))
-    {
-      sscanf(arg1,"%d",&Rows);
-    }
-    else if (StrEquals(resource, "Columns"))
-    {
-      sscanf(arg1,"%d",&Columns);
-    }
-    else if (StrEquals(resource, "DeskTopScale"))
-    {
-      sscanf(arg1,"%d",&Scr.VScale);
-    }
-    else if (StrEquals(resource, "WindowColors"))
-    {
-      if (Pdepth > 1)
-      {
-	free(WindowFore);
-	free(WindowBack);
-	free(WindowHiFore);
-	free(WindowHiBack);
-	CopyString(&WindowFore, arg1);
-	CopyString(&WindowBack, arg2);
-	tline2 = GetNextToken(tline2, &WindowHiFore);
-	GetNextToken(tline2, &WindowHiBack);
-      }
-    }
-    else if (StrEquals(resource, "WindowBorderWidth"))
-    {
-      MinSize = MinSize - 2*WindowBorderWidth;
-      sscanf(arg1, "%d", &WindowBorderWidth);
-      if (WindowBorderWidth > 0)
-        MinSize = 2 * WindowBorderWidth + MinSize;
-      else
-        MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + MinSize;
-    }
-    else if (StrEquals(resource, "WindowMinSize"))
-    {
-      sscanf(arg1, "%d", &MinSize);
-      if (MinSize > 0)
-        MinSize = 2 * WindowBorderWidth + MinSize;
-      else
-        MinSize = 2 * WindowBorderWidth + DEFAULT_PAGER_WINDOW_MIN_SIZE;
-    }
-    else if (StrEquals(resource, "HideSmallWindows"))
-    {
-      HideSmallWindows = true;
-    }
-    else if (StrEquals(resource, "Window3dBorders"))
-    {
-      WindowBorders3d = true;
-    }
-    else if (StrEquals(resource,"WindowColorsets"))
-    {
-      sscanf(arg1,"%d",&windowcolorset);
-      AllocColorset(windowcolorset);
-      sscanf(arg2,"%d",&activecolorset);
-      AllocColorset(activecolorset);
-    }
-    else if (StrEquals(resource,"WindowLabelFormat"))
-    {
-      free(WindowLabelFormat);
-      CopyString(&WindowLabelFormat,arg1);
-    }
-    else if (StrEquals(resource,"UseSkipList"))
-    {
-      UseSkipList = true;
-    }
-    else if (StrEquals(resource, "MoveThreshold"))
-    {
-      int val;
-      if (GetIntegerArguments(next, NULL, &val, 1) > 0 && val >= 0)
-      {
-	MoveThreshold = val;
-	MoveThresholdSetForModule = true;
-      }
-    }
-    else if (StrEquals(resource, "SloppyFocus"))
-    {
-      do_focus_on_enter = true;
-    }
-    else if (StrEquals(resource, "FocusAfterMove"))
-    {
-      FocusAfterMove = true;
-    }
-    else if (StrEquals(resource, "SolidSeparators"))
-    {
-      use_dashed_separators = false;
-      use_no_separators = false;
-    }
-    else if (StrEquals(resource, "NoSeparators"))
-    {
-      use_no_separators = true;
-    }
-    /* ... and get Balloon config options ...
-       -- ric@giccs.georgetown.edu */
-    else if (StrEquals(resource, "Balloons"))
-    {
-      free(BalloonTypeString);
-      CopyString(&BalloonTypeString, arg1);
-
-      if ( strncasecmp(BalloonTypeString, "Pager", 5) == 0 ) {
-	ShowPagerBalloons = true;
-	ShowIconBalloons = false;
-      }
-      else if ( strncasecmp(BalloonTypeString, "Icon", 4) == 0 ) {
-	ShowPagerBalloons = false;
-	ShowIconBalloons = true;
-      }
-      else {
-	ShowPagerBalloons = true;
-	ShowIconBalloons = true;
-      }
-
-      /* turn this on initially so balloon window is created; later this
-	 variable is changed to match ShowPagerBalloons or ShowIconBalloons
-	 whenever we receive iconify or deiconify packets */
-      ShowBalloons = true;
-    }
-
-    else if (StrEquals(resource, "BalloonBack"))
-    {
-      if (Pdepth > 1)
-      {
-	free(BalloonBack);
-	CopyString(&BalloonBack, arg1);
-      }
-    }
-
-    else if (StrEquals(resource, "BalloonFore"))
-    {
-      if (Pdepth > 1)
-      {
-	free(BalloonFore);
-	CopyString(&BalloonFore, arg1);
-      }
-    }
-
-    else if (StrEquals(resource, "BalloonFont"))
-    {
-      free(BalloonFont);
-      CopyStringWithQuotes(&BalloonFont, next);
-    }
-
-    else if (StrEquals(resource, "BalloonBorderColor"))
-    {
-      free(BalloonBorderColor);
-      CopyString(&BalloonBorderColor, arg1);
-    }
-
-    else if (StrEquals(resource, "BalloonBorderWidth"))
-    {
-      sscanf(arg1, "%d", &BalloonBorderWidth);
-    }
-
-    else if (StrEquals(resource, "BalloonYOffset"))
-    {
-      sscanf(arg1, "%d", &BalloonYOffset);
-      if (BalloonYOffset == 0)
-      {
-	fvwm_debug(__func__,
-                   "%s: Warning:"
-                   " you're not allowed BalloonYOffset 0; defaulting to +3\n",
-                   MyName);
-	/* we don't allow yoffset of 0 because it allows direct transit from
-	 * pager window to balloon window, setting up a LeaveNotify/EnterNotify
-	 * event loop */
-	BalloonYOffset = 3;
-      }
-    }
-    else if (StrEquals(resource,"BalloonStringFormat"))
-    {
-      free(BalloonFormatString);
-      CopyString(&BalloonFormatString,arg1);
-    }
-
-    free(resource);
-    free(arg1);
-    free(arg2);
-  }
-
-  return;
+	return;
 }
 
 /* Returns the DeskStyle for inputted desk. */
