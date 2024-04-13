@@ -26,6 +26,7 @@
 #include <sys/wait.h>
 #include "libs/FScreen.h"
 #include "libs/ftime.h"
+#include "libs/safemalloc.h"
 #include <ctype.h>
 
 #ifdef HAVE_SYS_BSDTYPES_H
@@ -1982,15 +1983,13 @@ DeskStyle *FindDeskStyle(int desk)
 	/* No matching style found. Create new style and return it. */
 	style = NULL;
 	DeskStyle *default_style = TAILQ_FIRST(&desk_style_q);
-	char label[10];
 
 	style = fxcalloc(1, sizeof(DeskStyle));
 	style->desk = desk;
 	style->colorset = default_style->colorset;;
 	style->highcolorset = default_style->highcolorset;
 	style->ballooncolorset = default_style->ballooncolorset;
-	snprintf(label, sizeof(label), "Desk %d", desk);
-	style->label = fxstrdup(label);
+	xasprintf(&style->label, "Desk %d", desk);
 	style->fgColor = fxstrdup(default_style->fgColor);
 	style->bgColor = fxstrdup(default_style->bgColor);
 	style->hiColor = fxstrdup(default_style->hiColor);
