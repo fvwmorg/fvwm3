@@ -125,13 +125,14 @@ typedef struct balloon_window
 typedef struct desk_style
 {
 	int desk;
-	int colorset;
-	int highcolorset;
-	int ballooncolorset;
+	int cs;
+	int hi_cs;
+	int balloon_cs;
 	char *label;
-	char *fgColor;
-	char *bgColor;
-	char *hiColor;
+	Pixel fg;			/* Store colors as pixels. */
+	Pixel bg;
+	Pixel hi_fg;
+	Pixel hi_bg;
 	FvwmPicture *bgPixmap;		/* Pixmap used as background. */
 	FvwmPicture *hiPixmap;		/* Hilighted background pixmap. */
 	TAILQ_ENTRY(desk_style) entry;
@@ -293,7 +294,7 @@ void initialise_common_pager_fragments(void);
 void initialize_pager(void);
 void initialize_fpmonitor_windows(struct fpmonitor *);
 void initialize_viz_pager(void);
-Pixel GetColor(char *name);
+Pixel GetSimpleColor(char *name);
 void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);

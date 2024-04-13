@@ -214,11 +214,19 @@ size may be slightly different than the specified size.
 For backwards compatibility the option, '*FvwmPager: DeskColor [desk] color',
 is an alias for this option and works the same.
 
-*FvwmPager: Hilight [desk] color::
-  Sets the background color for both the location of any active monitors (if
-  _DeskHilight_ is set) and the current desk label and/or monitor label if
-  _DeskLabels_ or _MonitorLabels_ is set. If _desk_ is not present or is
-  equal to '*', the color is used for all desks.
+*FvwmPager: HiFore [desk] color::
+  Sets the foreground color the for text used in the highlighted _DeskLabels_
+  and _MonitorLabels_ if _DeskHilight_ is set. If _desk_ is not present or
+  is equal to '*' the color is used for all desks.
+
+*FvwmPager: HiBack [desk] color::
+  Sets the background color the for the highlighted labels when using
+  _DeskLabels_ or _MonitorLabels_ or for the location of any active monitors.
+  Has no effect if _DeskHilight_ is not on. If _desk_ is not present or equal
+  to '*' the color is used for all desks.
++
+For backwards compatibility the option, '*FvwmPager: Hilight [desk] color',
+is an alias for this option and works the same.
 
 *FvwmPager: Colorset [desk] colorset::
   Sets the _colorset_ number (see fvwm3commands(1)) used for both the
