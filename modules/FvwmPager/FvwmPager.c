@@ -54,9 +54,6 @@
  *
  */
 /* Colors, Pixmaps, Fonts, etc. */
-char		*HilightC = NULL;
-char		*PagerFore = NULL;
-char		*PagerBack = NULL;
 char		*smallFont = NULL;
 char		*ImagePath = NULL;
 char		*WindowBack = NULL;
@@ -71,9 +68,6 @@ char		*WindowLabelFormat = NULL;
 char		*BalloonTypeString = NULL;
 char		*BalloonBorderColor = NULL;
 char		*BalloonFormatString = NULL;
-Pixel		hi_pix;
-Pixel		back_pix;
-Pixel		fore_pix;
 Pixel		focus_pix;
 Pixel		win_back_pix;
 Pixel		win_fore_pix;
@@ -83,8 +77,6 @@ Pixel		win_hi_fore_pix;
 Pixmap		default_pixmap = None;
 FlocaleFont	*Ffont;
 FlocaleFont	*FwindowFont;
-FvwmPicture	*PixmapBack = NULL;
-FvwmPicture	*HilightPixmap = NULL;
 FlocaleWinString	*FwinString;
 
 /* Sizes / Dimensions */
@@ -280,9 +272,12 @@ int main(int argc, char **argv)
 	default_style->colorset = -1;
 	default_style->highcolorset = -1;
 	default_style->ballooncolorset = -1;
-	default_style->label = NULL;
-	default_style->Dcolor = NULL;
+	default_style->label = fxstrdup("-");
+	default_style->fgColor = fxstrdup("black");
+	default_style->bgColor = fxstrdup("white");
+	default_style->hiColor = fxstrdup("grey");
 	default_style->bgPixmap = NULL;
+	default_style->hiPixmap = NULL;
 	TAILQ_INSERT_TAIL(&desk_style_q, default_style, entry);
   }
 
@@ -457,20 +452,8 @@ int main(int argc, char **argv)
     yneg = false;
   }
 
-  if (PagerFore == NULL)
-    PagerFore = fxstrdup("black");
-
-  if (PagerBack == NULL)
-    PagerBack = fxstrdup("white");
-
-  if (HilightC == NULL)
-    HilightC = fxstrdup(PagerFore);
-
   if (WindowLabelFormat == NULL)
     WindowLabelFormat = fxstrdup("%i");
-
-  if ((HilightC == NULL) && (HilightPixmap == NULL))
-    HilightDesks = false;
 
   if (BalloonBorderColor == NULL)
     BalloonBorderColor = fxstrdup("black");
@@ -1509,7 +1492,6 @@ void ParseOptions(void)
 {
 	char *tline= NULL;
 	char *mname;
-	int desk;
 	bool MoveThresholdSetForModule = false;
 
 	FvwmPictureAttributes fpa;
@@ -1564,7 +1546,7 @@ void ParseOptions(void)
 
 			int val;
 			if (GetIntegerArguments(next, NULL, &val, 1) > 0)
-				MoveThreshold = (val => 0) ? val :
+				MoveThreshold = (val >= 0) ? val :
 						DEFAULT_PAGER_MOVE_THRESHOLD;
 			continue;
 		} else if (StrEquals(token, "DesktopName")) {
@@ -1588,37 +1570,10 @@ void ParseOptions(void)
 		tline2 = GetModuleResource(tline, &resource, MyName);
 		if (!resource)
 			continue;
-		tline2 = GetNextToken(tline2, &arg1);
-		if (!arg1)
-		{
-			arg1 = fxmalloc(1);
-			arg1[0] = 0;
-		}
-		tline2 = GetNextToken(tline2, &arg2);
-		if (!arg2)
-		{
-			arg2 = fxmalloc(1);
-			arg2[0] = 0;
-		}
 
-		if (StrEquals(resource, "Monitor")) {
-			free(preferred_monitor);
-			next = SkipSpaces(next, NULL, 0);
-			if (StrEquals(next, "none")) {
-				monitor_to_track = NULL;
-				preferred_monitor = NULL;
-				continue;
-			}
-			monitor_to_track = fpmonitor_by_name(next);
-			/* Fallback to current monitor. */
-			if (monitor_to_track == NULL)
-				monitor_to_track = fpmonitor_this(NULL);
-			preferred_monitor = fxstrdup(next);
-		} else if (StrEquals(resource, "CurrentMonitor")) {
-			next = SkipSpaces(next, NULL, 0);
-			current_monitor = (StrEquals(next, "none")) ?
-				NULL : fpmonitor_by_name(next);
-		} else if (StrEquals(resource, "DeskLabels")) {
+		/* Start by looking for options with no parameters. */
+		flags = 1;
+		if (StrEquals(resource, "DeskLabels")) {
 			use_desk_label = true;
 		} else if (StrEquals(resource, "NoDeskLabels")) {
 			use_desk_label = false;
@@ -1634,6 +1589,86 @@ void ParseOptions(void)
 			IsShared = true;
 		} else if (StrEquals(resource, "IsNotShared")) {
 			IsShared = false;
+		} else if (StrEquals(resource, "DeskHilight")) {
+			HilightDesks = true;
+		} else if (StrEquals(resource, "NoDeskHilight")) {
+			HilightDesks = false;
+		} else if (StrEquals(resource, "MiniIcons")) {
+			MiniIcons = true;
+		} else if (StrEquals(resource, "StartIconic")) {
+			StartIconic = true;
+		} else if (StrEquals(resource, "NoStartIconic")) {
+			StartIconic = false;
+		} else if (StrEquals(resource, "LabelsBelow")) {
+			LabelsBelow = true;
+		} else if (StrEquals(resource, "LabelsAbove")) {
+			LabelsBelow = false;
+		} else if (StrEquals(resource, "ShapeLabels")) {
+			if (FHaveShapeExtension)
+				ShapeLabels = true;
+		} else if (StrEquals(resource, "NoShapeLabels")) {
+			ShapeLabels = false;
+		} else if (StrEquals(resource, "HideSmallWindows")) {
+			HideSmallWindows = true;
+		} else if (StrEquals(resource, "Window3dBorders")) {
+			WindowBorders3d = true;
+		} else if (StrEquals(resource,"UseSkipList")) {
+			UseSkipList = true;
+		} else if (StrEquals(resource, "SloppyFocus")) {
+			do_focus_on_enter = true;
+		} else if (StrEquals(resource, "FocusAfterMove")) {
+			FocusAfterMove = true;
+		} else if (StrEquals(resource, "SolidSeparators")) {
+			use_dashed_separators = false;
+			use_no_separators = false;
+		} else if (StrEquals(resource, "NoSeparators")) {
+			use_no_separators = true;
+		} else {
+			/* No Match, set this to continue parsing. */
+			flags = 0;
+		}
+		if (flags == 1) {
+			free(resource);
+			continue;
+		}
+
+		/* Now look for options with additional inputs.
+		 * Many inputs are of the form: [desk] value
+		 * Since desk is optional, inputs are stored as:
+		 *     One input:  arg1 = '*';     arg2 = input1
+		 *     Two inputs: arg1 = input1;  arg2 = input2
+		 * Options that expect one input should use "next".
+		 */
+		tline2 = GetNextToken(tline2, &arg1);
+		if (!arg1)
+			/* No inputs, nothing to do. */
+			continue;
+
+		tline2 = GetNextToken(tline2, &arg2);
+		if (!arg2)
+		{
+			arg2 = arg1;
+			arg1 = NULL;
+			arg1 = fxmalloc(1);
+			arg1[0] = '*';
+		}
+
+		next = SkipSpaces(next, NULL, 0);
+		if (StrEquals(resource, "Monitor")) {
+			free(preferred_monitor);
+			if (StrEquals(next, "none")) {
+				monitor_to_track = NULL;
+				preferred_monitor = NULL;
+				goto free_vars;
+			}
+			monitor_to_track = fpmonitor_by_name(next);
+			/* Fallback to current monitor. */
+			if (monitor_to_track == NULL)
+				monitor_to_track = fpmonitor_this(NULL);
+			preferred_monitor = fxstrdup(next);
+		} else if (StrEquals(resource, "CurrentMonitor")) {
+			current_monitor = (StrEquals(next, "none")) ?
+				NULL : fpmonitor_by_name(next);
 		} else if(StrEquals(resource,"Colorset")) {
 			ParseColorset(arg1, arg2,
 				&(((DeskStyle *)(NULL))->colorset));
@@ -1645,7 +1680,7 @@ void ParseOptions(void)
 				&(((DeskStyle *)(NULL))->highcolorset));
 		} else if (StrEquals(resource, "Geometry")) {
 			flags = FScreenParseGeometry(
-					arg1, &g_x, &g_y, &width, &height);
+					next, &g_x, &g_y, &width, &height);
 			if (flags & WidthValue)
 				pwindow.width = width;
 			if (flags & HeightValue)
@@ -1664,7 +1699,7 @@ void ParseOptions(void)
 			}
 		} else if (StrEquals(resource, "IconGeometry")) {
 			flags = FScreenParseGeometry(
-					arg1, &g_x, &g_y, &width, &height);
+					next, &g_x, &g_y, &width, &height);
 			if (flags & WidthValue)
 				icon.width = width;
 			if (flags & HeightValue)
@@ -1689,82 +1724,121 @@ void ParseOptions(void)
 				font_string = NULL;
 			}
 		} else if (StrEquals(resource, "Fore")) {
-			if (Pdepth > 1) {
-				free(PagerFore);
-				CopyString(&PagerFore,arg1);
-			}
-		} else if (StrEquals(resource, "Back")) {
-			if (Pdepth > 1) {
-				free(PagerBack);
-				CopyString(&PagerBack,arg1);
-			}
-		} else if (StrEquals(resource, "DeskColor")) {
+			if (Pdepth == 0)
+				goto free_vars;
+
 			DeskStyle *style;
-
-			if (StrEquals(arg1, "*")) {
-				desk = 0;
-			} else {
-				desk = desk1;
-				sscanf(arg1, "%d", &desk);
-			}
-
-			style = FindDeskStyle(desk);
-			if (style->Dcolor)
-				free(style->Dcolor);
-			style->Dcolor = NULL;
-			CopyString(&(style->Dcolor), arg2);
-		} else if (StrEquals(resource, "DeskPixmap")) {
-			DeskStyle *style;
-
-			if (StrEquals(arg1, "*")) {
-				desk = 0;
-			}
-			else
-			{
-				desk = desk1;
-				sscanf(arg1, "%d", &desk);
-			}
-
-			style = FindDeskStyle(desk);
-			if (style->bgPixmap != NULL)
-			{
-				PDestroyFvwmPicture(dpy, style->bgPixmap);
-				style->bgPixmap = NULL;
-			}
-
-			style->bgPixmap = PCacheFvwmPicture(
-				dpy, Scr.Pager_w, ImagePath, arg2, fpa);
-		} else if (StrEquals(resource, "Pixmap")) {
-			if(Pdepth > 1)
-			{
-				if (PixmapBack) {
-					PDestroyFvwmPicture(dpy, PixmapBack);
-					PixmapBack = NULL;
+			if (arg1[0] == '*') {
+				TAILQ_FOREACH(style, &desk_style_q, entry) {
+					if (style->fgColor)
+						free(style->fgColor);
+					CopyString(&(style->fgColor), arg2);
 				}
+			} else {
+				int desk = 0;
+				sscanf(arg1, "%d", &desk);
+				style = FindDeskStyle(desk);
+				if (style->fgColor)
+					free(style->fgColor);
+				CopyString(&(style->fgColor), arg2);
+			}
+		} else if (StrEquals(resource, "Back") ||
+			   StrEquals(resource, "DeskColor"))
+		{
+			if (Pdepth == 0)
+				goto free_vars;
 
-				PixmapBack = PCacheFvwmPicture(dpy,
-					Scr.Pager_w, ImagePath, arg1, fpa);
+			DeskStyle *style;
+			if (arg1[0] == '*') {
+				TAILQ_FOREACH(style, &desk_style_q, entry) {
+					if (style->bgColor)
+						free(style->bgColor);
+					CopyString(&(style->bgColor), arg2);
+				}
+			} else {
+				int desk = 0;
+				sscanf(arg1, "%d", &desk);
+				style = FindDeskStyle(desk);
+				if (style->bgColor)
+					free(style->bgColor);
+				CopyString(&(style->bgColor), arg2);
+			}
+		} else if (StrEquals(resource, "Hilight")) {
+			if (Pdepth == 0)
+				goto free_vars;
+
+			DeskStyle *style;
+			if (arg1[0] == '*') {
+				TAILQ_FOREACH(style, &desk_style_q, entry) {
+					if (style->hiColor)
+						free(style->hiColor);
+					CopyString(&(style->hiColor), arg2);
+				}
+			} else {
+				int desk = 0;
+				sscanf(arg1, "%d", &desk);
+				style = FindDeskStyle(desk);
+				if (style->hiColor)
+					free(style->hiColor);
+				CopyString(&(style->hiColor), arg2);
+			}
+		} else if (StrEquals(resource, "Pixmap") ||
+			   StrEquals(resource, "DeskPixmap"))
+		{
+			if (Pdepth == 0)
+				goto free_vars;
+
+			DeskStyle *style;
+			if (arg1[0] == '*') {
+				TAILQ_FOREACH(style, &desk_style_q, entry) {
+					if (style->bgPixmap != NULL) {
+						PDestroyFvwmPicture(
+							dpy, style->bgPixmap);
+						style->bgPixmap = NULL;
+					}
+					style->bgPixmap = PCacheFvwmPicture(
+						dpy, Scr.Pager_w, ImagePath,
+						arg2, fpa);
+				}
+			} else {
+				int desk = 0;
+				sscanf(arg1, "%d", &desk);
+				style = FindDeskStyle(desk);
+				if (style->bgPixmap != NULL) {
+					PDestroyFvwmPicture(
+						dpy, style->bgPixmap);
+					style->bgPixmap = NULL;
+				}
+				style->bgPixmap = PCacheFvwmPicture(dpy,
+					Scr.Pager_w, ImagePath, arg2, fpa);
 			}
 		} else if (StrEquals(resource, "HilightPixmap")) {
-			if(Pdepth > 1)
-			{
-				if (HilightPixmap) {
-					PDestroyFvwmPicture(
-						dpy, HilightPixmap);
-					HilightPixmap = NULL;
-				}
+			if (Pdepth == 0)
+				goto free_vars;
 
-				HilightPixmap = PCacheFvwmPicture(dpy,
-					Scr.Pager_w, ImagePath, arg1, fpa);
-			}
-		} else if (StrEquals(resource, "DeskHilight")) {
-			HilightDesks = true;
-		} else if (StrEquals(resource, "NoDeskHilight")) {
-			HilightDesks = false;
-		} else if (StrEquals(resource, "Hilight")) {
-			if(Pdepth > 1) {
-				free(HilightC);
-				CopyString(&HilightC,arg1);
+			DeskStyle *style;
+			if (arg1[0] == '*') {
+				TAILQ_FOREACH(style, &desk_style_q, entry) {
+					if (style->hiPixmap != NULL) {
+						PDestroyFvwmPicture(
+							dpy, style->hiPixmap);
+						style->hiPixmap = NULL;
+					}
+					style->hiPixmap = PCacheFvwmPicture(
+						dpy, Scr.Pager_w, ImagePath,
+						arg2, fpa);
+				}
+			} else {
+				int desk = 0;
+				sscanf(arg1, "%d", &desk);
+				style = FindDeskStyle(desk);
+				if (style->hiPixmap != NULL) {
+					PDestroyFvwmPicture(
+						dpy, style->hiPixmap);
+					style->hiPixmap = NULL;
+				}
+				style->hiPixmap = PCacheFvwmPicture(dpy,
+					Scr.Pager_w, ImagePath, arg2, fpa);
 			}
 		} else if (StrEquals(resource, "SmallFont")) {
 			free(smallFont);
@@ -1773,28 +1847,12 @@ void ParseOptions(void)
 				free(smallFont);
 				smallFont = NULL;
 			}
-		} else if (StrEquals(resource, "MiniIcons")) {
-			MiniIcons = true;
-		} else if (StrEquals(resource, "StartIconic")) {
-			StartIconic = true;
-		} else if (StrEquals(resource, "NoStartIconic")) {
-			StartIconic = false;
-		} else if (StrEquals(resource, "LabelsBelow")) {
-			LabelsBelow = true;
-		} else if (StrEquals(resource, "LabelsAbove")) {
-			LabelsBelow = false;
-		} else if (FHaveShapeExtension &&
-			   StrEquals(resource, "ShapeLabels"))
-		{
-			ShapeLabels = true;
-		} else if (StrEquals(resource, "NoShapeLabels")) {
-			ShapeLabels = false;
 		} else if (StrEquals(resource, "Rows")) {
-			sscanf(arg1, "%d", &Rows);
+			sscanf(next, "%d", &Rows);
 		} else if (StrEquals(resource, "Columns")) {
-			sscanf(arg1, "%d", &Columns);
+			sscanf(next, "%d", &Columns);
 		} else if (StrEquals(resource, "DeskTopScale")) {
-			sscanf(arg1,"%d",&Scr.VScale);
+			sscanf(next, "%d", &Scr.VScale);
 		} else if (StrEquals(resource, "WindowColors")) {
 			if (Pdepth > 1)
 			{
@@ -1809,33 +1867,27 @@ void ParseOptions(void)
 			}
 		} else if (StrEquals(resource, "WindowBorderWidth")) {
 			MinSize = MinSize - 2*WindowBorderWidth;
-			sscanf(arg1, "%d", &WindowBorderWidth);
+			sscanf(next, "%d", &WindowBorderWidth);
 			if (WindowBorderWidth > 0)
 				MinSize = 2 * WindowBorderWidth + MinSize;
 			else
 				MinSize = MinSize + 2 *
 					  DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
 		} else if (StrEquals(resource, "WindowMinSize")) {
-			sscanf(arg1, "%d", &MinSize);
+			sscanf(next, "%d", &MinSize);
 			if (MinSize > 0)
 				MinSize = 2 * WindowBorderWidth + MinSize;
 			else
 				MinSize = 2 * WindowBorderWidth +
 					  DEFAULT_PAGER_WINDOW_MIN_SIZE;
-		} else if (StrEquals(resource, "HideSmallWindows")) {
-			HideSmallWindows = true;
-		} else if (StrEquals(resource, "Window3dBorders")) {
-			WindowBorders3d = true;
 		} else if (StrEquals(resource,"WindowColorsets")) {
-			sscanf(arg1,"%d",&windowcolorset);
+			sscanf(arg1, "%d", &windowcolorset);
 			AllocColorset(windowcolorset);
-			sscanf(arg2,"%d",&activecolorset);
+			sscanf(arg2, "%d", &activecolorset);
 			AllocColorset(activecolorset);
 		} else if (StrEquals(resource,"WindowLabelFormat")) {
 			free(WindowLabelFormat);
-			CopyString(&WindowLabelFormat,arg1);
-		} else if (StrEquals(resource,"UseSkipList")) {
-			UseSkipList = true;
+			CopyString(&WindowLabelFormat, next);
 		} else if (StrEquals(resource, "MoveThreshold")) {
 			int val;
 			if (GetIntegerArguments(next, NULL, &val, 1) > 0 &&
@@ -1844,18 +1896,9 @@ void ParseOptions(void)
 				MoveThreshold = val;
 				MoveThresholdSetForModule = true;
 			}
-		} else if (StrEquals(resource, "SloppyFocus")) {
-			do_focus_on_enter = true;
-		} else if (StrEquals(resource, "FocusAfterMove")) {
-			FocusAfterMove = true;
-		} else if (StrEquals(resource, "SolidSeparators")) {
-			use_dashed_separators = false;
-			use_no_separators = false;
-		} else if (StrEquals(resource, "NoSeparators")) {
-			use_no_separators = true;
 		} else if (StrEquals(resource, "Balloons")) {
 			free(BalloonTypeString);
-			CopyString(&BalloonTypeString, arg1);
+			CopyString(&BalloonTypeString, next);
 
 			if (StrEquals(BalloonTypeString, "Pager")) {
 				ShowPagerBalloons = true;
@@ -1879,24 +1922,24 @@ void ParseOptions(void)
 			if (Pdepth > 1)
 			{
 				free(BalloonBack);
-				CopyString(&BalloonBack, arg1);
+				CopyString(&BalloonBack, next);
 			}
 		} else if (StrEquals(resource, "BalloonFore")) {
 			if (Pdepth > 1)
 			{
 				free(BalloonFore);
-				CopyString(&BalloonFore, arg1);
+				CopyString(&BalloonFore, next);
 			}
 		} else if (StrEquals(resource, "BalloonFont")) {
 			free(BalloonFont);
 			CopyStringWithQuotes(&BalloonFont, next);
 		} else if (StrEquals(resource, "BalloonBorderColor")) {
 			free(BalloonBorderColor);
-			CopyString(&BalloonBorderColor, arg1);
+			CopyString(&BalloonBorderColor, next);
 		} else if (StrEquals(resource, "BalloonBorderWidth")) {
-			sscanf(arg1, "%d", &BalloonBorderWidth);
+			sscanf(next, "%d", &BalloonBorderWidth);
 		} else if (StrEquals(resource, "BalloonYOffset")) {
-			sscanf(arg1, "%d", &BalloonYOffset);
+			sscanf(next, "%d", &BalloonYOffset);
 			if (BalloonYOffset == 0)
 			{
 				fvwm_debug(__func__,
@@ -1913,9 +1956,10 @@ void ParseOptions(void)
 			}
 		} else if (StrEquals(resource,"BalloonStringFormat")) {
 			free(BalloonFormatString);
-			CopyString(&BalloonFormatString,arg1);
+			CopyString(&BalloonFormatString, next);
 		}
 
+free_vars:
 		free(resource);
 		free(arg1);
 		free(arg2);
@@ -1936,24 +1980,25 @@ DeskStyle *FindDeskStyle(int desk)
 	}
 
 	/* No matching style found. Create new style and return it. */
-	DeskStyle *new_style;
+	style = NULL;
 	DeskStyle *default_style = TAILQ_FIRST(&desk_style_q);
 	char label[10];
 
-	new_style = fxcalloc(1, sizeof(DeskStyle));
-	new_style->desk = desk;
-	new_style->colorset = default_style->colorset;;
-	new_style->highcolorset = default_style->highcolorset;
-	new_style->ballooncolorset = default_style->ballooncolorset;
+	style = fxcalloc(1, sizeof(DeskStyle));
+	style->desk = desk;
+	style->colorset = default_style->colorset;;
+	style->highcolorset = default_style->highcolorset;
+	style->ballooncolorset = default_style->ballooncolorset;
 	snprintf(label, sizeof(label), "Desk %d", desk);
-	new_style->label = fxstrdup(label);
-	new_style->Dcolor = NULL;
-	if (default_style->Dcolor)
-		new_style->Dcolor = fxstrdup(default_style->Dcolor);
-	new_style->bgPixmap = default_style->bgPixmap;
-	TAILQ_INSERT_TAIL(&desk_style_q, new_style, entry);
+	style->label = fxstrdup(label);
+	style->fgColor = fxstrdup(default_style->fgColor);
+	style->bgColor = fxstrdup(default_style->bgColor);
+	style->hiColor = fxstrdup(default_style->hiColor);
+	style->bgPixmap = default_style->bgPixmap;
+	style->hiPixmap = default_style->hiPixmap;
+	TAILQ_INSERT_TAIL(&desk_style_q, style, entry);
 
-	return new_style;
+	return style;
 }
 
 void ExitPager(void)
@@ -1969,10 +2014,10 @@ void ExitPager(void)
 
   TAILQ_FOREACH_SAFE(style, &desk_style_q, entry, style2) {
 	TAILQ_REMOVE(&desk_style_q, style, entry);
-	if (style->label)
-		free(style->label);
-	if (style->Dcolor)
-		free(style->Dcolor);
+	free(style->label);
+	free(style->fgColor);
+	free(style->bgColor);
+	free(style->hiColor);
 	free(style);
   }
   free(Desks);
