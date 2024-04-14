@@ -302,14 +302,14 @@ void ReConfigure(void);
 void ReConfigureAll(void);
 void update_pr_transparent_windows(void);
 void MovePage();
-void DrawGrid(int desk,Window ew,XRectangle *r);
-void DrawIconGrid(int erase);
+void draw_desk_grid(int desk);
+void draw_icon_grid(int erase);
 void SwitchToDesk(int Desk, struct fpmonitor *m);
 void SwitchToDeskAndPage(int Desk, XEvent *Event);
 void AddNewWindow(PagerWindow *prev);
 void MoveResizePagerView(PagerWindow *t, bool do_force_redraw);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
-void MoveStickyWindow(bool is_new_page, bool is_new_desk);
+void MoveStickyWindows(bool is_new_page, bool is_new_desk);
 void Hilight(PagerWindow *, int);
 void Scroll(int x, int y, int Desk, bool do_scroll_icon);
 void MoveWindow(XEvent *Event);
@@ -334,6 +334,7 @@ struct fpmonitor *fpmonitor_from_desk(int desk);
 void initialize_desk_style_gcs(DeskStyle *style);
 void update_desk_style_gcs(DeskStyle *style);
 void update_desk_background(int desk);
+void update_monitor_locations(int desk);
 void update_monitor_backgrounds(int desk);
 
 #endif /* FVWMPAGER_H */
