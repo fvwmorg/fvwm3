@@ -117,6 +117,11 @@ are listed below.
 
 == CONFIGURATION OPTIONS
 
+The configuration options are split into two groups. First is the
+collection of options that affect the overall look and behavior of
+the pager. Below these is a collection of options that can style each
+desk individually, allowing each desk to have its own unique look.
+
 *FvwmPager: Geometry geometry::
   Completely or partially specifies the pager windows location and
   geometry, in standard X11 notation. If both width and height are
@@ -197,67 +202,6 @@ size may be slightly different than the specified size.
   specified, the window labels will be omitted. Window labels seem to be
   fairly useless for desktop scales of 32 or greater. If _font_name_ is
   "none" then no window names will be displayed.
-
-*FvwmPager: Fore [desk] color::
-  Sets the foreground color, which is used to write desktop labels and to
-  draw the page-grid lines.  The _color_ is any valid 'X11/rgb.txt' color
-  name and _desk_ is an optional parameter which states what desk to set
-  the foreground color for. If _desk_ is not present or is equal to '*',
-  the color is used for all desks.
-
-*FvwmPager: Back [desk] color::
-  Sets the background color, which is used for the background of each desk.
-  The _color_ is any valid 'X11/rgb.txt' color name and _desk_ is an optional
-  parameter which states what desk to set the foreground color for. If _desk_
-  is not present or is equal to '*', the color is used for all desks.
-+
-For backwards compatibility the option, '*FvwmPager: DeskColor [desk] color',
-is an alias for this option and works the same.
-
-*FvwmPager: HiFore [desk] color::
-  Sets the foreground color the for text used in the highlighted _DeskLabels_
-  and _MonitorLabels_ if _DeskHilight_ is set. If _desk_ is not present or
-  is equal to '*' the color is used for all desks.
-
-*FvwmPager: HiBack [desk] color::
-  Sets the background color the for the highlighted labels when using
-  _DeskLabels_ or _MonitorLabels_ or for the location of any active monitors.
-  Has no effect if _DeskHilight_ is not on. If _desk_ is not present or equal
-  to '*' the color is used for all desks.
-+
-For backwards compatibility the option, '*FvwmPager: Hilight [desk] color',
-is an alias for this option and works the same.
-
-*FvwmPager: Colorset [desk] colorset::
-  Sets the _colorset_ number (see fvwm3commands(1)) used for both the
-  foreground and background of the optional _desk_. If _desk_ is not provided
-  or equal to '*', the colorset is used for all desks.
-
-*FvwmPager: BalloonColorset [desk] colorset::
-  Sets the _colorset_ number (see fvwm3commands(1)) used for both the
-  foreground and background of the balloon windows on the optional _desk_.
-  If _desk_ is not provided or equal to '*', the colorset is used for all
-  desks.
-
-*FvwmPager: HilightColorset [desk] colorset::
-  Sets the _colorset_ number (see fvwm3commands(1)) used for both the
-  foreground and background of the highlighted areas, which includes the
-  location of active monitors, and the desk and monitor labels. If _desk_
-  is not provided or equal to '*', the colorset is used for all desks.
-
-*FvwmPager: Pixmap [desk] pixmap::
-  Sets the _pixmap_ to be used as the background image instead of the _Back_
-  color for the desktop _desk_. If _desk_ is not provided or equal to '*',
-  the pixmap is used for all desks.
-+
-For backwards compatibility the option,
-'*FvwmPager: DeskPixmap [desk] pixmap',
-is an alias for this option and works the same.
-
-*FvwmPager: HilightPixmap [desk] pixmap::
-  Sets the _pixmap_ to be used as the background image of the active monitor
-  locations instead of 'Hilight' color for the desktop _desk_. If _desk_ is
-  not provided or equal to '*', the pixmap is used for all desks.
 
 *FvwmPager: DeskHilight::
   Hilight the area shown by all active monitors with the current hilight
@@ -426,6 +370,84 @@ done about this - except not using SloppyFocus in the pager.
 
 *FvwmPager: IsNotShared::
   This setting turns off the previous, _IsShared_, setting.
+
+== DESK STYLE OPTIONS
+
+These configuration options can be used to configure the look of each desk
+the pager shows individually. The options all take one or two parameters,
+The first optional parameter is the _desk_ to configure and the second is
+the value to set. If the _desk_ is not provided, or a "*" is used, the
+setting applies to all desktops.
+
+Colorsets are preferred over color names. Once a colorset is configured, the
+related color settings will have no affect. When using colorsets, the pager
+will update if the colorset is changed in fvwm. Color names are still
+supported, and any valid 'X11/rgb.txt' name is accepted. For best results,
+don't mix colorsets and color names.
+
+Note setting an option for all desks will override any previous options set,
+so make sure to set the global options for all desks first, and the individual
+options for single desks second. For example, to make all desks use colorsets
+10 and 11 except desk 12 which uses colorsets 12 and 13, use the following:
+
+....
+*FvwmPager: Colorset 10
+*FvwmPager: HilightColorset 11
+*FvwmPager: Colorset 2 12
+*FvwmPager: HilightColorset 2 13
+....
+
+*FvwmPager: Colorset [desk] colorset::
+  Sets the _colorset_ number used by each desktop. This colorset is used
+  for the foreground text in the _DeskLabels_ and _MonitorLabels_, and
+  the background color for each desktop. The colorset can also set a
+  pixmap to use for the background, or be transparent. This colorset
+  overrides and sets both _Fore_ and _Back_ below.
+
+*FvwmPager: HilightColorset [desk] colorset::
+  Sets the _colorset_ for the highlighted monitor location and labels.
+  The foreground color is used for the text in highlighted labels, and the
+  background sets the color of both the labels and active monitor locations.
+  In addition pixmaps or transparency can be used for the background instead.
+  This colorset overrides and sets both _HiFore_ and _HiBack_ below.
+
+*FvwmPager: BalloonColorset [desk] colorset::
+  Sets the _colorset_ used for both the foreground, background, and borders
+  of the balloon window.
+
+*FvwmPager: Fore [desk] color::
+  Sets the foreground color, which is used to write desktop labels and to
+  draw the page-grid lines.
+
+*FvwmPager: Back [desk] color::
+  Sets the background color, which is used for the background of each desk.
++
+For backwards compatibility the option, '*FvwmPager: DeskColor [desk] color',
+is an alias for this option and works the same.
+
+*FvwmPager: HiFore [desk] color::
+  Sets the foreground color the for text used in the highlighted _DeskLabels_
+  and _MonitorLabels_ if _DeskHilight_ is set.
+
+*FvwmPager: HiBack [desk] color::
+  Sets the background color the for the highlighted labels when using
+  _DeskLabels_ or _MonitorLabels_, and sets the color used for the location
+  of any active monitors. Has no effect if _DeskHilight_ is not set.
++
+For backwards compatibility the option, '*FvwmPager: Hilight [desk] color',
+is an alias for this option and works the same.
+
+*FvwmPager: Pixmap [desk] pixmap::
+  Sets the _pixmap_ to be used as the background image instead of the _Back_
+  color for the desktop _desk_.
++
+For backwards compatibility the option,
+'*FvwmPager: DeskPixmap [desk] pixmap',
+is an alias for this option and works the same.
+
+*FvwmPager: HilightPixmap [desk] pixmap::
+  Sets the _pixmap_ to be used as the background image of the active monitor
+  locations instead of 'Hilight' color for the desktop _desk_.
 
 == AUTHOR
 
