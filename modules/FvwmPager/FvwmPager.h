@@ -301,7 +301,7 @@ void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);
 void update_pr_transparent_windows(void);
-void MovePage(bool is_new_desk);
+void MovePage();
 void DrawGrid(int desk,Window ew,XRectangle *r);
 void DrawIconGrid(int erase);
 void SwitchToDesk(int Desk, struct fpmonitor *m);

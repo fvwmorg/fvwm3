@@ -918,8 +918,8 @@ void list_new_page(unsigned long *body)
 	}
 
 	if (do_reconfigure) {
-		MovePage(false);
-		MoveStickyWindow(true, false);
+		MovePage();
+		MoveStickyWindows(true, false);
 		Hilight(FocusWin,true);
 	}
 }
@@ -995,14 +995,15 @@ void list_new_desk(unsigned long *body)
 		Desks[0].style = style;
 		update_desk_background(0);
 		update_monitor_backgrounds(0);
+		ReConfigureAll();
 	}
 
 	XStoreName(dpy, Scr.Pager_w, style->label);
 	XSetIconName(dpy, Scr.Pager_w, style->label);
-	MovePage(true);
+	MovePage();
 	DrawGrid(oldDesk - desk1, None, NULL);
 	DrawGrid(newDesk - desk1, None, NULL);
-	MoveStickyWindow(false, true);
+	MoveStickyWindows(false, true);
 	Hilight(FocusWin, true);
 }
 
