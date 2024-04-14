@@ -115,6 +115,7 @@ bool	win_pix_set = false;
 bool	is_transient = false;
 bool	HilightDesks = true;
 bool	ShowBalloons = false;
+bool	HilightLabels = true;
 bool	error_occured = false;
 bool	FocusAfterMove = false;
 bool	use_desk_label = true;
@@ -169,7 +170,10 @@ fpmonitor_new(struct monitor *m)
 	struct fpmonitor	*fp;
 
 	fp = fxcalloc(1, sizeof(*fp));
-	fp->CPagerWin = fxcalloc(1, ndesks * sizeof(*fp->CPagerWin));
+	if (HilightDesks)
+		fp->CPagerWin = fxcalloc(1, ndesks * sizeof(*fp->CPagerWin));
+	else
+		fp->CPagerWin = NULL;
 	fp->m = m;
 	fp->disabled = false;
 	TAILQ_INSERT_TAIL(&fp_monitor_q, fp, entry);
@@ -413,10 +417,12 @@ int main(int argc, char **argv)
 
 	default_style = fxcalloc(1, sizeof(DeskStyle));
 	default_style->desk = -1;
+	default_style->label = fxstrdup("-");
+
+	default_style->use_label_pixmap = true;
 	default_style->cs = -1;
 	default_style->hi_cs = -1;
 	default_style->balloon_cs = -1;
-	default_style->label = fxstrdup("-");
 	default_style->fg = GetSimpleColor("black");
 	default_style->bg = GetSimpleColor("white");
 	default_style->hi_fg = GetSimpleColor("black");
@@ -1431,6 +1437,40 @@ static void SetDeskStylePixel(char *arg1, char *arg2, void *offset_style)
   return;
 }
 
+static void SetDeskStyleBool(char *arg1, char *arg2, void *offset_style)
+{
+  int desk;
+  unsigned long offset = (unsigned long)offset_style;
+  DeskStyle *style;
+  bool val;
+
+  /* We are a bit greedy here, but it is okay. */
+  if (arg2[0] == 't' || arg2[0] == 'T' || arg2[0] == '1') {
+	  val = true;
+  } else if (arg2[0] == 'f' || arg2[0] == 'F' || arg2[0] == '0') {
+	  val = false;
+  } else {
+	  /* But not too greedy. */
+	  return;
+  }
+
+
+
+  if (arg1[0] == '*') {
+	  TAILQ_FOREACH(style, &desk_style_q, entry) {
+		  *(bool *)(((char *)style) + offset) = val;
+	  }
+  } else {
+	  desk = desk1;
+	  sscanf(arg1, "%d", &desk);
+
+	  style = FindDeskStyle(desk);
+	  *(bool *)(((char *)style) + offset) = val;
+  }
+
+  return;
+}
+
 static void SetDeskLabel(int desk, const char *label)
 {
 	DeskStyle *style = FindDeskStyle(desk);
@@ -1657,6 +1697,10 @@ void ParseOptions(void)
 			HilightDesks = true;
 		} else if (StrEquals(resource, "NoDeskHilight")) {
 			HilightDesks = false;
+		} else if (StrEquals(resource, "LabelHilight")) {
+			HilightLabels = true;
+		} else if (StrEquals(resource, "NoLabelHilight")) {
+			HilightLabels = false;
 		} else if (StrEquals(resource, "MiniIcons")) {
 			MiniIcons = true;
 		} else if (StrEquals(resource, "StartIconic")) {
@@ -1762,6 +1806,9 @@ void ParseOptions(void)
 			if (Pdepth > 0)
 				SetDeskStylePixel(arg1, arg2,
 					&(((DeskStyle *)(NULL))->hi_bg));
+		} else if (StrEquals(resource, "LabelPixmap")) {
+			SetDeskStyleBool(arg1, arg2,
+				&(((DeskStyle *)(NULL))->use_label_pixmap));
 		} else if (StrEquals(resource, "Geometry")) {
 			flags = FScreenParseGeometry(
 					next, &g_x, &g_y, &width, &height);
@@ -2009,19 +2056,12 @@ DeskStyle *FindDeskStyle(int desk)
 	DeskStyle *default_style = TAILQ_FIRST(&desk_style_q);
 
 	style = fxcalloc(1, sizeof(DeskStyle));
-	style->desk = desk;
-	style->cs = default_style->cs;;
-	style->hi_cs = default_style->hi_cs;
-	style->balloon_cs = default_style->balloon_cs;
-	xasprintf(&style->label, "Desk %d", desk);
-	style->fg = default_style->fg;
-	style->bg = default_style->bg;
-	style->hi_fg = default_style->hi_fg;
-	style->hi_bg = default_style->hi_bg;
-	style->bgPixmap = default_style->bgPixmap;
-	style->hiPixmap = default_style->hiPixmap;
-	TAILQ_INSERT_TAIL(&desk_style_q, style, entry);
+	memcpy(style, default_style, sizeof *style);
 
+	style->desk = desk;
+	xasprintf(&style->label, "Desk %d", desk);
+
+	TAILQ_INSERT_TAIL(&desk_style_q, style, entry);
 	return style;
 }
 

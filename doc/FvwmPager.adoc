@@ -174,17 +174,18 @@ size may be slightly different than the specified size.
   canceling the effect of the _ShapeLabels_ option.
 
 *FvwmPager: DeskLabels::
-  Tells FvwmPager to display a label for each desk. This is the default
-  state, but this is useful for undoing _Font none_ or _NoDeskLabels_.
+  Tells FvwmPager to display a label for each desk. If _LabelHilight_ is
+  set, the active desk will be highlighted. This is the default state,
+  but this is useful for undoing _Font none_ or _NoDeskLabels_.
 
 *FvwmPager: NoDeskLabels::
   Tells FvwmPager to not display desk labels.
 
 *FvwmPager: MonitorLabels::
-  Tells FvwmPager to display a row of monitor labels. The monitor label
-  on the desktop the monitor is currently viewing will be highlighted using
-  the hilight color. Clicking on a monitor label will move that monitor to
-  the selected desktop. This option is best used with
+  Tells FvwmPager to display a row of monitor labels. If _LabelHilight_ is
+  set, the monitor label on the desktop the monitor is currently viewing will
+  be highlighted using the hilight color. Clicking on a monitor label will
+  move that monitor to the selected desktop. This option is goes well with
   'DesktopConfiguration shared' to be able to control which monitor is moved
   to a selected desktop.
 
@@ -204,11 +205,21 @@ size may be slightly different than the specified size.
   "none" then no window names will be displayed.
 
 *FvwmPager: DeskHilight::
-  Hilight the area shown by all active monitors with the current hilight
+  Highlight the area shown by all active monitors with the current highlight
   color/pixmap. Useful for canceling the effect of the _NoDeskHilight_ option.
 
 *FvwmPager: NoDeskHilight::
-  Don't hilight the active page.
+  Don't highlight the active page.
+
+*FvwmPager: LabelHilight::
+  Highlight the label of the current monitor and/or desk. What is highlighted
+  depends on a combination of what _DesktopConfiguration_ is used and which
+  labels are shown. This is the default state.
+
+*FvwmPager: NoLabelHilight::
+  Don't highlight the current labels. This is useful when using pixmaps or
+  transparent colorsets, to remove the filled rectangle on the highlighted
+  label.
 
 *FvwmPager: WindowColors fore back hiFore hiBack::
   Change the normal/highlight colors of the windows. _fore_ and _hiFore_
@@ -448,6 +459,13 @@ is an alias for this option and works the same.
 *FvwmPager: HilightPixmap [desk] pixmap::
   Sets the _pixmap_ to be used as the background image of the active monitor
   locations instead of 'Hilight' color for the desktop _desk_.
+
+*FvwmPager: LabelPixmap [desk] True|False::
+  By default pixmaps are drawn in the root window for each desk, which covers
+  the labels. Turning this option by using _False_, _F_, or _0_, will draw
+  pixmaps only over the virtual desktop window. This option can be turned
+  back on with _True_, _T_, or _1_. Note, disabling this will not work with
+  transparent colorsets.
 
 == AUTHOR
 

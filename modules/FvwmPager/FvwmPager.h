@@ -125,10 +125,12 @@ typedef struct balloon_window
 typedef struct desk_style
 {
 	int desk;
+	char *label;
+
+	bool use_label_pixmap;		/* Stretch pixmap over label? */
 	int cs;
 	int hi_cs;
 	int balloon_cs;
-	char *label;
 	Pixel fg;			/* Store colors as pixels. */
 	Pixel bg;
 	Pixel hi_fg;
@@ -139,6 +141,7 @@ typedef struct desk_style
 	GC dashed_gc;			/* Page boundary lines. */
 	GC hi_bg_gc;			/* Hilighting monitor locations. */
 	GC hi_fg_gc;			/* Hilighting desk labels. */
+
 	TAILQ_ENTRY(desk_style) entry;
 } DeskStyle;
 TAILQ_HEAD(desk_styles, desk_style);
@@ -150,8 +153,6 @@ typedef struct desk_info
   Window title_w;
   BalloonWindow balloon;
   DeskStyle *style;
-  unsigned long fp_mask;        /* used for the fpmonitor window */
-  XSetWindowAttributes fp_attr; /* used for the fpmonitor window */
   struct fpmonitor *fp;         /* most recent monitor viewing desk. */
 } DeskInfo;
 
@@ -220,6 +221,7 @@ extern bool	win_pix_set;
 extern bool	is_transient;
 extern bool	HilightDesks;
 extern bool	ShowBalloons;
+extern bool	HilightLabels;
 extern bool	error_occured;
 extern bool	FocusAfterMove;
 extern bool	use_desk_label;
