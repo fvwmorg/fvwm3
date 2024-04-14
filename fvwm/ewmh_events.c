@@ -39,6 +39,7 @@
 #include "decorations.h"
 #include "geometry.h"
 #include "borders.h"
+#include "module_interface.h"
 
 extern ewmh_atom ewmh_atom_wm_state[];
 
@@ -1124,16 +1125,23 @@ int ewmh_WMStateSkipPager(
 
 	if (ev != NULL)
 	{
-		/* I do not think we can get such client message */
 		int bool_arg = ev->xclient.data.l[0];
 
 		if ((bool_arg == NET_WM_STATE_TOGGLE &&
 		     !DO_SKIP_WINDOW_LIST(fw)) ||
 		    bool_arg == NET_WM_STATE_ADD)
 		{
+			SET_DO_SKIP_WINDOW_LIST(fw, 1);
+			EWMH_SetWMState(fw, False);
+			BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 		}
-		else
+		else if ((bool_arg == NET_WM_STATE_TOGGLE &&
+		      DO_SKIP_WINDOW_LIST(fw)) ||
+		    bool_arg == NET_WM_STATE_REMOVE)
 		{
+			SET_DO_SKIP_WINDOW_LIST(fw, 0);
+			EWMH_SetWMState(fw, False);
+			BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 		}
 	}
 	return 0;
@@ -1196,16 +1204,23 @@ int ewmh_WMStateSkipTaskBar(
 
 	if (ev != NULL)
 	{
-		/* I do not think we can get such client message */
 		int bool_arg = ev->xclient.data.l[0];
 
 		if ((bool_arg == NET_WM_STATE_TOGGLE &&
 		     !DO_SKIP_WINDOW_LIST(fw)) ||
 		    bool_arg == NET_WM_STATE_ADD)
 		{
+			SET_DO_SKIP_WINDOW_LIST(fw, 1);
+			EWMH_SetWMState(fw, False);
+			BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 		}
-		else
+		else if ((bool_arg == NET_WM_STATE_TOGGLE &&
+		      DO_SKIP_WINDOW_LIST(fw)) ||
+		    bool_arg == NET_WM_STATE_REMOVE)
 		{
+			SET_DO_SKIP_WINDOW_LIST(fw, 0);
+			EWMH_SetWMState(fw, False);
+			BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 		}
 	}
 	return 0;
