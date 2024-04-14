@@ -141,6 +141,7 @@ DeskInfo	*Desks;
 ScreenInfo	Scr;
 PagerWindow	*Start = NULL;
 PagerWindow	*FocusWin = NULL;
+struct desk_styles desk_style_q;
 
 /* Monitors */
 struct fpmonitor	*current_monitor = NULL;
@@ -151,7 +152,6 @@ struct fpmonitors	fp_monitor_q;
 static int x_fd;
 static fd_set_size_t fd_width;
 static bool fp_new_block = false;
-static struct desk_styles desk_style_q;
 
 static void SetDeskLabel(int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
@@ -967,6 +967,13 @@ void list_new_desk(unsigned long *body)
 	/* Update the current desk. */
 	desk_i = newDesk;
 	style = FindDeskStyle(newDesk);
+	/* Create and update GCs if needed. */
+	if (oldDesk != newDesk) {
+		if (style->label_gc)
+			update_desk_style_gcs(style);
+		else
+			initialize_desk_style_gcs(style);
+	}
 
 	/* Keep monitors in sync when tracking is global. */
 	if (monitor_mode == MONITOR_TRACKING_G)
@@ -986,7 +993,8 @@ void list_new_desk(unsigned long *body)
 
 		/* Update DeskStyle */
 		Desks[0].style = style;
-		set_desk_background(0);
+		update_desk_background(0);
+		update_monitor_backgrounds(0);
 	}
 
 	XStoreName(dpy, Scr.Pager_w, style->label);
@@ -1254,9 +1262,19 @@ void list_config_info(unsigned long *body)
 	if (StrEquals(token, "Colorset"))
 	{
 		int color;
+		DeskStyle *style;
 
 		color = LoadColorset(tline);
-		change_colorset(color);
+		TAILQ_FOREACH(style, &desk_style_q, entry) {
+			if (style->cs == color || style->hi_cs == color) {
+				update_desk_style_gcs(style);
+				if (style->desk < desk1 || style->desk > desk2)
+					continue;
+
+				update_desk_background(style->desk - desk1);
+				update_monitor_backgrounds(style->desk - desk1);
+			}
+		}
 	}
 	else if (StrEquals(token, "DesktopName"))
 	{
