@@ -1710,73 +1710,34 @@ void update_pr_transparent_windows(void)
 	}
 }
 
-void MovePage(bool is_new_desk)
+void MovePage()
 {
-  int i;
-  rectangle vp;
-  XTextProperty name;
-  char str[100],*sptr;
-  static int icon_desk_shown = -1000;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
-  struct fpmonitor *m;
+	/* No monitor highlights, nothing to do. */
+	if (!HilightDesks)
+		return;
 
-  if (fp == NULL)
-    return;
+	int i;
+	rectangle vp;
+	struct fpmonitor *fp;
 
-  Wait = 0;
+	/* Unsure which desk was updated, so check all monitors/desks. */
+	for(i = 0; i < ndesks; i++) {
+		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+			if (fp->disabled || (monitor_to_track != NULL &&
+			    monitor_to_track != fp) || (i + desk1 !=
+			    fp->m->virtual_scr.CurrentDesk)) {
+				HideWindow(NULL, fp->CPagerWin[i]);
+				continue;
+			}
 
-  for(i=0;i<ndesks;i++)
-  {
-    if (HilightDesks)
-    {
-      TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	int desk = (CurrentDeskPerMonitor && fAlwaysCurrentDesk) ?
-		m->m->virtual_scr.CurrentDesk : desk1;
-
-	if (!m->disabled && i == m->m->virtual_scr.CurrentDesk - desk &&
-		(monitor_to_track == NULL || m == monitor_to_track))
-	{
-		vp = set_vp_size_and_loc(m, false);
-		XMoveResizeWindow(dpy, m->CPagerWin[i],
+			vp = set_vp_size_and_loc(fp, false);
+			XMoveResizeWindow(dpy, fp->CPagerWin[i],
 				vp.x, vp.y, vp.width, vp.height);
-		XLowerWindow(dpy, m->CPagerWin[i]);
-		if (CSET_IS_TRANSPARENT(Desks[i].style->hi_cs))
-		{
-			SetWindowBackground(
-				dpy, m->CPagerWin[i], vp.width, vp.height,
-				&Colorset[Desks[i].style->hi_cs], Pdepth,
-				Scr.NormalGC, True);
 		}
-	} else {
-		XMoveWindow(dpy, m->CPagerWin[i], -32768,-32768);
+		update_monitor_backgrounds(i);
 	}
-      }
-    }
-  }
-  DrawIconGrid(1);
-
-  ReConfigureAll();
-
-  if(fp->m->virtual_scr.CurrentDesk != icon_desk_shown)
-  {
-    icon_desk_shown = fp->m->virtual_scr.CurrentDesk;
-
-    if((fp->m->virtual_scr.CurrentDesk >= desk1)&&(fp->m->virtual_scr.CurrentDesk <=desk2))
-      sptr = Desks[fp->m->virtual_scr.CurrentDesk - desk1].style->label;
-    else
-    {
-      snprintf(str, sizeof(str), "GotoDesk screen %s %d", fp->m->si->name, fp->m->virtual_scr.CurrentDesk);
-      sptr = &str[0];
-    }
-
-    if (FlocaleTextListToTextProperty(
-	  dpy, &sptr, 1, XStdICCTextStyle, &name) == 0)
-    {
-      return;
-    }
-    XSetWMIconName(dpy,Scr.Pager_w,&name);
-    XFree(name.value);
-  }
+	DrawIconGrid(true);
+	Wait = 0;
 }
 
 void ReConfigureAll(void)
@@ -1784,7 +1745,7 @@ void ReConfigureAll(void)
 	PagerWindow *t;
 
 	t = Start;
-	while(t != NULL) {
+	while (t != NULL) {
 		MoveResizePagerView(t, true);
 		t = t->next;
 	}
@@ -2367,44 +2328,35 @@ void MoveResizePagerView(PagerWindow *t, bool do_force_redraw)
 	return;
 }
 
-
-void MoveStickyWindow(bool is_new_page, bool is_new_desk)
+void MoveStickyWindows(bool is_new_page, bool is_new_desk)
 {
 	PagerWindow *t;
 	struct fpmonitor *fp;
 
-	for (t = Start; t != NULL; t = t->next)
-	{
+	for (t = Start; t != NULL; t = t->next) {
 		fp = fpmonitor_this(t->m);
 		if (fp == NULL)
 			continue;
-		if (
-			is_new_desk && t->desk != fp->m->virtual_scr.CurrentDesk &&
-			((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
-			 IS_STICKY_ACROSS_DESKS(t)))
-		{
+
+		if (is_new_desk &&
+		    t->desk != fp->m->virtual_scr.CurrentDesk &&
+		    (IS_STICKY_ACROSS_DESKS(t) ||
+		    (IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t))))
 			ChangeDeskForWindow(t, fp->m->virtual_scr.CurrentDesk);
-		}
-		else if (
-			is_new_page &&
-			((IS_ICONIFIED(t) &&
-			  IS_ICON_STICKY_ACROSS_PAGES(t)) ||
-			 IS_STICKY_ACROSS_PAGES(t)))
-		{
+
+		if (is_new_page &&
+		    (IS_STICKY_ACROSS_PAGES(t) ||
+		    (IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_PAGES(t))))
 			MoveResizePagerView(t, true);
-		}
 	}
 }
 
 void Hilight(PagerWindow *t, int on)
 {
-	if (!t)
+	if (!t || (monitor_to_track != NULL && t->m != monitor_to_track->m))
 		return;
 
-	if (monitor_to_track != NULL && t->m != monitor_to_track->m)
-		return;
-
-	if(Pdepth < 2)
+	if (Pdepth < 2)
 	{
 		if (on)
 		{
