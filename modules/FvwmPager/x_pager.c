@@ -374,6 +374,37 @@ void set_desk_size(bool update_label)
 	return;
 }
 
+void update_monitor_locations(int i)
+{
+	if (!HilightDesks)
+		return;
+
+	struct fpmonitor *fp;
+
+	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+		if (fp->disabled)
+			continue;
+
+		rectangle vp = set_vp_size_and_loc(fp, false);
+
+		/* Conditions to show a monitor view port are:
+		 *   + Never show monitors not being tracked.
+		 *   + Always shown when CurrntDeskPerMonitor is in use.
+		 *   + Otherwise only show monitors on desk.
+		 */
+		if ((monitor_to_track == NULL || monitor_to_track == fp) &&
+		    ((CurrentDeskPerMonitor && fAlwaysCurrentDesk) ||
+		    fp->m->virtual_scr.CurrentDesk == i + desk1))
+		{
+			XMoveResizeWindow(dpy, fp->CPagerWin[i],
+				vp.x, vp.y, vp.width, vp.height);
+		} else {
+			XMoveResizeWindow(dpy, fp->CPagerWin[i],
+				-32768, -32768, vp.width, vp.height);
+		}
+	}
+}
+
 void update_monitor_backgrounds(int desk)
 {
 	if (!HilightDesks)
@@ -749,6 +780,7 @@ void initialize_fpmonitor_windows(struct fpmonitor *fp)
 				CopyFromParent, Desks[i].fp_mask,
 				&Desks[i].fp_attr);
 		XMapRaised(dpy, fp->CPagerWin[i]);
+		update_monitor_locations(i);
 		update_monitor_backgrounds(i);
 	}
 }
@@ -1476,8 +1508,8 @@ void HandleEnterNotify(XEvent *Event)
  * logic is a bit more complicated. Just redraw the whole label since
  * the rest of the grid is being redrawn anyways. This simplifies things
  * drastically, and this optimization might not have noticeable gain.
- * If this functionality is added back, DrawGrid needs to be correctly
- * updated to deal with the bound logic.
+ * If this functionality is added back, draw_desk_grid needs to be
+ * correctly updated to deal with the bound logic.
  */
 XRectangle get_expose_bound(XEvent *Event)
 {
@@ -1516,9 +1548,7 @@ void HandleExpose(XEvent *Event)
 		if (Event->xany.window == Desks[i].w ||
 		    Event->xany.window == Desks[i].title_w)
 		{
-			//XRectangle r = get_expose_bound(Event);
-			//DrawGrid(i, 0, Event->xany.window, &r);
-			DrawGrid(i, Event->xany.window, NULL);
+			draw_desk_grid(i);
 			return;
 		}
 	}
@@ -1528,7 +1558,7 @@ void HandleExpose(XEvent *Event)
 		return;
 	}
 	if(Event->xany.window == icon_win)
-		DrawIconGrid(0);
+		draw_icon_grid(0);
 
 	for (t = Start; t != NULL; t = t->next)
 	{
@@ -1556,67 +1586,41 @@ void HandleExpose(XEvent *Event)
  */
 void ReConfigure(void)
 {
-  Window root;
-  unsigned border_width, depth;
-  rectangle vp = {0, 0, 0, 0};
-  int i = 0, j = 0, k = 0;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
-  struct fpmonitor *m;
+	Window root;
+	unsigned dummy;
+	int i, j, k;
 
-  if (fp == NULL)
-    return;
 
-  if (!XGetGeometry(dpy, Scr.Pager_w, &root, &vp.x, &vp.y, (unsigned *)&pwindow.width,
-		    (unsigned *)&pwindow.height, &border_width,&depth))
-  {
-    return;
-  }
-  set_desk_size(false);
+	/* Using i for a dummy, as no return needed. */
+	if (!XGetGeometry(dpy, Scr.Pager_w, &root, &i, &i,
+	    (unsigned *)&pwindow.width, (unsigned *)&pwindow.height,
+	    &dummy, &dummy))
+		return;
 
-  for(k=0;k<Rows;k++)
-  {
-    for(j=0;j<Columns;j++)
-    {
-      i = k*Columns+j;
-      if (i<ndesks)
-      {
-	XMoveResizeWindow(
-	  dpy,Desks[i].title_w, (desk_w+1)*j-1,(desk_h+label_h+1)*k-1,
-	  desk_w,desk_h+label_h);
-	XMoveResizeWindow(
-	  dpy,Desks[i].w, -1, (LabelsBelow) ? -1 : label_h - 1, desk_w,desk_h);
-	update_desk_background(i);
+	set_desk_size(false);
+	for(k = 0; k < Rows; k++) {
+		for(j = 0; j < Columns; j++) {
+			i = k * Columns + j;
+			if (i >= ndesks)
+				continue;
 
-	if (HilightDesks)
-	{
-	  int desk;
+			XMoveResizeWindow(dpy, Desks[i].title_w,
+					  (desk_w + 1) * j - 1,
+					  (desk_h + label_h + 1) * k - 1,
+					  desk_w, desk_h + label_h);
+			XMoveResizeWindow(dpy, Desks[i].w, -1,
+					  (LabelsBelow) ? -1 : label_h - 1,
+					  desk_w, desk_h);
 
-	  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-	    if (m->disabled)
-	      continue;
-
-	    vp = set_vp_size_and_loc(m, false);
-	    desk = (CurrentDeskPerMonitor && fAlwaysCurrentDesk) ?
-		m->m->virtual_scr.CurrentDesk : desk1;
-
-	    if (i == m->m->virtual_scr.CurrentDesk - desk &&
-		(monitor_to_track == NULL || m == monitor_to_track) &&
-		(!IsShared || Desks[i].fp == m))
-	    {
-	      XMoveResizeWindow(dpy, m->CPagerWin[i],
-				vp.x, vp.y, vp.width, vp.height);
-	    } else {
-	      XMoveResizeWindow(dpy, m->CPagerWin[i],
-				-32768, -32768, vp.width, vp.height);
-	    }
-	    update_monitor_backgrounds(i);
-	  }
+			update_desk_background(i);
+			update_monitor_locations(i);
+			update_monitor_backgrounds(i);
+			draw_desk_grid(i);
+		}
 	}
-      }
-    }
-  }
-  /* reconfigure all the subordinate windows */
-  ReConfigureAll();
+
+	/* reconfigure all the subordinate windows */
+	ReConfigureAll();
 }
 
 /*
@@ -1717,26 +1721,13 @@ void MovePage()
 		return;
 
 	int i;
-	rectangle vp;
-	struct fpmonitor *fp;
 
-	/* Unsure which desk was updated, so check all monitors/desks. */
+	/* Unsure which desk was updated, so update all desks. */
 	for(i = 0; i < ndesks; i++) {
-		TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
-			if (fp->disabled || (monitor_to_track != NULL &&
-			    monitor_to_track != fp) || (i + desk1 !=
-			    fp->m->virtual_scr.CurrentDesk)) {
-				HideWindow(NULL, fp->CPagerWin[i]);
-				continue;
-			}
-
-			vp = set_vp_size_and_loc(fp, false);
-			XMoveResizeWindow(dpy, fp->CPagerWin[i],
-				vp.x, vp.y, vp.width, vp.height);
-		}
+		update_monitor_locations(i);
 		update_monitor_backgrounds(i);
 	}
-	DrawIconGrid(true);
+	draw_icon_grid(true);
 	Wait = 0;
 }
 
@@ -1812,56 +1803,43 @@ void draw_grid_label(const char *label, const char *small, int desk,
 	return;
 }
 
-void DrawGrid(int desk, Window ew, XRectangle *r)
+void draw_desk_grid(int desk)
 {
 	int y, y1, y2, x, x1, x2, d;
 	char str[15];
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 	DeskStyle *style;
 
-	if (fp == NULL)
-		return;
-
-	if ((desk < 0 ) || (desk >= ndesks))
+	if (fp == NULL || desk < 0 || desk >= ndesks)
 		return;
 
 	style = Desks[desk].style;
 	/* desk grid */
-	if (!ew || ew == Desks[desk].w)
+	x = fpmonitor_get_all_widths();
+	y1 = 0;
+	y2 = desk_h;
+	while (x < fp->virtual_scr.VWidth)
 	{
-		x = fpmonitor_get_all_widths();
-		y1 = 0;
-		y2 = desk_h;
-		while (x < fp->virtual_scr.VWidth)
+		x1 = (x * desk_w) / fp->virtual_scr.VWidth;
+		if (!use_no_separators)
 		{
-			x1 = (x * desk_w) / fp->virtual_scr.VWidth;
-			if (!use_no_separators)
-			{
-				XDrawLine(
-					dpy, Desks[desk].w, style->dashed_gc,
-					x1, y1, x1, y2);
-			}
-			x += fpmonitor_get_all_widths();
+			XDrawLine(dpy, Desks[desk].w, style->dashed_gc,
+				  x1, y1, x1, y2);
 		}
-		y = fpmonitor_get_all_heights();
-		x1 = 0;
-		x2 = desk_w;
-		while(y < fp->virtual_scr.VHeight)
-		{
-			y1 = (y * desk_h) / fp->virtual_scr.VHeight;
-			if (!use_no_separators)
-			{
-				XDrawLine(
-					dpy, Desks[desk].w, style->dashed_gc,
-					x1, y1, x2, y1);
-			}
-			y += fpmonitor_get_all_heights();
-		}
+		x += fpmonitor_get_all_widths();
 	}
-
-	if (ew && ew != Desks[desk].title_w)
+	y = fpmonitor_get_all_heights();
+	x1 = 0;
+	x2 = desk_w;
+	while(y < fp->virtual_scr.VHeight)
 	{
-		return;
+		y1 = (y * desk_h) / fp->virtual_scr.VHeight;
+		if (!use_no_separators)
+		{
+			XDrawLine(dpy, Desks[desk].w, style->dashed_gc,
+				  x1, y1, x2, y1);
+		}
+		y += fpmonitor_get_all_heights();
 	}
 
 	/* desk label location */
@@ -1963,7 +1941,7 @@ void DrawGrid(int desk, Window ew, XRectangle *r)
 }
 
 
-void DrawIconGrid(int erase)
+void draw_icon_grid(int erase)
 {
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 

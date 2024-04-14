@@ -188,6 +188,7 @@ void fpmonitor_disable(struct fpmonitor *fp)
 
 	if (fp == monitor_to_track)
 		monitor_to_track = fpmonitor_this(NULL);
+
 }
 
 struct fpmonitor *
@@ -994,6 +995,7 @@ void list_new_desk(unsigned long *body)
 		/* Update DeskStyle */
 		Desks[0].style = style;
 		update_desk_background(0);
+		update_monitor_locations(0);
 		update_monitor_backgrounds(0);
 		ReConfigureAll();
 	}
@@ -1001,8 +1003,8 @@ void list_new_desk(unsigned long *body)
 	XStoreName(dpy, Scr.Pager_w, style->label);
 	XSetIconName(dpy, Scr.Pager_w, style->label);
 	MovePage();
-	DrawGrid(oldDesk - desk1, None, NULL);
-	DrawGrid(newDesk - desk1, None, NULL);
+	draw_desk_grid(oldDesk - desk1);
+	draw_desk_grid(newDesk - desk1);
 	MoveStickyWindows(false, true);
 	Hilight(FocusWin, true);
 }
@@ -1299,7 +1301,7 @@ void list_config_info(unsigned long *body)
 		{
 			val = val - desk1;
 		}
-		DrawGrid(val, None, NULL);
+		draw_desk_grid(val);
 	} else if (StrEquals(token, "Monitor")) {
 		parse_monitor_line(tline);
 		ReConfigure();
