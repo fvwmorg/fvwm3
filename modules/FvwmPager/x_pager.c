@@ -384,6 +384,9 @@ void update_monitor_backgrounds(int desk)
 	DeskStyle *style = Desks[desk].style;
 
 	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+		if (CurrentDeskPerMonitor && fAlwaysCurrentDesk)
+			style = FindDeskStyle(fp->m->virtual_scr.CurrentDesk);
+
 		if (style->hi_cs < 0) {
 			XSetWindowBackground(dpy,
 				fp->CPagerWin[desk], style->hi_bg);
@@ -1815,6 +1818,18 @@ void draw_grid_label(const char *label, const char *small, int desk,
 			XFillRectangle(dpy, Desks[desk].title_w,
 				       Desks[desk].style->hi_bg_gc,
 				       x, y, width, height);
+		} else if (CurrentDeskPerMonitor && fAlwaysCurrentDesk) {
+			/* Draw label colors based on location of monitor. */
+			struct fpmonitor *fp = fpmonitor_from_n(x / width);
+			DeskStyle *style;
+
+			style = FindDeskStyle(fp->m->virtual_scr.CurrentDesk);
+			cs = style->hi_cs;
+			FwinString->gc = style->hi_fg_gc;
+
+			style = FindDeskStyle(fp->m->virtual_scr.CurrentDesk);
+			XFillRectangle(dpy, Desks[desk].title_w,
+				       style->hi_bg_gc, x, y, width, height);
 		} else {
 			cs = Desks[desk].style->cs;
 			FwinString->gc = Desks[desk].style->label_gc;
