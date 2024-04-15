@@ -57,20 +57,18 @@ typedef struct ScreenInfo
 
   GC NormalGC;           /* used for window names and setting backgrounds */
   GC MiniIconGC;         /* used for clipping mini-icons */
-  GC whGC, wsGC, ahGC, asGC; /* used for 3d shadows on mini-windows */
-  GC label_gc;
   GC balloon_gc;
 
   int balloon_desk;
   char *balloon_label;   /* the label displayed inside the balloon */
-  char  *Hilite;         /* the fvwm window that is highlighted
-			  * except for networking delays, this is the
-			  * window which REALLY has the focus */
+
   unsigned VScale;       /* Panner scale factor */
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
-  Pixel black;
+  Pixel focus_win_fg; /* The fvwm focus pixel. */
+  Pixel focus_win_bg;
+
 } ScreenInfo;
 
 typedef struct pager_window
@@ -130,17 +128,27 @@ typedef struct desk_style
 	bool use_label_pixmap;		/* Stretch pixmap over label? */
 	int cs;
 	int hi_cs;
+	int win_cs;
+	int focus_cs;
 	int balloon_cs;
 	Pixel fg;			/* Store colors as pixels. */
 	Pixel bg;
 	Pixel hi_fg;
 	Pixel hi_bg;
+	Pixel win_fg;
+	Pixel win_bg;
+	Pixel focus_fg;
+	Pixel focus_bg;
 	FvwmPicture *bgPixmap;		/* Pixmap used as background. */
 	FvwmPicture *hiPixmap;		/* Hilighted background pixmap. */
 	GC label_gc;			/* Label GC. */
 	GC dashed_gc;			/* Page boundary lines. */
 	GC hi_bg_gc;			/* Hilighting monitor locations. */
 	GC hi_fg_gc;			/* Hilighting desk labels. */
+	GC win_hi_gc;			/* GCs for 3D borders. */
+	GC win_sh_gc;
+	GC focus_hi_gc;
+	GC focus_sh_gc;
 
 	TAILQ_ENTRY(desk_style) entry;
 } DeskStyle;
@@ -164,24 +172,16 @@ typedef struct desk_info
 /* Colors, Pixmaps, Fonts, etc. */
 extern char		*smallFont;
 extern char		*ImagePath;
-extern char		*WindowBack;
-extern char		*WindowFore;
 extern char		*font_string;
 extern char		*BalloonFore;
 extern char		*BalloonBack;
 extern char		*BalloonFont;
-extern char		*WindowHiFore;
-extern char		*WindowHiBack;
 extern char		*WindowLabelFormat;
 extern char		*BalloonTypeString;
 extern char		*BalloonBorderColor;
 extern char		*BalloonFormatString;
-extern Pixel		focus_pix;
-extern Pixel		win_back_pix;
-extern Pixel		win_fore_pix;
-extern Pixel		focus_fore_pix;
-extern Pixel		win_hi_back_pix;
-extern Pixel		win_hi_fore_pix;
+extern Pixel		focus_win_fg;
+extern Pixel		focus_win_bg;
 extern Pixmap		default_pixmap;
 extern FlocaleFont	*Ffont;
 extern FlocaleFont	*FwindowFont;
@@ -203,8 +203,6 @@ extern rectangle	pwindow;
 extern rectangle	icon;
 
 /* Settings */
-extern int	windowcolorset;
-extern int	activecolorset;
 extern bool	xneg;
 extern bool	yneg;
 extern bool	IsShared;
@@ -217,7 +215,6 @@ extern bool	UseSkipList;
 extern bool	StartIconic;
 extern bool	LabelsBelow;
 extern bool	ShapeLabels;
-extern bool	win_pix_set;
 extern bool	is_transient;
 extern bool	HilightDesks;
 extern bool	ShowBalloons;
@@ -225,7 +222,6 @@ extern bool	HilightLabels;
 extern bool	error_occured;
 extern bool	FocusAfterMove;
 extern bool	use_desk_label;
-extern bool	win_hi_pix_set;
 extern bool	WindowBorders3d;
 extern bool	HideSmallWindows;
 extern bool	ShowIconBalloons;
@@ -312,15 +308,8 @@ void AddNewWindow(PagerWindow *prev);
 void MoveResizePagerView(PagerWindow *t, bool do_force_redraw);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
 void MoveStickyWindows(bool is_new_page, bool is_new_desk);
-void Hilight(PagerWindow *, int);
 void Scroll(int x, int y, int Desk, bool do_scroll_icon);
 void MoveWindow(XEvent *Event);
-void BorderWindow(PagerWindow *t);
-void BorderIconWindow(PagerWindow *t);
-void LabelWindow(PagerWindow *t);
-void LabelIconWindow(PagerWindow *t);
-void PictureWindow(PagerWindow *t);
-void PictureIconWindow(PagerWindow *t);
 void ReConfigureIcons(bool do_reconfigure_desk_only);
 void IconSwitchPage(XEvent *Event);
 void IconMoveWindow(XEvent *Event,PagerWindow *t);
@@ -338,5 +327,9 @@ void update_desk_style_gcs(DeskStyle *style);
 void update_desk_background(int desk);
 void update_monitor_locations(int desk);
 void update_monitor_backgrounds(int desk);
+void update_window_background(PagerWindow *t);
+void update_window_decor(PagerWindow *t);
+void update_pager_window_decor(PagerWindow *t);
+void update_icon_window_decor(PagerWindow *t);
 
 #endif /* FVWMPAGER_H */
