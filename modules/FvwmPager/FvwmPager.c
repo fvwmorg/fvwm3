@@ -1933,10 +1933,12 @@ void ParseOptions(void)
 				style->hiPixmap = PCacheFvwmPicture(dpy,
 					Scr.pager_w, ImagePath, arg2, fpa);
 			}
-		} else if (StrEquals(resource, "SmallFont")) {
+		} else if (StrEquals(resource, "WindowFont") ||
+			   StrEquals(resource, "SmallFont"))
+		{
 			free(smallFont);
 			CopyStringWithQuotes(&smallFont, next);
-			if (strncasecmp(smallFont,"none",4) == 0) {
+			if (strncasecmp(smallFont, "none", 4) == 0) {
 				free(smallFont);
 				smallFont = NULL;
 			}
@@ -1944,7 +1946,7 @@ void ParseOptions(void)
 			sscanf(next, "%d", &Rows);
 		} else if (StrEquals(resource, "Columns")) {
 			sscanf(next, "%d", &Columns);
-		} else if (StrEquals(resource, "DeskTopScale")) {
+		} else if (StrEquals(resource, "DesktopScale")) {
 			sscanf(next, "%d", &Scr.VScale);
 		} else if (StrEquals(resource, "WindowBorderWidth")) {
 			MinSize = MinSize - 2*WindowBorderWidth;
