@@ -57,24 +57,14 @@
 /* Colors, Pixmaps, Fonts, etc. */
 char		*smallFont = NULL;
 char		*ImagePath = NULL;
-char		*WindowBack = NULL;
-char		*WindowFore = NULL;
 char		*font_string = NULL;
 char		*BalloonFore = NULL;
 char		*BalloonBack = NULL;
 char		*BalloonFont = NULL;
-char		*WindowHiFore = NULL;
-char		*WindowHiBack = NULL;
 char		*WindowLabelFormat = NULL;
 char		*BalloonTypeString = NULL;
 char		*BalloonBorderColor = NULL;
 char		*BalloonFormatString = NULL;
-Pixel		focus_pix;
-Pixel		win_back_pix;
-Pixel		win_fore_pix;
-Pixel		focus_fore_pix;
-Pixel		win_hi_back_pix;
-Pixel		win_hi_fore_pix;
 Pixmap		default_pixmap = None;
 FlocaleFont	*Ffont;
 FlocaleFont	*FwindowFont;
@@ -97,8 +87,6 @@ rectangle	pwindow = {0, 0, 0, 0};
 rectangle	icon = {-10000, -10000, 0, 0};
 
 /* Settings */
-int	windowcolorset = -1;
-int	activecolorset = -1;
 bool	xneg = false;
 bool	yneg = false;
 bool	IsShared = false;
@@ -111,7 +99,6 @@ bool	UseSkipList = false;
 bool	StartIconic = false;
 bool	LabelsBelow = false;
 bool	ShapeLabels = false;
-bool	win_pix_set = false;
 bool	is_transient = false;
 bool	HilightDesks = true;
 bool	ShowBalloons = false;
@@ -119,7 +106,6 @@ bool	HilightLabels = true;
 bool	error_occured = false;
 bool	FocusAfterMove = false;
 bool	use_desk_label = true;
-bool	win_hi_pix_set = false;
 bool	WindowBorders3d = false;
 bool	HideSmallWindows = false;
 bool	ShowIconBalloons = false;
@@ -422,11 +408,17 @@ int main(int argc, char **argv)
 	default_style->use_label_pixmap = true;
 	default_style->cs = -1;
 	default_style->hi_cs = -1;
+	default_style->win_cs = -1;
+	default_style->focus_cs = -1;
 	default_style->balloon_cs = -1;
 	default_style->fg = GetSimpleColor("black");
 	default_style->bg = GetSimpleColor("white");
 	default_style->hi_fg = GetSimpleColor("black");
 	default_style->hi_bg = GetSimpleColor("grey");
+	default_style->win_fg = None; /* Use fvwm pixel unless defined. */
+	default_style->win_bg = None;
+	default_style->focus_fg = None;
+	default_style->focus_bg = None;
 	default_style->bgPixmap = NULL;
 	default_style->hiPixmap = NULL;
 	TAILQ_INSERT_TAIL(&desk_style_q, default_style, entry);
@@ -729,16 +721,9 @@ void handle_config_win_package(PagerWindow *t,
 	memcpy(&(t->allowed_actions), &(cfgpacket->allowed_actions),
 	       sizeof(cfgpacket->allowed_actions));
 
-	if (win_pix_set)
-	{
-		t->text = win_fore_pix;
-		t->back = win_back_pix;
-	}
-	else
-	{
-		t->text = cfgpacket->TextPixel;
-		t->back = cfgpacket->BackPixel;
-	}
+	/* These are used for windows if no pixel is set. */
+	t->text = cfgpacket->TextPixel;
+	t->back = cfgpacket->BackPixel;
 
 	if (IS_ICONIFIED(t))
 	{
@@ -850,32 +835,20 @@ void list_monitor_focus(unsigned long *body)
 void list_focus(unsigned long *body)
 {
 	PagerWindow *t = find_pager_window(body[0]);
-	extern Pixel focus_pix, focus_fore_pix;
 	bool do_force_update = false;
 
-	if (win_hi_pix_set)
-	{
-		if (focus_pix != win_hi_back_pix ||
-		    focus_fore_pix != win_hi_fore_pix)
-			do_force_update = true;
-		focus_pix = win_hi_back_pix;
-		focus_fore_pix = win_hi_fore_pix;
-	}
-	else
-	{
-		if (focus_pix != body[4] || focus_fore_pix != body[3])
-			do_force_update = true;
-		focus_pix = body[4];
-		focus_fore_pix = body[3];
-	}
+	/* Update Pixels data. */
+	if (Scr.focus_win_fg != body[3] || Scr.focus_win_bg != body[4])
+		do_force_update = true;
+	Scr.focus_win_fg = body[3];
+	Scr.focus_win_bg = body[4];
 
-	if (t != FocusWin || do_force_update)
-	{
-		if (FocusWin != NULL)
-			Hilight(FocusWin, false);
+	if (do_force_update || t != FocusWin) {
+		PagerWindow *focus = FocusWin;
 		FocusWin = t;
-		if (FocusWin != NULL)
-			Hilight(FocusWin, true);
+
+		update_window_background(focus);
+		update_window_background(t);
 	}
 }
 
@@ -927,7 +900,7 @@ void list_new_page(unsigned long *body)
 	if (do_reconfigure) {
 		MovePage();
 		MoveStickyWindows(true, false);
-		Hilight(FocusWin,true);
+		update_window_background(FocusWin);
 	}
 }
 
@@ -1012,7 +985,7 @@ void list_new_desk(unsigned long *body)
 	draw_desk_grid(oldDesk - desk1);
 	draw_desk_grid(newDesk - desk1);
 	MoveStickyWindows(false, true);
-	Hilight(FocusWin, true);
+	update_window_background(FocusWin);
 }
 
 void list_raise(unsigned long *body)
@@ -1275,13 +1248,29 @@ void list_config_info(unsigned long *body)
 
 		color = LoadColorset(tline);
 		TAILQ_FOREACH(style, &desk_style_q, entry) {
-			if (style->cs == color || style->hi_cs == color) {
+			if (style->cs == color || style->hi_cs == color)
+			{
 				update_desk_style_gcs(style);
 				if (style->desk < desk1 || style->desk > desk2)
 					continue;
 
 				update_desk_background(style->desk - desk1);
 				update_monitor_backgrounds(style->desk - desk1);
+			}
+			if (style->win_cs == color || style->focus_cs == color) {
+				PagerWindow *t = Start;
+
+				update_desk_style_gcs(style);
+				while (t != NULL) {
+					if (t->desk != style->desk) {
+						t = t->next;
+						continue;
+					}
+					update_desk_style_gcs(style);
+					update_window_background(t);
+					update_window_decor(t);
+					t = t->next;
+				}
 			}
 		}
 	}
@@ -1600,7 +1589,6 @@ void ParseOptions(void)
 
 	FvwmPictureAttributes fpa;
 	Scr.FvwmRoot = NULL;
-	Scr.Hilite = NULL;
 	Scr.VScale = 32;
 
 	fpa.mask = 0;
@@ -1777,15 +1765,29 @@ void ParseOptions(void)
 		} else if (StrEquals(resource, "CurrentMonitor")) {
 			current_monitor = (StrEquals(next, "none")) ?
 				NULL : fpmonitor_by_name(next);
-		} else if(StrEquals(resource,"Colorset")) {
+		} else if(StrEquals(resource, "Colorset")) {
 			SetDeskStyleColorset(arg1, arg2,
 				&(((DeskStyle *)(NULL))->cs));
-		} else if(StrEquals(resource,"BalloonColorset")) {
+		} else if(StrEquals(resource, "BalloonColorset")) {
 			SetDeskStyleColorset(arg1, arg2,
 				&(((DeskStyle *)(NULL))->balloon_cs));
-		} else if(StrEquals(resource,"HilightColorset")) {
+		} else if(StrEquals(resource, "HilightColorset")) {
 			SetDeskStyleColorset(arg1, arg2,
 				&(((DeskStyle *)(NULL))->hi_cs));
+		} else if (StrEquals(resource, "WindowColorset")) {
+			SetDeskStyleColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->win_cs));
+		} else if (StrEquals(resource, "FocusColorset")) {
+			SetDeskStyleColorset(arg1, arg2,
+				&(((DeskStyle *)(NULL))->focus_cs));
+		} else if (StrEquals(resource, "WindowColorsets")) {
+			/* Backwards compatibility. */
+			if (arg1[0] != '*') {
+				SetDeskStyleColorset("*", arg1,
+					&(((DeskStyle *)(NULL))->win_cs));
+				SetDeskStyleColorset("*", arg2,
+					&(((DeskStyle *)(NULL))->focus_cs));
+			}
 		} else if (StrEquals(resource, "Fore")) {
 			if (Pdepth > 0)
 				SetDeskStylePixel(arg1, arg2,
@@ -1806,6 +1808,39 @@ void ParseOptions(void)
 			if (Pdepth > 0)
 				SetDeskStylePixel(arg1, arg2,
 					&(((DeskStyle *)(NULL))->hi_bg));
+		} else if (StrEquals(resource, "WindowFore")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->win_fg));
+		} else if (StrEquals(resource, "WindowBack")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->win_bg));
+		} else if (StrEquals(resource, "FocusFore")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->focus_fg));
+		} else if (StrEquals(resource, "FocusBack")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->focus_bg));
+		} else if (StrEquals(resource, "WindowColors")) {
+			/* Backwards compatibility. */
+			if (Pdepth > 1 && arg1[0] != '*')
+			{
+				SetDeskStylePixel("*", arg1,
+					&(((DeskStyle *)(NULL))->win_bg));
+				SetDeskStylePixel("*", arg2,
+					&(((DeskStyle *)(NULL))->win_bg));
+				free(arg2);
+				tline2 = GetNextToken(tline2, &arg2);
+				SetDeskStylePixel("*", arg2,
+					&(((DeskStyle *)(NULL))->focus_fg));
+				free(arg2);
+				tline2 = GetNextToken(tline2, &arg2);
+				SetDeskStylePixel("*", arg2,
+					&(((DeskStyle *)(NULL))->focus_bg));
+			}
 		} else if (StrEquals(resource, "LabelPixmap")) {
 			SetDeskStyleBool(arg1, arg2,
 				&(((DeskStyle *)(NULL))->use_label_pixmap));
@@ -1925,18 +1960,6 @@ void ParseOptions(void)
 			sscanf(next, "%d", &Columns);
 		} else if (StrEquals(resource, "DeskTopScale")) {
 			sscanf(next, "%d", &Scr.VScale);
-		} else if (StrEquals(resource, "WindowColors")) {
-			if (Pdepth > 1)
-			{
-				free(WindowFore);
-				free(WindowBack);
-				free(WindowHiFore);
-				free(WindowHiBack);
-				CopyString(&WindowFore, arg1);
-				CopyString(&WindowBack, arg2);
-				tline2 = GetNextToken(tline2, &WindowHiFore);
-				GetNextToken(tline2, &WindowHiBack);
-			}
 		} else if (StrEquals(resource, "WindowBorderWidth")) {
 			MinSize = MinSize - 2*WindowBorderWidth;
 			sscanf(next, "%d", &WindowBorderWidth);
@@ -1952,11 +1975,6 @@ void ParseOptions(void)
 			else
 				MinSize = 2 * WindowBorderWidth +
 					  DEFAULT_PAGER_WINDOW_MIN_SIZE;
-		} else if (StrEquals(resource,"WindowColorsets")) {
-			sscanf(arg1, "%d", &windowcolorset);
-			AllocColorset(windowcolorset);
-			sscanf(arg2, "%d", &activecolorset);
-			AllocColorset(activecolorset);
 		} else if (StrEquals(resource,"WindowLabelFormat")) {
 			free(WindowLabelFormat);
 			CopyString(&WindowLabelFormat, next);
