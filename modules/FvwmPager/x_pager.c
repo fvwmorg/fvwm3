@@ -68,6 +68,7 @@ static int FvwmErrorHandler(Display *, XErrorEvent *);
 static rectangle CalcGeom(PagerWindow *, bool);
 static void HideWindow(PagerWindow *, Window);
 static void MoveResizeWindow(PagerWindow *, bool, bool);
+static void DrawInBalloonWindow(void);
 static rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 static struct fpmonitor *fpmonitor_from_xy(int x, int y);
 static struct fpmonitor *fpmonitor_from_n(int n);
@@ -75,7 +76,7 @@ static int fpmonitor_count(void);
 static void set_desk_size(bool);
 static void fvwmrec_to_pager(rectangle *, bool, struct fpmonitor *);
 static void pagerrec_to_fvwm(rectangle *, bool, struct fpmonitor *);
-static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
+static char *get_label(const PagerWindow *pw,const char *fmt);
 static int is_window_visible(PagerWindow *t);
 static void draw_desk_label(const char *label, const char *small, int desk,
 			int x, int y, int width, int height, bool hilight);
@@ -325,27 +326,27 @@ void initialize_viz_pager(void)
 	XGCValues xgcv;
 
 	/* FIXME: I think that we only need that Pdepth ==
-	 * DefaultDepth(dpy, Scr.screen) to use the Scr.Root for Scr.Pager_w */
+	 * DefaultDepth(dpy, Scr.screen) to use the Scr.Root for Scr.pager_w */
 	if (Pdefault)
 	{
-		Scr.Pager_w = Scr.Root;
+		Scr.pager_w = Scr.Root;
 	}
 	else
 	{
 		attr.background_pixmap = None;
 		attr.border_pixel = 0;
 		attr.colormap = Pcmap;
-		Scr.Pager_w = XCreateWindow(
+		Scr.pager_w = XCreateWindow(
 			dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
 			InputOutput, Pvisual,
 			CWBackPixmap|CWBorderPixel|CWColormap, &attr);
-		Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
+		Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.pager_w, 0, &xgcv);
 	}
-	Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, NULL);
+	Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.pager_w, 0, NULL);
 
 	xgcv.plane_mask = AllPlanes;
 	Scr.MiniIconGC = fvwmlib_XCreateGC(
-		dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
+		dpy, Scr.pager_w, GCPlaneMask, &xgcv);
 
 	/* Transparent background are only allowed when the depth matched the
 	 * root */
@@ -568,19 +569,31 @@ XSizeHints sizehints =
 	(NorthWestGravity)	/* gravity */
 };
 
+/* create balloon window -- ric@giccs.georgetown.edu */
 void initialize_balloon_window(void)
 {
 	XGCValues xgcv;
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 
-	/* create balloon window
-	   -- ric@giccs.georgetown.edu */
-	if (!ShowBalloons)
-	{
+	Balloon.is_mapped = false;
+	if (!(Balloon.show_in_pager || Balloon.show_in_icon)) {
 		Scr.balloon_w = None;
 		return;
 	}
+
+	/* Set some defaults */
+	if (Balloon.border_width <= 0)
+		Balloon.border_width = DEFAULT_BALLOON_BORDER_WIDTH;
+	if (Balloon.y_offset == 0)
+		/* we don't allow y_offset of 0 because it allows direct
+		 * transit from pager window to balloon window, setting
+		 * up a LeaveNotify/EnterNotify event loop.
+		 */
+		Balloon.y_offset = DEFAULT_BALLOON_Y_OFFSET;
+	if (Balloon.label_format == NULL)
+		Balloon.label_format = fxstrdup("%i");
+
 	valuemask = CWOverrideRedirect | CWEventMask | CWColormap;
 	/* tell WM to ignore this window */
 	attributes.override_redirect = true;
@@ -589,13 +602,16 @@ void initialize_balloon_window(void)
 	/* now create the window */
 	Scr.balloon_w = XCreateWindow(
 		dpy, Scr.Root, 0, 0, /* coords set later */ 1, 1,
-		BalloonBorderWidth, Pdepth, InputOutput, Pvisual, valuemask,
+		Balloon.border_width, Pdepth, InputOutput, Pvisual, valuemask,
 		&attributes);
-	Scr.balloon_gc = fvwmlib_XCreateGC(dpy, Scr.balloon_w, 0, &xgcv);
-	/* Make sure we don't get balloons initially with the Icon option. */
-	ShowBalloons = ShowPagerBalloons;
 
-	return;
+	/* Initialize, actual values will be updated later. */
+	valuemask = GCForeground;
+	xgcv.foreground = GetSimpleColor("black");
+	Balloon.Ffont = FlocaleLoadFont(dpy, BalloonFont, MyName);
+	Balloon.gc = fvwmlib_XCreateGC(
+		dpy, Scr.balloon_w, valuemask, &xgcv);
+	free(BalloonFont);
 }
 
 /* Computes pager size rectangle from fvwm size or visa versa */
@@ -744,13 +760,13 @@ void initialise_common_pager_fragments(void)
 	if (Pdepth < 2)
 	{
 		Scr.gray_pixmap = XCreatePixmapFromBitmapData(
-			dpy, Scr.Pager_w, g_bits, g_width, g_height,
+			dpy, Scr.pager_w, g_bits, g_width, g_height,
 			style->fg, style->bg, Pdepth);
 		Scr.light_gray_pixmap = XCreatePixmapFromBitmapData(
-			dpy, Scr.Pager_w, l_g_bits, l_g_width, l_g_height,
+			dpy, Scr.pager_w, l_g_bits, l_g_width, l_g_height,
 			style->fg, style->bg, Pdepth);
 		Scr.sticky_gray_pixmap = XCreatePixmapFromBitmapData(
-			dpy, Scr.Pager_w, s_g_bits, s_g_width, s_g_height,
+			dpy, Scr.pager_w, s_g_bits, s_g_width, s_g_height,
 			style->fg, style->bg, Pdepth);
 	}
 
@@ -843,6 +859,10 @@ void update_desk_style_gcs(DeskStyle *style)
 		style->focus_fg = Colorset[style->focus_cs].fg;
 		style->focus_bg = Colorset[style->focus_cs].bg;
 	}
+	if (style->balloon_cs >= 0) {
+		style->balloon_fg = Colorset[style->balloon_cs].fg;
+		style->balloon_bg = Colorset[style->balloon_bg].bg;
+	}
 
 	XSetForeground(dpy, style->label_gc, style->fg);
 	XSetForeground(dpy, style->dashed_gc, style->fg);
@@ -872,32 +892,32 @@ void initialize_desk_style_gcs(DeskStyle *style)
 	if (Ffont && Ffont->font) {
 		gcv.font = Ffont->font->fid;
 		style->label_gc = fvwmlib_XCreateGC(
-			dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+			dpy, Scr.pager_w, GCForeground | GCFont, &gcv);
 	} else {
 		style->label_gc = fvwmlib_XCreateGC(
-			dpy, Scr.Pager_w, GCForeground, &gcv);
+			dpy, Scr.pager_w, GCForeground, &gcv);
 	}
 
 	/* Hilight GC, used for monitors and labels backgrounds. */
 	gcv.foreground = (Pdepth < 2) ? style->bg : style->hi_bg;
 	style->hi_bg_gc = fvwmlib_XCreateGC(
-		dpy, Scr.Pager_w, GCForeground, &gcv);
+		dpy, Scr.pager_w, GCForeground, &gcv);
 
 	/* create the hilight desk title drawing GC */
 	gcv.foreground = (Pdepth < 2) ? style->fg : style->hi_fg;
 	if (Ffont && Ffont->font)
 		style->hi_fg_gc = fvwmlib_XCreateGC(
-			dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+			dpy, Scr.pager_w, GCForeground | GCFont, &gcv);
 	else
 		style->hi_fg_gc = fvwmlib_XCreateGC(
-			dpy, Scr.Pager_w, GCForeground, &gcv);
+			dpy, Scr.pager_w, GCForeground, &gcv);
 
 	/* create the virtual page boundary GC */
 	gcv.foreground = style->fg;
 	gcv.line_width = 1;
 	gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
 	style->dashed_gc = fvwmlib_XCreateGC(dpy,
-		Scr.Pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
+		Scr.pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
 	if (use_dashed_separators) {
 		/* Although this should already be the default for a freshly
 		 * created GC, some X servers do not draw properly dashed
@@ -912,21 +932,21 @@ void initialize_desk_style_gcs(DeskStyle *style)
 	gcv.foreground = (style->win_cs) ?
 			 Colorset[style->win_cs].hilite : style->fg;
 	style->win_hi_gc = fvwmlib_XCreateGC(
-		dpy, Scr.Pager_w, GCForeground, &gcv);
+		dpy, Scr.pager_w, GCForeground, &gcv);
 	gcv.foreground = (style->win_cs) ?
 			 Colorset[style->win_cs].shadow : style->fg;
 	style->win_sh_gc = fvwmlib_XCreateGC(
-		dpy, Scr.Pager_w, GCForeground, &gcv);
+		dpy, Scr.pager_w, GCForeground, &gcv);
 
 	/* Focus window borders. */
 	gcv.foreground = (style->focus_cs) ?
 			 Colorset[style->focus_cs].hilite : style->fg;
 	style->focus_hi_gc = fvwmlib_XCreateGC(
-		dpy, Scr.Pager_w, GCForeground, &gcv);
+		dpy, Scr.pager_w, GCForeground, &gcv);
 	gcv.foreground = (style->focus_cs) ?
 			 Colorset[style->focus_cs].shadow : style->fg;
 	style->focus_sh_gc = fvwmlib_XCreateGC(
-		dpy, Scr.Pager_w, GCForeground, &gcv);
+		dpy, Scr.pager_w, GCForeground, &gcv);
 }
 
 void initialize_desk_windows(int desk)
@@ -959,7 +979,7 @@ void initialize_desk_windows(int desk)
 	}
 
 	attributes.event_mask = (ExposureMask | ButtonReleaseMask);
-	Desks[desk].title_w = XCreateWindow(dpy, Scr.Pager_w,
+	Desks[desk].title_w = XCreateWindow(dpy, Scr.pager_w,
 			-1, -1, desk_w, desk_h + label_h, 1,
 			CopyFromParent, InputOutput, CopyFromParent,
 			valuemask, &attributes);
@@ -1006,8 +1026,6 @@ void initialize_pager(void)
   unsigned long valuemask;
   XSetWindowAttributes attributes;
   int i = 0;
-  extern char *BalloonFont;
-  FlocaleFont *balloon_font;
   struct fpmonitor *fp = fpmonitor_this(NULL);
   struct fpmonitor *m;
   DeskStyle *style;
@@ -1086,18 +1104,18 @@ void initialize_pager(void)
   attributes.event_mask = (StructureNotifyMask);
 
   /* destroy the temp window first, don't worry if it's the Root */
-  if (Scr.Pager_w != Scr.Root)
-    XDestroyWindow(dpy, Scr.Pager_w);
-  Scr.Pager_w = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y, pwindow.width,
+  if (Scr.pager_w != Scr.Root)
+    XDestroyWindow(dpy, Scr.pager_w);
+  Scr.pager_w = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y, pwindow.width,
 			       pwindow.height, 0, Pdepth, InputOutput, Pvisual,
 			       valuemask, &attributes);
-  XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
+  XSetWMProtocols(dpy,Scr.pager_w,&wm_del_win,1);
   /* hack to prevent mapping on wrong screen with StartsOnScreen */
   FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &sizehints);
-  XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
+  XSetWMNormalHints(dpy,Scr.pager_w,&sizehints);
   if (is_transient)
   {
-    XSetTransientForHint(dpy, Scr.Pager_w, Scr.Root);
+    XSetTransientForHint(dpy, Scr.pager_w, Scr.Root);
   }
 
   if (FlocaleTextListToTextProperty(
@@ -1115,27 +1133,30 @@ void initialize_pager(void)
 
   icon.width = (icon.width / (VxPages + 1)) * (VxPages + 1) + VxPages;
   icon.height = (icon.height / (VyPages + 1)) * (VyPages + 1) + VyPages;
-  icon_win = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y,
+  Scr.icon_w = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y,
 			    icon.width, icon.height,
 			    0, Pdepth, InputOutput, Pvisual, valuemask,
 			    &attributes);
-  XGrabButton(dpy, 1, AnyModifier, icon_win,
+  XGrabButton(dpy, 1, AnyModifier, Scr.icon_w,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
 	      GrabModeAsync, GrabModeAsync, None,
 	      None);
-  XGrabButton(dpy, 2, AnyModifier, icon_win,
+  XGrabButton(dpy, 2, AnyModifier, Scr.icon_w,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
 	      GrabModeAsync, GrabModeAsync, None,
 	      None);
-  XGrabButton(dpy, 3, AnyModifier, icon_win,
+  XGrabButton(dpy, 3, AnyModifier, Scr.icon_w,
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
 	      GrabModeAsync, GrabModeAsync, None,
 	      None);
 
-  if(!StartIconic)
-    wmhints.initial_state = NormalState;
-  else
-    wmhints.initial_state = IconicState;
+  if (StartIconic) {
+	  Balloon.show = Balloon.show_in_icon;
+	  wmhints.initial_state = IconicState;
+  } else {
+	  Balloon.show = Balloon.show_in_pager;
+	  wmhints.initial_state = NormalState;
+  }
   wmhints.flags = 0;
   if (icon.x != -10000)
   {
@@ -1156,14 +1177,14 @@ void initialize_pager(void)
     wmhints.icon_y = icon.y;
     wmhints.flags = IconPositionHint;
   }
-  wmhints.icon_window = icon_win;
+  wmhints.icon_window = Scr.icon_w;
   wmhints.input = True;
   wmhints.flags |= InputHint | StateHint | IconWindowHint;
 
   class1.res_name = MyName;
   class1.res_class = "FvwmPager";
 
-  XSetWMProperties(dpy,Scr.Pager_w,&name,&name,NULL,0,
+  XSetWMProperties(dpy,Scr.pager_w,&name,&name,NULL,0,
 		   &sizehints,&wmhints,&class1);
   XFree((char *)name.value);
 
@@ -1172,8 +1193,6 @@ void initialize_pager(void)
 
   if (FwindowFont != NULL && FwindowFont->font != NULL)
     XSetFont(dpy, Scr.NormalGC, FwindowFont->font->fid);
-
-  balloon_font = FlocaleLoadFont(dpy, BalloonFont, MyName);
 
   /* Initialize DeskStyle GCs */
   for (i = 0; i < ndesks; i++) {
@@ -1187,17 +1206,13 @@ void initialize_pager(void)
   for(i=0;i<ndesks;i++)
   {
     initialize_desk_windows(i);
-
-    /* get font for balloon */
-    Desks[i].balloon.Ffont = balloon_font;
-    Desks[i].balloon.height = Desks[i].balloon.Ffont->height + 1;
   }
 
   TAILQ_FOREACH(m, &fp_monitor_q, entry) {
     initialize_fpmonitor_windows(m);
   }
   initialize_balloon_window();
-  XMapRaised(dpy,Scr.Pager_w);
+  XMapRaised(dpy,Scr.pager_w);
 }
 
 
@@ -1248,7 +1263,7 @@ void UpdateWindowShape(void)
     }
 
     FShapeCombineRectangles(
-      dpy, Scr.Pager_w, FShapeBounding, 0, 0, shape, shape_count, FShapeSet, 0);
+      dpy, Scr.pager_w, FShapeBounding, 0, 0, shape, shape_count, FShapeSet, 0);
     free(shape);
   }
 }
@@ -1283,7 +1298,7 @@ void DispatchEvent(XEvent *Event)
     HandleEnterNotify(Event);
     break;
   case LeaveNotify:
-    if ( ShowBalloons )
+    if (Balloon.show)
       UnmapBalloonWindow();
     break;
   case ConfigureNotify:
@@ -1291,7 +1306,7 @@ void DispatchEvent(XEvent *Event)
     w = Event->xconfigure.window;
     discard_events(ConfigureNotify, Event->xconfigure.window, Event);
     fev_sanitise_configure_notify(&Event->xconfigure);
-    if (w != icon_win)
+    if (w != Scr.icon_w)
     {
       /* icon_win is not handled here */
       discard_events(Expose, w, NULL);
@@ -1353,9 +1368,9 @@ void DispatchEvent(XEvent *Event)
 	  Scroll(x, y, i, false);
 	}
       }
-      if(Event->xany.window == icon_win)
+      if(Event->xany.window == Scr.icon_w)
       {
-	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+	FQueryPointer(dpy, Scr.icon_w, &JunkRoot, &JunkChild,
 		  &JunkX, &JunkY,&x, &y, &JunkMask);
 	Scroll(x, y, -1, true);
       }
@@ -1408,7 +1423,7 @@ void DispatchEvent(XEvent *Event)
 		SwitchToDesk(i, NULL);
 	}
       }
-      if(Event->xany.window == icon_win)
+      if(Event->xany.window == Scr.icon_w)
       {
 	IconSwitchPage(Event);
       }
@@ -1421,7 +1436,7 @@ void DispatchEvent(XEvent *Event)
     break;
   case ButtonPress:
     do_ignore_next_button_release = false;
-    if ( ShowBalloons )
+    if (Balloon.show)
       UnmapBalloonWindow();
     if (((Event->xbutton.button == 2)||
 	 ((Event->xbutton.button == 3)&&
@@ -1459,9 +1474,9 @@ void DispatchEvent(XEvent *Event)
 	  break;
 	}
       }
-      if(Event->xany.window == icon_win)
+      if(Event->xany.window == Scr.icon_w)
       {
-	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+	FQueryPointer(dpy, Scr.icon_w, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask);
 	struct fpmonitor *fp2 = fpmonitor_this(NULL);
 	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
@@ -1501,9 +1516,9 @@ void DispatchEvent(XEvent *Event)
 	  Scroll(x, y, i, false);
 	}
       }
-      if(Event->xany.window == icon_win)
+      if(Event->xany.window == Scr.icon_w)
       {
-	FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+	FQueryPointer(dpy, Scr.icon_w, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask);
 	Scroll(x, y, -1, true);
       }
@@ -1525,42 +1540,30 @@ void DispatchEvent(XEvent *Event)
 void HandleEnterNotify(XEvent *Event)
 
 {
-  PagerWindow *t;
-  bool is_icon_view = false;
-  extern bool do_focus_on_enter;
+	PagerWindow *t;
 
-  if (!ShowBalloons && !do_focus_on_enter)
-    /* nothing to do */
-    return;
+	if (!Balloon.show && !do_focus_on_enter)
+		/* nothing to do */
+		return;
 
-  /* is this the best way to match X event window ID to PagerWindow ID? */
-  for ( t = Start; t != NULL; t = t->next )
-  {
-    if ( t->PagerView == Event->xcrossing.window )
-    {
-      break;
-    }
-    if ( t->IconView == Event->xcrossing.window )
-    {
-      is_icon_view = true;
-      break;
-    }
-  }
-  if (t == NULL)
-  {
-    return;
-  }
+	/* is this the best way to match X event window ID to PagerWindow ID? */
+	for (t = Start; t != NULL; t = t->next) {
+		if (t->PagerView == Event->xcrossing.window) {
+			if (Balloon.show)
+				MapBalloonWindow(t, false);
+			break;
+		}
+		if (t->IconView == Event->xcrossing.window) {
+			if (Balloon.show)
+				MapBalloonWindow(t, true);
+			break;
+		}
+	}
+	if (t == NULL)
+		return;
 
-  if (ShowBalloons)
-  {
-    MapBalloonWindow(t, is_icon_view);
-  }
-
-  if (do_focus_on_enter)
-  {
-    SendText(fd, "Silent FlipFocus NoWarp", t->w);
-  }
-
+	if (do_focus_on_enter)
+		SendText(fd, "Silent FlipFocus NoWarp", t->w);
 }
 
 #if 0
@@ -1602,10 +1605,17 @@ void HandleExpose(XEvent *Event)
 	int i;
 	PagerWindow *t;
 
-	/* it will be good to have full "clipping redraw". Do that for
-	 * desk label only for now */
-	for(i=0;i<ndesks;i++)
-	{
+	/* Determine event window. */
+	if (Event->xany.window == Scr.icon_w) {
+		draw_icon_grid(0);
+		return;
+	}
+	if (Event->xany.window == Scr.balloon_w) {
+		DrawInBalloonWindow();
+		return;
+	}
+
+	for(i = 0; i < ndesks; i++) {
 		/* ric@giccs.georgetown.edu */
 		if (Event->xany.window == Desks[i].w ||
 		    Event->xany.window == Desks[i].title_w)
@@ -1614,20 +1624,15 @@ void HandleExpose(XEvent *Event)
 			return;
 		}
 	}
-	if (Event->xany.window == Scr.balloon_w)
-	{
-		DrawInBalloonWindow(Scr.balloon_desk);
-		return;
-	}
-	if(Event->xany.window == icon_win)
-		draw_icon_grid(0);
 
-	for (t = Start; t != NULL; t = t->next)
-	{
-		if (t->PagerView == Event->xany.window)
+	for (t = Start; t != NULL; t = t->next) {
+		if (t->PagerView == Event->xany.window) {
 			update_pager_window_decor(t);
-		else if (t->IconView == Event->xany.window)
+			return;
+		} else if (t->IconView == Event->xany.window) {
 			update_icon_window_decor(t);
+			return;
+		}
 	}
 
 	discard_events(Expose, Event->xany.window, NULL);
@@ -1646,7 +1651,7 @@ void ReConfigure(void)
 
 
 	/* Using i for a dummy, as no return needed. */
-	if (!XGetGeometry(dpy, Scr.Pager_w, &root, &i, &i,
+	if (!XGetGeometry(dpy, Scr.pager_w, &root, &i, &i,
 	    (unsigned *)&pwindow.width, (unsigned *)&pwindow.height,
 	    &dummy, &dummy))
 		return;
@@ -1753,14 +1758,8 @@ void update_pr_transparent_windows(void)
 	}
 
 	/* ballon */
-	if (BalloonView != None)
-	{
-		cset = Desks[Scr.balloon_desk].style->balloon_cs;
-		if (CSET_IS_TRANSPARENT_PR(cset))
-		{
+	if (Balloon.is_mapped && CSET_IS_TRANSPARENT_PR(Balloon.cs))
 			XClearArea(dpy, Scr.balloon_w, 0, 0, 0, 0, True);
-		}
-	}
 }
 
 void MovePage()
@@ -2009,11 +2008,11 @@ void draw_icon_grid(int erase)
 
 	if (erase) {
 		if (style->bgPixmap)
-			XSetWindowBackgroundPixmap(dpy, icon_win,
+			XSetWindowBackgroundPixmap(dpy, Scr.icon_w,
 				style->bgPixmap->picture);
 		else
-			XSetWindowBackground(dpy, icon_win, style->bg);
-		XClearWindow(dpy, icon_win);
+			XSetWindowBackground(dpy, Scr.icon_w, style->bg);
+		XClearWindow(dpy, Scr.icon_w);
 	}
 
 	rec.x = fp->virtual_scr.VxPages;
@@ -2022,10 +2021,10 @@ void draw_icon_grid(int erase)
 	rec.height = icon.height / rec.y;
 	if (!use_no_separators) {
 		for(i = 1; i < rec.x; i++)
-			XDrawLine(dpy, icon_win, style->dashed_gc,
+			XDrawLine(dpy, Scr.icon_w, style->dashed_gc,
 				i * rec.width, 0, i * rec.width, icon.height);
 		for(i = 1; i < rec.y; i++)
-			XDrawLine(dpy, icon_win, style->dashed_gc,
+			XDrawLine(dpy, Scr.icon_w, style->dashed_gc,
 				0, i * rec.height, icon.width, i * rec.height);
 	}
 
@@ -2047,11 +2046,12 @@ void draw_icon_grid(int erase)
 
 			rec = set_vp_size_and_loc(fp, true);
 			if (style->hiPixmap) {
-				XCopyArea(dpy, style->hiPixmap->picture, icon_win,
-					Scr.NormalGC, 0, 0, rec.width, rec.height,
-					rec.x, rec.y);
+				XCopyArea(dpy, style->hiPixmap->picture,
+					Scr.icon_w, Scr.NormalGC, 0, 0,
+					rec.width, rec.height, rec.x, rec.y);
 			} else {
-				XFillRectangle(dpy, icon_win, style->hi_bg_gc,
+				XFillRectangle(dpy, Scr.icon_w,
+					style->hi_bg_gc,
 					rec.x, rec.y, rec.width, rec.height);
 			}
 		}
@@ -2266,7 +2266,7 @@ void AddNewWindow(PagerWindow *t)
 
 	t->icon_view = r;
 	t->IconView = XCreateWindow(
-		dpy, icon_win, r.x, r.y, r.width, r.height, 0,
+		dpy, Scr.icon_w, r.x, r.y, r.width, r.height, 0,
 		CopyFromParent, InputOutput, CopyFromParent,
 		valuemask, &attributes);
 	XMapRaised(dpy, t->IconView);
@@ -2525,7 +2525,7 @@ void MoveWindow(XEvent *Event)
 	if (!LabelsBelow)
 		rec.y += label_h;
 
-	XReparentWindow(dpy, t->PagerView, Scr.Pager_w, rec.x, rec.y);
+	XReparentWindow(dpy, t->PagerView, Scr.pager_w, rec.x, rec.y);
 	XRaiseWindow(dpy, t->PagerView);
 
 	XTranslateCoordinates(dpy, Event->xany.window, t->PagerView,
@@ -2539,7 +2539,7 @@ void MoveWindow(XEvent *Event)
 			   ExposureMask, Event);
 		if (Event->type == MotionNotify) {
 			XTranslateCoordinates(dpy, Event->xany.window,
-					      Scr.Pager_w, Event->xmotion.x,
+					      Scr.pager_w, Event->xmotion.x,
 					      Event->xmotion.y, &x, &y,
 					      &dumwin);
 
@@ -2557,7 +2557,7 @@ void MoveWindow(XEvent *Event)
 		}
 		else if (Event->type == ButtonRelease) {
 			XTranslateCoordinates(dpy, Event->xany.window,
-					      Scr.Pager_w, Event->xbutton.x,
+					      Scr.pager_w, Event->xbutton.x,
 					      Event->xbutton.y, &x, &y,
 					      &dumwin);
 			x -= rec.x;
@@ -2625,7 +2625,7 @@ void MoveWindow(XEvent *Event)
 		ChangeDeskForWindow(t, t->desk);
 		return;
 	}
-	XTranslateCoordinates(dpy, Scr.Pager_w, Desks[NewDesk].w,
+	XTranslateCoordinates(dpy, Scr.pager_w, Desks[NewDesk].w,
 			      x, y, &rec.x, &rec.y, &dumwin);
 
 	fp = fpmonitor_from_xy(
@@ -2839,7 +2839,7 @@ static void do_label_window(PagerWindow *t, Window w, rectangle r)
 	XSetForeground(dpy, Scr.NormalGC, pix);
 
 	free(t->window_label);
-	t->window_label = GetBalloonLabel(t, WindowLabelFormat);
+	t->window_label = get_label(t, WindowLabelFormat);
 
 	if (FftSupport)
 		XClearWindow(dpy, w);
@@ -3034,207 +3034,126 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		ExitPager(); /* does not return */
 }
 
-
-void setup_balloon_window(int i)
+void setup_balloon_window(PagerWindow *t)
 {
+	Pixel fg;
 	XSetWindowAttributes xswa;
 	unsigned long valuemask;
+	DeskStyle *style = FindDeskStyle(t->desk);
 
-	if (!ShowBalloons && Scr.balloon_w == None)
-	{
-		return;
-	}
+	/* Store Balloon.cs for future events. */
+	Balloon.cs = style->balloon_cs;
+
+	fg = (style->balloon_fg) ? style->balloon_fg :
+	     (style->win_fg) ? style->win_fg : t->text;
+	XSetForeground(dpy, Balloon.gc, fg);
+
 	XUnmapWindow(dpy, Scr.balloon_w);
-	if (Desks[i].style->balloon_cs < 0)
-	{
-		xswa.border_pixel = (BalloonBorderColor) ?
-				    GetSimpleColor(BalloonBorderColor) :
-				    Desks[i].style->fg;
-		xswa.background_pixel = (BalloonBack) ?
-					GetSimpleColor(BalloonBack) :
-					Desks[i].style->bg;
+	xswa.border_pixel = (style->balloon_border) ? style->balloon_border :
+			    (style->balloon_fg) ? style->balloon_fg : t->text;
+	xswa.background_pixel = (style->balloon_bg) ? style->balloon_bg :
+				(style->win_bg) ? style->win_bg : t->back;
+	if (style->balloon_cs >= 0 && Colorset[style->balloon_cs].pixmap) {
+		/* set later */
+		xswa.background_pixmap = None;
+		valuemask = CWBackPixmap | CWBorderPixel;;
+	} else {
 		valuemask = CWBackPixel | CWBorderPixel;
 	}
-	else
-	{
-		xswa.border_pixel = Colorset[Desks[i].style->balloon_cs].fg;
-		xswa.background_pixel =
-			Colorset[Desks[i].style->balloon_cs].bg;
-		if (Colorset[Desks[i].style->balloon_cs].pixmap)
-		{
-			/* set later */
-			xswa.background_pixmap = None;
-			valuemask = CWBackPixmap | CWBorderPixel;;
-		}
-		else
-		{
-			valuemask = CWBackPixel | CWBorderPixel;
-		}
-	}
 	XChangeWindowAttributes(dpy, Scr.balloon_w, valuemask, &xswa);
-
-	return;
-}
-
-void setup_balloon_gc(int i, PagerWindow *t)
-{
-	XGCValues xgcv;
-	unsigned long valuemask;
-
-	valuemask = GCForeground;
-	if (Desks[i].style->balloon_cs < 0)
-	{
-		xgcv.foreground = (BalloonFore) ? GetSimpleColor(BalloonFore) :
-				  Desks[i].style->fg;
-		if (BalloonFore == NULL)
-		{
-			XSetForeground(dpy, Scr.balloon_gc, t->text);
-		}
-	}
-	else
-	{
-		xgcv.foreground = Colorset[Desks[i].style->balloon_cs].fg;
-	}
-	if (Desks[i].balloon.Ffont->font != NULL)
-	{
-		xgcv.font = Desks[i].balloon.Ffont->font->fid;
-		valuemask |= GCFont;
-	}
-	XChangeGC(dpy, Scr.balloon_gc, valuemask, &xgcv);
-
-	return;
 }
 
 /* Just maps window ... draw stuff in it later after Expose event
    -- ric@giccs.georgetown.edu */
-void MapBalloonWindow(PagerWindow *t, bool is_icon_view)
+void MapBalloonWindow(PagerWindow *t, bool is_icon)
 {
-	extern int BalloonYOffset;
 	Window view, dummy;
-	int view_width, view_height;
+	int width, height;
 	int x, y;
 	rectangle new_g;
-	int i;
 
-	if (!is_icon_view)
-	{
-		view = t->PagerView;
-		view_width = t->pager_view.width;
-		view_height = t->pager_view.height;
-	}
-	else
-	{
+	/* Keep track of which window is being mapped. */
+	Balloon.is_icon = is_icon;
+
+	if (is_icon) {
 		view = t->IconView;
-		view_width = t->icon_view.width;
-		view_height = t->icon_view.height;
-	}
-	BalloonView = view;
-	/* associate balloon with its pager window */
-	if (fAlwaysCurrentDesk)
-	{
-		i = 0;
-	}
-	else
-	{
-		i = t->desk - desk1;
+		width = t->icon_view.width;
+		height = t->icon_view.height;
+	} else {
+		view = t->PagerView;
+		width = t->pager_view.width;
+		height = t->pager_view.height;
 	}
 
-	if (i < 0)
-		return;
-
-	Scr.balloon_desk = i;
+	setup_balloon_window(t);
 	/* get the label for this balloon */
-	if (Scr.balloon_label)
-	{
-		free(Scr.balloon_label);
-	}
-	Scr.balloon_label = GetBalloonLabel(t, BalloonFormatString);
-#if 0
-	if (Scr.balloon_label == NULL)
-	{
-		/* dont draw empty labels */
-		return;
-	}
-#endif
-	setup_balloon_window(i);
-	setup_balloon_gc(i, t);
+	free(Balloon.label);
+	Balloon.label = get_label(t, Balloon.label_format);
+
 	/* calculate window width to accommodate string */
-	new_g.height = Desks[i].balloon.height;
+	new_g.height = Balloon.Ffont->height + 1;
 	new_g.width = 4;
-	if (Scr.balloon_label)
-	{
+	if (Balloon.label) {
 		new_g.width += FlocaleTextWidth(
-			Desks[i].balloon.Ffont,	 Scr.balloon_label,
-			strlen(Scr.balloon_label));
+			Balloon.Ffont, Balloon.label,
+			strlen(Balloon.label));
 	}
-	/* get x and y coords relative to pager window */
-	x = (view_width / 2) - (new_g.width / 2) - BalloonBorderWidth;
-	if (BalloonYOffset > 0)
-	{
-		y = view_height + BalloonYOffset - 1;
-	}
+
+	/* get x and y coords relative to view window */
+	x = (width / 2) - (new_g.width / 2) - Balloon.border_width;
+	if (Balloon.y_offset > 0)
+		y = height + Balloon.y_offset - 1;
 	else
-	{
-		y = BalloonYOffset - new_g.height + 1 -
-			(2 * BalloonBorderWidth);
-	}
+		y = Balloon.y_offset - new_g.height + 1 -
+			(2 * Balloon.border_width);
+
 	/* balloon is a top-level window, therefore need to
 	   translate pager window coords to root window coords */
 	XTranslateCoordinates(
-		dpy, view, Scr.Root, x, y, &new_g.x, &new_g.y,
-		&dummy);
+		dpy, view, Scr.Root, x, y, &new_g.x, &new_g.y, &dummy);
 	/* make sure balloon doesn't go off screen
 	 * (actually 2 pixels from edge rather than 0 just to be pretty :-) */
 	/* too close to top ... make yoffset +ve */
-	if ( new_g.y < 2 )
+	if (new_g.y < 2)
 	{
-		y = - BalloonYOffset - 1 + view_height;
+		y = - Balloon.y_offset - 1 + height;
 		XTranslateCoordinates(
 			dpy, view, Scr.Root, x, y, &new_g.x, &new_g.y, &dummy);
 	}
 	/* too close to bottom ... make yoffset -ve */
-	else if ( new_g.y + new_g.height >
-		  fpmonitor_get_all_heights() - (2 * BalloonBorderWidth) - 2 )
+	else if (new_g.y + new_g.height >
+		 fpmonitor_get_all_heights() - (2 * Balloon.border_width) - 2)
 	{
-		y = - BalloonYOffset + 1 - new_g.height -
-			(2 * BalloonBorderWidth);
+		y = - Balloon.y_offset + 1 - new_g.height -
+			(2 * Balloon.border_width);
 		XTranslateCoordinates(
 			dpy, view, Scr.Root, x, y, &new_g.x, &new_g.y, &dummy);
 	}
 	/* too close to left */
-	if ( new_g.x < 2 )
+	if (new_g.x < 2)
 	{
 		new_g.x = 2;
 	}
 	/* too close to right */
 	else if (new_g.x + new_g.width >
-		 fpmonitor_get_all_widths() - (2 * BalloonBorderWidth) - 2 )
+		 fpmonitor_get_all_widths() - (2 * Balloon.border_width) - 2 )
 	{
 		new_g.x = fpmonitor_get_all_widths() - new_g.width -
-			(2 * BalloonBorderWidth) - 2;
+			(2 * Balloon.border_width) - 2;
 	}
 	/* make changes to window */
-	XMoveResizeWindow(
-		dpy, Scr.balloon_w, new_g.x, new_g.y, new_g.width,
-		new_g.height);
-	/* if background not set in config make it match pager window */
-	if ( BalloonBack == NULL )
-	{
-		XSetWindowBackground(dpy, Scr.balloon_w, t->back);
-	}
-	if (Desks[i].style->balloon_cs > -1)
-	{
+	XMoveResizeWindow(dpy,
+		Scr.balloon_w, new_g.x, new_g.y, new_g.width, new_g.height);
+
+	/* Update the background if using a colorset. */
+	if (Balloon.cs > -1)
 		SetWindowBackground(
 			dpy, Scr.balloon_w, new_g.width, new_g.height,
-			&Colorset[Desks[i].style->balloon_cs], Pdepth,
+			&Colorset[Balloon.cs], Pdepth,
 			Scr.NormalGC, True);
-		XSetWindowBorder(
-			dpy, Scr.balloon_w,
-			Colorset[Desks[i].style->balloon_cs].fg);
-	}
-	XMapRaised(dpy, Scr.balloon_w);
 
-	return;
+	XMapRaised(dpy, Scr.balloon_w);
+	Balloon.is_mapped = true;
 }
 
 
@@ -3256,7 +3175,7 @@ static void InsertExpand(char **dest, char *s)
 
 /* Generate the BallonLabel from the format string
    -- disching@fmi.uni-passau.de */
-char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
+char *get_label(const PagerWindow *pw,const char *fmt)
 {
   char *dest = fxstrdup("");
   const char *pos = fmt;
@@ -3300,20 +3219,20 @@ char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
 void UnmapBalloonWindow (void)
 {
   XUnmapWindow(dpy, Scr.balloon_w);
-  BalloonView = None;
+  Balloon.is_mapped = false;
 }
 
 
 /* Draws string in balloon window -- call after it's received Expose event
    -- ric@giccs.georgetown.edu */
-void DrawInBalloonWindow (int i)
+void DrawInBalloonWindow(void)
 {
-	FwinString->str = Scr.balloon_label;
+	FwinString->str = Balloon.label;
 	FwinString->win = Scr.balloon_w;
-	FwinString->gc = Scr.balloon_gc;
-	if (Desks[i].style->balloon_cs >= 0)
+	FwinString->gc = Balloon.gc;
+	if (Balloon.cs >= 0)
 	{
-		FwinString->colorset = &Colorset[Desks[i].style->balloon_cs];
+		FwinString->colorset = &Colorset[Balloon.cs];
 		FwinString->flags.has_colorset = True;
 	}
 	else
@@ -3321,8 +3240,6 @@ void DrawInBalloonWindow (int i)
 		FwinString->flags.has_colorset = False;
 	}
 	FwinString->x = 2;
-	FwinString->y = Desks[i].balloon.Ffont->ascent;
-	FlocaleDrawString(dpy, Desks[i].balloon.Ffont, FwinString, 0);
-
-	return;
+	FwinString->y = Balloon.Ffont->ascent;
+	FlocaleDrawString(dpy, Balloon.Ffont, FwinString, 0);
 }
