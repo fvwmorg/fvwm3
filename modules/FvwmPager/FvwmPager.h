@@ -46,8 +46,6 @@ typedef struct ScreenInfo
 {
   unsigned long screen;
 
-  char *FvwmRoot;       /* the head of the fvwm window list */
-
   Window Root;
   Window Pager_w;
   Window label_w;
@@ -73,7 +71,6 @@ typedef struct ScreenInfo
 
 typedef struct pager_window
 {
-  char *t;
   Window w;
   Window frame;
   struct monitor *m;
