@@ -823,6 +823,7 @@ void list_destroy(unsigned long *body)
 		free(t->res_name);
 		free(t->window_name);
 		free(t->icon_name);
+		free(t->window_label);
 		free(t);
 	}
 }
@@ -1023,7 +1024,6 @@ void list_iconify(unsigned long *body)
 	if (t == NULL)
 		return;
 
-	t->t = (char *)body[2];
 	t->frame = body[1];
 	t->icon_x = body[3];
 	t->icon_y = body[4];
@@ -1588,7 +1588,6 @@ void ParseOptions(void)
 	bool MoveThresholdSetForModule = false;
 
 	FvwmPictureAttributes fpa;
-	Scr.FvwmRoot = NULL;
 	Scr.VScale = 32;
 
 	fpa.mask = 0;
@@ -2087,19 +2086,41 @@ void ExitPager(void)
 {
   DeskStyle *style, *style2;
   struct fpmonitor *fp, *fp1;
+  PagerWindow *t, *t2;
 
+  /* Screen */
+  free(Scr.balloon_label);
+
+  /* Monitors */
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
 	TAILQ_REMOVE(&fp_monitor_q, fp, entry);
 	free(fp->CPagerWin);
 	free(fp);
   }
 
+  /* DeskStyles */
   TAILQ_FOREACH_SAFE(style, &desk_style_q, entry, style2) {
 	TAILQ_REMOVE(&desk_style_q, style, entry);
 	free(style->label);
 	free(style);
   }
   free(Desks);
+
+  /* PagerWindows */
+	t2 = Start;
+	while (t2 != NULL) {
+		t = t2;
+		t2 = t2->next;
+
+		XDestroyWindow(dpy, t->PagerView);
+		XDestroyWindow(dpy, t->IconView);
+		free(t->res_class);
+		free(t->res_name);
+		free(t->window_name);
+		free(t->icon_name);
+		free(t->window_label);
+		free(t);
+	}
 
   if (is_transient)
   {
