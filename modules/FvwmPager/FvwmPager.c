@@ -58,13 +58,8 @@
 char		*smallFont = NULL;
 char		*ImagePath = NULL;
 char		*font_string = NULL;
-char		*BalloonFore = NULL;
-char		*BalloonBack = NULL;
 char		*BalloonFont = NULL;
 char		*WindowLabelFormat = NULL;
-char		*BalloonTypeString = NULL;
-char		*BalloonBorderColor = NULL;
-char		*BalloonFormatString = NULL;
 Pixmap		default_pixmap = None;
 FlocaleFont	*Ffont;
 FlocaleFont	*FwindowFont;
@@ -101,17 +96,14 @@ bool	LabelsBelow = false;
 bool	ShapeLabels = false;
 bool	is_transient = false;
 bool	HilightDesks = true;
-bool	ShowBalloons = false;
 bool	HilightLabels = true;
 bool	error_occured = false;
 bool	FocusAfterMove = false;
 bool	use_desk_label = true;
 bool	WindowBorders3d = false;
 bool	HideSmallWindows = false;
-bool	ShowIconBalloons = false;
 bool	use_no_separators = false;
 bool	use_monitor_label = false;
-bool	ShowPagerBalloons = false;
 bool	do_focus_on_enter = false;
 bool	fAlwaysCurrentDesk = false;
 bool	CurrentDeskPerMonitor = false;
@@ -119,16 +111,15 @@ bool	use_dashed_separators = true;
 bool	do_ignore_next_button_release = false;
 
 /* Screen / Windows */
-int		fd[2];
-char		*MyName;
-Window		icon_win;
-Window		BalloonView = None;
-Display		*dpy;
-DeskInfo	*Desks;
-ScreenInfo	Scr;
-PagerWindow	*Start = NULL;
-PagerWindow	*FocusWin = NULL;
-struct desk_styles desk_style_q;
+int			fd[2];
+char			*MyName;
+Display			*dpy;
+DeskInfo		*Desks;
+ScreenInfo		Scr;
+PagerWindow		*Start = NULL;
+PagerWindow		*FocusWin = NULL;
+struct balloon_data	Balloon;
+struct desk_styles	desk_style_q;
 
 /* Monitors */
 struct fpmonitor	*current_monitor = NULL;
@@ -419,6 +410,9 @@ int main(int argc, char **argv)
 	default_style->win_bg = None;
 	default_style->focus_fg = None;
 	default_style->focus_bg = None;
+	default_style->balloon_fg = None;
+	default_style->balloon_bg = None;
+	default_style->balloon_border = None;
 	default_style->bgPixmap = NULL;
 	default_style->hiPixmap = NULL;
 	TAILQ_INSERT_TAIL(&desk_style_q, default_style, entry);
@@ -472,15 +466,6 @@ int main(int argc, char **argv)
 
   if (WindowLabelFormat == NULL)
     WindowLabelFormat = fxstrdup("%i");
-
-  if (BalloonBorderColor == NULL)
-    BalloonBorderColor = fxstrdup("black");
-
-  if (BalloonTypeString == NULL)
-    BalloonTypeString = fxstrdup("%i");
-
-  if (BalloonFormatString == NULL)
-    BalloonFormatString = fxstrdup("%i");
 
   /* Create a list of all windows */
   /* Request a list of all windows,
@@ -565,7 +550,7 @@ void Loop(int *fd)
       unsigned border_width, depth;
       int x,y;
 
-      if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
+      if(XGetGeometry(dpy,Scr.pager_w,&root,&x,&y,
 		      (unsigned *)&pwindow.width,(unsigned *)&pwindow.height,
 		      &border_width,&depth)==0)
       {
@@ -980,8 +965,8 @@ void list_new_desk(unsigned long *body)
 		ReConfigureAll();
 	}
 
-	XStoreName(dpy, Scr.Pager_w, style->label);
-	XSetIconName(dpy, Scr.Pager_w, style->label);
+	XStoreName(dpy, Scr.pager_w, style->label);
+	XSetIconName(dpy, Scr.pager_w, style->label);
 	MovePage();
 	draw_desk_grid(oldDesk - desk1);
 	draw_desk_grid(newDesk - desk1);
@@ -1045,10 +1030,8 @@ void list_iconify(unsigned long *body)
 	t->height = t->icon_height;
 
 	/* if iconifying main pager window turn balloons on or off */
-	if (t->w == Scr.Pager_w)
-	{
-		ShowBalloons = ShowIconBalloons;
-	}
+	if (t->w == Scr.pager_w)
+		Balloon.show = Balloon.show_in_icon;
 	MoveResizePagerView(t, true);
 }
 
@@ -1073,8 +1056,8 @@ void list_deiconify(unsigned long *body, unsigned long length)
 	t->height = t->frame_height;
 
 	/* if deiconifying main pager window turn balloons on or off */
-	if ( t->w == Scr.Pager_w )
-		ShowBalloons = ShowPagerBalloons;
+	if (t->w == Scr.pager_w)
+		Balloon.show = Balloon.show_in_pager;
 
 	MoveResizePagerView(t, true);
 }
@@ -1108,19 +1091,11 @@ void list_window_name(unsigned long *body, unsigned long type)
 		XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 		XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
 	}
-	if (ShowBalloons && BalloonView)
+	if (Balloon.is_mapped)
 	{
 		/* update balloons */
-		if (BalloonView == t->PagerView)
-		{
-			UnmapBalloonWindow();
-			MapBalloonWindow(t, false);
-		}
-		else if (BalloonView == t->IconView)
-		{
-			UnmapBalloonWindow();
-			MapBalloonWindow(t, true);
-		}
+		UnmapBalloonWindow();
+		MapBalloonWindow(t, Balloon.is_icon);
 	}
 }
 
@@ -1312,11 +1287,11 @@ void list_property_change(unsigned long *body)
 	if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
 	{
 		if (((!Swallowed && body[2] == 0) ||
-		    (Swallowed && body[2] == Scr.Pager_w)))
+		    (Swallowed && body[2] == Scr.pager_w)))
 			update_pr_transparent_windows();
 	}
 	else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW &&
-		  body[2] == Scr.Pager_w)
+		  body[2] == Scr.pager_w)
 	{
 		Swallowed = body[1];
 	}
@@ -1840,6 +1815,18 @@ void ParseOptions(void)
 				SetDeskStylePixel("*", arg2,
 					&(((DeskStyle *)(NULL))->focus_bg));
 			}
+		} else if (StrEquals(resource, "BalloonFore")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->balloon_fg));
+		} else if (StrEquals(resource, "BalloonBack")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->balloon_bg));
+		} else if (StrEquals(resource, "BalloonBorderColor")) {
+			if (Pdepth > 1)
+				SetDeskStylePixel(arg1, arg2,
+					&(((DeskStyle *)(NULL))->balloon_border));
 		} else if (StrEquals(resource, "LabelPixmap")) {
 			SetDeskStyleBool(arg1, arg2,
 				&(((DeskStyle *)(NULL))->use_label_pixmap));
@@ -1903,7 +1890,7 @@ void ParseOptions(void)
 						style->bgPixmap = NULL;
 					}
 					style->bgPixmap = PCacheFvwmPicture(
-						dpy, Scr.Pager_w, ImagePath,
+						dpy, Scr.pager_w, ImagePath,
 						arg2, fpa);
 				}
 			} else {
@@ -1916,7 +1903,7 @@ void ParseOptions(void)
 					style->bgPixmap = NULL;
 				}
 				style->bgPixmap = PCacheFvwmPicture(dpy,
-					Scr.Pager_w, ImagePath, arg2, fpa);
+					Scr.pager_w, ImagePath, arg2, fpa);
 			}
 		} else if (StrEquals(resource, "HilightPixmap")) {
 			if (Pdepth == 0)
@@ -1931,7 +1918,7 @@ void ParseOptions(void)
 						style->hiPixmap = NULL;
 					}
 					style->hiPixmap = PCacheFvwmPicture(
-						dpy, Scr.Pager_w, ImagePath,
+						dpy, Scr.pager_w, ImagePath,
 						arg2, fpa);
 				}
 			} else {
@@ -1944,7 +1931,7 @@ void ParseOptions(void)
 					style->hiPixmap = NULL;
 				}
 				style->hiPixmap = PCacheFvwmPicture(dpy,
-					Scr.Pager_w, ImagePath, arg2, fpa);
+					Scr.pager_w, ImagePath, arg2, fpa);
 			}
 		} else if (StrEquals(resource, "SmallFont")) {
 			free(smallFont);
@@ -1986,66 +1973,29 @@ void ParseOptions(void)
 				MoveThresholdSetForModule = true;
 			}
 		} else if (StrEquals(resource, "Balloons")) {
-			free(BalloonTypeString);
-			CopyString(&BalloonTypeString, next);
-
-			if (StrEquals(BalloonTypeString, "Pager")) {
-				ShowPagerBalloons = true;
-				ShowIconBalloons = false;
-			}
-			else if (StrEquals(BalloonTypeString, "Icon")) {
-				ShowPagerBalloons = false;
-				ShowIconBalloons = true;
+			if (StrEquals(next, "Pager")) {
+				Balloon.show_in_pager = true;
+				Balloon.show_in_icon = false;
+			} else if (StrEquals(next, "Icon")) {
+				Balloon.show_in_pager = false;
+				Balloon.show_in_icon = true;
+			} else if (StrEquals(next, "None")) {
+				Balloon.show_in_pager = false;
+				Balloon.show_in_icon = false;
 			} else {
-				ShowPagerBalloons = true;
-				ShowIconBalloons = true;
-			}
-
-			/* turn this on initially so balloon window is
-			 * created; later this variable is changed to
-			 * match ShowPagerBalloons or ShowIconBalloons
-			 * whenever we receive iconify or deiconify packets
-			 */
-			ShowBalloons = true;
-		} else if (StrEquals(resource, "BalloonBack")) {
-			if (Pdepth > 1)
-			{
-				free(BalloonBack);
-				CopyString(&BalloonBack, next);
-			}
-		} else if (StrEquals(resource, "BalloonFore")) {
-			if (Pdepth > 1)
-			{
-				free(BalloonFore);
-				CopyString(&BalloonFore, next);
+				Balloon.show_in_pager = true;
+				Balloon.show_in_icon = true;
 			}
 		} else if (StrEquals(resource, "BalloonFont")) {
 			free(BalloonFont);
 			CopyStringWithQuotes(&BalloonFont, next);
-		} else if (StrEquals(resource, "BalloonBorderColor")) {
-			free(BalloonBorderColor);
-			CopyString(&BalloonBorderColor, next);
 		} else if (StrEquals(resource, "BalloonBorderWidth")) {
-			sscanf(next, "%d", &BalloonBorderWidth);
+			sscanf(next, "%d", &(Balloon.border_width));
 		} else if (StrEquals(resource, "BalloonYOffset")) {
-			sscanf(next, "%d", &BalloonYOffset);
-			if (BalloonYOffset == 0)
-			{
-				fvwm_debug(__func__,
-					"%s: Warning: You're not allowed "
-					"BalloonYOffset 0; "
-					"defaulting to +3\n",
-					MyName);
-				/* we don't allow yoffset of 0 because it
-				 * allows direct transit from pager window
-				 * to balloon window, setting up a
-				 * LeaveNotify/EnterNotify event loop
-				 */
-				BalloonYOffset = 3;
-			}
+			sscanf(next, "%d", &(Balloon.y_offset));
 		} else if (StrEquals(resource,"BalloonStringFormat")) {
-			free(BalloonFormatString);
-			CopyString(&BalloonFormatString, next);
+			free(Balloon.label_format);
+			CopyString(&(Balloon.label_format), next);
 		}
 
 free_vars:
@@ -2088,8 +2038,9 @@ void ExitPager(void)
   struct fpmonitor *fp, *fp1;
   PagerWindow *t, *t2;
 
-  /* Screen */
-  free(Scr.balloon_label);
+  /* Balloons */
+  free(Balloon.label);
+  free(Balloon.label_format);
 
   /* Monitors */
   TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {

@@ -47,7 +47,8 @@ typedef struct ScreenInfo
   unsigned long screen;
 
   Window Root;
-  Window Pager_w;
+  Window pager_w;
+  Window icon_w;
   Window label_w;
   Window balloon_w;
 
@@ -55,10 +56,6 @@ typedef struct ScreenInfo
 
   GC NormalGC;           /* used for window names and setting backgrounds */
   GC MiniIconGC;         /* used for clipping mini-icons */
-  GC balloon_gc;
-
-  int balloon_desk;
-  char *balloon_label;   /* the label displayed inside the balloon */
 
   unsigned VScale;       /* Panner scale factor */
   Pixmap sticky_gray_pixmap;
@@ -68,6 +65,28 @@ typedef struct ScreenInfo
   Pixel focus_win_bg;
 
 } ScreenInfo;
+
+/* Store the balloon settings and current state. */
+struct balloon_data
+{
+	/* Current state and toggles. */
+	int cs;
+	bool is_mapped;
+	bool is_icon;
+	bool show;
+
+	/* Configuration */
+	bool show_in_pager;
+	bool show_in_icon;
+	int border_width;
+	int y_offset;
+	char *label_format;
+
+	/* Resources */
+	char *label;
+	GC gc;
+	FlocaleFont *Ffont;
+};
 
 typedef struct pager_window
 {
@@ -110,13 +129,6 @@ typedef struct pager_window
   struct pager_window *next;
 } PagerWindow;
 
-typedef struct balloon_window
-{
-  FlocaleFont *Ffont;
-  int height;            /* height of balloon window based on font */
-  int desk;
-} BalloonWindow;
-
 typedef struct desk_style
 {
 	int desk;
@@ -136,6 +148,9 @@ typedef struct desk_style
 	Pixel win_bg;
 	Pixel focus_fg;
 	Pixel focus_bg;
+	Pixel balloon_fg;
+	Pixel balloon_bg;
+	Pixel balloon_border;
 	FvwmPicture *bgPixmap;		/* Pixmap used as background. */
 	FvwmPicture *hiPixmap;		/* Hilighted background pixmap. */
 	GC label_gc;			/* Label GC. */
@@ -156,7 +171,6 @@ typedef struct desk_info
 {
   Window w;
   Window title_w;
-  BalloonWindow balloon;
   DeskStyle *style;
   struct fpmonitor *fp;         /* most recent monitor viewing desk. */
 } DeskInfo;
@@ -170,13 +184,8 @@ typedef struct desk_info
 extern char		*smallFont;
 extern char		*ImagePath;
 extern char		*font_string;
-extern char		*BalloonFore;
-extern char		*BalloonBack;
 extern char		*BalloonFont;
 extern char		*WindowLabelFormat;
-extern char		*BalloonTypeString;
-extern char		*BalloonBorderColor;
-extern char		*BalloonFormatString;
 extern Pixel		focus_win_fg;
 extern Pixel		focus_win_bg;
 extern Pixmap		default_pixmap;
@@ -192,8 +201,6 @@ extern int		desk_i;
 extern int		ndesks;
 extern int		Columns;
 extern int		MoveThreshold;
-extern int		BalloonBorderWidth;
-extern int		BalloonYOffset;
 extern unsigned int	WindowBorderWidth;
 extern unsigned int	MinSize;
 extern rectangle	pwindow;
@@ -214,17 +221,14 @@ extern bool	LabelsBelow;
 extern bool	ShapeLabels;
 extern bool	is_transient;
 extern bool	HilightDesks;
-extern bool	ShowBalloons;
 extern bool	HilightLabels;
 extern bool	error_occured;
 extern bool	FocusAfterMove;
 extern bool	use_desk_label;
 extern bool	WindowBorders3d;
 extern bool	HideSmallWindows;
-extern bool	ShowIconBalloons;
 extern bool	use_no_separators;
 extern bool	use_monitor_label;
-extern bool	ShowPagerBalloons;
 extern bool	do_focus_on_enter;
 extern bool	fAlwaysCurrentDesk;
 extern bool	CurrentDeskPerMonitor;
@@ -232,15 +236,14 @@ extern bool	use_dashed_separators;
 extern bool	do_ignore_next_button_release;
 
 /* Screen / Windows */
-extern int		fd[2];
-extern char		*MyName;
-extern Window		icon_win;
-extern Window		BalloonView;
-extern Display		*dpy;
-extern DeskInfo		*Desks;
-extern ScreenInfo	Scr;
-extern PagerWindow	*Start;
-extern PagerWindow	*FocusWin;
+extern int			fd[2];
+extern char			*MyName;
+extern Display			*dpy;
+extern DeskInfo			*Desks;
+extern ScreenInfo		Scr;
+extern PagerWindow		*Start;
+extern PagerWindow		*FocusWin;
+extern struct balloon_data	Balloon;
 
 /* Monitors */
 extern struct fpmonitor		*current_monitor;
@@ -314,7 +317,6 @@ void HandleEnterNotify(XEvent *Event);
 void HandleExpose(XEvent *Event);
 void MapBalloonWindow(PagerWindow *t, bool is_icon_view);
 void UnmapBalloonWindow(void);
-void DrawInBalloonWindow(int i);
 void HandleScrollDone(void);
 int fpmonitor_get_all_widths(void);
 int fpmonitor_get_all_heights(void);
