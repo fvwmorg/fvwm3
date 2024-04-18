@@ -14,6 +14,7 @@
  */
 
 #include "config.h"
+#include <stdbool.h>
 #include "libs/FScreen.h"
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
@@ -44,9 +45,11 @@ static void process_icon_name(unsigned long *body);
 static void process_mini_icon(unsigned long *body);
 static void process_restack(unsigned long *body, unsigned long length);
 static void process_end(void);
-static void process_config_info(unsigned long *body);
 static void process_property_change(unsigned long *body);
 static void process_reply(unsigned long *body);
+static void parse_monitor_line(char *tline);
+static void parse_desktop_size_line(char *tline);
+static void parse_desktop_configuration_line(char *tline);
 
 /*
  *  Procedure:
@@ -109,7 +112,7 @@ void process_message(FvwmPacket *packet)
 			process_restack(body, length);
 			break;
 		case M_CONFIG_INFO:
-			process_config_info(body);
+			process_config_info_line((char *)&body[3], false);
 			break;
 		case MX_PROPERTY_CHANGE:
 			process_property_change(body);
@@ -595,7 +598,7 @@ void process_window_name(unsigned long *body, unsigned long type)
 	}
 
 	/* repaint by clearing window */
-	if (FwindowFont != NULL && t->icon_name != NULL &&
+	if (Scr.winFfont != NULL && t->icon_name != NULL &&
 	    !(MiniIcons && t->mini_icon.picture))
 	{
 		XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
@@ -619,7 +622,7 @@ void process_icon_name(unsigned long *body)
 	free(t->icon_name);
 	CopyString(&t->icon_name, (char *)(&body[3]));
 	/* repaint by clearing window */
-	if (FwindowFont != NULL && t->icon_name != NULL &&
+	if (Scr.winFfont != NULL && t->icon_name != NULL &&
 	    !(MiniIcons && t->mini_icon.picture))
 	{
 		XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
@@ -719,79 +722,6 @@ void process_end(void)
 		XFree((char *)children);
 }
 
-void process_config_info(unsigned long *body)
-{
-	struct fpmonitor *m;
-	char *tline, *token;
-
-	tline = (char*)&(body[3]);
-	token = PeekToken(tline, &tline);
-	if (StrEquals(token, "Colorset"))
-	{
-		int color;
-		DeskStyle *style;
-
-		color = LoadColorset(tline);
-		TAILQ_FOREACH(style, &desk_style_q, entry) {
-			if (style->cs == color || style->hi_cs == color)
-			{
-				update_desk_style_gcs(style);
-				if (style->desk < desk1 || style->desk > desk2)
-					continue;
-
-				update_desk_background(style->desk - desk1);
-				update_monitor_backgrounds(style->desk - desk1);
-			}
-			if (style->win_cs == color || style->focus_cs == color) {
-				PagerWindow *t = Start;
-
-				update_desk_style_gcs(style);
-				while (t != NULL) {
-					if (t->desk != style->desk) {
-						t = t->next;
-						continue;
-					}
-					update_desk_style_gcs(style);
-					update_window_background(t);
-					update_window_decor(t);
-					t = t->next;
-				}
-			}
-		}
-	}
-	else if (StrEquals(token, "DesktopName"))
-	{
-		int val;
-		if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
-		{
-			set_desk_label(val, (const char *)tline);
-		}
-		else
-		{
-			return;
-		}
-		if (fAlwaysCurrentDesk)
-		{
-			TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-				if (m->m->virtual_scr.CurrentDesk == val)
-					val = 0;
-			}
-		}
-		else if ((val >= desk1) && (val <=desk2))
-		{
-			val = val - desk1;
-		}
-		draw_desk_grid(val);
-	} else if (StrEquals(token, "Monitor")) {
-		parse_monitor_line(tline);
-		ReConfigure();
-	} else if (StrEquals(token, "DesktopSize")) {
-		parse_desktop_size_line(tline);
-	} else if (StrEquals(token, "DesktopConfiguration")) {
-		parse_desktop_configuration_line(tline);
-	}
-}
-
 void process_property_change(unsigned long *body)
 {
 	if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
@@ -816,29 +746,13 @@ void process_reply(unsigned long *body)
 		HandleScrollDone();
 }
 
-/* These methods are also used in parse_options in init_pager.c */
+/* Helper methods */
 void set_desk_label(int desk, const char *label)
 {
 	DeskStyle *style = FindDeskStyle(desk);
 
 	free(style->label);
 	CopyString(&(style->label), label);
-}
-
-void set_desk_size(bool update_label)
-{
-	if (update_label) {
-		label_h = 0;
-		if (use_desk_label)
-			label_h += Ffont->height + 2;
-		if (use_monitor_label)
-			label_h += Ffont->height + 2;
-	}
-
-	desk_w = (pwindow.width - Columns + 1) / Columns;
-	desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
-
-	return;
 }
 
 void parse_monitor_line(char *tline)
@@ -949,6 +863,88 @@ void parse_desktop_configuration_line(char *tline)
 			monitor_mode = mmode;
 			is_tracking_shared = is_shared;
 		}
+}
+
+/* These methods are also used in parse_options in init_pager.c */
+void process_config_info_line(char *line, bool is_init)
+{
+	char *token, *next;
+
+	token = PeekToken(line, &next);
+	if (StrEquals(token, "DesktopSize")) {
+		parse_desktop_size_line(next);
+	} else if (StrEquals(token, "DesktopConfiguration")) {
+		parse_desktop_configuration_line(next);
+	} else if (StrEquals(token, "Monitor")) {
+		parse_monitor_line(next);
+		if (!is_init)
+			ReConfigure();
+	} else if (StrEquals(token, "ImagePath")) {
+			free(ImagePath);
+			ImagePath = NULL;
+			GetNextToken(next, &ImagePath);
+	} else if (StrEquals(token, "DesktopName")) {
+		int val;
+
+		if (GetIntegerArguments(next, &next, &val, 1) <= 0)
+			return;
+
+		set_desk_label(val, (const char *)next);
+
+		if (is_init)
+			return;
+
+		if (fAlwaysCurrentDesk)
+		{
+			struct fpmonitor *fp;
+
+			TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+				if (fp->m->virtual_scr.CurrentDesk == val)
+					val = 0;
+			}
+		}
+		else if ((val >= desk1) && (val <=desk2))
+		{
+			val = val - desk1;
+		}
+		draw_desk_grid(val);
+	} else if (StrEquals(token, "Colorset")) {
+		DeskStyle *style;
+		int color = LoadColorset(next);
+
+		if (is_init)
+			return;
+
+		TAILQ_FOREACH(style, &desk_style_q, entry) {
+			if (style->cs == color || style->hi_cs == color)
+			{
+				update_desk_style_gcs(style);
+				if (style->desk < desk1 ||
+				    style->desk > desk2)
+					continue;
+
+				int i = style->desk - desk1;
+				update_desk_background(i);
+				update_monitor_backgrounds(i);
+			}
+			if (style->win_cs == color ||
+			    style->focus_cs == color)
+			{
+				PagerWindow *t = Start;
+
+				update_desk_style_gcs(style);
+				while (t != NULL) {
+					if (t->desk != style->desk) {
+						t = t->next;
+						continue;
+					}
+					update_window_background(t);
+					update_window_decor(t);
+					t = t->next;
+				}
+			}
+		}
+	}
 }
 
 void update_monitor_to_track(struct fpmonitor **fp_track,

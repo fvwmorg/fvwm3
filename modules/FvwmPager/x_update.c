@@ -280,7 +280,7 @@ void update_window_decor(PagerWindow *t)
 
 void do_label_window(PagerWindow *t, Window w, rectangle r)
 {
-	if (t == NULL || w == None || FwindowFont == NULL ||
+	if (t == NULL || w == None || Scr.winFfont == NULL ||
 	    (MiniIcons && t->mini_icon.picture) || /* Draw image later. */
 	    t->icon_name == NULL)
 		return;
@@ -311,13 +311,13 @@ void do_label_window(PagerWindow *t, Window w, rectangle r)
 		FwinString->flags.has_colorset = True;
 	}
 	FwinString->x = label_border;
-	FwinString->y = FwindowFont->ascent+2;
+	FwinString->y = Scr.winFfont->ascent+2;
 
 	/* draw the window label with simple greedy wrapping */
 	char *cur, *next, *end;
 	int space_width, cur_width;
 
-	space_width = FlocaleTextWidth(FwindowFont, " ", 1);
+	space_width = FlocaleTextWidth(Scr.winFfont, " ", 1);
 	cur_width   = 0;
 	cur = next = t->window_label;
 	end = cur + strlen(cur);
@@ -331,7 +331,7 @@ void do_label_window(PagerWindow *t, Window w, rectangle r)
 				p = end;
 
 			width = FlocaleTextWidth(
-				FwindowFont, next, p - next );
+				Scr.winFfont, next, p - next );
 			if (width > r.width - cur_width -
 			    space_width - 2*label_border)
 				break;
@@ -345,9 +345,9 @@ void do_label_window(PagerWindow *t, Window w, rectangle r)
 				int len, width;
 
 				len = FlocaleStringNumberOfBytes(
-					FwindowFont, next);
+					Scr.winFfont, next);
 				width = FlocaleTextWidth(
-					FwindowFont, next, len);
+					Scr.winFfont, next, len);
 
 				if (width > r.width - cur_width -
 				    2 * label_border && cur != next)
@@ -362,12 +362,12 @@ void do_label_window(PagerWindow *t, Window w, rectangle r)
 		strncpy(FwinString->str, cur, next - cur);
 		FwinString->str[next - cur] = 0;
 
-		FlocaleDrawString(dpy, FwindowFont, FwinString, 0);
+		FlocaleDrawString(dpy, Scr.winFfont, FwinString, 0);
 
 		free(FwinString->str);
 		FwinString->str = NULL;
 
-		FwinString->y += FwindowFont->height;
+		FwinString->y += Scr.winFfont->height;
 		cur = next;
 		cur_width = 0;
 	}

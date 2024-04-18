@@ -24,14 +24,25 @@
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
 
+static Pixmap default_pixmap;
+static bool usposition = false;
+static bool xneg = false;
+static bool yneg = false;
+static bool icon_usposition = false;
+static bool icon_xneg = false;
+static bool icon_yneg = false;
+
 static void initialize_viz_pager(void);
 static void initialize_desks_and_monitors(void);
 static void initialize_colorsets(void);
 static int fvwm_error_handler(Display *dpy, XErrorEvent *event);
+static void initialize_fonts(void);
+static void initialize_transient(void);
 static void initialise_common_pager_fragments(void);
+static void initialize_pager_size(void);
 static void initialize_balloon_window(void);
 static void initialize_desk_windows(int desk);
-static void initialize_pager(void);
+static void initialize_pager_window(void);
 static void set_desk_style_cset(char *arg1, char *arg2, void *offset_style);
 static void set_desk_style_pixel(char *arg1, char *arg2, void *offset_style);
 static void set_desk_style_bool(char *arg1, char *arg2, void *offset_style);
@@ -39,85 +50,52 @@ static void parse_options(void);
 
 void init_fvwm_pager(void)
 {
-
-	Window JunkRoot, JunkChild;
-	int JunkX, JunkY;
-	unsigned JunkMask;
-
-	/* Initialize fonts. */
-	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
+	int i;
+	DeskStyle *style;
+	struct fpmonitor *fp;
 
 	/* make a temp window for any pixmaps, deleted later */
 	initialize_viz_pager();
 
 	/* Run initializations */
 	initialize_desks_and_monitors();
+	initialize_fonts();
 	parse_options();
+	initialize_colorsets();
+	initialise_common_pager_fragments();
+	initialize_pager_size();
+	if (is_transient)
+		initialize_transient();
+	initialize_pager_window();
 
-	if (is_transient) {
-		FQueryPointer(
-			dpy, Scr.Root, &JunkRoot, &JunkChild, &pwindow.x,
-			&pwindow.y, &JunkX, &JunkY, &JunkMask);
-		usposition = false;
-		xneg = false;
-		yneg = false;
+	/* Initialize DeskStyle GCs */
+	for (i = 0; i < ndesks; i++) {
+		/* Create any missing DeskStyles. */
+		style = FindDeskStyle(i);
+	}
+	TAILQ_FOREACH(style, &desk_style_q, entry) {
+		initialize_desk_style_gcs(style);
 	}
 
-	if (WindowLabelFormat == NULL)
-		WindowLabelFormat = fxstrdup("%i");
+	/* After DeskStyles are initialized, initialize desk windows. */
+	for (i = 0; i < ndesks; i++) {
+		initialize_desk_windows(i);
+	}
+
+	/* Hilight monitor windows. */
+	TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+		initialize_fpmonitor_windows(fp);
+	}
+
+	initialize_balloon_window();
 
 	/* Create a list of all windows, by requesting a list of all
 	 * windows, and wait for ConfigureWindow packets.
 	 */
-	SendInfo(fd,"Send_WindowList",0);
+	SendInfo(fd, "Send_WindowList", 0);
 
-	/* Initialize pager window */
-	initialize_colorsets();
-	initialise_common_pager_fragments();
-	initialize_pager();
-
-  if (is_transient)
-  {
-    int i;
-    bool is_pointer_grabbed = false;
-    bool is_keyboard_grabbed = false;
-
-    XSync(dpy,0);
-    for (i = 0; i < 50 && !(is_pointer_grabbed && is_keyboard_grabbed); i++)
-    {
-      if (!is_pointer_grabbed &&
-	  XGrabPointer(
-	    dpy, Scr.Root, true,
-	    ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
-	    PointerMotionMask|EnterWindowMask|LeaveWindowMask, GrabModeAsync,
-	    GrabModeAsync, None, None, CurrentTime) == GrabSuccess)
-      {
-	is_pointer_grabbed = true;
-      }
-      if (!is_keyboard_grabbed &&
-	  XGrabKeyboard(
-	    dpy, Scr.Root, true, GrabModeAsync, GrabModeAsync, CurrentTime) ==
-	  GrabSuccess)
-      {
-	is_keyboard_grabbed = true;
-      }
-      /* If you go too fast, other windows may not get a change to release
-       * any grab that they have. */
-      usleep(20000);
-    }
-    if (!is_pointer_grabbed)
-    {
-      XBell(dpy, 0);
-      fvwm_debug(__func__,
-                 "%s: could not grab pointer in transient mode. exiting.\n",
-                 MyName);
-      exit(1);
-    }
-
-    XSync(dpy,0);
-  }
-
-
+	/* Initialization done! */
+	XMapRaised(dpy, Scr.pager_w);
 }
 
 
@@ -243,6 +221,93 @@ int fvwm_error_handler(Display *dpy, XErrorEvent *event)
 	return 0;
 }
 
+void initialize_fonts(void)
+{
+	/* Initialize fonts. */
+	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
+
+	/* load a default font. */
+	Scr.Ffont = FlocaleLoadFont(dpy, "", MyName);
+
+	/* init our Flocale window string */
+	FlocaleAllocateWinString(&FwinString);
+
+	WindowLabelFormat = fxstrdup("%i");
+}
+
+void initialize_transient(void)
+{
+	int i;
+	Window junk_w;
+	unsigned junk_mask;
+	struct fpmonitor *fp;
+	bool is_pointer_grabbed = false;
+	bool is_keyboard_grabbed = false;
+
+	/* Place window at pointer. */
+	usposition = true;
+	xneg = false;
+	yneg = false;
+	FQueryPointer(
+		dpy, Scr.Root, &junk_w, &junk_w, &pwindow.x,
+		&pwindow.y, &i, &i, &junk_mask);
+
+	/* Find monitor pointer is on. */
+	fp = fpmonitor_from_xy(pwindow.x, pwindow.y);
+	if (fp == NULL)
+		fp = fpmonitor_this(NULL);
+
+	/* Center window on pointer. This ignores window decor size. */
+	pwindow.x -= pwindow.width / 2;
+	pwindow.y -= pwindow.height / 2;
+
+	/* Adjust if pager is outside of monitor boundary.
+	 * This ignores EWMH working area.
+	 */
+	if (pwindow.x < fp->m->si->x)
+		pwindow.x = fp->m->si->x;
+	if (pwindow.y < fp->m->si->y)
+		pwindow.y = fp->m->si->y;
+	if (pwindow.x + pwindow.width > fp->m->si->x + fp->m->si->w)
+		pwindow.x = fp->m->si->x + fp->m->si->w - pwindow.width;
+	if (pwindow.y + pwindow.height > fp->m->si->y + fp->m->si->h)
+		pwindow.y = fp->m->si->y + fp->m->si->h - pwindow.height;
+
+	/* Grab pointer. */
+	XSync(dpy, 0);
+	for (i = 0; i < 50 &&
+	     !(is_pointer_grabbed && is_keyboard_grabbed); i++)
+	{
+		if (!is_pointer_grabbed && XGrabPointer(
+		    dpy, Scr.Root, true,
+		    ButtonPressMask | ButtonReleaseMask |
+		    ButtonMotionMask | PointerMotionMask |
+		    EnterWindowMask | LeaveWindowMask,
+		    GrabModeAsync, GrabModeAsync,
+		    None, None, CurrentTime) == GrabSuccess)
+			is_pointer_grabbed = true;
+
+		if (!is_keyboard_grabbed && XGrabKeyboard(
+		   dpy, Scr.Root, true, GrabModeAsync, GrabModeAsync,
+		   CurrentTime) == GrabSuccess)
+			is_keyboard_grabbed = true;
+
+		/* If you go too fast, other windows may not get a
+		 * change to release any grab that they have.
+		 */
+		usleep(20000);
+	}
+
+	if (!is_pointer_grabbed) {
+		XBell(dpy, 0);
+		fprintf(stderr,
+			"%s: could not grab pointer in transient mode. "
+			"Exiting.\n", MyName);
+		ExitPager();
+	}
+	XSync(dpy, 0);
+}
+
 void initialise_common_pager_fragments(void)
 {
 	DeskStyle *style = FindDeskStyle(-1);
@@ -255,28 +320,10 @@ void initialise_common_pager_fragments(void)
 
 	wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
-	/* load the font */
-	/* Note: "font" is always created, whether labels are used or not
-	   because a GC below is set to use a font. dje Dec 2001.
-	   OK, I fixed the GC below, but now something else is blowing up.
-	   Right now, I've got to do some Real Life stuff, so this kludge is
-	   in place, its still better than I found it.
-	   I hope that I've fixed this (olicha)
-	*/
-	Ffont = FlocaleLoadFont(dpy, font_string, MyName);
-
-	/* init our Flocale window string */
-	FlocaleAllocateWinString(&FwinString);
-
 	/* Check that shape extension exists. */
 	if (FHaveShapeExtension && ShapeLabels)
 	{
 		ShapeLabels = (FShapesSupported) ? 1 : 0;
-	}
-
-	if(smallFont != NULL)
-	{
-		FwindowFont = FlocaleLoadFont(dpy, smallFont, MyName);
 	}
 
 	/* Load pixmaps for mono use */
@@ -300,11 +347,18 @@ void initialise_common_pager_fragments(void)
 			dpy, Scr.pager_w, s_g_bits, s_g_width, s_g_height,
 			style->fg, style->bg, Pdepth);
 	}
+}
 
-	/* Size the window */
-	if(Rows < 0)
+void initialize_pager_size(void)
+{
+	struct fpmonitor *fp = fpmonitor_this(NULL);
+	int VxPages = fp->virtual_scr.VxPages;
+	int VyPages = fp->virtual_scr.VyPages;
+
+	/* Grid size */
+	if (Rows < 0)
 	{
-		if(Columns <= 0)
+		if (Columns <= 0)
 		{
 			Columns = ndesks;
 			Rows = 1;
@@ -316,7 +370,7 @@ void initialise_common_pager_fragments(void)
 			Rows++;
 		}
 	}
-	if(Columns < 0)
+	if (Columns < 0)
 	{
 		if (Rows == 0)
 			Rows = 1;
@@ -325,7 +379,7 @@ void initialise_common_pager_fragments(void)
 			Columns++;
 	}
 
-	if(Rows*Columns < ndesks)
+	if (Rows*Columns < ndesks)
 	{
 		if (Columns == 0)
 			Columns = 1;
@@ -334,6 +388,59 @@ void initialise_common_pager_fragments(void)
 			Rows++;
 	}
 	set_desk_size(true);
+
+	/* Set window size if not fully set by user to match */
+	/* aspect ratio of monitor(s) being shown. */
+	if (pwindow.width == 0 || pwindow.height == 0) {
+		int vWidth  = fpmonitor_get_all_widths();
+		int vHeight = fpmonitor_get_all_heights();
+
+		if (monitor_to_track != NULL || IsShared) {
+			vWidth = fp->m->si->w;
+			vHeight = fp->m->si->h;
+		}
+
+		if (pwindow.width > 0) {
+			pwindow.height = (pwindow.width * vHeight) /
+					 vWidth + label_h * Rows + Rows;
+		} else if (pwindow.height > label_h * Rows) {
+			pwindow.width = ((pwindow.height - label_h * Rows +
+					Rows) * vWidth) / vHeight + Columns;
+		} else {
+			pwindow.width = (VxPages * vWidth * Columns) /
+					Scr.VScale + Columns;
+			pwindow.height = (VyPages * vHeight * Rows) /
+					 Scr.VScale + label_h * Rows + Rows;
+		}
+	}
+	set_desk_size(false);
+
+	/* Icon window size. */
+	if (icon.width < 1)
+		icon.width = (pwindow.width - Columns + 1) / Columns;
+	if (icon.height < 1)
+		icon.height = (pwindow.height - Rows * label_h - Rows + 1) /
+			      Rows;
+
+	/* Icon window location. */
+	if (icon.x != -10000) {
+		icon_usposition = true;
+		if (icon_xneg)
+			icon.x = fpmonitor_get_all_widths() + icon.x - icon.width;
+	} else {
+		icon.x = 0;
+	}
+	if (icon.y != -10000) {
+		icon_usposition = true;
+		if (icon_yneg)
+			icon.y = fpmonitor_get_all_heights() + icon.y - icon.height;
+	} else {
+		icon.y = 0;
+	}
+
+	/* Make each page have same number of pixels. */
+	icon.width = (icon.width / (VxPages + 1)) * (VxPages + 1) + VxPages;
+	icon.height = (icon.height / (VyPages + 1)) * (VyPages + 1) + VyPages;
 }
 
 /* create balloon window -- ric@giccs.georgetown.edu */
@@ -350,6 +457,8 @@ void initialize_balloon_window(void)
 	}
 
 	/* Set some defaults */
+	Balloon.show = (StartIconic) ?
+		Balloon.show_in_icon : Balloon.show_in_pager;
 	if (Balloon.border_width <= 0)
 		Balloon.border_width = DEFAULT_BALLOON_BORDER_WIDTH;
 	if (Balloon.y_offset == 0)
@@ -360,6 +469,8 @@ void initialize_balloon_window(void)
 		Balloon.y_offset = DEFAULT_BALLOON_Y_OFFSET;
 	if (Balloon.label_format == NULL)
 		Balloon.label_format = fxstrdup("%i");
+	if (!Balloon.Ffont)
+		Balloon.Ffont = FlocaleLoadFont(dpy, "", MyName);
 
 	valuemask = CWOverrideRedirect | CWEventMask | CWColormap;
 	/* tell WM to ignore this window */
@@ -375,10 +486,8 @@ void initialize_balloon_window(void)
 	/* Initialize, actual values will be updated later. */
 	valuemask = GCForeground;
 	xgcv.foreground = GetSimpleColor("black");
-	Balloon.Ffont = FlocaleLoadFont(dpy, BalloonFont, MyName);
 	Balloon.gc = fvwmlib_XCreateGC(
 		dpy, Scr.balloon_w, valuemask, &xgcv);
-	free(BalloonFont);
 }
 
 void initialize_fpmonitor_windows(struct fpmonitor *fp)
@@ -424,8 +533,8 @@ void initialize_desk_style_gcs(DeskStyle *style)
 
 	/* Desk labels GC. */
 	gcv.foreground = style->fg;
-	if (Ffont && Ffont->font) {
-		gcv.font = Ffont->font->fid;
+	if (Scr.Ffont && Scr.Ffont->font) {
+		gcv.font = Scr.Ffont->font->fid;
 		style->label_gc = fvwmlib_XCreateGC(
 			dpy, Scr.pager_w, GCForeground | GCFont, &gcv);
 	} else {
@@ -440,7 +549,7 @@ void initialize_desk_style_gcs(DeskStyle *style)
 
 	/* create the hilight desk title drawing GC */
 	gcv.foreground = (Pdepth < 2) ? style->fg : style->hi_fg;
-	if (Ffont && Ffont->font)
+	if (Scr.Ffont && Scr.Ffont->font)
 		style->hi_fg_gc = fvwmlib_XCreateGC(
 			dpy, Scr.pager_w, GCForeground | GCFont, &gcv);
 	else
@@ -553,213 +662,100 @@ void initialize_desk_windows(int desk)
 	XMapRaised(dpy, Desks[desk].w);
 }
 
-void initialize_pager(void)
+void initialize_pager_window(void)
 {
-  XWMHints wmhints;
-  XClassHint class1;
-  XTextProperty name;
-  unsigned long valuemask;
-  XSetWindowAttributes attributes;
-  int i = 0;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
-  struct fpmonitor *m;
-  DeskStyle *style;
+	XWMHints wmhints;
+	XClassHint class1;
+	XTextProperty name;
+	unsigned long valuemask;
+	XSetWindowAttributes attributes;
 
-  XSizeHints sizehints =
-  {
-	  (PWinGravity),	/* flags */
-	  0, 0, 100, 100,	/* x, y, width and height (legacy) */
-	  1, 1,			/* Min width and height */
-	  0, 0,			/* Max width and height */
-	  1, 1,			/* Width and height increments */
-	  {0, 0}, {0, 0},	/* Aspect ratio */
-	  1, 1,			/* base size */
-	  (NorthWestGravity)	/* gravity */
-  };
+	XSizeHints sizehints = {
+		(PWinGravity),		/* flags */
+		0, 0, 100, 100,		/* x, y, width and height (legacy) */
+		1, 1,			/* Min width and height */
+		0, 0,			/* Max width and height */
+		1, 1,			/* Width and height increments */
+		{0, 0}, {0, 0},		/* Aspect ratio */
+		1, 1,			/* base size */
+		(NorthWestGravity)	/* gravity */
+	};
 
-  int VxPages = fp->virtual_scr.VxPages, VyPages = fp->virtual_scr.VyPages;
+	if (xneg) {
+		sizehints.win_gravity = NorthEastGravity;
+		pwindow.x = fpmonitor_get_all_widths() - pwindow.width + pwindow.x;
+	}
+	if (yneg) {
+		if(sizehints.win_gravity == NorthEastGravity)
+			sizehints.win_gravity = SouthEastGravity;
+		else
+			sizehints.win_gravity = SouthWestGravity;
+		pwindow.y = fpmonitor_get_all_heights() - pwindow.height + pwindow.y;
+	}
+	if (usposition)
+		sizehints.flags |= USPosition;
 
-  /* Set window size if not fully set by user to match */
-  /* aspect ratio of monitor(s) being shown. */
-  if ( pwindow.width == 0 || pwindow.height == 0 ) {
-	  int vWidth  = fpmonitor_get_all_widths();
-	  int vHeight = fpmonitor_get_all_heights();
-	  if (monitor_to_track != NULL || IsShared) {
-		  vWidth = fp->m->si->w;
-		  vHeight = fp->m->si->h;
-	  }
+	valuemask = (CWBackPixmap | CWBorderPixel | CWColormap | CWEventMask);
+	attributes.background_pixmap = default_pixmap;
+	attributes.border_pixel = 0;
+	attributes.colormap = Pcmap;
+	attributes.event_mask = StructureNotifyMask;
 
-	  if (pwindow.width > 0) {
-		  pwindow.height = (pwindow.width * vHeight) / vWidth +
-			  label_h * Rows + Rows;
-	  } else if (pwindow.height > label_h * Rows) {
-		  pwindow.width = ((pwindow.height - label_h * Rows + Rows) *
-				  vWidth) / vHeight + Columns;
-	  } else {
-		  pwindow.width = (VxPages * vWidth * Columns) / Scr.VScale +
-			  Columns;
-		  pwindow.height = (VyPages * vHeight * Rows) / Scr.VScale +
-			  label_h * Rows + Rows;
-	  }
-  }
-  set_desk_size(false);
+	/* destroy the temp window first, don't worry if it's the Root */
+	if (Scr.pager_w != Scr.Root)
+		XDestroyWindow(dpy, Scr.pager_w);
 
-  if (is_transient)
-  {
-    rectangle screen_g;
-    fscreen_scr_arg fscr;
+	Scr.pager_w = XCreateWindow(
+		dpy, Scr.Root, pwindow.x, pwindow.y, pwindow.width,
+		pwindow.height, 0, Pdepth, InputOutput, Pvisual,
+		valuemask, &attributes);
 
-    fscr.xypos.x = pwindow.x;
-    fscr.xypos.y = pwindow.y;
-    FScreenGetScrRect(
-      &fscr, FSCREEN_XYPOS,
-      &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
-    /* FIXME: Recalculate what to do if window is off screen. */
-    /* Leaving alone for now */
-    if (pwindow.width + pwindow.x > screen_g.x + screen_g.width)
-    {
-      pwindow.x = screen_g.x + screen_g.width - fp->m->si->w; //fp->m->virtual_scr.MyDisplayWidth;
-      xneg = true;
-    }
-    if (pwindow.height + pwindow.y > screen_g.y + screen_g.height)
-    {
-      pwindow.y = screen_g.y + screen_g.height - fp->m->si->h; //fp->m->virtual_scr.MyDisplayHeight;
-      yneg = true;
-    }
-  }
-  if (xneg)
-  {
-    sizehints.win_gravity = NorthEastGravity;
-    pwindow.x = fpmonitor_get_all_widths() - pwindow.width + pwindow.x;
-  }
-  if (yneg)
-  {
-    pwindow.y = fpmonitor_get_all_heights() - pwindow.height + pwindow.y;
-    if(sizehints.win_gravity == NorthEastGravity)
-      sizehints.win_gravity = SouthEastGravity;
-    else
-      sizehints.win_gravity = SouthWestGravity;
-  }
+	XSetWMProtocols(dpy, Scr.pager_w, &wm_del_win, 1);
+	/* hack to prevent mapping on wrong screen with StartsOnScreen */
+	FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &sizehints);
+	XSetWMNormalHints(dpy, Scr.pager_w, &sizehints);
+	if (is_transient)
+		XSetTransientForHint(dpy, Scr.pager_w, Scr.Root);
 
-  if(usposition)
-    sizehints.flags |= USPosition;
+	if (FlocaleTextListToTextProperty(dpy,
+		&(Desks[0].style->label), 1, XStdICCTextStyle, &name) == 0)
+	{
+		fprintf(stderr,"%s: fatal error: cannot allocate desk name", MyName);
+		ExitPager();
+	}
 
-  valuemask = (CWBackPixmap | CWBorderPixel | CWColormap | CWEventMask);
-  attributes.background_pixmap = default_pixmap;
-  attributes.border_pixel = 0;
-  attributes.colormap = Pcmap;
-  attributes.event_mask = (StructureNotifyMask);
+	/* Icon Window */
+	attributes.event_mask = StructureNotifyMask | ExposureMask;
+	Scr.icon_w = XCreateWindow (
+		dpy, Scr.Root, pwindow.x, pwindow.y,
+		icon.width, icon.height, 0, Pdepth,
+		InputOutput, Pvisual, valuemask, &attributes);
+	XGrabButton(dpy, 1, AnyModifier, Scr.icon_w, True,
+		    ButtonPressMask | ButtonReleaseMask | ButtonMotionMask,
+		    GrabModeAsync, GrabModeAsync, None, None);
+	XGrabButton(dpy, 2, AnyModifier, Scr.icon_w, True,
+		    ButtonPressMask | ButtonReleaseMask | ButtonMotionMask,
+		    GrabModeAsync, GrabModeAsync, None, None);
+	XGrabButton(dpy, 3, AnyModifier, Scr.icon_w, True,
+		    ButtonPressMask | ButtonReleaseMask | ButtonMotionMask,
+		    GrabModeAsync, GrabModeAsync, None, None);
 
-  /* destroy the temp window first, don't worry if it's the Root */
-  if (Scr.pager_w != Scr.Root)
-    XDestroyWindow(dpy, Scr.pager_w);
-  Scr.pager_w = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y, pwindow.width,
-			       pwindow.height, 0, Pdepth, InputOutput, Pvisual,
-			       valuemask, &attributes);
-  XSetWMProtocols(dpy,Scr.pager_w,&wm_del_win,1);
-  /* hack to prevent mapping on wrong screen with StartsOnScreen */
-  FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &sizehints);
-  XSetWMNormalHints(dpy,Scr.pager_w,&sizehints);
-  if (is_transient)
-  {
-    XSetTransientForHint(dpy, Scr.pager_w, Scr.Root);
-  }
+	wmhints.initial_state = (StartIconic) ? IconicState : NormalState;
+	wmhints.flags = 0;
+	wmhints.icon_x = icon.x;
+	wmhints.icon_y = icon.y;
+	wmhints.flags = InputHint | StateHint | IconWindowHint;
+	if (icon_usposition)
+		wmhints.flags |= IconPositionHint;
+	wmhints.icon_window = Scr.icon_w;
+	wmhints.input = True;
 
-  if (FlocaleTextListToTextProperty(
-	 dpy, &(Desks[0].style->label), 1, XStdICCTextStyle, &name) == 0)
-  {
-    fprintf(stderr,"%s: fatal error: cannot allocate desk name", MyName);
-    exit(0);
-  }
+	class1.res_name = MyName;
+	class1.res_class = "FvwmPager";
 
-  attributes.event_mask = (StructureNotifyMask| ExposureMask);
-  if(icon.width < 1)
-    icon.width = (pwindow.width - Columns + 1) / Columns;
-  if(icon.height < 1)
-    icon.height = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
-
-  icon.width = (icon.width / (VxPages + 1)) * (VxPages + 1) + VxPages;
-  icon.height = (icon.height / (VyPages + 1)) * (VyPages + 1) + VyPages;
-  Scr.icon_w = XCreateWindow (dpy, Scr.Root, pwindow.x, pwindow.y,
-			    icon.width, icon.height,
-			    0, Pdepth, InputOutput, Pvisual, valuemask,
-			    &attributes);
-  XGrabButton(dpy, 1, AnyModifier, Scr.icon_w,
-	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-	      GrabModeAsync, GrabModeAsync, None,
-	      None);
-  XGrabButton(dpy, 2, AnyModifier, Scr.icon_w,
-	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-	      GrabModeAsync, GrabModeAsync, None,
-	      None);
-  XGrabButton(dpy, 3, AnyModifier, Scr.icon_w,
-	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-	      GrabModeAsync, GrabModeAsync, None,
-	      None);
-
-  if (StartIconic) {
-	  Balloon.show = Balloon.show_in_icon;
-	  wmhints.initial_state = IconicState;
-  } else {
-	  Balloon.show = Balloon.show_in_pager;
-	  wmhints.initial_state = NormalState;
-  }
-  wmhints.flags = 0;
-  if (icon.x != -10000)
-  {
-    if (icon_xneg)
-      icon.x = fpmonitor_get_all_widths() + icon.x - icon.width;
-    if (icon.y != -10000)
-    {
-      if (icon_yneg)
-	icon.y = fpmonitor_get_all_heights() + icon.y - icon.height;
-    }
-    else
-    {
-      icon.y = 0;
-    }
-    icon_xneg = false;
-    icon_yneg = false;
-    wmhints.icon_x = icon.x;
-    wmhints.icon_y = icon.y;
-    wmhints.flags = IconPositionHint;
-  }
-  wmhints.icon_window = Scr.icon_w;
-  wmhints.input = True;
-  wmhints.flags |= InputHint | StateHint | IconWindowHint;
-
-  class1.res_name = MyName;
-  class1.res_class = "FvwmPager";
-
-  XSetWMProperties(dpy,Scr.pager_w,&name,&name,NULL,0,
-		   &sizehints,&wmhints,&class1);
-  XFree((char *)name.value);
-
-  /* change colour/font for labelling mini-windows */
-  XSetForeground(dpy, Scr.NormalGC, GetSimpleColor("black"));
-
-  if (FwindowFont != NULL && FwindowFont->font != NULL)
-    XSetFont(dpy, Scr.NormalGC, FwindowFont->font->fid);
-
-  /* Initialize DeskStyle GCs */
-  for (i = 0; i < ndesks; i++) {
-	  /* Create any missing DeskStyles. */
-	  style = FindDeskStyle(i);
-  }
-  TAILQ_FOREACH(style, &desk_style_q, entry) {
-	  initialize_desk_style_gcs(style);
-  }
-
-  for(i=0;i<ndesks;i++)
-  {
-    initialize_desk_windows(i);
-  }
-
-  TAILQ_FOREACH(m, &fp_monitor_q, entry) {
-    initialize_fpmonitor_windows(m);
-  }
-  initialize_balloon_window();
-  XMapRaised(dpy,Scr.pager_w);
+	XSetWMProperties(dpy, Scr.pager_w, &name, &name, NULL, 0,
+			 &sizehints, &wmhints, &class1);
+	XFree((char *)name.value);
 }
 
 /* These functions are really tricky. An offset of the struct member
@@ -871,23 +867,9 @@ void parse_options(void)
 
 		token = PeekToken(tline, &next);
 
-		/* Step 1: Initial configuration broadcasts are parsed here.
-		 * This needs to match list_config_info(), along with having
-		 * a few extra broadcasts that are sent during initialization.
-		 */
+		/* Step 1: Initial configuration broadcasts are parsed here. */
 		if (token[0] == '*') {
 			/* Module configuration item, skip to next step. */
-		} else if (StrEquals(token, "Colorset")) {
-			LoadColorset(next);
-			continue;
-		} else if (StrEquals(token, "DesktopSize")) {
-			parse_desktop_size_line(next);
-			continue;
-		} else if (StrEquals(token, "ImagePath")) {
-			free(ImagePath);
-			ImagePath = NULL;
-			GetNextToken(next, &ImagePath);
-			continue;
 		} else if (StrEquals(token, "MoveThreshold")) {
 			if (MoveThresholdSetForModule)
 				continue;
@@ -897,20 +879,9 @@ void parse_options(void)
 				MoveThreshold = (val >= 0) ? val :
 						DEFAULT_PAGER_MOVE_THRESHOLD;
 			continue;
-		} else if (StrEquals(token, "DesktopName")) {
-			int val;
-
-			if (GetIntegerArguments(next, &next, &val, 1) > 0)
-				set_desk_label(val, (const char *)next);
-			continue;
-		} else if (StrEquals(token, "Monitor")) {
-			parse_monitor_line(next);
-			continue;
-		} else if (StrEquals(token, "DesktopConfiguration")) {
-			parse_desktop_configuration_line(next);
-			continue;
 		} else {
-			/* Module configuration lines have skipped this. */
+			/* Deal with any M_CONFIG_INFO lines. */
+			process_config_info_line(tline, true);
 			continue;
 		}
 
@@ -1140,13 +1111,12 @@ void parse_options(void)
 					icon_yneg = true;
 			}
 		} else if (StrEquals(resource, "Font")) {
-			free(font_string);
-			CopyStringWithQuotes(&font_string, next);
-			if(strncasecmp(font_string, "none", 4) == 0) {
+			if (strncasecmp(next, "none", 4) == 0) {
 				use_desk_label = false;
 				use_monitor_label = false;
-				free(font_string);
-				font_string = NULL;
+			} else {
+				FlocaleUnloadFont(dpy, Scr.Ffont);
+				Scr.Ffont = FlocaleLoadFont(dpy, next, MyName);
 			}
 		} else if (StrEquals(resource, "Pixmap") ||
 			   StrEquals(resource, "DeskPixmap"))
@@ -1209,12 +1179,10 @@ void parse_options(void)
 		} else if (StrEquals(resource, "WindowFont") ||
 			   StrEquals(resource, "SmallFont"))
 		{
-			free(smallFont);
-			CopyStringWithQuotes(&smallFont, next);
-			if (strncasecmp(smallFont, "none", 4) == 0) {
-				free(smallFont);
-				smallFont = NULL;
-			}
+			FlocaleUnloadFont(dpy, Scr.winFfont);
+			if (strncasecmp(next, "none", 4) != 0)
+				Scr.winFfont = FlocaleLoadFont(
+					dpy, next, MyName);
 		} else if (StrEquals(resource, "Rows")) {
 			sscanf(next, "%d", &Rows);
 		} else if (StrEquals(resource, "Columns")) {
@@ -1236,7 +1204,7 @@ void parse_options(void)
 			else
 				MinSize = 2 * WindowBorderWidth +
 					  DEFAULT_PAGER_WINDOW_MIN_SIZE;
-		} else if (StrEquals(resource,"WindowLabelFormat")) {
+		} else if (StrEquals(resource, "WindowLabelFormat")) {
 			free(WindowLabelFormat);
 			CopyString(&WindowLabelFormat, next);
 		} else if (StrEquals(resource, "MoveThreshold")) {
@@ -1262,13 +1230,13 @@ void parse_options(void)
 				Balloon.show_in_icon = true;
 			}
 		} else if (StrEquals(resource, "BalloonFont")) {
-			free(BalloonFont);
-			CopyStringWithQuotes(&BalloonFont, next);
+			FlocaleUnloadFont(dpy, Balloon.Ffont);
+			Balloon.Ffont = FlocaleLoadFont(dpy, next, MyName);
 		} else if (StrEquals(resource, "BalloonBorderWidth")) {
 			sscanf(next, "%d", &(Balloon.border_width));
 		} else if (StrEquals(resource, "BalloonYOffset")) {
 			sscanf(next, "%d", &(Balloon.y_offset));
-		} else if (StrEquals(resource,"BalloonStringFormat")) {
+		} else if (StrEquals(resource, "BalloonStringFormat")) {
 			free(Balloon.label_format);
 			CopyString(&(Balloon.label_format), next);
 		}
