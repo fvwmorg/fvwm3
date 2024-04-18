@@ -3,12 +3,6 @@
 #ifndef FVWMPAGER_H
 #define FVWMPAGER_H
 
-#include "libs/Picture.h"
-#include "libs/vpacket.h"
-#include "libs/Flocale.h"
-#include "libs/Module.h"
-#include "libs/FScreen.h"
-
 #define DEFAULT_PAGER_WINDOW_BORDER_WIDTH 1
 #define DEFAULT_PAGER_WINDOW_MIN_SIZE 3
 #define DEFAULT_PAGER_MOVE_THRESHOLD 3
@@ -20,16 +14,16 @@ struct fpmonitor {
 
 	Window *CPagerWin;
 
-        struct {
-                int VxMax;
-                int VyMax;
-                int Vx;
-                int Vy;
+	struct {
+		int VxMax;
+		int VyMax;
+		int Vx;
+		int Vy;
 		int VxPages;           /* desktop size */
 		int VyPages;
 		int VWidth;            /* Size of virtual desktop */
 		int VHeight;
-        } virtual_scr;
+	} virtual_scr;
 
 	int scr_width; /* Size of DisplayWidth() */
 	int scr_height; /* Size of DisplayHeight() */
@@ -37,10 +31,7 @@ struct fpmonitor {
 	TAILQ_ENTRY(fpmonitor) entry;
 };
 TAILQ_HEAD(fpmonitors, fpmonitor);
-
 extern struct fpmonitors	 fp_monitor_q;
-struct fpmonitor		*fpmonitor_by_name(const char *);
-struct fpmonitor		*fpmonitor_this(struct monitor *);
 
 typedef struct ScreenInfo
 {
@@ -176,9 +167,7 @@ typedef struct desk_info
 } DeskInfo;
 
 /*
- *
  * Shared variables.
- *
  */
 /* Colors, Pixmaps, Fonts, etc. */
 extern char		*smallFont;
@@ -192,6 +181,7 @@ extern Pixmap		default_pixmap;
 extern FlocaleFont	*Ffont;
 extern FlocaleFont	*FwindowFont;
 extern FlocaleWinString	*FwinString;
+extern Atom		wm_del_win;
 
 /* Sizes / Dimensions */
 extern int		Rows;
@@ -199,6 +189,9 @@ extern int		desk1;
 extern int		desk2;
 extern int		desk_i;
 extern int		ndesks;
+extern int		desk_w;
+extern int		desk_h;
+extern int		label_h;
 extern int		Columns;
 extern int		MoveThreshold;
 extern unsigned int	WindowBorderWidth;
@@ -252,84 +245,65 @@ extern char			*preferred_monitor;
 extern struct fpmonitors	fp_monitor_q;
 
 /*
- *
- * Subroutine Prototypes
- *
+ * Shared methods prototypes
  */
-void Loop(int *fd);
-RETSIGTYPE DeadPipe(int nonsense);
-void process_message(FvwmPacket*);
-void ParseOptions(void);
-
-void list_add(unsigned long *body);
-void list_configure(unsigned long *body);
-void list_config_info(unsigned long *body);
-void list_destroy(unsigned long *body);
-void list_focus(unsigned long *body);
-void list_toggle(unsigned long *body);
-void list_new_page(unsigned long *body);
-void list_new_desk(unsigned long *body);
-void list_raise(unsigned long *body);
-void list_lower(unsigned long *body);
-void list_unknown(unsigned long *body);
-void list_iconify(unsigned long *body);
-void list_deiconify(unsigned long *body, unsigned long length);
-void list_window_name(unsigned long *body,unsigned long type);
-void list_icon_name(unsigned long *body);
-void list_class(unsigned long *body);
-void list_res_name(unsigned long *body);
-void list_mini_icon(unsigned long *body);
-void list_restack(unsigned long *body, unsigned long length);
-void list_property_change(unsigned long *body);
-void list_end(void);
-void list_reply(unsigned long *body);
-int My_XNextEvent(Display *dpy, XEvent *event);
+/* FvwmPager.c methods */
 DeskStyle *FindDeskStyle(int desk);
 void ExitPager(void);
-void initialize_colorsets();
 
-/* Stuff in x_pager.c */
-void change_colorset(int colorset);
-void initialise_common_pager_fragments(void);
-void initialize_pager(void);
-void initialize_fpmonitor_windows(struct fpmonitor *);
-void initialize_viz_pager(void);
-Pixel GetSimpleColor(char *name);
-void set_desk_size(bool);
+/* x_pager.c methods */
+void HandleScrollDone(void);
+rectangle set_vp_size_and_loc(struct fpmonitor *, bool is_icon);
 void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);
-void update_pr_transparent_windows(void);
 void MovePage();
 void draw_desk_grid(int desk);
-void draw_icon_grid(int erase);
-void SwitchToDesk(int Desk, struct fpmonitor *m);
-void SwitchToDeskAndPage(int Desk, XEvent *Event);
 void AddNewWindow(PagerWindow *prev);
-void MoveResizePagerView(PagerWindow *t, bool do_force_redraw);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
+void MoveResizePagerView(PagerWindow *t, bool do_force_redraw);
 void MoveStickyWindows(bool is_new_page, bool is_new_desk);
-void Scroll(int x, int y, int Desk, bool do_scroll_icon);
-void MoveWindow(XEvent *Event);
-void ReConfigureIcons(bool do_reconfigure_desk_only);
-void IconSwitchPage(XEvent *Event);
-void IconMoveWindow(XEvent *Event,PagerWindow *t);
-void HandleEnterNotify(XEvent *Event);
-void HandleExpose(XEvent *Event);
 void MapBalloonWindow(PagerWindow *t, bool is_icon_view);
+char *get_label(const PagerWindow *pw, const char *fmt);
 void UnmapBalloonWindow(void);
-void HandleScrollDone(void);
-int fpmonitor_get_all_widths(void);
-int fpmonitor_get_all_heights(void);
-struct fpmonitor *fpmonitor_from_desk(int desk);
-void initialize_desk_style_gcs(DeskStyle *style);
-void update_desk_style_gcs(DeskStyle *style);
-void update_desk_background(int desk);
+
+/* x_update.c methods */
 void update_monitor_locations(int desk);
 void update_monitor_backgrounds(int desk);
+void update_desk_background(int desk);
 void update_window_background(PagerWindow *t);
-void update_window_decor(PagerWindow *t);
+void update_pr_transparent_windows(void);
+void update_desk_style_gcs(DeskStyle *style);
 void update_pager_window_decor(PagerWindow *t);
 void update_icon_window_decor(PagerWindow *t);
+void update_window_decor(PagerWindow *t);
+
+/* fpmonitor.c methods */
+struct fpmonitor	*fpmonitor_new(struct monitor *);
+struct fpmonitor	*fpmonitor_this(struct monitor *);
+struct fpmonitor	*fpmonitor_by_name(const char *);
+struct fpmonitor	*fpmonitor_from_desk(int desk);
+struct fpmonitor	*fpmonitor_from_xy(int x, int y);
+struct fpmonitor	*fpmonitor_from_n(int n);
+void			fpmonitor_disable(struct fpmonitor *);
+int			fpmonitor_get_all_widths(void);
+int			fpmonitor_get_all_heights(void);
+int			fpmonitor_count(void);
+
+/* messages.c methods */
+void process_message(FvwmPacket *packet);
+void set_desk_label(int desk, const char *label);
+void set_desk_size(bool update_label);
+void parse_monitor_line(char *tline);
+void parse_desktop_size_line(char *tline);
+void parse_desktop_configuration_line(char *tline);
+void update_monitor_to_track(struct fpmonitor **fp_track,
+			     char *name, bool update_prefered);
+
+/* init_pager.c methods */
+void init_fvwm_pager(void);
+void initialize_colorset(DeskStyle *style);
+void initialize_fpmonitor_windows(struct fpmonitor *fp);
+void initialize_desk_style_gcs(DeskStyle *style);
 
 #endif /* FVWMPAGER_H */

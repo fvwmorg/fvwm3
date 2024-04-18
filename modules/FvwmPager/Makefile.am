@@ -11,7 +11,8 @@ EXTRA_DIST = ConfigFvwmPager
 config_DATA = \
   ConfigFvwmPager
 
-FvwmPager_SOURCES = FvwmPager.c FvwmPager.h x_pager.c
+FvwmPager_SOURCES = FvwmPager.c FvwmPager.h x_pager.c fpmonitor.c \
+	messages.c init_pager.c x_update.c
 FvwmPager_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
