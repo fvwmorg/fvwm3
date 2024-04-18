@@ -36,10 +36,6 @@
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
 
-Atom wm_del_win;
-int desk_w = 0;
-int desk_h = 0;
-int label_h = 0;
 static int Wait = 0;
 static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
@@ -331,6 +327,22 @@ rectangle set_vp_size_and_loc(struct fpmonitor *m, bool is_icon)
 	return vp;
 }
 
+void set_desk_size(bool update_label)
+{
+	if (update_label) {
+		label_h = 0;
+		if (use_desk_label)
+			label_h += Scr.Ffont->height + 2;
+		if (use_monitor_label)
+			label_h += Scr.Ffont->height + 2;
+	}
+
+	desk_w = (pwindow.width - Columns + 1) / Columns;
+	desk_h = (pwindow.height - Rows * label_h - Rows + 1) / Rows;
+
+	return;
+}
+
 void UpdateWindowShape(void)
 {
   if (FHaveShapeExtension)
@@ -479,7 +491,7 @@ void DispatchEvent(XEvent *Event)
 	if(Event->xany.window == Desks[i].w)
 	{
 	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY,&x, &y, &JunkMask);
+			    &JunkX, &JunkY, &x, &y, &JunkMask);
 	  Scroll(x, y, i, false);
 	}
       }
@@ -880,11 +892,11 @@ void draw_desk_label(const char *label, const char *small, int desk,
 	int w, cs;
 	char *str = fxstrdup(label);
 
-	w = FlocaleTextWidth(Ffont, str, strlen(label));
+	w = FlocaleTextWidth(Scr.Ffont, str, strlen(label));
 	if (w > width) {
 		free(str);
 		str = fxstrdup(small);
-		w = FlocaleTextWidth(Ffont, str, strlen(str));
+		w = FlocaleTextWidth(Scr.Ffont, str, strlen(str));
 	}
 
 	if (w <= width) {
@@ -923,9 +935,9 @@ void draw_desk_label(const char *label, const char *small, int desk,
 			FwinString->flags.has_colorset = True;
 		}
 		FwinString->x = x + (width - w)/2;
-		FwinString->y = y + Ffont->ascent + 1;
+		FwinString->y = y + Scr.Ffont->ascent + 1;
 		FwinString->flags.has_clip_region = False;
-		FlocaleDrawString(dpy, Ffont, FwinString, 0);
+		FlocaleDrawString(dpy, Scr.Ffont, FwinString, 0);
 	}
 
 	free(str);

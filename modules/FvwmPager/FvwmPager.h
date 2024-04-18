@@ -43,12 +43,14 @@ typedef struct ScreenInfo
   Window label_w;
   Window balloon_w;
 
-  Font PagerFont;        /* font struct for window labels in pager (optional)*/
+  FlocaleFont *Ffont;
+  FlocaleFont *winFfont;
 
   GC NormalGC;           /* used for window names and setting backgrounds */
   GC MiniIconGC;         /* used for clipping mini-icons */
 
   unsigned VScale;       /* Panner scale factor */
+
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
@@ -169,17 +171,9 @@ typedef struct desk_info
 /*
  * Shared variables.
  */
-/* Colors, Pixmaps, Fonts, etc. */
-extern char		*smallFont;
+/* Misc */
 extern char		*ImagePath;
-extern char		*font_string;
-extern char		*BalloonFont;
 extern char		*WindowLabelFormat;
-extern Pixel		focus_win_fg;
-extern Pixel		focus_win_bg;
-extern Pixmap		default_pixmap;
-extern FlocaleFont	*Ffont;
-extern FlocaleFont	*FwindowFont;
 extern FlocaleWinString	*FwinString;
 extern Atom		wm_del_win;
 
@@ -200,14 +194,9 @@ extern rectangle	pwindow;
 extern rectangle	icon;
 
 /* Settings */
-extern bool	xneg;
-extern bool	yneg;
 extern bool	IsShared;
-extern bool	icon_xneg;
-extern bool	icon_yneg;
 extern bool	MiniIcons;
 extern bool	Swallowed;
-extern bool	usposition;
 extern bool	UseSkipList;
 extern bool	StartIconic;
 extern bool	LabelsBelow;
@@ -258,6 +247,7 @@ void DispatchEvent(XEvent *Event);
 void ReConfigure(void);
 void ReConfigureAll(void);
 void MovePage();
+void set_desk_size(bool update_label);
 void draw_desk_grid(int desk);
 void AddNewWindow(PagerWindow *prev);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
@@ -292,11 +282,7 @@ int			fpmonitor_count(void);
 
 /* messages.c methods */
 void process_message(FvwmPacket *packet);
-void set_desk_label(int desk, const char *label);
-void set_desk_size(bool update_label);
-void parse_monitor_line(char *tline);
-void parse_desktop_size_line(char *tline);
-void parse_desktop_configuration_line(char *tline);
+void process_config_info_line(char *line, bool is_init);
 void update_monitor_to_track(struct fpmonitor **fp_track,
 			     char *name, bool update_prefered);
 

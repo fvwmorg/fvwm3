@@ -38,6 +38,7 @@
 #include "libs/Grab.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
+#include "libs/Picture.h"
 #include "libs/System.h"
 
 #include "fvwm/fvwm.h"
@@ -48,15 +49,11 @@
  * Shared variables.
  */
 /* Colors, Pixmaps, Fonts, etc. */
-char		*smallFont = NULL;
 char		*ImagePath = NULL;
-char		*font_string = NULL;
 char		*BalloonFont = NULL;
 char		*WindowLabelFormat = NULL;
-Pixmap		default_pixmap = None;
-FlocaleFont	*Ffont;
-FlocaleFont	*FwindowFont;
 FlocaleWinString	*FwinString;
+Atom		wm_del_win;
 
 /* Sizes / Dimensions */
 int		Rows = -1;
@@ -64,6 +61,9 @@ int		desk1 = 0;
 int		desk2 = 0;
 int		desk_i = 0;
 int		ndesks = 0;
+int		desk_w = 0;
+int		desk_h = 0;
+int		label_h = 0;
 int		Columns = -1;
 int		MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
 int		BalloonBorderWidth = DEFAULT_BALLOON_BORDER_WIDTH;
@@ -75,14 +75,9 @@ rectangle	pwindow = {0, 0, 0, 0};
 rectangle	icon = {-10000, -10000, 0, 0};
 
 /* Settings */
-bool	xneg = false;
-bool	yneg = false;
 bool	IsShared = false;
-bool	icon_xneg = false;
-bool	icon_yneg = false;
 bool	MiniIcons = false;
 bool	Swallowed = false;
-bool	usposition = false;
 bool	UseSkipList = false;
 bool	StartIconic = false;
 bool	LabelsBelow = false;
@@ -420,30 +415,37 @@ DeskStyle *FindDeskStyle(int desk)
 
 void ExitPager(void)
 {
-  DeskStyle *style, *style2;
-  struct fpmonitor *fp, *fp1;
-  PagerWindow *t, *t2;
+	DeskStyle *style, *style2;
+	struct fpmonitor *fp, *fp1;
+	PagerWindow *t, *t2;
 
-  /* Balloons */
-  free(Balloon.label);
-  free(Balloon.label_format);
+	/* Balloons */
+	free(Balloon.label);
+	free(Balloon.label_format);
 
-  /* Monitors */
-  TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
-	TAILQ_REMOVE(&fp_monitor_q, fp, entry);
-	free(fp->CPagerWin);
-	free(fp);
-  }
+	/* Fonts */
+	FlocaleUnloadFont(dpy, Scr.Ffont);
+	FlocaleUnloadFont(dpy, Scr.winFfont);
+	FlocaleUnloadFont(dpy, Balloon.Ffont);
 
-  /* DeskStyles */
-  TAILQ_FOREACH_SAFE(style, &desk_style_q, entry, style2) {
-	TAILQ_REMOVE(&desk_style_q, style, entry);
-	free(style->label);
-	free(style);
-  }
-  free(Desks);
+	/* Monitors */
+	TAILQ_FOREACH_SAFE(fp, &fp_monitor_q, entry, fp1) {
+		TAILQ_REMOVE(&fp_monitor_q, fp, entry);
+		free(fp->CPagerWin);
+		free(fp);
+	}
 
-  /* PagerWindows */
+	/* DeskStyles */
+	TAILQ_FOREACH_SAFE(style, &desk_style_q, entry, style2) {
+		TAILQ_REMOVE(&desk_style_q, style, entry);
+		PDestroyFvwmPicture(dpy, style->bgPixmap);
+		PDestroyFvwmPicture(dpy, style->hiPixmap);
+		free(style->label);
+		free(style);
+	}
+	free(Desks);
+
+	/* PagerWindows */
 	t2 = Start;
 	while (t2 != NULL) {
 		t = t2;
@@ -459,13 +461,17 @@ void ExitPager(void)
 		free(t);
 	}
 
-  if (is_transient)
-  {
-    XUngrabPointer(dpy,CurrentTime);
-    MyXUngrabServer(dpy);
-    XSync(dpy,0);
-  }
-  XUngrabKeyboard(dpy, CurrentTime);
-  free(preferred_monitor);
-  exit(0);
+	/* Additional pointers */
+	free(preferred_monitor);
+	free(ImagePath);
+	free(WindowLabelFormat);
+
+	if (is_transient) {
+		XUngrabPointer(dpy, CurrentTime);
+		MyXUngrabServer(dpy);
+		XSync(dpy, 0);
+	}
+	XUngrabKeyboard(dpy, CurrentTime);
+
+	exit(0);
 }
