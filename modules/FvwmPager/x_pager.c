@@ -345,57 +345,49 @@ void set_desk_size(bool update_label)
 
 void UpdateWindowShape(void)
 {
-  if (FHaveShapeExtension)
-  {
-    int i, j, cnt, shape_count, x_pos, y_pos;
-    XRectangle *shape;
-    struct fpmonitor *fp = fpmonitor_this(NULL);
+	if (!ShapeLabels || label_h == 0 || fAlwaysCurrentDesk)
+		return;
 
-    if (!fp || !ShapeLabels || label_h == 0)
-      return;
+	int i, j, cnt, x_pos, y_pos;
+	XRectangle *shape;
+	struct fpmonitor *fp;
+	shape = fxmalloc(ndesks * sizeof (XRectangle));
 
-    shape_count =
-      ndesks + ((fp->m->virtual_scr.CurrentDesk < desk1 || fp->m->virtual_scr.CurrentDesk >desk2) ? 0 : 1);
+	cnt = 0;
+	y_pos = (LabelsBelow) ? 0 : label_h;
+	for (i = 0; i < Rows; i++) {
+		x_pos = 0;
+		for (j = 0; j < Columns; j++) {
+			if (cnt >= ndesks)
+				continue;
 
-    shape = fxmalloc(shape_count * sizeof (XRectangle));
+			/* Default shape/hide labels. */
+			shape[cnt].x = x_pos;
+			shape[cnt].y = y_pos;
+			shape[cnt].width = desk_w + 1;
+			shape[cnt].height = desk_h + 2;
 
-    cnt = 0;
-    y_pos = (LabelsBelow ? 0 : label_h);
+			/* Show labels for active monitors. */
+			TAILQ_FOREACH(fp, &fp_monitor_q, entry) {
+				if (fp->disabled ||
+				    (monitor_to_track != NULL &&
+				    monitor_to_track != fp) ||
+				    cnt + desk1 !=
+				    fp->m->virtual_scr.CurrentDesk)
+					continue;
 
-    for (i = 0; i < Rows; ++i)
-    {
-      x_pos = 0;
-      for (j = 0; j < Columns; ++j)
-      {
-	if (cnt < ndesks)
-	{
-	  shape[cnt].x = x_pos;
-	  shape[cnt].y = y_pos;
-	  shape[cnt].width = desk_w + 1;
-	  shape[cnt].height = desk_h + 2;
-
-	  if (cnt == fp->m->virtual_scr.CurrentDesk - desk1)
-	  {
-	    shape[ndesks].x = x_pos;
-	    shape[ndesks].y =
-	      (LabelsBelow ? y_pos + desk_h + 2 : y_pos - label_h);
-	    shape[ndesks].width = desk_w;
-	    shape[ndesks].height = label_h + 2;
-	  }
+				shape[cnt].y -= (LabelsBelow) ? 0 : label_h;
+				shape[cnt].height += label_h;
+			}
+			cnt++;
+			x_pos += desk_w + 1;
+		}
+		y_pos += desk_h + 2 + label_h;
 	}
-	++cnt;
-	x_pos += desk_w + 1;
-      }
-      y_pos += desk_h + 2 + label_h;
-    }
-
-    FShapeCombineRectangles(
-      dpy, Scr.pager_w, FShapeBounding, 0, 0, shape, shape_count, FShapeSet, 0);
-    free(shape);
-  }
+	FShapeCombineRectangles(dpy, Scr.pager_w, FShapeBounding,
+				0, 0, shape, cnt, FShapeSet, 0);
+	free(shape);
 }
-
-
 
 /*
  *

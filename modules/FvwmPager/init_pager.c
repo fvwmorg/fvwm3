@@ -322,9 +322,7 @@ void initialise_common_pager_fragments(void)
 
 	/* Check that shape extension exists. */
 	if (FHaveShapeExtension && ShapeLabels)
-	{
 		ShapeLabels = (FShapesSupported) ? 1 : 0;
-	}
 
 	/* Load pixmaps for mono use */
 	if (Pdepth < 2)
