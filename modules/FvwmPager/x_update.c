@@ -240,6 +240,10 @@ void update_desk_style_gcs(DeskStyle *style)
 {
 	initialize_colorset(style);
 
+	/* Don't update GC's for default style. */
+	if (style->desk < 0)
+		return;
+
 	XSetForeground(dpy, style->label_gc, style->fg);
 	XSetForeground(dpy, style->dashed_gc, style->fg);
 	XSetForeground(dpy, style->hi_bg_gc, style->hi_bg);

@@ -68,13 +68,13 @@ void init_fvwm_pager(void)
 		initialize_transient();
 	initialize_pager_window();
 
-	/* Initialize DeskStyle GCs */
-	for (i = 0; i < ndesks; i++) {
-		/* Create any missing DeskStyles. */
-		style = FindDeskStyle(i);
-	}
+	/* Update styles with user configurations. */
 	TAILQ_FOREACH(style, &desk_style_q, entry) {
-		initialize_desk_style_gcs(style);
+		update_desk_style_gcs(style);
+	}
+	/* Initialize any non configured desks. */
+	for (i = 0; i < ndesks; i++) {
+		style = FindDeskStyle(i);
 	}
 
 	/* After DeskStyles are initialized, initialize desk windows. */
@@ -201,7 +201,7 @@ void initialize_colorset(DeskStyle *style)
 	}
 	if (style->balloon_cs >= 0) {
 		style->balloon_fg = Colorset[style->balloon_cs].fg;
-		style->balloon_bg = Colorset[style->balloon_bg].bg;
+		style->balloon_bg = Colorset[style->balloon_cs].bg;
 	}
 }
 
@@ -531,14 +531,8 @@ void initialize_desk_style_gcs(DeskStyle *style)
 
 	/* Desk labels GC. */
 	gcv.foreground = style->fg;
-	if (Scr.Ffont && Scr.Ffont->font) {
-		gcv.font = Scr.Ffont->font->fid;
-		style->label_gc = fvwmlib_XCreateGC(
-			dpy, Scr.pager_w, GCForeground | GCFont, &gcv);
-	} else {
-		style->label_gc = fvwmlib_XCreateGC(
-			dpy, Scr.pager_w, GCForeground, &gcv);
-	}
+	style->label_gc = fvwmlib_XCreateGC(
+		dpy, Scr.pager_w, GCForeground, &gcv);
 
 	/* Hilight GC, used for monitors and labels backgrounds. */
 	gcv.foreground = (Pdepth < 2) ? style->bg : style->hi_bg;
@@ -547,12 +541,8 @@ void initialize_desk_style_gcs(DeskStyle *style)
 
 	/* create the hilight desk title drawing GC */
 	gcv.foreground = (Pdepth < 2) ? style->fg : style->hi_fg;
-	if (Scr.Ffont && Scr.Ffont->font)
-		style->hi_fg_gc = fvwmlib_XCreateGC(
-			dpy, Scr.pager_w, GCForeground | GCFont, &gcv);
-	else
-		style->hi_fg_gc = fvwmlib_XCreateGC(
-			dpy, Scr.pager_w, GCForeground, &gcv);
+	style->hi_fg_gc = fvwmlib_XCreateGC(
+		dpy, Scr.pager_w, GCForeground, &gcv);
 
 	/* create the virtual page boundary GC */
 	gcv.foreground = style->fg;
@@ -864,7 +854,6 @@ void parse_options(void)
 		char *next;
 
 		token = PeekToken(tline, &next);
-
 		/* Step 1: Initial configuration broadcasts are parsed here. */
 		if (token[0] == '*') {
 			/* Module configuration item, skip to next step. */
