@@ -36,9 +36,11 @@
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
 
+/* Stash values for Scroll logic. */
 static int Wait = 0;
-static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
-static struct fpmonitor *ScrollFp = NULL;	/* Stash monitor drag logic */
+static int ScrollVx, ScrollVy;
+static unsigned ScrollMotionMask;
+static struct fpmonitor *ScrollFp = NULL;
 
 static void do_scroll(
 	int sx, int sy, bool do_send_message, bool is_message_recieved);
@@ -54,12 +56,17 @@ static void HandleExpose(XEvent *Event);
 static void draw_desk_label(const char *label, const char *small, int desk,
 			int x, int y, int width, int height, bool hilight);
 static void draw_icon_grid(int erase);
-static void SwitchToDesk(int Desk, struct fpmonitor *m);
-static void SwitchToDeskAndPage(int Desk, XEvent *Event);
+static void process_mouse_press(XEvent *Event);
+static void process_mouse_release(XEvent *Event);
+static void SendPagerCommand(XEvent *Event);
+static void SendWindowCommand(XEvent *Event);
+static void SwitchToDesk(int Desk, struct fpmonitor *fp);
+static void SwitchToDeskAndPage(XEvent *Event);
 static void IconSwitchPage(XEvent *Event);
 static void HideWindow(PagerWindow *, Window);
 static void MoveResizeWindow(PagerWindow *, bool, bool);
 static int is_window_visible(PagerWindow *t);
+static void StartScroll(XEvent *Event);
 static void Scroll(int x, int y, int Desk, bool do_scroll_icon);
 static void MoveWindow(XEvent *Event);
 static void IconMoveWindow(XEvent *Event, PagerWindow *t);
@@ -390,270 +397,132 @@ void UpdateWindowShape(void)
 }
 
 /*
- *
  * Decide what to do about received X events
- *
  */
 void DispatchEvent(XEvent *Event)
 {
-  int i,x,y;
-  Window JunkRoot, JunkChild;
-  Window w;
-  int JunkX, JunkY;
-  unsigned JunkMask;
-  char keychar;
-  KeySym keysym;
-  bool do_move_page = false;
-  short dx = 0;
-  short dy = 0;
-  struct fpmonitor *fp = fpmonitor_this(NULL);
+	switch (Event->xany.type)
+	{
+		case EnterNotify:
+			HandleEnterNotify(Event);
+			break;
+		case LeaveNotify:
+			if (Balloon.show)
+				UnmapBalloonWindow();
+			break;
+		case ConfigureNotify:
+		{
+			Window w;
 
-  if (fp == NULL)
-      return;
+			fev_sanitise_configure_notify(&Event->xconfigure);
+			w = Event->xconfigure.window;
+			discard_events(ConfigureNotify,
+				       Event->xconfigure.window, Event);
+			fev_sanitise_configure_notify(&Event->xconfigure);
+			if (w != Scr.icon_w) {
+				/* icon_win is not handled here */
+				discard_events(Expose, w, NULL);
+				ReConfigure();
+			}
+			break;
+		}
+		case Expose:
+			HandleExpose(Event);
+			break;
+		case KeyPress:
+		{
+			int dx = 0, dy = 0;
+			char command[64];
+			char keychar;
+			KeySym keysym;
 
-  switch(Event->xany.type)
-  {
-  case EnterNotify:
-    HandleEnterNotify(Event);
-    break;
-  case LeaveNotify:
-    if (Balloon.show)
-      UnmapBalloonWindow();
-    break;
-  case ConfigureNotify:
-    fev_sanitise_configure_notify(&Event->xconfigure);
-    w = Event->xconfigure.window;
-    discard_events(ConfigureNotify, Event->xconfigure.window, Event);
-    fev_sanitise_configure_notify(&Event->xconfigure);
-    if (w != Scr.icon_w)
-    {
-      /* icon_win is not handled here */
-      discard_events(Expose, w, NULL);
-      ReConfigure();
-    }
-    break;
-  case Expose:
-    HandleExpose(Event);
-    break;
-  case KeyPress:
-    if (is_transient)
-    {
-      XLookupString(&(Event->xkey), &keychar, 1, &keysym, NULL);
-      switch(keysym)
-      {
-      case XK_Up:
-	dy = -100;
-	do_move_page = true;
-	break;
-      case XK_Down:
-	dy = 100;
-	do_move_page = true;
-	break;
-      case XK_Left:
-	dx = -100;
-	do_move_page = true;
-	break;
-      case XK_Right:
-	dx = 100;
-	do_move_page = true;
-	break;
-      default:
-	/* does not return */
-	ExitPager();
-	break;
-      }
-      if (do_move_page)
-      {
-	char command[64];
-	snprintf(command, sizeof(command),"Scroll %d %d", dx, dy);
-	SendText(fd, command, 0);
-      }
-    }
-    break;
-  case ButtonRelease:
-    if (do_ignore_next_button_release)
-    {
-      do_ignore_next_button_release = false;
-      break;
-    }
-    if (Event->xbutton.button == 3)
-    {
-      for(i=0;i<ndesks;i++)
-      {
-	if(Event->xany.window == Desks[i].w)
-	{
-	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY, &x, &y, &JunkMask);
-	  Scroll(x, y, i, false);
-	}
-      }
-      if(Event->xany.window == Scr.icon_w)
-      {
-	FQueryPointer(dpy, Scr.icon_w, &JunkRoot, &JunkChild,
-		  &JunkX, &JunkY,&x, &y, &JunkMask);
-	Scroll(x, y, -1, true);
-      }
-      /* Flush any pending scroll operations */
-      do_scroll(0, 0, true, false);
-      ScrollFp = NULL;
-    }
-    else if((Event->xbutton.button == 1)||
-	    (Event->xbutton.button == 2))
-    {
-      /* Location of monitor labels. */
-      int m_count = fpmonitor_count();
-      int ymin = 0, ymax = label_h;
-      if (use_desk_label)
-	ymin = ymax / 2;
-      if (LabelsBelow) {
-	ymin += desk_h;
-	ymax += desk_h;
-      }
+			if (!is_transient)
+				break;
 
-      for(i=0;i<ndesks;i++)
-      {
-	if (Event->xany.window == Desks[i].w)
-	{
-		SwitchToDeskAndPage(i, Event);
-		break;
-	}
-	/* Check for clicks on monitor labels first, since these clicks
-	 * always indicate what monitor to switch to in all modes.
-	 */
-	else if (use_monitor_label && monitor_to_track == NULL &&
-		Event->xany.window == Desks[i].title_w &&
-		Event->xbutton.y >= ymin && Event->xbutton.y <= ymax)
-	{
-		struct fpmonitor *fp2 = fpmonitor_from_n(
-				m_count * Event->xbutton.x / desk_w);
-		SwitchToDesk(i, fp2);
-		break;
-	}
-	/* Title clicks only change desk in global configuration, or when the
-	 * pager is being asked to track a specific monitor.  Or, regardless
-	 * of the DesktopConfiguration setting, there is only one monitor in
-	 * use.
-	 */
-	else if (Event->xany.window == Desks[i].title_w &&
-		((monitor_mode == MONITOR_TRACKING_G &&
-		!is_tracking_shared) ||
-		monitor_to_track != NULL || m_count == 1))
-	{
-		SwitchToDesk(i, NULL);
-	}
-      }
-      if(Event->xany.window == Scr.icon_w)
-      {
-	IconSwitchPage(Event);
-      }
-    }
-    if (is_transient)
-    {
-      /* does not return */
-      ExitPager();
-    }
-    break;
-  case ButtonPress:
-    do_ignore_next_button_release = false;
-    if (Balloon.show)
-      UnmapBalloonWindow();
-    if (((Event->xbutton.button == 2)||
-	 ((Event->xbutton.button == 3)&&
-	  (Event->xbutton.state & Mod1Mask)))&&
-	(Event->xbutton.subwindow != None))
-    {
-      MoveWindow(Event);
-    }
-    else if (Event->xbutton.button == 3)
-    {
-      for(i=0;i<ndesks;i++)
-      {
-	if(Event->xany.window == Desks[i].w)
-	{
-	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	  if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
-		fp = fpmonitor_from_desk(i + desk1);
-	  else
-		fp = fpmonitor_from_xy(x * fp->virtual_scr.VWidth / desk_w,
-			   y * fp->virtual_scr.VHeight / desk_h);
+			XLookupString(&(Event->xkey),
+				      &keychar, 1, &keysym, NULL);
+			switch (keysym)
+			{
+				case XK_Up:
+					dy = -100;
+					break;
+				case XK_Down:
+					dy = 100;
+					break;
+				case XK_Left:
+					dx = -100;
+					break;
+				case XK_Right:
+					dx = 100;
+					break;
+				default:
+					/* does not return */
+					ExitPager();
+					break;
+			}
 
-	  if (fp == NULL)
-	    break;
-	  /* Save initial virtual desk info. */
-	  ScrollFp = fp;
-	  MyVx = fp->virtual_scr.Vx;
-	  MyVy = fp->virtual_scr.Vy;
-	  Scroll(x, y, fp->m->virtual_scr.CurrentDesk, false);
-	  if (fp->m->virtual_scr.CurrentDesk != i + desk1)
-	  {
-	    Wait = 0;
-	    SwitchToDesk(i, fp);
-	  }
-	  break;
-	}
-      }
-      if(Event->xany.window == Scr.icon_w)
-      {
-	FQueryPointer(dpy, Scr.icon_w, &JunkRoot, &JunkChild,
-			  &JunkX, &JunkY,&x, &y, &JunkMask);
-	struct fpmonitor *fp2 = fpmonitor_this(NULL);
-	if (monitor_mode == MONITOR_TRACKING_G && is_tracking_shared)
-		fp = fp2;
-	else {
-		fp = fpmonitor_from_xy(
-			x * fp->virtual_scr.VWidth / icon.width,
-			y * fp->virtual_scr.VHeight / icon.height);
-		/* Make sure monitor is on current desk. */
-		if (fp->m->virtual_scr.CurrentDesk !=
-				fp2->m->virtual_scr.CurrentDesk)
+			snprintf(command, sizeof(command),
+				 "Scroll %d %d", dx, dy);
+			SendText(fd, command, 0);
+			break;
+		}
+		case ButtonRelease:
+			if (do_ignore_next_button_release) {
+				do_ignore_next_button_release = false;
+				break;
+			}
+			process_mouse_release(Event);
+			if (is_transient)
+				ExitPager(); /* does not return */
+			break;
+		case ButtonPress:
+			do_ignore_next_button_release = false;
+			if (Balloon.show)
+				UnmapBalloonWindow();
+			process_mouse_press(Event);
+			break;
+		case MotionNotify:
+		{
+			int i, x, y, junk_i;
+			unsigned junk_mask;
+			Window junk_w;
+
+			do_ignore_next_button_release = false;
+			while (FCheckMaskEvent(dpy, PointerMotionMask |
+					       ButtonMotionMask, Event));
+
+			/* Check this is for an active Scroll. */
+			if (ScrollFp == NULL ||
+			    !(Event->xmotion.state & ScrollMotionMask))
+				break;
+
+			for (i = 0; i < ndesks; i++) {
+				if (Event->xany.window == Desks[i].w) {
+					FQueryPointer(
+						dpy, Desks[i].w,
+						&junk_w, &junk_w,
+						&junk_i, &junk_i, &x, &y,
+						&junk_mask);
+					Scroll(x, y, i, false);
+					break;
+				}
+			}
+			if(Event->xany.window == Scr.icon_w) {
+				FQueryPointer(
+					dpy, Scr.icon_w, &junk_w, &junk_w,
+					&junk_i, &junk_i, &x, &y, &junk_mask);
+				Scroll(x, y, -1, true);
+			}
+			break;
+		}
+		case ClientMessage:
+			if ((Event->xclient.format == 32) &&
+			    (Event->xclient.data.l[0] == wm_del_win))
+				ExitPager(); /* does not return */
+			break;
+		default:
 			break;
 	}
-	if (fp == NULL)
-	  break;
-	/* Save initial virtual desk info. */
-	ScrollFp = fp;
-	MyVx = fp->virtual_scr.Vx;
-	MyVy = fp->virtual_scr.Vy;
-	Scroll(x, y, -1, true);
-      }
-    }
-    break;
-  case MotionNotify:
-    do_ignore_next_button_release = false;
-    while(FCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
-      ;
-
-    if(Event->xmotion.state & Button3MotionMask)
-    {
-      for(i=0;i<ndesks;i++)
-      {
-	if(Event->xany.window == Desks[i].w)
-	{
-	  FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
-			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	  Scroll(x, y, i, false);
-	}
-      }
-      if(Event->xany.window == Scr.icon_w)
-      {
-	FQueryPointer(dpy, Scr.icon_w, &JunkRoot, &JunkChild,
-			  &JunkX, &JunkY,&x, &y, &JunkMask);
-	Scroll(x, y, -1, true);
-      }
-
-    }
-    break;
-
-  case ClientMessage:
-    if ((Event->xclient.format==32) &&
-	(Event->xclient.data.l[0]==wm_del_win))
-    {
-      /* does not return */
-      ExitPager();
-    }
-    break;
-  }
 }
 
 void HandleEnterNotify(XEvent *Event)
@@ -1142,26 +1011,139 @@ void draw_icon_grid(int erase)
 }
 
 
-void SwitchToDesk(int Desk, struct fpmonitor *m)
+/* Handel mouse bindings. */
+void process_mouse_press(XEvent *Event)
 {
-	char command[256];
-	struct fpmonitor *fp = (m == NULL) ? fpmonitor_this(NULL) : m;
+	int button = Event->xbutton.button - 1;
 
-	if (fp == NULL) {
-		fprintf(stderr, "%s: couldn't find monitor (fp is NULL)\n",
-		    __func__);
+	if (button < 0 || button >= P_MOUSE_BUTTONS)
 		return;
+
+	switch (mouse_action[button])
+	{
+		case P_MOUSE_WIN_MOVE:
+			if (Event->xbutton.subwindow != None)
+				MoveWindow(Event);
+			break;
+		case P_MOUSE_SCROLL:
+			StartScroll(Event);
+			break;
+		default:
+			break;
 	}
-	snprintf(command, sizeof(command),
-		"GotoDesk screen %s 0 %d", fp->m->si->name, Desk + desk1);
-	SendText(fd,command,0);
 }
 
 
-void SwitchToDeskAndPage(int Desk, XEvent *Event)
+void process_mouse_release(XEvent *Event)
+{
+	int button = Event->xbutton.button - 1;
+
+	if (button < 0 || button >= P_MOUSE_BUTTONS)
+		return;
+
+	switch (mouse_action[button])
+	{
+		case P_MOUSE_MOVE:
+			SwitchToDeskAndPage(Event);
+			break;
+		case P_MOUSE_SCROLL:
+		{
+			Window junk_w;
+			int i, x, y, junk_i;
+			unsigned junk_mask;
+
+			/* Determine which desk to scroll. */
+			for (i = 0; i < ndesks; i++) {
+				if (Event->xany.window == Desks[i].w) {
+					FQueryPointer(dpy, Desks[i].w,
+						&junk_w, &junk_w, &junk_i,
+						&junk_i, &x, &y, &junk_mask);
+					Scroll(x, y, i, false);
+					break;
+				}
+			}
+			if (Event->xany.window == Scr.icon_w) {
+				FQueryPointer(dpy, Scr.icon_w,
+					&junk_w, &junk_w, &junk_i,
+					&junk_i, &x, &y, &junk_mask);
+				Scroll(x, y, -1, true);
+			}
+			/* Flush any pending scroll operations. */
+			do_scroll(0, 0, true, false);
+			ScrollFp = NULL;
+			break;
+		}
+		case P_MOUSE_WIN_CMD:
+			if (Event->xbutton.subwindow != None)
+				SendWindowCommand(Event);
+			break;
+		case P_MOUSE_CMD:
+			SendPagerCommand(Event);
+			break;
+		default:
+			break;
+	}
+}
+
+
+void SendPagerCommand(XEvent *Event)
+{
+	char *command;
+	int button = Event->xbutton.button - 1;
+
+	if (mouse_cmd[button] == NULL)
+		return;
+
+	/* Some pager window was clicked. Send user command. */
+	xasprintf(&command, "Silent %s", mouse_cmd[button]);
+	SendText(fd, command, 0);
+	free(command);
+	Wait = 1;
+}
+
+
+void SendWindowCommand(XEvent *Event)
+{
+	char *command;
+	int button = Event->xbutton.button - 1;
+	PagerWindow *t;
+
+	if (mouse_cmd[button] == NULL)
+		return;
+
+	/* Determine which window was clicked. */
+	for (t = Start; t != NULL; t = t->next) {
+		if (Event->xbutton.subwindow == t->PagerView ||
+		    Event->xbutton.subwindow == t->IconView)
+			break;
+	}
+	if (t == NULL)
+		return;
+
+	xasprintf(&command, "Silent %s", mouse_cmd[button]);
+	SendText(fd, command, t->w);
+	free(command);
+	Wait = 1;
+}
+
+
+void SwitchToDesk(int Desk, struct fpmonitor *fp)
 {
 	char command[256];
-	int x, y;
+
+	if (fp == NULL)
+		return;
+
+	snprintf(command, sizeof(command),
+		"GotoDesk screen %s 0 %d", fp->m->si->name, Desk + desk1);
+	SendText(fd, command, 0);
+}
+
+
+void SwitchToDeskAndPage(XEvent *Event)
+{
+	char command[256];
+	int i, x, y, Desk;
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 
 	if (fp == NULL) {
@@ -1170,6 +1152,54 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 		return;
 	}
 
+	/* Determine which desk was clicked. */
+	for (i = 0; i < ndesks; i++) {
+		if (Event->xany.window == Desks[i].w) {
+			Desk = i;
+			goto found_desk;
+		}
+		if (Event->xany.window == Desks[i].title_w) {
+			/* Click on label buttons. */
+			int m_count = fpmonitor_count();
+			int ymin = 0, ymax = label_h;
+			if (use_desk_label)
+				ymin = ymax / 2;
+			if (LabelsBelow) {
+				ymin += desk_h;
+				ymax += desk_h;
+			}
+
+			/* Check for monitor labels first, since those clicks
+			 * always indicate what monitor to switch.
+			 */
+			if (use_monitor_label && monitor_to_track == NULL &&
+			    Event->xbutton.y >= ymin &&
+			    Event->xbutton.y <= ymax)
+			{
+				fp = fpmonitor_from_n(
+					m_count * Event->xbutton.x / desk_w);
+				SwitchToDesk(i, fp);
+			}
+			/* Title clicks change desk in global configuration,
+			 * or when tracking single monitor, or if only one
+			 * monitor in use.
+			 */
+			else if ((monitor_mode == MONITOR_TRACKING_G &&
+				 !is_tracking_shared) ||
+				 monitor_to_track != NULL || m_count == 1)
+			{
+				SwitchToDesk(i, fp);
+			}
+			return;
+		}
+	}
+
+	/* A desk wasn't clicked, check icon window and return. */
+	if (Event->xany.window == Scr.icon_w)
+		IconSwitchPage(Event);
+	return;
+
+found_desk:
 	/* If tracking / showing a single monitor, just need to find page. */
 	if (IsShared || monitor_to_track != NULL || fpmonitor_count() == 1) {
 		if (monitor_to_track != NULL)
@@ -1464,6 +1494,91 @@ void MoveStickyWindows(bool is_new_page, bool is_new_desk)
 	}
 }
 
+
+void StartScroll(XEvent *Event)
+{
+	Window junk_w;
+	int i, x, y, junk_i, desk = -1;
+	unsigned junk_mask;
+	bool is_icon = false;
+	struct fpmonitor *fp = fpmonitor_this(NULL);
+
+	/* Determine which button mask to use. */
+	switch (Event->xbutton.button)
+	{
+		case 1:
+			ScrollMotionMask = Button1MotionMask;
+			break;
+		case 2:
+			ScrollMotionMask = Button2MotionMask;
+			break;
+		case 3:
+			ScrollMotionMask = Button3MotionMask;
+			break;
+		case 4:
+			ScrollMotionMask = Button5MotionMask;
+			break;
+		case 5:
+			ScrollMotionMask = Button5MotionMask;
+			break;
+		default:
+			/* Not a valid scroll button. */
+			return;
+			break;
+	}
+
+	/* Determine which desk to scroll. */
+	for (i = 0; i < ndesks; i++) {
+		if (Event->xany.window == Desks[i].w) {
+			FQueryPointer(dpy, Desks[i].w,
+				&junk_w, &junk_w, &junk_i,
+				&junk_i, &x, &y, &junk_mask);
+			desk = i;
+			break;
+		}
+	}
+	if (desk < 0 && Event->xany.window == Scr.icon_w) {
+		FQueryPointer(dpy, Scr.icon_w,
+			&junk_w, &junk_w, &junk_i,
+			&junk_i, &x, &y, &junk_mask);
+		is_icon = true;
+	} else if (desk < 0) {
+		/* no window found. */
+		return;
+	}
+	if (desk > 0) {
+		if (is_tracking_shared)
+			fp = fpmonitor_from_desk(desk + desk1);
+		else
+			fp = fpmonitor_from_xy(
+				x * fp->virtual_scr.VWidth / desk_w,
+				y * fp->virtual_scr.VHeight / desk_h);
+	} else {
+		if (!is_tracking_shared)
+			fp = fpmonitor_from_xy(
+				x * fp->virtual_scr.VWidth / desk_w,
+				y * fp->virtual_scr.VHeight / desk_h);
+		/* Make sure monitor is on icon desk. */
+		if (fp != NULL && fp->m->virtual_scr.CurrentDesk != desk_i)
+			return;
+	}
+	if (fp == NULL)
+		return;
+
+	/* Start Scroll, save initial monitor info. */
+	i = (desk < 0) ? -1 : fp->m->virtual_scr.CurrentDesk;
+	ScrollFp = fp;
+	ScrollVx = fp->virtual_scr.Vx;
+	ScrollVy = fp->virtual_scr.Vy;
+	Scroll(x, y, i, is_icon);
+	/* If Scroll is happening on a different desk, switch. */
+	if (desk >= 0 && fp->m->virtual_scr.CurrentDesk != desk + desk1) {
+		Wait = 0;
+		SwitchToDesk(desk, fp);
+	}
+}
+
+
 /* Use Desk == -1 to scroll the icon window */
 void Scroll(int x, int y, int Desk, bool do_scroll_icon)
 {
@@ -1522,11 +1637,11 @@ void Scroll(int x, int y, int Desk, bool do_scroll_icon)
 	sy = 0;
 	if (window_w != 0)
 	{
-		sx = (x * fp->virtual_scr.VWidth / window_w - MyVx);
+		sx = (x * fp->virtual_scr.VWidth / window_w - ScrollVx);
 	}
 	if (window_h != 0)
 	{
-		sy = (y * fp->virtual_scr.VHeight / window_h - MyVy);
+		sy = (y * fp->virtual_scr.VHeight / window_h - ScrollVy);
 	}
 	if (sx == 0 && sy == 0)
 	{
@@ -1539,17 +1654,14 @@ void Scroll(int x, int y, int Desk, bool do_scroll_icon)
 		/* Here we need to track the view offset on the desk. */
 		/* sx/y are are pixels on the screen to scroll. */
 		/* We don't use Scr.Vx/y since they lag the true position. */
-		MyVx += sx;
-		if (MyVx < 0)
-		{
-			MyVx = 0;
-		}
-		MyVy += sy;
+		ScrollVx += sx;
+		if (ScrollVx < 0)
+			ScrollVx = 0;
 
-		if (MyVy < 0)
-		{
-			MyVy = 0;
-		}
+		ScrollVy += sy;
+		if (ScrollVy < 0)
+			ScrollVy = 0;
+
 		Wait = 1;
 	}
 	if (Wait == 0)
@@ -1564,7 +1676,7 @@ void Scroll(int x, int y, int Desk, bool do_scroll_icon)
 void MoveWindow(XEvent *Event)
 {
 	int x, y, xi = 0, yi = 0;
-	int finished = 0;
+	int button, finished = 0;
 	Window dumwin;
 	PagerWindow *t;
 	int NewDesk, KeepMoving = 0;
@@ -1576,6 +1688,7 @@ void MoveWindow(XEvent *Event)
 	struct fpmonitor *fp;
 	rectangle rec;
 
+	/* Determine which window to move. */
 	t = Start;
 	while (t != NULL && t->PagerView != Event->xbutton.subwindow)
 		t = t->next;
@@ -1596,6 +1709,10 @@ void MoveWindow(XEvent *Event)
 	if (NewDesk < 0 || NewDesk >= ndesks)
 		return;
 
+	/* Store event button. */
+	button = Event->xbutton.button - 1;
+
+	/* Reparent window into main pager window. */
 	fp = fpmonitor_this(t->m);
 	rec.x = fp->virtual_scr.Vx + t->x;
 	rec.y = fp->virtual_scr.Vy + t->y;
@@ -1615,6 +1732,7 @@ void MoveWindow(XEvent *Event)
 			      Event->xbutton.x, Event->xbutton.y, &rec.x, &rec.y,
 			      &dumwin);
 
+	/* Move window */
 	xi = rec.x;
 	yi = rec.y;
 	while (!finished) {
@@ -1686,6 +1804,7 @@ void MoveWindow(XEvent *Event)
 		return;
 	}
 
+	/* Determine which desk the window was placed in. */
 	column = x / desk_w;
 	if (column >= Columns)
 		column = Columns - 1;
@@ -1708,6 +1827,8 @@ void MoveWindow(XEvent *Event)
 		ChangeDeskForWindow(t, t->desk);
 		return;
 	}
+
+	/* Compute position of monitor in the new desk. */
 	XTranslateCoordinates(dpy, Scr.pager_w, Desks[NewDesk].w,
 			      x, y, &rec.x, &rec.y, &dumwin);
 
@@ -1734,8 +1855,19 @@ void MoveWindow(XEvent *Event)
 		XClearArea(dpy, Desks[NewDesk].w, 0, 0, 0, 0, True);
 	}
 
+	/* Window not moved beyond threshold, send command instead. */
 	if (!moved) {
+		char *command;
+
+		/* Put back in original location. */
 		MoveResizePagerView(t, true);
+
+		/* Send window command. */
+		if (mouse_cmd[button] != NULL) {
+			xasprintf(&command, "Silent %s", mouse_cmd[button]);
+			SendText(fd, command, t->w);
+			free(command);
+		}
 		goto done_moving;
 	}
 
@@ -1763,12 +1895,16 @@ void MoveWindow(XEvent *Event)
 	XSync(dpy,0);
 	SendText(fd, "Silent Raise", t->w);
 
-	if (FocusAfterMove && fp->m->virtual_scr.CurrentDesk == NewDesk) {
-		XSync(dpy,0);
-		usleep(5000);
-		XSync(dpy,0);
+	/* Send window command, if asked. */
+	if (SendCmdAfterMove && mouse_cmd[button] != NULL) {
+		char *command;
 
-		SendText(fd, "Silent FlipFocus NoWarp", t->w);
+		XSync(dpy, 0);
+		usleep(5000);
+		XSync(dpy, 0);
+		xasprintf(&command, "Silent %s", mouse_cmd[button]);
+		SendText(fd, command, t->w);
+		free(command);
 	}
 
 done_moving:
@@ -1780,8 +1916,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 {
 	int finished = 0, x = 0, y = 0, xi = 0, yi = 0;
 	Window dumwin;
-	int moved = 0;
-	int KeepMoving = 0;
+	int button, moved = 0, KeepMoving = 0;
 	Window JunkRoot, JunkChild;
 	int JunkX, JunkY;
 	unsigned JunkMask;
@@ -1791,6 +1926,10 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	if (t == NULL || !t->allowed_actions.is_movable)
 		return;
 
+	/* Store button for later. */
+	button = Event->xbutton.button - 1;
+
+	/* Determine location of window. */
 	fp = fpmonitor_this(t->m);
 	rec.x = fp->virtual_scr.Vx + t->x;
 	rec.y = fp->virtual_scr.Vy + t->y;
@@ -1807,6 +1946,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 			      Event->xbutton.x, Event->xbutton.y,
 			      &rec.x, &rec.y, &dumwin);
 
+	/* Move window */
 	while (!finished) {
 		FMaskEvent(dpy, ButtonReleaseMask | ButtonMotionMask |
 			   ExposureMask, Event);
@@ -1839,6 +1979,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 	if (moved && (abs(x - xi) < MoveThreshold && abs(y - yi) < MoveThreshold))
 			moved = 0;
 
+	/* Finishing moving, placing, and sending any window commands. */
 	if (KeepMoving) {
 		FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 				  &x, &y, &JunkX, &JunkY, &JunkMask);
@@ -1871,10 +2012,31 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		SendText(fd, buf, t->w);
 		XSync(dpy, 0);
 		SendText(fd, "Silent Raise", t->w);
-		if (FocusAfterMove)
-			SendText(fd, "Silent FlipFocus NoWarp", t->w);
+
+		/* Send window command, if asked. */
+		if (SendCmdAfterMove && mouse_cmd[button] != NULL)
+		{
+			char *command;
+
+			XSync(dpy, 0);
+			usleep(5000);
+			XSync(dpy, 0);
+			xasprintf(&command, "Silent %s", mouse_cmd[button]);
+			SendText(fd, command, t->w);
+			free(command);
+		}
 	} else {
+		char *command;
+
+		/* Put back in original location. */
 		MoveResizePagerView(t, true);
+
+		/* Send window command. */
+		if (mouse_cmd[button] != NULL) {
+			xasprintf(&command, "Silent %s", mouse_cmd[button]);
+			SendText(fd, command, t->w);
+			free(command);
+                }
 	}
 	if (is_transient)
 		ExitPager(); /* does not return */

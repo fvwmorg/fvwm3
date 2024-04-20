@@ -33,6 +33,7 @@ static bool icon_xneg = false;
 static bool icon_yneg = false;
 
 static void initialize_viz_pager(void);
+static void initialize_mouse_bindings(void);
 static void initialize_desks_and_monitors(void);
 static void initialize_colorsets(void);
 static int fvwm_error_handler(Display *dpy, XErrorEvent *event);
@@ -58,6 +59,7 @@ void init_fvwm_pager(void)
 	initialize_viz_pager();
 
 	/* Run initializations */
+	initialize_mouse_bindings();
 	initialize_desks_and_monitors();
 	initialize_fonts();
 	parse_options();
@@ -134,6 +136,24 @@ void initialize_viz_pager(void)
 	 * root */
 	if (Pdepth == DefaultDepth(dpy, Scr.screen))
 		default_pixmap = ParentRelative;
+}
+
+void initialize_mouse_bindings(void)
+{
+	int i;
+
+	/* Bindings are stored as 'button - 1'. */
+	mouse_action[0] = P_MOUSE_MOVE;
+	mouse_action[1] = P_MOUSE_WIN_MOVE;
+	mouse_action[2] = P_MOUSE_SCROLL;
+	mouse_action[3] = P_MOUSE_NOP;
+	mouse_action[4] = P_MOUSE_NOP;
+
+	mouse_cmd = fxmalloc((P_MOUSE_BUTTONS) * sizeof(char *));
+	for (i = 0; i < P_MOUSE_BUTTONS; i++) {
+		mouse_cmd[i] = NULL;
+	}
+	mouse_cmd[1] = fxstrdup("FlipFocus NoWarp");
 }
 
 void initialize_desks_and_monitors(void)
@@ -657,6 +677,7 @@ void initialize_pager_window(void)
 	XTextProperty name;
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
+	int button;
 
 	XSizeHints sizehints = {
 		(PWinGravity),		/* flags */
@@ -718,15 +739,14 @@ void initialize_pager_window(void)
 		dpy, Scr.Root, pwindow.x, pwindow.y,
 		icon.width, icon.height, 0, Pdepth,
 		InputOutput, Pvisual, valuemask, &attributes);
-	XGrabButton(dpy, 1, AnyModifier, Scr.icon_w, True,
-		    ButtonPressMask | ButtonReleaseMask | ButtonMotionMask,
-		    GrabModeAsync, GrabModeAsync, None, None);
-	XGrabButton(dpy, 2, AnyModifier, Scr.icon_w, True,
-		    ButtonPressMask | ButtonReleaseMask | ButtonMotionMask,
-		    GrabModeAsync, GrabModeAsync, None, None);
-	XGrabButton(dpy, 3, AnyModifier, Scr.icon_w, True,
-		    ButtonPressMask | ButtonReleaseMask | ButtonMotionMask,
-		    GrabModeAsync, GrabModeAsync, None, None);
+
+	/* Grab button events in Icon window. */
+	valuemask = ButtonPressMask | ButtonReleaseMask | ButtonMotionMask;
+	for (button = 1; button <= P_MOUSE_BUTTONS; button++) {
+		XGrabButton(dpy, button, AnyModifier, Scr.icon_w, True,
+			    valuemask, GrabModeAsync, GrabModeAsync,
+			    None, None);
+	}
 
 	wmhints.initial_state = (StartIconic) ? IconicState : NormalState;
 	wmhints.flags = 0;
@@ -926,8 +946,8 @@ void parse_options(void)
 			UseSkipList = true;
 		} else if (StrEquals(resource, "SloppyFocus")) {
 			do_focus_on_enter = true;
-		} else if (StrEquals(resource, "FocusAfterMove")) {
-			FocusAfterMove = true;
+		} else if (StrEquals(resource, "SendCmdAfterMove")) {
+			SendCmdAfterMove = true;
 		} else if (StrEquals(resource, "SolidSeparators")) {
 			use_dashed_separators = false;
 			use_no_separators = false;
@@ -1226,6 +1246,43 @@ void parse_options(void)
 		} else if (StrEquals(resource, "BalloonStringFormat")) {
 			free(Balloon.label_format);
 			CopyString(&(Balloon.label_format), next);
+		} else if (StrEquals(resource, "Mouse")) {
+			int button;
+
+			if (arg1[0] == '*')
+				goto free_vars; /* Not enough inputs. */
+
+			sscanf(arg1, "%d", &button);
+			button--;
+			if (button < 0 || button >= P_MOUSE_BUTTONS)
+				goto free_vars;
+
+			/* Determine mouse action */
+			if (StrEquals(arg2, "ChangePage")) {
+				mouse_action[button] = P_MOUSE_MOVE;
+			} else if (StrEquals(arg2, "MoveWindow")) {
+				mouse_action[button] = P_MOUSE_WIN_MOVE;
+				if (tline2 != NULL && tline2[0] != '\0') {
+					free(mouse_cmd[button]);
+					mouse_cmd[button] = fxstrdup(tline2);
+				}
+			} else if (StrEquals(arg2, "WindowCmd")) {
+				if (tline2 == NULL || tline2[0] == '\0')
+					goto free_vars;
+				free(mouse_cmd[button]);
+				mouse_action[button] = P_MOUSE_WIN_CMD;
+				mouse_cmd[button] = fxstrdup(tline2);
+			} else if (StrEquals(arg2, "Scroll")) {
+				mouse_action[button] = P_MOUSE_SCROLL;
+			} else if (StrEquals(arg2, "Cmd")) {
+				if (tline2 == NULL || tline2[0] == '\0')
+					goto free_vars;
+				free(mouse_cmd[button]);
+				mouse_action[button] = P_MOUSE_CMD;
+				mouse_cmd[button] = fxstrdup(tline2);
+			} else if (StrEquals(arg2, "Nop")) {
+				mouse_action[button] = P_MOUSE_NOP;
+			}
 		}
 
 free_vars:

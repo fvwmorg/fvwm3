@@ -45,37 +45,33 @@ window. If no _alias_ is given, the default "FvwmPager" alias is used. See the
 FvwmPager displays a miniature view of the fvwm virtual desktop(s) showing
 the position of all windows and pages within each visible desktop. If
 _DeskHilight_ is set, the location of each monitor within the
-desktop is also shown. The pager can be used as a quick reference of the
-location of windows and monitors, to change the current page/desk, and to
-focus or move windows. The behavior of FvwmPager depends on the current
-_DesktopConfiguration_.
+desktop is also shown. The pager can be used as a reference to the location
+of windows and monitors in the virtual desktops.
 
-When clicked with button 1, FvwmPager will move the current desk/page to the
-location clicked. If using _DesktopConfiguration_ global all monitors will
-move to the location clicked, _DesktopConfiguration_ per-monitor moves the
-only the monitor which occupies the area clicked, and last
-_DesktopConfiguration_ shared only allows changing pages of a monitor which
-occupies the clicked desk. If _MonitorLabels_ are showing, clicks on the
-monitor label will move that monitor to the clicked desk. Clicks in which it
-cannot be clearly determined which monitor to move will be ignored, such as
-clicks on desk labels or dead space in per-monitor mode, clicking on a desk
-not occupied by any monitor in shared mode. It is suggested to use
-_MonitorLabels_ with shared mode. There is also a special mode _IsShared_
-to better view the shared desktops in shared mode.
+The pager can show labels with the names of the virtual desktops and
+monitors. The labels can be shown individually or together. By default
+the desk labels are shown, to disable them use _NoDeskLabels_. To show
+the monitor labels, use the _MonitorLabels_ option. The labels can be
+used as buttons to move the monitors to new desktops. See the *LABELS*
+configuration section for more details.
 
-When clicked with button 3, FvwmPager will move the current view port centered
-on the area clicked. Unlike a left click, which always places the monitor(s)
-inside a single page's boundaries, left click will _Scroll_ between multiple
-pages. While right click is held down, moving the mouse will cause the view
-port to _Scroll_ to the mouse location. Note that _Scroll_ works best in
-_global_ mode.
+The mouse can be used to change the current page/desk, to drag windows
+to new locations, or send windows fvwm commands. The default behavior
+is mouse 1 (left button) will switch desk/page a monitor is currently
+viewing to the area clicked. Mouse 2 (middle) can be used to drag windows
+to new locations or focus them. And mouse 3 (right) can _Scroll_ the
+view port to the location clicked.
 
-When button 2 clicks a window in the pager, that window will gain focus.
-Setting the _SloppyFocus_ option will give focus to the window under the
-mouse without clicking. Holding down button 2 on a window in the pager can
-be used the move the window. The window can be placed at any location inside
-the pager, and when you move the window outside of the pager, the window will
-move to the current location, and can continued to be moved.
+The mouse behavior can be configured, which button does what, and allow
+sending custom commands to fvwm. See the **MOUSE BEHAVIOUR** configuration
+section below for a more detailed description of mouse behavior and how
+to customize it.
+
+FvwmPager fully supports multiple monitors and fvwm's _DesktopConfiguration_.
+The _Monitor_ option can be used to show only the windows and virtual desktop
+area used by specific monitor. See *MONITOR AND DESKTOP CONFIGURATION* for
+details on ways to configure the pager to work with _per-monitor_ or
+_shared_ desktop configurations.
 
 When iconified, FvwmPager's icon on the desktop is a fully functional pager
 that only shows the current desk. This icon pager responds to all the same
@@ -90,6 +86,11 @@ resolution (see _DesktopScale_) and matches either the global
 aspect ratio or a single monitor if _Monitor_ is set. Both the size of
 the pager (see _Geometry_) and desktop layout (see _Cols_ and _Rows_)
 can be configured.
+
+Using the _SendToModule_ fvwm command, some of FvwmPager's configurations
+can be modified while running. This allows showing/hiding labels, changing
+which monitor is being tracked, and a few other things. See the
+*SENDING COMMANDS*.
 
 == CONFIGURATION
 
@@ -121,8 +122,8 @@ are listed below.
 The configuration options are split into two groups to help organize
 the large list of configuration options the pager has. Below you can
 find configuration options for the *GEOMETRY*, *LABELS*, *HILIGHTING*,
-*WINDOW LOOKS*, *BALLOON WINDOWS*, *MOUSE BEHAVIOUR*, *MONITOR AND
-DESKTOP CONFIGURATION*, *DESK STYLES*, and *MISCELLANEOUS*.
+*WINDOW LOOKS*, *BALLOON WINDOWS*, *MOUSE BEHAVIOUR*,
+*MONITOR AND DESKTOP CONFIGURATION*, *DESK STYLES*, and *MISCELLANEOUS*.
 
 === GEOMETRY
 
@@ -329,9 +330,69 @@ be configured below.
 
 === MOUSE BEHAVIOUR
 
-The mouse can be used to focus and move windows. Mouse button 2 (middle)
-can be used to focus (click) or move (hold and drag) the windows. These
-options can modify this behavior a bit.
+The mouse can be used to change the current virtual desk/page, _Scroll_
+through the pages, move windows and more using the mouse. These actions
+can be configured using the following _Mouse_ options. Each mouse button
+<N> can have a single action bound to it. Only the primary mouse buttons,
+1 - 5 are supported. The default bindings are as follows:
+
+....
+*FvwmPager: Mouse 1 ChangePage
+*FvwmPager: Mouse 2 MoveWindow FlipFocus NoWarp
+*FvwmPager: Mouse 3 Scroll
+*FvwmPager: Mouse 4 Nop
+*FvwmPager: Mouse 5 Nop
+....
+
+The mouse bindings and additional behaviors can be configured using
+the following options.
+
+*FvwmPager: Mouse <N> ChangePage::
+  Change the virtual page and/or desktop currently visible, base on the
+  location clicked. The exact behavior depends on which _DesktopConfiguration_
+  is used what mode the pager is in. In general the pager will only change
+  desk/page if it is absolutely clear which monitor to move to move. The
+  behavior for each _DesktopConfiguration_ is:
++
+--
+* *global*: Clicks on labels or pages will move all monitors to the desktop
+  and or page clicked.
+* *per-monitor*: Clicks on monitor labels will move that monitor to the
+  corresponding desktop. Clicks on desk labels will do nothing. Clicks on
+  a page will move the monitor corresponding to the area clicked to that page.
+* *shared*: The only way to move monitors between desktops is to click on the
+  monitor labels. Clicks on pages will move the current monitor (if any) on
+  that desktop to the corresponding page.
+--
+
+*FvwmPager: Mouse <N> MoveWindow [command]::
+  Move a window by clicking and dragging it to a new location. If the
+  window is moved out of the pager, the window is moved to the pointer
+  and can continued to be move on the current monitor. The distance a
+  window must be moved to be registered is set by the _MoveThreshold_
+  option, with a default of 3 pixels. Windows moved less than the
+  _MoveThreshold_, will have the optional fvwm _command_ (if set) sent
+  to them. The default is command "FlipFocus NoWarp". Setting the
+  _SendCmdAfterMove_ option will also send the _command_ after the
+  window is placed in its new location.
+
+*FvwmPager: Mouse <N> WindowCmd command::
+  Send the fvwm _command_ to the window clicked. This can be used to
+  focus, maximize, iconify, windows from the pager.
+
+*FvwmPager: Mouse <N> Scroll::
+  Clicking on a page will center the view port at that point using the fvwm
+  _Scroll_ command. Holding the button down and dragging will cause the
+  view port _Scroll_ to follow the mouse.  This works best with global
+  _DesktopConfiguration_.
+
+*FvwmPager: Mouse <N> Cmd command::
+  Clicking anywhere on the pager will send the _command_ to fvwm. This
+  can be used to make the mouse wheel change virtual desktops on a pager
+  that is only viewing the active desktop.
+
+*FvwmPager: Mouse <N> Nop::
+  This does nothing. Useful for disabling the default bindings.
 
 *FvwmPager: MoveThreshold pixels::
   Defines the distance the pointer has to be moved before a window being
@@ -355,14 +416,15 @@ does not get the input focus. This may happen if you drag the pointer
 over one of the mini windows in the pager. There is nothing that can be
 done about this - except not using SloppyFocus in the pager.
 
-*FvwmPager: FocusAfterMove::
-  After moving a window using the pager (using mouse button 2), give the
-  window focus if it is moved to the same desktop as the current monitor.
+*FvwmPager: SendCmdAfterMove::
+  After moving a window using the pager, send the configured command,
+  "FlipFocus NoWarp" by default, to the window. By default the command
+  is only sent on a click, not a move.
 
 === MONITOR AND DESKTOP CONFIGURATION
 
 FvwmPager supports multiple monitors and the per-monitor and shared
-_DesktopConfigurations_. FvwmPager can further be configured to show
+_DesktopConfiguration_. FvwmPager can further be configured to show
 only a single monitor or to interact with the monitors in specific ways.
 
 *FvwmPager: Monitor RandRName::
