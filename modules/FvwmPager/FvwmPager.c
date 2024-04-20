@@ -54,6 +54,8 @@ char		*BalloonFont = NULL;
 char		*WindowLabelFormat = NULL;
 FlocaleWinString	*FwinString;
 Atom		wm_del_win;
+int		mouse_action[P_MOUSE_BUTTONS];
+char		**mouse_cmd;
 
 /* Sizes / Dimensions */
 int		Rows = -1;
@@ -86,10 +88,10 @@ bool	is_transient = false;
 bool	HilightDesks = true;
 bool	HilightLabels = true;
 bool	error_occured = false;
-bool	FocusAfterMove = false;
 bool	use_desk_label = true;
 bool	WindowBorders3d = false;
 bool	HideSmallWindows = false;
+bool	SendCmdAfterMove = false;
 bool	use_no_separators = false;
 bool	use_monitor_label = false;
 bool	do_focus_on_enter = false;
@@ -416,6 +418,7 @@ DeskStyle *FindDeskStyle(int desk)
 
 void ExitPager(void)
 {
+	int i;
 	DeskStyle *style, *style2;
 	struct fpmonitor *fp, *fp1;
 	PagerWindow *t, *t2;
@@ -445,6 +448,12 @@ void ExitPager(void)
 		free(style);
 	}
 	free(Desks);
+
+	/* Mouse Bindings */
+	for (i = 0; i < P_MOUSE_BUTTONS; i++) {
+		free(mouse_cmd[i]);
+	}
+	free(mouse_cmd);
 
 	/* PagerWindows */
 	t2 = Start;

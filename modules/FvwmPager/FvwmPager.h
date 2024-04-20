@@ -177,6 +177,20 @@ extern char		*WindowLabelFormat;
 extern FlocaleWinString	*FwinString;
 extern Atom		wm_del_win;
 
+/* Mouse bindings */
+#define P_MOUSE_BUTTONS 5	/* Only use 1-5 due to Button?MotionMask */
+enum mouse_binding_actions
+{
+	P_MOUSE_NOP = 0,	/* Do nothing. */
+	P_MOUSE_MOVE,		/* Change desk/page on release. */
+	P_MOUSE_WIN_MOVE,	/* Drag window or send window command. */
+	P_MOUSE_WIN_CMD,	/* Only send command on release. */
+	P_MOUSE_SCROLL,		/* Start on press, stop on release. */
+	P_MOUSE_CMD,		/* Sends command on release. */
+};
+extern int	mouse_action[P_MOUSE_BUTTONS];
+extern char	**mouse_cmd;
+
 /* Sizes / Dimensions */
 extern int		Rows;
 extern int		desk1;
@@ -205,10 +219,10 @@ extern bool	is_transient;
 extern bool	HilightDesks;
 extern bool	HilightLabels;
 extern bool	error_occured;
-extern bool	FocusAfterMove;
 extern bool	use_desk_label;
 extern bool	WindowBorders3d;
 extern bool	HideSmallWindows;
+extern bool	SendCmdAfterMove;
 extern bool	use_no_separators;
 extern bool	use_monitor_label;
 extern bool	do_focus_on_enter;
