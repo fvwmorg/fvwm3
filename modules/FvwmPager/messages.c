@@ -64,8 +64,6 @@ void process_message(FvwmPacket *packet)
 	switch (type)
 	{
 		case M_ADD_WINDOW:
-			process_configure(body);
-			break;
 		case M_CONFIGURE_WINDOW:
 			process_configure(body);
 			break;
@@ -366,7 +364,8 @@ void process_new_page(unsigned long *body)
 		fp = fpmonitor_this(m);
 		if (fp == NULL)
 			return;
-		do_reconfigure = true;
+		if (monitor_to_track == NULL)
+			do_reconfigure = true;
 	}
 
 	fp->virtual_scr.Vx = fp->m->virtual_scr.Vx = body[0];
@@ -377,16 +376,20 @@ void process_new_page(unsigned long *body)
 		body[1] = mon_num;
 		process_new_desk(body);
 	}
-	if (fp->virtual_scr.VxPages != body[5] || fp->virtual_scr.VyPages != body[6])
+	if (fp->virtual_scr.VxPages != body[5] ||
+	    fp->virtual_scr.VyPages != body[6])
 	{
 		fp->virtual_scr.VxPages = body[5];
 		fp->virtual_scr.VyPages = body[6];
-		fp->virtual_scr.VWidth = fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
-		fp->virtual_scr.VHeight = fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
-		fp->virtual_scr.VxMax = fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
-		fp->virtual_scr.VyMax = fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
-		if (do_reconfigure)
-			ReConfigure();
+		fp->virtual_scr.VWidth =
+			fp->virtual_scr.VxPages * fpmonitor_get_all_widths();
+		fp->virtual_scr.VHeight =
+			fp->virtual_scr.VyPages * fpmonitor_get_all_heights();
+		fp->virtual_scr.VxMax =
+			fp->virtual_scr.VWidth - fpmonitor_get_all_widths();
+		fp->virtual_scr.VyMax =
+			fp->virtual_scr.VHeight - fpmonitor_get_all_heights();
+		ReConfigure();
 	}
 
 	if (do_reconfigure) {
@@ -428,10 +431,10 @@ void process_new_desk(unsigned long *body)
 	 *     and tracking is per-monitor or shared.
 	 */
 	if (!CurrentDeskPerMonitor && ((monitor_to_track != NULL &&
-	    mout != monitor_to_track->m) ||
+	    fp != monitor_to_track) ||
 	    (current_monitor != NULL &&
 	    monitor_to_track == NULL &&
-	    mout != current_monitor->m &&
+	    fp != current_monitor &&
 	    (monitor_mode == MONITOR_TRACKING_M ||
 	    is_tracking_shared))))
 	{
@@ -444,13 +447,6 @@ void process_new_desk(unsigned long *body)
 	/* Update the current desk. */
 	desk_i = newDesk;
 	style = FindDeskStyle(newDesk);
-	/* Create and update GCs if needed. */
-	if (oldDesk != newDesk) {
-		if (style->label_gc)
-			update_desk_style_gcs(style);
-		else
-			initialize_desk_style_gcs(style);
-	}
 
 	/* Keep monitors in sync when tracking is global. */
 	if (monitor_mode == MONITOR_TRACKING_G)
@@ -473,7 +469,6 @@ void process_new_desk(unsigned long *body)
 		update_desk_background(0);
 		update_monitor_locations(0);
 		update_monitor_backgrounds(0);
-		ReConfigureAll();
 	}
 
 	XStoreName(dpy, Scr.pager_w, style->label);
@@ -481,6 +476,7 @@ void process_new_desk(unsigned long *body)
 
 update_grid:
 	MovePage();
+	ReConfigureAll();
 	draw_desk_grid(oldDesk - desk1);
 	draw_desk_grid(newDesk - desk1);
 	MoveStickyWindows(false, true);
@@ -932,7 +928,10 @@ void process_config_info_line(char *line, bool is_init)
 			{
 				PagerWindow *t = Start;
 
-				update_desk_style_gcs(style);
+				/* Only update if it wasn't updated previously. */
+				if (style->cs != color && style->hi_cs != color)
+					update_desk_style_gcs(style);
+
 				while (t != NULL) {
 					if (t->desk != style->desk) {
 						t = t->next;

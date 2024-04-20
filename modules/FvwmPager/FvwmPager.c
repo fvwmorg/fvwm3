@@ -408,6 +408,7 @@ DeskStyle *FindDeskStyle(int desk)
 
 	style->desk = desk;
 	xasprintf(&style->label, "Desk %d", desk);
+	initialize_desk_style_gcs(style);
 
 	TAILQ_INSERT_TAIL(&desk_style_q, style, entry);
 	return style;
