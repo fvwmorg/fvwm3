@@ -351,12 +351,12 @@ the following options.
   Change the virtual page and/or desktop currently visible, base on the
   location clicked. The exact behavior depends on which _DesktopConfiguration_
   is used what mode the pager is in. In general the pager will only change
-  desk/page if it is absolutely clear which monitor to move to move. The
+  desk/page if it is absolutely clear which monitor to move. The
   behavior for each _DesktopConfiguration_ is:
 +
 --
 * *global*: Clicks on labels or pages will move all monitors to the desktop
-  and or page clicked.
+  and/or page clicked.
 * *per-monitor*: Clicks on monitor labels will move that monitor to the
   corresponding desktop. Clicks on desk labels will do nothing. Clicks on
   a page will move the monitor corresponding to the area clicked to that page.
