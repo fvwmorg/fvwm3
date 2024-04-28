@@ -4970,7 +4970,6 @@ static void grow_to_closest_type(
 static void unmaximize_fvwm_window(
 	FvwmWindow *fw, cmdparser_context_t *pc)
 {
-	char	*cmd;
 	rectangle new_g;
 
 	SET_MAXIMIZED(fw, 0);
@@ -5019,10 +5018,6 @@ static void unmaximize_fvwm_window(
 
 	frame_setup_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
-
-	xasprintf(&cmd, "MoveToScreen %s", fw->m->si->name);
-	execute_function_override_window(NULL, NULL, cmd, NULL, 0, fw);
-	free(cmd);
 
 	border_draw_decorations(
 		fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
