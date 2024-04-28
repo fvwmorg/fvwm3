@@ -407,6 +407,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	/* send ImagePath and ColorLimit first */
 	send_image_path(mod);
 	send_color_limit(mod);
+	BroadcastDesktopConfiguration(mod);
 	send_colorsets(mod);
 	send_click_time(mod);
 	send_move_threshold(mod);
