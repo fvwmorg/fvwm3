@@ -247,7 +247,7 @@ void initialize_fonts(void)
 	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
 
 	/* load a default font. */
-	Scr.Ffont = FlocaleLoadFont(dpy, "", MyName);
+	Scr.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
 
 	/* init our Flocale window string */
 	FlocaleAllocateWinString(&FwinString);
@@ -488,7 +488,7 @@ void initialize_balloon_window(void)
 	if (Balloon.label_format == NULL)
 		Balloon.label_format = fxstrdup("%i");
 	if (!Balloon.Ffont)
-		Balloon.Ffont = FlocaleLoadFont(dpy, "", MyName);
+		Balloon.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
 
 	valuemask = CWOverrideRedirect | CWEventMask | CWColormap;
 	/* tell WM to ignore this window */
