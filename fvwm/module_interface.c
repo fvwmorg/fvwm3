@@ -467,6 +467,16 @@ void BroadcastName(
 	return;
 }
 
+void BroadcastDesktopConfiguration(fmodule *send)
+{
+	char	name[256];
+
+	snprintf(name, sizeof(name), "DesktopConfiguration %d %d",
+	    monitor_mode, is_tracking_shared);
+
+	SendName(send, M_CONFIG_INFO, 0, 0, 0, name);
+}
+
 static
 void send_monitor_info(fmodule *send)
 {
@@ -488,11 +498,9 @@ void send_monitor_info(fmodule *send)
 	}
 }
 
-
 void BroadcastMonitorList(fmodule *this)
 {
 	struct monitor	*m;
-	char		*name;
 	fmodule_list_itr moditr;
 	fmodule *module;
 
@@ -504,16 +512,13 @@ void BroadcastMonitorList(fmodule *this)
 		 * module only.
 		 */
 		send_monitor_info(this);
+		BroadcastDesktopConfiguration(this);
 		goto out;
 	}
 
 	while ((module = module_list_itr_next(&moditr)) != NULL) {
 		send_monitor_info(module);
-
-		xasprintf(&name, "DesktopConfiguration %d %d",
-			monitor_mode, is_tracking_shared);
-		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
-		free(name);
+		BroadcastDesktopConfiguration(module);
 	}
 out:
 	/* Reissue the DesktopSize command here, rather than sending

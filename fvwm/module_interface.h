@@ -25,6 +25,7 @@ void BroadcastPropertyChange(
 void BroadcastColorset(int n);
 void BroadcastConfigInfoString(char *string);
 void BroadcastMonitorList(fmodule *);
+void BroadcastDesktopConfiguration(fmodule *);
 void broadcast_ignore_modifiers(void);
 void SendPacket(
 	struct fmodule *module, unsigned long event_type,
