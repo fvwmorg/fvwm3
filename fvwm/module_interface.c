@@ -51,6 +51,8 @@ static fqueue cqueue = FQUEUE_INIT;
 
 static const unsigned long dummy = 0;
 
+static void send_monitor_info(fmodule *);
+
 static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
 	     unsigned long num, va_list ap)
@@ -465,35 +467,55 @@ void BroadcastName(
 	return;
 }
 
+static
+void send_monitor_info(fmodule *send)
+{
+	struct monitor	*m;
+	const char	*m_info;
+	char		*name;
+
+	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d";
+
+	RB_FOREACH(m, monitors, &monitor_q) {
+		xasprintf(&name, m_info, m->si->name, m->flags,
+		    m->dx, m->dy, m->virtual_scr.Vx,
+		    m->virtual_scr.Vy, m->virtual_scr.VxMax,
+		    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk,
+		    monitor_get_all_widths(), monitor_get_all_heights());
+
+		SendName(send, M_CONFIG_INFO, 0, 0, 0, name);
+		free(name);
+	}
+}
+
+
 void BroadcastMonitorList(fmodule *this)
 {
-	char		*name;
-	const char	*m_info;
 	struct monitor	*m;
+	char		*name;
 	fmodule_list_itr moditr;
 	fmodule *module;
 
 	module_list_itr_init(&moditr);
 
-	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d";
+	if (this != NULL) {
+		/*
+		 * We've been requested to send this information to a specific
+		 * module only.
+		 */
+		send_monitor_info(this);
+		goto out;
+	}
 
 	while ((module = module_list_itr_next(&moditr)) != NULL) {
-		RB_FOREACH(m, monitors, &monitor_q) {
-			xasprintf(&name, m_info, m->si->name, m->flags,
-			    m->dx, m->dy, m->virtual_scr.Vx,
-			    m->virtual_scr.Vy, m->virtual_scr.VxMax,
-			    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk,
-			    monitor_get_all_widths(), monitor_get_all_heights());
+		send_monitor_info(module);
 
-			SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
-			free(name);
-		}
 		xasprintf(&name, "DesktopConfiguration %d %d",
 			monitor_mode, is_tracking_shared);
 		SendName(module, M_CONFIG_INFO, 0, 0, 0, name);
 		free(name);
 	}
-
+out:
 	/* Reissue the DesktopSize command here, rather than sending
 	 * down the DesktopSize -- we want FvwmPager in particular to
 	 * react to a M_NEW_PAGE event, which DesktopSize will do; and
