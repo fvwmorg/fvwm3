@@ -404,13 +404,13 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	 *
 	 * send_monitor_list(mod);
 	 */
-	send_desktop_geometry(mod);
 	/* send ImagePath and ColorLimit first */
 	send_image_path(mod);
 	send_color_limit(mod);
 	send_colorsets(mod);
 	send_click_time(mod);
 	send_move_threshold(mod);
+	send_desktop_geometry(mod);
 	match = PeekToken(action, &action);
 	if (match)
 	{
