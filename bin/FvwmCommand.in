@@ -9,27 +9,36 @@ import json
 
 # Fvwm3 - socket API and MFL UNIX socket
 # Simple Python 3 FvwmMFL client which purpose is to act as FVWM2 FvwmCommand
-# replacement in FVWM3. It uses FvwmMFL unix domain socket to send FVWM commands
-# at this moment, that is all. It doesn't parse json structures yet, or anything
-# fancy and new from FVWM3 new command processing interface.
+# replacement in FVWM3. It uses FvwmMFL unix domain socket to send FVWM
+# commands at this moment, that is all. It doesn't parse json structures yet,
+# or anything fancy and new from FVWM3 new command processing interface.
 
 def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
+    # Check DISPLAY is defined, else bail:
+    if not 'DISPLAY' in os.environ:
+        print("$DISPLAY not set, is xorg/fvwm running?")
+        sys.exit(1)
+    sock_file_name = '/fvwm_mfl_' + str(os.environ.get('DISPLAY')) + '.sock'
+
     # Create a unix domain socket
     sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
 
     # Connect the socket to the "port" where the server is listening
-    # FvwmMFL is setting this in environment. This is done by using
-    # the explicit -f <sockname> flag if it is provided, otherwise
-    # use the environment FVWMMFL_SOCKET if it is defined, then fall
-    # back to TMPDIR/fvwm_mfl.sock if TMPDIR is defined, and last use
-    # the default location /tmp/fvwm_mfl.sock.
+    # FvwmMFL is setting this in environment. This is done by checking
+    # in the following order:
+    #  + Use the explicit -f <sockname> if it is provided.
+    #  + Use FVWMMFL_SOCKET_PATH/fvwm_mfl_DISPLAY.sock if defined.
+    #  + Use TMPDIR/fvwmmfl/fvwm_mfl_DISPLAY.sock if defined.
+    #  + Last use default location /tmp/fvwmmfl/fvwm_mfl_DISPLAY.sock
     if not fvwm_socket:
-        if 'FVWMMFL_SOCKET' in os.environ:
-            fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET'))
+        if 'FVWMMFL_SOCKET_PATH' in os.environ:
+            fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET_PATH'))
+            fvwm_socket += sock_file_name
         elif 'TMPDIR' in os.environ:
-            fvwm_socket = str(os.environ.get('TMPDIR')) + '/fvwm_mfl.sock'
+            fvwm_socket = str(os.environ.get('TMPDIR'))
+            fvwm_socket += '/fvwmmfl' + sock_file_name
         else:
-            fvwm_socket = '/tmp/fvwm_mfl.sock'
+            fvwm_socket = '/tmp/fvwmmfl' + sock_file_name
         def_socket = True
     else:
         def_socket = False
@@ -71,7 +80,7 @@ def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
                 sock.sendall(message)
         if verbose:
             print('Sent {!r}'.format(message) + " to FvwmMFL")
-    
+
         amount_received = 0
         data = sock.recv(32768)
         # amount_received += len(data)
