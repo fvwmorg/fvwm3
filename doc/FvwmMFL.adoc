@@ -30,9 +30,12 @@ packet has different fields, depending on the type requested.
 
 == COMMUNICATION
 
-The default unix-domain socket for _FvwmMFL_ is _$TMPDIR/fvwm_mfl.sock_,
-although this can be overridden via an environment variable
-_FVWMMFL_SOCKET_.
+The default unix-domain socket for _FvwmMFL_ is
+_$TMPDIR/fvwmmfl/fvwm_mfl_$DISPLAY.sock_.
+
+The path for where _fvwm_mfl-$DISPLAY_.sock is created can be changed by
+setting the _FVWMMFL_SOCKET_PATH_ environment variable.  _FvwmMFL_ will create
+this if it does not exist, and set relevant permissions.
 
 == REGISTERING INTEREST
 

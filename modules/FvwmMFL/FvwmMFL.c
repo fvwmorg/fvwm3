@@ -47,13 +47,11 @@
 #include <event2/listener.h>
 #include <event2/util.h>
 
-/* This is also configurable via getenv() - see FvwmMFL(1) */
-#define MFL_SOCKET_DEFAULT "fvwm_mfl.sock"
 #define MYNAME "FvwmMFL"
 
 static int debug;
 struct fvwm_msg;
-static char *sock_pathname;
+static char *socket_name, *socket_basepath;
 static char *pid_file;
 
 struct client {
@@ -152,17 +150,16 @@ delete_pid_file(void)
 static void
 set_pid_file(void)
 {
-	char	*fud = getenv("FVWM_USERDIR");
 	char	*dsp = getenv("DISPLAY");
 
-	if (fud == NULL || dsp == NULL) {
+	if (dsp == NULL) {
 		fprintf(stderr,
-		    "FVWM_USERDIR or DISPLAY is not set in the environment\n");
+		    "DISPLAY is not set in the environment\n");
 		exit(1);
 	}
 
 	free(pid_file);
-	xasprintf(&pid_file, "%s/fvwm_mfl_%s.pid", fud, dsp);
+	xasprintf(&pid_file, "%s/fvwm_mfl_%s.pid", socket_basepath, dsp);
 }
 
 static void
@@ -250,7 +247,8 @@ HandleTerminate(int fd, short what, void *arg)
 {
 	fprintf(stderr, "%s: dying...\n", __func__);
 	delete_pid_file();
-	unlink(sock_pathname);
+	unlink(socket_name);
+	rmdir(socket_basepath);
 	fvwmSetTerminate(fd);
 }
 
@@ -787,7 +785,9 @@ fvwm_read(int efd, short ev, void *data)
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
 		if (debug)
 			fprintf(stderr, "Couldn't read from FVWM - exiting.\n");
-		unlink(sock_pathname);
+		delete_pid_file();
+		unlink(socket_name);
+		rmdir(socket_basepath);
 		exit(0);
 	}
 
@@ -797,33 +797,58 @@ fvwm_read(int efd, short ev, void *data)
 void
 set_socket_pathname(void)
 {
-	char		*mflsock_env, *tmpdir;
+	char		*mflsock_env, *display_env, *tmpdir;
 	const char	*unrolled_path;
+	struct stat	 sb;
 
 	/* Figure out if we are using default MFL socket path or we should
 	 * respect environment variable FVWMMFL_SOCKET for FvwmMFL socket path
 	 */
 
-	mflsock_env = getenv("FVWMMFL_SOCKET");
+	mflsock_env = getenv("FVWMMFL_SOCKET_PATH");
+	display_env = getenv("DISPLAY");
+
 	if (mflsock_env == NULL) {
 		/* Check if TMPDIR is defined.  If so, use that, otherwise
 		 * default to /tmp for the directory name.
 		 */
 		if ((tmpdir = getenv("TMPDIR")) == NULL)
 			tmpdir = "/tmp";
-		xasprintf(&sock_pathname, "%s/%s", tmpdir, MFL_SOCKET_DEFAULT);
-		return;
+		xasprintf(&socket_basepath, "%s/fvwmmfl", tmpdir);
+		goto check_dir;
 	}
 
 	unrolled_path = expand_path(mflsock_env);
 	if (unrolled_path[0] == '/')
-		sock_pathname = fxstrdup(unrolled_path);
+		socket_basepath = fxstrdup(unrolled_path);
 	else {
-		xasprintf(&sock_pathname, "%s/%s", getenv("FVWM_USERDIR"),
+		xasprintf(&socket_basepath, "%s/%s", getenv("FVWM_USERDIR"),
 			unrolled_path);
 	}
 
 	free((void *)unrolled_path);
+
+check_dir:
+	/* Check if what we've been given is a directory */
+	if (lstat(socket_basepath, &sb) != 0 && errno == ENOTDIR) {
+		fprintf(stderr, "Not a directory: socket_basepath: %s\n",
+			socket_basepath);
+		free(socket_basepath);
+		exit(1);
+	}
+
+	/* Try and create the directory.  Only complain if this failed, and
+	 * the directory doesn't already exist.
+	 */
+	if (mkdir(socket_basepath, S_IRWXU) != 0 && errno != EEXIST) {
+		fprintf(stderr, "Coudln't create socket_basepath: %s: %s\n",
+			socket_basepath, strerror(errno));
+		free(socket_basepath);
+		exit(1);
+	}
+
+	xasprintf(&socket_name, "%s/fvwm_mfl_%s.sock", socket_basepath,
+		display_env);
 }
 
 int main(int argc, char **argv)
@@ -831,6 +856,7 @@ int main(int argc, char **argv)
 	struct event_base     *base;
 	struct evconnlistener *fmd_cfd;
 	struct sockaddr_un    sin;
+	char		     *pe;
 
 	TAILQ_INIT(&clientq);
 
@@ -839,12 +865,13 @@ int main(int argc, char **argv)
 		return (1);
 	}
 
+	set_socket_pathname();
+
 	/* If we're already running... */
 	if (check_pid() == 0)
 		return (1);
 
-	set_socket_pathname();
-	unlink(sock_pathname);
+	unlink(socket_name);
 
 	/* Create new event base */
 	if ((base = event_base_new()) == NULL) {
@@ -855,7 +882,7 @@ int main(int argc, char **argv)
 
 	memset(&sin, 0, sizeof(sin));
 	sin.sun_family = AF_LOCAL;
-	strcpy(sin.sun_path, sock_pathname);
+	strcpy(sin.sun_path, socket_name);
 
 	/* Create a new listener */
 	fmd_cfd = evconnlistener_new_bind(base, accept_conn_cb, NULL,
@@ -867,25 +894,28 @@ int main(int argc, char **argv)
 	}
 	evconnlistener_set_error_cb(fmd_cfd, accept_error_cb);
 
-	chmod(sock_pathname, 0770);
+	chmod(socket_name, 0600);
 
 	/* Setup comms to fvwm3. */
 	fc.fd[0] = fc.m->to_fvwm;
 	fc.fd[1] = fc.m->from_fvwm;
 
-	/* If the user hasn't set FVWMMFL_SOCKET in the environment, then tell
-	 * Fvwm3 to do this.  Note that we have to get Fvwm3 to do this so
-	 * that all other windows can inherit this environment variable.  We
-	 * cannot use flib_putenv() here since this never reaches Fvwm3's
+	/* If the user hasn't set FVWMMFL_SOCKET_PATH in the environment, then
+	 * tell Fvwm3 to do this.  Note that we have to get Fvwm3 to do this
+	 * so that all other windows can inherit this environment variable.
+	 * We cannot use flib_putenv() here since this never reaches Fvwm3's
 	 * environment.
 	 */
-	if (getenv("FVWMMFL_SOCKET") == NULL) {
-		char	*pe;
+	if (getenv("FVWMMFL_SOCKET_PATH") == NULL) {
 
-		xasprintf(&pe, "SetEnv FVWMMFL_SOCKET %s", sock_pathname);
+		xasprintf(&pe, "SetEnv FVWMMFL_SOCKET_PATH %s", socket_basepath);
 		SendText(fc.fd, pe, 0);
 		free(pe);
 	}
+
+	xasprintf(&pe, "SetEnv FVWMMFL_SOCKET %s", socket_name);
+	SendText(fc.fd, pe, 0);
+	free(pe);
 
 	if (evutil_make_socket_nonblocking(fc.fd[0]) < 0)
 		fprintf(stderr, "fvwm to_fvwm socket non-blocking failed");
@@ -900,7 +930,7 @@ int main(int argc, char **argv)
 	SendFinishedStartupNotification(fc.fd);
 
 	event_base_dispatch(base);
-	unlink(sock_pathname);
+	unlink(socket_name);
 
 	return (0);
 }
