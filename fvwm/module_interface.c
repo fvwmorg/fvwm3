@@ -500,6 +500,7 @@ void send_monitor_info(fmodule *send)
 
 void BroadcastMonitorList(fmodule *this)
 {
+	char action[256];
 	struct monitor	*m;
 	fmodule_list_itr moditr;
 	fmodule *module;
@@ -526,7 +527,6 @@ out:
 	 * react to a M_NEW_PAGE event, which DesktopSize will do; and
 	 * this avoids duplication in FvwmPager as a result.
 	 */
-	char action[256];
 
 	/* Every monitor will have the same dx/dy values, so just take
 	 * the fist entry in our list.
