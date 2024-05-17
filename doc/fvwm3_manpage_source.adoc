@@ -785,7 +785,7 @@ Please refer to the *Module Commands* section for details.
 == ICCCM COMPLIANCE
 
 Fvwm attempts to be ICCCM 2.0 compliant. Check
-_http://tronche.com/gui/x/icccm/_ for more info. In addition, ICCCM
+http://tronche.com/gui/x/icccm/ for more info. In addition, ICCCM
 states that it should be possible for applications to receive any
 keystroke, which is not consistent with the keyboard shortcut approach
 used in fvwm and most other window managers. In particular you cannot
@@ -842,7 +842,7 @@ AddToFunc UrgencyDoneFunc
 
 Fvwm attempts to respect the extended window manager hints (ewmh or EWMH
 for short) specification:
-_https://specifications.freedesktop.org/wm-spec/wm-spec-1.3.html_ and
+https://specifications.freedesktop.org/wm-spec/wm-spec-1.3.html and
 some extensions of this specification.
 
 This support is configurable with styles and commands. These styles and
@@ -1873,9 +1873,9 @@ using the *Key* and *Mouse* commands with the special context 'M',
 possible combined with 'T' for the menu title, 'I' for other menu
 items, 'S' for any border or sidepic, '[' for left border including a
 left sidepic, ']' for right border including a right sidepic, '-' for
-top border, '_' for bottom border. The menu context uses its own set
-of actions that can be bound to keys and mouse buttons. These are
-_MenuClose_, _MenuCloseAndExec_, _MenuEnterContinuation_,
+top border, '\_' for bottom border. The menu context uses its own set
+of actions that can be bound to keys and mouse buttons.
+These are _MenuClose_, _MenuCloseAndExec_, _MenuEnterContinuation_,
 _MenuEnterSubmenu_, _MenuLeaveSubmenu_, _MenuMoveCursor_,
 _MenuCursorLeft_, _MenuCursorRight_, _MenuSelectItem_, _MenuScroll_
 and _MenuTearOff_.
@@ -3501,7 +3501,7 @@ _infostore_ which prints information on all entries in the infostore,
 listing the key and its value. _verbose_ has no effect with this
 option.
 
-*Schedule* [Periodic] _delay_ms_ [_command_id_] _command_::
+*Schedule* [_Periodic_] _delay_ms_ [_command_id_] _command_::
 	The _command_ is executed after about _delay_ms_ milliseconds. This
 	may be useful in some tricky setups. The _command_ is executed in the
 	same context window as the *Schedule* command. An optional integer
@@ -3513,7 +3513,7 @@ option.
 	and its arguments undergo the usual command line expansion, and, when
 	_command_ is finally executed, it is expanded again. It may therefore
 	be necessary to quote the parts of the command that must not be
-expanded twice.
+	expanded twice.
 +
 Note: A window's id as it is returned with $[w.id] can be used as the
 _command_id_. Example:
@@ -3755,7 +3755,7 @@ consider the windows with _WindowListSkip_ style.)
 	by spaces. Details of each option are described below.
 +
 ....
-*GeometryWindow* Hide [Never | Move | Resize]
+GeometryWindow Hide [Never | Move | Resize]
 ....
 +
 Hides or switches off the geometry window. If the optional parameters _Move_
@@ -3764,7 +3764,7 @@ respective operation. The parameter _Never_ will switch the geometry back on
 again (equivalent to _Show_).
 +
 ....
-*GeometryWindow* Show [Never | Move | Resize]
+GeometryWindow Show [Never | Move | Resize]
 ....
 +
 Shows or switches on the geometry window (equivalent to _Hide Never_). If
@@ -3773,14 +3773,14 @@ geometry window during the respective operation. The parameter _Never_ will
 switch the geometry window off (equivalent to _Hide_).
 +
 ....
-*GeometryWindow* Colorset _cset_
+GeometryWindow Colorset _cset_
 ....
 +
 Sets colorset of the gometry window to _cset_. Use the literal option
 _default_ for _cset_ to use the default colorset.
 +
 ....
-*GeometryWindow* Position \[\+|-]_x_[p] \[+|-]_y_[p]
+GeometryWindow Position [+|-]_x_[p] [+|-]_y_[p]
 ....
 +
 Configures the position the geometry window appears. _x_ and _y_ are the
@@ -3792,7 +3792,7 @@ arguments are given, the geometry window's position will return to its default
 state of the upper left corner or the center if emulating MWM.
 +
 ....
-*GeometryWindow* Screen _RANDRNAME_
+GeometryWindow Screen _RANDRNAME_
 ....
 +
 Configure which screen the geometry window is shown on. By default the
@@ -3869,14 +3869,14 @@ window is moved to the pointer position before starting an interactive
 move; this is mainly intended for internal use by modules like *FvwmPager*.
 +
 ....
-*Move* pointer
+Move pointer
 ....
 +
 To move a window in a given direction until it hits another window, icon,
 or screen boundary use:
 +
 ....
-*Move* shuffle [Warp] [ewmhiwa] [snap _type_] [layers _min_ _max_] _direction_(s)
+Move shuffle [Warp] [ewmhiwa] [snap _type_] [layers _min_ _max_] _direction_(s)
 ....
 +
 The _direction_ can be _North_/_N_/_Up_/_U_, _East_/_E_/_Right_/_R_,
@@ -3911,10 +3911,10 @@ Move shuffle Up Left
 ....
 
 +
-*Move* can be used to moved a window to a specified position:
+Move can be used to moved a window to a specified position:
 +
 ....
-*Move* [screen _S_] [desk _N_] \[w | m | v]_x_[p | w] \[w | m | v]_y_[p | w] [Warp] [ewmhiwa]
+Move [screen _S_] [desk _N_] [w | m | v]_x_[p | w] [w | m | v]_y_[p | w] [Warp] [ewmhiwa]
 ....
 +
 This will move the window to the _x_ and _y_ position (see below).
@@ -8916,7 +8916,7 @@ If you need to have more colors and do not want to reinvent the wheel,
 you may use the convention used in fvwm-themes, it defines the meaning
 of the first 40 colorsets for nearly all purposes:
 +
-_http://fvwm-themes.sourceforge.net/doc/colorsets_
+http://fvwm-themes.sourceforge.net/doc/colorsets
 +
 Each colorset has four colors, an optional pixmap and an optional
 shape mask. The four colors are used by modules as the foreground,
@@ -9382,4 +9382,4 @@ refer to the COPYING file that came with fvwm for details.
 Bug reports can be sent to the fvwm-workers mailing list at
 <fvwm-workers@fvwm.org>
 
-The official fvwm homepage is _http://fvwm.org/_.
+The official fvwm homepage is http://fvwm.org/
