@@ -2928,6 +2928,16 @@ the newcomer.
 
 === Miscellaneous Commands
 
+*Capabilities* [_option_ [_bool_]], ...::
+	This command enables features which are still experimental.
++
+_FvwmStyleV3_ activates enhanced style matching whereby different aspects of
+styles can be matched, for example:
++
+....
+Style (Class=XTerm, Name=mc) Sticky
+....
+
 *BugOpts* [_option_ [_bool_]], ...::
 	This command controls several workarounds for bugs in third party
 	programs. The individual options are separated by commas. The optional

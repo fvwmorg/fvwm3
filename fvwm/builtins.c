@@ -3179,6 +3179,52 @@ void CMD_UnsetEnv(F_CMD_ARGS)
 	return;
 }
 
+void CMD_Capabilities(F_CMD_ARGS)
+{
+	char *opt;
+	int toggle;
+	char *optstring;
+
+	while (action && *action && *action != '\n')
+	{
+		action = GetNextFullOption(action, &optstring);
+		if (!optstring)
+		{
+			/* no more options */
+			return;
+		}
+		toggle = ParseToggleArgument(
+			SkipNTokens(optstring,1), NULL, 2, False);
+		opt = PeekToken(optstring, NULL);
+		free(optstring);
+
+		if (!opt)
+		{
+			return;
+		}
+
+		if (StrEquals(opt, "FvwmStyleV3"))
+		{
+			switch (toggle)
+			{
+			case -1:
+				Scr.cap.fvwm_style_v3 ^= 1;
+				break;
+			case 0:
+			case 1:
+				Scr.cap.fvwm_style_v3 = toggle;
+				break;
+			default:
+				Scr.cap.fvwm_style_v3 = 0;
+				break;
+			}
+		} else {
+			fvwm_debug(__func__,
+				   "Unknown capability '%s'", opt);
+		}
+	}
+}
+
 void CMD_BugOpts(F_CMD_ARGS)
 {
 	char *opt;

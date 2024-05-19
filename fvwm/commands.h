@@ -29,6 +29,7 @@ enum
 	F_BUSY_CURSOR,
 	F_BUTTON_STATE,
 	F_BUTTON_STYLE,
+	F_CAPABILITIES,
 	F_CHANGE_MENUSTYLE,
 	F_CIRCULATE_DOWN,
 	F_CIRCULATE_UP,
@@ -206,6 +207,7 @@ void CMD_BugOpts(F_CMD_ARGS);
 void CMD_BusyCursor(F_CMD_ARGS);
 void CMD_ButtonState(F_CMD_ARGS);
 void CMD_ButtonStyle(F_CMD_ARGS);
+void CMD_Capabilities(F_CMD_ARGS);
 void CMD_ChangeDecor(F_CMD_ARGS);
 void CMD_ChangeMenuStyle(F_CMD_ARGS);
 void CMD_CleanupColorsets(F_CMD_ARGS);
