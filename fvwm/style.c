@@ -54,6 +54,7 @@
 /* ---------------------------- forward declarations ----------------------- */
 
 static int style_set_border_colorset(window_style *, char *, int);
+static char *parse_v3_style_id(char *, style_id_t *);
 
 /* ---------------------------- local variables ---------------------------- */
 
@@ -4524,15 +4525,13 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 
 	if (!is_window_style)
 	{
-		/* parse style name */
-		action = GetNextToken(action, &SGET_NAME(*ps));
-		/* in case there was no argument! */
-		if (SGET_NAME(*ps) == NULL)
-		{
+		/* FIXME: capability check. */
+		action = parse_v3_style_id(action, &SGET_ID(*ps));
+		if (action == NULL) {
 			free(ps);
 			return;
 		}
-		SSET_ID_HAS_NAME(*ps, True);
+
 	}
 	else
 	{
@@ -4581,6 +4580,11 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 	}
 
 	return;
+}
+
+static char *parse_v3_style_id(char *action, style_id_t *r)
+{
+	return action;
 }
 
 /* ---------------------------- interface functions ------------------------ */
