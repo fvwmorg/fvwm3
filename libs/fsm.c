@@ -1043,6 +1043,12 @@ int fsm_init(char *module)
 		return 0;
 	}
 
+
+#ifdef HAVE__ICETRANSNOLISTEN
+	_IceTransNoListen("tcp");
+#endif
+
+
 	if (!FIceListenForConnections (
 		    &numTransports, &slistenObjs, 256, errormsg))
 	{
