@@ -377,6 +377,10 @@ if test ! x"$with_sm" = xno; then
   AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
     with_sm=no; problem_sm=": Failed to detect libSM",
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+  ac_LIBS="$LIBS"
+  LIBS="$LIBS -lICE"
+  AC_CHECK_FUNCS([_IceTransNoListen])
+  LIBS="$ac_LIBS"
 fi
 dnl AC_SUBST(sm_LIBS)
 dnl AC_SUBST(sm_CFLAGS)
