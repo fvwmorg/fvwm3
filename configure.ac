@@ -379,7 +379,11 @@ if test ! x"$with_sm" = xno; then
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
   ac_LIBS="$LIBS"
   LIBS="$LIBS -lICE"
-  AC_CHECK_FUNCS([_IceTransNoListen])
+  AC_CHECK_FUNCS([_IceTransNoListen],
+    [AC_CHECK_HEADERS([X11/Xtrans/Xtrans.h],
+      [AC_DEFINE(ICE_t, 1, [Xtrans transport type])
+      dnl AC_DEFINE(TRANS_CLIENT, 1, [Xtrans transport client code])
+      AC_DEFINE(TRANS_SERVER, 1, [Xtrans transport server code])])])
   LIBS="$ac_LIBS"
 fi
 dnl AC_SUBST(sm_LIBS)
