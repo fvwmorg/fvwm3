@@ -31,7 +31,9 @@ def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
     #  + Use TMPDIR/fvwmmfl/fvwm_mfl_DISPLAY.sock if defined.
     #  + Last use default location /tmp/fvwmmfl/fvwm_mfl_DISPLAY.sock
     if not fvwm_socket:
-        if 'FVWMMFL_SOCKET_PATH' in os.environ:
+        if 'FVWMMFL_SOCKET' in os.environ:
+            fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET'))
+        elif 'FVWMMFL_SOCKET_PATH' in os.environ:
             fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET_PATH'))
             fvwm_socket += sock_file_name
         elif 'TMPDIR' in os.environ:
@@ -162,4 +164,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
