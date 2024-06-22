@@ -14,10 +14,14 @@ import json
 # or anything fancy and new from FVWM3 new command processing interface.
 
 def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
+    def_socket = False
+
     # Check DISPLAY is defined, else bail:
     if not 'DISPLAY' in os.environ:
         print("$DISPLAY not set, is xorg/fvwm running?")
         sys.exit(1)
+    if verbose:
+        print ("DISPLAY set as: " + str(os.environ.get('DISPLAY')))
     sock_file_name = '/fvwm_mfl_' + str(os.environ.get('DISPLAY')) + '.sock'
 
     # Create a unix domain socket
@@ -31,17 +35,24 @@ def mflclnt(verbose, read_from_stdin, info, fvwm_socket, args):
     #  + Use TMPDIR/fvwmmfl/fvwm_mfl_DISPLAY.sock if defined.
     #  + Last use default location /tmp/fvwmmfl/fvwm_mfl_DISPLAY.sock
     if not fvwm_socket:
-        if 'FVWMMFL_SOCKET_PATH' in os.environ:
+        if 'FVWMMFL_SOCKET' in os.environ:
+            fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET'))
+            if verbose:
+                print ("Looking up 'FVWMMFL_SOCKET': " + fvwm_socket)
+        elif 'FVWMMFL_SOCKET_PATH' in os.environ:
             fvwm_socket = str(os.environ.get('FVWMMFL_SOCKET_PATH'))
+            if verbose:
+                print ("Looking up 'FVWMMFL_SOCKET_PATH': " + fvwm_socket)
             fvwm_socket += sock_file_name
         elif 'TMPDIR' in os.environ:
             fvwm_socket = str(os.environ.get('TMPDIR'))
+            if verbose:
+                print ("Looking up 'TMPDIR': " + fvwm_socket)
             fvwm_socket += '/fvwmmfl' + sock_file_name
         else:
             fvwm_socket = '/tmp/fvwmmfl' + sock_file_name
         def_socket = True
-    else:
-        def_socket = False
+
     try:
         if verbose:
             print ("Trying to determine if", fvwm_socket, "exists as MFL socket ...")
