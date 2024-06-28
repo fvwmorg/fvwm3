@@ -3323,18 +3323,6 @@ WindowId 0x3800002 FakeKeypress press A
 +
 Note: all command names can be abbreviated with their first letter.
 
-*HilightColor* _textcolor_ _backgroundcolor_::
-	This command is obsoleted by the *Style* options _HilightFore_ and
-	_HilightBack_. Please use
-+
-
-....
-Style * HilightFore textcolor, HilightBack backgroundcolor
-....
-
-+
-instead.
-
 *HilightColorset* [_num_]::
 	This command is obsoleted by the *Style* option _HilightColorset_.
 	Please use
@@ -5351,9 +5339,8 @@ and overrides the colors set by _Color_ or _Colorset_. To stop using
 this colorset, the argument is omitted.
 +
 _HilightIconTitleColorset_ takes the colorset number as its sole
-argument and overrides the colors set by *HilightColor* or
-_HilightColorset_. To stop using this colorset, the argument is
-omitted.
+argument and overrides the colors set by _HilightColorset_.
+To stop using this colorset, the argument is omitted.
 +
 _IconBackgroundColorset_ takes the colorset number as its sole
 argument and uses it to set a background for the icon picture. By
@@ -6694,9 +6681,9 @@ Add or divert commands to the decor named _decor_. A decor is a name
 given to the set of commands which affect button styles, title-bar
 styles and border styles. If _decor_ does not exist it is created;
 otherwise the existing _decor_ is modified. Note: Earlier versions
-allowed to use the *HilightColor*, *HilightColorset* and *WindowFont*
-commands in decors. This is no longer possible. Please use the *Style*
-command with the _Hilight..._ and _Font_ options.
+allowed to use the *HilightColorset* and *WindowFont* commands in decors.
+This is no longer possible. Please use the *Style* command with the
+_Hilight..._ and _Font_ options.
 +
 New decors start out exactly like the "default" decor without any
 style definitions. A given decor may be applied to a set of windows
