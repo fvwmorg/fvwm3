@@ -72,7 +72,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   GotoDeskAndPage       - Switch viewport to another desk and page
   GotoPage              - Switch viewport to another page same desk
   HideGeometryWindow    - Hide/show the position/size window
-  HilightColor          - (obsolete, use Style * HighlightFore/Back)
   HilightColorset       - (obsolete, use Style * HighlightColorset)
   IconFont              - (obsolete, use Style * IconFont)
   Iconify               - Change iconification status of a window (minimize)

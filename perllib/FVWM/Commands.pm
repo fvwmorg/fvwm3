@@ -453,12 +453,6 @@ $TIME = 1410306754;
 		descr => q{Hide/show the position/size window},
 	},
 	{
-		name => 'HilightColor',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use Style * HighlightFore/Back)},
-	},
-	{
 		name => 'HilightColorset',
 		cursor => '',
 		window => 0,

@@ -1805,7 +1805,6 @@ CMD_WINDOWSDESK = "WindowsDesk" ; See 'MoveToDesk'
 CMD_DESK = "Desk" ; See 'Gotodesk'
 CMD_EDGERESISTANCE = "EdgeResistance" ; Style * EdgeMoveDelay, EdgeMoveResistance
 CMD_HIDEGEOMETRYWINDOW = "HideGeometryWindow" ; GeometryWindow Hide
-CMD_HILIGHTCOLOR = "HilightColor" ; Style
 CMD_ICONFONT = "IconFont" FONTNAME ; Style
 CMD_ICONPATH = "IconPath" ; ImagePath
 CMD_PIXMAPPATH = "PixmapPath" ; ImagePath
