@@ -29,6 +29,7 @@
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
 #include "Strings.h"
+#include "log.h"
 
 #if FiconvSupport
 #include <iconv.h>

@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "libs/modifiers.h"

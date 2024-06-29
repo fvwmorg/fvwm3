@@ -23,6 +23,7 @@
 
 #include "config.h"
 
+#include "libs/log.h"
 #include <unistd.h>
 #include <ctype.h>
 #include <stdio.h>

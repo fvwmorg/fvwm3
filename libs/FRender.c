@@ -29,6 +29,7 @@
 #include "FRenderInit.h"
 #include "FRender.h"
 #include "FRenderInterface.h"
+#include "log.h"
 
 /* ---------------------------- local definitions -------------------------- */
 

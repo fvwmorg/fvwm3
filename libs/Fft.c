@@ -30,6 +30,7 @@
 #include "FftInterface.h"
 #include "FRenderInit.h"
 #include "PictureBase.h"
+#include "log.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
