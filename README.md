@@ -13,8 +13,14 @@ The successor to [fvwm-2.6.x](http://github.com/fvwmorg/fvwm).
 Fvwm3 is intended to be extremely customizable and extendible while consuming
 a relatively small amount of resources.
 
-**An existing version 2 configuration currently works, but over time this will
-change.**
+Fvwm2 Compatibility
+-------------------
+
+Although an existing fvwm2 configuration should mostly work with fvwm3, it
+isn't guaranteed to work without some modifications.  This is because fvwm3
+has changed, often removing long-standing deprecated options.
+
+More details about those changes [can be found here](https://github.com/fvwmorg/fvwm3/discussions/878)
 
 Releases / Changelog
 --------------------
