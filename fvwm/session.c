@@ -811,24 +811,16 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 	{
 		if (strcmp (g_argv[i], "-clientId") == 0 ||
 		    strcmp (g_argv[i], "-restore") == 0 ||
-		    strcmp (g_argv[i], "-d") == 0 ||
-		    (strcmp (g_argv[i], "-s") == 0 && i+1 < g_argc &&
-		     g_argv[i+1][0] != '-'))
+		    strcmp (g_argv[i], "-d") == 0)
 		{
 			i++;
 		}
-		else if (strcmp (g_argv[i], "-s") != 0)
+		else
 		{
 			prop5.vals[numVals].value = (FSmPointer) g_argv[i];
 			prop5.vals[numVals++].length = strlen (g_argv[i]);
 		}
 	}
-
-	prop5.vals[numVals].value = (FSmPointer) "-s";
-	prop5.vals[numVals++].length = 2;
-
-	prop5.vals[numVals].value = (FSmPointer) screen_num;
-	prop5.vals[numVals++].length = strlen (screen_num);
 
 
 	prop5.num_vals = numVals;
@@ -847,13 +839,11 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 		{
 			if (strcmp (g_argv[i], "-clientId") == 0 ||
 			    strcmp (g_argv[i], "-restore") == 0 ||
-			    strcmp (g_argv[i], "-d") == 0 ||
-			    (strcmp (g_argv[i], "-s") == 0 && i+1 < g_argc &&
-			     g_argv[i+1][0] != '-'))
+			    strcmp (g_argv[i], "-d") == 0)
 			{
 				i++;
 			}
-			else if (strcmp (g_argv[i], "-s") != 0)
+			else
 			{
 				prop6.vals[numVals].value =
 					(FSmPointer) g_argv[i];
@@ -861,12 +851,6 @@ set_sm_properties(FSmcConn sm_conn, char *filename, char hint)
 					strlen (g_argv[i]);
 			}
 		}
-
-		prop6.vals[numVals].value = (FSmPointer) "-s";
-		prop6.vals[numVals++].length = 2;
-
-		prop6.vals[numVals].value = (FSmPointer) screen_num;
-		prop6.vals[numVals++].length = strlen (screen_num);
 
 		prop6.vals[numVals].value = (FSmPointer) "-clientId";
 		prop6.vals[numVals++].length = 9;
