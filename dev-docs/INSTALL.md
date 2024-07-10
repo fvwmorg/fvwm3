@@ -60,12 +60,28 @@ To generate `fvwm3`'s documentation:
 Installing From Git
 ===================
 
+## Autotools
+
 FVWM3 has a bootstrap script to generate `configure` and associated files.
 Run the following command chain to generate the `configure` script and build
 the project:
 
+```console
+user@host:~/fvwm3$ ./autogen.sh
+user@host:~/fvwm3$ ./configure
+user@host:~/fvwm3$ make
+user@host:~/fvwm3$ sudo make install
 ```
-./autogen.sh && ./configure && make
+
+## Meson
+
+FVWM3 supports the Meson build system. To build with Meson:
+
+```console
+user@host:~/fvwm3$ meson setup builddir
+user@host:~/fvwm3$ cd builddir
+user@host:~/fvwm3/builddir$ meson compile
+user@host:~/fvwm3/builddir$ meson install
 ```
 
 Installing From Release Tarball
@@ -73,9 +89,21 @@ Installing From Release Tarball
 
 Release tarballs will come bundled with `./configure` already, hence:
 
-```
-./configure && make
+```console
+user@host:~/fvwm3-1.2.3$ ./configure
+user@host:~/fvwm3-1.2.3$ make
+user@host:~/fvwm3-1.2.3$ sudo make install
 ```
 
-As with most things, if the default options `./configure` chooses isn't
+or
+
+```console
+user@host:~/fvwm3-1.2.3$ meson setup builddir
+user@host:~/fvwm3-1.2.3$ cd builddir
+user@host:~/fvwm3-1.2.3/builddir$ meson compile
+user@host:~/fvwm3-1.2.3/builddir$ meson install
+```
+
+
+As with most things, if the default options `./configure` chooses aren't
 appropriate for your needs, see `./configure --help` for appropriate options.

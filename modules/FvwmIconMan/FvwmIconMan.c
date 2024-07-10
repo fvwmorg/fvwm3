@@ -24,6 +24,7 @@
 #include "xmanager.h"
 
 #include "libs/fvwmsignal.h"
+#include "libs/log.h"
 #include "libs/Module.h"
 #include "libs/FTips.h"
 #include "libs/FEvent.h"

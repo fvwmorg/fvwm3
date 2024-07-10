@@ -27,8 +27,10 @@
 #include "config.h"
 
 #include "FvwmConsole.h"
+#include "libs/defaults.h"
 #include "libs/fio.h"
 #include "libs/fvwmsignal.h"
+#include "libs/log.h"
 
 /* using ParseModuleArgs now */
 static ModuleArgs* module;

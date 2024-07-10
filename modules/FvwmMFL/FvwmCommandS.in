@@ -1,0 +1,4 @@
+#!/bin/sh
+modargs="$1 $2 $3 $4 $5"
+shift; shift; shift; shift; shift
+exec @FVWM_MODULEDIR@/FvwmMFL $modargs $@
