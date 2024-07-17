@@ -384,6 +384,18 @@
 	((id).flags.has_window_id = !!(x))
 #define SID_GET_HAS_WINDOW_ID(id) \
 	((id).flags.has_window_id)
+#define SID_GET_HAS_RESOURCE(id) \
+	((id).flags.has_resource)
+#define SID_SET_HAS_RESOURCE(id,x) \
+	((id).flags.has_resource = (x))
+#define SID_GET_HAS_CLASS(id) \
+	((id).flags.has_class)
+#define SID_SET_HAS_CLASS(id,x) \
+	((id).flags.has_class = (x))
+#define SID_GET_HAS_ICON(id) \
+	((id).flags.has_icon)
+#define SID_SET_HAS_ICON(id,x) \
+	((id).flags.has_icon = (x))
 
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(s) \
