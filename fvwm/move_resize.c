@@ -664,14 +664,6 @@ static int GetOnePositionArgument(
 		fvwm_debug(
 			__func__, "new position is out of range: %d",
 			final_pos);
-		if (final_pos > MAX_X_WINDOW_POSITION)
-		{
-			final_pos = MAX_X_WINDOW_POSITION;
-		}
-		else if (final_pos < MIN_X_WINDOW_POSITION)
-		{
-			final_pos = MIN_X_WINDOW_POSITION;
-		}
 	}
 	*pFinalPos = final_pos;
 
@@ -4426,7 +4418,7 @@ static Bool _resize_window(F_CMD_ARGS)
 			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
 				    &y, &JunkX, &JunkY, &JunkMask);
-			
+
 			fev_make_null_event(&e2, dpy);
 			e2.type = MotionNotify;
 			e2.xmotion.time = fev_get_evtime();
