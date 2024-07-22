@@ -671,10 +671,10 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 	mnew = FindScreenOfXY(g.x, g.y);
 
 	/* Avoid unnecessary updates. */
-	if (mnew == fw->m && fw->UpdateDesk < 0)
+	if (mnew == fw->m && fw->UpdateDesk == INT_MIN)
 		return False;
 
-	if (fw->UpdateDesk < 0) {
+	if (fw->UpdateDesk == INT_MIN) {
 		fw->Desk = mnew->virtual_scr.CurrentDesk;
 		goto out;
 	}
@@ -701,7 +701,7 @@ Bool update_fvwm_monitor(FvwmWindow *fw)
 		map_window(fw);
 	}
 	fw->Desk = fw->UpdateDesk;
-	fw->UpdateDesk = -1;
+	fw->UpdateDesk = INT_MIN;
 
 out:
 	if (fw->m != mnew) {

@@ -756,7 +756,7 @@ int GetMoveArguments(FvwmWindow *fw,
 
 		free(s1);
 		token = PeekToken(action, &action);
-		if (sscanf(token, "%d", &desk) && desk >= 0)
+		if (sscanf(token, "%d", &desk) && desk != INT_MIN)
 			fw->UpdateDesk = desk;
 		action = GetNextToken(action, &s1);
 	}
@@ -4426,7 +4426,7 @@ static Bool _resize_window(F_CMD_ARGS)
 			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
 				    &y, &JunkX, &JunkY, &JunkMask);
-			
+
 			fev_make_null_event(&e2, dpy);
 			e2.type = MotionNotify;
 			e2.xmotion.time = fev_get_evtime();
