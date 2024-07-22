@@ -1177,7 +1177,6 @@ static void usage(int is_verbose)
 		   " -c cmd:       preprocess configuration file with <cmd>\n"
 		   " -C vis-class: use visual class <vis-class>\n"
 		   " -d display:   run fvwm on <display>\n"
-		   " -D:           enable debug output\n"
 		   " -f cfgfile:   read configuration from <cfgfile>\n"
 		   " -F file:      used internally for session management\n"
 		   " -h, -?:       print this help message\n"
