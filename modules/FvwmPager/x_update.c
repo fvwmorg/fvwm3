@@ -241,7 +241,7 @@ void update_desk_style_gcs(DeskStyle *style)
 	initialize_colorset(style);
 
 	/* Don't update GC's for default style. */
-	if (style->desk < 0)
+	if (style->desk == INT_MIN)
 		return;
 
 	XSetForeground(dpy, style->label_gc, style->fg);

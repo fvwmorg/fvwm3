@@ -756,7 +756,7 @@ int GetMoveArguments(FvwmWindow *fw,
 
 		free(s1);
 		token = PeekToken(action, &action);
-		if (sscanf(token, "%d", &desk) && desk >= 0)
+		if (sscanf(token, "%d", &desk) && desk != INT_MIN)
 			fw->UpdateDesk = desk;
 		action = GetNextToken(action, &s1);
 	}

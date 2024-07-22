@@ -76,7 +76,7 @@ void init_fvwm_pager(void)
 	}
 	/* Initialize any non configured desks. */
 	for (i = 0; i < ndesks; i++) {
-		style = FindDeskStyle(i);
+		style = FindDeskStyle(i+desk1);
 	}
 
 	/* After DeskStyles are initialized, initialize desk windows. */
@@ -170,7 +170,7 @@ void initialize_desks_and_monitors(void)
 
 	/* Initialize default DeskStyle, stored on desk -1. */
 	default_style = fxcalloc(1, sizeof(DeskStyle));
-	default_style->desk = -1;
+	default_style->desk = INT_MIN;
 	default_style->label = fxstrdup("-");
 
 	default_style->use_label_pixmap = true;
@@ -196,7 +196,7 @@ void initialize_desks_and_monitors(void)
 
 	Desks = fxcalloc(1, ndesks*sizeof(DeskInfo));
 	for(i = 0; i < ndesks; i++) {
-		Desks[i].style = FindDeskStyle(i);
+		Desks[i].style = FindDeskStyle(i + desk1);
 		Desks[i].fp = fpmonitor_from_desk(i + desk1);
 	}
 }
@@ -330,7 +330,7 @@ void initialize_transient(void)
 
 void initialise_common_pager_fragments(void)
 {
-	DeskStyle *style = FindDeskStyle(-1);
+	DeskStyle *style = FindDeskStyle(INT_MIN);
 
 	/* I don't think that this is necessary - just let pager die */
 	/* domivogt (07-mar-1999): But it is! A window being moved in the pager

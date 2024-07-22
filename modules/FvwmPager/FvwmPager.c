@@ -128,6 +128,11 @@ static int My_XNextEvent(Display *dpy, XEvent *event);
 int main(int argc, char **argv)
 {
 	short opt_num;
+#ifdef ALLOW_NEGATIVE_DESKS
+	int min_desk = INT_MIN+1;
+#else
+	int min_desk = 0;
+#endif
 
 	/* Save our program name */
 	MyName = GetFileNameFromPath(argv[0]);
@@ -229,10 +234,10 @@ int main(int argc, char **argv)
 			desk2 = desk1;
 		else
 			desk2 = atoi(argv[opt_num+1]);
-		if (desk1 < 0)
-			desk1 = 0;
-		if (desk2 < 0)
-			desk2 = 0;
+		if (desk1 < min_desk)
+			desk1 = min_desk;
+		if (desk2 < min_desk)
+			desk2 = min_desk;
 		if (desk2 < desk1) {
 			int dtemp = desk1;
 			desk1 = desk2;
