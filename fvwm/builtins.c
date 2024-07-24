@@ -2746,6 +2746,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	{
 		PicturePrintColorInfo(verbose);
 	}
+	else if (StrEquals(subject, "Colorsets"))
+	{
+		print_colorsets(verbose);
+	}
 	else if (StrEquals(subject, "Locale"))
 	{
 		FlocalePrintLocaleInfo(dpy, verbose);

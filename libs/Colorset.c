@@ -121,6 +121,20 @@ char *DumpColorset(int n, colorset_t *cs)
 	return csetbuf;
 }
 
+void print_colorsets()
+{
+	int n;
+
+	fvwm_debug(__func__, "Info on fvwm Colorsets:\n");
+	for (n = 0; n < nColorsets; n++)
+	{
+		fvwm_debug(__func__,
+			   "  %s\n",
+			   DumpColorset(n, &Colorset[n]));
+	}
+	return;
+}
+
 /*
  * LoadColorset() takes a strings and stuffs it into the array
  */

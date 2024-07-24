@@ -3471,6 +3471,9 @@ If _verbose_ is one or greater the palette used by fvwm is printed. If
 you have a limited color palette, and you run out of colors, this
 command might be helpful.
 +
+_Colorsets_ which prints information about the colorsets currently in
+use by fvwm.
++
 _ImageCache_ which prints information about the images loaded by fvwm.
 If _verbose_ is one or greater all images in the cache will be listed
 together with their respective reuse.
@@ -8873,7 +8876,9 @@ colorset is modified all parts of fvwm react to that change. A colorset
 includes a foreground color, background color, shadow and highlight
 color (often based on the background color), background face (this
 includes images and all kinds of gradients). There is a way to render
-background face and specify other color operations.
+background face and specify other color operations. You can use the
+*PrintInfo* _Colorsets_ command to get information on the currently
+allocated colorsets.
 
 *Colorset* _num_ [_options_]::
 	Creates or modifies colorset _num_. Colorsets are identified by this

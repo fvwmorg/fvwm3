@@ -84,7 +84,7 @@ typedef struct Colorset
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_t *Colorset;
-
+extern void print_colorsets();
 
 /* some macro for transparency */
 #define CSET_IS_TRANSPARENT(cset) \
