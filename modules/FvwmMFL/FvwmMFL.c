@@ -19,6 +19,7 @@
 #include "libs/envvar.h"
 #include "libs/cJSON.h"
 
+#include <sys/file.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/time.h>
@@ -52,7 +53,8 @@
 static int debug;
 struct fvwm_msg;
 static char *socket_name, *socket_basepath;
-static char *pid_file;
+static char *lockfile = NULL;
+static int fvwmmfl_lock_fd = -1;
 
 struct client {
 	struct bufferevent	*comms;
@@ -122,11 +124,8 @@ static struct fvwm_msg *fvwm_msg_new(void);
 static void fvwm_msg_free(struct fvwm_msg *);
 static void register_interest(void);
 static void send_version_info(struct client *);
-static void set_socket_pathname(void);
-static int check_pid(void);
-static void set_pid_file(void);
-static void create_pid_file(void);
-static void delete_pid_file(void);
+static void set_pathnames(void);
+static int lock_fvwmmfl(void);
 static void fm_to_json(struct fvwm_msg *);
 
 static void
@@ -137,88 +136,6 @@ fm_to_json(struct fvwm_msg *fm)
 		cJSON_Delete(fm->j_obj);
 	}
 }
-
-static void
-delete_pid_file(void)
-{
-	if (pid_file == NULL)
-		return;
-
-	unlink(pid_file);
-}
-
-static void
-set_pid_file(void)
-{
-	char	*dsp = getenv("DISPLAY");
-
-	if (dsp == NULL) {
-		fprintf(stderr,
-		    "DISPLAY is not set in the environment\n");
-		exit(1);
-	}
-
-	free(pid_file);
-	xasprintf(&pid_file, "%s/fvwm_mfl_%s.pid", socket_basepath, dsp);
-}
-
-static void
-create_pid_file(void)
-{
-	FILE	*pf;
-
-	if ((pf = fopen(pid_file, "w")) == NULL) {
-		fprintf(stderr, "Couldn't open %s because: %s\n", pid_file,
-			strerror(errno));
-		exit(1);
-	}
-	fprintf(pf, "%d", getpid());
-
-	if (fclose(pf) != 0) {
-		fprintf(stderr, "Couldn't close %s because: %s\n", pid_file,
-			strerror(errno));
-		exit(1);
-	}
-
-	/* Alongside sigTerm, ensure we remove the pid when exiting as well. */
-	atexit(delete_pid_file);
-}
-
-static int
-check_pid(void)
-{
-	FILE	*pf;
-	int	 pid;
-
-	if (pid_file == NULL)
-		set_pid_file();
-
-	if (access(pid_file, F_OK) != 0) {
-		create_pid_file();
-		return (1);
-	}
-
-	if ((pf = fopen(pid_file, "r")) == NULL) {
-		fprintf(stderr, "Couldn't open %s for reading: %s\n", pid_file,
-			strerror(errno));
-		exit(1);
-	}
-	if (fscanf(pf, "%d", &pid) != 1) {
-		fprintf(stderr, "Error reading pid from %s: %s\n", pid_file,
-			strerror(errno));
-		exit(1);
-	};
-
-	/* Non-fatal if we can't close this file handle from reading. */
-	(void)fclose(pf);
-
-	if ((kill(pid, 0) == 0)) {
-		fprintf(stderr, "FvwmMFL is already running\n");
-		return (0);
-	}
-	return (1);
-}
-
 
 static struct fvwm_msg *
 fvwm_msg_new(void)
@@ -246,7 +163,7 @@ static void
 HandleTerminate(int fd, short what, void *arg)
 {
 	fprintf(stderr, "%s: dying...\n", __func__);
-	delete_pid_file();
+	unlink(lockfile);
 	unlink(socket_name);
 	rmdir(socket_basepath);
 	fvwmSetTerminate(fd);
@@ -785,7 +702,7 @@ fvwm_read(int efd, short ev, void *data)
 	if ((packet = ReadFvwmPacket(efd)) == NULL) {
 		if (debug)
 			fprintf(stderr, "Couldn't read from FVWM - exiting.\n");
-		delete_pid_file();
+		unlink(lockfile);
 		unlink(socket_name);
 		rmdir(socket_basepath);
 		exit(0);
@@ -795,7 +712,7 @@ fvwm_read(int efd, short ev, void *data)
 }
 
 void
-set_socket_pathname(void)
+set_pathnames(void)
 {
 	char		*mflsock_env, *display_env, *tmpdir;
 	const char	*unrolled_path;
@@ -849,6 +766,31 @@ check_dir:
 
 	xasprintf(&socket_name, "%s/fvwm_mfl_%s.sock", socket_basepath,
 		display_env);
+
+	xasprintf(&lockfile, "%s/fvwmmfl_lockfile_%s.lock", socket_basepath,
+	   display_env);
+
+}
+
+int
+lock_fvwmmfl(void)
+{
+	struct flock	l;
+	int		fd = -1;
+
+	if ((fd = open(lockfile, O_CREAT|O_WRONLY, 0600)) == -1)
+		return fd;
+	l.l_start = 0;
+	l.l_type = F_WRLCK;
+	l.l_len = 0;
+	l.l_whence = SEEK_SET;
+
+	if (fcntl(fd, F_SETLK, &l) == -1) {
+		close(fd);
+		return -1;
+	}
+
+	return fd;
 }
 
 int main(int argc, char **argv)
@@ -865,10 +807,10 @@ int main(int argc, char **argv)
 		return (1);
 	}
 
-	set_socket_pathname();
+	set_pathnames();
 
 	/* If we're already running... */
-	if (check_pid() == 0)
+	if ((fvwmmfl_lock_fd = lock_fvwmmfl()) == -1)
 		return (1);
 
 	unlink(socket_name);
