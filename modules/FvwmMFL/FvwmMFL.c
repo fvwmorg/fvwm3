@@ -175,6 +175,7 @@ setup_signal_handlers(struct event_base *base)
 	struct event	*hup, *term, *intrp, *quit, *child;
 
 	signal(SIGPIPE, SIG_IGN);
+	signal(SIGUSR2, SIG_IGN);
 
 	hup   =  evsignal_new(base, SIGHUP,  HandleTerminate, NULL);
 	term  =  evsignal_new(base, SIGTERM, HandleTerminate, NULL);
