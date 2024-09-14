@@ -139,6 +139,7 @@ Bool PImageLoadArgbDataFromFile(FIMAGE_CMD_ARGS)
  * svg loader
  *
  */
+#if USE_SVG
 static
 Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 {
@@ -411,6 +412,13 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	return True;
 }
+#else
+static Bool
+PImageLoadSvg(FIMAGE_CMD_ARGS)
+{
+	return (True);
+}
+#endif
 
 /*
  *
@@ -508,16 +516,16 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	 * this fail to build on much older libpng versions which we support
 	 * (pre 1.3), then I might have to.
 	 */
-	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_RGB_ALPHA)
+	if (Fpng_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_RGB_ALPHA)
 	{
 		hasa = 1;
 	}
-	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY_ALPHA)
+	if (Fpng_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY_ALPHA)
 	{
 		hasa = 1;
 		hasg = 1;
 	}
-	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY)
+	if (Fpng_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY)
 	{
 		hasg = 1;
 	}
