@@ -284,7 +284,23 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	free(allocated_path);
 
 	/* Keep the original aspect ratio when either w or h is 0 */
+#if LIBRSVG_CHECK_VERSION(2,52,0)
+	double		ddw, ddh;
+	RsvgLength	out_w, out_h;
+
+	rsvg_handle_get_intrinsic_size_in_pixels(rsvg, &ddw, &ddh);
+	dim.width = ddw;
+	dim.height = ddh;
+
+	rsvg_handle_get_intrinsic_dimensions(rsvg, NULL, &out_w, NULL, &out_h,
+		NULL, NULL);
+
+	dim.em = out_w.length;
+	dim.ex = out_h.length;
+
+#else
         Frsvg_handle_get_dimensions(rsvg, &dim);
+#endif
 	if (!w && !h)
 	{
 		w = dim.width;
@@ -357,7 +373,19 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	Fcairo_translate(cr, -.5, -.5);
 	Fcairo_scale(cr, 1 / dim.em, 1 / dim.ex);
 
+#if LIBRSVG_CHECK_VERSION(2,52,0)
+	GError *err = NULL;
+	RsvgRectangle vp;
+
+	vp.x = 0;
+	vp.y = 0;
+	vp.width = dim.width;
+	vp.height = dim.height;
+
+	rsvg_handle_render_document(rsvg, cr, &vp, &err);
+#else
 	Frsvg_handle_render_cairo(rsvg, cr);
+#endif
 	Fg_object_unref(FG_OBJECT(rsvg));
 	Fcairo_destroy(cr);
 
