@@ -22,6 +22,10 @@ add_project_arguments(
     language: 'c',
 )
 
+# This script is used to clean up the release tarball when calling
+# "meson dist".
+meson.add_dist_script('meson-scripts/dist-tarball.sh')
+
 cc = meson.get_compiler('c')
 
 # Undefine _FOTIFY_SOURCE explicitly.  fvwm3 needs work to support this.
@@ -374,7 +378,7 @@ conf_out = configure_file(
     configuration: conf,
 )
 
-conf_cmd = '@0@/runme.sh'.format(meson.current_source_dir())
+conf_cmd = '@0@/meson-scripts/conf-cmd.sh'.format(meson.current_source_dir())
 build_dir = '@0@/config.h'.format(meson.current_build_dir())
 configure_file(
     output: 'config.h',
