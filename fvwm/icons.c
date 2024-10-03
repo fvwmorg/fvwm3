@@ -1791,8 +1791,19 @@ void AutoPlaceIcon(
 	break;
       }
       /* get the screen dimensions for the icon box */
-      FScreenGetScrRect(fscr, FSCREEN_CURRENT,
+      if (icon_boxes_ptr->IconScreen == NULL ||
+          strcmp(icon_boxes_ptr->IconScreen, "global") == 0) {
+	      ref.x = 0;
+	      ref.y = 0;
+	      ref.width = monitor_get_all_widths();
+	      ref.height = monitor_get_all_heights();
+	      fvwm_debug(__func__, "using global screen");
+      } else {
+	      fscr->name = icon_boxes_ptr->IconScreen;
+	      FScreenGetScrRect(fscr, FSCREEN_BY_NAME,
 		        &ref.x, &ref.y, &ref.width, &ref.height);
+	      fvwm_debug(__func__, "using screen %s ", fscr->name);
+      }
       dim[1].screen_offset = ref.y;
       dim[1].screen_dimension = ref.height;
       dim[2].screen_offset = ref.x;
