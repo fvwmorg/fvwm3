@@ -27,7 +27,7 @@ FVWMSCRIPT_FILES="default-config/FvwmScript-ConfirmQuit \
 
 # Function Definitions
 update_po() {
-	POFILE=fvwm3.$1.po
+	POFILE=$1.po
 	if [ ! -e "${POFILE}" ]; then
 		echo "${POFILE} doesn't exist. Aborting!"
 		exit 1
@@ -39,7 +39,7 @@ update_po() {
 }
 
 build_po() {
-	POFILE=fvwm3.$1.po
+	POFILE=$1.po
 	GMOFILE=fvwm3.$1.gmo
 	if [ ! -e "${POFILE}" ]; then
 		echo "${POFILE} doesn't exist. Aborting!"
@@ -54,7 +54,7 @@ CMD=$1
 LL_CC=$2
 case "$CMD" in
 	"init")
-		POFILE=fvwm3.${LL_CC}.po
+		POFILE=${LL_CC}.po
 		if [ -e "$POFILE" ]; then
 			echo "${POFILE} exists. Aborting!"
 			exit 1

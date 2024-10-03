@@ -44,7 +44,7 @@ To update an existing translation:
 ```
 
 2) Modify the translation file by updating or adding any
-   translation strings in the `fvwm3.LL_CC.po` file.
+   translation strings in the `LL_CC.po` file.
 
 3) Build the binary translation file:
 
