@@ -1701,8 +1701,8 @@ int main(int argc, char **argv)
 	}
 	g_argv[g_argc] = NULL;
 
-	FlocaleInit(LC_CTYPE, "", "", "fvwm");
-	FGettextInit("fvwm", LOCALEDIR, "fvwm");
+	FlocaleInit(LC_CTYPE, "", "", "fvwm3");
+	FGettextInit("fvwm3", LOCALEDIR, "fvwm3");
 
 	setVersionInfo();
 	/* Put the default module directory into the environment so it can be

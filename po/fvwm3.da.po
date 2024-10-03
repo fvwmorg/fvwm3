@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: fvwm version-2_6_6-142-g1a05b191-dirty\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-29 23:39-0600\n"
+"POT-Creation-Date: 2024-10-03 08:47-0600\n"
 "PO-Revision-Date: 2017-02-07 00:00+0100\n"
 "Last-Translator: scootergrisen\n"
 "Language-Team: Danish\n"
@@ -17,469 +17,376 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../fvwm/fvwm3.c:1352
+#: fvwm/fvwm3.c:1293
 msgid "Builtin Menu"
 msgstr "Indbygget menu"
 
-#: ../fvwm/fvwm3.c:1359
-msgid "Issue fvwm commands"
-msgstr "Udsted fvwm-kommandoer"
+#: fvwm/fvwm3.c:1300
+#, fuzzy
+msgid "Load Default Config"
+msgstr "Musekonfiguration:"
 
-#: ../fvwm/fvwm3.c:1364
-msgid "Desktop Menu"
-msgstr ""
+#: fvwm/fvwm3.c:1305
+#, fuzzy
+msgid "Restart"
+msgstr "Genstart"
 
-#: ../fvwm/fvwm3.c:1369
-msgid "Restart fvwm"
-msgstr "Genstart fvwm"
+#: fvwm/fvwm3.c:1310 default-config/FvwmScript-ConfirmQuit:25
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:85
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:89
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:94
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:235
+msgid "Quit"
+msgstr "Afslut"
 
-#: ../fvwm/fvwm3.c:1374
-msgid "Exit fvwm"
-msgstr "Afslut fvwm"
-
-#. #-#-#-#-#  duplicate.pot (PACKAGE VERSION)  #-#-#-#-#
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 406
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 410
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 411
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 412
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 413
-#: ../fvwm/expand.c:492
+#: fvwm/expand.c:496 default-config/config:419 default-config/config:423
+#: default-config/config:424 default-config/config:425
+#: default-config/config:426
 msgid "Desk"
 msgstr "Skrivebord"
 
-#: ../fvwm/windowlist.c:96 ../fvwm/windowlist.c:102 ../fvwm/windowlist.c:109
+#: fvwm/windowlist.c:87 fvwm/windowlist.c:93 fvwm/windowlist.c:100
 msgid "\tGeometry"
 msgstr "\tGeometri"
 
-#: ../fvwm/windowlist.c:107
+#: fvwm/windowlist.c:98
 #, c-format
 msgid "Desk: %d%s"
 msgstr "Skrivebord: %d%s"
 
-#: ../fvwm/menus.c:1798
+#: fvwm/menus.c:1811
 msgid "More&..."
 msgstr "Flere&..."
 
-#. ./default-config/config: line 303
+#: default-config/config:315
 msgid "&Programs"
 msgstr ""
 
-#. ./default-config/config: line 304
+#: default-config/config:316
 msgid "XDG &Menu"
 msgstr ""
 
-#. ./default-config/config: line 309
+#: default-config/config:322
 msgid "&Wallpapers"
 msgstr ""
 
-#. ./default-config/config: line 310
+#: default-config/config:323
 msgid "M&an Pages"
 msgstr ""
 
-#. ./default-config/config: line 313
+#: default-config/config:324
+#, fuzzy
+msgid "Cop&y Config"
+msgstr "Kopiér konfigurationsfil(er)"
+
+#: default-config/config:326
 #, fuzzy
 msgid "Re&fresh"
 msgstr "&Opdater vindue"
 
-#. ./default-config/config: line 314
+#: default-config/config:327
 #, fuzzy
 msgid "&Restart"
 msgstr "Genstart"
 
-#. ./default-config/config: line 315
+#: default-config/config:328
 #, fuzzy
 msgid "&Quit"
 msgstr "Afslut"
 
-#. ./default-config/config: line 326
+#: default-config/config:339
 msgid "Programs"
 msgstr ""
 
-#. ./default-config/config: line 340
+#: default-config/config:353
 msgid "Wallpapers"
 msgstr ""
 
-#. ./default-config/config: line 341
+#: default-config/config:354
 msgid "Floral"
 msgstr ""
 
-#. ./default-config/config: line 342
+#: default-config/config:355
 msgid "Circles"
 msgstr ""
 
-#. ./default-config/config: line 343
+#: default-config/config:356
 msgid "Space"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 348
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 360
+#: default-config/config:361 default-config/config:373
 #, fuzzy
 msgid "Move"
 msgstr "&Flyt"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 349
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 361
+#: default-config/config:362 default-config/config:374
 #, fuzzy
 msgid "Resize"
 msgstr "&Tilpas størrelse"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 350
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 362
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 383
+#: default-config/config:363 default-config/config:375
+#: default-config/config:396
 #, fuzzy
 msgid "(De)Iconify"
 msgstr "&Ikonificer til/fra"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 351
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 363
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 384
+#: default-config/config:364 default-config/config:376
+#: default-config/config:397
 #, fuzzy
 msgid "(Un)Maximize"
 msgstr "&Maksimer til/fra"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 352
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 364
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 385
+#: default-config/config:365 default-config/config:377
+#: default-config/config:398
 msgid "(Un)Shade"
 msgstr ""
 
-#. ./default-config/config: line 353
+#: default-config/config:366
 #, fuzzy
 msgid "(Un)Stick"
 msgstr "&Klæb til/fra"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 355
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 369
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 390
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 293
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 64
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 132
+#: default-config/config:368 default-config/config:382
+#: default-config/config:403 bin/fvwm-menu-desktop-config.fpl:293
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:64
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:132
 #, fuzzy
 msgid "Close"
 msgstr "&Luk"
 
-#. ./default-config/config: line 356
+#: default-config/config:369
 #, fuzzy
 msgid "More"
 msgstr "Flere&..."
 
-#. ./default-config/config: line 359
+#: default-config/config:372
 msgid "Window Ops"
 msgstr "Vindueshandlinger"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 365
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 386
+#: default-config/config:378 default-config/config:399
 #, fuzzy
 msgid "(Un)Sticky"
 msgstr "&Klæb til/fra"
 
-#. ./default-config/config: line 366
+#: default-config/config:379
 msgid "(No)Title Bar"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 367
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 388
+#: default-config/config:380 default-config/config:401
 msgid "Send To"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 370
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 391
+#: default-config/config:383 default-config/config:404
 msgid "Destroy"
 msgstr "Ødelæg"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 372
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 393
+#: default-config/config:385 default-config/config:406
 #, fuzzy
 msgid "Raise"
 msgstr "&Hæv"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 373
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 394
+#: default-config/config:386 default-config/config:407
 #, fuzzy
 msgid "Lower"
 msgstr "Sæ&nk"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 375
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 396
+#: default-config/config:388 default-config/config:409
 msgid "Stays On Top"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 376
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 397
+#: default-config/config:389 default-config/config:410
 msgid "Stays Put"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 377
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 398
+#: default-config/config:390 default-config/config:411
 msgid "Stays On Bottom"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 379
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 400
+#: default-config/config:392 default-config/config:413
 msgid "Identify"
 msgstr ""
 
-#. ./default-config/config: line 387
+#: default-config/config:400
 msgid "(No)TitleBar"
 msgstr ""
 
-#. ./default-config/config: line 404
+#: default-config/config:417
 msgid "Current"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 405
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 417
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 418
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 419
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./default-config/config: line 420
+#: default-config/config:418 default-config/config:430
+#: default-config/config:431 default-config/config:432
+#: default-config/config:433
 msgid "Page"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 55
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 58
+#: bin/fvwm-menu-desktop-config.fpl:55 bin/fvwm-menu-desktop-config.fpl:58
 #, fuzzy
 msgid "Fvwm XDGMenu Config"
 msgstr "Skrivebordskonfiguration for Fvwm-menu"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 62
+#: bin/fvwm-menu-desktop-config.fpl:62
 #, fuzzy
 msgid "Available Menus"
 msgstr "Enkelt menu"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 70
+#: bin/fvwm-menu-desktop-config.fpl:70
 msgid "Menus in"
 msgstr "Menuer i"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 98
+#: bin/fvwm-menu-desktop-config.fpl:98
 msgid "No menus found! Check why from within a terminal with"
 msgstr "Ingen menuer fundet! Tjek hvordan det kan være i en terminal med"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 109
+#: bin/fvwm-menu-desktop-config.fpl:109
 #, fuzzy
 msgid "Options"
 msgstr "Generelle valgmuligheder"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 110
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 291
+#: bin/fvwm-menu-desktop-config.fpl:110 bin/fvwm-menu-desktop-config.fpl:291
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:69
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:137
 msgid "Help"
 msgstr "Hjælp"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 115
+#: bin/fvwm-menu-desktop-config.fpl:115
 #, fuzzy
 msgid "Include in Menu?    "
 msgstr "Indsæt i menu:      "
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 117
+#: bin/fvwm-menu-desktop-config.fpl:117
 msgid "Config   "
 msgstr ""
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 118
+#: bin/fvwm-menu-desktop-config.fpl:118
 #, fuzzy
 msgid "Regenerate  "
 msgstr "Regenererer XDG-menu"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 119
+#: bin/fvwm-menu-desktop-config.fpl:119
 msgid "Both   "
 msgstr ""
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 120
+#: bin/fvwm-menu-desktop-config.fpl:120
 msgid "None  "
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 123
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 27
+#: bin/fvwm-menu-desktop-config.fpl:123
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:27
 msgid "Use Icons?          "
 msgstr "Brug ikoner?        "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 125
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 136
+#: bin/fvwm-menu-desktop-config.fpl:125 bin/fvwm-menu-desktop-config.fpl:136
 msgid "Yes      "
 msgstr "Ja       "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 126
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 137
+#: bin/fvwm-menu-desktop-config.fpl:126 bin/fvwm-menu-desktop-config.fpl:137
 msgid "No   "
 msgstr "Nej  "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 128
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 139
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 147
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 155
+#: bin/fvwm-menu-desktop-config.fpl:128 bin/fvwm-menu-desktop-config.fpl:139
+#: bin/fvwm-menu-desktop-config.fpl:147 bin/fvwm-menu-desktop-config.fpl:155
 msgid "  "
 msgstr "  "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 129
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 38
+#: bin/fvwm-menu-desktop-config.fpl:129
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:38
 msgid "Icon size:          "
 msgstr "Ikonstørrelse:      "
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 131
+#: bin/fvwm-menu-desktop-config.fpl:131
 msgid " (Default is 24)"
 msgstr " (standard er 24)"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 134
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 99
+#: bin/fvwm-menu-desktop-config.fpl:134
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:99
 msgid "Use Titles?         "
 msgstr "Brug titler?        "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 140
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 57
+#: bin/fvwm-menu-desktop-config.fpl:140
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:57
 msgid "Used Icon theme:    "
 msgstr "Anvendt ikontema:   "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 144
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 71
+#: bin/fvwm-menu-desktop-config.fpl:144
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:71
 msgid "Directory Icon:     "
 msgstr "Mappeikon:          "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 148
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 85
+#: bin/fvwm-menu-desktop-config.fpl:148
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:85
 msgid "Application Icon:   "
 msgstr "Programikon:        "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 152
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 104
+#: bin/fvwm-menu-desktop-config.fpl:152
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:104
 #, fuzzy
 msgid "Top Menu Name:      "
 msgstr "Anvendt menutype:   "
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 156
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 109
+#: bin/fvwm-menu-desktop-config.fpl:156
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:109
 #, fuzzy
 msgid "Insert Menu Into:   "
 msgstr "Indsæt i menu:      "
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 160
+#: bin/fvwm-menu-desktop-config.fpl:160
 msgid "Terminal command:   "
 msgstr ""
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 162
+#: bin/fvwm-menu-desktop-config.fpl:162
 msgid " (Used to run Terminal entries)"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 165
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 46
+#: bin/fvwm-menu-desktop-config.fpl:165
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:46
 msgid "Icon directory:     "
 msgstr "Ikonmappe:          "
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 167
+#: bin/fvwm-menu-desktop-config.fpl:167
 msgid " (Directory for converted icons)"
 msgstr " (mappe til konverterede ikoner)"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./bin/fvwm-menu-desktop-config.fpl: line 170
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 122
+#: bin/fvwm-menu-desktop-config.fpl:170
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:122
 msgid "Output path:        "
 msgstr "Outputsti:          "
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 172
+#: bin/fvwm-menu-desktop-config.fpl:172
 msgid " (Full path to store output)"
 msgstr " (fuld sti til at lagre output)"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 180
+#: bin/fvwm-menu-desktop-config.fpl:180
 #, fuzzy
 msgid "Export Menu"
 msgstr "Rodmenu"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 211
+#: bin/fvwm-menu-desktop-config.fpl:211
 msgid "Save and Regenerate"
 msgstr ""
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 251
+#: bin/fvwm-menu-desktop-config.fpl:251
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:67
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:62
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:66
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:170
 msgid "Save"
-msgstr ""
+msgstr "Gem"
 
-#. ./bin/fvwm-menu-desktop-config.fpl: line 289
+#: bin/fvwm-menu-desktop-config.fpl:289
 msgid "Reset"
 msgstr "Nulstil"
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 6
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:134
 msgid "XDGMenu Help"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 10
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:10
 msgid "XDGMenu.Help"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 17
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:17
 #, fuzzy
 msgid ""
 "All the XDG menus found on the system are listed under Available Menus.  Use"
@@ -487,63 +394,63 @@ msgstr ""
 "I dette afsnit vises alle XDG-menuer som findes på systemet. Alle valgte "
 "menuer"
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 19
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:19
 msgid ""
 "this FvwmForm to configure some of the defaults options for fvwm-menu-desktop"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 21
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:21
 msgid ""
 "and select which menus are generated.  Select the options you want and then"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 23
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:23
 msgid "generate then generate the menu by selecting the following:"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 27
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:27
 #, fuzzy
 msgid "Export Menu:"
 msgstr "Rodmenu"
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 29
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:29
 msgid ""
 "     Generates a menu by calling fvwm-menu-desktop with the selected options"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 31
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:31
 msgid ""
 "     and saves the output to Output Path. After the menu file is created it"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 33
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:33
 msgid ""
 "     is read by fvwm. This option does not save any changes made to settings."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 37
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:37
 msgid "Save and Regenerate:"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 39
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:39
 msgid ""
 "     This saves the settings then runs fvwm-menu-desktop with no options "
 "using"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 41
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:41
 msgid ""
 "     the defaults saved in the config file. This does not export the menu."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 45
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:45
 #, fuzzy
 msgid ""
 "Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX."
 msgstr ""
 "Bemærk at ens menuer fundet under /etc/xdg/menus OG $HOME/.config/menus/"
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 47
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:47
 #, fuzzy
 msgid ""
 "Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/"
@@ -551,106 +458,98 @@ msgid ""
 msgstr ""
 "Bemærk at ens menuer fundet under /etc/xdg/menus OG $HOME/.config/menus/"
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 49
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:49
 #, fuzzy
 msgid ""
 "following the XDG menu specification are only shown in $HOME/.config/menus/."
 msgstr "som følger XDG-menu-specifikationen kun vises i $HOME/.config/menus/."
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 53
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:53
 #, fuzzy
 msgid "If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'."
 msgstr ""
 "Hvis der ikke vises nogen menu, så tjek årsagen fra en terminal med 'fvwm-"
 "menu-desktop -v'."
 
-#. ./modules/FvwmForm/FvwmForm-XDGMenuHelp: line 55
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:55
 #, fuzzy
 msgid "Also it is a good idea to check $HOME/.xsession-errors for errors."
 msgstr ""
 "Det er også en god ide at tjekke .xsession-errors i bruger-hjemmemappen for "
 "fejl."
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 6
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 10
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:66
+#, fuzzy
+msgid "Options Help"
+msgstr "Generelle valgmuligheder"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:68
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:136
+msgid "manpage"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:10
 #, fuzzy
 msgid "XDGMenu Options Help"
 msgstr "Generelle valgmuligheder"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 15
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:15
 msgid "General Options"
 msgstr "Generelle valgmuligheder"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 19
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:19
 #, fuzzy
 msgid "Include in Menu:    "
 msgstr "Indsæt i menu:      "
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 20
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:20
 msgid ""
 "Set if XDGMenu will include menu items to Configure and/or Regenerate the "
 "menu"
 msgstr ""
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 22
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 30
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 33
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 41
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 49
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 52
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 60
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 63
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 66
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 74
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 77
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 80
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 88
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 91
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 94
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 117
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:22
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:30
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:33
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:41
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:49
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:52
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:60
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:63
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:66
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:74
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:77
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:80
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:88
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:91
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:94
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:117
 msgid "                    "
 msgstr "                    "
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 23
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:23
 msgid "at the bottom of the top level menu."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 28
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:28
 #, fuzzy
 msgid ""
 "Option enables mini-icons in the menu(s). Warning! If ImageMagick is "
 "installed"
 msgstr "Valgmulighed aktiverer miniikoner i menuen/menuerne."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 31
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:31
 msgid ""
 "the script may generate all the icons and pause your system until the job is"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 34
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:34
 msgid ""
 "done. After the icons are generated, it will not take as long to regenerate."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 39
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:39
 msgid ""
 "If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
 "is"
@@ -658,11 +557,11 @@ msgstr ""
 "Hvis 'Brug ikoner' er angivet, så bruges 24x24 miniikoner som standard. Hvis "
 "en anden størrelse er"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 42
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:42
 msgid "desired enter the wanted size in this field."
 msgstr "ønsket, så indtast den ønskede størrelse i dette felt."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 47
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:47
 msgid ""
 "If the specified icon isn't that size it is converted if ImageMagick is "
 "installed."
@@ -670,74 +569,68 @@ msgstr ""
 "Hvis det angivne ikon ikke er den størrelse, så konverteres det hvis "
 "ImageMagick er installeret."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 50
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:50
 msgid ""
 "Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
 "here."
 msgstr "Genererede ikoner gemmes i $HOME/.fvwm/icons eller mappen angivet her."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 53
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:53
 msgid "Otherwise no icon appears in the menu for that entry."
 msgstr "Ellers vises intet ikon i menuen for det punkt."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 58
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:58
 msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
 msgstr ""
 "Angiver det brugte ikontema. Standard er 'gnome', men alle andre fundet i"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 61
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:61
 msgid ""
 "/usr/share/icons can used except the hicolor theme because it's the default"
 msgstr "/usr/share/icons kan bruges undtagen hicolor-temaet, da det er"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 64
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:64
 msgid ""
 "fallback theme if no icon is found. Note that the theme name must be written"
 msgstr ""
 "temaet som anvendes som standard hvis der ikke findes noget ikon. Bemærk at "
 "temanavnet skal skrives"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 67
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:67
 msgid "exactly as the icon directory e.g."
 msgstr "præcist som ikonmappen eksempelvis"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 72
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:72
 msgid ""
 "If 'Use Icons' is enabled and for a directory in a menu no icon is found"
 msgstr ""
 "Hvis 'Brug ikoner' er aktiveret og til en mappe i en menu hvor der ikke er "
 "fundet noget ikon"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 75
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 89
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:75
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:89
 msgid "as default icon is used. But if the gnome icon theme isn't"
 msgstr "som standardikon er brugt. Men hvis gnome-ikon-temaet ikke er"
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 78
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 92
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:78
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:92
 msgid "installed no default icon appears. Another icon can defined here."
 msgstr ""
 "installeret vises der ikke noget standardikon. Et andet ikon kan defineres "
 "her."
 
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 81
-#. #-#-#-#-#  duplicate  #-#-#-#-#
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 95
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:81
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:95
 msgid "Only the name of an icon is needed not the path!"
 msgstr "Det er kun nødvendigt med navnet på et ikon, ikke stien!"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 86
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:86
 msgid "If 'Use Icons' is enabled and for an application no icon is found"
 msgstr ""
 "Hvis 'Brug ikoner' er aktiveret og til et program hvor der ikke er fundet "
 "noget ikon"
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 100
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:100
 #, fuzzy
 msgid ""
 "If this option is set menus are generated with titles. Default is use titles."
@@ -745,38 +638,256 @@ msgstr ""
 "Hvis denne valgmulighed er angivet, genereres menuer med titler. Standard er "
 "ingen titler."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 105
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:105
 msgid "Sets the name of the name of the top level menu. Default is XDGMenu."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 110
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:110
 msgid "Inserts the menu items into the given Menu."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 114
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:114
 msgid "Terminal Command:   "
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 115
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:115
 msgid ""
 "Enter terminal emulator command used to launch terminal applications. The "
 "command"
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 118
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:118
 msgid "must end with an execute option (-e). Default xterm -e."
 msgstr ""
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 123
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:123
 #, fuzzy
 msgid "Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu."
 msgstr ""
 "Indtast den FULDE sti på menuen som skal lagres. Standardsti er "
 "$FVWM_USERDIR/.menu."
 
-#. ./modules/FvwmForm/FvwmForm-XDGOptionsHelp: line 136
-msgid "manpage"
+#: default-config/FvwmScript-ConfirmQuit:11
+msgid "Do you really want to quit Fvwm?"
 msgstr ""
+
+#: default-config/FvwmScript-ConfirmQuit:41
+#: default-config/FvwmScript-ConfirmCopyConfig:127
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:58
+msgid "Cancel"
+msgstr "Annuller"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:2
+msgid "ConfirmCopyConfig"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:21
+#, fuzzy
+msgid "Fvwm Default Configuration"
+msgstr "Musekonfiguration:"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:36
+msgid "This script copies the default configuration into your home directory:"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:64
+msgid "A backup of your current configuration will be located at:"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:92
+msgid "Click Confirm to continue and restart Fvwm."
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:107
+msgid "Confirm"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:2
+msgid "Bell Setup"
+msgstr "Opsætning af klokke"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:49
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:43
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:47
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:132
+msgid "Apply"
+msgstr "Anvend"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:100
+msgid "Beep"
+msgstr "Bip"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:135
+msgid "Volume:"
+msgstr "Lydstyrke:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:161
+msgid "Pitch(Hz):"
+msgstr "Tonehøjde (Hz):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:187
+msgid "Duration(ms):"
+msgstr "Varighed (ms):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:212
+msgid "Bell"
+msgstr "Klokke"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:2
+msgid "Keyboard Setup"
+msgstr "Opsætning af tastatur"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:120
+msgid "Click Volume (%)"
+msgstr "Klik-lydstyrke (%)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:133
+msgid "AutoRepeat On"
+msgstr "Automatisk gentagelse til"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:159
+msgid "Start Delay:  "
+msgstr "Forsinkelse ved start:  "
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:185
+msgid "Repeat Delay:"
+msgstr "Forsinkelse ved gentagelse:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:210
+msgid "Keyboard"
+msgstr "Tastatur"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:2
+msgid "Pointer Setup"
+msgstr "Opsætning af markør"
+
+# scootergrisen: bruges i drop down hvor der ikke er så god plads så " bruger" kan eventuelt undlades
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:108
+msgid "Right-handed user|Left-handed user"
+msgstr "Højrehåndet|Venstrehåndet"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:122
+msgid "Mouse configuration:"
+msgstr "Musekonfiguration:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:150
+msgid "Acceleration:"
+msgstr "Acceleration:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:177
+msgid "Threshold (pixels):"
+msgstr "Tærskel (pixels):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:202
+msgid "Pointer"
+msgstr "Markør"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:2
+msgid "Screen Setup"
+msgstr "Opsætning af skærm"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:264
+msgid "Background"
+msgstr "Baggrund"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:279
+msgid "Uniform color:"
+msgstr "Ensartet farve:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:394
+msgid "Pixmap:"
+msgstr "Pixelkort:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:425
+msgid "Browser..."
+msgstr "Browser..."
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:468
+msgid "Disable xinit background"
+msgstr "Deaktivér xinit-baggrund"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:500
+msgid "Screen-saver"
+msgstr "Pauseskærm"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:514
+msgid "Blank"
+msgstr "Tom"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:528
+msgid "Timeout(s):"
+msgstr "Timeout (s):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:554
+msgid "Pattern"
+msgstr "Mønster"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:569
+msgid "Cycle(s):"
+msgstr "Gennemløb (s):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:614
+msgid "DPMS"
+msgstr "DPMS"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:628
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:768
+msgid "Enable"
+msgstr "Aktivér"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:643
+msgid "Disable"
+msgstr "Deaktivér"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:657
+msgid "Standby(s):"
+msgstr "Standby (s):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:684
+msgid "Suspend(s):"
+msgstr "Hvile (s):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:711
+msgid "Off(s):"
+msgstr "Sluk (s):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:754
+msgid "xscreensaver"
+msgstr "xscreensaver"
+
+# scootergrisen: bruges på en knap hvor der ikke er plads nok til "Konfiguration og demonstration"
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:794
+msgid "Config and Demo"
+msgstr "Konfig og demo"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:2
+msgid "File Browser"
+msgstr "Filbrowser"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:42
+msgid "OK"
+msgstr "OK"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:86
+msgid "Path:"
+msgstr "Sti:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:181
+msgid " Show hidden files"
+msgstr " Vis skjulte filer"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:246
+msgid "Selected file:"
+msgstr "Valgte fil:"
+
+#~ msgid "Issue fvwm commands"
+#~ msgstr "Udsted fvwm-kommandoer"
+
+#~ msgid "Restart fvwm"
+#~ msgstr "Genstart fvwm"
+
+#~ msgid "Exit fvwm"
+#~ msgstr "Afslut fvwm"
 
 #~ msgid "Setup Form"
 #~ msgstr "Opsætningsformular"
@@ -910,9 +1021,6 @@ msgstr ""
 
 #~ msgid "Return - Dismiss"
 #~ msgstr "Vend tilbage - afvis"
-
-#~ msgid "Copy Config File(s)"
-#~ msgstr "Kopiér konfigurationsfil(er)"
 
 #~ msgid "Multiple Menu"
 #~ msgstr "Flere menu"

@@ -14,72 +14,63 @@ from template file, `.pot`. The `.po` file is then compiled into a
 
 This document explains the tools to build template files, update
 translations, and to compile the `.gmo` file from the `.po` using
-the fvwm Makefile.
+the fvwm Makefile. All the commands below assume the user is in
+the `po/` directory.
 
-## Translator Instructions
+## fvwmpo.sh
 
-Here is a set of instructions to create and update translations.
-All of these instructions assume you are in the `po/` directory.
+The shell script `fvwmpo.sh` is the main script to update
+the template, initialize new languages, update exist languages,
+and build the binary translation files. Each language, `LL_CC`,
+has its own translation file.
 
-First before you create or update a translation, update the
-template files (this ensures you have all the current strings
-to translate):
+### Update Template File
+
+To update the main template file, `fvwm3.pot`:
 
 ```
-make fvwm.pot-update FvwmScript.pot-update
+./fvwmpo.sh update-pot
 ```
-
-### Create New Translations
-
-To create a new translation from a template file:
-
-1. Add your language to the `ALL_LINGUAS` variable in `configure.ac`,
-   then `cd po/`.
-
-2. Use the template file to create new LL_CC (e.g., fr, zh_CN)
-   `.po` files:
-
-   ```
-   msginit -i fvwm.pot -l LL_CC -o fvwm.LL_CC.po
-   msginit -i FvwmScript.pot -l LL_CC -o FvwmScript.LL_CC.po
-   ```
-
-3. Edit your translation files, `fvwm.LL_CC.po` and `FvwmScript.LL_CC.po`
-   by providing the translated string `msgstr` for each string listed.
-
-4. Compile `.gmo` files from the `.po` files:
-
-   ```
-   make fvwm.LL_CC.gmo FvwmScript.LL_CC.gmo
-   ```
-
-5. Install your translations, then test them with the default-config.
-
-   + If this is the first time installing this translation you have to
-     build and install fvwm3 from source, starting with `./autogen.sh`
-     to add your language to the Makefiles.
-   + Once you have installed the language once, you only need to
-     `make install` to install the new `.gmo` file.
-
-   If you notice any issues, repeat steps 3-5 until satisfied.
-
-6. Create a pull request with your updates on github. Be sure to include the
-   `.gmo` file in your request.
 
 ### Update Existing Translation
 
 To update an existing translation:
 
-1. Use the update template files to update the `.po` files for
-   language LL_CC. This will remove old strings and add new strings
-   from the template file.
+1) Update the language file to match the current template
+   (if needed):
 
-   ```
-   make fvwm.LL_CC.po-update FvwmScript.LL_CC.po-update
-   ```
+```
+./fvwmpo.sh update LL_CC
+```
 
-2. Follow instructions 3-6 above by updating all the new (and maybe old)
-   strings in `fvwm.LL_CC.po` and `FvwmScript.LL_CC.po`.
+2) Modify the translation file by updating or adding any
+   translation strings in the `fvwm3.LL_CC.po` file.
+
+3) Build the binary translation file:
+
+```
+./fvwmpo.sh build LL_CC
+```
+
+4) Both the translation `.po` and binary `.gmo` file need to be
+   included in the commit to fvwm3.
+
+### Create New Translations
+
+To create a new translation from a template file:
+
+1) Add your language to the `ALL_LINGUAS` variable in
+   `../configure.ac` and `fvwmpo.sh` files.
+
+2) Use the template file to create a new LL_CC (e.g., fr, zh_CN)
+   translation `.po` file.
+
+```
+./fvwmpo.sh init LL_CC
+```
+
+3) Follow the above instructions 2-4 to add strings to the translation
+   file and build the `.gmo` file to commit to fvwm3.
 
 ### Translation Comments
 
@@ -107,18 +98,22 @@ Adding new strings to be translated to the templates depends on where
 the string is located. Right now there are three possible file types
 the Makefiles use to build the templates:
 
-+ FVWM_POT_FILES: This is a list of C source files that use the
++ FVWM_FILES: This is a list of C source files that use the
   FGettext(string) macro `_(string)`.
 
-+ FVWMRC_POT_FILES: This is a list of files that make use of the
++ FVWMRC_FILES: This is a list of files that make use of the
   command expansion `$[gt.string]`. These are used in the default-config
   and various FvwmForms.
 
-+ FVWMSCRIPT_POT_FILES: This is a list of FvwmScript files that use
++ FVWMSCRIPT_FILES: This is a list of FvwmScript files that use
   `UseGettext` option along with `WindowLocaleTitle` and `LocaleTitle`.
 
 To add new files to be translated, include them in the appropriate
-list in `po/MakeFile.am`. Then run `autogen.sh` and `./configure`
-to regenerate the Makefiles. Afterwards you can update the template
-with the new strings using the commands above.
+list in `fvwmpo.sh`. Then update the template using the above instructions.
+You can also update all translation files and rebuild all `.gmo` files using:
+
+```
+./fvwmpo.sh update-all
+./fvwmpo.sh build-all
+```
 
