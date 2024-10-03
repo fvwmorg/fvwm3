@@ -2230,7 +2230,7 @@ yyparse ()
 #endif
 #endif
 {
-  
+
   int yystate;
   int yyn;
   int yyresult;
@@ -2482,7 +2482,7 @@ yyreduce:
   case 5:
 #line 402 "script.y"
     {
-	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
+	FGettextInit("fvwm3", LOCALEDIR, "fvwm3");
 	FGettextSetLocalePath((yyvsp[(3) - (3)].str));
 }
     break;
@@ -2491,7 +2491,7 @@ yyreduce:
 #line 407 "script.y"
     {
 	fprintf(stderr,"UseGettext!\n");
-	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
+	FGettextInit("fvwm3", LOCALEDIR, "fvwm3");
 }
     break;
 

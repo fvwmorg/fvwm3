@@ -1,0 +1,970 @@
+# Arabic translations for fvwm package.
+# Copyright (C) 2002 fvwm workers
+# This file is distributed under the same license as the fvwm package.
+# Nadim Shaikli <shaikli@yahoo.com>
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-10-03 08:47-0600\n"
+"PO-Revision-Date: 2002-12-06 08:25+0100\n"
+"Last-Translator: Nadim Shaikli <shaikli@yahoo.com>\n"
+"Language-Team: Arabic\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 0.9.6\n"
+
+#: fvwm/fvwm3.c:1293
+msgid "Builtin Menu"
+msgstr "قائمة مبنية داخليا"
+
+#: fvwm/fvwm3.c:1300
+msgid "Load Default Config"
+msgstr ""
+
+#: fvwm/fvwm3.c:1305
+#, fuzzy
+msgid "Restart"
+msgstr "أعد التشغيل"
+
+#: fvwm/fvwm3.c:1310 default-config/FvwmScript-ConfirmQuit:25
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:85
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:89
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:94
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:235
+msgid "Quit"
+msgstr ""
+
+#: fvwm/expand.c:496 default-config/config:419 default-config/config:423
+#: default-config/config:424 default-config/config:425
+#: default-config/config:426
+msgid "Desk"
+msgstr "المكتب"
+
+#: fvwm/windowlist.c:87 fvwm/windowlist.c:93 fvwm/windowlist.c:100
+msgid "\tGeometry"
+msgstr "\tالأبعاد"
+
+#: fvwm/windowlist.c:98
+#, c-format
+msgid "Desk: %d%s"
+msgstr "المكتب: %d%s"
+
+#: fvwm/menus.c:1811
+msgid "More&..."
+msgstr ""
+
+#: default-config/config:315
+msgid "&Programs"
+msgstr ""
+
+#: default-config/config:316
+msgid "XDG &Menu"
+msgstr ""
+
+#: default-config/config:322
+msgid "&Wallpapers"
+msgstr ""
+
+#: default-config/config:323
+msgid "M&an Pages"
+msgstr ""
+
+#: default-config/config:324
+#, fuzzy
+msgid "Cop&y Config"
+msgstr "إنسخ ملفات التعريف"
+
+#: default-config/config:326
+#, fuzzy
+msgid "Re&fresh"
+msgstr "أعد تنشيط النافذة"
+
+#: default-config/config:327
+#, fuzzy
+msgid "&Restart"
+msgstr "أعد التشغيل"
+
+#: default-config/config:328
+msgid "&Quit"
+msgstr ""
+
+#: default-config/config:339
+msgid "Programs"
+msgstr ""
+
+#: default-config/config:353
+msgid "Wallpapers"
+msgstr ""
+
+#: default-config/config:354
+msgid "Floral"
+msgstr ""
+
+#: default-config/config:355
+msgid "Circles"
+msgstr ""
+
+#: default-config/config:356
+msgid "Space"
+msgstr ""
+
+#: default-config/config:361 default-config/config:373
+#, fuzzy
+msgid "Move"
+msgstr "&حرك"
+
+#: default-config/config:362 default-config/config:374
+#, fuzzy
+msgid "Resize"
+msgstr "غ&ير الحجم"
+
+#: default-config/config:363 default-config/config:375
+#: default-config/config:396
+#, fuzzy
+msgid "(De)Iconify"
+msgstr "(عدم) التحويل لأي&قونة"
+
+#: default-config/config:364 default-config/config:376
+#: default-config/config:397
+#, fuzzy
+msgid "(Un)Maximize"
+msgstr "(أزل) الت&كبير"
+
+#: default-config/config:365 default-config/config:377
+#: default-config/config:398
+msgid "(Un)Shade"
+msgstr ""
+
+#: default-config/config:366
+#, fuzzy
+msgid "(Un)Stick"
+msgstr "(أزل)ت&ثبيت"
+
+#: default-config/config:368 default-config/config:382
+#: default-config/config:403 bin/fvwm-menu-desktop-config.fpl:293
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:64
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:132
+#, fuzzy
+msgid "Close"
+msgstr "أ&غلق"
+
+#: default-config/config:369
+msgid "More"
+msgstr ""
+
+#: default-config/config:372
+msgid "Window Ops"
+msgstr "خيارات النافذة"
+
+#: default-config/config:378 default-config/config:399
+#, fuzzy
+msgid "(Un)Sticky"
+msgstr "(أزل)ت&ثبيت"
+
+#: default-config/config:379
+msgid "(No)Title Bar"
+msgstr ""
+
+#: default-config/config:380 default-config/config:401
+msgid "Send To"
+msgstr ""
+
+#: default-config/config:383 default-config/config:404
+msgid "Destroy"
+msgstr "تدمير"
+
+#: default-config/config:385 default-config/config:406
+#, fuzzy
+msgid "Raise"
+msgstr "ار&فع"
+
+#: default-config/config:386 default-config/config:407
+#, fuzzy
+msgid "Lower"
+msgstr "ا&خفض"
+
+#: default-config/config:388 default-config/config:409
+msgid "Stays On Top"
+msgstr ""
+
+#: default-config/config:389 default-config/config:410
+msgid "Stays Put"
+msgstr ""
+
+#: default-config/config:390 default-config/config:411
+msgid "Stays On Bottom"
+msgstr ""
+
+#: default-config/config:392 default-config/config:413
+msgid "Identify"
+msgstr ""
+
+#: default-config/config:400
+msgid "(No)TitleBar"
+msgstr ""
+
+#: default-config/config:417
+msgid "Current"
+msgstr ""
+
+#: default-config/config:418 default-config/config:430
+#: default-config/config:431 default-config/config:432
+#: default-config/config:433
+msgid "Page"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:55 bin/fvwm-menu-desktop-config.fpl:58
+#, fuzzy
+msgid "Fvwm XDGMenu Config"
+msgstr "خيارات إعداد Fvwm"
+
+#: bin/fvwm-menu-desktop-config.fpl:62
+msgid "Available Menus"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:70
+msgid "Menus in"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:98
+msgid "No menus found! Check why from within a terminal with"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:109
+msgid "Options"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:110 bin/fvwm-menu-desktop-config.fpl:291
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:69
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:137
+msgid "Help"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:115
+msgid "Include in Menu?    "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:117
+msgid "Config   "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:118
+msgid "Regenerate  "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:119
+msgid "Both   "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:120
+msgid "None  "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:123
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:27
+msgid "Use Icons?          "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:125 bin/fvwm-menu-desktop-config.fpl:136
+msgid "Yes      "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:126 bin/fvwm-menu-desktop-config.fpl:137
+msgid "No   "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:128 bin/fvwm-menu-desktop-config.fpl:139
+#: bin/fvwm-menu-desktop-config.fpl:147 bin/fvwm-menu-desktop-config.fpl:155
+msgid "  "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:129
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:38
+msgid "Icon size:          "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:131
+msgid " (Default is 24)"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:134
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:99
+msgid "Use Titles?         "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:140
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:57
+msgid "Used Icon theme:    "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:144
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:71
+msgid "Directory Icon:     "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:148
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:85
+msgid "Application Icon:   "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:152
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:104
+msgid "Top Menu Name:      "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:156
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:109
+msgid "Insert Menu Into:   "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:160
+msgid "Terminal command:   "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:162
+msgid " (Used to run Terminal entries)"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:165
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:46
+msgid "Icon directory:     "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:167
+msgid " (Directory for converted icons)"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:170
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:122
+msgid "Output path:        "
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:172
+msgid " (Full path to store output)"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:180
+#, fuzzy
+msgid "Export Menu"
+msgstr "القائمة الجذرية"
+
+#: bin/fvwm-menu-desktop-config.fpl:211
+msgid "Save and Regenerate"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:251
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:67
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:62
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:66
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:170
+msgid "Save"
+msgstr ""
+
+#: bin/fvwm-menu-desktop-config.fpl:289
+msgid "Reset"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:134
+msgid "XDGMenu Help"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:10
+msgid "XDGMenu.Help"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:17
+msgid ""
+"All the XDG menus found on the system are listed under Available Menus.  Use"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:19
+msgid ""
+"this FvwmForm to configure some of the defaults options for fvwm-menu-desktop"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:21
+msgid ""
+"and select which menus are generated.  Select the options you want and then"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:23
+msgid "generate then generate the menu by selecting the following:"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:27
+#, fuzzy
+msgid "Export Menu:"
+msgstr "القائمة الجذرية"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:29
+msgid ""
+"     Generates a menu by calling fvwm-menu-desktop with the selected options"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:31
+msgid ""
+"     and saves the output to Output Path. After the menu file is created it"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:33
+msgid ""
+"     is read by fvwm. This option does not save any changes made to settings."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:37
+msgid "Save and Regenerate:"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:39
+msgid ""
+"     This saves the settings then runs fvwm-menu-desktop with no options "
+"using"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:41
+msgid ""
+"     the defaults saved in the config file. This does not export the menu."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:45
+msgid ""
+"Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:47
+msgid ""
+"Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/"
+"menus/"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:49
+msgid ""
+"following the XDG menu specification are only shown in $HOME/.config/menus/."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:53
+msgid "If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:55
+msgid "Also it is a good idea to check $HOME/.xsession-errors for errors."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:66
+msgid "Options Help"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:68
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:136
+msgid "manpage"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:10
+msgid "XDGMenu Options Help"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:15
+msgid "General Options"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:19
+msgid "Include in Menu:    "
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:20
+msgid ""
+"Set if XDGMenu will include menu items to Configure and/or Regenerate the "
+"menu"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:22
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:30
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:33
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:41
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:49
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:52
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:60
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:63
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:66
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:74
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:77
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:80
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:88
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:91
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:94
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:117
+msgid "                    "
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:23
+msgid "at the bottom of the top level menu."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:28
+msgid ""
+"Option enables mini-icons in the menu(s). Warning! If ImageMagick is "
+"installed"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:31
+msgid ""
+"the script may generate all the icons and pause your system until the job is"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:34
+msgid ""
+"done. After the icons are generated, it will not take as long to regenerate."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:39
+msgid ""
+"If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
+"is"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:42
+msgid "desired enter the wanted size in this field."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:47
+msgid ""
+"If the specified icon isn't that size it is converted if ImageMagick is "
+"installed."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:50
+msgid ""
+"Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
+"here."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:53
+msgid "Otherwise no icon appears in the menu for that entry."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:58
+msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:61
+msgid ""
+"/usr/share/icons can used except the hicolor theme because it's the default"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:64
+msgid ""
+"fallback theme if no icon is found. Note that the theme name must be written"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:67
+msgid "exactly as the icon directory e.g."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:72
+msgid ""
+"If 'Use Icons' is enabled and for a directory in a menu no icon is found"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:75
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:89
+msgid "as default icon is used. But if the gnome icon theme isn't"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:78
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:92
+msgid "installed no default icon appears. Another icon can defined here."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:81
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:95
+msgid "Only the name of an icon is needed not the path!"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:86
+msgid "If 'Use Icons' is enabled and for an application no icon is found"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:100
+msgid ""
+"If this option is set menus are generated with titles. Default is use titles."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:105
+msgid "Sets the name of the name of the top level menu. Default is XDGMenu."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:110
+msgid "Inserts the menu items into the given Menu."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:114
+msgid "Terminal Command:   "
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:115
+msgid ""
+"Enter terminal emulator command used to launch terminal applications. The "
+"command"
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:118
+msgid "must end with an execute option (-e). Default xterm -e."
+msgstr ""
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:123
+msgid "Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu."
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmQuit:11
+msgid "Do you really want to quit Fvwm?"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmQuit:41
+#: default-config/FvwmScript-ConfirmCopyConfig:127
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:58
+msgid "Cancel"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:2
+msgid "ConfirmCopyConfig"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:21
+msgid "Fvwm Default Configuration"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:36
+msgid "This script copies the default configuration into your home directory:"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:64
+msgid "A backup of your current configuration will be located at:"
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:92
+msgid "Click Confirm to continue and restart Fvwm."
+msgstr ""
+
+#: default-config/FvwmScript-ConfirmCopyConfig:107
+msgid "Confirm"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:2
+msgid "Bell Setup"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:49
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:43
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:47
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:132
+msgid "Apply"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:100
+msgid "Beep"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:135
+msgid "Volume:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:161
+msgid "Pitch(Hz):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:187
+msgid "Duration(ms):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:212
+msgid "Bell"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:2
+msgid "Keyboard Setup"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:120
+msgid "Click Volume (%)"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:133
+msgid "AutoRepeat On"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:159
+msgid "Start Delay:  "
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:185
+msgid "Repeat Delay:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:210
+msgid "Keyboard"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:2
+msgid "Pointer Setup"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:108
+msgid "Right-handed user|Left-handed user"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:122
+msgid "Mouse configuration:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:150
+msgid "Acceleration:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:177
+msgid "Threshold (pixels):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:202
+msgid "Pointer"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:2
+msgid "Screen Setup"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:264
+msgid "Background"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:279
+msgid "Uniform color:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:394
+msgid "Pixmap:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:425
+msgid "Browser..."
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:468
+msgid "Disable xinit background"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:500
+msgid "Screen-saver"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:514
+msgid "Blank"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:528
+msgid "Timeout(s):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:554
+msgid "Pattern"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:569
+msgid "Cycle(s):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:614
+msgid "DPMS"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:628
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:768
+msgid "Enable"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:643
+msgid "Disable"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:657
+msgid "Standby(s):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:684
+msgid "Suspend(s):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:711
+msgid "Off(s):"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:754
+msgid "xscreensaver"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:794
+msgid "Config and Demo"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:2
+msgid "File Browser"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:42
+msgid "OK"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:86
+msgid "Path:"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:181
+msgid " Show hidden files"
+msgstr ""
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:246
+msgid "Selected file:"
+msgstr ""
+
+#~ msgid "Issue fvwm commands"
+#~ msgstr "أصدر أوامر fvwm"
+
+#~ msgid "Restart fvwm"
+#~ msgstr "أعد تشغيل fvwm"
+
+#~ msgid "Exit fvwm"
+#~ msgstr "أخرج من fvwm"
+
+#~ msgid "Setup Form"
+#~ msgstr "شاشة الإعداد"
+
+#~ msgid "Setup 95 Script"
+#~ msgstr "ملف إعداد 95"
+
+#~ msgid "Remote Logins"
+#~ msgstr "الدخول عن بعد"
+
+#~ msgid "Utilities"
+#~ msgstr "برامج الخدمات"
+
+#~ msgid "Fvwm Modules"
+#~ msgstr "وحدات Fvwm"
+
+#~ msgid "Fvwm Window Ops"
+#~ msgstr "خيارات نوافذ Fvwm"
+
+#~ msgid "Refresh Screen"
+#~ msgstr "أعد تنشيط الشاشة"
+
+#~ msgid "Recapture Screen"
+#~ msgstr "أعد عرض الشاشة"
+
+#~ msgid "Exit Fvwm"
+#~ msgstr "الخروج من Fvwm"
+
+#~ msgid "Reset X defaults"
+#~ msgstr "إسترجاع الإفتراضي لأكس"
+
+#~ msgid "Sloppy Focus"
+#~ msgstr "تركيز بطيئ"
+
+#~ msgid "Click To Focus"
+#~ msgstr "تركيز بالضعط"
+
+#~ msgid "Focus Follows Mouse"
+#~ msgstr "تركيز بلحاق الفارة"
+
+#~ msgid "Colormap Follows Mouse"
+#~ msgstr "خارطة الألوان تلحق بالفارة"
+
+#~ msgid "Colormap Follows Focus"
+#~ msgstr "خارطة الألوان تلحق بالتركيز"
+
+#~ msgid "Full Paging ON"
+#~ msgstr "تشغيل التصفح الكامل "
+
+#~ msgid "All Paging OFF"
+#~ msgstr "توقيف التصفح الكامل"
+
+#~ msgid "Horizontal Paging Only"
+#~ msgstr "التصفح الأفقي فقط"
+
+#~ msgid "Vertical Paging Only"
+#~ msgstr "التصفح العمودي فقط"
+
+#~ msgid "Partial Paging"
+#~ msgstr "تصفح جزئي"
+
+#~ msgid "Full Paging && Edge Wrap"
+#~ msgstr "تصفح كامل مع القلب عند الحواف"
+
+#~ msgid "&Delete"
+#~ msgstr "اح&ذف"
+
+#~ msgid "Print"
+#~ msgstr "أطبع"
+
+#~ msgid "Print Re&verse"
+#~ msgstr "أطبع بالم&قلوب"
+
+#~ msgid "Control Animation"
+#~ msgstr "تحكم بالحركة"
+
+#~ msgid "desks"
+#~ msgstr "مكاتب"
+
+#~ msgid "Stop Module Menu"
+#~ msgstr "قائمة إيقاف الوحدات"
+
+#~ msgid "Stop Fvwm Modules"
+#~ msgstr "إيقاف وحدات Fvem"
+
+#~ msgid "Stop"
+#~ msgstr "إيقاف"
+
+#~ msgid "Really Quit Fvwm?"
+#~ msgstr "هل تريد الخروج من Fvwm ؟"
+
+#~ msgid "Yes, Really Quit"
+#~ msgstr "نعم، أريد الخروج"
+
+#~ msgid "Start"
+#~ msgstr "إبدأ"
+
+#~ msgid "Just an Xterm"
+#~ msgstr "أظهر Xterm فقط"
+
+#~ msgid "No, Don't Quit"
+#~ msgstr "لا، لا تخرج"
+
+#~ msgid "fvwm - Create Configuration"
+#~ msgstr "إنشاء ملف خيارات ل fvwm"
+
+#~ msgid "Use this form to create your fvwm2rc configuration file."
+#~ msgstr "إستعمل هذا النموذج لإنشاء ملف الإعدادات fvwm2rc الخاص بك"
+
+#~ msgid "The file created is ~/.fvwm/.fvwm2rc or $FVWM_USERDIR/.fvwm2rc."
+#~ msgstr "الملف المنشأ هو ~/.fvwm/.fvwm2rc أو $FVWM_USERDIR/.fvwm2rc"
+
+#~ msgid "After creation, the fvwm2rc file can then be changed with any"
+#~ msgstr "بعد الإنشاء، من الممكن تعديل الملف الخيارات fvwm2rc بإستعمال أي"
+
+#~ msgid "editor to suit your own needs."
+#~ msgstr "محرر نصوص تريده."
+
+#~ msgid "Create a starting .fvwm2rc file"
+#~ msgstr "أنشئ الملف المبدئي .fvwm2rc "
+
+#~ msgid "These files are optional.  Select the modules you want to customize."
+#~ msgstr "الملفات التالية إختيارية. أختر الوحدات التي تود أن تخصصها."
+
+#~ msgid "You can always copy them later."
+#~ msgstr "تستطيع نسخهم في الوقت الذي تريد."
+
+#~ msgid "Return - Dismiss"
+#~ msgstr "رجوع - خروج"

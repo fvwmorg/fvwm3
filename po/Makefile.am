@@ -1,146 +1,20 @@
 
 localedir = @LOCALEDIR@
 
-FVWM_POT_FILES = \
-     ../fvwm/fvwm3.c \
-     ../fvwm/expand.c \
-     ../fvwm/windowlist.c \
-     ../fvwm/virtual.c \
-     ../fvwm/menus.c
-
-FVWMRC_POT_FILES = \
-     ../default-config/config \
-     ../bin/fvwm-menu-desktop-config.fpl \
-     ../modules/FvwmForm/FvwmForm-XDGMenuHelp \
-     ../modules/FvwmForm/FvwmForm-XDGOptionsHelp
-
-FVWMSCRIPT_POT_FILES = \
-        ../default-config/FvwmScript-ConfirmQuit \
-        ../default-config/FvwmScript-ConfirmCopyConfig \
-	../modules/FvwmScript/Scripts/FvwmScript-BellSetup \
-	../modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup \
-	../modules/FvwmScript/Scripts/FvwmScript-PointerSetup \
-	../modules/FvwmScript/Scripts/FvwmScript-ScreenSetup \
-	../modules/FvwmScript/Scripts/FvwmScript-FileBrowser
-
 EXTRA_DIST = \
-	@POFILES@ @GMOFILES@ fvwm.pot FvwmScript.pot \
-	remove-potcdate.sed remove-potcdate.sin
-
-COPYRIGHT_HOLDER = fvwm workers
-
-# These options get passed to xgettext.
-XGETTEXT_OPTIONS = --keyword=_ --keyword=N_
+	@POFILES@ @GMOFILES@ fvwm3.pot
 
 # This is the list of locale categories, beyond LC_MESSAGES, for which the
 # message catalogs shall be used.  It is usually empty.
 EXTRA_LOCALE_CATEGORIES =
 
-MSGMERGE_UPDATE = @MSGMERGE@ --update
-
-SUFFIXES = .po .gmo .mo .sed .sin .nop .po-update
-
-.po.mo:
-	@echo "$(MSGFMT) -c -o $@ $<"; \
-	$(MSGFMT) -c -o t-$@ $< && mv t-$@ $@
-
-.po.gmo:
-	@lang=`echo $* | sed -e 's,.*/,,'`; \
-	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	if test -f $(srcdir)/$${lang}.po; then \
-	  echo "$${cdcmd}rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o $${lang}.gmo $${lang}.po"; \
-	  cd $(srcdir) && rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o t-$${lang}.gmo $${lang}.po && mv t-$${lang}.gmo $${lang}.gmo; \
-	fi
-
-.sin.sed:
-	sed -e '/^#/d' $< > t-$@
-	mv t-$@ $@
-
-
 all-local: all-local-@USE_NLS@
 
 # make [all] should do nothing ...
-#all-local-yes: $(CATALOGS)
 all-local-yes:
 all-local-no:
 
 catalogs: $(CATALOGS)
-
-maintainer-clean-local:
-	rm -f $(GMOFILES)
-
-$(FVWM_DOMAIN).pot-update: $(FVWM_POT_FILES) \
-	$(FVWMRC_POT_FILES) \
-	remove-potcdate.sed
-	rm -f fvwmrc.pot; \
-	rcpotfiles='$(FVWMRC_POT_FILES)'; \
-	rm -f duplicate; \
-	for file in $$rcpotfiles; do \
-	  perl -ne 's/\[gt\.((\\.|.)+?)\]/ print "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
-	  $$file >> duplicate; \
-	done; \
-	msguniq duplicate > fvwmrc.pot;
-	rm -f duplicate; \
-	potfiles='$(FVWM_POT_FILES)'; \
-	$(XGETTEXT) \
-	  --add-comments=TRANSLATORS: $(XGETTEXT_OPTIONS) -o $(FVWM_DOMAIN).po \
-	  --copyright-holder='$(COPYRIGHT_HOLDER)' $$potfiles; \
-	test ! -f $(FVWM_DOMAIN).po || { \
-	  if test -f $(srcdir)/$(FVWM_DOMAIN).pot; then \
-	    sed -f remove-potcdate.sed < $(srcdir)/$(FVWM_DOMAIN).pot > $(FVWM_DOMAIN).1po && \
-	    sed -f remove-potcdate.sed < $(FVWM_DOMAIN).po > $(FVWM_DOMAIN).2po && \
-	    if cmp $(FVWM_DOMAIN).1po $(FVWM_DOMAIN).2po >/dev/null 2>&1; then \
-	      rm -f $(FVWM_DOMAIN).1po $(FVWM_DOMAIN).2po $(FVWM_DOMAIN).po; \
-	    else \
-	      rm -f $(FVWM_DOMAIN).1po $(FVWM_DOMAIN).2po $(srcdir)/$(FVWM_DOMAIN).pot && \
-	      mv $(FVWM_DOMAIN).po $(srcdir)/$(FVWM_DOMAIN).pot; \
-	    fi; \
-	  else \
-	    mv $(FVWM_DOMAIN).po $(srcdir)/$(FVWM_DOMAIN).pot; \
-	  fi; \
-	  mv $(FVWM_DOMAIN).pot duplicate.pot; \
-	  cat fvwmrc.pot >> duplicate.pot; \
-	  msguniq duplicate.pot  > $(FVWM_DOMAIN).pot; \
-	  rm -f duplicate.pot fvwmrc.pot; \
-	}
-
-$(srcdir)/$(FVWM_DOMAIN).pot:
-	$(MAKE) $(FVWM_DOMAIN).pot-update
-
-$(FVWMSCRIPT_DOMAIN).pot-update: $(FVWMSCRIPT_POT_FILES) \
-	remove-potcdate.sed
-	potfiles='$(FVWMSCRIPT_POT_FILES)'; \
-	rm -f duplicate; \
-	for file in $$potfiles; do \
-	  perl -ne 's/LocaleTitle\s+\{((\\.|.)+?)\}/ print "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
-	  $$file >> duplicate; \
-	done; \
-	msguniq duplicate > duplicate.pot; \
-        potfiles='/dev/null'; \
-        $(XGETTEXT) \
-          --add-comments=TRANSLATORS: --language=C -o $(FVWMSCRIPT_DOMAIN).pot \
-          --copyright-holder='$(COPYRIGHT_HOLDER)' --force-po $$potfiles; \
-	echo >> $(FVWMSCRIPT_DOMAIN).pot; \
-	cat duplicate.pot >> $(FVWMSCRIPT_DOMAIN).pot; \
-	rm -f duplicate duplicate.pot;
-
-$(srcdir)/$(FVWMSCRIPT_DOMAIN).pot:
-	$(MAKE) $(FVWMSCRIPT_DOMAIN).pot-update
-
-$(POFILES): $(srcdir)/$(FVWM_DOMAIN).pot \
-	$(srcdir)/$(FVWMSCRIPT_DOMAIN).pot
-	dlang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po$$//'`; \
-	dom=`echo $$dlang | sed -e 's/\..*$$//'`; \
-	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	if test -f $${dlang}.po; then \
-	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $${dlang}.po $${dom}.pot"; \
-	  cd $(srcdir) && $(MSGMERGE_UPDATE) $${dlang}.po $${dom}.pot; \
-	fi
-
-#	@lang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po$$//'`; \
-#	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-#	echo "$${cdcmd}$(MSGMERGE_UPDATE) $${lang}.po $(FVWM_DOMAIN).pot"; \
-#	cd $(srcdir) && $(MSGMERGE_UPDATE) $${lang}.po $(FVWM_DOMAIN).pot
 
 install-data-local: install-data-local-@USE_NLS@
 install-data-local-no: all
@@ -203,7 +77,6 @@ install-data-local-yes: all
 	  done; \
 	done
 
-
 installdirs-data: installdirs-data-local-@USE_NLS@
 installdirs-data-local-no:
 installdirs-data-local-yes:
@@ -247,7 +120,6 @@ installdirs-data-local-yes:
 	  done; \
 	done
 
-
 uninstall-local: uninstall-local-@USE_NLS@
 uninstall-local-no:
 uninstall-local-yes:
@@ -264,40 +136,3 @@ uninstall-local-yes:
 	done
 	if test -d @FVWM_DATADIR@"/locale"; then rm -fr @FVWM_DATADIR@"/locale"; fi
 
-update-po: Makefile
-	$(MAKE) $(FVWM_DOMAIN).pot-update
-	$(MAKE) $(FVWMSCRIPT_DOMAIN).pot-update
-	$(MAKE) $(UPDATEPOFILES)
-	$(MAKE) update-gmo
-
-# General rule for updating PO files.
-
-.nop.po-update:
-	dlang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po-update$$//'`; \
-	dom=`echo $$dlang | sed -e 's/\..*$$//'`; \
-	tmpdir=`pwd`; \
-	echo "$$dlang:"; \
-	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	echo "$${cdcmd}$(MSGMERGE) $$dlang.po $$dom.pot -o $$dlang.new.po"; \
-	cd $(srcdir); \
-	if $(MSGMERGE) $$dlang.po $$dom.pot -o $$tmpdir/$$dlang.new.po; then \
-	  if cmp $$dlang.po $$tmpdir/$$dlang.new.po >/dev/null 2>&1; then \
-	    rm -f $$tmpdir/$$dlang.new.po; \
-	  else \
-	    if mv -f $$tmpdir/$$dlang.new.po $$dlang.po; then \
-	      :; \
-	    else \
-	      echo "msgmerge for $$dlang.po failed: cannot move \
-$$tmpdir/$$dlang.new.po to $$dlang.po" 1>&2; \
-	      exit 1; \
-	    fi; \
-	  fi; \
-	else \
-	  echo "msgmerge for $$dlang.po failed!" 1>&2; \
-	  rm -f $$tmpdir/$$dlang.new.po; \
-	fi
-
-$(DUMMYPOFILES):
-
-update-gmo: Makefile $(GMOFILES)
-	@:

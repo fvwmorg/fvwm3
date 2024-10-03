@@ -1808,7 +1808,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			/* don't propagate sidepic, sidecolor, popup and
 			 * popdown actions */
 			/* And add the entry pointing to the new menu */
-			gt_name = gettext("More&...");
+			gt_name = _("More&...");
 			name = fxstrdup(gt_name);
 			AddToMenu(
 				msp->menu, name, tempname,

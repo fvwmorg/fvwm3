@@ -399,13 +399,13 @@ initvar: 			{ InitVarGlob(); }
 head:
 | head USEGETTEXT GSTR
 {
-	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
+	FGettextInit("fvwm3", LOCALEDIR, "fvwm3");
 	FGettextSetLocalePath($3);
 }
 | head USEGETTEXT
 {
 	fprintf(stderr,"UseGettext!\n");
-	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
+	FGettextInit("fvwm3", LOCALEDIR, "fvwm3");
 }
 /* empty: we use default values */
 | head WINDOWTITLE GSTR
