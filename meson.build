@@ -313,6 +313,13 @@ if librsvg.found()
             + ' to build SVG support.',
         )
     else
+        # On Alpine Linux (and possibly other distros), for gio to compile,
+        # -lmount needs to be included.  If we find it, use it.
+        libmount = dependency('mount', required: false)
+        if libmount.found()
+            svg_deps += libmount
+            summary_depvals += {'mount': libmount}
+        endif
         all_found_deps += svg_deps
     endif
 endif
