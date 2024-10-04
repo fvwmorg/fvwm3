@@ -19,6 +19,7 @@
 #include "config.h"
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/Picture.h"
 #include "libs/Strings.h"
 

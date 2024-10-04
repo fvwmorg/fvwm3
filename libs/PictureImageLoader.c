@@ -34,7 +34,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
 
-#include <fvwmlib.h>
+#include "fvwmlib.h"
+#include "defaults.h"
+#include "log.h"
 #include "System.h"
 #include "Strings.h"
 #include "Picture.h"
@@ -58,11 +60,7 @@
 typedef struct PImageLoader
 {
   char *extension;
-#ifdef __STDC__
   int (*func)(FIMAGE_CMD_ARGS);
-#else
-  int (*func)();
-#endif
 } PImageLoader;
 
 /* ---------------------------- local macros ------------------------------- */
@@ -75,7 +73,11 @@ typedef struct PImageLoader
 
 /* ---------------------------- forward declarations ----------------------- */
 
+#ifdef USE_SVG
 static Bool PImageLoadSvg(FIMAGE_CMD_ARGS);
+#else
+#define PImageLoadSvg(a,b,c,d,e) (0)
+#endif
 static Bool PImageLoadPng(FIMAGE_CMD_ARGS);
 static Bool PImageLoadXpm(FIMAGE_CMD_ARGS);
 
@@ -139,6 +141,7 @@ Bool PImageLoadArgbDataFromFile(FIMAGE_CMD_ARGS)
  * svg loader
  *
  */
+#if USE_SVG
 static
 Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 {
@@ -411,6 +414,13 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 
 	return True;
 }
+#else
+static Bool
+PImageLoadSvg(FIMAGE_CMD_ARGS)
+{
+	return (True);
+}
+#endif
 
 /*
  *
@@ -508,16 +518,16 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	 * this fail to build on much older libpng versions which we support
 	 * (pre 1.3), then I might have to.
 	 */
-	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_RGB_ALPHA)
+	if (Fpng_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_RGB_ALPHA)
 	{
 		hasa = 1;
 	}
-	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY_ALPHA)
+	if (Fpng_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY_ALPHA)
 	{
 		hasa = 1;
 		hasg = 1;
 	}
-	if (png_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY)
+	if (Fpng_get_color_type(Fpng_ptr, Finfo_ptr) == FPNG_COLOR_TYPE_GRAY)
 	{
 		hasg = 1;
 	}
