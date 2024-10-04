@@ -21,6 +21,7 @@
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/Strings.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

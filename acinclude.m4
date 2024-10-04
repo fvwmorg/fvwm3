@@ -946,6 +946,8 @@ AC_DEFUN([AM_GNU_FGETTEXT],
         if test "$no_dgettext" != "yes"; then
           CFLAGS="$CFLAGS $intl_LIBS $iconv_LIBS"
           LIBS="$LIBS $intl_LIBS $iconv_LIBS"
+          echo "LIBS: $LIBS"
+          echo "CFLAGS: $CFLAGS"
           AC_MSG_CHECKING(if a simple gettext program link)
           AC_TRY_LINK([
           #include <libintl.h>

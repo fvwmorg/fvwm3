@@ -439,6 +439,7 @@ typedef Fpng_struct  **Fpng_structpp;
 #define Fpng_destroy_read_struct(a,b,c) png_destroy_read_struct(a,b,c)
 #define Fpng_init_io(a,b) png_init_io(a,b)
 #define Fpng_read_info(a,b) png_read_info(a,b)
+#define Fpng_get_color_type(a, b) png_get_color_type(a, b)
 #define Fpng_get_IHDR(a,b,c,d,e,f,g,h,i) png_get_IHDR(a,b,c,d,e,f,g,h,i)
 #define Fpng_set_expand(a) png_set_expand(a)
 #define Fpng_set_swap_alpha(a) png_set_swap_alpha(a)
@@ -471,9 +472,10 @@ typedef Fpng_struct  **Fpng_structpp;
 #define FPNG_INFO_tRNS 7
 
 #define Fpng_check_sig(a,b) 0
-#define Fpng_create_read_struct(a,b,c,d) NULL
 #define Fpng_create_info_struct(a) NULL
+#define Fpng_create_read_struct(a,b,c,d) NULL
 #define Fpng_destroy_read_struct(a,b,c)
+#define Fpng_get_color_type(a, b) 0
 #define Fpng_init_io(a,b)
 #define Fpng_read_info(a,b)
 #define Fpng_get_IHDR(a,b,c,d,e,f,g,h,i)

@@ -32,6 +32,7 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
+#include "libs/log.h"
 #include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"

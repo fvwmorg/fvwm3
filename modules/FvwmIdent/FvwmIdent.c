@@ -53,6 +53,7 @@
 #include "libs/System.h"
 #include "libs/Target.h"
 #include "libs/XError.h"
+#include "libs/log.h"
 
 #include "FvwmIdent.h"
 

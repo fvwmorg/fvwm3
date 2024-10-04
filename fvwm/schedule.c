@@ -17,6 +17,7 @@
 
 #include <stdio.h>
 
+#include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/fqueue.h"
 #include "libs/charmap.h"
