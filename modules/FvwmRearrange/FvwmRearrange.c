@@ -91,6 +91,7 @@ int do_ewmhiwa = 0;
 int FvwmTile = 0;
 int FvwmCascade = 1;
 
+char *monitor_name = NULL;
 
 RETSIGTYPE DeadPipe(int sig)
 {
@@ -126,6 +127,7 @@ int is_suitable_window(unsigned long *body)
 {
   XWindowAttributes xwa;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
+  char *m_name = (char *)&(cfgpacket->monitor_name);
 
   if ((DO_SKIP_WINDOW_LIST(cfgpacket)) && !all)
     return 0;
@@ -164,6 +166,9 @@ int is_suitable_window(unsigned long *body)
 
   if ((IS_TRANSIENT(cfgpacket)) && !transients)
     return 0;
+
+  if (monitor_name != NULL && (strcmp(monitor_name, m_name) == 0))
+    return 1;
 
   return 1;
 }
@@ -251,8 +256,7 @@ void move_resize_raise_window(
 	window_item *wi, int x, int y, int w, int h)
 {
 	static char msg[78];
-	const char *ewmhiwa = do_ewmhiwa ?
-		"ewmhiwa" : "";
+	const char *ewmhiwa = do_ewmhiwa ? "ewmhiwa" : "";
 
 	if (resize)
 	{
@@ -261,6 +265,7 @@ void move_resize_raise_window(
 			"ResizeMove";
 		snprintf(msg, sizeof(msg), "%s %dp %dp %up %upi %s", function, w, h, x, y,
 			ewmhiwa);
+		fprintf(stderr, "SENDING: %s\n", msg);
 		SendText(fd, msg, wi->frame);
 	}
 	else
@@ -273,6 +278,7 @@ void move_resize_raise_window(
 				ewmhiwa);
 		else
 			snprintf(msg, sizeof(msg), "%s %up %up %s", function, x, y, ewmhiwa);
+		fprintf(stderr, "SENDING: %s\n", msg);
 		SendText(fd, msg, wi->frame);
 	}
 
@@ -495,6 +501,10 @@ void parse_args(char *s, int argc, char *argv[], int argi)
     else if (!strcmp(argv[argi], "-noanimate")) {
       do_animate = 0;
     }
+    else if (!strcmp(argv[argi], "-screen") && ((argi + 1) < argc)) {
+      monitor_name = fxstrdup(argv[++argi]);
+      fprintf(stderr, "MONITOR: %s\n", monitor_name);
+    }
     else {
       if (++nsargc > 4) {
 	fprintf(console,
@@ -515,10 +525,6 @@ void parse_args(char *s, int argc, char *argv[], int argi)
       }
     }
   }
-  ofsx += dx;
-  ofsy += dy;
-  maxx += dx;
-  maxy += dy;
 }
 
 int main(int argc, char *argv[])
@@ -559,9 +565,31 @@ int main(int argc, char *argv[])
   {
     GetConfigLine(fd, &config_line);
   }
-  FScreenGetScrRect(NULL, FSCREEN_CURRENT, &dx, &dy, &dwidth, &dheight);
 
   parse_args("module args", module->user_argc, module->user_argv, 0);
+
+  struct monitor *m = monitor_resolve_name(monitor_name ? monitor_name : "g");
+  if (m == NULL)
+      m = monitor_get_current();
+
+  struct monitor *mg = monitor_get_global();
+
+  dx = m->si->x;
+  dy = m->si->y;
+  dwidth = m->si->w;
+  dheight = m->si->h;
+  ofsx += dx;
+  ofsy += dy;
+  maxx += dx;
+  maxy += dy;
+
+  if (monitor_name != NULL) {
+    dx = m->si->x;
+    dy = m->si->y;
+  }
+
+  fprintf(stderr, "Using monitor: <%s>: {dx: %d, dy: %d, dwidth: %d, dheight: %d}\n",
+	  m->si->name, dx, dy, dwidth, dheight);
 
   SetMessageMask(fd,
 		 M_CONFIGURE_WINDOW |
