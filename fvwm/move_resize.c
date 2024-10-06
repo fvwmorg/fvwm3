@@ -1145,6 +1145,7 @@ static int GetResizeArguments(
 	*paction = naction;
 
 	m = fw->m;
+	fprintf(stderr, "%s: USING MONITOR: %s\n", __func__, m->si->name);
 	n = 0;
 	n += ParseOneResizeArgument(
 		s1, monitor_get_all_widths(),
