@@ -1773,10 +1773,10 @@ static void _refocus_stolen_focus_win(const evh_args_t *ea)
 
 /* ---------------------------- event handlers ----------------------------- */
 
-void monitor_update_ewmh(void)
+static void monitor_update_ewmh(void)
 {
 	FvwmWindow	*t;
-	struct monitor	*m, *mref, *mo, *mo1;
+	struct monitor	*m, *mref;
 
 	if (Scr.bo.do_debug_randr)
 	{
@@ -1787,22 +1787,12 @@ void monitor_update_ewmh(void)
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->flags & MONITOR_CHANGED) {
-			fvwm_debug(__func__, "Applying EWMH changes to "
-			    "existing %s", m->si->name);
-			TAILQ_FOREACH(mo, &monitorsold_q, oentry) {
-				if (strcmp(m->si->name, mo->si->name) != 0)
-					continue;
-				if (mo->Desktops == NULL)
-					continue;
-				for (t = Scr.FvwmRoot.next; t; t = t->next) {
-					if (t->m == mo) {
-						t->m = m;
-						update_fvwm_monitor(t);
-					}
-				}
-				m->emit |= MONITOR_CHANGED;
-			}
 			m->flags &= ~MONITOR_CHANGED;
+
+			// FIXME: We need to add back in the logic here
+			// which was removed.  We can't just do nothing if a
+			// monitor has changed -- we have to adjust windows,
+			// etc.
 			continue;
 		}
 		if (m->flags & MONITOR_NEW) {
@@ -1829,17 +1819,10 @@ void monitor_update_ewmh(void)
 			m->virtual_scr.Vy = 0;
 
 			set_ewmhc_strut_values(m, ewbs);
+
+			m->flags &= ~MONITOR_NEW;
 		}
 		EWMH_Init(m);
-
-		/* Clear the flag now that it's been registered. */
-		m->flags &= ~MONITOR_NEW;
-	}
-
-	TAILQ_FOREACH_SAFE(mo, &monitorsold_q, oentry, mo1) {
-		TAILQ_REMOVE(&monitorsold_q, mo, oentry);
-		fvwm_debug(__func__, "Removed mo '%s' from processing",
-		    mo->si->name);
 	}
 
 
@@ -1850,7 +1833,7 @@ void monitor_update_ewmh(void)
 	}
 }
 
-void
+static void
 monitor_emit_broadcast(void)
 {
 	struct monitor	*m;
@@ -1859,44 +1842,37 @@ monitor_emit_broadcast(void)
 	RB_FOREACH (m, monitors, &monitor_q) {
 		if (m->emit > 0)
 			fvwm_debug(__func__, "%s: emit: %d\n", m->si->name, m->emit);
-		if (m->emit &= ~MONITOR_CHANGED) {
+		if (m->emit & MONITOR_CHANGED) {
+			fvwm_debug(__func__, "%s: emit monitor changed", m->si->name);
 			BroadcastName(
 				MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
-			m->emit &= ~MONITOR_CHANGED;
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
-		if (m->emit &= ~MONITOR_ENABLED) {
+		if (m->emit & MONITOR_ENABLED) {
+			fvwm_debug(__func__, "%s: emit monitor enabled", m->si->name);
 			BroadcastName(
 				MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
-		if (m->emit &= ~MONITOR_DISABLED) {
-			fvwm_debug(__func__, "MONITOR DISABLED: %s", m->si->name);
+		if (m->emit & MONITOR_DISABLED) {
+			fvwm_debug(__func__, "%s: emit monitor disabled", m->si->name);
 			BroadcastName(
 				MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 
-		if (m->flags & MONITOR_PRIMARY) {
-			struct monitor *pm = m, *mnew;
+		if ((m->flags & MONITOR_PRIMARY) &&
+		    (m != monitor_by_last_primary())) {
+			fvwm_debug(__func__, "%s: emit monitor primary change", m->si->name);
 
-			if ((mnew = monitor_by_last_primary()) == NULL)
-				break;
-
-			if (pm != mnew) {
-				fvwm_debug(__func__, "MONITOR PRIMARY");
-				execute_function_override_window(
-				    NULL, NULL, randrfunc, NULL, 0, NULL);
-			}
+			execute_function_override_window(
+				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 	}
 }
@@ -4150,11 +4126,21 @@ void dispatch_event(XEvent *e)
 	Window w = e->xany.window;
 	FvwmWindow *fw;
 	event_group_t *event_group;
+	static unsigned long prev_serial = 0;
 
 	XFlush(dpy);
 
 	switch (e->type - randr_event) {
 	case RRScreenChangeNotify:
+		/* Avoid processing identical RandR events twice. */
+		if (e->xany.serial == prev_serial)
+		{
+			fvwm_debug(__func__, "Ignoring duplicate event %lu\n",
+				 e->xany.serial);
+			break;
+		}
+		prev_serial = e->xany.serial;
+
 		XRRUpdateConfiguration(e);
 		monitor_output_change(e->xany.display, NULL);
 		monitor_update_ewmh();
