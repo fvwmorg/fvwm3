@@ -44,6 +44,7 @@
 #include "geometry.h"
 #include "libs/fvwmsignal.h"
 #include "decorations.h"
+#include "ewmh.h"
 #include "commands.h"
 
 /* A queue of commands from the modules */
@@ -481,17 +482,22 @@ static
 void send_monitor_info(fmodule *send)
 {
 	struct monitor	*m;
+	boundingbox	 r;
 	const char	*m_info;
 	char		*name;
 
-	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d";
+	r = get_ewmhc_boundingbox(m);
+
+	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d";
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		xasprintf(&name, m_info, m->si->name, m->flags,
 		    m->dx, m->dy, m->virtual_scr.Vx,
 		    m->virtual_scr.Vy, m->virtual_scr.VxMax,
 		    m->virtual_scr.VyMax, m->virtual_scr.CurrentDesk,
-		    monitor_get_all_widths(), monitor_get_all_heights());
+		    monitor_get_all_widths(), monitor_get_all_heights(),
+		    r.left, r.right, r.top, r.bottom
+		);
 
 		SendName(send, M_CONFIG_INFO, 0, 0, 0, name);
 		free(name);
