@@ -23,6 +23,14 @@ typedef struct
 
 typedef struct
 {
+	int top;
+	int bottom;
+	int left;
+	int right;
+} boundingbox;
+
+typedef struct
+{
 	int x;
 	int y;
 } position;

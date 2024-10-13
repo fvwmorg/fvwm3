@@ -59,6 +59,7 @@ void EWMH_ExitStuff(void);
 
 /* ewmh_conf.c */
 void set_ewmhc_strut_values(struct monitor *, int *);
+boundingbox get_ewmhc_boundingbox(struct monitor *);
 
 /* ewmh_events.c */
 Bool EWMH_ProcessClientMessage(const exec_context_t *exc);
