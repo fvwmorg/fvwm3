@@ -754,6 +754,7 @@ void set_desk_label(int desk, const char *label)
 void parse_monitor_line(char *tline)
 {
 	int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
+	int		  bs_top, bs_bottom, bs_left, bs_right;
 	int		  scr_width, scr_height;
 	int		  flags;
 	char		 *mname;
@@ -762,9 +763,9 @@ void parse_monitor_line(char *tline)
 
 	tline = GetNextToken(tline, &mname);
 
-	sscanf(tline, "%d %d %d %d %d %d %d %d %d %d", &flags,
+	sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d", &flags,
 	    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk,
-	    &scr_width, &scr_height);
+	    &scr_width, &scr_height, &bs_left, &bs_right, &bs_top, &bs_bottom);
 
 	monitor_refresh_module(dpy);
 
