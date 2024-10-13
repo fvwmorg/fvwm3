@@ -285,6 +285,7 @@ static void move_to_next_monitor(
 	position page;
 	struct monitor *m;
 	int x1, x2, y1, y2; /* Working area bounds */
+	int left = 0, right = 0, top = 0, bottom = 0;
 	int check_vert = 0, check_hor = 0;
 
 	get_page_offset_check_visible(&page.x, &page.y, fw);
@@ -296,53 +297,49 @@ static void move_to_next_monitor(
 		if (fw->m == m)
 			continue;
 
+		if (ewmh) {
+			EWMH_UpdateWorkArea(m);
+			left = m->Desktops->ewmh_working_area.x;
+			right = m->si->w - left -
+				m->Desktops->ewmh_working_area.width;
+			top = m->Desktops->ewmh_working_area.y;
+			bottom = m->si->h - top -
+				 m->Desktops->ewmh_working_area.height;
+		}
+
 		if (dir == DIR_N && m->si->y + m->si->h == fw->m->si->y &&
 			win_r->x < m->si->x + m->si->w &&
 			win_r->x + win_r->width > m->si->x)
 		{
 			check_hor = 1;
-			win_r->y = m->si->y + m->si->h - win_r->height;
-			if (ewmh)
-				win_r->y -= m->ewmhc.BaseStrut.bottom;
+			win_r->y = m->si->y + m->si->h - win_r->height - bottom;
 		}
 		else if (dir == DIR_E && m->si->x == fw->m->si->x +
 			fw->m->si->w &&	win_r->y < m->si->y + m->si->h &&
 				win_r->y + win_r->height > m->si->y)
 		{
 			check_vert = 1;
-			win_r->x = m->si->x;
-			if (ewmh)
-				win_r->x += m->ewmhc.BaseStrut.left;
+			win_r->x = m->si->x + left;
 		}
 		else if (dir == DIR_S && m->si->y == fw->m->si->y +
 			fw->m->si->h &&	win_r->x < m->si->x + m->si->w &&
 			win_r->x + win_r->width > m->si->x)
 		{
 			check_hor = 1;
-			win_r->y = m->si->y;
-			if (ewmh)
-				win_r->y += m->ewmhc.BaseStrut.top;
+			win_r->y = m->si->y + top;
 		}
 		else if (dir == DIR_W && m->si->x + m->si->w == fw->m->si->x &&
 			win_r->y < m->si->y + m->si->h &&
 			win_r->y + win_r->height > m->si->y)
 		{
 			check_vert = 1;
-			win_r->x = m->si->x + m->si->w - win_r->width;
-			if (ewmh)
-				win_r->x -= m->ewmhc.BaseStrut.right;
+			win_r->x = m->si->x + m->si->w - win_r->width - right;
 		}
 		if (check_hor || check_vert) {
-			x1 = m->si->x;
-			y1 = m->si->y;
-			x2 = x1 + m->si->w;
-			y2 = y1 + m->si->h;
-			if (ewmh) {
-				x1 += m->ewmhc.BaseStrut.left;
-				y1 += m->ewmhc.BaseStrut.top;
-				x2 -= m->ewmhc.BaseStrut.right;
-				y2 -= m->ewmhc.BaseStrut.bottom;
-			}
+			x1 = m->si->x + left;
+			y1 = m->si->y + top;
+			x2 = x1 + m->si->w - right;
+			y2 = y1 + m->si->h - bottom;
 			break;
 		}
 	}
@@ -425,12 +422,11 @@ static void shuffle_win_to_closest(
 	wa.height = fw->m->si->h;
 	if (ewmh)
 	{
-		wa.x += fw->m->ewmhc.BaseStrut.left;
-		wa.y += fw->m->ewmhc.BaseStrut.top;
-		wa.width -= fw->m->ewmhc.BaseStrut.left;
-		wa.width -= fw->m->ewmhc.BaseStrut.right;
-		wa.height -= fw->m->ewmhc.BaseStrut.top;
-		wa.height -= fw->m->ewmhc.BaseStrut.bottom;
+		EWMH_UpdateWorkArea(fw->m);
+		wa.x += fw->m->Desktops->ewmh_working_area.x;
+		wa.y += fw->m->Desktops->ewmh_working_area.y;
+		wa.width = fw->m->Desktops->ewmh_working_area.width;
+		wa.height = fw->m->Desktops->ewmh_working_area.height;
 	}
 
 	/* Get direction(s) */
