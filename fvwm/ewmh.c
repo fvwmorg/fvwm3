@@ -1116,9 +1116,9 @@ void EWMH_UpdateWorkArea(struct monitor *m)
 }
 
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type)
+	struct monitor *mon, int *x, int *y, int *w, int *h, int type)
 {
-	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
+	struct monitor	*m = (mon) ? mon : monitor_get_current();
 
 	EWMH_UpdateWorkArea(m);
 

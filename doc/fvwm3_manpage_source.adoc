@@ -3906,10 +3906,16 @@ Move [screen _S_] [desk _N_] [w | m | v]_x_[p | w] [w | m | v]_y_[p | w] [Warp] 
 ....
 +
 This will move the window to the _x_ and _y_ position (see below).
-By default, the EWMH working area is honoured. If he trailing option
-_ewmhiwa_ is given, then the window position will ignore the working
-area (such as ignoring any values set via *EwmhBaseStruts*). If the
-option _Warp_ is given then the pointer is warped to the window.
+By default, the EWMH working area of each monitor is honoured (the
+working area for each monitor is set via *EwmhBaseStruts* and honors
+any strut hints provided by windows on the monitor). This means that
+if a window is placed outside the working area, the position of the
+window will be adjusted to fit inside the working area of the screen
+the center of the window is on. If the trailing option _ewmhiwa_ is
+given, then the window position will ignore the working area and its
+position will not be adjusted (this option is needed to move windows
+off the screen and to have full control of where it is placed). If
+the option _Warp_ is given then the pointer is warped to the window.
 +
 If the literal option _screen_ followed by a RandR screen name _S_ is
 specified, the coordinates are interpreted as relative to the given
@@ -3925,15 +3931,17 @@ is updated to be the same as the new monitor. This option can override
 that behavior by specifying which desk the window should end up on.
 +
 The positional arguments _x_ and _y_ can specify an absolute or relative
-position from either the left/top or right/bottom of the screen. By default,
-the numeric value given is interpreted as a percentage of the screen
-width/height, but a trailing '_p_' changes the interpretation to mean pixels,
-while a trailing '_w_' means percent of the window width/height. To move the
-window relative to its current position, add the '_w_' (for "window") prefix
-before the _x_ and/or _y_ value. To move the window to a position relative to
-the current location of the pointer, add the '_m_' (for "mouse") prefix. To
-move the window relative to the virtual screen coordinates, add the '_v_'
-(for "virtual screen") prefix. This is mostly for internal use with FvwmPager,
+position from either the left/top (positive values) or right/bottom
+(negative values) of the global screen (the bounding box that contains all
+monitors) or specified _screen_. By default, the numeric value given is
+interpreted as a percentage of the screen's width/height, but a trailing
+'_p_' changes the interpretation to mean pixels, while a trailing '_w_'
+means percent of the window width/height. To move the window relative to
+its current position, add the '_w_' (for "window") prefix before the _x_
+and/or _y_ value. To move the window to a position relative to the current
+location of the pointer, add the '_m_' (for "mouse") prefix. To move the
+window relative to the virtual screen coordinates, add the '_v_' (for
+"virtual screen") prefix. This is mostly for internal use with FvwmPager,
 but can be used to give exact coordinates on the virtual screen and is best
 used with the '_p_' suffix. To leave either coordinate unchanged, "_keep_"
 can be specified in place of _x_ or _y_.
