@@ -284,9 +284,9 @@ static void move_to_next_monitor(
 	FvwmWindow *fw, rectangle *win_r, bool ewmh, direction_t dir)
 {
 	position page;
+	boundingbox r = {0};
 	struct monitor *m;
 	int x1, x2, y1, y2; /* Working area bounds */
-	int left = 0, right = 0, top = 0, bottom = 0;
 	int check_vert = 0, check_hor = 0;
 
 	get_page_offset_check_visible(&page.x, &page.y, fw);
@@ -298,49 +298,42 @@ static void move_to_next_monitor(
 		if (fw->m == m)
 			continue;
 
-		if (ewmh) {
-			EWMH_UpdateWorkArea(m);
-			left = m->Desktops->ewmh_working_area.x;
-			right = m->si->w - left -
-				m->Desktops->ewmh_working_area.width;
-			top = m->Desktops->ewmh_working_area.y;
-			bottom = m->si->h - top -
-				 m->Desktops->ewmh_working_area.height;
-		}
+		if (ewmh)
+			r = get_ewmhc_boundingbox(m);
 
 		if (dir == DIR_N && m->si->y + m->si->h == fw->m->si->y &&
 			win_r->x < m->si->x + m->si->w &&
 			win_r->x + win_r->width > m->si->x)
 		{
 			check_hor = 1;
-			win_r->y = m->si->y + m->si->h - win_r->height - bottom;
+			win_r->y = m->si->y + m->si->h - win_r->height - r.bottom;
 		}
 		else if (dir == DIR_E && m->si->x == fw->m->si->x +
 			fw->m->si->w &&	win_r->y < m->si->y + m->si->h &&
 				win_r->y + win_r->height > m->si->y)
 		{
 			check_vert = 1;
-			win_r->x = m->si->x + left;
+			win_r->x = m->si->x + r.left;
 		}
 		else if (dir == DIR_S && m->si->y == fw->m->si->y +
 			fw->m->si->h &&	win_r->x < m->si->x + m->si->w &&
 			win_r->x + win_r->width > m->si->x)
 		{
 			check_hor = 1;
-			win_r->y = m->si->y + top;
+			win_r->y = m->si->y + r.top;
 		}
 		else if (dir == DIR_W && m->si->x + m->si->w == fw->m->si->x &&
 			win_r->y < m->si->y + m->si->h &&
 			win_r->y + win_r->height > m->si->y)
 		{
 			check_vert = 1;
-			win_r->x = m->si->x + m->si->w - win_r->width - right;
+			win_r->x = m->si->x + m->si->w - win_r->width - r.right;
 		}
 		if (check_hor || check_vert) {
-			x1 = m->si->x + left;
-			y1 = m->si->y + top;
-			x2 = x1 + m->si->w - right;
-			y2 = y1 + m->si->h - bottom;
+			x1 = m->si->x + r.left;
+			y1 = m->si->y + r.top;
+			x2 = x1 + m->si->w - r.right;
+			y2 = y1 + m->si->h - r.bottom;
 			break;
 		}
 	}
