@@ -64,7 +64,6 @@ enum monitor_tracking monitor_mode;
 bool			 is_tracking_shared;
 struct screen_infos	 screen_info_q, screen_info_q_temp;
 struct monitors		 monitor_q;
-struct monitorsold	 monitorsold_q;
 int randr_event;
 const char *prev_focused_monitor;
 static struct monitor	*monitor_global = NULL;
@@ -317,6 +316,9 @@ monitor_by_output(int output)
 	return (mret);
 }
 
+/* Returns the (first) monitor marked as primary or NULL if none
+ * has been marked yet.
+ */
 struct monitor *
 monitor_by_primary(void)
 {
@@ -332,6 +334,10 @@ monitor_by_primary(void)
 	return (m);
 }
 
+/* Returns the (first) monitor that, before the latest RandR
+ * change, has been marked primary but now is not.  Returns NULL
+ * if there is no such monitor.
+ */
 struct monitor *
 monitor_by_last_primary(void)
 {
@@ -347,17 +353,9 @@ monitor_by_last_primary(void)
 	return (m);
 }
 
-int changed_monitor_count(void)
-{
-	struct monitor	*m;
-	int c = 0;
-
-	TAILQ_FOREACH(m, &monitorsold_q, oentry)
-		c++;
-
-	return (c);
-}
-
+/* Marks the first monitor as primary if no other has been marked
+ * as primary yet.
+ */
 static void
 monitor_check_primary(void)
 {
@@ -413,6 +411,9 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	scan_screens(dpy);
 }
 
+/* Updates the monitor's coordinates, its primary flag, and its
+ * previously primary flag from the RandR monitor information.
+ */
 static void
 monitor_set_coords(struct monitor *m, XRRMonitorInfo rrm)
 {
@@ -509,7 +510,6 @@ monitor_mark_changed(struct monitor *m, XRRMonitorInfo *rrm)
 	    m->si->w != rrm->width ||
 	    m->si->h != rrm->height) {
 		m->flags |= MONITOR_CHANGED;
-		m->emit |= MONITOR_CHANGED;
 
 		fvwm_debug(__func__, "%s: x: %d, y: %d, w: %d, h: %d "
 			"comp: x: %d, y: %d, w: %d, h: %d\n",
@@ -517,7 +517,6 @@ monitor_mark_changed(struct monitor *m, XRRMonitorInfo *rrm)
 			rrm->x, rrm->y, rrm->width, rrm->height);
 
 		monitor_set_coords(m, *rrm);
-		TAILQ_INSERT_TAIL(&monitorsold_q, m, oentry);
 
 		return (true);
 	}
@@ -549,6 +548,17 @@ scan_screens(Display *dpy)
     	int			 i, n = 0;
 	Window			 root = RootWindow(dpy, DefaultScreen(dpy));
 
+	/*
+	 * Reset all MONITOR_NEW and MONITOR_CHANGED flags, since not all
+	 * callers of this function might reset them properly.  Which in
+	 * turn leads to incorrect scan results in follow-up calls of this
+	 * function.
+	 */
+	RB_FOREACH(m, monitors, &monitor_q) {
+		m->flags &= ~MONITOR_NEW;
+		m->flags &= ~MONITOR_CHANGED;
+	}
+
 	rrm = XRRGetMonitors(dpy, root, true, &n);
 	if (n <= 0 && (!randr_initialised && monitor_get_count() == 0)) {
 		fvwm_debug(__func__, "get monitors failed\n");
@@ -577,50 +587,85 @@ scan_screens(Display *dpy)
 	 *   - It's an existing monitor (position changed)
 	 *   - It's an existing monitor which has been toggled on or off.
 	 *
-	 *   In such cases, we must detect if the monitor exists and what
-	 *   state it is in.
+	 * In such cases, we must detect if the monitor exists and what state it
+	 * is in.  Regardless of how the monitor state has changed, we flag all
+	 * monitors reported by XRRGetMonitors with flag MONITOR_FOUND, which we
+	 * use below to determine its new state.
 	 */
+        fvwm_debug(__func__, "Case 2: processing %d monitors", n);
 	for (i = 0; i < n; i++) {
 		if ((name = XGetAtomName(dpy, rrm[i].name)) == NULL)
 			continue;
 		if ((m = monitor_by_name(name)) == NULL) {
 			/* Case 2.1 -- new monitor. */
-			fvwm_debug(__func__, "Case 2.1: new monitor");
+			fvwm_debug(__func__, "Case 2.1: %s added", name);
 			monitor_add(&rrm[i]);
 		}
 
 		if (monitor_mark_changed(m, &rrm[i])) {
 			fvwm_debug(__func__, "Case 2.2: %s changed", m->si->name);
 		}
+
+		/* Flag monitor as MONITOR_FOUND. */
 		monitor_mark_inlist(name);
 
 		XFree(name);
 	}
 
 out:
+	/* Update monitor order after changes.  Do not mix that up with the
+	 * following loop or some monitors might get processed twice.
+	 */
 	RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
 		if (m->flags & MONITOR_CHANGED) {
-			m->flags &= ~MONITOR_DISABLED;
-			fvwm_debug(__func__, "REINSERTING: %s\n", m->si->name);
 			RB_REMOVE(monitors, &monitor_q, m);
 			RB_INSERT(monitors, &monitor_q, m);
 		}
+	}
+
+	RB_FOREACH(m, monitors, &monitor_q) {
+		int  flags = m->flags;
+		Bool found = m->flags & MONITOR_FOUND;
+
 
 		/* Check for monitor connection status -- whether a monitor is
 		 * active or not.  Clearing the MONITOR_FOUND flag is
 		 * important here so that the monitor is reconsidered again.
+		 *
+		 * Better try to keep these conditions readable than
+		 * ingenious ...
 		 */
-		if (!(m->flags & (MONITOR_FOUND|MONITOR_NEW))) {
-			m->flags |= MONITOR_DISABLED;
-			m->emit |= MONITOR_DISABLED;
-		} else if ((m->flags & (MONITOR_FOUND|MONITOR_DISABLED)) ==
-			(MONITOR_FOUND|MONITOR_DISABLED)) {
+		fvwm_debug(__func__, "Flags: %s -> %04x, %04x\n", m->si->name, m->flags, m->emit);
+		if      (found && (flags & MONITOR_NEW)) {
 			m->flags &= ~MONITOR_DISABLED;
-		} else {
-			m->flags |= MONITOR_ENABLED;
+			m->emit   = MONITOR_ENABLED;
+		}
+		else if (found && (flags & MONITOR_CHANGED)) {
+			m->flags &= ~MONITOR_DISABLED;
+			m->emit   = MONITOR_CHANGED;
+		}
+		else if (found && (flags & MONITOR_DISABLED)) {
+			m->flags &= ~MONITOR_DISABLED;
+			m->emit   = MONITOR_ENABLED;
+		}
+		else if (found && (! (flags & MONITOR_DISABLED))) {
+			m->emit   = 0;
+		}
+		/* This case happens if !randr_initialised. */
+		else if (!found && (flags & MONITOR_NEW)) {
+			m->emit   = 0;
+		}
+		else if (!found && (flags & MONITOR_DISABLED)) {
+			m->emit   = 0;
+		}
+		else /* (!found && (! (flags & MONITOR_DISABLED))) */ {
+			m->flags |= MONITOR_DISABLED;
+			m->emit   = MONITOR_DISABLED;
 		}
 		m->flags &= ~MONITOR_FOUND;
+		fvwm_debug(__func__, "Flags: %s -> %04x, %04x\n", m->si->name, m->flags, m->emit);
 	}
+
 	/* Now that all monitors have been inserted, assign them a number from
 	 * 0 -> n so that they can be referenced in order.
 	 */
@@ -648,9 +693,6 @@ void FScreenInit(Display *dpy)
 
 	if (TAILQ_EMPTY(&screen_info_q))
 		TAILQ_INIT(&screen_info_q);
-
-	if (TAILQ_EMPTY(&monitorsold_q))
-		TAILQ_INIT(&monitorsold_q);
 
 	if (!XRRQueryExtension(dpy, &randr_event, &err_base) ||
 	    !XRRQueryVersion (dpy, &major, &minor)) {
@@ -730,14 +772,15 @@ monitor_dump_state(struct monitor *m)
 			continue;
 		fvwm_debug(
 			__func__,
-			"\tNumber:\t%d\n"
-			"\tName:\t%s\n"
-			"\tDisabled:\t%s\n"
-			"\tIs Primary:\t%s\n"
-			"\tIs Current:\t%s\n"
-			"\tIs Previous:\t%s\n"
-			"\tOutput:\t%d\n"
-			"\tCoords:\t{x: %d, y: %d, w: %d, h: %d}\n"
+			"\tNumber:   %d\n"
+			"\tName:     %s\n"
+			"\tIFlags:   %d\n"
+			"\tDisabled: %s\n"
+			"\tPrimary:  %s\n"
+			"\tCurrent:  %s\n"
+			"\tPrevious: %s\n"
+			"\tOutput:   %d\n"
+			"\tCoords:   {x: %d, y: %d, w: %d, h: %d}\n"
 			"\tVirtScr: {\n"
 			"\t\tVxMax: %d, VyMax: %d, Vx: %d, Vy: %d\n"
 			"\t\tEdgeScrollX: %d, EdgeScrollY: %d\n"
@@ -753,6 +796,7 @@ monitor_dump_state(struct monitor *m)
 			"\tFlags:%s\n\n",
 			m2->number,
 			m2->si->name,
+			m2->flags,
 			(m2->flags & MONITOR_DISABLED) ? "true" : "false",
 			(m2->flags & MONITOR_PRIMARY) ? "yes" : "no",
 			(mcur && m2 == mcur) ? "yes" : "no",
