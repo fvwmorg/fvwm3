@@ -460,8 +460,8 @@ static pl_penalty_t _pl_position_get_pos_simple(
 		 * options.
 		 */
 		EWMH_GetWorkAreaIntersection(
-			arg->place_fw, (int *)&arg->screen_g.x, (int *)&arg->screen_g.y,
-			(int *)&arg->screen_g.width,
+			arg->place_fw->m, (int *)&arg->screen_g.x,
+			(int *)&arg->screen_g.y, (int *)&arg->screen_g.width,
 			(int *)&arg->screen_g.height, EWMH_USE_WORKING_AREA);
 
 		if (ret_p->x + arg->place_fw->g.frame.width > arg->screen_g.x
@@ -1812,7 +1812,7 @@ static int _place_window(
 		 * for this placement policy.
 		 */
 		EWMH_GetWorkAreaIntersection(
-			fw, &screen_g.x, &screen_g.y, &screen_g.width,
+			fw->m, &screen_g.x, &screen_g.y, &screen_g.width,
 			&screen_g.height,
 			SEWMH_PLACEMENT_MODE(&pstyle->flags));
 		reason->screen.was_modified_by_ewmh_workingarea = 1;

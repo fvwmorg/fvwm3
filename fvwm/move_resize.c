@@ -723,7 +723,6 @@ int GetMoveArguments(FvwmWindow *fw,
 		shuffle_win_to_closest(fw, &action, pFinal, fWarp);
 		*paction = action;
 		return 2;
-
 	}
 	if (s1 && StrEquals(s1, "screen"))
 	{
@@ -733,13 +732,6 @@ int GetMoveArguments(FvwmWindow *fw,
 		free(s1);
 		token = PeekToken(action, &action);
 		parg.name = token;
-
-		/* When being asked to move a window to coordinates which are
-		 * relative to a given screen, don't assume to use the
-		 * screen's working area, as the coordinates given are not
-		 * relative to that.
-		 */
-		use_working_area = False;
 
 		FScreenGetScrRect(
 			&parg, FSCREEN_BY_NAME, &scr_pos.x, &scr_pos.y,
@@ -785,17 +777,9 @@ int GetMoveArguments(FvwmWindow *fw,
 		}
 	}
 
-	if (use_working_area)
-	{
-		EWMH_GetWorkAreaIntersection(
-			NULL, &scr_pos.x, &scr_pos.y, &scr_w, &scr_h,
-			EWMH_USE_WORKING_AREA);
-	}
-
 	if (s1 != NULL && s2 != NULL)
 	{
 		int n;
-		retval = 0;
 		if (fKeep == True && StrEquals(s1, "keep"))
 		{
 			retval++;
@@ -837,9 +821,12 @@ int GetMoveArguments(FvwmWindow *fw,
 			/* make sure warping is off for interactive moves */
 			*fWarp = False;
 		}
-		else if (use_virt_x || use_virt_y)
+		else if (!use_working_area && (use_virt_x || use_virt_y))
 		{
-			/* Adjust position when using virtual screen. */
+			/* Adjust position when using virtual screen.
+			 * If using working area, do nothing here, this
+			 * will be done later.
+			 */
 			struct monitor *m = FindScreenOfXY(
 					pFinal->x, pFinal->y);
 			pFinal->x -= (use_virt_x) ? m->virtual_scr.Vx : 0;
@@ -849,14 +836,86 @@ int GetMoveArguments(FvwmWindow *fw,
 	else
 	{
 		/* not enough arguments, switch to current page. */
+		scr_w = monitor_get_all_widths();
+		scr_h = monitor_get_all_heights();
 		while (pFinal->x < 0)
 		{
-			pFinal->x = monitor_get_all_widths() + pFinal->x;
+			pFinal->x += scr_w;
 		}
 		while (pFinal->y < 0)
 		{
-			pFinal->y = monitor_get_all_heights() + pFinal->y;
+			pFinal->y += scr_h;
 		}
+	}
+
+	if (retval == 2 && use_working_area) {
+		/* Adjusts final position to fit inside the working area. */
+		struct monitor *m = FindScreenOfXY(pFinal->x, pFinal->y);
+		int x, y, dx = 0, dy = 0;
+
+		/* Reset screen size to global screen. */
+		scr_pos.x = scr_pos.y = 0;
+		scr_w = monitor_get_all_widths();
+		scr_h = monitor_get_all_heights();
+
+		/* Ensure the window is placed on a valid page. This requires
+		 * first computing the coordinates relative to the virtual
+		 * desktop, then moving the window onto the virtual desktop,
+		 * then determine what monitor the window is mostly on, and
+		 * adjusting its coordinates relative to that monitor.
+		 */
+		x = pFinal->x;
+		if (!use_virt_x)
+			x += m->virtual_scr.Vx;
+		y = pFinal->y;
+		if (!use_virt_y)
+			y += m->virtual_scr.Vy;
+		if (x < 0)
+			x = 0;
+		if (y < 0)
+			y = 0;
+		if (x + s.width > m->virtual_scr.VxMax + scr_w)
+			x = m->virtual_scr.VxMax + scr_w - s.width;
+		if (y + s.height > m->virtual_scr.VyMax + scr_h)
+			y = m->virtual_scr.VyMax + scr_h - s.height;
+		m = FindScreenOfXY(x + s.width / 2, y + s.height / 2);
+		pFinal->x = x - m->virtual_scr.Vx;
+		pFinal->y = y - m->virtual_scr.Vy;
+
+		/* Since the final position might not be on the current
+		 * page, compute the adjustment needed as if it were on
+		 * the current page. The midpoint is used to determine
+		 * which page the window is mostly on.
+		 */
+		x = (pFinal->x + s.width / 2) % scr_w;
+		y = (pFinal->y + s.height / 2) % scr_h;
+		if (x < 0)
+			x += scr_w;
+		if (y < 0)
+			y += scr_h;
+		x -= s.width / 2;
+		y -= s.height / 2;
+
+		/* Move the window into the working area. */
+		EWMH_GetWorkAreaIntersection(
+			m, &scr_pos.x, &scr_pos.y, &scr_w, &scr_h,
+			EWMH_USE_WORKING_AREA);
+		if (x < scr_pos.x) {
+			dx = scr_pos.x - x;
+		} else if (x + s.width > scr_pos.x + scr_w) {
+			dx = scr_pos.x + scr_w - x - s.width;
+			if (x + dx < scr_pos.x)
+				dx = scr_pos.x - x;
+		}
+		if (y < scr_pos.y) {
+			dy = scr_pos.y - y;
+		} else if (y + s.height > scr_pos.y + scr_h) {
+			dy = scr_pos.y + scr_h - y - s.height;
+			if (y + dy < scr_pos.y)
+				dy = scr_pos.y - y;
+		}
+		pFinal->x += dx;
+		pFinal->y += dy;
 	}
 
 	if (s1)
@@ -4422,7 +4481,7 @@ static Bool _resize_window(F_CMD_ARGS)
 			FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
 				    &y, &JunkX, &JunkY, &JunkMask);
-			
+
 			fev_make_null_event(&e2, dpy);
 			e2.type = MotionNotify;
 			e2.xmotion.time = fev_get_evtime();
@@ -5235,7 +5294,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	if (!ignore_working_area)
 	{
 		EWMH_GetWorkAreaIntersection(
-			fw, &scr.x, &scr.y, &scr.width, &scr.height,
+			fw->m, &scr.x, &scr.y, &scr.width, &scr.height,
 			EWMH_MAXIMIZE_MODE(fw));
 	}
 #if 0

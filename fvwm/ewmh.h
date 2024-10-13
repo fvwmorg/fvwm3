@@ -38,7 +38,7 @@ void EWMH_SetClientList(struct monitor *);
 void EWMH_SetClientListStacking(struct monitor *);
 void EWMH_UpdateWorkArea(struct monitor *);
 void EWMH_GetWorkAreaIntersection(
-	FvwmWindow *fw, int *x, int *y, int *w, int *h, int type);
+	struct monitor *mon, int *x, int *y, int *w, int *h, int type);
 float EWMH_GetBaseStrutIntersection(struct monitor *m,
 	int x11, int y11, int x12, int y12, Bool use_percent);
 float EWMH_GetStrutIntersection(struct monitor *m,
