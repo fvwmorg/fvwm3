@@ -19,6 +19,7 @@
 #include "config.h"
 #include "libs/defaults.h"
 #include "libs/Parse.h"
+#include "libs/log.h"
 
 #include <assert.h>
 #include <stdio.h>

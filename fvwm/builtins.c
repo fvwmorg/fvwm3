@@ -27,6 +27,7 @@
 #include "libs/fvwm_x11.h"
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/log.h"
 #include "libs/cJSON.h"
 #include "libs/setpgrp.h"
 #include "libs/Grab.h"
