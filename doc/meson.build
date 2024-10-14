@@ -33,6 +33,8 @@ main_file = 'fvwm3_manpage_source.adoc'
 ad_build_targets = []
 sections = ['commands', 'menus', 'styles']
 
+generate_ad_cmd = '@0@/meson-scripts/generate_ad_file.sh'.format(meson.project_source_root())
+
 foreach sec : sections
     outfile = f'fvwm3_@sec@.ad'
     # We could use a generator here, but since multiple targets include
@@ -41,7 +43,7 @@ foreach sec : sections
     ad_build_targets += custom_target(
         output: outfile,
         input: main_file,
-        command: ['generate_ad_file.sh', sec, '@INPUT@'],
+        command: [generate_ad_cmd, sec, '@INPUT@'],
         capture: true,
         install: false,
     )
