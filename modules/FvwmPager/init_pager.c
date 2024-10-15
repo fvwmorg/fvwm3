@@ -953,6 +953,8 @@ void parse_options(void)
 			use_no_separators = false;
 		} else if (StrEquals(resource, "NoSeparators")) {
 			use_no_separators = true;
+		} else if (StrEquals(resource, "IgnoreWorkingArea")) {
+			ewmhiwa = true;
 		} else {
 			/* No Match, set this to continue parsing. */
 			flags = 0;

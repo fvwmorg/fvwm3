@@ -1834,7 +1834,7 @@ void MoveWindow(XEvent *Event)
 
 	fp = fpmonitor_from_xy(
 		rec.x * fp->virtual_scr.VWidth / desk_w,
-		rec.y * fp->virtual_scr.VHeight / desk_h);
+		rec.y * fp->virtual_scr.VHeight / (desk_h + label_h));
 	if (fp == NULL)
 		fp = fpmonitor_this(NULL);
 
@@ -1872,6 +1872,7 @@ void MoveWindow(XEvent *Event)
 	}
 
 	char buf[64];
+	const char *iwa = ewmhiwa ? "ewmhiwa" : "";
 
 	/* Move using the virtual screen's coordinates "+vXp +vYp", to avoid
 	 * guessing which monitor fvwm will use. The "desk" option is sent
@@ -1883,13 +1884,13 @@ void MoveWindow(XEvent *Event)
 	if (CurrentDeskPerMonitor && fAlwaysCurrentDesk) {
 		NewDesk = fp->m->virtual_scr.CurrentDesk;
 		/* Let fvwm handle any desk changes in this case. */
-		snprintf(buf, sizeof(buf), "Silent Move v+%dp v+%dp ewmhiwa",
-			 rec.x, rec.y);
+		snprintf(buf, sizeof(buf), "Silent Move v+%dp v+%dp %s",
+			 rec.x, rec.y, iwa);
 	} else {
 		NewDesk += desk1;
 		snprintf(buf, sizeof(buf),
-			 "Silent Move desk %d v+%dp v+%dp ewmhiwa",
-			 NewDesk, rec.x, rec.y);
+			 "Silent Move desk %d v+%dp v+%dp %s",
+			 NewDesk, rec.x, rec.y, iwa);
 	}
 	SendText(fd, buf, t->w);
 	XSync(dpy,0);
@@ -1989,6 +1990,7 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		SendText(fd, "Silent Move Pointer", t->w);
 	} else if (moved) {
 		char buf[64];
+		const char *iwa = ewmhiwa ? "ewmhiwa" : "";
 
 		rec.x = x - rec.x;
 		rec.y = y - rec.y;
@@ -2000,15 +2002,15 @@ void IconMoveWindow(XEvent *Event, PagerWindow *t)
 		pagerrec_to_fvwm(&rec, true, fp);
 		if (CurrentDeskPerMonitor)
 			snprintf(buf, sizeof(buf),
-				 "Silent Move v+%dp v+%dp ewmhiwa",
-				 rec.x, rec.y);
+				 "Silent Move v+%dp v+%dp %s",
+				 rec.x, rec.y, iwa);
 		else
 			/* Keep window on current desk, even if another
 			 * monitor is currently on a different desk.
 			 */
 			snprintf(buf, sizeof(buf),
-				 "Silent Move desk %d v+%dp v+%dp ewmhiwa",
-				 desk_i, rec.x, rec.y);
+				 "Silent Move desk %d v+%dp v+%dp %s",
+				 desk_i, rec.x, rec.y, iwa);
 		SendText(fd, buf, t->w);
 		XSync(dpy, 0);
 		SendText(fd, "Silent Raise", t->w);

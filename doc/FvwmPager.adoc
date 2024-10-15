@@ -374,7 +374,10 @@ the following options.
   _MoveThreshold_, will have the optional fvwm _command_ (if set) sent
   to them. The default is command "FlipFocus NoWarp". Setting the
   _SendCmdAfterMove_ option will also send the _command_ after the
-  window is placed in its new location.
+  window is placed in its new location. Note, by default the EWMH
+  working area is honored, and windows placement will be adjusted
+  to fit inside the working area of the monitor they are placed on.
+  To turn this off use the _IgnoreWorkingArea_ option.
 
 *FvwmPager: Mouse <N> WindowCmd command::
   Send the fvwm _command_ to the window clicked. This can be used to
@@ -420,6 +423,11 @@ done about this - except not using SloppyFocus in the pager.
   After moving a window using the pager, send the configured command,
   "FlipFocus NoWarp" by default, to the window. By default the command
   is only sent on a click, not a move.
+
+*FvwmPager: IgnoreWorkingArea::
+  After moving a window, ignore the working area when placing the window.
+  This makes it so the window's position will no longer be adjusted to
+  fit inside the working area of the monitor it is placed in.
 
 === MONITOR AND DESKTOP CONFIGURATION
 
