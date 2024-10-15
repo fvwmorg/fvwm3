@@ -77,6 +77,7 @@ rectangle	pwindow = {0, 0, 0, 0};
 rectangle	icon = {-10000, -10000, 0, 0};
 
 /* Settings */
+bool	ewmhiwa = false;
 bool	IsShared = false;
 bool	MiniIcons = false;
 bool	Swallowed = false;

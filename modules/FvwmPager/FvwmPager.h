@@ -208,6 +208,7 @@ extern rectangle	pwindow;
 extern rectangle	icon;
 
 /* Settings */
+extern bool	ewmhiwa;
 extern bool	IsShared;
 extern bool	MiniIcons;
 extern bool	Swallowed;
