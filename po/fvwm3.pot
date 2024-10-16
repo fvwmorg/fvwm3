@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-10-03 08:47-0600\n"
+"POT-Creation-Date: 2024-10-17 13:48-0600\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,9 +37,9 @@ msgstr ""
 msgid "Quit"
 msgstr ""
 
-#: fvwm/expand.c:496 default-config/config:419 default-config/config:423
-#: default-config/config:424 default-config/config:425
-#: default-config/config:426
+#: fvwm/expand.c:496 default-config/config:422 default-config/config:426
+#: default-config/config:427 default-config/config:428
+#: default-config/config:429
 msgid "Desk"
 msgstr ""
 
@@ -56,151 +56,155 @@ msgstr ""
 msgid "More&..."
 msgstr ""
 
-#: default-config/config:315
+#: default-config/config:118
+msgid "Documentation can be found at https://www.fvwm.org"
+msgstr ""
+
+#: default-config/config:318
 msgid "&Programs"
 msgstr ""
 
-#: default-config/config:316
+#: default-config/config:319
 msgid "XDG &Menu"
 msgstr ""
 
-#: default-config/config:322
+#: default-config/config:325
 msgid "&Wallpapers"
 msgstr ""
 
-#: default-config/config:323
+#: default-config/config:326
 msgid "M&an Pages"
 msgstr ""
 
-#: default-config/config:324
+#: default-config/config:327
 msgid "Cop&y Config"
 msgstr ""
 
-#: default-config/config:326
+#: default-config/config:329
 msgid "Re&fresh"
 msgstr ""
 
-#: default-config/config:327
+#: default-config/config:330
 msgid "&Restart"
 msgstr ""
 
-#: default-config/config:328
+#: default-config/config:331
 msgid "&Quit"
 msgstr ""
 
-#: default-config/config:339
+#: default-config/config:342
 msgid "Programs"
 msgstr ""
 
-#: default-config/config:353
+#: default-config/config:356
 msgid "Wallpapers"
 msgstr ""
 
-#: default-config/config:354
+#: default-config/config:357
 msgid "Floral"
 msgstr ""
 
-#: default-config/config:355
+#: default-config/config:358
 msgid "Circles"
 msgstr ""
 
-#: default-config/config:356
+#: default-config/config:359
 msgid "Space"
 msgstr ""
 
-#: default-config/config:361 default-config/config:373
+#: default-config/config:364 default-config/config:376
 msgid "Move"
 msgstr ""
 
-#: default-config/config:362 default-config/config:374
+#: default-config/config:365 default-config/config:377
 msgid "Resize"
 msgstr ""
 
-#: default-config/config:363 default-config/config:375
-#: default-config/config:396
+#: default-config/config:366 default-config/config:378
+#: default-config/config:399
 msgid "(De)Iconify"
 msgstr ""
 
-#: default-config/config:364 default-config/config:376
-#: default-config/config:397
+#: default-config/config:367 default-config/config:379
+#: default-config/config:400
 msgid "(Un)Maximize"
 msgstr ""
 
-#: default-config/config:365 default-config/config:377
-#: default-config/config:398
+#: default-config/config:368 default-config/config:380
+#: default-config/config:401
 msgid "(Un)Shade"
 msgstr ""
 
-#: default-config/config:366
+#: default-config/config:369
 msgid "(Un)Stick"
 msgstr ""
 
-#: default-config/config:368 default-config/config:382
-#: default-config/config:403 bin/fvwm-menu-desktop-config.fpl:293
+#: default-config/config:371 default-config/config:385
+#: default-config/config:406 bin/fvwm-menu-desktop-config.fpl:293
 #: modules/FvwmForm/FvwmForm-XDGMenuHelp:64
 #: modules/FvwmForm/FvwmForm-XDGOptionsHelp:132
 msgid "Close"
 msgstr ""
 
-#: default-config/config:369
+#: default-config/config:372
 msgid "More"
 msgstr ""
 
-#: default-config/config:372
+#: default-config/config:375
 msgid "Window Ops"
 msgstr ""
 
-#: default-config/config:378 default-config/config:399
+#: default-config/config:381 default-config/config:402
 msgid "(Un)Sticky"
 msgstr ""
 
-#: default-config/config:379
+#: default-config/config:382
 msgid "(No)Title Bar"
 msgstr ""
 
-#: default-config/config:380 default-config/config:401
+#: default-config/config:383 default-config/config:404
 msgid "Send To"
 msgstr ""
 
-#: default-config/config:383 default-config/config:404
+#: default-config/config:386 default-config/config:407
 msgid "Destroy"
 msgstr ""
 
-#: default-config/config:385 default-config/config:406
+#: default-config/config:388 default-config/config:409
 msgid "Raise"
 msgstr ""
 
-#: default-config/config:386 default-config/config:407
+#: default-config/config:389 default-config/config:410
 msgid "Lower"
 msgstr ""
 
-#: default-config/config:388 default-config/config:409
+#: default-config/config:391 default-config/config:412
 msgid "Stays On Top"
 msgstr ""
 
-#: default-config/config:389 default-config/config:410
+#: default-config/config:392 default-config/config:413
 msgid "Stays Put"
 msgstr ""
 
-#: default-config/config:390 default-config/config:411
+#: default-config/config:393 default-config/config:414
 msgid "Stays On Bottom"
 msgstr ""
 
-#: default-config/config:392 default-config/config:413
+#: default-config/config:395 default-config/config:416
 msgid "Identify"
 msgstr ""
 
-#: default-config/config:400
+#: default-config/config:403
 msgid "(No)TitleBar"
 msgstr ""
 
-#: default-config/config:417
+#: default-config/config:420
 msgid "Current"
 msgstr ""
 
-#: default-config/config:418 default-config/config:430
-#: default-config/config:431 default-config/config:432
-#: default-config/config:433
+#: default-config/config:421 default-config/config:433
+#: default-config/config:434 default-config/config:435
+#: default-config/config:436
 msgid "Page"
 msgstr ""
 

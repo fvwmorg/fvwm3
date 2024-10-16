@@ -109,11 +109,14 @@ AddToFunc MoveToCurrent
 # Function: ViewManPage $0
 #
 # This function loads the man page $0 in an terminal
-# and is used with the help menu.
+# and is used with the help menu. If the manual page is
+# not found, point users at fvwm.org and keep terminal open.
 DestroyFunc ViewManPage
 AddToFunc   ViewManPage
 + I Exec exec $[infostore.terminal] -g 80x40 \
-  -n "Manual Page - $0" -T "Manual Page - $0" -e man "$0"
+  -n "Manual Page - $0" -T "Manual Page - $0" -e 'man "$0" || \
+  (echo "$[gt.Documentation can be found at https://www.fvwm.org]"; \
+  read tmp)'
 
 # Function: SetBG $0
 #
