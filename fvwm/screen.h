@@ -445,6 +445,10 @@ typedef struct ScreenInfo
 	} bo; /* bug workaround control options */
 	struct
 	{
+		unsigned fvwm_style_v3 : 1;
+	} cap; /* Capabilities. */
+	struct
+	{
 		unsigned do_emulate_mwm : 1;
 		unsigned do_emulate_win : 1;
 		unsigned do_hide_position_window : 1;
