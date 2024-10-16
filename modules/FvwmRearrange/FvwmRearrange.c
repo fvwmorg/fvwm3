@@ -46,6 +46,7 @@
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
 #include "libs/System.h"
+#include "libs/Parse.h"
 
 typedef struct window_item {
 	Window frame;
@@ -569,7 +570,27 @@ int main(int argc, char *argv[])
   GetConfigLine(fd, &config_line);
   while (config_line != NULL)
   {
-    GetConfigLine(fd, &config_line);
+	char *token, *next, *mname;
+	int dummy, bs_top, bs_bottom, bs_left, bs_right;
+
+	token = PeekToken(config_line, &next);
+
+	if (!StrEquals(token, "Monitor")) {
+		GetConfigLine(fd, &config_line);
+		continue;
+	}
+
+	config_line = GetNextToken(next, &mname);
+
+	sscanf(config_line, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+		&dummy, &dummy, &dummy, &dummy, &dummy, &dummy,
+		&dummy, &dummy, &dummy, &dummy,
+		&bs_left, &bs_right, &bs_top, &bs_bottom);
+
+		fprintf(stderr,
+	  "Monitor %s has: bs_top: %d, bs_bot: %d, bs_left: %d, bs_right: %d\n",
+	  mname, bs_top, bs_bottom, bs_left, bs_right);
+	GetConfigLine(fd, &config_line);
   }
 
   parse_args("module args", module->user_argc, module->user_argv, 0);

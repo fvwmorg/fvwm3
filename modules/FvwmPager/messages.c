@@ -755,6 +755,7 @@ void parse_monitor_line(char *tline)
 {
 	int		  dx, dy, Vx, Vy, VxMax, VyMax, CurrentDesk;
 	int		  scr_width, scr_height;
+	int		  bs_top, bs_bottom, bs_left, bs_right;
 	int		  flags;
 	char		 *mname;
 	struct monitor	 *tm;
@@ -762,9 +763,13 @@ void parse_monitor_line(char *tline)
 
 	tline = GetNextToken(tline, &mname);
 
-	sscanf(tline, "%d %d %d %d %d %d %d %d %d %d", &flags,
+	sscanf(tline, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d", &flags,
 	    &dx, &dy, &Vx, &Vy, &VxMax, &VyMax, &CurrentDesk,
-	    &scr_width, &scr_height);
+	    &scr_width, &scr_height, &bs_left, &bs_right, &bs_top, &bs_bottom);
+
+	fprintf(stderr,
+	 "Monitor %s has: bs_top: %d, bs_bot: %d, bs_left: %d, bs_right: %d\n",
+	 mname, bs_top, bs_bottom, bs_left, bs_right);
 
 	monitor_refresh_module(dpy);
 

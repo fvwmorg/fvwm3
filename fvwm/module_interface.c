@@ -486,11 +486,10 @@ void send_monitor_info(fmodule *send)
 	const char	*m_info;
 	char		*name;
 
-	r = get_ewmhc_boundingbox(m);
-
 	m_info = "Monitor %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d";
 
 	RB_FOREACH(m, monitors, &monitor_q) {
+		r = get_ewmhc_boundingbox(m);
 		xasprintf(&name, m_info, m->si->name, m->flags,
 		    m->dx, m->dy, m->virtual_scr.Vx,
 		    m->virtual_scr.Vy, m->virtual_scr.VxMax,
