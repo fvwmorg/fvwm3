@@ -800,7 +800,8 @@ monitor_get_count(void)
 struct monitor *
 FindScreenOfXY(int x, int y)
 {
-	struct monitor	*m;
+	struct monitor	*m, *m_min = NULL;
+	int dmin = INT_MAX;
 	int all_widths = monitor_get_all_widths();
 	int all_heights = monitor_get_all_heights();
 
@@ -824,31 +825,35 @@ FindScreenOfXY(int x, int y)
 			return (m);
 	}
 
-	struct monitor *m_min;
-	if (m == NULL) {
-		/* No monitor found, point is in a dead area.
-		 * Find closest monitor using the taxi cab metric.
-		 */
-		int dmin = INT_MAX;
-		struct monitor *m_min;
+	/* No monitor found, point is in a dead area.
+	 * Find closest monitor using the taxi cab metric.
+	 */
+	RB_FOREACH(m, monitors, &monitor_q) {
+		int d = 0;
 
-		RB_FOREACH(m, monitors, &monitor_q) {
-			int d = 0;
-			if (x < m->si->x)
-				d += m->si->x  - x;
-			if (x > m->si->x + m->si->w)
-				d += x - m->si->x - m->si->w;
-			if (y < m->si->y)
-				d += m->si->y - y;
-			if (y > m->si->y + m->si->h)
-				d += y - m->si->y - m->si->h;
-			if (d < dmin) {
-				dmin = d;
-				m_min = m;
-			}
+		/* Skip global screen */
+		if (m == monitor_global)
+			continue;
+
+		if (x < m->si->x)
+			d += m->si->x  - x;
+		if (x > m->si->x + m->si->w)
+			d += x - m->si->x - m->si->w;
+		if (y < m->si->y)
+			d += m->si->y - y;
+		if (y > m->si->y + m->si->h)
+			d += y - m->si->y - m->si->h;
+		if (d < dmin) {
+			dmin = d;
+			m_min = m;
 		}
 	}
 
+	/* Shouldn't happen. */
+	if (m_min == NULL) {
+		fvwm_debug(__func__, "Couldn't find any monitor");
+		exit(106);
+	}
 	return (m_min);
 }
 
