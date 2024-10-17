@@ -181,7 +181,16 @@ WinData *id_to_win(Ulong id)
 
 static void set_win_configuration(WinData *win, FvwmPacketBody *body)
 {
-	copy_string(&win->monitor, (char *)&(body->add_config_data.monitor_name));
+	struct monitor *m = monitor_by_output(body->add_config_data.monitor_id);
+
+	if (m == NULL) {
+		fprintf(stderr,
+			"FvwmIconMan: %s: couldn't find mon with id: %ld\n",
+			__func__, body->add_config_data.monitor_id);
+		copy_string(&win->monitor, "Unknown");
+	} else
+		copy_string(&win->monitor, m->si->name);
+
 	win->desknum = body->add_config_data.desk;
 	win->x = body->add_config_data.frame_x;
 	win->y = body->add_config_data.frame_y;
