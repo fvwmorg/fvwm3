@@ -64,27 +64,28 @@ _FvwmEvent_ gets config info from *fvwm*'s module configuration database
 configuration options:
 
 *FvwmEvent: Cmd command::
-  This determines the _fvwm_ function that is to be called with the
-  event parameters. You might want to do one of the following (details
-  below):
+  This determines the default _fvwm_ command (if any) that is to be
+  called with the event parameters.
 +
-....
-	# execute distinct fvwm functions
-	*FvwmEvent: Cmd
-
-	# execute distinct external programs
-	*FvwmEvent: Cmd exec
-....
-+
-_FvwmEvent_ has support for any other external program. e.g: the
-rsynth 'say' command:
+_FvwmEvent_ uses the value of the _Cmd_ configuration option, appends
+any configured event handling action (details below), and passes the
+resulting command to _fvwm_ for execution when it receives an event.
+For example, with the the following configuration:
 +
 ....
 	*FvwmEvent: Cmd "Exec /rsynth/say"
 	*FvwmEvent: destroy_window "window closed"
 ....
 +
-You can also use _fvwm_'s builtin _Echo_ command as _FvwmEvent: Cmd_ to
+_fvwm_ would execute the command
++
+....
+        Exec /rsynth/say window closed
+....
++
+when a window is destroyed.
++
+You can also use _fvwm_'s builtin _Echo_ command as _*FvwmEvent: Cmd_ to
 obtain debug output for _fvwm_ events quietly. I used this setup to
 debug FvwmAuto:
 +
@@ -98,16 +99,27 @@ You can even call different shell commands for each event just by
 setting
 +
 ....
-	*FvwmEvent: Cmd exec
+	*FvwmEvent: Cmd Exec
 	*FvwmEvent: add_window 'killname "APPL ERROR"'
 ....
++
+ For example:
++
+....
+	# execute any fvwm commands
+	*FvwmEvent: Cmd
 
+	# execute external programs only
+	*FvwmEvent: Cmd Exec
+
+	# execute fvwm user functions only
+	*FvwmEvent: Cmd Function
+....
+
+*FvwmEvent: PassArgs::
 *FvwmEvent: PassId::
-  Specifies that the event action will have an ID parameter added to the
-  end of the command line. Most events will have the windowID of the
-  window that the event refers to, new_desk will have the new desk
-  number. The windowID is a hexadecimal string preceded by 0x, desk
-  numbers are decimal.
+  Specifies that _FvwmEvent_ should append additional arguments to the
+  event action at end of the command line. For details see the event table
 
 *FvwmEvent: window-manager-event action-or-filename::
   Binds particular actions to window manager events.
@@ -161,11 +173,6 @@ The following events are valid:
 |window_name 		| Occurs when a window's name (WM_NAME) is set
 |windowshade 		| Occurs when a window is shaded
 |===
-
-+
-The window related event handlers are executed within a window context.
-Previously PassId was used for this purpose, but now using PassId is not
-needed.
 +
 The monitor_* events do not operate in a window context (as there isn't
 one), but react to when a monitor is plugged in (enabled), unplugged
@@ -181,6 +188,19 @@ moves into the root window. In this case, the id passed is 0.
 +
 Note: When the shutdown event arrives, FvwmEvent may be killed before it
 can trigger the associated action.
+
+For most events this is the
+  windowID of the window that the event refers to, passed as a
+  hexadecimal string preceded by 0x.
++
+Some events do not get any arguments, like _new_page_, and some events
+get special arguments:
++
+_new_desk_: gets the new desk number as a decimal number
++
+_monitor_changed_, _monitor_disabled_, _monitor_enabled_,
+_monitor_focus_: get two arguments, the decimal monitor number and the
+monitor name
 
 *FvwmEvent: Delay 5::
   Specifies that an event-action will only be executed if it occurs at
