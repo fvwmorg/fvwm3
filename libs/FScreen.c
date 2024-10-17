@@ -824,11 +824,32 @@ FindScreenOfXY(int x, int y)
 			return (m);
 	}
 
-	/* FIXME: this is a convenience, but could confuse callers. */
-	if (m == NULL)
-		return RB_MIN(monitors, &monitor_q);
+	struct monitor *m_min;
+	if (m == NULL) {
+		/* No monitor found, point is in a dead area.
+		 * Find closest monitor using the taxi cab metric.
+		 */
+		int dmin = INT_MAX;
+		struct monitor *m_min;
 
-	return (NULL);
+		RB_FOREACH(m, monitors, &monitor_q) {
+			int d = 0;
+			if (x < m->si->x)
+				d += m->si->x  - x;
+			if (x > m->si->x + m->si->w)
+				d += x - m->si->x - m->si->w;
+			if (y < m->si->y)
+				d += m->si->y - y;
+			if (y > m->si->y + m->si->h)
+				d += y - m->si->y - m->si->h;
+			if (d < dmin) {
+				dmin = d;
+				m_min = m;
+			}
+		}
+	}
+
+	return (m_min);
 }
 
 /* Returns the primary screen if arg.name is NULL. */
