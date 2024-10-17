@@ -134,7 +134,14 @@ is_suitable_window(unsigned long *body)
 {
 	XWindowAttributes	xwa;
 	struct ConfigWinPacket *cfgpacket = (void *)body;
-	char		       *m_name	  = (char *)&(cfgpacket->monitor_name);
+	struct monitor	       *m = monitor_by_output(cfgpacket->monitor_id);
+	char		       *m_name;
+
+	if (m == NULL) {
+		fprintf(stderr, "MONITOR WAS NULL\n");
+		return 0;
+	}
+	m_name = (char *)m->si->name;
 
 	if ((DO_SKIP_WINDOW_LIST(cfgpacket)) && !all)
 		return 0;
@@ -202,6 +209,7 @@ get_window(void)
 		cfgpacket = (struct ConfigWinPacket *)packet->body;
 		switch (packet->type &= ~M_EXTENDED_MSG) {
 		case M_CONFIGURE_WINDOW:
+			SendUnlockNotification(fd);
 			if (is_suitable_window(packet->body)) {
 				window_item *wi = fxmalloc(sizeof(window_item));
 				wi->frame	= cfgpacket->frame;
@@ -236,12 +244,6 @@ void
 wait_configure(window_item *wi)
 {
 	int found = 0;
-
-	/** Uh, what's the point of the select() here?? **/
-	fd_set infds;
-	FD_ZERO(&infds);
-	FD_SET(fd[1], &infds);
-	select(fd_width, SELECT_FD_SET_CAST & infds, 0, 0, NULL);
 
 	while (!found) {
 		FvwmPacket *packet = ReadFvwmPacket(fd[1]);
@@ -611,6 +613,8 @@ main(int argc, char *argv[])
 
 	SetMessageMask(fd, M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
 	SetMessageMask(fd, M_EXTENDED_MSG);
+	SetSyncMask(fd, M_CONFIGURE_WINDOW);
+	SetNoGrabMask(fd, M_CONFIGURE_WINDOW);
 
 	if (FvwmTile) {
 		if (maxx == dx)
