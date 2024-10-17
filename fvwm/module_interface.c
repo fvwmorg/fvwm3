@@ -300,7 +300,7 @@ action_flags *_get_allowed_actions(const FvwmWindow *fw)
   as a dummy to preserve alignment of the other fields in the
   old packet: we should drop this before the next release.
 */
-#define CONFIGARGS(_fw) 35,				\
+#define CONFIGARGS(_fw) 34,				\
 		(unsigned long)(-sizeof(Window)),	\
 		&FW_W(*(_fw)),				\
 		(unsigned long)(-sizeof(Window)),	\
