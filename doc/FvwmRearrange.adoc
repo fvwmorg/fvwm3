@@ -6,147 +6,320 @@ FvwmRearrange - rearrange fvwm windows
 
 == SYNOPSIS
 
-**Module FvwmRearrange [-cascade | -tile] [options] [bounding box]**
+**FvwmRearrange [options] [bounding box] [options]**
 
-FvwmRearrange is spawned by fvwm, so no command line invocation will
-work.
+FvwmRearrange is spawned by fvwm, so no command line invocation will work.
 
 == DESCRIPTION
 
 This module can be called to tile or cascade windows.
 
-When tiling the module attempts to tile windows on the current screen
-subject to certain constraints. Horizontal or vertical tiling is
-performed so that each window does not overlap another, and by default
-each window is resized to its nearest resize increment (note sometimes
-some space might appear between tiled windows -- this is why).
+When tiling the module will tile the windows into a grid (table or matrix)
+inside the bounding box (the current monitor's working area by default).
+Tiling is performed so that windows will not overlap. When moving and
+resizing windows to fit into the grid, windows are resized to their nearest
+increment size, specified by the window's size hints (this is why sometimes
+space might appear between tiled windows, common with terminals). Use the
+_ResizeHintOverride_ style on widows with increment size hints to override
+this behavior (which removes the gaps).
 
-When cascading the module attempts to cascade windows on the current
-screen subject to certain constraints. Layering is performed so
-consecutive windows will have their window titles visible underneath the
-previous.
+When cascading the module will cascade the windows inside the bounding box
+from the top left of the bounding box. Windows will be resized to fit the
+bounding box and layering is performed so that consecutive windows all have
+their titles visible underneath the previous window.
+
+The behavior of both tiling and cascading can be configured by the options
+listed below. This can control the size of the bounding box, if windows are
+resized, and which windows are affected, and so on.
 
 == INVOCATION
 
-FvwmRearrange is best invoked from a menu, pop up or button. There are a
-number of command line options which can be used to constrain the
-layering, these are described below. As an example case, one could call
-FvwmRearrange with the following arguments:
+FvwmRearrange is best invoked from a menu, keybinding, or button. There are
+a number of command line options which can be used to control how windows
+will be cascaded/tiled, described below. Invoking FvwmRearrange with no
+options will auto tile (see _-auto_tile) windows on the current monitor:
 
 ....
-FvwmRearrange -tile -h 10 10 90 90
+FvwmRearrange
 ....
 
-or
+This tiles all windows in the working area of the current monitor into
+a grid. This size of the grid will be computed using the number of
+windows trying to make the grid as square as possible. Windows on the top
+row will be resized to take up any extra space filling the full working
+area. Adding additional arguments can change the behavior, for example:
 
 ....
-FvwmRearrange -cascade -resize 10 2 80 70
+FvwmRearrange -tile -swap 10 10 90 90
 ....
 
-The first invocation will horizontally tile windows with a bounding box
-which starts at 10 by 10 percent into and down the screen and ends at 90
-by 90 percent into and down the screen.
+This invocation will tile windows in a single column with a bounding box
+which starts at 10 by 10 percent into and down the monitor's working area
+and ends at 90 by 90 percent into and down the working area. Another example:
 
-The second invocation will cascade windows starting 10 by 2 percent into
-and down the screen. Windows will be constrained to 80 by 70 percent of
-the screen dimensions. Since the _resize_ is also specified, windows
-will be resized to the given constrained width and height.
+....
+FvwmRearrange -cascade 10 2 80 70
+....
+
+This invocation will cascade windows starting 10 by 2 percent into and down
+the monitor's working area. Windows will be resized so their height and width
+are 75 percent of the bounding box, which ends at 80 by 70 percent of the
+working area.
+
+FvwmRearrange can also be run multiple times on the same monitor with
+different bounding boxes. This way you can better control how windows are
+tiled. Consider the following example:
+
+....
+FvwmRearrange -tile -swap 0 0 35 100
+FvwmRearrange 35 0 100 100
+....
+
+The first command will create a single column of windows located on the left
+35% of the monitor, and the second will auto tile the windows on the right
+65% of the monitor. This way you can control how windows are tiled in
+different parts of the monitor independent of each other.
+
+If you want to run FvwmRearrange automatically when new windows are added,
+use FvwmEvent to trigger FvwmRearrange with an _add_window_ event. If using
+multiple bounding boxes (like the above example), a ManualPlacement Style
+would allow you to place a window in the portion of the screen you wanted
+it to be tiled in.
 
 == OPTIONS
 
--a::
-  Causes _all_ window types to be affected, even ones with the
-  WindowListSkip style.
--animate::
-  Attempt to do an animated move, this is ignored if _-resize_ or
-  _-maximize_ are used.
+FvwmRearrange is only configured using command line options. These options
+can come before or after the _bounding box_, and all start with a '-'.
+Below the options are split into categories, *TILING OPTIONS*,
+*CASCADING OPTIONS*, *GENERAL OPTIONS*, *RESIZING OPTIONS*,
+*FILTERING OPTIONS*, and *ORDERING OPTIONS*.
+
+=== TILING OPTIONS
+
+Tiling takes the windows inside the bounding box, creates a grid of equal
+sized cells based on the number of windows, then resizes and moves the
+windows to fill the cells, starting at the top left. The cells are then
+filled one row at a time (from left to right) working downward.
+
+Windows may have minimum size or size increment EMWH hints, so there
+could be gaps between windows or some windows minimum size might be
+bigger than the cell. The _ResizeHintOverride_ fvwm _Style_ will
+override this behavior and make windows fit in their cells better.
+
+-auto_tile::
+  This is the default behavior which tiles all windows into as close to
+  a square grid as possible. There can be up to one more column than row
+  (or one more row than column with _-swap_), depending on number of windows.
+  If the option _-max_n N_ is also provided, then the grid will have _N_ more
+  columns than rows (or _N_ more rows than columns if _-swap_ is included).
+  This option implies _-fill_start_ so all space will be used. If _-fill_end_
+  option is provided, the free space is used at the end instead.
+-tile::
+  This will tile the windows into a single row (or column if with _-swap_).
+  If _-max_n N_ is also provided, there will be at most _N_ columns per row
+  (or _N_ rows per column with _-sawp_) in the resulting grid. If the grid
+  has more cells than the number of windows, then the additional cells at
+  the end will be left open, unless the _-fill_start_ or _-fill_end_ options
+  are included.
+-max_n _N_::
+  This option alters how the grid is computed. When using _-auto_tile_ this
+  gives the number of more columns than rows (or more rows than columns with
+  _-swap_). When using _-tile_ this gives the max number of columns, before
+  a new row is created (or max number of rows with _-swap_). Default is 0.
+-swap::
+  Swaps the rows and columns, and swaps the direction the cells are filled,
+  by starting at the top left cell and filling each column downward (from
+  top to bottom) while working to the right. This use to be called horizontal
+  sort (with the default being vertical sort), and the old option _-h_ is
+  an alias for _-swap_, due to this history.
+-fill_start::
+  This will use any unused space in the grid by filling the first row (or
+  first column with _-swap_) left open in the grid. This is done by growing
+  the windows in the row (or column) to fill the unused space. The rest of
+  the windows will then fill up the rest of the grid.
+-fill_end::
+  This will use any unused space in the grid by filling the last row (or
+  last column with _-swap_) left open in the grid.
+
+=== CASCADING OPTIONS
+
+Cascading takes all windows in the bounding box, places the first window
+in the upper left corer of the bounding box, then stacks the second window
+just below the first shifted slightly down and to the right, so the previous
+window can be seen behind it. This process is repeated placing each window
+slightly down and to the right of the previous window.
+
+By default the windows are resized such that their height and width are
+75% of the bounding box's height and width. Though as the windows are
+cascaded, windows will shrunk so they will stay inside the bounding box.
+The _-nostretch_ and _-noresize_ options will prevent windows from being
+stretched or resized.
+
 -cascade::
-  Cascade windows. This argument must be the first on the command line.
-  This is the default.
--desk::
-  Causes all windows on the desk to be cascaded/tiled instead of the
-  current screen only.
+  Cascade windows inside the bounding box.
+-cascadew _arg_::
+  Specifies the width of the cascade windows. _arg_ is a percentage of the
+  bounding box's width, or a pixel value if a _p_ is suffixed. Windows are
+  shrunk if the width pushes them outside the bounding box. Default is 75.
+-cascadeh _arg_::
+  Specifies the height of the cascade windows. _arg_ is a percentage of the
+  bounding box's height, or a pixel value if a _p_ is suffixed. Windows are
+  shrunk if the height pushes them outside the bounding box. Default is 75.
+-inc_equal::
+  Make the x and y increment equal to the maximum of the two values. This is
+  useful to get the offset to be equal to the size of the border and title
+  bar in both directions. This can be combined with _-incx, _-incy_,
+  _-flatx_, and _-flaty_.
+-incx _arg_::
+  Specifies an additional horizontal increment which is successively added
+  to cascaded windows. _arg_ is a percentage of bounding box's width, or a
+  pixel value if a _p_ is suffixed. Default is zero.
+-incy _arg_::
+  Specifies an additional vertical increment which is successively added to
+  cascaded windows. _arg_ is a percentage of bounding box's height, or a
+  pixel value if a _p_ is suffixed. Default is zero.
 -flatx::
-  Inhibits border width increment. Only used when cascading.
+  Inhibits incrementing the horizontal position by a windows border width
+  (and title width if titles are on the right or left). Useful with _-incx_
+  to better control the horizontal increment.
 -flaty::
-  Inhibits border height increment. Only used when cascading.
--h::
-  Tiles horizontally (default is to tile vertically). Used for tiling
-  only.
--incx arg::
-  Specifies a horizontal increment which is successively added to
-  cascaded windows. _arg_ is a percentage of screen width, or pixel
-  value if a _p_ is suffixed. Default is zero. Used only for cascading.
--incy arg::
-  Specifies a vertical increment which is successively added to cascaded
-  windows. _arg_ is a percentage of screen height, or pixel value if a
-  _p_ is suffixed. Default is zero. Used only for cascading.
--m::
-  Causes maximized windows to also be affected (implied by -a).
--maximize::
-  When moving/resizing a window, put it also into maximized state.
--mn arg::
-  Tiles up to _arg_ windows in tile direction. If more windows exist, a
-  new direction row or column is created (in effect, a matrix is
-  created). Used only when tiling windows.
--noanimate::
-  Do not attempt to do an animated move.
--nomaximize::
-  Do not put windows into maximized state.
+  Inhibits incrementing the vertical position by a windows border width
+  (and title width if titles are on the top or bottom). Useful with _-incy_
+  to better control the vertical increment.
+
+=== GENERAL OPTIONS
+
+-screen _name_::
+  By default the current monitor is used to determine what windows to
+  cascade/tile, and is used as the base bounding box. This will use the
+  monitor specified by the RandR _name_ instead. If _name_ is equal to "g"
+  the global monitor (bounding box containing all monitors is used). Since
+  this may cause windows to span across multiple monitors, the working area
+  is ignored (see _ewmhiwa_).
 -noraise::
   Inhibits window raising, leaving the depth ordering intact.
--noresize::
-  Inhibits window resizing, leaving window sizes intact. This is the
-  default when cascading windows.
--nostretch::
-  If tiling: inhibits window growth to fit tile. Windows are shrunk to
-  fit the tile but not expanded.
-+
-If cascading: inhibits window expansion when using the -resize option.
-Windows will only shrink to fit the maximal width and height (if given).
-
--r::
-  Reverses the window sequence.
--resize::
-  Forces all windows to resize to the constrained width and height (if
-  given). This is the default when tiling windows.
--s::
-  Causes sticky windows to also be affected (implied by -a).
--sp::
-  Causes windows sticky across pages to also be affected (implied by
-  -a).
--sd::
-  Causes windows sticky across desks to also be affected (implied by
-  -a).
--t::
-  Causes transient windows to also be affected (implied by -a).
--tile::
-  Tile windows. This argument must be the first on the command line.
--u::
-  Causes untitled windows to also be affected (implied by -a).
+-maximize::
+  When moving/resizing a window, put them into a maximized state. This makes
+  so _Maximize_ can be used to restore the previous size and position.
+-animate::
+  When only moving windows (_-noresize_ is used), use _AnimateMove_ instead
+  of _Move_ to move windows.
 -ewmhiwa::
-  When rearranging windows, make the calculation ignore the working
-  area, such as EwmhBaseStruts; by default, FvwmRearrange will honour
-  the working area.
+  When rearranging windows, make the calculation ignore the working area,
+  such as _EwmhBaseStruts_; by default, FvwmRearrange will honour the
+  working area. This option may place windows outside of the current monitor.
 
+=== RESIZING OPTIONS
+
+By default both tiling and cascading will resize windows based on the
+provided options. These options will limit this behavior.
+
+-noresize::
+  Inhibits window resizing, leaving window sizes intact.
+-nostretch::
+  Inhibits windows from growing to fit the grid cell (when tiling) or
+  bounding box (when cascading). Windows are still shrunk to fit but not
+  expanded. This implies both _-nostretchx_ and _-nostretchy_.
+-nostretchx::
+  Inhibits windows from growing horizontally to fit, but they will still
+  be shrunk.
+-nostretchy::
+  Inhibits windows from growing vertically to fit, but they will still be
+  shrunk.
+
+=== FILTERING OPTIONS
+
+These options affect which windows inside the bounding box will be tiled
+or cascaded.
+
+-all::
+  Cause skipped, sticky, and transient windows to also be cascaded/tiled
+  (ignored by default). This is a shortcut for _-skiplist_, _-sticky_ and
+  _-transient_.
+-some::
+  Don't include maximized windows and windows without title bars (useful
+  when cascading) when cascading/tiling. This is a shortcut for
+  _-no_maximized_ and _-no_titled_.
+-skiplist::
+  Causes windows on the windows skip list (see _WindowListSkip_ style) to
+  also be affected.
+-sticky::
+  Causes sticky windows to also be affected. This is a shortcut for
+  _-sticky_page_ and _-sticky_desk_.
+-sticky_page::
+  Causes windows sticky across pages to also be affected.
+-sticky_desk::
+  Causes windows sticky across desks to also be affected.
+-transient::
+  Causes transient windows to also be affected.
+-no_maximized::
+  Don't include windows in the maximized state to be cascaded/tiled.
+-no_titled::
+  Don't include windows with title bars to be cascaded/tiled.
+-desk::
+  Causes all windows on the desk to be cascaded/tiled instead of only
+  windows that intersect the bounding box.
+
+=== ORDERING OPTIONS
+
+Windows are tiled or cascaded based on their order. By default the order
+is based off fvwm's _WindowList_ order (usually based off the order the
+windows were last focused). These options control the window order.
+
+-order_name::
+  Order the windows by their name.
+-order_icon::
+  Order the windows by their icon name.
+-order_class::
+  Order the windows by their class.
+-order_resource::
+  Order the windows by their resource.
+-order_xy::
+  Order the windows based on their (x, y) coordinate position. This is a
+  lexicographic ordering, by comparing x-coordinates first, then if the
+  x-coordinates are equal compare the y-coordinates. This ordering matches
+  the ordering of the _-swap_ tiling option.
+-order_yx::
+  Order the windows based on their (x, y) coordinate position. This is a
+  lexicographic ordering, by comparing y-coordinates first, then if the
+  y-coordinates are equal compare the x-coordinates. This ordering matches
+  the default positing of tiling windows.
+-order_hw::
+  Order the windows based on their height, and if their heights are the same
+  compare windows based on their width. This can be useful with _-cascade_
+  and _-noresize_ to stack windows based on their size.
+-order_wh::
+  Order the windows based on their width, and if their widths are the same
+  compare windows based on their height. This can be useful with _-cascade_
+  and _-noresize_ to stack windows based on their size.
+-reverse::
+  Reverses the window ordering.
 
 == BOUNDING BOX
 
-Up to four numbers can be placed on the command line that are not
-switches. The first pair specify an x and y offset to start the first
-window (default is 0, 0). The meaning of the second pair depends on
-operation mode:
+The bounding box is the area in which FvwmRearrange will both find and place
+windows when cascading/tiling.  The base bounding box is the working area of
+the current or specified monitor via the _-screen name_ option. If the option
+_-ewmhiwa_ is provided the base bounding box will ignore the working area and
+use the full monitor.
 
-When tiling windows it specifies an absolute coordinate reference
-denoting the lower right bounding box for tiling.
+Up to four numbers can be placed on the command line to specify a bounding
+box relative to the base bounding box of the given monitor.  The numbers
+give the position of the corners of the bounding box in the following order
+(default is "0 0 100 100"):
 
-When cascading it specifies a maximal width and height for the layered
-windows. If an affected window exceeds either this width or height, it
-is resized to the maximal width or height.
+....
+Left Top Right Bottom
+....
 
-If any number is suffixed with the letter p, then it is taken to be a
-pixel value, otherwise it is interpreted as a screen percentage.
-Specifying zero for any parameter is equivalent to not specifying it.
+These numbers are treated as a percentage of the base bounding box. For
+instance the bounding box "10 5 85 80" would use a bounding starting 10%
+across the working area from the left and ending 85% across the working
+area, while starting 5% down the working area from the top and ending
+80% down the working area. If any number is suffixed with the letter _p_,
+then it is taken to be a pixel value instead of a percentage.
+Specifying zero for any parameter is equivalent to not specifying it
+(for example "0 0 0 0" is the same as "0 0 100 100").
 
 == BUGS
 
@@ -155,5 +328,6 @@ rearranged.
 
 == AUTHORS
 
-Andrew Veliath (original FvwmTile and FvwmCascade modules) Dominik Vogt
-(merged FvwmTile and FvwmCascade to FvwmRearrange)
+Andrew Veliath (original FvwmTile and FvwmCascade modules),
+Dominik Vogt (merged FvwmTile and FvwmCascade to FvwmRearrange),
+Jaimos Skriletz (updated for fvwm3 including adding the auto_tile option).
