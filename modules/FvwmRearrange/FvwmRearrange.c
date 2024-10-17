@@ -43,6 +43,7 @@
 
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
+#include "libs/Parse.h"
 #include "libs/System.h"
 #include "libs/fvwmlib.h"
 #include "libs/vpacket.h"
@@ -71,9 +72,10 @@ int ofsx = 0, ofsy = 0;
 int maxw = 0, maxh = 0;
 int maxx, maxy;
 int untitled = 0, transients = 0;
-int maximized = 0;
-int all	      = 0;
-int desk      = 0;
+int maximized	 = 0;
+int all		 = 0;
+int desk	 = 0;
+int current_desk = 0;
 int reversed = 0, raise_window = 1;
 int resize	= 0;
 int nostretch	= 0;
@@ -87,9 +89,13 @@ int maxnum     = 0;
 int do_maximize = 0;
 int do_animate	= 0;
 int do_ewmhiwa	= 0;
+int is_global	= 0;
 
 int FvwmTile	= 0;
 int FvwmCascade = 1;
+
+char	       *monitor_name = NULL;
+struct monitor *mon;
 
 RETSIGTYPE
 DeadPipe(int sig)
@@ -128,6 +134,7 @@ is_suitable_window(unsigned long *body)
 {
 	XWindowAttributes	xwa;
 	struct ConfigWinPacket *cfgpacket = (void *)body;
+	char		       *m_name	  = (char *)&(cfgpacket->monitor_name);
 
 	if ((DO_SKIP_WINDOW_LIST(cfgpacket)) && !all)
 		return 0;
@@ -153,7 +160,10 @@ is_suitable_window(unsigned long *body)
 	if (IS_ICONIFIED(cfgpacket))
 		return 0;
 
-	if (!desk) {
+	if (desk) {
+		if (!is_global && (int)cfgpacket->desk != current_desk)
+			return 0;
+	} else {
 		int x = (int)cfgpacket->frame_x, y = (int)cfgpacket->frame_y;
 		int w = (int)cfgpacket->frame_width,
 		    h = (int)cfgpacket->frame_height;
@@ -166,6 +176,9 @@ is_suitable_window(unsigned long *body)
 		return 0;
 
 	if ((IS_TRANSIENT(cfgpacket)) && !transients)
+		return 0;
+
+	if (!is_global && strcmp(mon->si->name, m_name) != 0)
 		return 0;
 
 	return 1;
@@ -268,15 +281,12 @@ move_resize_raise_window(window_item *wi, int x, int y, int w, int h)
 		    w, h, x, y, ewmhiwa);
 		SendText(fd, msg, wi->frame);
 	} else {
-		const char *function = do_maximize  ? "ResizeMoveMaximize"
+		const char *function = do_maximize
+					   ? "ResizeMoveMaximize keep keep"
 				       : do_animate ? "AnimatedMove"
 						    : "Move";
-		if (do_maximize)
-			snprintf(msg, sizeof(msg), "%s keep keep %up %up %s",
-			    function, x, y, ewmhiwa);
-		else
-			snprintf(msg, sizeof(msg), "%s %up %up %s", function, x,
-			    y, ewmhiwa);
+		snprintf(
+		    msg, sizeof(msg), "%s %up %up %s", function, x, y, ewmhiwa);
 		SendText(fd, msg, wi->frame);
 	}
 
@@ -405,7 +415,7 @@ cascade_windows(void)
 }
 
 void
-parse_args(char *s, int argc, char *argv[], int argi)
+parse_args(int argc, char *argv[], int argi)
 {
 	int nsargc = 0;
 	/* parse args */
@@ -462,10 +472,10 @@ parse_args(char *s, int argc, char *argv[], int argi)
 			nostretch = 1;
 		} else if (!strcmp(argv[argi], "-incx")
 			   && ((argi + 1) < argc)) {
-			incx = atopixel(argv[++argi], dwidth);
+			incx = ++argi;
 		} else if (!strcmp(argv[argi], "-incy")
 			   && ((argi + 1) < argc)) {
-			incy = atopixel(argv[++argi], dheight);
+			incy = ++argi;
 		} else if (!strcmp(argv[argi], "-ewmhiwa")) {
 			do_ewmhiwa = 1;
 		} else if (!strcmp(argv[argi], "-maximize")) {
@@ -476,26 +486,46 @@ parse_args(char *s, int argc, char *argv[], int argi)
 			do_animate = 1;
 		} else if (!strcmp(argv[argi], "-noanimate")) {
 			do_animate = 0;
+		} else if (!strcmp(argv[argi], "-screen")
+			   && ((argi + 1) < argc)) {
+			monitor_name = fxstrdup(argv[++argi]);
 		} else {
 			if (++nsargc > 4) {
 				fprintf(console,
-				    "%s: %s: ignoring unknown arg %s\n",
-				    module->name, s, argv[argi]);
+				    "%s: ignoring unknown arg %s\n",
+				    module->name, argv[argi]);
 				continue;
 			}
 			if (nsargc == 1) {
-				ofsx = atopixel(argv[argi], dwidth);
+				ofsx = argi;
 			} else if (nsargc == 2) {
-				ofsy = atopixel(argv[argi], dheight);
+				ofsy = argi;
 			} else if (nsargc == 3) {
-				maxw = atopixel(argv[argi], dwidth);
-				maxx = maxw;
+				maxw = argi;
 			} else if (nsargc == 4) {
-				maxh = atopixel(argv[argi], dheight);
-				maxy = maxh;
+				maxh = argi;
 			}
 		}
 	}
+}
+
+void
+update_sizes(char *argv[])
+{
+	if (incx > 0)
+		incx = atopixel(argv[incx], dwidth);
+	if (incy > 0)
+		incy = atopixel(argv[incy], dheight);
+	if (ofsx > 0)
+		ofsx = atopixel(argv[ofsx], dwidth);
+	if (ofsy > 0)
+		ofsy = atopixel(argv[ofsy], dheight);
+	if (maxw > 0)
+		maxw = atopixel(argv[maxw], dwidth);
+	if (maxh > 0)
+		maxh = atopixel(argv[maxh], dheight);
+	maxx = maxw;
+	maxy = maxh;
 	ofsx += dx;
 	ofsy += dy;
 	maxx += dx;
@@ -532,16 +562,52 @@ main(int argc, char *argv[])
 	FScreenInit(dpy);
 	fd_width = GetFdWidth();
 
+	/* Need to parse args first so we know what monitor to use. */
+	parse_args(module->user_argc, module->user_argv, 0);
+	if (monitor_name && StrEquals(monitor_name, "g")) {
+		is_global  = 1;
+		do_ewmhiwa = 1; /* Ignore hints for global monitor. */
+	}
+
+	mon = monitor_resolve_name(monitor_name ? monitor_name : "c");
+	if (mon == NULL)
+		mon = monitor_get_current();
+
+	dx	= mon->si->x;
+	dy	= mon->si->y;
+	dwidth	= mon->si->w;
+	dheight = mon->si->h;
+
 	strcpy(match, "*");
 	strcat(match, module->name);
 	InitGetConfigLine(fd, match);
-	GetConfigLine(fd, &config_line);
-	while (config_line != NULL) {
-		GetConfigLine(fd, &config_line);
-	}
-	FScreenGetScrRect(NULL, FSCREEN_CURRENT, &dx, &dy, &dwidth, &dheight);
+	for (GetConfigLine(fd, &config_line); config_line != NULL;
+	     GetConfigLine(fd, &config_line)) {
+		char *token, *next, *mname;
+		int   dummy, bs_top, bs_bottom, bs_left, bs_right;
 
-	parse_args("module args", module->user_argc, module->user_argv, 0);
+		token = PeekToken(config_line, &next);
+		if (!StrEquals(token, "Monitor"))
+			continue;
+
+		config_line = GetNextToken(next, &mname);
+		if (!StrEquals(mname, mon->si->name))
+			continue;
+
+		sscanf(config_line, "%d %d %d %d %d %d %d %d %d %d %d %d %d %d",
+		    &dummy, &dummy, &dummy, &dummy, &dummy, &dummy, &dummy,
+		    &current_desk, &dummy, &dummy, &bs_left, &bs_right, &bs_top,
+		    &bs_bottom);
+		if (!do_ewmhiwa) {
+			dx += bs_left;
+			dy += bs_top;
+			dwidth -= bs_right;
+			dheight -= bs_bottom;
+		}
+	}
+
+	/* Update options now that dwidth and dheight are known */
+	update_sizes(module->user_argv);
 
 	SetMessageMask(fd, M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
 	SetMessageMask(fd, M_EXTENDED_MSG);
@@ -570,6 +636,9 @@ main(int argc, char *argv[])
 
 	if (console != stderr)
 		fclose(console);
+
+	if (monitor_name)
+		free(monitor_name);
 
 	return 0;
 }
