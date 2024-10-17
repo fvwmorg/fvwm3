@@ -30,7 +30,6 @@ typedef struct ConfigWinPacket
 	unsigned long  frame_height;
 	unsigned long  desk;
 	unsigned long  monitor_id;
-	unsigned long  monitor_name;
 	unsigned long  layer;
 	unsigned long  hints_base_width;
 	unsigned long  hints_base_height;

@@ -320,8 +320,6 @@ action_flags *_get_allowed_actions(const FvwmWindow *fw)
 		(unsigned long)(0),			\
 		&(*(_fw))->m->si->rr_output,		\
 		(unsigned long)(sizeof(unsigned long)),\
-		(*(_fw))->m->si->name,			\
-		(unsigned long)(0),			\
 		&(*(_fw))->layer,			\
 		(unsigned long)(0),			\
 		&(*(_fw))->hints.base_width,		\
