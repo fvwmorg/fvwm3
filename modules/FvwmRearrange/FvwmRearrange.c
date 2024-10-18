@@ -91,6 +91,8 @@ window_list	   wins = NULL, wins_tail = NULL;
 int		   wins_count = 0;
 FILE		  *console;
 
+static void	   Loop(int *);
+static void	   process_message(unsigned long, unsigned long *);
 static void	   free_window_list(window_list);
 
 /* Computation variables */
@@ -128,6 +130,7 @@ int titled	 = 1;
 int desk	 = 0;
 int reversed	 = 0;
 int do_ewmhiwa	 = 0;
+int is_init	 = 1;
 
 /* Monitor to act on. */
 struct monitor *mon;
@@ -149,6 +152,12 @@ DeadPipe(int sig)
 
 	exit(0);
 	SIGNAL_RETURN;
+}
+
+RETSIGTYPE
+HandleAlarm(int sig)
+{
+	DeadPipe(sig);
 }
 
 void
@@ -345,122 +354,35 @@ is_suitable_window(unsigned long *body)
 }
 
 void
-process_name(unsigned long type, unsigned long *body)
+get_window(unsigned long *body)
 {
-	window_item *wi = wins;
+	struct ConfigWinPacket *cfgpacket = (void *)body;
 
-	while (wi != NULL && wi->w != body[0])
-		wi = wi->next;
-
-	if (wi == NULL)
-		return;
-
-	switch(type) {
-		case M_RES_NAME:
-			free(wi->resource);
-			wi->resource = fxstrdup((char *)(&body[3]));
-			break;
-		case M_RES_CLASS:
-			free(wi->class);
-			wi->class = fxstrdup((char *)(&body[3]));
-			break;
-		case M_ICON_NAME:
-			free(wi->icon_name);
-			wi->icon_name = fxstrdup((char *)(&body[3]));
-			break;
-		case M_WINDOW_NAME:
-			free(wi->name);
-			wi->name = fxstrdup((char *)(&body[3]));
-			break;
-	}
-}
-
-int
-get_window(void)
-{
-	FvwmPacket	       *packet;
-	struct ConfigWinPacket *cfgpacket;
-	int			last = 1;
-	fd_set			infds;
-
-	FD_ZERO(&infds);
-	FD_SET(fd[1], &infds);
-	select(fd_width, SELECT_FD_SET_CAST & infds, 0, 0, NULL);
-
-	if ((packet = ReadFvwmPacket(fd[1])) == NULL)
-		DeadPipe(0);
-	else {
-		cfgpacket = (struct ConfigWinPacket *)packet->body;
-		switch (packet->type &= ~M_EXTENDED_MSG) {
-		case M_CONFIGURE_WINDOW:
-			if (is_suitable_window(packet->body)) {
-				window_item *wi = fxmalloc(sizeof(window_item));
-				wi->w		= cfgpacket->w;
-				wi->x		= cfgpacket->frame_x;
-				wi->y		= cfgpacket->frame_y;
-				wi->frame	= cfgpacket->frame;
-				wi->th		= cfgpacket->title_height;
-				wi->bw		= cfgpacket->border_width;
-				wi->width	= cfgpacket->frame_width;
-				wi->height	= cfgpacket->frame_height;
-				wi->base_w	= cfgpacket->hints_base_width;
-				wi->base_h	= cfgpacket->hints_base_height;
-				wi->min_w	= cfgpacket->hints_min_width;
-				wi->min_h	= cfgpacket->hints_min_height;
-				wi->max_w	= cfgpacket->hints_max_width;
-				wi->max_h	= cfgpacket->hints_max_height;
-				wi->inc_w	= cfgpacket->hints_width_inc;
-				wi->inc_h	= cfgpacket->hints_height_inc;
-				wi->flags	= cfgpacket->flags;
-				wi->name	= NULL;
-				wi->icon_name	= NULL;
-				wi->class	= NULL;
-				wi->resource	= NULL;
-				insert_window_list(wi);
-				++wins_count;
-			}
-			break;
-
-		case M_RES_NAME:
-		case M_RES_CLASS:
-		case M_ICON_NAME:
-		case M_WINDOW_NAME:
-			process_name(packet->type, packet->body);
-			break;
-
-		case M_END_WINDOWLIST:
-			last = 0;
-			break;
-
-		default:
-			fprintf(console,
-			    "%s: internal inconsistency: unknown message "
-			    "0x%08x\n",
-			    module->name, (int)packet->type);
-			break;
-		}
-	}
-	return last;
-}
-
-void
-wait_configure(window_item *wi)
-{
-	int found = 0;
-
-	/** Uh, what's the point of the select() here?? **/
-	fd_set infds;
-	FD_ZERO(&infds);
-	FD_SET(fd[1], &infds);
-	select(fd_width, SELECT_FD_SET_CAST & infds, 0, 0, NULL);
-
-	while (!found) {
-		FvwmPacket *packet = ReadFvwmPacket(fd[1]);
-		if (packet == NULL)
-			DeadPipe(0);
-		if (packet->type == M_CONFIGURE_WINDOW
-		    && (Window)(packet->body[1]) == wi->frame)
-			found = 1;
+	if (is_suitable_window(body)) {
+		window_item *wi = fxmalloc(sizeof(window_item));
+		wi->w		= cfgpacket->w;
+		wi->x		= cfgpacket->frame_x;
+		wi->y		= cfgpacket->frame_y;
+		wi->frame	= cfgpacket->frame;
+		wi->th		= cfgpacket->title_height;
+		wi->bw		= cfgpacket->border_width;
+		wi->width	= cfgpacket->frame_width;
+		wi->height	= cfgpacket->frame_height;
+		wi->base_w	= cfgpacket->hints_base_width;
+		wi->base_h	= cfgpacket->hints_base_height;
+		wi->min_w	= cfgpacket->hints_min_width;
+		wi->min_h	= cfgpacket->hints_min_height;
+		wi->max_w	= cfgpacket->hints_max_width;
+		wi->max_h	= cfgpacket->hints_max_height;
+		wi->inc_w	= cfgpacket->hints_width_inc;
+		wi->inc_h	= cfgpacket->hints_height_inc;
+		wi->flags	= cfgpacket->flags;
+		wi->name	= NULL;
+		wi->icon_name	= NULL;
+		wi->class	= NULL;
+		wi->resource	= NULL;
+		insert_window_list(wi);
+		++wins_count;
 	}
 }
 
@@ -498,12 +420,11 @@ move_resize_raise_window(window_item *wi, int x, int y, int w, int h)
 	const char *ewmhiwa = do_ewmhiwa ? "ewmhiwa" : "";
 	int orig_w = wi->width - frame_size(wi, 1);
 	int orig_h = wi->height - frame_size(wi, 0);
-	int do_wait = 1;
 
 	if (x == wi->x && y == wi->y && (!resize ||
 	    (w == orig_w && h == orig_h))) {
 		/* Window is the same size/position. Do nothing. */
-		do_wait = 0;
+		return;
 	} else if (resize) {
 		const char *function =
 		    do_maximize ? "ResizeMoveMaximize" : "ResizeMove";
@@ -522,9 +443,6 @@ move_resize_raise_window(window_item *wi, int x, int y, int w, int h)
 
 	if (raise_window)
 		SendText(fd, "Raise", wi->frame);
-
-	if (do_wait)
-		wait_configure(wi);
 }
 
 int
@@ -933,6 +851,7 @@ main(int argc, char *argv[])
 		exit(-1);
 	}
 	signal(SIGPIPE, DeadPipe);
+	signal(SIGALRM, HandleAlarm);
 
 	FScreenInit(dpy);
 	fd_width = GetFdWidth();
@@ -997,18 +916,87 @@ main(int argc, char *argv[])
 	/* Tell fvwm we're running */
 	SendFinishedStartupNotification(fd);
 
-	while (get_window()) /* */
-		;
-
-	sort_window_items();
-	if (wins_count) {
-		if (FvwmCascade)
-			cascade_windows();
-		else /* FvwmTile */
-			tile_windows();
-	}
+	Loop(fd);
 
 	free_resources();
 
 	return 0;
+}
+
+static void
+Loop(int *fd)
+{
+	FvwmPacket	*packet = NULL;
+
+	/* Ten seconds should be enough to tile all the windows.  This was
+	 * tested on a desk which had 128 windows, and it took less than five
+	 * seconds.
+	 */
+	alarm(10);
+
+	while (1) {
+		if ((packet = ReadFvwmPacket(fd[1])) == NULL)
+			DeadPipe(0);
+		process_message(packet->type, packet->body);
+	}
+}
+
+void
+process_name(unsigned long type, unsigned long *body)
+{
+	window_item *wi = wins;
+
+	while (wi != NULL && wi->w != body[0])
+		wi = wi->next;
+
+	if (wi == NULL)
+		return;
+
+	switch(type) {
+		case M_RES_NAME:
+			free(wi->resource);
+			wi->resource = fxstrdup((char *)(&body[3]));
+			break;
+		case M_RES_CLASS:
+			free(wi->class);
+			wi->class = fxstrdup((char *)(&body[3]));
+			break;
+		case M_ICON_NAME:
+			free(wi->icon_name);
+			wi->icon_name = fxstrdup((char *)(&body[3]));
+			break;
+		case M_WINDOW_NAME:
+			free(wi->name);
+			wi->name = fxstrdup((char *)(&body[3]));
+			break;
+	}
+}
+
+void process_message(unsigned long type, unsigned long *body)
+{
+	switch(type)
+	{
+	case M_CONFIGURE_WINDOW:
+		if (is_init)
+			get_window(body);
+		break;
+	case M_RES_NAME:
+	case M_RES_CLASS:
+	case M_ICON_NAME:
+	case M_WINDOW_NAME:
+		process_name(type, body);
+		break;
+	case M_END_WINDOWLIST:
+		is_init = 0;
+		if (wins_count) {
+			sort_window_items();
+			if (FvwmCascade)
+				cascade_windows();
+			else /* FvwmTile */
+				tile_windows();
+		}
+		break;
+	default:
+		break;
+	}
 }
