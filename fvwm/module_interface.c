@@ -24,6 +24,7 @@
 #include <stdarg.h>
 #include <errno.h>
 
+#include "libs/log.h"
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/ColorUtils.h"

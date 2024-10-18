@@ -14,6 +14,7 @@
  */
 
 #include "config.h"
+#include "libs/log.h"
 #include "libs/fvwm_x11.h"
 #include <stdio.h>
 

@@ -17,6 +17,7 @@
 #include <stdbool.h>
 #include "libs/FScreen.h"
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/Module.h"
 #include "libs/Parse.h"
 #include "fvwm/fvwm.h"

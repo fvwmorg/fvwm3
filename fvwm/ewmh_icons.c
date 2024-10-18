@@ -27,6 +27,7 @@
 #include "libs/FRenderInit.h"
 #include "libs/Graphics.h"
 #include "libs/Strings.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "window_flags.h"

@@ -20,6 +20,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/log.h"
 #include "libs/Grab.h"
 #include "libs/Parse.h"
 #include "libs/XResource.h"

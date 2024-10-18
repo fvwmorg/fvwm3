@@ -19,6 +19,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "libs/defaults.h"
 #include "libs/fvwm_x11.h"
 #include "libs/Module.h"
 #include "libs/Strings.h"

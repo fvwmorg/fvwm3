@@ -15,22 +15,23 @@
 
 #include "config.h"
 
-#include <X11/extensions/Xrandr.h>
-#include <X11/extensions/randr.h>
+#include <ctype.h>
+#include <err.h>
+#include <errno.h>
+#include <limits.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <ctype.h>
-#include <errno.h>
-#include <err.h>
+#include <X11/extensions/randr.h>
+#include <X11/extensions/Xrandr.h>
 
-#include "log.h"
 #include "defaults.h"
+#include "FEvent.h"
+#include "FScreen.h"
 #include "fvwmlib.h"
+#include "log.h"
 #include "Parse.h"
 #include "PictureBase.h"
-#include "FScreen.h"
-#include "FEvent.h"
 #include "queue.h"
 #include "strtonum.h"
 
