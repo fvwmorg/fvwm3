@@ -63,6 +63,13 @@
 typedef struct
 {
 	char *name;
+	/* -1: no action arguments
+	 *  0: action argument is window ID
+	 *  {0, 1, 2} | ARG_NO_WINID:
+	 *     action argument is a signed long in the given data slot
+	 *  0 | ARG_MONITOR | ARG_NO_WINID:
+	 *     action argument is monitor info
+	 */
 	int action_arg;
 	union
 	{
@@ -72,7 +79,7 @@ typedef struct
 
 /* ---------------------------- forward declarations ------------------------ */
 
-void execute_event(event_entry*, short, unsigned long*);
+void execute_event(event_entry*, short, unsigned long*, int);
 void config(void);
 RETSIGTYPE DeadPipe(int);
 static RETSIGTYPE TerminateHandler(int);
@@ -94,7 +101,8 @@ static Bool PassID = False;
 static Bool audio_compat = False;
 static char *audio_play_dir = NULL;
 
-#define ARG_NO_WINID 1024  /* just a large number */
+#define ARG_NO_WINID 2<<10  /* just a large number */
+#define ARG_MONITOR  2<<11  /* ditto */
 
 #define EVENT_ENTRY(name,action_arg) { name, action_arg, {NULL} }
 static event_entry message_event_table[] =
@@ -138,10 +146,10 @@ static event_entry extended_message_event_table[] =
 	EVENT_ENTRY( "enter_window", 0 ),
 	EVENT_ENTRY( "leave_window", 0 ),
 	EVENT_ENTRY( "property_change", 0),
-	EVENT_ENTRY( "monitor_enabled", 0 | ARG_NO_WINID),
-	EVENT_ENTRY( "monitor_disabled", 0 | ARG_NO_WINID),
-	EVENT_ENTRY( "monitor_changed", 0 | ARG_NO_WINID),
-	EVENT_ENTRY( "monitor_focus", 0 | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_enabled", 0 | ARG_MONITOR | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_disabled", 0 | ARG_MONITOR | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_changed", 0 | ARG_MONITOR | ARG_NO_WINID),
+	EVENT_ENTRY( "monitor_focus", 0 | ARG_MONITOR | ARG_NO_WINID),
 	EVENT_ENTRY( "echo", 0),
 	EVENT_ENTRY( "reply", 0), /* FvwmEvent will never receive MX_REPLY */
 	EVENT_ENTRY(NULL,0)
@@ -211,7 +219,7 @@ int main(int argc, char **argv)
 	char *s;
 	unsigned long header[FvwmPacketHeaderSize];
 	unsigned long body[FvwmPacketBodyMaxSize];
-	int total, remaining, count, event;
+	int total, bodysize, remaining, count, event;
 	int is_extended_msg;
 
 	cmd_line = fxmalloc(1);
@@ -290,7 +298,7 @@ int main(int argc, char **argv)
 	/* configure events */
 	config();
 	/* Startup event */
-	execute_event(builtin_event_table, BUILTIN_STARTUP, NULL);
+	execute_event(builtin_event_table, BUILTIN_STARTUP, NULL, 0);
 	if (start_audio_delay)
 	{
 		last_time = time(0);
@@ -341,7 +349,7 @@ int main(int argc, char **argv)
 
 		/* junk the event body */
 		total=0;
-		remaining = (header[2] - FvwmPacketHeaderSize) *
+		bodysize = remaining = (header[2] - FvwmPacketHeaderSize) *
 			sizeof(unsigned long);
 		while (remaining)
 		{
@@ -394,10 +402,10 @@ int main(int argc, char **argv)
 		{
 			event_table = message_event_table;
 		}
-		execute_event(event_table, event, body);
+		execute_event(event_table, event, body, bodysize);
 		unlock_event(header[1]);
 	} /* while */
-	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL);
+	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL, 0);
 
 	return 0;
 }
@@ -410,7 +418,8 @@ int main(int argc, char **argv)
  *    execute_event - actually executes the actions from lookup table
  *
  */
-void execute_event(event_entry *event_table, short event, unsigned long *body)
+void execute_event(event_entry *event_table, short event,
+		   unsigned long *body, int bodysize)
 {
 	if (event_table[event].action.action != NULL)
 	{
@@ -423,6 +432,10 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 		if (audio_play_dir)
 		{
 			len += strlen(audio_play_dir);
+		}
+		else
+		{
+			len += bodysize;
 		}
 		buf = fxmalloc(len);
 		if (audio_compat)
@@ -449,14 +462,21 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 			int action_arg = event_table[event].action_arg;
 			int fw = 0;
 
+			/* determine function window */
 			if (action_arg != -1 && !(action_arg & ARG_NO_WINID))
 			{
 				fw = body[action_arg];
 			}
 
+			/* determine command line */
 			if (PassID && action_arg != -1)
 			{
-				if (action_arg & ARG_NO_WINID)
+				if (action_arg & (ARG_MONITOR | ARG_NO_WINID))
+				{
+					snprintf(buf, len, "%s %s %ld %s", cmd_line,
+						 action, body[0], (char *)(&body[3]));
+				}
+				else if (action_arg & ARG_NO_WINID)
 				{
 					action_arg &= ~ARG_NO_WINID;
 					snprintf(buf, len, "%s %s %ld", cmd_line,
@@ -470,7 +490,7 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 			}
 			else
 			{
-				snprintf(buf, len,"%s %s", cmd_line, action);
+				snprintf(buf, len, "%s %s", cmd_line, action);
 			}
 			/* let fvwm execute the function */
 			SendText(fd, buf, fw);
@@ -507,6 +527,7 @@ void handle_config_line(char *buf)
 		"Cmd",
 		"Delay",
 		"Dir",
+		"PassArgs",
 		"PassID",
 		"StartDelay"
 	}; /* define entries here, if this list becomes unsorted, use FindToken */
@@ -565,10 +586,11 @@ void handle_config_line(char *buf)
 			break;
 
 		case 3:
-			/* PassID */
+		case 4:
+			/* PassArgs, PassID */
 			PassID = True;
 			break;
-		case 4:
+		case 5:
 			/* StartDelay */
 			if (token)
 			{
@@ -693,7 +715,7 @@ TerminateHandler(int nonsense)
  */
 RETSIGTYPE DeadPipe(int flag)
 {
-	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL);
+	execute_event(builtin_event_table, BUILTIN_SHUTDOWN, NULL, 0);
 	exit(flag);
 	SIGNAL_RETURN;
 }
