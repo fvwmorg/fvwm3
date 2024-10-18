@@ -254,27 +254,6 @@ get_window(void)
 	return last;
 }
 
-void
-wait_configure(window_item *wi)
-{
-	int found = 0;
-
-	/** Uh, what's the point of the select() here?? **/
-	fd_set infds;
-	FD_ZERO(&infds);
-	FD_SET(fd[1], &infds);
-	select(fd_width, SELECT_FD_SET_CAST & infds, 0, 0, NULL);
-
-	while (!found) {
-		FvwmPacket *packet = ReadFvwmPacket(fd[1]);
-		if (packet == NULL)
-			DeadPipe(0);
-		if (packet->type == M_CONFIGURE_WINDOW
-		    && (Window)(packet->body[1]) == wi->frame)
-			found = 1;
-	}
-}
-
 int
 atopixel(char *s, unsigned long f)
 {
@@ -297,12 +276,10 @@ move_resize_raise_window(window_item *wi, int x, int y, int w, int h)
 	const char *ewmhiwa = do_ewmhiwa ? "ewmhiwa" : "";
 	int orig_w = wi->width - 2 * wi->bw;
 	int orig_h = wi->height - 2 * wi->bw - wi->th;
-	int do_wait = 1;
 
 	if (x == wi->x && y == wi->y && (!resize ||
 	    (w == orig_w && h == orig_h))) {
-		/* Window is in the same. Do nothing. */
-		do_wait = 0;
+		/* Window is the same. Do nothing. */
 	} else if (resize) {
 		const char *function =
 		    do_maximize ? "ResizeMoveMaximize" : "ResizeMove";
@@ -321,9 +298,6 @@ move_resize_raise_window(window_item *wi, int x, int y, int w, int h)
 
 	if (raise_window)
 		SendText(fd, "Raise", wi->frame);
-
-	if (do_wait)
-		wait_configure(wi);
 }
 
 int
@@ -666,7 +640,6 @@ main(int argc, char *argv[])
 	update_sizes(module->user_argv);
 
 	SetMessageMask(fd, M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
-	SetMessageMask(fd, M_EXTENDED_MSG);
 
 	if (FvwmTile) {
 		if (maxx == dx)
@@ -677,16 +650,22 @@ main(int argc, char *argv[])
 
 	SendText(fd, "Send_WindowList", 0);
 
-	/* tell fvwm we're running */
+	/* Tell fvwm we're running */
 	SendFinishedStartupNotification(fd);
 
 	while (get_window()) /* */
 		;
 	if (wins_count) {
+		/* We don't want any more messages from fvwm. */
+		SetMessageMask(fd, 0);
+
 		if (FvwmCascade)
 			cascade_windows();
 		else /* FvwmTile */
 			tile_windows();
+
+		/* Wait a second to ensure all messages go through. */
+		usleep(1000000);
 	}
 	free_window_list(wins);
 
