@@ -316,9 +316,6 @@ monitor_by_output(int output)
 	return (mret);
 }
 
-/* Returns the (first) monitor marked as primary or NULL if none
- * has been marked yet.
- */
 struct monitor *
 monitor_by_primary(void)
 {
@@ -334,10 +331,6 @@ monitor_by_primary(void)
 	return (m);
 }
 
-/* Returns the (first) monitor that, before the latest RandR
- * change, has been marked primary but now is not.  Returns NULL
- * if there is no such monitor.
- */
 struct monitor *
 monitor_by_last_primary(void)
 {
@@ -353,9 +346,6 @@ monitor_by_last_primary(void)
 	return (m);
 }
 
-/* Marks the first monitor as primary if no other has been marked
- * as primary yet.
- */
 static void
 monitor_check_primary(void)
 {
@@ -411,9 +401,6 @@ monitor_output_change(Display *dpy, XRRScreenChangeNotifyEvent *e)
 	scan_screens(dpy);
 }
 
-/* Updates the monitor's coordinates, its primary flag, and its
- * previously primary flag from the RandR monitor information.
- */
 static void
 monitor_set_coords(struct monitor *m, XRRMonitorInfo rrm)
 {
@@ -555,8 +542,7 @@ scan_screens(Display *dpy)
 	 * function.
 	 */
 	RB_FOREACH(m, monitors, &monitor_q) {
-		m->flags &= ~MONITOR_NEW;
-		m->flags &= ~MONITOR_CHANGED;
+		m->flags &= ~(MONITOR_NEW|MONITOR_CHANGED);
 	}
 
 	rrm = XRRGetMonitors(dpy, root, true, &n);
@@ -598,7 +584,7 @@ scan_screens(Display *dpy)
 			continue;
 		if ((m = monitor_by_name(name)) == NULL) {
 			/* Case 2.1 -- new monitor. */
-			fvwm_debug(__func__, "Case 2.1: %s added", name);
+			fvwm_debug(__func__, "Case 2.1: new monitor");
 			monitor_add(&rrm[i]);
 		}
 
@@ -614,7 +600,8 @@ scan_screens(Display *dpy)
 
 out:
 	/* Update monitor order after changes.  Do not mix that up with the
-	 * following loop or some monitors might get processed twice.
+	 * following loop or some monitors might get their flags processed
+	 * twice.
 	 */
 	RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
 		if (m->flags & MONITOR_CHANGED) {
@@ -627,45 +614,32 @@ out:
 		int  flags = m->flags;
 		Bool found = m->flags & MONITOR_FOUND;
 
-
 		/* Check for monitor connection status -- whether a monitor is
 		 * active or not.  Clearing the MONITOR_FOUND flag is
 		 * important here so that the monitor is reconsidered again.
-		 *
-		 * Better try to keep these conditions readable than
-		 * ingenious ...
 		 */
-		fvwm_debug(__func__, "Flags: %s -> %04x, %04x\n", m->si->name, m->flags, m->emit);
-		if      (found && (flags & MONITOR_NEW)) {
+		if (found && (flags & MONITOR_NEW)) {
 			m->flags &= ~MONITOR_DISABLED;
 			m->emit   = MONITOR_ENABLED;
-		}
-		else if (found && (flags & MONITOR_CHANGED)) {
+		} else if (found && (flags & MONITOR_CHANGED)) {
 			m->flags &= ~MONITOR_DISABLED;
 			m->emit   = MONITOR_CHANGED;
-		}
-		else if (found && (flags & MONITOR_DISABLED)) {
+		} else if (found && (flags & MONITOR_DISABLED)) {
 			m->flags &= ~MONITOR_DISABLED;
 			m->emit   = MONITOR_ENABLED;
-		}
-		else if (found && (! (flags & MONITOR_DISABLED))) {
+		} else if (found && (! (flags & MONITOR_DISABLED))) {
 			m->emit   = 0;
-		}
-		/* This case happens if !randr_initialised. */
-		else if (!found && (flags & MONITOR_NEW)) {
+		} else if (!found && (flags & MONITOR_NEW)) {
+			/* This case happens if !randr_initialised. */
 			m->emit   = 0;
-		}
-		else if (!found && (flags & MONITOR_DISABLED)) {
+		} else if (!found && (flags & MONITOR_DISABLED)) {
 			m->emit   = 0;
-		}
-		else /* (!found && (! (flags & MONITOR_DISABLED))) */ {
+		} else /* (!found && (! (flags & MONITOR_DISABLED))) */ {
 			m->flags |= MONITOR_DISABLED;
 			m->emit   = MONITOR_DISABLED;
 		}
 		m->flags &= ~MONITOR_FOUND;
-		fvwm_debug(__func__, "Flags: %s -> %04x, %04x\n", m->si->name, m->flags, m->emit);
 	}
-
 	/* Now that all monitors have been inserted, assign them a number from
 	 * 0 -> n so that they can be referenced in order.
 	 */

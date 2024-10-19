@@ -1778,11 +1778,17 @@ static void monitor_update_ewmh(void)
 	FvwmWindow	*t;
 	struct monitor	*m, *mref;
 
+	if (Scr.bo.do_debug_randr)
+	{
+		monitor_dump_state(NULL);
+	}
+
 	mref = RB_MIN(monitors, &monitor_q);
 
 	RB_FOREACH(m, monitors, &monitor_q) {
 		if (m->flags & MONITOR_CHANGED) {
 			m->flags &= ~MONITOR_CHANGED;
+			continue;
 		}
 		if (m->flags & MONITOR_NEW) {
 			fvwm_debug(__func__, "Applying EWMH changes to new %s",
@@ -1815,6 +1821,7 @@ static void monitor_update_ewmh(void)
 		EWMH_Init(m);
 	}
 
+
 	BroadcastMonitorList(NULL);
 
 	for (t = Scr.FvwmRoot.next; t; t = t->next) {
@@ -1822,7 +1829,8 @@ static void monitor_update_ewmh(void)
 	}
 }
 
-static void monitor_emit_broadcast(void)
+static void
+monitor_emit_broadcast(void)
 {
 	struct monitor	*m;
 	char		*randrfunc = "RandRFunc";
@@ -1833,27 +1841,24 @@ static void monitor_emit_broadcast(void)
 		if (m->emit & MONITOR_CHANGED) {
 			fvwm_debug(__func__, "%s: emit monitor changed", m->si->name);
 			BroadcastName(
-				MX_MONITOR_CHANGED, m->number, -1, -1, m->si->name);
+				MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 		if (m->emit & MONITOR_ENABLED) {
 			fvwm_debug(__func__, "%s: emit monitor enabled", m->si->name);
 			BroadcastName(
-				MX_MONITOR_ENABLED, m->number, -1, -1, m->si->name);
+				MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 		if (m->emit & MONITOR_DISABLED) {
 			fvwm_debug(__func__, "%s: emit monitor disabled", m->si->name);
 			BroadcastName(
-				MX_MONITOR_DISABLED, m->number, -1, -1, m->si->name);
+				MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
@@ -1862,7 +1867,6 @@ static void monitor_emit_broadcast(void)
 		    (m != monitor_by_last_primary())) {
 			fvwm_debug(__func__, "%s: emit monitor primary change", m->si->name);
 
-			/* Run the RandRFunc in case a user has set it. */
 			execute_function_override_window(
 				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
@@ -1998,7 +2002,7 @@ toggle_prev_monitor_state(struct monitor *this, struct monitor *prev,
 	if (fw == NULL) {
 		/* Assume root window. */
 		if (this != prev) {
-			BroadcastName(MX_MONITOR_FOCUS, this->number, -1, -1,
+			BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
 			    this->si->name /* Name of the monitor. */
 			);
 		}
@@ -2010,7 +2014,7 @@ toggle_prev_monitor_state(struct monitor *this, struct monitor *prev,
 	}
 
 	if (fw->m != prev) {
-		BroadcastName(MX_MONITOR_FOCUS, this->number, -1, -1,
+		BroadcastName(MX_MONITOR_FOCUS, -1, -1, -1,
 			this->si->name /* Name of the monitor. */
 		);
 
