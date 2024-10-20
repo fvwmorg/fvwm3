@@ -149,11 +149,9 @@ struct monitor {
 	TAILQ_ENTRY(monitor) oentry;
 };
 RB_HEAD(monitors, monitor);
-TAILQ_HEAD(monitorsold, monitor);
 
 extern struct monitors  monitors;
 extern struct monitors	monitor_q;
-extern struct monitorsold  monitorsold_q;
 int			monitor_compare(struct monitor *, struct monitor *);
 RB_PROTOTYPE(monitors, monitor, entry, monitor_compare);
 
