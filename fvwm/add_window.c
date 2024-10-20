@@ -205,8 +205,12 @@ static void setup_window_structure(
 	FW_W(*pfw) = w;
 	if (savewin != NULL)
 	{
+		/* JS: 2024-10-19
+		 * Set initial monitor to NULL, so current monitor can
+		 * be used for placement and finding current desk.
+		 */
+		(*pfw)->m = NULL;
 		(*pfw)->Desk = savewin->Desk;
-		(*pfw)->m = savewin->m;
 		SET_SHADED(*pfw, IS_SHADED(savewin));
 		SET_USED_TITLE_DIR_FOR_SHADING(
 			*pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
@@ -2332,8 +2336,6 @@ FvwmWindow *AddWindow(
 	else
 	{
 		rectangle attr_g;
-
-		update_fvwm_monitor(fw);
 
 		if (IS_SHADED(fw))
 		{
