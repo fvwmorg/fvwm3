@@ -1053,7 +1053,7 @@ AC_DEFUN([AM_PO_SUBDIRS],
   DUMMYPOFILES=
   for lang in $ALL_LINGUAS; do
     for dom in $ALL_DOMAINS; do
-      POFILES="$POFILES $dom.$lang.po"
+      POFILES="$POFILES $lang.po"
       GMOFILES="$GMOFILES $dom.$lang.gmo"
       UPDATEPOFILES="$UPDATEPOFILES $dom.$lang.po-update"
       DUMMYPOFILES="$DUMMYPOFILES $dom.$lang.nop"
