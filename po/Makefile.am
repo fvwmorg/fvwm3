@@ -2,7 +2,7 @@
 localedir = @LOCALEDIR@
 
 EXTRA_DIST = \
-	@POFILES@ @GMOFILES@ fvwm3.pot
+	@POFILES@ @GMOFILES@ fvwm3.pot meson.build
 
 # This is the list of locale categories, beyond LC_MESSAGES, for which the
 # message catalogs shall be used.  It is usually empty.

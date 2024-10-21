@@ -19,7 +19,7 @@ MODULE_ADOC = $(filter-out FvwmPrompt.adoc, $(MODULE_ADOC_SRCS))
 REMOVE_LINK = FvwmPrompt.adoc
 endif
 
-EXTRA_DIST = $(MODULE_ADOC_SRCS)
+EXTRA_DIST = $(MODULE_ADOC_SRCS) meson.build index.adoc.in
 
 nothing:
 

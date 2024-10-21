@@ -5,3 +5,5 @@ program_transform_name =
 moduledir = @FVWM_MODULEDIR@
 
 module_SCRIPTS = FvwmPerl
+
+EXTRA_DIST = meson.build FvwmPerl.in

@@ -6,7 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmPager
-EXTRA_DIST = ConfigFvwmPager
+EXTRA_DIST = ConfigFvwmPager meson.build
 
 config_DATA = \
   ConfigFvwmPager

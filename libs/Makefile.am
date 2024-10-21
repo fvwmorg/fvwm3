@@ -2,6 +2,8 @@
 
 noinst_LIBRARIES = libfvwm3.a
 
+EXTRA_DIST=meson.build
+
 ## please keep .c files in largest first order to speed up parallel makes
 libfvwm3_a_SOURCES = \
 	BidiJoin.h Bindings.h ClientMsg.h ColorUtils.h Colorset.h \

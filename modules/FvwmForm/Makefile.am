@@ -27,7 +27,9 @@ EXTRA_DIST = Changes \
   FvwmForm-Talk           \
   FvwmForm-TalkHelp       \
   FvwmForm-XDGOptionsHelp \
-  FvwmForm-XDGMenuHelp
+  FvwmForm-XDGMenuHelp    \
+  FvwmTalk-wrapper.in     \
+  meson.build
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
 

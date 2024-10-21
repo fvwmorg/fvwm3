@@ -5,6 +5,8 @@ program_transform_name =
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmAuto
 
+EXTRA_DIST = meson.build
+
 FvwmAuto_SOURCES = FvwmAuto.c
 FvwmAuto_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 

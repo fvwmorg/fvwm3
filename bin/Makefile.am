@@ -22,7 +22,7 @@ AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS) \
 configdir = @FVWM_DATADIR@
 config_DATA = fvwm-menu-desktop-config.fpl
 
-EXTRA_DIST = fvwm-menu-desktop-config.fpl FvwmPrompt
+EXTRA_DIST = fvwm-menu-desktop-config.fpl FvwmPrompt meson.build
 
 dist-hook:
 	rm -f $(distdir)/FvwmPrompt/FvwmPrompt

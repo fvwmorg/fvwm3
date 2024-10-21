@@ -6,7 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmIdent
-EXTRA_DIST = ConfigFvwmIdent
+EXTRA_DIST = ConfigFvwmIdent meson.build
 
 config_DATA = \
   ConfigFvwmIdent

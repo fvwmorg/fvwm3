@@ -5,6 +5,8 @@ program_transform_name =
 moduleexecdir = @FVWM_MODULEDIR@
 moduleexec_PROGRAMS = FvwmEvent
 
+EXTRA_DIST = meson.build
+
 FvwmEvent_SOURCES = FvwmEvent.c
 FvwmEvent_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 

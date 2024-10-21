@@ -13,7 +13,8 @@ EXTRA_DIST  = images \
 	      stalonetrayrc \
 	      FvwmScript-DateTime \
 	      FvwmScript-ConfirmQuit \
-	      FvwmScript-ConfirmCopyConfig
+	      FvwmScript-ConfirmCopyConfig \
+              meson.build
 
 install-data-hook:
 	cp -r $(srcdir)/images $(inst_location)/default-config
