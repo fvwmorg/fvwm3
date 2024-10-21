@@ -4,6 +4,7 @@ GOBUILD=$(GOCMD) build
 GOFLAGS=-ldflags="-s -w"
 GOCLEAN=$(GOCMD) clean
 BINARY_NAME=FvwmPrompt
+EXTRA_DIST=meson.build
 
 all: build
 build:

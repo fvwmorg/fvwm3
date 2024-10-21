@@ -21,7 +21,12 @@ xsessions_DATA = $(XSESSIONFILE)
 
 CLEANFILES = $(XSESSIONFILE)
 
-EXTRA_DIST = CHANGELOG.md $(XSESSIONFILE).in
+EXTRA_DIST = CHANGELOG.md \
+    $(XSESSIONFILE).in \
+    meson.build \
+    meson.options \
+    meson-scripts \
+    config_defines.h
 
 ## ---------------------------------------------------------------------------
 ## Manage bzip2 archive together with gzip archive

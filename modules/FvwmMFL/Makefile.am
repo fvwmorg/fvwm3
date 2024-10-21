@@ -6,6 +6,8 @@ moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmMFL
 module_SCRIPTS = FvwmCommandS
 
+EXTRA_DIST = meson.build FvwmCommandS.in
+
 FvwmMFL_SOURCES = FvwmMFL.c
 FvwmMFL_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 

@@ -7,7 +7,7 @@ configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmBacker
 
-EXTRA_DIST = ConfigFvwmBacker
+EXTRA_DIST = ConfigFvwmBacker meson.build
 config_DATA = ConfigFvwmBacker
 
 FvwmBacker_SOURCES = FvwmBacker.c FvwmBacker.h root_bits.c

@@ -3,7 +3,7 @@
 configdir = @FVWM_DATADIR@
 bin_PROGRAMS = fvwm3
 
-EXTRA_DIST = $(config_DATA)
+EXTRA_DIST = $(config_DATA) meson.build
 
 config_DATA = ConfigFvwmDefaults
 

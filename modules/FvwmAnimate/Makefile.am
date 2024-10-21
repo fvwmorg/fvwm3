@@ -5,6 +5,8 @@ program_transform_name =
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmAnimate
 
+EXTRA_DIST = meson.build
+
 FvwmAnimate_SOURCES = FvwmAnimate.c FvwmAnimate.h
 FvwmAnimate_DEPENDENCIES = $(top_builddir)/libs/libfvwm3.a
 

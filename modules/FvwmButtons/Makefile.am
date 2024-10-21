@@ -6,7 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmButtons
-EXTRA_DIST = CHANGES samplebuttonrc BUGS ConfigFvwmButtons
+EXTRA_DIST = CHANGES samplebuttonrc BUGS ConfigFvwmButtons meson.build
 
 config_DATA = ConfigFvwmButtons
 

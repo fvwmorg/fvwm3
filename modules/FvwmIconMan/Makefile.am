@@ -6,7 +6,7 @@ moduledir = @FVWM_MODULEDIR@
 configdir = @FVWM_DATADIR@
 
 module_PROGRAMS = FvwmIconMan
-EXTRA_DIST = ConfigFvwmIconMan
+EXTRA_DIST = ConfigFvwmIconMan meson.build
 
 config_DATA = \
   ConfigFvwmIconMan

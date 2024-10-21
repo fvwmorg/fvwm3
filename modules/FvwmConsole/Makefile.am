@@ -12,6 +12,8 @@ if !FVWM_BUILD_GOLANG
 
 module_PROGRAMS = FvwmConsole FvwmConsoleC
 
+EXTRA_DIST = meson.build
+
 FvwmConsole_SOURCES = FvwmConsole.c FvwmConsole.h
 FvwmConsoleC_SOURCES = FvwmConsoleC.c FvwmConsole.h getline.c
 
