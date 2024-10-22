@@ -2272,7 +2272,9 @@ int main(int argc, char **argv)
 	LoadWindowStates(state_filename);
 
 	is_tracking_shared = false;
+	fvwm_debug(__func__, "About to loop over monitors...");
 	RB_FOREACH(m, monitors, &monitor_q) {
+		fvwm_debug(__func__, "monitor is: %s", m ? m->si->name : "(null)");
 		EWMH_Init(m);
 
 		/* Having initialised the monitor at startup here, we can
