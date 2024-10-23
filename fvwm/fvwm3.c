@@ -1994,6 +1994,7 @@ int main(int argc, char **argv)
 	{
 		fvwm_debug(__func__, "can't open display %s",
 			   XDisplayName(display_name));
+		abort();
 		exit (1);
 	}
 	Scr.screen= DefaultScreen(dpy);
@@ -2283,6 +2284,7 @@ int main(int argc, char **argv)
 		 */
 		m->flags &= ~MONITOR_NEW;
 	}
+	fvwm_debug(__func__, "Finished looping over monitors...");
 
 	SetRCDefaults();
 	flush_window_updates();
