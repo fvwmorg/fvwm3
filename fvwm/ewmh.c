@@ -2064,3 +2064,26 @@ void EWMH_fullscreen(FvwmWindow *fw)
 
 	return;
 }
+
+boundingbox
+get_ewmhc_boundingbox(struct monitor *m)
+{
+	boundingbox r = {0};
+	int left = 0, right = 0, top = 0, bottom = 0;
+
+	EWMH_UpdateWorkArea(m);
+
+	left = m->Desktops->ewmh_working_area.x;
+	right = m->si->w - left -
+		m->Desktops->ewmh_working_area.width;
+	top = m->Desktops->ewmh_working_area.y;
+	bottom = m->si->h - top -
+		 m->Desktops->ewmh_working_area.height;
+
+	r.left = left;
+	r.right = right;
+	r.top = top;
+	r.bottom = bottom;
+
+	return r;
+}
