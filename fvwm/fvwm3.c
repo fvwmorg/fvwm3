@@ -1283,6 +1283,7 @@ static void SetRCDefaults(void)
 		{ "ImagePath "FVWM_DATADIR"/default-config/images", "", "" },
 		{ "SetEnv FVWM_DATADIR "FVWM_DATADIR"", "", "" },
 		{ "SetEnv FVWM_IS_FVWM3 1", "", "" },
+		{ "Module FvwmMFL", "", "" },
 		/* The below is historical -- before we had a default
 		 * configuration which defines these and more.
 		 */
@@ -1325,9 +1326,9 @@ static void SetRCDefaults(void)
 		{ "Mouse 1 MI A MenuSelectItem", "", "" },
 		/* Default escape from CusorBarriers */
 		{ "Key D A CS CursorBarrier destroy", "", "" },
+		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		/* don't add anything below */
 		{ RC_DEFAULTS_COMPLETE, "", "" },
-		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		{ NULL, NULL, NULL }
 	};
 
