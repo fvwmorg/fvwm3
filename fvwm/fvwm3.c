@@ -2287,6 +2287,7 @@ int main(int argc, char **argv)
 	fvwm_debug(__func__, "Finished looping over monitors...");
 
 	SetRCDefaults();
+	fvwm_debug(__func__, "SetRCDefaults()");
 	flush_window_updates();
 	simplify_style_list();
 
@@ -2386,6 +2387,8 @@ int main(int argc, char **argv)
 	resize_geometry_window();
 	CoerceEnterNotifyOnCurrentWindow();
 	SessionInit();
+
+	fvwm_debug(__func__, "About to enter loop...\n");
 
 	HandleEvents();
 	switch (fvwmRunState)
