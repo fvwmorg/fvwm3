@@ -241,7 +241,7 @@ fribidi = dependency(
 )
 if fribidi.found()
     all_found_deps += fribidi
-    conf.set10('HAVE_FRIBIDI', true)
+    conf.set10('HAVE_BIDI', true)
 endif
 
 iconv = dependency('iconv', required: get_option('iconv'))
@@ -332,7 +332,7 @@ endif
 xext = dependency('xext', required: get_option('xext'))
 if xext.found()
     all_found_deps += xext
-    conf.set10('HAVE_SHAPE', true)
+    conf.set10('SHAPE', true)
 endif
 
 xkbcommon = dependency('xkbcommon', required: get_option('xkbcommon'))
@@ -344,7 +344,7 @@ endif
 xpm = dependency('xpm', required: get_option('xpm'))
 if xpm.found()
     all_found_deps += xpm
-    conf.set10('HAVE_XPM', true)
+    conf.set10('XPM', true)
 endif
 
 xrender = dependency('xrender', required: get_option('xrender'))
@@ -356,7 +356,7 @@ endif
 # Hard-coded
 non_configurable_ops = [
     'FMiniIconsSupported',
-    'HAVE_XSM',
+    'HAVE_XSHM',
 ]
 
 foreach nco : non_configurable_ops
