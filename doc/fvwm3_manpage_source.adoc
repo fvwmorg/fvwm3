@@ -4473,8 +4473,8 @@ first, then horizontally to find space. Instead of the horizontal
 "grow" argument, "_growleft_" or "_growright_" can be used
 respectively "_growup_" and "_growdown_". The optional _flags_
 argument is a space separated list containing the following key words:
-_fullscreen_, _ewmhiwa_, _growonwindowlayer_, _growonlayers_ and
-_screen_. _fullscreen_ causes the window to become fullscreened if the
+_fullscreen_, _ewmhiwa_, _growonwindowlayer_, _growonlayers_, _keepgrowing_,
+and _screen_. _fullscreen_ causes the window to become fullscreened if the
 appropriate EWMH hint is set. _ewmhiwa_ causes fvwm to ignore the EWMH
 working area. _growonwindowlayer_ causes the various grow methods to
 ignore windows with a layer other than the current layer of the window
@@ -4482,7 +4482,9 @@ which is maximized. The _growonlayers_ option must have two integer
 arguments. The first one is the minimum layer and the second one the
 maximum layer to use. Windows that are outside of this range of layers
 are ignored by the grow methods. A negative value as the first or
-second argument means to assume no minimum or maximum layer. _screen_
+second argument means to assume no minimum or maximum layer. _keepgrowing_
+will allow the window to keep growing beyond any window it is currently
+touching until it grows into the next closest window boundary. _screen_
 must have an argument which specifies the screen on which to operate.
 +
 Here are some examples. The following adds a title-bar button to
