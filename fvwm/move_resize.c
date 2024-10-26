@@ -5157,6 +5157,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool is_screen_given = False;
 	Bool ignore_working_area = False;
 	Bool do_fullscreen = False;
+	bool consider_touching = true;
 	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
 	rectangle scr;
@@ -5214,6 +5215,11 @@ void CMD_Maximize(F_CMD_ARGS)
 					layers[0] = -1;
 					layers[1] = -1;
 				}
+			}
+			else if (StrEquals(token, "keepgrowing"))
+			{
+				consider_touching = false;
+				action = taction;
 			}
 			else if (StrEquals(token, "fullscreen"))
 			{
@@ -5433,7 +5439,7 @@ void CMD_Maximize(F_CMD_ARGS)
 					page.y + scr.y + scr.height - bound.y;
 			}
 			grow_to_closest_type(fw, &new_g, bound, layers,
-				SNAP_NONE, true);
+				SNAP_NONE, consider_touching);
 		}
 		else if (val2 > 0)
 		{
@@ -5454,7 +5460,7 @@ void CMD_Maximize(F_CMD_ARGS)
 					page.x + scr.x + scr.width - bound.x;
 			}
 			grow_to_closest_type(fw, &new_g, bound, layers,
-				SNAP_NONE, true);
+				SNAP_NONE, consider_touching);
 		}
 		else if (val1 >0)
 		{
