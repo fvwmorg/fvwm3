@@ -160,6 +160,7 @@ functions = {
     'sysconf': {},
     'intl': {},
     'uname': {},
+    'wait3': {},
     'waitpid': {},
 }
 
