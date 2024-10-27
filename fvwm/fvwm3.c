@@ -1280,6 +1280,7 @@ static void SetRCDefaults(void)
 		{ "ImagePath "FVWM_DATADIR"/default-config/images", "", "" },
 		{ "SetEnv FVWM_DATADIR "FVWM_DATADIR"", "", "" },
 		{ "SetEnv FVWM_IS_FVWM3 1", "", "" },
+		{ "Module FvwmMFL", "", "" },
 		/* The below is historical -- before we had a default
 		 * configuration which defines these and more.
 		 */
@@ -1320,9 +1321,9 @@ static void SetRCDefaults(void)
 		{ "Key Up M A MenuMoveCursor -1", "", "" },
 		{ "Key Down M A MenuMoveCursor 1", "", "" },
 		{ "Mouse 1 MI A MenuSelectItem", "", "" },
+		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		/* don't add anything below */
 		{ RC_DEFAULTS_COMPLETE, "", "" },
-		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		{ NULL, NULL, NULL }
 	};
 

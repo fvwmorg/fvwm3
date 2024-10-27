@@ -79,7 +79,6 @@ AddToFunc   StartFunction
 + I Test (Init) InitBackground
 + I Module FvwmButtons RightPanel
 + I Module FvwmEvent EventNewDesk
-+ I Module FvwmMFL
 
 # Function to set background when fvwm starts
 DestroyFunc InitBackground
