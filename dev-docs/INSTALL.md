@@ -32,6 +32,7 @@ system in use.
 * libxrandr-dev (>= 1.5)
 * libxrender-dev
 * libxt-dev
+* xtrans-dev
 
 ## Optional dependencies
 

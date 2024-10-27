@@ -33,11 +33,8 @@
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
-#if defined(HAVE_X11_XTRANS_XTRANS_H) && defined(HAVE__ICETRANSNOLISTEN)
 #include <X11/Xtrans/Xtrans.h>
-#elif defined(HAVE__ICETRANSNOLISTEN)
-extern void _IceTransNoListen(char *protocol);
-#endif
+
 
 #include "fvwmlib.h"
 #include "log.h"
