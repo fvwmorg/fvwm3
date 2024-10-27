@@ -223,6 +223,10 @@ else
     if readline.found()
         all_found_deps += readline
         conf.set10('HAVE_READLINE', true)
+        # Check for append_history to determine if we have GNU readline
+        if cc.has_function('append_history', dependencies: readline)
+            conf.set10('HAVE_GNU_READLINE', true)
+        endif
     endif
 endif
 
