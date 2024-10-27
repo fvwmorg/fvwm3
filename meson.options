@@ -89,12 +89,6 @@ option(
     description: 'Enable Xcursor support',
 )
 option(
-    'xext',
-    type: 'feature',
-    value: 'auto',
-    description: 'Enable shaped window support via Xext',
-)
-option(
     'xkbcommon',
     type: 'feature',
     value: 'auto',

@@ -188,6 +188,10 @@ foreach rd : all_req_deps
     all_found_deps += this_dep
 endforeach
 
+xext = dependency('xext', required: true)
+all_found_deps += xext
+conf.set10('SHAPE', true)
+
 # Python is a required dependency, we generate shebangs at buildtime
 # This will error by default if there is no python interpreter found
 py_mod = import('python')
@@ -333,12 +337,6 @@ xcursor = dependency('xcursor', required: get_option('xcursor'))
 if xcursor.found()
     all_found_deps += xcursor
     conf.set10('HAVE_XCURSOR', true)
-endif
-
-xext = dependency('xext', required: get_option('xext'))
-if xext.found()
-    all_found_deps += xext
-    conf.set10('SHAPE', true)
 endif
 
 xkbcommon = dependency('xkbcommon', required: get_option('xkbcommon'))
