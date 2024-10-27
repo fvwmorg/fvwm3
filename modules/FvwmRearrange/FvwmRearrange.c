@@ -92,10 +92,10 @@ int FvwmTile = 0;
 int FvwmCascade = 1;
 
 
-RETSIGTYPE DeadPipe(int sig)
+void DeadPipe(int sig)
 {
   exit(0);
-  SIGNAL_RETURN;
+  return;
 }
 
 void insert_window_list(window_list *wl, window_item *i)

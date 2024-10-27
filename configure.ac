@@ -1289,11 +1289,6 @@ AH_VERBATIM([_ZEND_EXPLICIT_DEFINITIONS],
 #define FMiniIconsSupported 0
 #endif
 
-#if RETSIGTYPE != void
-#define SIGNAL_RETURN return 0
-#else
-#define SIGNAL_RETURN return
-#endif
 
 /* Allow GCC extensions to work, if you have GCC. */
 #ifndef __attribute__

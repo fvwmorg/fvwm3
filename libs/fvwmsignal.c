@@ -51,7 +51,7 @@ static jmp_buf deadJump;
  * We do this asynchronously within the SIGCHLD handler so that
  * "it just happens".
  */
-RETSIGTYPE
+void
 fvwmReapChildren(int sig)
 {
 	(void)sig;
@@ -79,7 +79,7 @@ fvwmReapChildren(int sig)
 #endif
 	BSD_UNBLOCK_SIGNALS;
 
-	SIGNAL_RETURN;
+	return;
 }
 
 #ifdef USE_BSD_SIGNALS

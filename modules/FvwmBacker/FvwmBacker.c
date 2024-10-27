@@ -495,10 +495,10 @@ void ProcessMessage(unsigned long type, unsigned long *body)
 /*
   Detected a broken pipe - time to exit
 */
-RETSIGTYPE DeadPipe(int nonsense)
+void DeadPipe(int nonsense)
 {
 	exit(1);
-	SIGNAL_RETURN;
+	return;
 }
 
 /*

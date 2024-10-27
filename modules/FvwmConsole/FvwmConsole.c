@@ -41,7 +41,7 @@ char Name[80]; /* name of this program in executable format */
 char *S_name = NULL;  /* socket name */
 
 void server(void);
-RETSIGTYPE DeadPipe(int);
+void DeadPipe(int);
 void ErrMsg(char *msg);
 void SigHandler(int);
 
@@ -64,27 +64,27 @@ void clean_up(void)
 /*
  *      signal handler
  */
-RETSIGTYPE DeadPipe(int dummy)
+void DeadPipe(int dummy)
 {
 	clean_up();
 	exit(0);
 
-	SIGNAL_RETURN;
+	return;
 }
 
-RETSIGTYPE SigHandler(int dummy)
+void SigHandler(int dummy)
 {
 	clean_up();
 	exit(0);
 
-	SIGNAL_RETURN;
+	return;
 }
 
-RETSIGTYPE ReapChildren(int sig)
+void ReapChildren(int sig)
 {
 	fvwmReapChildren(sig);
 
-	SIGNAL_RETURN;
+	return;
 }
 
 int main(int argc, char *argv[])

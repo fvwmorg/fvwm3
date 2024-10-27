@@ -153,7 +153,7 @@ static void AnimateResizeNone(int, int, int, int, int, int, int, int);
 static void AnimateResizeTwist(int, int, int, int, int, int, int, int);
 static void DefineForm(void);
 
-static RETSIGTYPE HandleTerminate(int sig);
+static void HandleTerminate(int sig);
 
 struct ASAnimate Animate = { NULL, NULL, ANIM_ITERATIONS, ANIM_DELAY,
 			     ANIM_TWIST, ANIM_WIDTH,
@@ -748,14 +748,14 @@ void
 DeadPipe(int arg) {
   myfprintf((stderr,"Dead Pipe, arg %d\n",arg));
   exit(0);
-  SIGNAL_RETURN;
+  return;
 }
 
 
-static RETSIGTYPE
+static void
 HandleTerminate(int sig) {
   fvwmSetTerminate(sig);
-  SIGNAL_RETURN;
+  return;
 }
 
 

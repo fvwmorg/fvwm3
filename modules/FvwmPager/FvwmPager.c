@@ -128,7 +128,7 @@ static int x_fd;
 static fd_set_size_t fd_width;
 
 static void Loop(int *fd);
-static RETSIGTYPE TerminateHandler(int);
+static void TerminateHandler(int);
 static int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Procedure: main - start of module */
@@ -341,18 +341,18 @@ void Loop(int *fd)
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  */
-static RETSIGTYPE TerminateHandler(int sig)
+static void TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
-	SIGNAL_RETURN;
+	return;
 }
 
 #if 0
 /* Is this used? */
-RETSIGTYPE DeadPipe(int nonsense)
+void DeadPipe(int nonsense)
 {
 	exit(0);
-	SIGNAL_RETURN;
+	return;
 }
 #endif
 

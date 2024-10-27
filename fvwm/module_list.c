@@ -1054,9 +1054,9 @@ void FlushAllMessageQueues(void)
 
 /* empty, only here so that the signal handling initialization code is the
  * same for modules and fvwm  */
-RETSIGTYPE DeadPipe(int sig)
+void DeadPipe(int sig)
 {
-	SIGNAL_RETURN;
+	return;
 }
 
 void CMD_Module(F_CMD_ARGS)

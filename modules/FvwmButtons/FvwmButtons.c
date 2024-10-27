@@ -98,9 +98,9 @@ extern void SaveButtons(button_info *);
 
 /* ------------------------------ prototypes ------------------------------- */
 
-RETSIGTYPE DeadPipe(int nonsense);
+void DeadPipe(int nonsense);
 static void DeadPipeCleanup(void);
-static RETSIGTYPE TerminateHandler(int sig);
+static void TerminateHandler(int sig);
 void SetButtonSize(button_info *, int, int);
 /* main */
 void Loop(void);
@@ -219,21 +219,21 @@ int IsThereADestroyEvent(button_info *b)
 *** Externally callable function to quit! Note that DeadPipeCleanup
 *** is an exit-procedure and so will be called automatically
 **/
-RETSIGTYPE DeadPipe(int whatever)
+void DeadPipe(int whatever)
 {
 	exit(0);
-	SIGNAL_RETURN;
+	return;
 }
 
 /**
 *** TerminateHandler()
 *** Signal handler that will make the event-loop terminate
 **/
-static RETSIGTYPE
+static void
 TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
-	SIGNAL_RETURN;
+	return;
 }
 
 /**

@@ -62,7 +62,7 @@
 #endif
 
 
-static RETSIGTYPE TerminateHandler(int signo);
+static void TerminateHandler(int signo);
 
 /*
  *
@@ -70,12 +70,12 @@ static RETSIGTYPE TerminateHandler(int signo);
  *  Termination procedure : *not* a signal handler
  *
  */
-RETSIGTYPE DeadPipe(int nonsense)
+void DeadPipe(int nonsense)
 {
 	(void)nonsense;
 	myfprintf((stderr,"Leaving via DeadPipe\n"));
 	exit(0);
-	SIGNAL_RETURN;
+	return;
 }
 
 /*
@@ -84,11 +84,11 @@ RETSIGTYPE DeadPipe(int nonsense)
  *  Signal handler that tells the module to quit
  *
  */
-static RETSIGTYPE
+static void
 TerminateHandler(int signo)
 {
 	fvwmSetTerminate(signo);
-	SIGNAL_RETURN;
+	return;
 }
 
 /*

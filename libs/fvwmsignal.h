@@ -52,7 +52,7 @@ extern volatile sig_atomic_t isTerminated;
 /*
  * Module prototypes
  */
-RETSIGTYPE fvwmReapChildren(int sig);
+void fvwmReapChildren(int sig);
 extern void fvwmSetTerminate(int sig);
 
 #ifdef USE_BSD_SIGNALS

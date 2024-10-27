@@ -276,7 +276,7 @@ static void catch_exit(void)
 /*
  * Restart on a signal
  */
-static RETSIGTYPE
+static void
 Restart(int sig)
 {
 	fvwmRunState = FVWM_RESTART;
@@ -286,18 +286,18 @@ Restart(int sig)
 	 * BEFORE we call it ... */
 	fvwmSetTerminate(sig);
 
-	SIGNAL_RETURN;
+	return;
 }
 
-static RETSIGTYPE
+static void
 ToggleLogging(int sig)
 {
 	log_toggle(fvwm_userdir);
 
-	SIGNAL_RETURN;
+	return;
 }
 
-static RETSIGTYPE
+static void
 SigDone(int sig)
 {
 	fvwmRunState = FVWM_DONE;
@@ -307,7 +307,7 @@ SigDone(int sig)
 	 * BEFORE we call it ... */
 	fvwmSetTerminate(sig);
 
-	SIGNAL_RETURN;
+	return;
 }
 
 /*

@@ -50,7 +50,7 @@ struct Item
  *
  */
 void Loop(int *fd);
-RETSIGTYPE DeadPipe(int nonsense) __attribute__((noreturn));
+void DeadPipe(int nonsense) __attribute__((noreturn));
 void process_message(unsigned long type, unsigned long *body);
 void PixmapDrawWindow(int h, int w);
 void DrawItems(Drawable d, int x, int y, int w, int h);

@@ -160,6 +160,6 @@ char *skipModuleAliasToken(const char *string);
 
 
 /* dead pipe signal handler - empty */
-RETSIGTYPE DeadPipe(int nonsense);
+void DeadPipe(int nonsense);
 
 #endif /* MODULE_LIST_H */

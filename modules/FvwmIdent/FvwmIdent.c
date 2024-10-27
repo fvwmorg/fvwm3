@@ -57,7 +57,7 @@
 
 #include "FvwmIdent.h"
 
-static RETSIGTYPE TerminateHandler(int);
+static void TerminateHandler(int);
 
 static ModuleArgs *module;
 static fd_set_size_t fd_width;
@@ -357,11 +357,11 @@ void process_message(unsigned long type,unsigned long *body)
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  */
-static RETSIGTYPE
+static void
 TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
-	SIGNAL_RETURN;
+	return;
 }
 
 /*

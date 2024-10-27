@@ -82,8 +82,6 @@ conf.set_quoted(
 conf.set_quoted('FVWM_DATADIR', fvwm_datadir)
 conf.set_quoted('LOCALEDIR', prefix / get_option('localedir'))
 conf.set_quoted('FVWM_CONFDIR', prefix / get_option('sysconfdir'))
-conf.set('RETSIGTYPE', 'void')
-conf.set('SIGNAL_RETURN', 'return')
 conf.set('ICONV_ARG_CONST', '')
 conf.set('fd_set_size_t', 'int')
 conf.set('EXECUTABLE_EXTENSION', 'NULL')

@@ -234,11 +234,11 @@ static void TryToFind(char *filename) {
 }
 
 /* Exiting with Delete button */
-RETSIGTYPE DeadPipe(int nonsense)
+void DeadPipe(int nonsense)
 {
   is_dead_pipe = True;
   Quit (0,NULL);
-  SIGNAL_RETURN;
+  return;
 }
 
 /* Reading system.fvwmrc or .fvwmrc file */
@@ -1346,11 +1346,11 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
 
 
 /* signal handler to close down the module */
-static RETSIGTYPE
+static void
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
-  SIGNAL_RETURN;
+  return;
 }
 
 

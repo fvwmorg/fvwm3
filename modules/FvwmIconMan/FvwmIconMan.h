@@ -387,7 +387,7 @@ extern int mods_unused;
 extern void ReadFvwmPipe(void);
 extern void Free (void *p);
 extern void ShutMeDown (int flag) __attribute__ ((__noreturn__));
-extern RETSIGTYPE DeadPipe (int nothing);
+extern void DeadPipe (int nothing);
 extern char *copy_string (char **target, const char *src);
 
 extern void init_globals (void);

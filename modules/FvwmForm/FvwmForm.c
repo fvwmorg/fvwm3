@@ -2559,11 +2559,11 @@ static void MainLoop(void)
 
 
 /* signal-handler to make the application quit */
-static RETSIGTYPE
+static void
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
-  SIGNAL_RETURN;
+  return;
 }
 
 /* signal-handler to make the timer work */
@@ -2624,7 +2624,7 @@ TimerHandler(evutil_socket_t fd, short ev, void *arg)
     RedrawTimeout(timer);
   }
 
-  SIGNAL_RETURN;
+  return;
 }
 
 
@@ -2745,10 +2745,10 @@ int main (int argc, char **argv)
 }
 
 
-RETSIGTYPE DeadPipe(int nonsense)
+void DeadPipe(int nonsense)
 {
   exit(0);
-  SIGNAL_RETURN;
+  return;
 }
 
 /*

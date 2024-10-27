@@ -35,7 +35,7 @@ char *MyName;
 FlocaleWinString *FwinString;
 int mods_unused = DEFAULT_MODS_UNUSED;
 
-static RETSIGTYPE TerminateHandler(int);
+static void TerminateHandler(int);
 
 char *copy_string(char **target, const char *src)
 {
@@ -115,11 +115,11 @@ void PrintMemuse(void)
 #endif
 
 
-static RETSIGTYPE
+static void
 TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
-	SIGNAL_RETURN;
+	return;
 }
 
 
@@ -135,7 +135,7 @@ DeadPipe(int nothing)
 {
 	(void)nothing;
 	ShutMeDown(0);
-	SIGNAL_RETURN;
+	return;
 }
 
 static void
