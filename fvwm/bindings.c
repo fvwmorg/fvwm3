@@ -543,6 +543,7 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 void print_bindings(void)
 {
 	Binding *b;
+	char kbinding[4096], pbinding[4096];
 
 	fvwm_debug(__func__, "Current list of bindings:\n\n");
 	for (b = Scr.AllBindings; b != NULL; b = b->NextBinding)
@@ -550,14 +551,15 @@ void print_bindings(void)
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
-			fvwm_debug(__func__, "Key");
+			snprintf(kbinding, sizeof(kbinding), "%s ", "Key");
 			break;
 		case BIND_PKEYPRESS:
-			fvwm_debug(__func__, "PointerKey");
+			snprintf(kbinding, sizeof(kbinding), "%s ",
+				"PointerKey");
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			fvwm_debug(__func__, "Mouse");
+			snprintf(kbinding, sizeof(kbinding), "%s ", "Mouse");
 			break;
 		default:
 			fvwm_debug(__func__, "invalid binding type %d", b->type);
@@ -565,17 +567,20 @@ void print_bindings(void)
 		}
 		if (b->windowName != NULL)
 		{
-			fvwm_debug(__func__, " (%s)", b->windowName);
+			snprintf(kbinding, sizeof(kbinding), "(%s)",
+				b->windowName);
 		}
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
 		case BIND_PKEYPRESS:
-			fvwm_debug(__func__, "\t%s", b->key_name);
+			snprintf(pbinding, sizeof(pbinding), "\t%s",
+				b->key_name);
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			fvwm_debug(__func__, "\t%d", b->Button_Key);
+			snprintf(pbinding, sizeof(pbinding), "\t%d",
+				b->Button_Key);
 			break;
 		}
 		{
@@ -586,11 +591,12 @@ void print_bindings(void)
 				MaskUsedModifiers(b->Modifier),key_modifiers);
 			context_string = charmap_table_to_string(
 				b->Context, win_contexts);
-			fvwm_debug(__func__, "\t%s\t%s\t%s\n", context_string,
-				   mod_string, (char *)b->Action);
+			snprintf(pbinding, sizeof(pbinding), "\t%s\t%s\t%s\n",
+				context_string, mod_string, (char *)b->Action);
 			free(mod_string);
 			free(context_string);
 		}
+		fvwm_debug(__func__, "%s %s", kbinding, pbinding);
 	}
 
 	return;
