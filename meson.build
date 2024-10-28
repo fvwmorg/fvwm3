@@ -65,6 +65,10 @@ if host_machine.endian() == 'big'
     conf.set('WORDS_BIGENDIAN', true)
 endif
 
+if host_machine.system() == 'darwin'
+    conf.set10('HOST_MACOS', true)
+endif
+
 # Set static configuration.
 conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('VERSIONINFO', fvwm_vcs_versioninfo)
