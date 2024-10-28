@@ -8,7 +8,7 @@ on:
         branches:
             - main
 jobs:
-  build:
+  build-linux:
     runs-on: ubuntu-latest
     container:
       image: ${{ matrix.os == 'alpine' && 'fvwmorg/fvwm3-build-alpine:latest' || 'fvwmorg/fvwm3-build:latest' }}
@@ -28,25 +28,98 @@ jobs:
       - name: Set git safe directory
         run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
+      - if: matrix.build-system == 'autotools'
+        name: Prepare Build
+        run: ./autogen.sh
+
       - name: Configure and Build
         run: |
-          if [ "${{ matrix.build-system }}" = "autotools" ]; then
-            if [ "${{ matrix.compiler }}" = "gcc" ]; then
-              export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-            else
-              export CC_LD=lld
-            fi
-            export CC=${{ matrix.compiler }}
-            ./autogen.sh && ./configure --enable-mandoc --enable-golang && make -j
+          export CC=${{ matrix.compiler }}
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+          else
+            export CC_LD=lld
           fi
-          if [ "${{ matrix.build-system }}" = "meson" ]; then
-            if [ "${{ matrix.compiler }}" = "gcc" ]; then
-              export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-            else
-              export CC_LD=lld
-            fi
-            export CC=${{ matrix.compiler }}
+          if [ "${{ matrix.build-system }}" = "autotools" ]; then
+            ./configure --enable-mandoc --enable-golang && make -j
+          else
             meson setup builddir -Dhtmldoc=true -Dmandoc=true && ninja -C builddir
+          fi
+
+  build-macOS-13:
+    runs-on: macos-13
+    strategy:
+      matrix:
+        build-system: [autotools, meson]
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 1
+
+    - name: Install dependencies
+      run: |
+        if [ "${{ matrix.build-system }}" = "autotools" ]; then
+            build_tools="autoconf automake"
+        else
+            build_tools="meson ninja"
+        fi
+        brew update
+        brew install asciidoctor fontconfig freetype go libevent libice libpng libx11 libxext libxft libxrandr libxrender libxt xtrans ${build_tools}
+
+    - if: matrix.build-system == 'autotools'
+      name: Prepare Build
+      run: ./autogen.sh
+
+    - name: Configure Build
+      run: |
+        if [ "${{ matrix.build-system }}" = "autotools" ]; then
+            ./configure --enable-mandoc --enable-golang
+        else
+            meson setup builddir -Dhtmldoc=true -Dmandoc=true
+        fi
+
+    - name: Build fvwm3 for macOS-13 with ${{ matrix.build-system }}
+      run: |
+        if [ "${{ matrix.build-system }}" = "autotools" ]; then
+          make
+        else
+          ninja -C builddir
+        fi
+
+  build-FreeBSD-14:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        build-system: [autotools, meson]
+    steps:
+    - uses: actions/checkout@v4
+    - name: FreeBSD VM build
+      id: test
+      uses: vmactions/freebsd-vm@v1
+      with:
+        release: "14.1"
+        usesh: true
+        prepare: |
+          set -x
+          if [ "${{ matrix.build-system }}" = "autotools" ]; then
+            build_tools="autoconf automake"
+          else
+            build_tools="meson ninja"
+          fi
+          pkg install -y ${build_tools} go rubygem-asciidoctor libevent libICE libX11 libXext libXft libXrandr libXrender libXt perl5 png pkgconf python3 xtrans
+        run: |
+          set -x
+          pwd
+          freebsd-version
+          if [ "${{ matrix.build-system }}" = "autotools" ]; then
+            ./autogen.sh
+            ./configure CPPFLAGS='-I/usr/local/include' LDFLAGS='-L/usr/local/lib' --enable-mandoc --enable-golang
+            cat config.log
+            make
+          else
+            CFLAGS='-I/usr/local/include' LDFLAGS='-L/usr/local/lib' meson setup build
+            ninja -C build
           fi
 
   notification:
