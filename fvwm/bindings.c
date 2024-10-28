@@ -543,23 +543,24 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 void print_bindings(void)
 {
 	Binding *b;
-	char kbinding[4096], pbinding[4096];
+	char kbinding[4096], pbinding[4096], type[4096];
 
 	fvwm_debug(__func__, "Current list of bindings:\n\n");
 	for (b = Scr.AllBindings; b != NULL; b = b->NextBinding)
 	{
+		memset(&kbinding, '\0', sizeof kbinding);
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
-			snprintf(kbinding, sizeof(kbinding), "%s ", "Key");
+			snprintf(type, sizeof(type), "%s ", "Key");
 			break;
 		case BIND_PKEYPRESS:
-			snprintf(kbinding, sizeof(kbinding), "%s ",
+			snprintf(type, sizeof(type), "%s ",
 				"PointerKey");
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			snprintf(kbinding, sizeof(kbinding), "%s ", "Mouse");
+			snprintf(type, sizeof(type), "%s ", "Mouse");
 			break;
 		default:
 			fvwm_debug(__func__, "invalid binding type %d", b->type);
@@ -596,7 +597,7 @@ void print_bindings(void)
 			free(mod_string);
 			free(context_string);
 		}
-		fvwm_debug(__func__, "%s %s", kbinding, pbinding);
+		fvwm_debug(__func__, "%s %s %s", type, kbinding, pbinding);
 	}
 
 	return;
