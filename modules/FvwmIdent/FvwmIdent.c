@@ -55,6 +55,10 @@
 #include "libs/XError.h"
 #include "libs/log.h"
 
+#ifdef HAVE_MPACK
+#include "libs/mcomms.h"
+#endif
+
 #include "FvwmIdent.h"
 
 static RETSIGTYPE TerminateHandler(int);
@@ -213,7 +217,9 @@ int main(int argc, char **argv)
 
 	InitGetConfigLine(fd, mname);
 	GetConfigLine(fd,&tline);
-
+#ifdef HAVE_MPACK
+	m_register_interest(fd, "new_window", "this", "that");
+#endif
 	while (tline != (char *)0)
 	{
 		if (strlen(tline) <= 1)

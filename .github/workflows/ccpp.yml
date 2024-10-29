@@ -37,7 +37,7 @@ jobs:
               export CC_LD=lld
             fi
             export CC=${{ matrix.compiler }}
-            ./autogen.sh && ./configure --enable-mandoc --enable-golang && make -j
+            ./autogen.sh && ./configure --enable-mandoc --enable-golang --enable-mpack && make -j
           fi
           if [ "${{ matrix.build-system }}" = "meson" ]; then
             if [ "${{ matrix.compiler }}" = "gcc" ]; then
@@ -46,7 +46,7 @@ jobs:
               export CC_LD=lld
             fi
             export CC=${{ matrix.compiler }}
-            meson setup builddir -Dhtmldoc=true -Dmandoc=true && ninja -C builddir
+            meson setup builddir -Dhtmldoc=true -Dmandoc=true -Dmcomms=true && ninja -C builddir
           fi
 
   notification:

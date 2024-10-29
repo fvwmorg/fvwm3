@@ -38,6 +38,10 @@ else
 libfvwm3_a_SOURCES += strlcpy.h strlcat.h strlcpy.c strlcat.c
 endif
 
+if HAVE_MPACK
+libfvwm3_a_SOURCES += mcomms.c mcomms.h
+endif
+
 libfvwm3_a_LIBADD = @LIBOBJS@
 
 AM_CPPFLAGS = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
