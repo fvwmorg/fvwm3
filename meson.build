@@ -176,6 +176,14 @@ foreach f, v : functions
     endif
 endforeach
 
+# SETPGRP_VOID is obsolete
+# All current systems have a setpgrp whose signature conforms to Posix.
+# We need to set this to use the correct implementation internally
+# but we don't need to check for it.
+if conf.has('HAVE_SETPGRP')
+    conf.set10('SETPGRP_VOID', true)
+endif
+
 # Dependencies.
 all_found_deps = []
 
