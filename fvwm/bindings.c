@@ -24,6 +24,7 @@
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "libs/modifiers.h"
+#include "libs/strtonum.h"
 #include "libs/Parse.h"
 #include "libs/Strings.h"
 #include "libs/defaults.h"
@@ -543,61 +544,52 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 void print_bindings(void)
 {
 	Binding *b;
-	char kbinding[4096], pbinding[4096], type[4096];
+	char *type;
+	char *wname = NULL;
+	char kname[1024];
 
 	fvwm_debug(__func__, "Current list of bindings:\n\n");
 	for (b = Scr.AllBindings; b != NULL; b = b->NextBinding)
 	{
-		memset(&kbinding, '\0', sizeof kbinding);
+		memset(kname, '\0', sizeof kname);
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
-			snprintf(type, sizeof(type), "%s ", "Key");
+			type = "Key";
+			snprintf(kname, sizeof kname, "%s\t", b->key_name);
 			break;
 		case BIND_PKEYPRESS:
-			snprintf(type, sizeof(type), "%s ",
-				"PointerKey");
+			type = "PointerKey";
+			snprintf(kname, sizeof kname, "%s\t", b->key_name);
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			snprintf(type, sizeof(type), "%s ", "Mouse");
+			type = "Mouse";
+			snprintf(kname, sizeof kname, "%d\t", b->Button_Key);
 			break;
-		default:
-			fvwm_debug(__func__, "invalid binding type %d", b->type);
-			continue;
 		}
 		if (b->windowName != NULL)
 		{
-			snprintf(kbinding, sizeof(kbinding), "(%s)",
-				b->windowName);
+			xasprintf(&wname, "(%s)", b->windowName);
 		}
-		switch (b->type)
-		{
-		case BIND_KEYPRESS:
-		case BIND_PKEYPRESS:
-			snprintf(pbinding, sizeof(pbinding), "\t%s",
-				b->key_name);
-			break;
-		case BIND_BUTTONPRESS:
-		case BIND_BUTTONRELEASE:
-			snprintf(pbinding, sizeof(pbinding), "\t%d",
-				b->Button_Key);
-			break;
-		}
-		{
-			char *mod_string;
-			char *context_string;
 
-			mod_string = charmap_table_to_string(
-				MaskUsedModifiers(b->Modifier),key_modifiers);
-			context_string = charmap_table_to_string(
-				b->Context, win_contexts);
-			snprintf(pbinding, sizeof(pbinding), "\t%s\t%s\t%s\n",
-				context_string, mod_string, (char *)b->Action);
-			free(mod_string);
-			free(context_string);
-		}
-		fvwm_debug(__func__, "%s %s %s", type, kbinding, pbinding);
+		char *mod_string;
+		char *context_string;
+
+		mod_string = charmap_table_to_string(
+			MaskUsedModifiers(b->Modifier),key_modifiers);
+		context_string = charmap_table_to_string(
+			b->Context, win_contexts);
+
+		fvwm_debug(__func__, "\t%s\t%s\t%s\t%s\t%s\t%s\n",
+			type, kname, wname ? wname : "", context_string,
+			mod_string, (char *)b->Action);
+
+		free(wname);
+		wname = NULL;
+
+		free(mod_string);
+		free(context_string);
 	}
 
 	return;
