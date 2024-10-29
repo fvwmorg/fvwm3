@@ -113,8 +113,11 @@ static int matches_string (NameType type, char *pattern, char *tname,
 
   ConsoleDebug (WINLIST, "matches_string: type: 0x%x pattern: %s\n",
 		type, pattern);
-  ConsoleDebug (WINLIST, "\tstrings: %s:%s %s:%s\n", tname, iname,
-		rname, cname);
+  ConsoleDebug (WINLIST, "\tstrings: %s:%s %s:%s\n",
+                tname ? tname : "(null)",
+                iname ? iname : "(null)",
+                rname ? rname : "(null)",
+                cname ? cname : "(null)");
 
   if (tname && (type == ALL_NAME || type == TITLE_NAME)) {
     ans |= matchWildcards (pattern, tname);
