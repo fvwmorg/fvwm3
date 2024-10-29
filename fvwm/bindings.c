@@ -543,7 +543,7 @@ static void binding_cmd(F_CMD_ARGS, binding_t type)
 void print_bindings(void)
 {
 	Binding *b;
-	char kbinding[4096], pbinding[4096], type[4096];
+	char kbinding[4096], pbinding[4096], tmp[4096];
 
 	fvwm_debug(__func__, "Current list of bindings:\n\n");
 	for (b = Scr.AllBindings; b != NULL; b = b->NextBinding)
@@ -552,15 +552,14 @@ void print_bindings(void)
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
-			snprintf(type, sizeof(type), "%s ", "Key");
+			snprintf(tmp, sizeof(tmp), "%s", "Key");
 			break;
 		case BIND_PKEYPRESS:
-			snprintf(type, sizeof(type), "%s ",
-				"PointerKey");
+			snprintf(tmp, sizeof(tmp), "%s", "PointerKey");
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			snprintf(type, sizeof(type), "%s ", "Mouse");
+			snprintf(tmp, sizeof(tmp), "%s", "Mouse");
 			break;
 		default:
 			fvwm_debug(__func__, "invalid binding type %d", b->type);
@@ -568,20 +567,22 @@ void print_bindings(void)
 		}
 		if (b->windowName != NULL)
 		{
-			snprintf(kbinding, sizeof(kbinding), "(%s)",
-				b->windowName);
+			snprintf(kbinding, sizeof(kbinding), "%s (%s)",
+				tmp, b->windowName);
+		}
+		else
+		{
+			snprintf(kbinding, sizeof(kbinding), "%s", tmp);
 		}
 		switch (b->type)
 		{
 		case BIND_KEYPRESS:
 		case BIND_PKEYPRESS:
-			snprintf(pbinding, sizeof(pbinding), "\t%s",
-				b->key_name);
+			snprintf(tmp, sizeof(tmp), "%s", b->key_name);
 			break;
 		case BIND_BUTTONPRESS:
 		case BIND_BUTTONRELEASE:
-			snprintf(pbinding, sizeof(pbinding), "\t%d",
-				b->Button_Key);
+			snprintf(tmp, sizeof(tmp), "%d", b->Button_Key);
 			break;
 		}
 		{
@@ -592,12 +593,13 @@ void print_bindings(void)
 				MaskUsedModifiers(b->Modifier),key_modifiers);
 			context_string = charmap_table_to_string(
 				b->Context, win_contexts);
-			snprintf(pbinding, sizeof(pbinding), "\t%s\t%s\t%s\n",
-				context_string, mod_string, (char *)b->Action);
+			snprintf(pbinding, sizeof(pbinding), "%s\t%s\t%s\t%s",
+				tmp, context_string, mod_string,
+				(char *)b->Action);
 			free(mod_string);
 			free(context_string);
 		}
-		fvwm_debug(__func__, "%s %s %s", type, kbinding, pbinding);
+		fvwm_debug(__func__, "%s %s", kbinding, pbinding);
 	}
 
 	return;
