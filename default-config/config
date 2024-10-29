@@ -253,6 +253,12 @@ Style * HilightBorderColorset 4 8 4 8 4 8 4 8
 # Comment this out or use Style * Icon to get the icons back.
 Style * !Icon
 
+# ICCCM allows windows to tell the WM to not give them keyboard focus.
+# Many windows use this incorrectly and expect keyboard focus anyways.
+# This styles tells fvwm to ignore this property, which makes some
+# applications (such as java and electron apps) behave better.
+Style * Lenience
+
 # Window Specific Styles
 Style RightPanel !Title, !Borders, !Handles, Sticky, \
                  WindowListSkip, NeverFocus
