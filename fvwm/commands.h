@@ -40,6 +40,7 @@ enum
 	F_CONFIG_LIST,
 	F_COPY_MENU_STYLE,
 	F_CURRENT,
+	F_CURSOR_BARRIER,
 	F_CURSOR_STYLE,
 	F_DESCHEDULE,
 	F_DESKTOP_CONFIGURATION,
@@ -225,6 +226,7 @@ void CMD_ColormapFocus(F_CMD_ARGS);
 void CMD_Colorset(F_CMD_ARGS);
 void CMD_CopyMenuStyle(F_CMD_ARGS);
 void CMD_Current(F_CMD_ARGS);
+void CMD_CursorBarrier(F_CMD_ARGS);
 void CMD_CursorMove(F_CMD_ARGS);
 void CMD_CursorStyle(F_CMD_ARGS);
 void CMD_DefaultFont(F_CMD_ARGS);

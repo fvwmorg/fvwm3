@@ -348,6 +348,12 @@ if xcursor.found()
     conf.set10('HAVE_XCURSOR', true)
 endif
 
+xfixes = dependency('xfixes', required: get_option('xfixes'))
+if xfixes.found()
+    all_found_deps += xfixes
+    conf.set10('HAVE_XFIXES', true)
+endif
+
 xkbcommon = dependency('xkbcommon', required: get_option('xkbcommon'))
 if xkbcommon.found()
     all_found_deps += xkbcommon
@@ -568,6 +574,7 @@ featurevals = {
     'Shaped Windows': xext.found() ? xext : false,
     'SVG support': librsvg.found() ? librsvg : false,
     'Xcursor': xcursor.found() ? xcursor : false,
+    'XFixes': xfixes.found() ? xfixes : false,
     'xkbcommon': xkbcommon.found() ? xkbcommon : false,
     'XPM support': xpm.found() ? xpm : false,
     'XRender': xrender.found() ? xrender : false,
