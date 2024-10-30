@@ -146,6 +146,9 @@ const func_t func_table[] =
 	CMD_ENT("current", CMD_Current, F_CURRENT, 0, 0),
 	/* - Operate on the currently focused window */
 
+	CMD_ENT("cursorbarrier", CMD_CursorBarrier, F_CURSOR_BARRIER, 0, 0),
+	/* - Manage barriers the cursor cannot moved out of unless warped */
+
 	CMD_ENT("cursormove", CMD_CursorMove, F_MOVECURSOR, 0, 0),
 	/* - Move the cursor pointer non interactively */
 

@@ -1250,6 +1250,9 @@ static void setVersionInfo(void)
 #ifdef HAVE_XFT
 	strlcat(support_str, " XFT,", sizeof(support_str));
 #endif
+#ifdef HAVE_XFIXES
+	strlcat(support_str, " XFixes,", sizeof(support_str));
+#endif
 #ifdef HAVE_NLS
 	strlcat(support_str, " NLS,", sizeof(support_str));
 #endif
@@ -1320,6 +1323,8 @@ static void SetRCDefaults(void)
 		{ "Key Up M A MenuMoveCursor -1", "", "" },
 		{ "Key Down M A MenuMoveCursor 1", "", "" },
 		{ "Mouse 1 MI A MenuSelectItem", "", "" },
+		/* Default escape from CusorBarriers */
+		{ "Key D A CS CursorBarrier destroy", "", "" },
 		/* don't add anything below */
 		{ RC_DEFAULTS_COMPLETE, "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },

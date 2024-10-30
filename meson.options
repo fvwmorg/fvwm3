@@ -89,6 +89,12 @@ option(
     description: 'Enable Xcursor support',
 )
 option(
+    'xfixes',
+    type: 'feature',
+    value: 'auto',
+    description: 'Enable XFixes support',
+)
+option(
     'xkbcommon',
     type: 'feature',
     value: 'auto',

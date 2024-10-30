@@ -4329,6 +4329,53 @@ MoveToDesk 0 n
 
 === Focus & Mouse Movement
 
+*CursorBarrier* [destroy] [options] [_left_ _top_ _right_ _bottom_]::
+	A cursor barrier is a box that the cursor cannot be moved outside of
+	(unless warped with _CursorMove_ or _WarpToWindow_). The _left_, _top_,
+	_right_, and _bottom_ values give the percent distance the box is placed
+	from each of the corresponding edges of the desktop. If the values end
+	with a _p_, they are interpreted as pixel amounts instead. If the option
+	_coords_ is given, the values are interpreted as the left/top and
+	right/bottom coordinates of the box's corners. If the option
+	_screen RandRname_ is given, the positions are computed relative to the
+	specified monitor. Use _screen c_ to place the barrier on the current
+	monitor.
++
+Multiple barriers can be created by calling _CursorBarrier_ multiple times.
+This allows creating multiple regions to confine the cursor to (such as each
+monitor in a multi-monitor setup), then use _CursorMove_ or _WarpToWindow_
+to move the cursor between the barriers. If the command _destroy_ is included,
+all barriers are destroyed allowing free movement of the mouse again. If
+_destroy_ is followed by an integer _N_, only that barrier is destroyed
+(barriers are numbered in the order they are created starting at 0). If the
+integer is negative, this counts backwards, such as "-1" is the most recent
+created barrier, "-2" is the second most recent, and so on. When a barrier
+is destroyed, this renumbers all barriers after it. In practice this is
+best used with _destroy -1_ to destroy the most recent barrier without
+affecting any previously created barriers.
++
+By default the key binding ctrl+shift+D will destroy all cursor barriers
+by calling _CursorBarrier destroy_.
++
+Here are some examples:
++
+....
+# A barrier 15% from left/right and 10% from top/bottom.
+CursorBarrier 15 10 15 10
+
+# A barrier to confine the mouse to the current monitor.
+CursorBarrier screen c
+
+# A barrier to confine the mouse to a selected window
+Pick CursorBarrier coords $[w.x]p $[w.y]p \
+    $[math.+.$[w.x],$[w.width]]p $[math.+.$[w.y],$[w.height]]p
+
+# Destroy all barriers
+CursorBarrier destroy
+....
++
+_CursorBarrier_ only works if fvwm is complied with the XFixes extension.
+
 *CursorMove* _horizontal_[p] _vertical_[p]::
 	Moves the mouse pointer by _horizontal_ pages in the X direction and
 	_vertical_ pages in the Y direction. Either or both entries may be

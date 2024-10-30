@@ -38,6 +38,81 @@
 #include "cursor.h"
 #include "menus.h"
 
+#ifdef HAVE_XFIXES
+#include <X11/extensions/Xfixes.h>
+#define MAX_BARRIERS 16
+PointerBarrier barriers_l[MAX_BARRIERS];
+PointerBarrier barriers_r[MAX_BARRIERS];
+PointerBarrier barriers_t[MAX_BARRIERS];
+PointerBarrier barriers_b[MAX_BARRIERS];
+int num_barriers = 0;
+
+void create_barrier(int x1, int y1, int x2, int y2)
+{
+	if (num_barriers >= MAX_BARRIERS) {
+		fvwm_debug(__func__, "Too many barriers. Aborting.");
+		return;
+	}
+
+	barriers_l[num_barriers] = XFixesCreatePointerBarrier(
+		dpy, Scr.Root, x1, y1, x1, y2, 0, 0, NULL);
+	barriers_r[num_barriers] = XFixesCreatePointerBarrier(
+		dpy, Scr.Root, x2, y1, x2, y2, 0, 0, NULL);
+	barriers_t[num_barriers] = XFixesCreatePointerBarrier(
+		dpy, Scr.Root, x1, y1, x2, y1, 0, 0, NULL);
+	barriers_b[num_barriers] = XFixesCreatePointerBarrier(
+		dpy, Scr.Root, x1, y2, x2, y2, 0, 0, NULL);
+	num_barriers++;
+}
+
+void destroy_barrier(int n)
+{
+	XFixesDestroyPointerBarrier(dpy, barriers_l[n]);
+	XFixesDestroyPointerBarrier(dpy, barriers_r[n]);
+	XFixesDestroyPointerBarrier(dpy, barriers_t[n]);
+	XFixesDestroyPointerBarrier(dpy, barriers_b[n]);
+}
+
+void destroy_all_barriers(void)
+{
+	int i;
+
+	for (i = 0; i < num_barriers; i++) {
+		destroy_barrier(i);
+	}
+
+	num_barriers = 0;
+}
+
+void destroy_barrier_n(int n)
+{
+	int i;
+
+	if (num_barriers == 0)
+		return;
+
+	if (n < 0)
+		n += num_barriers;
+	if (n < 0 || n >= num_barriers) {
+		fvwm_debug(__func__, "Invalid barrier number: %d", n);
+		return;
+	}
+
+	destroy_barrier(n);
+	num_barriers--;
+	for (i = n; i < num_barriers; i++) {
+		barriers_l[i] = barriers_l[i+1];
+		barriers_r[i] = barriers_r[i+1];
+		barriers_t[i] = barriers_t[i+1];
+		barriers_b[i] = barriers_b[i+1];
+	}
+}
+
+#else
+#define create_barrier(a, b, c, d)
+#define destroy_all_barriers()
+#define destroy_barrier_n(a)
+#endif
 /* ---------------------------- local definitions -------------------------- */
 
 /* ---------------------------- local macros ------------------------------- */
@@ -543,4 +618,88 @@ void CMD_BusyCursor(F_CMD_ARGS)
 	}
 
 	return;
+}
+
+void CMD_CursorBarrier(F_CMD_ARGS)
+{
+	int val[4] = {0, 0, 0, 0};
+	int x1, y1, x2, y2;
+	rectangle r =
+		{0, 0, monitor_get_all_widths(), monitor_get_all_heights()};
+	bool is_coords = false;
+	char *option;
+	struct monitor *m = NULL;
+
+#if !defined(HAVE_XFIXES)
+	SUPPRESS_UNUSED_VAR_WARNING(x1);
+	SUPPRESS_UNUSED_VAR_WARNING(y1);
+	SUPPRESS_UNUSED_VAR_WARNING(x2);
+	SUPPRESS_UNUSED_VAR_WARNING(y2);
+	return;
+#endif
+
+	/* Note, if option is matched, the matched option must be skipped
+	 * with PeekToken(action, &action) to stop infinite loop.
+	 */
+	while ((option = PeekToken(action, NULL)) != NULL) {
+		if (StrEquals(option, "screen")) {
+			option = PeekToken(action, &action); /* Skip */
+			option = PeekToken(action, &action);
+			if ((m = monitor_resolve_name(option)) == NULL) {
+				fvwm_debug(__func__, "Invalid screen: %s",
+					option);
+				return;
+			}
+			r.x = m->si->x;
+			r.y = m->si->y;
+			r.width = m->si->w;
+			r.height = m->si->h;
+		} else if (StrEquals(option, "destroy")) {
+			int n;
+
+			option = PeekToken(action, &action); /* Skip */
+			option = PeekToken(action, &action);
+			if (option != NULL && sscanf(option, "%d", &n) == 1) {
+				destroy_barrier_n(n);
+			} else {
+				destroy_all_barriers();
+			}
+			XSync(dpy, False);
+			return;
+		} else if (StrEquals(option, "coords")) {
+			option = PeekToken(action, &action); /* Skip */
+			is_coords = true;
+		} else {
+			int i;
+			int unit[4] = {r.width, r.height, r.width, r.height};
+
+			for (i = 0; i < 4; i++) {
+				option = PeekToken(action, &action);
+				if (GetOnePercentArgument(
+				    option, &val[i], &unit[i]) == 0
+				    || val[i] < 0) {
+					fvwm_debug(__func__,
+						"Invalid coordinates.");
+					return;
+				}
+				val[i] = val[i] * unit[i] / 100;
+			}
+			break;
+		}
+	}
+
+	if (is_coords) {
+		x1 = r.x + val[0];
+		y1 = r.y + val[1];
+		x2 = r.x + val[2];
+		y2 = r.y + val[3];
+	} else {
+		x1 = r.x + val[0];
+		y1 = r.y + val[1];
+		x2 = r.x + r.width - val[2];
+		y2 = r.y + r.height - val[3];
+	}
+
+	create_barrier(x1, y1, x2, y2);
+	XSync(dpy, False);
 }
