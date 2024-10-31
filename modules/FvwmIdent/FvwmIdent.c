@@ -218,7 +218,8 @@ int main(int argc, char **argv)
 	InitGetConfigLine(fd, mname);
 	GetConfigLine(fd,&tline);
 #ifdef HAVE_MPACK
-	m_register_interest(fd, "new_window", "this", "that");
+	fprintf(stderr, "GOT: %lu\n",
+		m_register_interest(fd, "new-window this that the-other"));
 #endif
 	while (tline != (char *)0)
 	{

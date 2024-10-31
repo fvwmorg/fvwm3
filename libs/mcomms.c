@@ -13,23 +13,51 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "config.h"
 #include "log.h"
+#include "safemalloc.h"
 #include "mcomms.h"
 
-const char *m_register[] = {
-	"new_window"
+uint64_t m_find_bit(const char *);
+
+static const struct {
+	uint64_t	 bits;
+	const char	*name;
+} all_mcomm_types[] = {
+	{ MCOMMS_NEW_WINDOW, "new-window" },
+	{ 0, NULL },
 };
 
-bool
-m_register_interest(int *fd, const char *type, ...)
+uint64_t
+m_find_bit(const char *name)
 {
-	va_list		ap;
+	int i = 0;
 
-	va_start(ap, type);
-	vfprintf(stderr, type, ap);
-	va_end(ap);
+	for (i = 0; all_mcomm_types[i].name != NULL; i++) {
+		if (strcmp(all_mcomm_types[i].name, name) == 0) {
+			return all_mcomm_types[i].bits;
+		}
+	}
+	fprintf(stderr, "%s: Invalid module interest: %s\n", __func__, name);
+	return 0;
+}
 
-	return true;
+uint64_t
+m_register_interest(int *fd, const char *me)
+{
+	char		*me1;
+	const char	*component;
+	uint64_t	 m_bits = 0;
+
+	if (me == NULL)
+		return 0;
+	me1 = fxstrdup(me);
+
+	while ((component = strsep(&me1, " ")) != NULL)
+		m_bits |= m_find_bit(component);
+
+	free(me1);
+	return m_bits;
 }
