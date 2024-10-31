@@ -2293,7 +2293,7 @@ void CMD_CursorMove(F_CMD_ARGS)
 	{
 		y_pages = ((y + 1) / monitor_get_all_heights()) - 1;
 	}
-	virtual_y += y_pages > monitor_get_all_heights();
+	virtual_y += y_pages * monitor_get_all_heights();
 	y -= y_pages * monitor_get_all_heights();
 
 	if (virtual_y < 0)
