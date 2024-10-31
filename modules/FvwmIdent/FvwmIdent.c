@@ -55,6 +55,8 @@
 #include "libs/XError.h"
 #include "libs/log.h"
 
+#include "libs/mcomms.h"
+
 #include "FvwmIdent.h"
 
 static RETSIGTYPE TerminateHandler(int);
@@ -213,6 +215,8 @@ int main(int argc, char **argv)
 
 	InitGetConfigLine(fd, mname);
 	GetConfigLine(fd,&tline);
+
+	m_register_interest(fd, "new_window", "this", "that");
 
 	while (tline != (char *)0)
 	{
