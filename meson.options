@@ -95,12 +95,6 @@ option(
     description: 'Enable XFixes support',
 )
 option(
-    'xkbcommon',
-    type: 'feature',
-    value: 'auto',
-    description: 'Enable xkbcommon support',
-)
-option(
     'xrender',
     type: 'feature',
     value: 'auto',
