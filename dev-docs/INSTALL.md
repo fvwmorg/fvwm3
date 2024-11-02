@@ -29,6 +29,7 @@ system in use.
 * libx11-dev
 * libxext-dev
 * libxft-dev
+* libxkbcommon-dev
 * libxrandr-dev (>= 1.5)
 * libxrender-dev
 * libxt-dev
@@ -37,6 +38,7 @@ system in use.
 ## Optional dependencies
 
 * asciidoctor
+* golang
 * libfribidi-dev
 * libncurses5-dev
 * libpng-dev
@@ -44,6 +46,7 @@ system in use.
 * librsvg-dev
 * libsm-dev
 * libxcursor-dev
+* libxfixes-dev
 * libxi-dev
 * libxpm-dev
 * sharutils

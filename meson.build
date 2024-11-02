@@ -199,7 +199,13 @@ endforeach
 
 xext = dependency('xext', required: true)
 all_found_deps += xext
+summary_depvals += {'xext': xext}
 conf.set10('SHAPE', true)
+
+xkbcommon = dependency('xkbcommon', required: true)
+all_found_deps += xkbcommon
+summary_depvals += {'xkbcommon': xkbcommon}
+conf.set10('HAVE_X11_XKBLIB_H', true)
 
 # Python is a required dependency, we generate shebangs at buildtime
 # This will error by default if there is no python interpreter found
@@ -352,12 +358,6 @@ xfixes = dependency('xfixes', required: get_option('xfixes'))
 if xfixes.found()
     all_found_deps += xfixes
     conf.set10('HAVE_XFIXES', true)
-endif
-
-xkbcommon = dependency('xkbcommon', required: get_option('xkbcommon'))
-if xkbcommon.found()
-    all_found_deps += xkbcommon
-    conf.set10('HAVE_X11_XKBLIB_H', true)
 endif
 
 xpm = dependency('xpm', required: get_option('xpm'))
@@ -571,11 +571,9 @@ featurevals = {
     'NLS': libintl.found(),
     'PNG support': libpng.found() ? libpng : false,
     'Session Management': sm.found() ? sm : false,
-    'Shaped Windows': xext.found() ? xext : false,
     'SVG support': librsvg.found() ? librsvg : false,
     'Xcursor': xcursor.found() ? xcursor : false,
     'XFixes': xfixes.found() ? xfixes : false,
-    'xkbcommon': xkbcommon.found() ? xkbcommon : false,
     'XPM support': xpm.found() ? xpm : false,
     'XRender': xrender.found() ? xrender : false,
 }
