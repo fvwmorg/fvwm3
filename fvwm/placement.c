@@ -1804,6 +1804,13 @@ static int _place_window(
 		reason->screen.screen = "current";
 	}
 
+	/* JS: Now that StartsOnScren has been processed, ensure a monitor
+	 * is set here to avoid a possible crash with broadcasting the new
+	 * window and to avoid checking the monitor is defined below.
+	 */
+	if (fw->m == NULL)
+		fw->m = monitor_get_current();
+
 	if (SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAPPERCENT &&
 	    SPLACEMENT_MODE(&pstyle->flags) != PLACE_MINOVERLAP &&
 	    SPLACEMENT_MODE(&pstyle->flags) != PLACE_POSITION)
@@ -1822,8 +1829,7 @@ static int _place_window(
 	/* Don't alter the existing desk location during Capture/Recapture.  */
 	if (!win_opts->flags.do_override_ppos)
 	{
-		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
-		fw->Desk = m->virtual_scr.CurrentDesk;
+		fw->Desk = fw->m->virtual_scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_CURRENT;
 	}
 	else
@@ -1832,8 +1838,7 @@ static int _place_window(
 	}
 	if (S_IS_STICKY_ACROSS_DESKS(SFC(pstyle->flags)))
 	{
-		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
-		fw->Desk = m->virtual_scr.CurrentDesk;
+		fw->Desk = fw->m->virtual_scr.CurrentDesk;
 		reason->desk.reason = PR_DESK_STICKY;
 	}
 	else if (SUSE_START_ON_DESK(&pstyle->flags) && start_style.desk &&
@@ -1930,13 +1935,11 @@ static int _place_window(
 	/*  RBW - 11/02/1998  --  I dont. */
 	if (!is_tracking_shared && !win_opts->flags.do_override_ppos && !DO_NOT_SHOW_ON_MAP(fw))
 	{
-		struct monitor	*m = fw->m ? fw->m : monitor_get_current();
-
-		if (m->virtual_scr.CurrentDesk != fw->Desk)
+		if (fw->m->virtual_scr.CurrentDesk != fw->Desk)
 		{
 			reason->desk.do_switch_desk = 1;
 		}
-		goto_desk(fw->Desk, m);
+		goto_desk(fw->Desk, fw->m);
 	}
 	/* Don't move viewport if SkipMapping, or if recapturing the window,
 	 * adjust the coordinates later. Otherwise, just switch to the target
@@ -1949,8 +1952,6 @@ static int _place_window(
 	{
 		if (start_style.page_x != 0 && start_style.page_y != 0)
 		{
-			struct monitor	*m = (fw && fw->m) ? fw->m :
-				monitor_get_current();
 			px = start_style.page_x - 1;
 			py = start_style.page_y - 1;
 			reason->page.reason = PR_PAGE_STYLE;
@@ -1959,14 +1960,14 @@ static int _place_window(
 			if (!win_opts->flags.do_override_ppos &&
 			    !DO_NOT_SHOW_ON_MAP(fw))
 			{
-				MoveViewport(m, px,py,True);
+				MoveViewport(fw->m, px, py, True);
 				reason->page.do_switch_page = 1;
 			}
 			else if (flags.do_honor_starts_on_page)
 			{
 				/*  Save the delta from current page */
-				pdeltax = m->virtual_scr.Vx - px;
-				pdeltay = m->virtual_scr.Vy - py;
+				pdeltax = fw->m->virtual_scr.Vx - px;
+				pdeltay = fw->m->virtual_scr.Vy - py;
 				reason->page.do_honor_starts_on_page = 1;
 			}
 		}
