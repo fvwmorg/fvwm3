@@ -320,7 +320,7 @@ action_flags *_get_allowed_actions(const FvwmWindow *fw)
 		&(*(_fw))->Desk,			\
 		(unsigned long)(0),			\
 		&(*(_fw))->m->si->rr_output,		\
-		(unsigned long)(sizeof(unsigned long)),\
+		(unsigned long)(0),			\
 		&(*(_fw))->layer,			\
 		(unsigned long)(0),			\
 		&(*(_fw))->hints.base_width,		\
