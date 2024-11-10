@@ -294,10 +294,10 @@ void do_label_window(PagerWindow *t, Window w, rectangle r)
 	DeskStyle *style = FindDeskStyle(t->desk);
 
 	if (t == FocusWin) {
-		pix = (style->focus_fg) ? style->focus_fg : Scr.focus_win_fg;
+		pix = (style->focus_fg < ULONG_MAX) ? style->focus_fg : Scr.focus_win_fg;
 		cs = style->focus_cs;
 	} else {
-		pix = (style->win_fg) ? style->win_fg : t->text;
+		pix = (style->win_fg < ULONG_MAX) ? style->win_fg : t->text;
 		cs = style->win_cs;
 	}
 	XSetForeground(dpy, Scr.NormalGC, pix);
@@ -453,7 +453,7 @@ void do_border_window(PagerWindow *t, Window w, rectangle r)
 	}
 
 	if (t == FocusWin) {
-		if (style->focus_fg)
+		if (style->focus_fg < ULONG_MAX)
 			XSetForeground(dpy,
 				style->focus_hi_gc, style->focus_fg);
 		else
@@ -464,7 +464,7 @@ void do_border_window(PagerWindow *t, Window w, rectangle r)
 				style->focus_hi_gc, style->focus_hi_gc,
 				WindowBorderWidth);
 	} else {
-		if (style->win_fg)
+		if (style->win_fg < ULONG_MAX)
 			XSetForeground(dpy,
 				style->win_hi_gc, style->win_fg);
 		else
