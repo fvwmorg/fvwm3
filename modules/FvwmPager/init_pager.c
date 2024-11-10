@@ -183,9 +183,9 @@ void initialize_desks_and_monitors(void)
 	default_style->bg = GetSimpleColor("white");
 	default_style->hi_fg = GetSimpleColor("black");
 	default_style->hi_bg = GetSimpleColor("grey");
-	default_style->win_fg = None; /* Use fvwm pixel unless defined. */
+	default_style->win_fg = ULONG_MAX; /* Use fvwm pixel unless defined. */
 	default_style->win_bg = None;
-	default_style->focus_fg = None;
+	default_style->focus_fg = ULONG_MAX;
 	default_style->focus_bg = None;
 	default_style->balloon_fg = None;
 	default_style->balloon_bg = None;

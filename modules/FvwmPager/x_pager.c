@@ -2055,7 +2055,7 @@ void setup_balloon_window(PagerWindow *t)
 	Balloon.cs = style->balloon_cs;
 
 	fg = (style->balloon_fg) ? style->balloon_fg :
-	     (style->win_fg) ? style->win_fg : t->text;
+	     (style->win_fg < ULONG_MAX) ? style->win_fg : t->text;
 	XSetForeground(dpy, Balloon.gc, fg);
 
 	XUnmapWindow(dpy, Scr.balloon_w);
