@@ -2355,6 +2355,9 @@ FvwmWindow *AddWindow(
 		/****** layer ******/
 		setup_layer(fw, &style);
 
+		/* Lookup the window style. */
+		lookup_style(fw, &style);
+
 		/****** window placement ******/
 		attr_g.x = wattr.x;
 		attr_g.y = wattr.y;
