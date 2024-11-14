@@ -179,7 +179,7 @@ GTK use color cubes as palettes. So, the idea is to configure your
 applications/toolkits to all use the same color cube. Moreover, you can
 use the colors in this color cube in your X resources configuration
 files and/or as arguments to colors options. Fvwm can use any color cube
-of the form RxGxB with 2 <= R <= 6, R = G, R-1 =< B <= R and B >= 2. To
+of the form RxGxB with 2 \<= R \<= 6, R = G, R-1 =< B \<= R and B >= 2. To
 get an RxGxB color cube give an argument to *-l* an integer c >= R*G*B
 and < (R+1)*(G+1)*B if B=R and < R*G*(B+1) if B < R (and different from
 61). If c > R*G*B, then some grey may be added to the color cube. You
@@ -8312,7 +8312,7 @@ by specifying _!CirculateHit_ etc. explicitly.
 +
 The _Version_ _operator x.y.z_ test-condition is fulfilled if the
 logical condition of the expression is true. Valid _operator_ values
-are: _>=_, _>_, _<=_, _<_, _==_ and _!=_.
+are: _>=_, _>_, _\<=_, _<_, _==_ and _!=_.
 +
 Example:
 +
