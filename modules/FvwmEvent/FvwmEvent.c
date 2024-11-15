@@ -87,14 +87,12 @@ static char *MyName;
 static int MyNameLen;
 static int fd[2];
 static char *cmd_line = NULL;
-static time_t audio_delay = 0; /* seconds */
+static time_t delay = 0; /* seconds */
 static time_t last_time = 0;
 static time_t now;
-static time_t start_audio_delay = 0;
+static time_t start_delay = 0;
 /* don't tag on the windowID by default */
 static Bool PassID = False;
-static Bool audio_compat = False;
-static char *audio_play_dir = NULL;
 
 #define ARG_NO_WINID 1024  /* just a large number */
 
@@ -231,15 +229,8 @@ int main(int argc, char **argv)
 	}
 	if (argc == 7)
 	{
-		if (strcmp(argv[6], "-audio") == 0)
-		{
-			audio_compat = True;
-		}
-		else
-		{
-			/* use an alias */
-			s = argv[6];
-		}
+		/* use an alias */
+		s = argv[6];
 	}
 
 	/* account for '*' */
@@ -249,11 +240,6 @@ int main(int argc, char **argv)
 	*MyName='*';
 	/* append name */
 	strcpy(MyName+1, s);
-	if (StrEquals("FvwmAudio", s))
-	{
-                /* catch the FvwmAudio alias */
-		audio_compat = True;
-	}
 
 	/* Now MyName is defined */
 	if ((argc != 6)&&(argc != 7))
@@ -293,7 +279,7 @@ int main(int argc, char **argv)
 	config();
 	/* Startup event */
 	execute_event(builtin_event_table, BUILTIN_STARTUP, NULL);
-	if (start_audio_delay)
+	if (start_delay)
 	{
 		last_time = time(0);
 	}
@@ -357,7 +343,7 @@ int main(int argc, char **argv)
 			total +=count;
 		}
 
-		if (now < last_time + audio_delay + start_audio_delay)
+		if (now < last_time + delay + start_delay)
 		{
 			/* quash event */
 			unlock_event(header[1]);
@@ -365,7 +351,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			start_audio_delay = 0;
+			start_delay = 0;
 		}
 
 		/* event will equal the number of shifts in the base-2
@@ -414,74 +400,40 @@ int main(int argc, char **argv)
  */
 void execute_event(event_entry *event_table, short event, unsigned long *body)
 {
-	if (event_table[event].action.action != NULL)
-	{
-		char *buf = NULL;
-		int len = 0;
-		char *action;
-
-		action = event_table[event].action.action;
-		len = strlen(cmd_line) + strlen(action) + 32;
-		if (audio_play_dir)
-		{
-			len += strlen(audio_play_dir);
-		}
-		buf = fxmalloc(len);
-		if (audio_compat)
-		{
-			/* Don't use audio_play_dir if it's NULL or if
-			 * the sound file is an absolute pathname. */
-			if (!audio_play_dir || audio_play_dir[0] == '\0' ||
-			    action[0] == '/')
-			{
-				snprintf(buf,len,"%s %s", cmd_line, action);
-			}
-			else
-			{
-				snprintf(buf,len,"%s %s/%s &", cmd_line,
-					audio_play_dir, action);
-			}
-			if (!system(buf))
-			{
-				last_time = now;
-			}
-		}
-		else
-		{
-			int action_arg = event_table[event].action_arg;
-			int fw = 0;
-
-			if (action_arg != -1 && !(action_arg & ARG_NO_WINID))
-			{
-				fw = body[action_arg];
-			}
-
-			if (PassID && action_arg != -1)
-			{
-				if (action_arg & ARG_NO_WINID)
-				{
-					action_arg &= ~ARG_NO_WINID;
-					snprintf(buf, len, "%s %s %ld", cmd_line,
-						action,	body[action_arg]);
-				}
-				else
-				{
-					snprintf(buf, len, "%s %s 0x%lx", cmd_line,
-						action,	body[action_arg]);
-				}
-			}
-			else
-			{
-				snprintf(buf, len,"%s %s", cmd_line, action);
-			}
-			/* let fvwm execute the function */
-			SendText(fd, buf, fw);
-			last_time = now;
-		}
-		free(buf);
-
+	if (event_table[event].action.action == NULL)
 		return;
+
+	char *buf = NULL;
+	int len = 0;
+	char *action;
+	int action_arg = event_table[event].action_arg;
+	int fw = 0;
+
+	action = event_table[event].action.action;
+	len = strlen(cmd_line) + strlen(action) + 32;
+	buf = fxmalloc(len);
+
+	if (action_arg != -1 && !(action_arg & ARG_NO_WINID))
+		fw = body[action_arg];
+
+	if (PassID && action_arg != -1) {
+		if (action_arg & ARG_NO_WINID) {
+			action_arg &= ~ARG_NO_WINID;
+			snprintf(buf, len, "%s %s %ld", cmd_line,
+				 action, body[action_arg]);
+		} else {
+			snprintf(buf, len, "%s %s 0x%lx", cmd_line,
+				 action, body[action_arg]);
+		}
+	} else {
+		snprintf(buf, len,"%s %s", cmd_line, action);
 	}
+
+	/* let fvwm execute the function */
+	SendText(fd, buf, fw);
+	last_time = now;
+
+	free(buf);
 
 	return;
 }
@@ -508,7 +460,6 @@ void handle_config_line(char *buf)
 	{
 		"Cmd",
 		"Delay",
-		"Dir",
 		"PassID",
 		"StartDelay"
 	}; /* define entries here, if this list becomes unsorted, use FindToken */
@@ -538,46 +489,24 @@ void handle_config_line(char *buf)
 				cmd_line = fxstrdup("");
 			}
 			break;
-
 		case 1:
 			/* Delay */
 			if (token)
 			{
-				audio_delay = atoi(token);
+				delay = atoi(token);
 			}
 			break;
-
 		case 2:
-			/* Dir */
-			if (!audio_compat)
-			{
-				fvwm_debug(__func__,
-					   "%s: Dir supported only when invoked as"
-					   " FvwmAudio\n", MyName+1);
-				break;
-			}
-			if (token)
-			{
-				if (audio_play_dir)
-				{
-					free(audio_play_dir);
-				}
-				audio_play_dir = fxstrdup(token);
-			}
-			break;
-
-		case 3:
 			/* PassID */
 			PassID = True;
 			break;
-		case 4:
+		case 3:
 			/* StartDelay */
 			if (token)
 			{
-				start_audio_delay = atoi(token);
+				start_delay = atoi(token);
 			}
 			break;
-
 		}
 	}
 	else
