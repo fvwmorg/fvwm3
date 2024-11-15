@@ -7383,7 +7383,7 @@ endif::[]
 
 === Controlling the Virtual Desktop
 
-*Desk* _arg1_ [_arg2_] [_min_ _max_]::
+*Desk* [screen _RANDRNAME_] _arg1_ [_arg2_] [_min_ _max_]::
 	This command has been renamed. Please see *GotoDesk* command.
 
 *DesktopName* _desk_ _name_::
@@ -7559,8 +7559,11 @@ treated as clicks on the root window.
 	equal to _max_ or if _max_ is null. Note that negative desktops are
 	not supported by the ewmh specification. The default is 4 0.
 
-*GotoDesk* [prev | _arg1_ [_arg2_] [_min_ _max_]]::
+*GotoDesk* [screen _RANDRNAME_] [prev | _arg1_ [_arg2_] [_min_ _max_]]::
 	Switches the current viewport to another desktop (workspace, room).
+	The current monitor is used in _per-monitor_ and _shared_
+	_DesktopConfiguration_, unless the literal _screen_ followed
+	by a valid RandR monitor name is included.
 +
 The command takes 1, 2, 3, or 4 arguments. A single argument is
 interpreted as a relative desk number. Two arguments are understood as
