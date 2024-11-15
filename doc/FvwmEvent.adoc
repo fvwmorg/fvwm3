@@ -11,51 +11,34 @@
 
 FvwmEvent - the fvwm event module
 
-== SYNOPSIS
-
-_FvwmEvent_ is a more versatile replacement for _FvwmAudio_. It can in
-general be used to hook any _fvwm_ function or program to any window
-manager event. E.g: Delete unwanted Netscape Pop ups or application
-error pop ups as they appear, play sounds, log events to a file and the
-like. Be creative, you'll find a use for it.
-
-_FvwmEvent_ is spawned by _fvwm_, so no command line invocation will
-work. From within the _.fvwm2rc_ file, _FvwmEvent_ is spawned as
-follows:
-
-....
-Module FvwmEvent
-....
-
-or from within an _fvwm_ pop-up menu:
-
-....
-DestroyMenu Module-Popup
-AddToMenu Module-Popup "Modules" Title
-+ "Event"        Module FvwmEvent
-+ "Auto"         Module FvwmAuto 200
-+ "Buttons"      Module FvwmButtons
-+ "Console"      Module FvwmConsole
-+ "Ident"        Module FvwmIdent
-+ "Banner"       Module FvwmBanner
-+ "Pager"        Module FvwmPager 0 3
-....
-
 == DESCRIPTION
 
-The _FvwmEvent_ module communicates with the _fvwm_ window manager to
-bind _actions_ to window manager _events_. Different actions may be
-assigned to distinct window manager events.
-
-_FvwmEvent_ can be used to bind sound files to events like _FvwmAudio_
-(RiP) did. It can be used for logging event traces to a log file, while
-debugging _fvwm_.
+_FvwmEvent_ is a module that triggers actions on _fvwm_ events.
+It can be used to hook any _fvwm_ function or program to any window
+manager event. _FvwmEvent_ can trigger actions when windows are
+added, deleted, iconified, shaded, or when _fvwm_ changes which
+virtual page or desk is being shown, or when RandR monitors are
+changed, enabled, disabled, or gain focus. Be creative, you'll
+find a use for it.
 
 == INVOCATION
 
-The invocation method was shown in the synopsis section. No command line
-invocation is possible. _FvwmEvent_ must be invoked by the _fvwm_ window
-manager.
+_FvwmEvent_ is spawned by _fvwm_, so no command line invocation will
+work. _FvwmEvent_ can be spawned from within the _config_ file
+with or without an _Alias_ as follows:
+
+....
+Module FvwmEvent Alias
+....
+
+You can add this to the _StartFunction_ to ensure _FvwmEvent_
+is running and listening for events when _fvwm_ starts. Alternatively
+you can add this to a menu, key binding, etc. You can kill stop
+a running instance of _FvwmEvent_ with:
+
+....
+KillModule FvwmEvent Alias
+....
 
 == CONFIGURATION OPTIONS
 
@@ -105,12 +88,14 @@ setting
 *FvwmEvent: PassId::
   Specifies that the event action will have an ID parameter added to the
   end of the command line. Most events will have the windowID of the
-  window that the event refers to, new_desk will have the new desk
-  number. The windowID is a hexadecimal string preceded by 0x, desk
-  numbers are decimal.
+  window that the event refers to. The new_desk event will have the new
+  desk number. Monitor events will have the RandR monitor name. The
+  windowID is a hexadecimal string preceded by 0x, desk numbers are
+  decimal, and monitor name's are strings.
 
-*FvwmEvent: window-manager-event action-or-filename::
-  Binds particular actions to window manager events.
+*FvwmEvent: window-manager-event action::
+  Binds particular actions to window manager events. The action is
+  appended to the _Cmd_ which is then sent to _fvwm_ for execution.
 +
 The following events are valid:
 +
@@ -200,9 +185,8 @@ on a similar Fvwm module called _FvwmSound_ by Mark Boyns. _FvwmAudio_
 simply took Mark's original program and extended it to make it generic
 enough to work with any audio player. Due to different requests to do
 specific things on specific events, _FvwmEvent_ took this one step
-further and now calls any _fvwm_ function, or builtin-rplay. If _fvwm_'s
-Exec function is used, any external program can be called with any
-parameter.
+further and now calls any _fvwm_ function. If _fvwm_'s Exec function
+is used, any external program can be called with any parameter.
 
 == AUTHORS
 
