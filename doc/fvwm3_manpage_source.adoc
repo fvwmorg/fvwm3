@@ -1569,17 +1569,22 @@ $[pointer.screen]::
 +
 This is deprecated; use $[monitor.current] instead.
 
-$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.output], $[monitor.number] $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
+$[monitor.<n>.x], $[monitor.<n>.y], $[monitor.<n>.width], $[monitor.<n>.height], $[monitor.<n>.desk], $[monitor.<n>.pagex], $[monitor.<n>.pagey] $[monitor.primary], $[monitor.prev_primary], $[monitor.current], $[monitor.prev] $[monitor.<n>.output], $[monitor.<n>.number] $[monitor.count], $[monitor.<n>.prev_desk], $[monitor.<n>.prev_pagex], $[monitor.<n>.prev_pagey]::
 	Returns information about the selected monitor. These can be nested, for
 	example: $[monitor.$[monitor.primary].width]
 +
-<n> should be a valid xrandr(1) output name.
+<n> can be the monitor's RandR name, the monitor's number (see "number"
+below), or the monitor's output (see "output" below).
 +
 "x" returns the monitor's x position; "y" returns the monitor's y
 position; "width" returns the monitor's width (in pixels); "height"
 returns the monitor's height (in pixels)
 +
+"name" returns the monitor's RandR name. See xrandr(1).
++
 "number" returns the monitor's position within the tree.  See RANDR SUPPORT.
++
+"output" returns the monitor's RandR output ID number.
 +
 "current" is the same as the deprecated $[screen.pointer] variable; the
 monitor which has the mouse pointer.

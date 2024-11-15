@@ -101,8 +101,8 @@ static char *audio_play_dir = NULL;
 #define EVENT_ENTRY(name,action_arg) { name, action_arg, {NULL} }
 static event_entry message_event_table[] =
 {
-	EVENT_ENTRY( "new_page", -1 ),
-	EVENT_ENTRY( "new_desk", 0 | ARG_NO_WINID ),
+	EVENT_ENTRY( "new_page", 7 | ARG_NO_WINID ),
+	EVENT_ENTRY( "new_desk", 1 | ARG_NO_WINID ),
 	EVENT_ENTRY( "old_add_window", 0 ),
 	EVENT_ENTRY( "raise_window", 0 ),
 	EVENT_ENTRY( "lower_window", 0 ),

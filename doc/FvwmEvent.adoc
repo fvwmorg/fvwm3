@@ -105,9 +105,11 @@ setting
 *FvwmEvent: PassId::
   Specifies that the event action will have an ID parameter added to the
   end of the command line. Most events will have the windowID of the
-  window that the event refers to, new_desk will have the new desk
-  number. The windowID is a hexadecimal string preceded by 0x, desk
-  numbers are decimal.
+  window that the event refers to, new_page and new_desk will have the
+  RandR output ID of the monitor (which can be used to get the current
+  desk or page with $[monitor.$0.desk], $[monitor.$0.pagex], or
+  $[monitor.$0.pagey]). The windowID is a hexadecimal string preceded by
+  0x, RandR output IDs are decimal.
 
 *FvwmEvent: window-manager-event action-or-filename::
   Binds particular actions to window manager events.

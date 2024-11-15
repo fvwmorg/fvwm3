@@ -252,8 +252,21 @@ monitor_resolve_name(const char *scr)
 	 * information we have.
 	 */
 	pos = strtonum(scr, 0, INT_MAX, &errstr);
-	if (errstr == NULL)
-		return (monitor_by_number(pos));
+	if (errstr == NULL) {
+		m = monitor_by_number(pos);
+
+		if (m != NULL)
+			return (m);
+
+		/* This number may refer to an output ID, check that. */
+		m = monitor_by_output(pos);
+
+		/* The above may have returned a fallback monitor. */
+		if (m->si->rr_output == pos)
+			return (m);
+		else
+			return (NULL);
+	}
 
 	/* "@g" is for the global screen. */
 	if (strcmp(scr, "g") == 0) {

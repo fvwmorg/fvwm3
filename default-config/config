@@ -166,7 +166,7 @@ AddToFunc   ChangeDesk
 + I SendToModule FvwmButtons ChangeButton desk1 Colorset 10
 + I SendToModule FvwmButtons ChangeButton desk2 Colorset 10
 + I SendToModule FvwmButtons ChangeButton desk3 Colorset 10
-+ I SendToModule FvwmButtons ChangeButton desk$0 Colorset 11
++ I SendToModule FvwmButtons ChangeButton desk$[monitor.$0.desk] Colorset 11
 
 
 #############
