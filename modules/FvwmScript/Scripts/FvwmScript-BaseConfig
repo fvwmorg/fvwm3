@@ -254,28 +254,28 @@ Init
 
    Set $pos=(Add $pos 1)
    Set $HIDEGEO=(GetOutput $CAT $pos -1)
-   If $HIDEGEO=={HideGeometryWindow Never} Then
+   If $HIDEGEO=={GeometryWindow Hide Never} Then
     Begin
     Set $HIDEMOVE={NO}
     Set $HIDERESIZE={NO}
     ChangeValue 52 0
     ChangeValue 53 0
     End
-   If $HIDEGEO=={HideGeometryWindow Resize} Then
+   If $HIDEGEO=={GeometryWindow Hide Resize} Then
     Begin
     Set $HIDEMOVE={NO}
     Set $HIDERESIZE={YES}
     ChangeValue 52 0
     ChangeValue 53 1
     End
-   If $HIDEGEO=={HideGeometryWindow Move} Then
+   If $HIDEGEO=={GeometryWindow Hide Move} Then
     Begin
     Set $HIDEMOVE={YES}
     Set $HIDERESIZE={NO}
     ChangeValue 52 1
     ChangeValue 53 0
     End
-   If $HIDEGEO=={HideGeometryWindow} Then
+   If $HIDEGEO=={GeometryWindow Hide} Then
     Begin
     Set $HIDEMOVE={YES}
     Set $HIDERESIZE={YES}
@@ -384,7 +384,7 @@ Init
    ChangeValue 50 1
    Set $RESIZEOPAQ={Style * ResizeOutline}
 
-   Set $HIDEGEO={HideGeometryWindow Never}
+   Set $HIDEGEO={GeometryWindow Hide Never}
    Set $HIDEMOVE={NO}
    Set $HIDERESIZE={NO}
    ChangeValue 52 0
@@ -582,7 +582,7 @@ Main
    ChangeValue 50 1
    Set $RESIZEOPAQ={Style * ResizeOutline}
 
-   Set $HIDEGEO={HideGeometryWindow Never}
+   Set $HIDEGEO={GeometryWindow Hide Never}
    Set $HIDEMOVE={NO}
    Set $HIDERESIZE={NO}
    ChangeValue 52 0
@@ -1255,18 +1255,18 @@ Main
     ChangeValue 52 0
     Set $HIDEMOVE={NO}
     If $HIDERESIZE=={YES} Then
-     Set $HIDEGEO={HideGeometryWindow Resize}
+     Set $HIDEGEO={GeometryWindow Hide Resize}
     Else
-     Set $HIDEGEO={HideGeometryWindow Never}
+     Set $HIDEGEO={GeometryWindow Hide Never}
     End
    Else
     Begin
     ChangeValue 52 1
     Set $HIDEMOVE={YES}
     If $HIDERESIZE=={YES} Then
-     Set $HIDEGEO={HideGeometryWindow}
+     Set $HIDEGEO={GeometryWindow Hide}
     Else
-     Set $HIDEGEO={HideGeometryWindow Move}
+     Set $HIDEGEO={GeometryWindow Hide Move}
     End
   End
 End
@@ -1287,18 +1287,18 @@ Main
     ChangeValue 53 0
     Set $HIDERESIZE={NO}
     If $HIDEMOVE=={YES} Then
-     Set $HIDEGEO={HideGeometryWindow Move}
+     Set $HIDEGEO={GeometryWindow Hide Move}
     Else
-     Set $HIDEGEO={HideGeometryWindow Never}
+     Set $HIDEGEO={GeometryWindow Hide Never}
     End
    Else
     Begin
     ChangeValue 53 1
     Set $HIDERESIZE={YES}
     If $HIDEMOVE=={YES} Then
-     Set $HIDEGEO={HideGeometryWindow}
+     Set $HIDEGEO={GeometryWindow Hide}
     Else
-     Set $HIDEGEO={HideGeometryWindow Resize}
+     Set $HIDEGEO={GeometryWindow Hide Resize}
     End
   End
 End

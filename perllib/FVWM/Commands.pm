@@ -147,12 +147,6 @@ $TIME = 1410306754;
 		descr => q{Try to Delete a window, if this fails, Destroy it},
 	},
 	{
-		name => 'ColorLimit',
-		cursor => '',
-		window => 0,
-		descr => q{Set limit on colors used (obsolete)},
-	},
-	{
 		name => 'ColormapFocus',
 		cursor => '',
 		window => 0,
@@ -229,12 +223,6 @@ $TIME = 1410306754;
 		cursor => '',
 		window => 0,
 		descr => q{Remove commands sheduled earlier using Schedule},
-	},
-	{
-		name => 'Desk',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use GotoDesk instead)},
 	},
 	{
 		name => 'DesktopName',
@@ -417,18 +405,6 @@ $TIME = 1410306754;
 		descr => q{Execute a user defined function, see AddToFunc},
 	},
 	{
-		name => 'GnomeButton',
-		cursor => '',
-		window => 0,
-		descr => q{Pass mouse button presses on root to GNOME program},
-	},
-	{
-		name => 'GnomeShowDesks',
-		cursor => '',
-		window => 0,
-		descr => q{Limit GNOME pager to the number of desks},
-	},
-	{
 		name => 'GotoDesk',
 		cursor => '',
 		window => 0,
@@ -447,34 +423,10 @@ $TIME = 1410306754;
 		descr => q{Switch viewport to another page same desk},
 	},
 	{
-		name => 'HideGeometryWindow',
-		cursor => '',
-		window => 0,
-		descr => q{Hide/show the position/size window},
-	},
-	{
-		name => 'HilightColorset',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use Style * HighlightColorset)},
-	},
-	{
-		name => 'IconFont',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use Style * IconFont)},
-	},
-	{
 		name => 'Iconify',
 		cursor => 'SELECT',
 		window => 1,
 		descr => q{Change iconification status of a window (minimize)},
-	},
-	{
-		name => 'IconPath',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use ImagePath instead)},
 	},
 	{
 		name => 'IgnoreModifiers',
@@ -661,12 +613,6 @@ $TIME = 1410306754;
 		cursor => '',
 		window => 0,
 		descr => q{Exec system command interpret output as fvwm commands},
-	},
-	{
-		name => 'PixmapPath',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use ImagePath instead)},
 	},
 	{
 		name => 'PlaceAgain',
@@ -903,18 +849,6 @@ $TIME = 1410306754;
 		descr => q{Suppress errors on command, avoid window selection},
 	},
 	{
-		name => 'SnapAttraction',
-		cursor => '',
-		window => 0,
-		descr => q{Control attraction of windows during move},
-	},
-	{
-		name => 'SnapGrid',
-		cursor => '',
-		window => 0,
-		descr => q{Control grid used with SnapAttraction},
-	},
-	{
 		name => 'State',
 		cursor => 'SELECT',
 		window => 1,
@@ -1011,12 +945,6 @@ $TIME = 1410306754;
 		descr => q{Warp the pointer to a window},
 	},
 	{
-		name => 'WindowFont',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use Style * Font)},
-	},
-	{
 		name => 'WindowId',
 		cursor => '',
 		window => 0,
@@ -1033,12 +961,6 @@ $TIME = 1410306754;
 		cursor => 'SELECT',
 		window => 1,
 		descr => q{Shade/unshade a window},
-	},
-	{
-		name => 'WindowShadeAnimate',
-		cursor => '',
-		window => 0,
-		descr => q{(obsolete, use Style * WindowShadeSteps)},
 	},
 	{
 		name => 'WindowStyle',
