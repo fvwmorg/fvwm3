@@ -2835,18 +2835,6 @@ void CMD_ImagePath(F_CMD_ARGS)
 	return;
 }
 
-void CMD_IconPath(F_CMD_ARGS)
-{
-	fvwm_debug(__func__,
-	    "IconPath is deprecated; use ImagePath instead.");
-}
-
-void CMD_PixmapPath(F_CMD_ARGS)
-{
-	fvwm_debug(__func__,
-	    "PixmapPath is deprecated; use ImagePath instead." );
-}
-
 void CMD_LocalePath(F_CMD_ARGS)
 {
 	FGettextSetLocalePath( action );
@@ -2872,31 +2860,6 @@ void CMD_ModuleTimeout(F_CMD_ARGS)
 	if (GetIntegerArguments(action, NULL, &timeout, 1) == 1 && timeout > 0)
 	{
 		moduleTimeout = timeout;
-	}
-
-	return;
-}
-
-void CMD_HilightColorset(F_CMD_ARGS)
-{
-	char *newaction;
-
-	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
-	{
-		fvwm_debug(__func__,
-			   "Decors do not support the HilightColorset command "
-			   "anymore. Please use "
-			   "'Style <stylename> HilightColorset <colorset>'"
-			   " instead. Sorry for the inconvenience.");
-		return;
-	}
-
-	if (action)
-	{
-		xasprintf(&newaction, "* HilightColorset %s", action);
-		action = newaction;
-		CMD_Style(F_PASS_ARGS);
-		free(newaction);
 	}
 
 	return;
@@ -3026,54 +2989,6 @@ void CMD_DefaultFont(F_CMD_ARGS)
 	/* set flags to indicate that the font has changed */
 	Scr.flags.do_need_window_update = 1;
 	Scr.flags.has_default_font_changed = 1;
-
-	return;
-}
-
-void CMD_IconFont(F_CMD_ARGS)
-{
-	char *newaction;
-
-	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
-	{
-		fvwm_debug(__func__,
-			   "Decors do not support the IconFont command anymore."
-			   " Please use 'Style <stylename> IconFont <fontname>'"
-			   " instead.  Sorry for the inconvenience.");
-		return;
-	}
-
-	if (action)
-	{
-		xasprintf(&newaction, "* IconFont %s", action);
-		action = newaction;
-		CMD_Style(F_PASS_ARGS);
-		free(newaction);
-	}
-
-	return;
-}
-
-void CMD_WindowFont(F_CMD_ARGS)
-{
-	char *newaction;
-
-	if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
-	{
-		fvwm_debug(__func__,
-			   "Decors do not support the WindowFont command anymore."
-			   " Please use 'Style <stylename> Font <fontname>'"
-			   " instead.  Sorry for the inconvenience.");
-		return;
-	}
-
-	if (action)
-	{
-		xasprintf(&newaction, "* Font %s", action);
-		action = newaction;
-		CMD_Style(F_PASS_ARGS);
-		free(newaction);
-	}
 
 	return;
 }
@@ -3632,15 +3547,6 @@ void CMD_Emulate(F_CMD_ARGS)
 
 	return;
 }
-
-void CMD_ColorLimit(F_CMD_ARGS)
-{
-	fvwm_debug(__func__, "ColorLimit is obsolete,\n\tuse the "
-		   "fvwm -color-limit option");
-
-	return;
-}
-
 
 /* set animation parameters */
 void CMD_SetAnimation(F_CMD_ARGS)

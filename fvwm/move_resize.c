@@ -3435,46 +3435,6 @@ void CMD_GeometryWindow(F_CMD_ARGS)
 	}
 }
 
-void CMD_HideGeometryWindow(F_CMD_ARGS)
-{
-	char *cmd;
-
-	fvwm_debug(__func__, "HideGeometryWindow is deprecated.  "
-	    "Converting to use: GeometryWindow hide %s", action);
-
-	xasprintf(&cmd, "GeometryWindow hide %s", action);
-	execute_function_override_window(NULL, NULL, cmd, NULL, 0, NULL);
-	free(cmd);
-}
-
-void CMD_SnapAttraction(F_CMD_ARGS)
-{
-	char *cmd;
-
-	xasprintf(&cmd, "Style * SnapAttraction %s", action);
-	fvwm_debug(__func__,
-		   "The command SnapAttraction is obsolete. Please use the"
-		   " following command instead:\n\n%s", cmd);
-	execute_function(cond_rc, exc, cmd, pc, FUNC_DONT_EXPAND_COMMAND);
-	free(cmd);
-
-	return;
-}
-
-void CMD_SnapGrid(F_CMD_ARGS)
-{
-	char *cmd;
-
-	xasprintf(&cmd, "Style * SnapGrid %s", action);
-	fvwm_debug(__func__,
-		   "The command SnapGrid is obsolete. Please use the following"
-		   " command instead:\n\n%s", cmd);
-	execute_function(cond_rc, exc, cmd, pc, FUNC_DONT_EXPAND_COMMAND);
-	free(cmd);
-
-	return;
-}
-
 static Pixmap XorPixmap = None;
 
 void CMD_XorValue(F_CMD_ARGS)
