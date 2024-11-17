@@ -2559,13 +2559,6 @@ void CMD_GotoDesk(F_CMD_ARGS)
 	goto_desk(new_desk, m);
 }
 
-void CMD_Desk(F_CMD_ARGS)
-{
-	CMD_GotoDesk(F_PASS_ARGS);
-
-	return;
-}
-
 /*
  *
  * Move to a new desktop and page at the same time.
