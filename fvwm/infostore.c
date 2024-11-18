@@ -37,8 +37,6 @@
 
 /* ---------------------------- local types -------------------------------- */
 
-static MetaInfo *mi_store;
-
 /* ---------------------------- forward declarations ----------------------- */
 
 static void delete_metainfo(const char *);
@@ -47,23 +45,19 @@ static void delete_metainfo(const char *);
 
 /* ---------------------------- exported variables (globals) --------------- */
 
+struct meta_infos meta_info_q;
+
 /* ---------------------------- local functions ---------------------------- */
-
-MetaInfo *new_metainfo(void)
-{
-	MetaInfo *mi;
-
-	mi = fxcalloc(1, sizeof *mi);
-
-	return mi;
-}
 
 void insert_metainfo(char *key, char *value)
 {
 	MetaInfo *mi;
 	MetaInfo *mi_new;
 
-	for (mi = mi_store; mi; mi = mi->next)
+	if (TAILQ_EMPTY(&meta_info_q))
+		TAILQ_INIT(&meta_info_q);
+
+	TAILQ_FOREACH(mi, &meta_info_q, entry)
 	{
 		if (StrEquals(mi->key, key))
 		{
@@ -78,36 +72,32 @@ void insert_metainfo(char *key, char *value)
 	}
 
 	/* It's a new item, add it to the list. */
-	mi_new = new_metainfo();
+	mi_new = fxcalloc(1, sizeof *mi_new);
 	mi_new->key = fxstrdup(key);
 	CopyString(&mi_new->value, value);
 
-	mi_new->next = mi_store;
-	mi_store = mi_new;
+	TAILQ_INSERT_TAIL(&meta_info_q, mi_new, entry);
 
 	return;
 }
 
 static void delete_metainfo(const char *key)
 {
-	MetaInfo *mi_current, *mi_prev;
-	mi_prev = NULL;
+	MetaInfo *mi = NULL;
 
-	for(mi_current = mi_store; mi_current != NULL;
-		mi_prev = mi_current, mi_current = mi_current->next)
+	TAILQ_FOREACH(mi, &meta_info_q, entry)
 	{
-		if (StrEquals(mi_current->key, key)) {
-			if (mi_prev == NULL)
-				mi_store = mi_current->next;
-			else
-				mi_prev->next = mi_current->next;
-
-			free(mi_current->key);
-			free(mi_current->value);
-			free(mi_current);
-
+		if (StrEquals(mi->key, key))
 			break;
-		}
+	}
+
+	if (mi != NULL)
+	{
+		TAILQ_REMOVE(&meta_info_q, mi, entry);
+
+		free(mi->key);
+		free(mi->value);
+		free(mi);
 	}
 
 	return;
@@ -115,56 +105,32 @@ static void delete_metainfo(const char *key)
 
 inline char *get_metainfo_value(const char *key)
 {
-	MetaInfo *mi_current;
+	MetaInfo *mi;
 
-	for(mi_current = mi_store; mi_current; mi_current = mi_current->next)
+	TAILQ_FOREACH(mi, &meta_info_q, entry)
 	{
-		if (StrEquals(mi_current->key, key))
-			return mi_current->value;
+		if (StrEquals(mi->key, key))
+			return mi->value;
 	}
 
 	return NULL;
-}
-
-int get_metainfo_length(void)
-{
-	MetaInfo *mi;
-	int count;
-
-	count = 0;
-
-	for(mi = mi_store; mi; mi = mi->next)
-		count++;
-
-	return count;
-}
-
-MetaInfo *
-get_metainfo(void)
-{
-	return mi_store;
 }
 
 void print_infostore(void)
 {
 	MetaInfo *mi;
 
-	fvwm_debug(__func__, "Current items in infostore (key, value):\n\n");
-
-	if (get_metainfo_length() == 0)
-	{
+	if (TAILQ_EMPTY(&meta_info_q)) {
 		fvwm_debug(__func__,
 			   "No items are currently stored in the infostore.\n");
 		return;
 	}
 
-	for(mi = mi_store; mi; mi = mi->next)
-	{
+	fvwm_debug(__func__, "Current items in infostore (key, value):\n\n");
+	TAILQ_FOREACH(mi, &meta_info_q, entry)
 		fvwm_debug(__func__, "%s\t%s\n", mi->key, mi->value);
-	}
 
 	return;
-
 }
 
 /* ---------------------------- interface functions ------------------------ */
@@ -189,6 +155,9 @@ void CMD_InfoStoreAdd(F_CMD_ARGS)
 	if (!key || !value)
 	{
 		fvwm_debug(__func__, "Bad arguments given.");
+		if (key)
+			free(key);
+
 		return;
 	}
 
@@ -218,11 +187,13 @@ void CMD_InfoStoreRemove(F_CMD_ARGS)
 
 void CMD_InfoStoreClear(F_CMD_ARGS)
 {
-	MetaInfo	*mi;
+	MetaInfo	*mi, *mi2;
 
-	if (get_metainfo_length() == 0)
-		return;
-
-	for (mi = mi_store; mi; mi = mi->next)
-		delete_metainfo(mi->key);
+	TAILQ_FOREACH_SAFE(mi, &meta_info_q, entry, mi2)
+	{
+		TAILQ_REMOVE(&meta_info_q, mi, entry);
+		free(mi->key);
+		free(mi->value);
+		free(mi);
+	}
 }
