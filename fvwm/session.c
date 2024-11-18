@@ -177,13 +177,13 @@ SaveGlobalState(FILE *f)
 		f, "  [STYLE] %i %i\n", Scr.gs.do_emulate_mwm,
 		Scr.gs.do_emulate_win);
 
-	if (get_metainfo_length() > 0) {
-		MetaInfo *mi = get_metainfo(), *mi_i;
+	if (!TAILQ_EMPTY(&meta_info_q)) {
+		MetaInfo *mi;
 
 		fprintf(f, "  [INFOSTORE]\n");
-		for (mi_i = mi; mi_i; mi_i = mi_i->next) {
-			fprintf(f, "    [KEY] %s\n", mi_i->key);
-			fprintf(f, "    [VALUE] %s\n", mi_i->value);
+		TAILQ_FOREACH(mi, &meta_info_q, entry) {
+			fprintf(f, "    [KEY] %s\n", mi->key);
+			fprintf(f, "    [VALUE] %s\n", mi->value);
 		}
 	}
 

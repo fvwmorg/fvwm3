@@ -11,13 +11,15 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
-typedef struct MetaInfo
+typedef struct meta_info
 {
     char *key;
     char *value;
 
-    struct MetaInfo *next;
+    TAILQ_ENTRY(meta_info) entry;
 } MetaInfo;
+TAILQ_HEAD(meta_infos, meta_info);
+extern struct meta_infos meta_info_q;
 
 /* ---------------------------- forward declarations ----------------------- */
 
@@ -25,11 +27,8 @@ typedef struct MetaInfo
 
 /* ---------------------------- interface functions ------------------------ */
 
-MetaInfo *new_metainfo(void);
 void insert_metainfo(char *, char *);
 char *get_metainfo_value(const char *);
-int get_metainfo_length(void);
-MetaInfo *get_metainfo(void);
 void print_infostore(void);
 
 #endif /* FVWM_INFOSTORE_H */
