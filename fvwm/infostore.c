@@ -150,13 +150,9 @@ void CMD_InfoStoreAdd(F_CMD_ARGS)
 error:
 	if (key == NULL || value == NULL) {
 		fvwm_debug(__func__, "Bad arguments given.");
-		goto out;
 	}
-out:
 	free(key);
 	free(value);
-
-	return;
 }
 
 void CMD_InfoStoreRemove(F_CMD_ARGS)
