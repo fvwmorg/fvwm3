@@ -83,24 +83,20 @@ void insert_metainfo(char *key, char *value)
 
 static void delete_metainfo(const char *key)
 {
-	MetaInfo *mi = NULL;
+	MetaInfo *mi = NULL, *mi1;
 
-	TAILQ_FOREACH(mi, &meta_info_q, entry)
+	TAILQ_FOREACH_SAFE(mi, &meta_info_q, entry, mi1)
 	{
-		if (StrEquals(mi->key, key))
-			break;
+		if (StrEquals(mi->key, key)) {
+			TAILQ_REMOVE(&meta_info_q, mi, entry);
+
+			free(mi->key);
+			free(mi->value);
+			free(mi);
+
+			return;
+		}
 	}
-
-	if (mi != NULL)
-	{
-		TAILQ_REMOVE(&meta_info_q, mi, entry);
-
-		free(mi->key);
-		free(mi->value);
-		free(mi);
-	}
-
-	return;
 }
 
 inline char *get_metainfo_value(const char *key)
@@ -138,30 +134,24 @@ void print_infostore(void)
 /* ---------------------------- builtin commands --------------------------- */
 void CMD_InfoStoreAdd(F_CMD_ARGS)
 {
-	char *key, *value;
+	char *key = NULL, *value = NULL;
 	char *token;
 
-	token = PeekToken(action, &action);
-	key = value = NULL;
+	if ((token = PeekToken(action, &action)) == NULL)
+		goto error;
+	key = fxstrdup(token);
 
-	if (token)
-		key = strdup(token);
+	if ((token = PeekToken(action, &action)) == NULL)
+		goto error;
+	value = fxstrdup(token);
 
-	token = PeekToken(action, &action);
-
-	if (token)
-		value = strdup(token);
-
-	if (!key || !value)
-	{
+error:
+	if (key == NULL || value == NULL) {
 		fvwm_debug(__func__, "Bad arguments given.");
-		if (key)
-			free(key);
-
-		return;
+		goto out;
 	}
-
 	insert_metainfo(key, value);
+out:
 	free(key);
 	free(value);
 
@@ -174,7 +164,7 @@ void CMD_InfoStoreRemove(F_CMD_ARGS)
 
 	token = PeekToken(action, &action);
 
-	if (!token)
+	if (token == NULL)
 	{
 		fvwm_debug(__func__, "No key given to remove item.");
 		return;
