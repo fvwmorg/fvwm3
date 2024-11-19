@@ -145,12 +145,13 @@ void CMD_InfoStoreAdd(F_CMD_ARGS)
 		goto error;
 	value = fxstrdup(token);
 
+	insert_metainfo(key, value);
+
 error:
 	if (key == NULL || value == NULL) {
 		fvwm_debug(__func__, "Bad arguments given.");
 		goto out;
 	}
-	insert_metainfo(key, value);
 out:
 	free(key);
 	free(value);
