@@ -8223,21 +8223,60 @@ This command implies the conditions _CirculateHit_,
 _CirculateHitIcon_ and _CirculateHitShaded_. They can be turned off
 by specifying _!CirculateHit_ etc. explicitly.
 +
-*Direction* [FromPointer] _direction_ [(_conditions_)] _command_:::
-	Performs _command_ (typically *Focus*) on a window in the given
-	direction which satisfies all _conditions_. Normally, the center of
-	the currently focused window or the context window in which the
-	command was invoked is taken as the starting point. Lacking such a
-	window, or when the _FromPointer_ option is given, the current
-	position of the pointer is taken as the starting point. The
-	_direction_ may be one of "North", "Northeast", "East", "Southeast",
-	"South", "Southwest", "West", "Northwest" and "Center". Which window
-	*Direction* selects depends on angle and distance between the center
-	points of the windows. Closer windows are considered a better match
-	than those farther away. The _Center_ direction simply selects the
-	window closest to the starting point. Returns -1 if an invalid
-	direction was given. See the *Conditions* section for a list of
-	conditions.
+*Direction* [Screen] [FromPointer] _direction_ [(_conditions_)] _command_:::
+	Scans for the closest window or monitor in the stated _direction_ then
+	executes the given _command_. With the literal _Screen_ this will scan
+	for the closest monitor, otherwise for the closest window. The scan
+	starts from the center of the currently focused window or the context
+	window in which the command was invoked. Lacking such a window, or when
+	the _FromPointer_ option is given, the position of the pointer is used
+	as the starting point. The _direction_ may be one of "North", "Northeast",
+	"East", "Southeast", "South", "Southwest", "West", "Northwest" and
+	"Center".
++
+When scanning for a window, the _command_ (typically *Focus*) is ran in the
+context of the closest window which meets the given _conditions_ (see the
+*Conditions* section for a list of conditions). The closest window depends on
+both the angle, based on _direction_, and the distance between the window's
+center and the starting point. The _Center_ direction simply selects the
+closest window ignoring angle.
++
+When scanning for a monitor, the closest monitor in the given _direction_
+from the starting point is used. The _Center_ direction uses the monitor
+that contains the starting point. If a monitor is found in the stated
+_direction_, it is inserted into the _command_ before running it.
+There are three types of commands this works with.
++
+General commands which accept a _screen_ option will be run with the option
+"screen RANDRNAME" inserted into the command. The following commands will
+work with this: *CursorMove*, *CursorBarrier*, *GotoDesk*, *GotoPage*,
+*GotoDeskAndPage*, *EdgeScroll*, *EdgeThickness*, *EwmhBaseStruts*, and
+*Scroll*. The following example will move the cursor to center of the
+monitor to the right of its current position:
++
+
+....
+Direction Screen FromPointer East CursorMove 50 50
+....
+
++
+Commands which act on windows and accept a _screen_ option can also
+be used, provided you include the *All*, *Current*, *Next*, *Prev*,
+or *Pick* conditional to state which windows to act on. The following
+commands will work with this: *Move*, *AnimatedMove*, *MoveToDesk*,
+and *MoveToScreen*. The following example will move all windows on
+the current screen and page to the screen to the left.
++
+
+....
+Direction Screen West All \
+    (CurrentScreen, CurrentPage) MoveToScreen
+....
+
++
+Last, you can use any custom function as _command_, and the RandR
+name of the found monitor will be inserted as the first argument
+of the function.
 +
 *KeepRc* _command_:::
 	Runs the _command_ but does not alter the return code of the

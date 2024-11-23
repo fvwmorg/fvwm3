@@ -1156,6 +1156,240 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	return True;
 }
 
+static int parse_direction(F_CMD_ARGS, bool *is_pointer_relative)
+{
+	int dir;
+	char *tmp;
+
+	/* Parse the direction. */
+	tmp = PeekToken(action, &action);
+	if (StrEquals(tmp, "FromPointer"))
+	{
+		*is_pointer_relative = true;
+		tmp = PeekToken(action, &action);
+	}
+	else
+	{
+		*is_pointer_relative = false;
+	}
+
+	dir = gravity_parse_dir_argument(tmp, NULL, -1);
+	if (dir == -1 || dir > DIR_ALL_MASK)
+	{
+		if (tmp)
+			fvwm_debug(__func__, "Invalid direction %s", tmp);
+		else
+			fvwm_debug(__func__, "No direction given.");
+
+		if (cond_rc != NULL)
+			cond_rc->rc = COND_RC_ERROR;
+
+		dir = -1;
+	}
+
+	return dir;
+}
+
+/* Scan for monitor in given direction by starting at the edge of
+ * the current monitor and moving in increments of a minimum monitor
+ * resolution of 400x400 until a monitor is found or the edge of
+ * the global monitor is hit.
+ */
+#define MIN_MONITOR_RES 400
+static struct monitor *find_screen_dir(int dir, int x, int y)
+{
+	int x_inc = 0, y_inc = 0, width, height;
+	struct monitor *m = FindScreenOfXY(x, y);
+	struct monitor *m2;
+
+	if (dir == DIR_C)
+		return (m);
+
+	width = monitor_get_all_widths();
+	height = monitor_get_all_heights();
+
+	x = m->si->x;
+	y = m->si->y;
+	if (dir == DIR_W || dir == DIR_NW || dir == DIR_SW) {
+		x_inc = -MIN_MONITOR_RES;
+	}
+	if (dir == DIR_E || dir == DIR_NE || dir == DIR_SE) {
+		x += m->si->w;
+		x_inc = MIN_MONITOR_RES;
+	}
+	if (dir == DIR_N || dir == DIR_NE || dir == DIR_NW) {
+		y_inc = -MIN_MONITOR_RES;
+	}
+	if (dir == DIR_S || dir == DIR_SW || dir == DIR_SW) {
+		y += m->si->h;
+		y_inc = MIN_MONITOR_RES;
+	}
+	x += x_inc / 2;
+	y += y_inc / 2;
+
+	while(1) {
+		if (x < 0 || y < 0 || x > width || y > height)
+			return (NULL);
+
+		m2 = FindScreenOfXY(x, y);
+
+		/* The above returns the closest monitor if in dead space,
+		 * so make sure we didn't get the initial monitor.
+		 */
+		if (m2 != m)
+			return (m2);
+
+		x += x_inc;
+		y += y_inc;
+	}
+}
+
+static void direction_screen_cmd(F_CMD_ARGS)
+{
+	int dir;
+	bool is_pointer_relative;
+	char *dir_str = NULL;
+	char *flags = NULL;
+	char *rest;
+	char *conditional = NULL;
+	char *usercmd = NULL;
+	char *buf;
+	struct monitor *m = NULL;
+	bool found_conditional = false;
+	bool include_flags = false;
+	bool no_screen = false;
+	rectangle g;
+
+	dir = parse_direction(F_PASS_ARGS, &is_pointer_relative);
+	if (dir == -1)
+		return;
+
+	/* Skip direction inputs. Store direction for error message. */
+	if (is_pointer_relative)
+		PeekToken(action, &action);
+	action = GetNextToken(action, &dir_str);
+	action = GetNextToken(action, &usercmd);
+
+	if (usercmd == NULL) {
+		fvwm_debug(__func__, "No command given.");
+		goto set_error;
+	}
+
+	/* Determine starting point. */
+	if (exc->w.fw && !is_pointer_relative) {
+		get_visible_window_or_icon_geometry(exc->w.fw, &g);
+		/* Start in closest monitor to window's center. */
+		g.x += g.width / 2;
+		g.y += g.height / 2;
+	} else {
+		FQueryPointer(
+			dpy, Scr.Root, &JunkRoot, &JunkChild, &g.x, &g.y,
+			&JunkX, &JunkY, &JunkMask);
+	}
+	m = find_screen_dir(dir, g.x, g.y);
+
+	if (m == NULL) {
+		fvwm_debug(__func__, "No monitor found in direction %s.",
+			   dir_str);
+		if (cond_rc != NULL)
+			cond_rc->rc = COND_RC_NO_MATCH;
+		goto free_vars;
+	}
+
+	/* Check if user command is a conditional. */
+	if (StrEquals(usercmd, "All") ||
+	    StrEquals(usercmd, "Current") ||
+	    StrEquals(usercmd, "Next") ||
+	    StrEquals(usercmd, "Prev") ||
+	    StrEquals(usercmd, "Pick"))
+	{
+		found_conditional = true;
+		conditional = usercmd;
+
+		/* Get conditional flags to pass on if needed. */
+		flags = CreateFlagString(action, &rest);
+
+		if (!rest)
+		{
+			fvwm_debug(__func__, "No command given.");
+			goto set_error;
+		}
+		rest = GetNextToken(rest, &usercmd);
+	} else {
+		rest = action;
+	}
+
+	/* List of commands which accept screen argument. */
+	if (StrEquals(usercmd, "CursorMove") ||
+	    StrEquals(usercmd, "CursorBarrier") ||
+	    StrEquals(usercmd, "GotoDesk") ||
+	    StrEquals(usercmd, "GotoPage") ||
+	    StrEquals(usercmd, "GotoDeskAndPage") ||
+	    StrEquals(usercmd, "EdgeScroll") ||
+	    StrEquals(usercmd, "EdgeThickness") ||
+	    StrEquals(usercmd, "EwmhBaseStruts") ||
+	    StrEquals(usercmd, "Scroll")) {
+		/* Defaults */
+	} else if (StrEquals(usercmd, "Move") ||
+		   StrEquals(usercmd, "AnimatedMove") ||
+		   StrEquals(usercmd, "MoveToDesk")) {
+		include_flags = true;
+	/* ResizeMove commands have screen argument in complex location.
+	 * Ignoring for now.
+	 * } else if (StrEquals(usercmd, "ResizeMove")) {
+	 *	include_flags = true;
+	 * } else if (StrEquals(usercmd, "ResizeMoveMaximize")) {
+	 *	include_flags = true;
+	 */
+	} else if (StrEquals(usercmd, "MoveToScreen")) {
+		include_flags = true;
+		no_screen = true;
+	} else if (find_complex_function(usercmd)) {
+		no_screen = true;
+	} else {
+		fvwm_debug(__func__, "Invalid screen command: %s",
+			   usercmd);
+		goto set_error;
+	}
+
+	if (found_conditional && include_flags && no_screen) {
+		xasprintf(&buf, "%s (%s) %s %s %s",
+			  conditional, (flags) ? flags : "",
+			  usercmd, m->si->name, (rest) ? rest : "");
+	} else if (found_conditional && include_flags) {
+		xasprintf(&buf, "%s (%s) %s screen %s %s",
+			  conditional, (flags) ? flags : "",
+			  usercmd, m->si->name, (rest) ? rest : "");
+	} else if (no_screen && !include_flags) {
+		xasprintf(&buf, "%s %s %s",
+			  usercmd, m->si->name, (rest) ? rest : "");
+	} else if (!include_flags) {
+		xasprintf(&buf, "%s screen %s %s",
+			  usercmd, m->si->name, (rest) ? rest : "");
+	} else {
+		fvwm_debug(__func__,
+			   "Window command %s sent without conditional.",
+			   usercmd);
+		goto set_error;
+	}
+
+	execute_function(cond_rc, exc, buf, pc, FUNC_DONT_EXPAND_COMMAND);
+	free(buf);
+	goto free_vars;
+
+set_error:
+	if (cond_rc != NULL)
+		cond_rc->rc = COND_RC_ERROR;
+
+free_vars:
+	free(flags);
+	free(dir_str);
+	free(usercmd);
+	free(conditional);
+
+	return;
+}
+
 static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 {
 	rectangle my_g;
@@ -1184,31 +1418,19 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 	float tx;
 	float ty;
 	WindowConditionMask mask;
-	Bool is_pointer_relative;
+	bool is_pointer_relative;
 	FvwmWindow * const fw = exc->w.fw;
 
 	/* Parse the direction. */
-	tmp = PeekToken(action, &action);
-	if (StrEquals(tmp, "FromPointer"))
-	{
-		is_pointer_relative = True;
-		tmp = PeekToken(action, &action);
-	}
-	else
-	{
-		is_pointer_relative = False;
-	}
-	dir = gravity_parse_dir_argument(tmp, NULL, -1);
-	if (dir == -1 || dir > DIR_ALL_MASK)
-	{
-		fvwm_debug(__func__, "Invalid direction %s",
-			   (tmp) ? tmp : "");
-		if (cond_rc != NULL)
-		{
-			cond_rc->rc = COND_RC_ERROR;
-		}
+	dir = parse_direction(F_PASS_ARGS, &is_pointer_relative);
+	if (dir == -1)
 		return;
-	}
+
+	/* Skip direction inputs. */
+	PeekToken(action, &action);
+	if (is_pointer_relative)
+		PeekToken(action, &action);
+
 	if (is_scan)
 	{
 		cycle = True;
@@ -1687,12 +1909,22 @@ void CMD_All(F_CMD_ARGS)
  */
 void CMD_Direction(F_CMD_ARGS)
 {
-	direction_cmd(F_PASS_ARGS,False);
+	char *option;
+
+	/* Check if screen option is provided. */
+	if ((option = PeekToken(action, NULL)) != NULL &&
+	    StrEquals(option, "screen"))
+	{
+		option = PeekToken(action, &action); /* Skip literal screen. */
+		direction_screen_cmd(F_PASS_ARGS);
+	} else {
+		direction_cmd(F_PASS_ARGS, False);
+	}
 }
 
 void CMD_ScanForWindow(F_CMD_ARGS)
 {
-	direction_cmd(F_PASS_ARGS,True);
+	direction_cmd(F_PASS_ARGS, True);
 }
 
 void CMD_WindowId(F_CMD_ARGS)
