@@ -4376,40 +4376,55 @@ CursorBarrier destroy
 +
 _CursorBarrier_ only works if fvwm is complied with the XFixes extension.
 
-*CursorMove* _horizontal_[p] _vertical_[p]::
-	Moves the mouse pointer by _horizontal_ pages in the X direction and
-	_vertical_ pages in the Y direction. Either or both entries may be
-	negative. CursorMove can only move the mouse cursor to a relative
-	position. To move the mouse cursor to an absolute position, see
-	*WarpToWindow*. Both horizontal and vertical values are expressed in
-	percent of pages, so
+*CursorMove* [screen _RANDRNAME_] _horizontal_[p] _vertical_[p]::
+	Without the _screen_ option, _CusorMove_ moves the mouse cursor a
+	_horizontal_ distance and _vertical_ distance from its current position.
+	The values are expressed as either a percent of the virtual desktop size,
+	or a pixel distance by appending a '_p_' to the value. Either or both
+	entries may be negative. For example,
 +
 
 ....
+# Move down and right by one full page.
 CursorMove 100 100
+
+# Move down two full pages.
+CursorMove 0 200
+
+# Move half page right and quarter page up.
+CursorMove 50 -25
+
+# Move left 100 pixels and down 50 pixels.
+CursorMove -100p 50p
 ....
 
 +
-means to move down and right by one full page.
+If the option _screen_ followed by a valid RandR monitor name is included,
+_CursorMove_ will move the cursor to the absolute position (starting at
+the top left corner) given by the arguments, as either percent values
+of the monitor's size, or an absolute location with the '_p_' suffix.
+For example,
 +
 
 ....
-CursorMove 50 25
+# Move cursor to center of monitor DP-1
+CursorMove screen DP-1 50 50
+
+# Move cursor to the exact location (400, 200) of monitor DP-2
+CursorMove screen DP-2 400p 200p
 ....
 
 +
-means to move right half a page and down a quarter of a page.
-Alternatively, the distance can be specified in pixels by appending a
-'_p_' to the horizontal and/or vertical specification. For example
+When moving to a specified _screen_, the _horizontal_ and _vertical_
+values are always shifted to be inside the current page of the specified
+monitor. For instance '50', '150', and '-150' will all be the center of the
+monitor, and will not change monitor's page. Use *GotoPage* to change the
+page of a specified monitor. Negative values can be used to specify distance
+from the right/bottom corner of the monitor.
 +
-
-....
-CursorMove -10p -10p
-....
-
-+
-means move ten pixels up and ten pixels left. The CursorMove function
-should not be called from pop-up menus.
+_CusorMove_ can only move the cursor relative to its current position,
+or to an absolute position on a given monitor. To move the cursor relative
+to a window, use *WarpToWindow*.
 
 *FlipFocus* [NoWarp]::
 	Executes a *Focus* command as if the user had used the pointer to
