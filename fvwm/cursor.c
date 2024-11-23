@@ -35,6 +35,7 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "virtual.h"
 #include "cursor.h"
 #include "menus.h"
 
@@ -178,6 +179,111 @@ static void SafeDefineCursor(Window w, Cursor cursor)
 	return;
 }
 
+static int cursor_move_relative(int x_unit, int y_unit, int *x, int *y)
+{
+	int virtual_x, virtual_y;
+	int x_pages, y_pages;
+	int width = monitor_get_all_widths();
+	int height = monitor_get_all_heights();
+	struct monitor *m = monitor_get_current();
+
+	FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			  x, y, &JunkX, &JunkY, &JunkMask);
+
+	*x += x_unit;
+	*y += y_unit;
+
+	virtual_x = m->virtual_scr.Vx;
+	virtual_y = m->virtual_scr.Vy;
+	if (*x >= 0)
+	{
+		x_pages = *x / width;
+	}
+	else
+	{
+		x_pages = ((*x + 1) / width) - 1;
+	}
+	virtual_x += x_pages * width;
+	*x -= x_pages * width;
+	if (virtual_x < 0)
+	{
+		*x += virtual_x;
+		virtual_x = 0;
+	}
+	else if (virtual_x > m->virtual_scr.VxMax)
+	{
+		*x += virtual_x - m->virtual_scr.VxMax;
+		virtual_x = m->virtual_scr.VxMax;
+	}
+
+	if (*y >= 0)
+	{
+		y_pages = *y / height;
+	}
+	else
+	{
+		y_pages = ((*y + 1) / height) - 1;
+	}
+	virtual_y += y_pages * height;
+	*y -= y_pages * height;
+
+	if (virtual_y < 0)
+	{
+		*y += virtual_y;
+		virtual_y = 0;
+	}
+	else if (virtual_y > m->virtual_scr.VyMax)
+	{
+		*y += virtual_y - m->virtual_scr.VyMax;
+		virtual_y = m->virtual_scr.VyMax;
+	}
+
+	/* TA:  (2010/12/19):  Only move to the new page if scrolling is
+	 * enabled and the viewport is able to change based on where the
+	 * pointer is.
+	 */
+	if ((virtual_x != m->virtual_scr.Vx && m->virtual_scr.EdgeScrollX != 0) ||
+	    (virtual_y != m->virtual_scr.Vy && m->virtual_scr.EdgeScrollY != 0))
+	{
+		MoveViewport(m, virtual_x, virtual_y, True);
+	}
+
+	/* TA:  (2010/12/19):  If the cursor is about to enter a pan-window, or
+	 * is one, or the cursor's next step is to go beyond the page
+	 * boundary, stop the cursor from moving in that direction, *if* we've
+	 * disallowed edge scrolling.
+	 *
+	 * Whilst this stops the cursor short of the edge of the screen in a
+	 * given direction, this is the desired behaviour.
+	 */
+	if (m->virtual_scr.EdgeScrollX == 0 &&
+	    (*x >= width || *x + x_unit >= width))
+		return 0;
+
+	if (m->virtual_scr.EdgeScrollY == 0 &&
+	    (*y >= height || *y + y_unit >= height))
+		return 0;
+
+	return 1;
+}
+
+static void cursor_move_screen(struct monitor *m, int x_unit, int y_unit,
+			       int *x, int *y)
+{
+	*x = x_unit % m->si->w;
+	*y = y_unit % m->si->h;
+
+	if (*x < 0)
+		*x += m->si->w;
+	if (*y < 0)
+		*y += m->si->h;
+
+	*x += m->si->x;
+	*y += m->si->y;
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 /* CreateCursors - Loads fvwm cursors */
@@ -195,6 +301,53 @@ Cursor *CreateCursors(Display *disp)
 }
 
 /* ---------------------------- builtin commands --------------------------- */
+
+void CMD_CursorMove(F_CMD_ARGS)
+{
+	int x, y;
+	int val1, val2;
+	int val1_unit = monitor_get_all_widths();
+	int val2_unit = monitor_get_all_heights();
+	struct monitor	*m = NULL;
+	char *option;
+
+	/* Check if screen option is provided. */
+	if ((option = PeekToken(action, NULL)) != NULL &&
+	    StrEquals(option, "screen"))
+	{
+		option = PeekToken(action, &action); /* Skip literal screen. */
+		option = PeekToken(action, &action);
+		if ((m = monitor_resolve_name(option)) == NULL) {
+			fvwm_debug(__func__, "Invalid screen: %s", option);
+			return;
+		}
+		val1_unit = m->si->w;
+		val2_unit = m->si->h;
+	}
+
+	if (GetTwoPercentArguments(
+	    action, &val1, &val2, &val1_unit, &val2_unit) != 2)
+	{
+		fvwm_debug(__func__, "CursorMove needs 2 arguments");
+		return;
+	}
+
+	val1 *= val1_unit / 100;
+	val2 *= val2_unit / 100;
+
+	if (m == NULL) {
+		if (cursor_move_relative(val1, val2, &x, &y) == 0)
+			return;
+	} else {
+		cursor_move_screen(m, val1, val2, &x, &y);
+	}
+
+	FWarpPointerUpdateEvpos(
+		exc->x.elast, dpy, None, Scr.Root, 0, 0,
+		monitor_get_all_widths(), monitor_get_all_heights(), x, y);
+
+	return;
+}
 
 void CMD_CursorStyle(F_CMD_ARGS)
 {
