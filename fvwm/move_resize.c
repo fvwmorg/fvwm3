@@ -2157,7 +2157,7 @@ static void _move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		get_absolute_geometry(fw, &t, &r);
 		get_page_offset_rectangle(fw, &page.x, &page.y, &t);
 
-		if (!get_page_arguments(fw, action, &page.x, &page.y, &m))
+		if (!get_page_arguments(action, &page.x, &page.y, &m))
 		{
 			m = fw->m;
 			page.x = m->virtual_scr.Vx;
