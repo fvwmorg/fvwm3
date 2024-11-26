@@ -1768,9 +1768,8 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	return;
 }
 
-Bool get_page_arguments(
-	FvwmWindow *fw, char *action, int *page_x, int *page_y,
-	struct monitor **mret)
+Bool get_page_arguments(char *action, int *page_x, int *page_y,
+    struct monitor **mret)
 {
 	int val[2];
 	int suffix[2];
@@ -2672,7 +2671,7 @@ void CMD_GotoPage(F_CMD_ARGS)
 
 	x = m->virtual_scr.Vx;
 	y = m->virtual_scr.Vy;
-	if (!get_page_arguments(fw, action, &x, &y, &mpa))
+	if (!get_page_arguments(action, &x, &y, &mpa))
 	{
 		fvwm_debug(__func__,
 			   "GotoPage: invalid arguments: %s", action);
