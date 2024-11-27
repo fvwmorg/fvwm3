@@ -3333,6 +3333,12 @@ void CMD_SetEnv(F_CMD_ARGS)
 	{
 		return;
 	}
+
+	if (strchr(szVar, '=') != NULL) {
+		fvwm_debug(__func__, "Invalid envvar: %s", szVar);
+		goto out;
+	}
+
 	action = GetNextToken(action, &szValue);
 	if (!szValue)
 	{
@@ -3340,6 +3346,7 @@ void CMD_SetEnv(F_CMD_ARGS)
 	}
 	xasprintf(&szPutenv, "%s=%s", szVar, szValue);
 	flib_putenv(szVar, szPutenv);
+out:
 	free(szVar);
 	free(szPutenv);
 	free(szValue);
