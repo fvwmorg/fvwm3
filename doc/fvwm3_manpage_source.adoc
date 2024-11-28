@@ -3864,7 +3864,7 @@ To move a window in a given direction until it hits another window, icon,
 or screen boundary use:
 +
 ....
-Move shuffle [Warp] [ewmhiwa] [snap _type_] [layers _min_ _max_] _direction_(s)
+Move shuffle [options] _direction_(s)
 ....
 +
 The _direction_ can be _North_/_N_/_Up_/_U_, _East_/_E_/_Right_/_R_,
@@ -3880,11 +3880,18 @@ multiple _direction_(s) are given, the window will move the directions
 in the order of the sequence stated.
 +
 The literal option _Warp_ will warp the mouse pointer to the window.
+The literal option _all_windows_ will consider all windows on the same
+monitor instead of just the windows in the path the window is moving.
+This allows moving to the boundary of a window it is next too. The literal
+option _both_sides_ will consider both the close side and the far side of
+the window (by default only the close side is considered).
++
 If the literal option _snap_ followed by a snap _type_ of _windows_,
 _icons_, or _same_ is given, then the window will only stop if it hits
 another window, icon, or the same type. If the literal option _layers_
-followed by a _min_ layer and _max_ layer is given, then only windows on
-the layers between _min_ and _max_ layers will stop the window. For example:
+followed by two integers specifying a _min_ layer and _max_ layer is given,
+then only windows on the layers between _min_ and _max_ layers will stop
+the window. For example:
 +
 
 ....
@@ -3902,7 +3909,8 @@ Move shuffle Up Left
 Move can be used to moved a window to a specified position:
 +
 ....
-Move [screen _S_] [desk _N_] [w | m | v]_x_[p | w] [w | m | v]_y_[p | w] [Warp] [ewmhiwa]
+Move [screen _S_] [desk _N_] [w | m | v]_x_[p | w] \
+     [w | m | v]_y_[p | w] [Warp] [ewmhiwa]
 ....
 +
 This will move the window to the _x_ and _y_ position (see below).
@@ -4518,19 +4526,26 @@ until finding any obstacle. The vertical resizing is similar. If both
 horizontal and vertical values are "grow", it expands vertically
 first, then horizontally to find space. Instead of the horizontal
 "grow" argument, "_growleft_" or "_growright_" can be used
-respectively "_growup_" and "_growdown_". The optional _flags_
-argument is a space separated list containing the following key words:
-_fullscreen_, _ewmhiwa_, _growonwindowlayer_, _growonlayers_, _keepgrowing_,
-and _screen_. _fullscreen_ causes the window to become fullscreened if the
-appropriate EWMH hint is set. _ewmhiwa_ causes fvwm to ignore the EWMH
-working area. _growonwindowlayer_ causes the various grow methods to
-ignore windows with a layer other than the current layer of the window
-which is maximized. The _growonlayers_ option must have two integer
-arguments. The first one is the minimum layer and the second one the
-maximum layer to use. Windows that are outside of this range of layers
-are ignored by the grow methods. A negative value as the first or
-second argument means to assume no minimum or maximum layer. _keepgrowing_
-will allow the window to keep growing beyond any window it is currently
+respectively "_growup_" and "_growdown_".
++
+The optional _flags_ argument is a space separated list containing the
+following key words: _fullscreen_, _ewmhiwa_, _growonwindowlayer_,
+_growonlayers_, _keepgrowing_, _all_windows_, _both_sides_, and _screen_.
+_fullscreen_ causes the window to become fullscreened if the appropriate
+EWMH hint is set. _ewmhiwa_ causes fvwm to ignore the EWMH working area.
+_growonwindowlayer_ causes the various grow methods to ignore windows with
+a layer other than the current layer of the window which is maximized. The
+_growonlayers_ option must have two integer arguments. The first one is
+the minimum layer and the second one the maximum layer to use. Windows that
+are outside of this range of layers are ignored by the grow methods. A
+negative value as the first or second argument means to assume no minimum
+or maximum layer. The _all_windows_ option will consider all windows on the
+same monitor in the direction the window is growing. This can be used to
+grow a window to the edge of a window it is next to. The option _both_sides_
+will consider both sides of other windows when growing (by default only the
+close side is considered). This can be used to grow a window to the
+boundaries of a window it is currently inside of. _keepgrowing_ will allow
+the window to keep growing beyond any window boundary it is currently
 touching until it grows into the next closest window boundary. _screen_
 must have an argument which specifies the screen on which to operate.
 +
