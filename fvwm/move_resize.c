@@ -103,8 +103,8 @@ static int move_drag_finish_button_mask =
 
 extern Window PressedW;
 
-static void grow_to_closest_type(FvwmWindow *, rectangle *, rectangle, int *,
-    int, bool);
+static void grow_to_closest_type(FvwmWindow *, rectangle *, rectangle,
+    rectangle, int *, int, bool, bool);
 static void set_geom_win_visible_val(char *, bool);
 static bool set_geom_win_position_val(char *, int *, bool *, bool *);
 
@@ -364,6 +364,8 @@ static void shuffle_win_to_closest(
 	int snap = SNAP_NONE;
 	int layers[2] = { -1, -1 };
 	bool ewmh = true;
+	bool use_both_sides = false;
+	bool use_all_win = false;
 
 	cwin = fw->g.frame;
 	get_page_offset_check_visible(&page.x, &page.y, fw);
@@ -400,6 +402,14 @@ static void shuffle_win_to_closest(
 		else if (StrEquals(token, "ewmhiwa"))
 		{
 			ewmh = false;
+		}
+		else if (StrEquals(token, "both_sides"))
+		{
+			use_both_sides = true;
+		}
+		else if (StrEquals(token, "all_windows"))
+		{
+			use_all_win = true;
 		}
 		else
 		{
@@ -446,8 +456,9 @@ static void shuffle_win_to_closest(
 				cwin.y = wa.y + wa.height - cwin.height;
 				break;
 			}
-			grow_to_closest_type(fw, &cwin, bound, layers,
-				snap, false);
+			grow_to_closest_type(fw, &cwin, bound,
+				use_all_win ? wa : cwin, layers,
+				snap, use_both_sides, false);
 			cwin.height = fw->g.frame.height;
 			break;
 		case DIR_E:
@@ -465,8 +476,9 @@ static void shuffle_win_to_closest(
 				cwin.x = wa.x;
 				break;
 			}
-			grow_to_closest_type(fw, &cwin, bound, layers,
-				snap, false);
+			grow_to_closest_type(fw, &cwin, bound,
+				use_all_win ? wa : cwin, layers,
+				snap, use_both_sides, false);
 			cwin.x = cwin.x + cwin.width - fw->g.frame.width;
 			cwin.width = fw->g.frame.width;
 			break;
@@ -485,8 +497,9 @@ static void shuffle_win_to_closest(
 				cwin.y = wa.y;
 				break;
 			}
-			grow_to_closest_type(fw, &cwin, bound, layers,
-				snap, false);
+			grow_to_closest_type(fw, &cwin, bound,
+				use_all_win ? wa : cwin, layers,
+				snap, use_both_sides, false);
 			cwin.y = cwin.y + cwin.height -	fw->g.frame.height;
 			cwin.height = fw->g.frame.height;
 			break;
@@ -505,8 +518,9 @@ static void shuffle_win_to_closest(
 				cwin.x = wa.x + wa.width - cwin.width;
 				break;
 			}
-			grow_to_closest_type(fw, &cwin, bound, layers,
-				snap, false);
+			grow_to_closest_type(fw, &cwin, bound,
+				use_all_win ? wa : cwin, layers,
+				snap, use_both_sides, false);
 			cwin.width = fw->g.frame.width;
 			break;
 		case DIR_NONE:
@@ -4903,19 +4917,21 @@ static void move_sticky_window_to_same_page(
  * on snap type, layers = { min_layer, max_layer }, or the boundary rectangle.
  */
 static void grow_to_closest_type(
-	FvwmWindow *fw, rectangle *win_r, rectangle bound, int *layers,
-	int type, bool consider_touching)
+	FvwmWindow *fw, rectangle *win_r, rectangle bound, rectangle bound2,
+	int *layers, int type, bool both_sides, bool consider_touching)
 {
 	FvwmWindow *twin;
 	rectangle other;
 	int maskout = (SNAP_SCREEN | SNAP_SCREEN_WINDOWS |
 			SNAP_SCREEN_ICONS | SNAP_SCREEN_ALL);
 
-	/* window coordinates for original window, other, and new */
+	/* window coordinates for original window, other, bound, and new */
 	position pw1;
 	position pw2;
 	position po1;
 	position po2;
+	position bw1;
+	position bw2;
 	position new1;
 	position new2;
 
@@ -4923,6 +4939,11 @@ static void grow_to_closest_type(
 	pw2.x = pw1.x + win_r->width;
 	pw1.y = win_r->y;
 	pw2.y = pw1.y + win_r->height;
+
+	bw1.x = bound2.x;
+	bw2.x = bound2.x + bound2.width;
+	bw1.y = bound2.y;
+	bw2.y = bound2.y + bound2.height;
 
 	new1.x = bound.x;
 	new2.x = new1.x + bound.width;
@@ -4982,31 +5003,55 @@ static void grow_to_closest_type(
                 }
 
 		/* Shrink left/right edges */
-		if (po1.y < pw2.y && po2.y > pw1.y)
+		if (po1.y < bw2.y && po2.y > bw1.y)
 		{
 			if (new1.x < po2.x && (pw1.x > po2.x ||
 				(consider_touching && pw1.x == po2.x)))
 			{
 				new1.x = po2.x;
 			}
+			else if (both_sides && new1.x < po1.x &&
+				(pw1.x > po1.x || (consider_touching &&
+				pw1.x == po1.x)))
+			{
+				new1.x = po1.x;
+			}
 			if (new2.x > po1.x && (pw2.x < po1.x ||
 				(consider_touching && pw2.x == po1.x)))
 			{
 				new2.x = po1.x;
 			}
+			else if (both_sides && new2.x > po2.x &&
+				(pw2.x < po2.x || (consider_touching &&
+				pw2.x == po2.x)))
+			{
+				new2.x = po2.x;
+			}
 		}
 		/* Shrink top/bottom edges */
-		if (po1.x < pw2.x && po2.x > pw1.x)
+		if (po1.x < bw2.x && po2.x > bw1.x)
 		{
 			if (new1.y < po2.y && (pw1.y > po2.y ||
 				(consider_touching && pw1.y == po2.y)))
 			{
 				new1.y = po2.y;
 			}
+			else if (both_sides && new1.y < po1.y &&
+				(pw1.y > po1.y || (consider_touching &&
+				pw1.y == po1.y)))
+			{
+				new1.y = po1.y;
+			}
 			if (new2.y > po1.y && (pw2.y < po1.y ||
 				(consider_touching && pw2.y == po1.y)))
 			{
 				new2.y = po1.y;
+			}
+			else if (both_sides && new2.y > po2.y &&
+				(pw2.y < po2.y || (consider_touching &&
+				pw2.y == po2.y)))
+			{
+				new2.y = po2.y;
 			}
 		}
 	}
@@ -5151,6 +5196,8 @@ void CMD_Maximize(F_CMD_ARGS)
 	Bool ignore_working_area = False;
 	Bool do_fullscreen = False;
 	bool consider_touching = true;
+	bool use_both_sides = false;
+	bool use_all_win = false;
 	int layers[2] = { -1, -1 };
 	Bool global_flag_parsed = False;
 	rectangle scr;
@@ -5212,6 +5259,16 @@ void CMD_Maximize(F_CMD_ARGS)
 			else if (StrEquals(token, "keepgrowing"))
 			{
 				consider_touching = false;
+				action = taction;
+			}
+			else if (StrEquals(token, "both_sides"))
+			{
+				use_both_sides = true;
+				action = taction;
+			}
+			else if (StrEquals(token, "all_windows"))
+			{
+				use_all_win = true;
 				action = taction;
 			}
 			else if (StrEquals(token, "fullscreen"))
@@ -5431,8 +5488,9 @@ void CMD_Maximize(F_CMD_ARGS)
 				bound.height =
 					page.y + scr.y + scr.height - bound.y;
 			}
-			grow_to_closest_type(fw, &new_g, bound, layers,
-				SNAP_NONE, consider_touching);
+			grow_to_closest_type(fw, &new_g, bound,
+				use_all_win ? scr : new_g, layers,
+				SNAP_NONE, use_both_sides, consider_touching);
 		}
 		else if (val2 > 0)
 		{
@@ -5452,8 +5510,9 @@ void CMD_Maximize(F_CMD_ARGS)
 				bound.width =
 					page.x + scr.x + scr.width - bound.x;
 			}
-			grow_to_closest_type(fw, &new_g, bound, layers,
-				SNAP_NONE, consider_touching);
+			grow_to_closest_type(fw, &new_g, bound,
+				use_all_win ? scr : new_g, layers,
+				SNAP_NONE, use_both_sides, consider_touching);
 		}
 		else if (val1 >0)
 		{
