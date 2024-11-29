@@ -269,7 +269,7 @@ static void _drag_viewport(const exec_context_t *exc, int scroll_speed)
 
 /*
  *
- * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
+ * Parse arguments for "GotoDesk" and "MoveToDesk":
  *
  * (nil)       : desk number = current desk
  * n           : desk number = current desk + n
@@ -287,9 +287,7 @@ static void _drag_viewport(const exec_context_t *exc, int scroll_speed)
  */
 static int GetDeskNumber(struct monitor *mon, char *action, int current_desk)
 {
-	int n;
 	int m;
-	int is_relative;
 	int desk;
 	int val[4];
 	int min, max;
@@ -301,93 +299,63 @@ static int GetDeskNumber(struct monitor *mon, char *action, int current_desk)
 	if (MatchToken(action, "next"))
 	{
 		if (current_desk + 1 >= number_of_desktops(mon))
-			return (0);
+			return 0;
 		else
-			return (current_desk + 1);
+			return current_desk + 1;
 	}
-	n = GetIntegerArguments(action, NULL, &(val[0]), 4);
-	if (n <= 0)
-	{
-		return mon->virtual_scr.CurrentDesk;
+
+	switch (GetIntegerArguments(action, NULL, &(val[0]), 4)) {
+		case 2:
+			if (val[0] == 0) {
+				desk = val[1];
+				goto found_desk;
+			}
+		case 1:
+			desk = val[0];
+			if (!is_tracking_shared)
+				desk += current_desk;
+			goto found_desk;
+		case 3:
+			m = 1;
+			break;
+		case 4:
+			m = 2;
+			break;
+		default:
+			return mon->virtual_scr.CurrentDesk;
 	}
-	if (n == 1)
-	{
-		if (is_tracking_shared)
-			return val[0];
-		return current_desk + val[0];
+
+	/* Handle limits. */
+	if (val[m] < val[m + 1]) {
+		min = val[m];
+		max = val[m + 1];
+	} else {
+		/* min > max is nonsense, so swap 'em. */
+		min = val[m + 1];
+		max = val[m];
 	}
-	desk = current_desk;
-	m = 0;
-	if (val[0] == 0)
-	{
-		/* absolute desk number */
+	if (min < 0) {
+		desk = min;
+		goto found_desk;
+	}
+
+	/* Return absolute desk number. */
+	if (val[0] == 0 && m == 2) {
 		desk = val[1];
-		is_relative = 0;
+		if (desk < min)
+			desk = min;
+		if (desk > max)
+			desk = max;
+		goto found_desk;
 	}
-	else
-	{
-		/* relative desk number */
-		desk += val[0];
-		is_relative = 1;
-	}
-	if (n == 3)
-	{
-		m = 1;
-	}
-	if (n == 4)
-	{
-		m = 2;
-	}
-	if (n > 2)
-	{
-		/* handle limits */
-		if (val[m] <= val[m+1])
-		{
-			min = val[m];
-			max = val[m+1];
-		}
-		else
-		{
-			/* min > max is nonsense, so swap 'em. */
-			min = val[m+1];
-			max = val[m];
-		}
-		if (is_relative)
-		{
-			/* Relative moves wrap around.	*/
-			if (desk < min)
-			{
-				desk += (max - min + 1);
-			}
-			else if (desk > max)
-			{
-				desk -= (max - min + 1);
-			}
-		}
-		else if (desk < min)
-		{
-			/* Relative move outside of range, wrap around. */
-			if (val[0] < 0)
-			{
-				desk = max;
-			}
-			else
-			{
-				desk = min;
-			}
-		}
-		else if (desk > max)
-		{
-			/* Move outside of range, truncate. */
-			if (val[0] > 0)
-			{
-				desk = min;
-			}
-			else
-			{
-				desk = max;
-			}
-		}
+
+	desk = (current_desk + val[0]) % (max - min + 1);
+	desk += desk < 0 ? max + 1 : min;
+
+found_desk:
+	if (desk < 0) {
+		fvwm_debug(__func__, "Negative desks are not supported.");
+		return current_desk;
 	}
 
 	return desk;
@@ -2524,6 +2492,8 @@ void CMD_GotoDesk(F_CMD_ARGS)
 		m = monitor_get_current();
 
 	new_desk = GetDeskNumber(m, action, m->virtual_scr.CurrentDesk);
+	if (m->virtual_scr.CurrentDesk == new_desk)
+		return;
 
 	if (is_tracking_shared) {
 		/* Check to see if this monitor is requesting a desktop which
