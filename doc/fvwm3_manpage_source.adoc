@@ -7585,8 +7585,8 @@ interpreted as a relative desk number. Two arguments are understood as
 a relative and an absolute desk number. Three arguments specify a
 relative desk and the minimum and maximum of the allowable range. Four
 arguments specify the relative, absolute, minimum and maximum values.
-(Desktop numbers can be negative). If a literal _prev_ is given as the
-single argument, the last visited desk number is used.
+If a literal _prev_ is given as the single argument, the last visited
+desk number is used.
 +
 If _arg1_ is non zero then the next desktop number is the current
 desktop number plus _arg1_.
@@ -7604,8 +7604,9 @@ different desktop.
 +
 The number of active desktops is determined dynamically. Only desktops
 which contain windows or are currently being displayed are active.
-Desktop numbers must be between 2147483647 and -2147483648 (is that
-enough?).
+Desktop numbers must be between 0 and 2147483647 (is that enough?).
+Negative desktop numbers are not supported by the EWMH specifications
+and are no longer supported in fvwm.
 
 *GotoDeskAndPage* screen | prev | _desk_ _xpage_ _ypage_::
 	Switches the current viewport to another desktop and page, similar to
