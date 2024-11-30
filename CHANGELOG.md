@@ -1,5 +1,94 @@
 # Changelog
 
+## [1.1.1](https://github.com/fvwmorg/fvwm3/tree/1.1.1) (2024-11-30)
+
+## What's Changed
+### Breaking Changes
+* FvwmMFL: introduce FVWMML_SOCKET_PATH for namespacing by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1023
+* Adjust windows to fit working area after move. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1067
+* FvwmEvent - Remove FvwmAudio compatibility. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1111
+### Enhancements
+* Make desktop buttons bigger in RightPanel by @somiaj in https://github.com/fvwmorg/fvwm3/pull/989
+* Add math expansion variables. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/988
+* FvwmPager: CurrentDeskPerMonitor and two other features. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1002
+* FvwmPager: New mode IsShared for DesktopConfiguration shared. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1003
+* EWMH Events: more _NET_WM_STATE client messages by @Zirias in https://github.com/fvwmorg/fvwm3/pull/1012
+* FvwmPager - DeskStyles by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1013
+* FvwmPager: Allow dynamic updates via SendToModule by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1010
+* FvwmPager: Code Cleanup and bugfixes. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1015
+* FvwmPager: Make mouse bindings configurable. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1017
+* Tweak close vector button in default-config. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1066
+* FvwmPager: Honor ewmh working area and option to ignore working area. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1070
+* FindScreenOfXY: Return closest monitor in dead area. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1072
+* Fix error in FindScreenOfXY by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1073
+* Build: Support Meson by @Kangie in https://github.com/fvwmorg/fvwm3/pull/996
+* Autotools make dist include meson build files. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1080
+* Improve monitor event handling by @farblos in https://github.com/fvwmorg/fvwm3/pull/1069
+* Add Maximize keepgrowing flag. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1085
+* Add XFixes support and CusorBarrier command. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1098
+* FvwmRearrange overhaul by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1081
+* Convert InfoStore to TAILQ. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1113
+* Move shuffle and Maximize grow all_windows and both_sides options. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1123
+### Other Changes
+* set next version by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/984
+* dev-docs: a few changes by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/985
+* Use AX_COMPARE_VERSION macro for golang version checks by @Kangie in https://github.com/fvwmorg/fvwm3/pull/987
+* configure: add go version to summary by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/991
+* Cleanup FvwmPager's window handling methods. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/994
+* Multiple FvwmPager Fixes by @somiaj in https://github.com/fvwmorg/fvwm3/pull/999
+* BroadcastMonitorList: send DesktopSize once by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/998
+* cJSON: bump to 1.7.17 by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1005
+* Manualpage formatting fixes/tweaks. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1006
+* clang: fix compiler warnings by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1007
+* Remove second FvwmPrompt link from htmldoc index page. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1009
+* Maximize: don't change monitor when unmaximizing by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1018
+* FvwmPager: Use NULL not "" to avoid crashes on some systems. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1020
+* Send_ConfigInfo improvements by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1019
+* clang: silence use after label by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1024
+* doc: cleanup asciidoc syntax for fvwm3all by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1026
+* FvwmButtons: stop listening for incoming TCP connections by @vladrich in https://github.com/fvwmorg/fvwm3/pull/1030
+* fsm_init: fix implicit function declaration _IceTransNoListen by @kro-cat in https://github.com/fvwmorg/fvwm3/pull/1032
+* FvwmCommand: look for FVWMMFL_SOCKET_PATH by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1037
+* Remove HilightColor from manual page. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1039
+* README: clarify fvwm2 compat by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1042
+* delete -D cli argument from usage, no longer valid by @ileGITimo in https://github.com/fvwmorg/fvwm3/pull/1051
+* Fix Restart functionality (after removal of single screen support) by @cmeerw in https://github.com/fvwmorg/fvwm3/pull/1047
+* FvwmMFL: fix singletion/locking mechanism by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1057
+* FvwmMFL: ignore SIGUSR2 by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1058
+* librsvg: update to newer API by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1061
+* Locale translation file updates. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1062
+* Rename fvwm3.LL_CC.po files to LL_CC.po. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1063
+* default-config: Don't close terminal if manpage not found. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1071
+* ConfigWinPacket: no longer send monitor_name by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1074
+* Update POFILES in autotools. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1079
+* Fix issue with placement in per-monitor configuration. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1076
+* Update editorconfig for EOF Newlines by @Kangie in https://github.com/fvwmorg/fvwm3/pull/1084
+* meson: fix defines by @Kangie in https://github.com/fvwmorg/fvwm3/pull/1086
+* PrintInfo: fix output of 'bindings' by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1090
+* Add Style * Lenience to default config. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1092
+* Fix CursorMove by more than one page in y-direction. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1097
+* Make xkbcommon required in meson.  by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1099
+* Ensure a window's monitor is defined when placing it. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1101
+* configargsnew: fix module packet by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1103
+* add_window: force style lookup by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1104
+* FvwmPager: Use ULONG_MAX to identify a non configured Pixel. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1106
+* Escape <= to keep asciidoctor from turning into an arrow. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1108
+* Manual page fix: Include GotoDesk screen RANDRNAME. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1110
+* infostore: general tidyup by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1114
+* infostore: move non-error case out of error block by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1115
+* get_page_arguments: remove fw field by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1120
+* SetEnv: disallow '=' in envvar by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1121
+* GetDeskNumber fix, cleanup, and drop support for negative desks. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1124
+* meson: add check for xtrans by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1125
+
+## New Contributors
+* @derekschrock made their first contribution in https://github.com/fvwmorg/fvwm3/pull/990
+* @vladrich made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1030
+* @kro-cat made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1032
+* @ileGITimo made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1051
+* @cmeerw made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1047
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.1.0...1.1.1
 ## [1.1.0](https://github.com/fvwmorg/fvwm3/tree/1.1.0) (2024-03-30)
 
 ## What's Changed
