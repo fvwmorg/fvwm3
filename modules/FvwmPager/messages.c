@@ -454,7 +454,7 @@ void process_new_desk(unsigned long *body)
 		monitor_assign_virtual(fp->m);
 
 	/* If always tracking current desk. Update Desks[0]. */
-	if (fAlwaysCurrentDesk && oldDesk != newDesk)
+	if (fAlwaysCurrentDesk && (oldDesk != newDesk || desk1 != newDesk))
 	{
 		PagerWindow *t;
 
