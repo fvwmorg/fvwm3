@@ -189,7 +189,7 @@ all_found_deps = []
 
 # Required dependencies, we can easily iterate over these.
 summary_depvals = {}
-all_req_deps = ['fontconfig', 'ice', 'libevent', 'x11', 'xft', 'xrandr', 'xt']
+all_req_deps = ['fontconfig', 'ice', 'libevent', 'x11', 'xft', 'xrandr', 'xt', 'xtrans']
 foreach rd : all_req_deps
     this_dep = dependency(rd, required: true)
     summary_depvals += {rd: this_dep}
