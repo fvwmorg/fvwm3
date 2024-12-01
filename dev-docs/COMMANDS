@@ -23,7 +23,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   CleanupColorsets      - Reset all used colorsets with the default gray colors
   ClickTime             - Set a time in milliseconds for click and double click
   Close                 - Try to Delete a window, if this fails, Destroy it
-  ColorLimit            - Set limit on colors used (obsolete)
   ColormapFocus         - Change the colormap behaviour for low-depth X servers
   Colorset              - Manage colors used like fg, bg, image bg, gradient bg
   CopyMenuStyle         - Copy the existing menu style to new or existing one
@@ -35,7 +34,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   DefaultLayers         - Set StaysOnBottom, StaysPut, StaysOnTop layer numbers
   Delete                - Try to delete a window using the X delete protocol
   Deschedule            - Remove commands scheduled earlier using Schedule
-  Desk                  - (obsolete, use GotoDesk instead)
   DesktopName           - Define the desktop names used in WindowList, modules
   DesktopSize           - Set virtual desktop size in units of physical pages
   Destroy               - Kill a window without any warning to an application
@@ -66,21 +64,15 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   Focus                 - Give focus to a window
   FocusStyle            - Configure focus and raise policy for windows
   Function              - Execute a user defined function, see AddToFunc
-  GnomeButton           - Pass mouse button presses on root to GNOME program
-  GnomeShowDesks        - Limit GNOME pager to the number of desks
   GotoDesk              - Switch viewport to another desk same page
   GotoDeskAndPage       - Switch viewport to another desk and page
   GotoPage              - Switch viewport to another page same desk
-  HideGeometryWindow    - Hide/show the position/size window
-  HilightColorset       - (obsolete, use Style * HighlightColorset)
-  IconFont              - (obsolete, use Style * IconFont)
   Iconify               - Change iconification status of a window (minimize)
-  IconPath              - (obsolete, use ImagePath instead)
   IgnoreModifiers       - Modifiers to ignore on mouse and key bindings
   ImagePath             - Directories to search for images
   InfoStoreAdd          - Adds an entry (key/value pairs) to the infostore
   InfoStoreRemove       - Removes an entry from the infostore
-  - KeepRc              - Do not modify the previous command return code
+  KeepRc                - Do not modify the previous command return code
   Key                   - Bind or unbind a key to an fvwm action
   KillModule            - Stops an fvwm module
   Layer                 - Change the layer of a window
@@ -107,7 +99,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   OpaqueMoveSize        - Set maximum size window fvwm should move opaquely
   Pick                  - Prefix to force a window context, prompted if needed
   PipeRead              - Exec system command interpret output as fvwm commands
-  PixmapPath            - (obsolete, use ImagePath instead)
   PlaceAgain            - Replace a window using initial window placement logic
   PointerKey            - Bind an action to a key based on pointer not focus
   PointerWindow         - Operate on window under pointer if it meets conditions
@@ -147,8 +138,6 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   SetAnimation          - Control animated moves and menus
   SetEnv                - Set an environment variable
   Silent                - Suppress errors on command, avoid window selection
-  SnapAttraction        - Control attraction of windows during move
-  SnapGrid              - Control grid used with SnapAttraction
   State                 - Control user defined window states
   Stick                 - Change window stickyness
   StickAcrossDesks      - Change window stickyness on a desk basis
@@ -165,11 +154,9 @@ The recognized commands for fvwm 2.6.6 (from cvs) as of 09-Sep-2014:
   UpdateStyles          - Cause styles to update while still in a function
   Wait                  - Pause until a matching window appears
   WarpToWindow          - Warp the pointer to a window
-  WindowFont            - (obsolete, use Style * Font)
   WindowId              - Execute command for window matching the windowid
   WindowList            - Display the window list as a menu to select a window
   WindowShade           - Shade/unshade a window
-  WindowShadeAnimate    - (obsolete, use Style * WindowShadeSteps)
   WindowStyle           - Set styles on the selected window
   Xinerama              - Control Xinerama support
   XineramaPrimaryScreen - Identify Xinerama primary screen

@@ -3062,9 +3062,6 @@ default root cursor, you must set your root cursor with the
 ClickTime also specifies the delay between two clicks to be interpreted as a
 double-click.
 
-*ColorLimit* _limit_::
-	This command is obsolete. See the *--color-limit* option to fvwm.
-
 *ColormapFocus* FollowsMouse | FollowsFocus::
 	By default, fvwm installs the colormap of the window that the cursor
 	is in. If you use
@@ -3323,32 +3320,6 @@ WindowId 0x3800002 FakeKeypress press A
 +
 Note: all command names can be abbreviated with their first letter.
 
-*HilightColorset* [_num_]::
-	This command is obsoleted by the *Style* option _HilightColorset_.
-	Please use
-+
-
-....
-Style * HilightColorset num
-....
-
-+
-instead.
-
-*IconFont* [_fontname_]::
-	This command is obsoleted by the *Style* option _IconFont_. Please use
-+
-
-....
-Style * IconFont fontname
-....
-
-+
-instead.
-
-*IconPath* _path_::
-	This command is obsolete. Please use *ImagePath* instead.
-
 *ImagePath* _path_::
 	Specifies a colon separated list of directories in which to search for
 	images (both monochrome and pixmap). To find an image given by a
@@ -3446,9 +3417,6 @@ for string translation. It is out of the scope of this discussion to
 explain how to build locale catalogs. Please refer to the GNU gettext
 documentation.
 
-*PixmapPath* _path_::
-	This command is obsolete. Please use *ImagePath* instead.
-
 *PrintInfo* _subject_ [_verbose_]::
 	Print information on _subject_ to debug log file, which defaults to
 	_$HOME/.fvwm/fvwm3-output.log_ . Environment variables _$FVWM_USERDIR_
@@ -3533,15 +3501,6 @@ Use the *Deschedule* command to stop periodic commands.
 	argument. "True" sets the given state, while "False" clears it. Using "toggle"
 	switches to the opposite state. If the _bool_ argument is not given, the state
 	is toggled.
-
-*WindowFont* [_fontname_]::
-	This command is obsoleted by the *Style* option _Font_. Please use
-+
-....
-Style * Font fontname
-....
-+
-instead.
 
 *WindowList* [(_conditions_)] [_position_] [_options_] [_double-click-action_]::
 	Generates a pop-up menu (and pops it up) in which the title and
@@ -3805,10 +3764,6 @@ GeometryWindow Hide
 ....
 
 
-*HideGeometryWindow* [Never | Move | Resize]::
-	This command has been depreciated and is now obsolete. Use
-        *GeometryWindow Hide* instead.
-
 *Layer* [_arg1_ _arg2_] | [default]::
 	Puts the current window in a new layer. If _arg1_ is non zero then the
 	next layer is the current layer number plus _arg1_. If _arg1_ is zero
@@ -4007,8 +3962,7 @@ See also the *AnimatedMove* command.
 *MoveToDesk* [prev | _arg1_ [_arg2_] [_min_ _max_]]::
 	Moves the selected window to another desktop. The arguments are the
 	same as for the *GotoDesk* command. Without any arguments, the window
-	is moved to the current desk. *MoveToDesk* is a replacement for the
-	obsolete *WindowsDesk* command, which can no longer be used.
+	is moved to the current desk.
 
 *MoveThreshold* [_pixels_]::
 	When the user presses a mouse button upon an object fvwm waits to see
@@ -4287,37 +4241,6 @@ positions of the 16 frames of the animation motion. Negative values
 are allowed, and in particular can be used to make the motion appear
 more cartoonish, by briefly moving slightly in the opposite direction
 of the main motion. The above settings are the default.
-
-*SnapAttraction* [_proximity_ [_behaviour_] [Screen]]::
-	The *SnapAttraction* command is obsolete. It has been replaced by the
-	*Style* command option _SnapAttraction_.
-
-*SnapGrid* [_x-grid-size_ _y-grid-size_]::
-	The *SnapGrid* command is obsolete. It has been replaced by the
-	*Style* command option _SnapGrid_.
-
-*WindowsDesk* _arg1_ [_arg2_]::
-	Moves the selected window to another desktop.
-+
-This command has been removed and must be replaced by *MoveToDesk*,
-the arguments for which are the same as for the *GotoDesk* command.
-+
-*Important*
-You cannot simply change the name of the command: the syntax has
-changed. If you used:
-+
-
-....
-WindowsDesk n
-....
-
-+
-to move a window to desk n, you have to change it to:
-+
-
-....
-MoveToDesk 0 n
-....
 
 *XorPixmap* [_pixmap_]::
 	Selects the pixmap with which bits are xor'ed when doing rubber-band
@@ -4667,10 +4590,6 @@ shaded in the direction of the title bar.
 For backward compatibility, the optional argument may also be 1 to
 signify "on", and 2 to signify "off". Note that this syntax is
 obsolete, and will be removed in the future.
-
-*WindowShadeAnimate* [_steps_ [p]]::
-	This command is obsolete. Please use the _WindowShadeSteps_ option of
-	the *Style* command instead.
 
 === Mouse & Key Bindings
 
@@ -5441,7 +5360,6 @@ The _Font_ and _IconFont_ options take the name of a font as their
 sole argument. This font is used in the window or icon title. By
 default the font given in the *DefaultFont* command is used. To
 revert back to the default, use the style without the name argument.
-These styles replace the older *WindowFont* and _IconFont_ commands.
 +
 The deprecated _IndexedWindowName_ style causes fvwm to use window
 titles in the form
@@ -6752,10 +6670,7 @@ or for the descriptions of available styles and flags, see the
 Add or divert commands to the decor named _decor_. A decor is a name
 given to the set of commands which affect button styles, title-bar
 styles and border styles. If _decor_ does not exist it is created;
-otherwise the existing _decor_ is modified. Note: Earlier versions
-allowed to use the *HilightColorset* and *WindowFont* commands in decors.
-This is no longer possible. Please use the *Style* command with the
-_Hilight..._ and _Font_ options.
+otherwise the existing _decor_ is modified.
 +
 New decors start out exactly like the "default" decor without any
 style definitions. A given decor may be applied to a set of windows
@@ -6780,7 +6695,7 @@ AddToDecor FlatDecor
 + BorderStyle -- HiddenHandles NoInset
 
 Style FlatStyle \
-	UseDecor FlatDecor, HandleWidth 4, Colorset 0, HilightColorset 1
+	UseDecor FlatDecor, HandleWidth 4, Colorset 0
 
 Style xterm UseStyle FlatStyle
 ....
@@ -7397,9 +7312,6 @@ Specifying an invalid decor results in all windows being updated.
 endif::[]
 
 === Controlling the Virtual Desktop
-
-*Desk* [screen _RANDRNAME_] _arg1_ [_arg2_] [_min_ _max_]::
-	This command has been renamed. Please see *GotoDesk* command.
 
 *DesktopName* _desk_ _name_::
 	Defines the name of the desktop number _desk_ to _name_. This name is

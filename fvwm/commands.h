@@ -74,10 +74,6 @@ enum
 	F_GOTO_DESK,
 	F_GOTO_PAGE,
 	F_HICOLOR,
-	F_HICOLORSET,
-	F_HIDEGEOMWINDOW,
-	F_ICONFONT,
-	F_ICON_PATH,
 	F_IGNORE_MODIFIERS,
 	F_IMAGE_PATH,
 	F_INFOSTOREADD,
@@ -100,7 +96,6 @@ enum
 	F_NONE,
 	F_OPAQUE,
 	F_PICK,
-	F_PIXMAP_PATH,
 	F_POINTERKEY,
 	F_POINTERWINDOW,
 	F_POPUP,
@@ -122,10 +117,7 @@ enum
 	F_SET_MASK,
 	F_SET_NOGRAB_MASK,
 	F_SET_SYNC_MASK,
-	F_SHADE_ANIMATE,
 	F_SILENT,
-	F_SNAP_ATT,
-	F_SNAP_GRID,
 	F_STAYSUP,
 	F_STATUS,
 	F_STYLE,
@@ -138,7 +130,6 @@ enum
 	F_TOGGLE_PAGE,
 	F_UPDATE_STYLES,
 	F_WAIT,
-	F_WINDOWFONT,
 	F_WINDOWLIST,
 	F_XOR,
 	F_XSYNC,
@@ -151,7 +142,6 @@ enum
 	F_ANIMATED_MOVE,
 	F_BORDERSTYLE,
 	F_CHANGE_DECOR,
-	F_COLOR_LIMIT,
 	F_DELETE,
 	F_DESTROY,
 	F_DESTROY_DECOR,
@@ -221,7 +211,6 @@ void CMD_ChangeMenuStyle(F_CMD_ARGS);
 void CMD_CleanupColorsets(F_CMD_ARGS);
 void CMD_ClickTime(F_CMD_ARGS);
 void CMD_Close(F_CMD_ARGS);
-void CMD_ColorLimit(F_CMD_ARGS);
 void CMD_ColormapFocus(F_CMD_ARGS);
 void CMD_Colorset(F_CMD_ARGS);
 void CMD_CopyMenuStyle(F_CMD_ARGS);
@@ -234,7 +223,6 @@ void CMD_DefaultIcon(F_CMD_ARGS);
 void CMD_DefaultLayers(F_CMD_ARGS);
 void CMD_Delete(F_CMD_ARGS);
 void CMD_Deschedule(F_CMD_ARGS);
-void CMD_Desk(F_CMD_ARGS);
 void CMD_DesktopConfiguration(F_CMD_ARGS);
 void CMD_DesktopName(F_CMD_ARGS);
 void CMD_DesktopSize(F_CMD_ARGS);
@@ -270,11 +258,7 @@ void CMD_GeometryWindow(F_CMD_ARGS);
 void CMD_GotoDesk(F_CMD_ARGS);
 void CMD_GotoDeskAndPage(F_CMD_ARGS);
 void CMD_GotoPage(F_CMD_ARGS);
-void CMD_HideGeometryWindow(F_CMD_ARGS);
-void CMD_HilightColorset(F_CMD_ARGS);
-void CMD_IconFont(F_CMD_ARGS);
 void CMD_Iconify(F_CMD_ARGS);
-void CMD_IconPath(F_CMD_ARGS);
 void CMD_IgnoreModifiers(F_CMD_ARGS);
 void CMD_ImagePath(F_CMD_ARGS);
 void CMD_InfoStoreAdd(F_CMD_ARGS);
@@ -307,7 +291,6 @@ void CMD_NoWindow(F_CMD_ARGS);
 void CMD_OpaqueMoveSize(F_CMD_ARGS);
 void CMD_Pick(F_CMD_ARGS);
 void CMD_PipeRead(F_CMD_ARGS);
-void CMD_PixmapPath(F_CMD_ARGS);
 void CMD_PlaceAgain(F_CMD_ARGS);
 void CMD_PointerKey(F_CMD_ARGS);
 void CMD_PointerWindow(F_CMD_ARGS);
@@ -346,8 +329,6 @@ void CMD_set_sync_mask(F_CMD_ARGS);
 void CMD_SetAnimation(F_CMD_ARGS);
 void CMD_SetEnv(F_CMD_ARGS);
 void CMD_Silent(F_CMD_ARGS);
-void CMD_SnapAttraction(F_CMD_ARGS);
-void CMD_SnapGrid(F_CMD_ARGS);
 void CMD_State(F_CMD_ARGS);
 void CMD_Stick(F_CMD_ARGS);
 void CMD_StickAcrossDesks(F_CMD_ARGS);
@@ -365,11 +346,9 @@ void CMD_UpdateDecor(F_CMD_ARGS);
 void CMD_UpdateStyles(F_CMD_ARGS);
 void CMD_Wait(F_CMD_ARGS);
 void CMD_WarpToWindow(F_CMD_ARGS);
-void CMD_WindowFont(F_CMD_ARGS);
 void CMD_WindowId(F_CMD_ARGS);
 void CMD_WindowList(F_CMD_ARGS);
 void CMD_WindowShade(F_CMD_ARGS);
-void CMD_WindowShadeAnimate(F_CMD_ARGS);
 void CMD_WindowStyle(F_CMD_ARGS);
 void CMD_XorPixmap(F_CMD_ARGS);
 void CMD_XorValue(F_CMD_ARGS);
