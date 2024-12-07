@@ -291,7 +291,15 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	double		ddw, ddh;
 	RsvgLength	out_w, out_h;
 
-	rsvg_handle_get_intrinsic_size_in_pixels(rsvg, &ddw, &ddh);
+	if (!rsvg_handle_get_intrinsic_size_in_pixels(rsvg, &ddw, &ddh)) {
+		/* The SVG image didn't set an explicit width/height.  In this
+		 * case, default to 16.0/16.0 for the width/height.
+		 *
+		 * This is the typical size for a small SVG icon.
+		 */
+		ddw = 16.0;
+		ddh = 16.0;
+	}
 	dim.width = ddw;
 	dim.height = ddh;
 
