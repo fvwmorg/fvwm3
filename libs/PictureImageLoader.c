@@ -36,6 +36,8 @@
 
 #include "fvwmlib.h"
 #include "defaults.h"
+#include "glib.h"
+#include "librsvg/rsvg.h"
 #include "log.h"
 #include "System.h"
 #include "Strings.h"
@@ -289,18 +291,32 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	/* Keep the original aspect ratio when either w or h is 0 */
 #if LIBRSVG_CHECK_VERSION(2,52,0)
 	double		ddw, ddh;
+	gboolean	has_out_w, has_out_h, has_vb;
 	RsvgLength	out_w, out_h;
+	RsvgRectangle	viewbox;
 
 	rsvg_handle_get_intrinsic_size_in_pixels(rsvg, &ddw, &ddh);
+
 	dim.width = ddw;
 	dim.height = ddh;
 
-	rsvg_handle_get_intrinsic_dimensions(rsvg, NULL, &out_w, NULL, &out_h,
-		NULL, NULL);
+	rsvg_handle_get_intrinsic_dimensions(rsvg, &has_out_w, &out_w,
+		&has_out_h, &out_h, &has_vb, &viewbox);
 
-	dim.em = out_w.length;
-	dim.ex = out_h.length;
+	if (!has_vb) {
+		fvwm_debug(__func__, "Couldn't determine viewbox");
+		return False;
+	}
 
+	dim.width = viewbox.width;
+	dim.height = viewbox.height;
+
+	if (has_out_w)
+		dim.em = out_w.length <= dim.width ? dim.width : out_w.length;
+	if (has_out_h)
+		dim.ex = out_h.length <= dim.height ? dim.height : out_h.length;
+
+	fvwm_debug(__func__, "FINAL: DIM.EM: %f, DIM.EX: %f", dim.em, dim.ex);
 #else
         Frsvg_handle_get_dimensions(rsvg, &dim);
 #endif
@@ -338,6 +354,7 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 		angle += 90;
 	}
 
+	fvwm_debug(__func__, "SIZE: %ld", w * h * sizeof(CARD32));
 	data = fxcalloc(1, w * h * sizeof(CARD32));
 	surface = Fcairo_image_surface_create_for_data((unsigned char *)data,
 		FCAIRO_FORMAT_ARGB32, w, h, w * sizeof(CARD32));
