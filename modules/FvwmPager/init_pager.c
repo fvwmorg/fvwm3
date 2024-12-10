@@ -567,18 +567,16 @@ void initialize_desk_style_gcs(DeskStyle *style)
 	/* create the virtual page boundary GC */
 	gcv.foreground = style->fg;
 	gcv.line_width = 1;
-	gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
+	gcv.line_style = LineOnOffDash;
 	style->dashed_gc = fvwmlib_XCreateGC(dpy,
 		Scr.pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
-	if (use_dashed_separators) {
-		/* Although this should already be the default for a freshly
-		 * created GC, some X servers do not draw properly dashed
-		 * lines if the dash style is not set explicitly.
-		 */
-		dash_list[0] = 4;
-		dash_list[1] = 4;
-		XSetDashes(dpy, style->dashed_gc, 0, dash_list, 2);
-	}
+	/* Although this should already be the default for a freshly
+	 * created GC, some X servers do not draw properly dashed
+	 * lines if the dash style is not set explicitly.
+	 */
+	dash_list[0] = 4;
+	dash_list[1] = 4;
+	XSetDashes(dpy, style->dashed_gc, 0, dash_list, 2);
 
 	/* Window borders. */
 	gcv.foreground = (style->win_cs) ?
