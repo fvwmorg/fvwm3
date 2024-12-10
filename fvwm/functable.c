@@ -131,9 +131,6 @@ const func_t func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_DESTROY),
 	/* - Try to Delete a window, if this fails, Destroy it */
 
-	CMD_ENT("colorlimit", CMD_ColorLimit, F_COLOR_LIMIT, 0, 0),
-	/* - Set limit on colors used (obsolete) */
-
 	CMD_ENT("colormapfocus", CMD_ColormapFocus, F_COLORMAP_FOCUS, 0, 0),
 	/* - Change the colormap behaviour for low-depth X servers */
 
@@ -170,9 +167,6 @@ const func_t func_table[] =
 
 	CMD_ENT("deschedule", CMD_Deschedule, F_DESCHEDULE, 0, 0),
 	/* - Remove commands sheduled earlier using Schedule */
-
-	CMD_ENT("desk", CMD_Desk, F_GOTO_DESK, 0, 0),
-	/* - (obsolete, use GotoDesk instead) */
 
 	CMD_ENT("desktopconfiguration", CMD_DesktopConfiguration,
 		F_DESKTOP_CONFIGURATION, 0, 0),
@@ -220,7 +214,7 @@ const func_t func_table[] =
 
 	CMD_ENT("echofuncdefinition", CMD_EchoFuncDefinition,
 		F_ECHO_FUNC_DEFINITION, 0, 0),
-	/* - Print the definion of a function */
+	/* - Print the definition of a function */
 
 	CMD_ENT("edgecommand", CMD_EdgeCommand, F_EDGE_COMMAND, 0, 0),
 	/* - Bind one or another screen edge to an fvwm action */
@@ -290,22 +284,9 @@ const func_t func_table[] =
 	CMD_ENT("gotopage", CMD_GotoPage, F_GOTO_PAGE, 0, 0),
 	/* - Switch viewport to another page same desk */
 
-	CMD_ENT("hidegeometrywindow", CMD_HideGeometryWindow,
-		F_HIDEGEOMWINDOW, 0, 0),
-	/* - (obsolete, use GeometryWindow Hide instead) */
-
-	CMD_ENT("hilightcolorset", CMD_HilightColorset, F_HICOLORSET, 0, 0),
-	/* - (obsolete, use Style * HighlightColorset) */
-
-	CMD_ENT("iconfont", CMD_IconFont, F_ICONFONT, 0, 0),
-	/* - (obsolete, use Style * IconFont) */
-
 	CMD_ENT("iconify", CMD_Iconify, F_ICONIFY,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Change iconification status of a window (minimize) */
-
-	CMD_ENT("iconpath", CMD_IconPath, F_ICON_PATH, 0, 0),
-	/* - (obsolete, use ImagePath instead) */
 
 	CMD_ENT("ignoremodifiers", CMD_IgnoreModifiers, F_IGNORE_MODIFIERS,
 		0, 0),
@@ -412,9 +393,6 @@ const func_t func_table[] =
 
 	CMD_ENT("piperead", CMD_PipeRead, F_READ, 0, 0),
 	/* - Exec system command interpret output as fvwm commands */
-
-	CMD_ENT("pixmappath", CMD_PixmapPath, F_PIXMAP_PATH, 0, 0),
-	/* - (obsolete, use ImagePath instead) */
 
 	CMD_ENT("placeagain", CMD_PlaceAgain, F_PLACEAGAIN,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
@@ -537,12 +515,6 @@ const func_t func_table[] =
 	CMD_ENT(PRE_SILENT, CMD_Silent, F_SILENT, 0, 0),
 	/* Silent - Suppress errors on command, avoid window selection */
 
-	CMD_ENT("snapattraction", CMD_SnapAttraction, F_SNAP_ATT, 0, 0),
-	/* - Control attraction of windows during move */
-
-	CMD_ENT("snapgrid", CMD_SnapGrid, F_SNAP_GRID, 0, 0),
-	/* - Control grid used with SnapAttraction */
-
 	CMD_ENT("state", CMD_State, F_STATE,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Control user defined window states */
@@ -600,9 +572,6 @@ const func_t func_table[] =
 		CRS_SELECT),
 	/* - Warp the pointer to a window */
 
-	CMD_ENT("windowfont", CMD_WindowFont, F_WINDOWFONT, 0, 0),
-	/* - (obsolete, use Style * Font) */
-
 	CMD_ENT("windowid", CMD_WindowId, F_WINDOWID, 0, 0),
 	/* - Execute command for window matching the windowid */
 
@@ -612,10 +581,6 @@ const func_t func_table[] =
 	CMD_ENT("windowshade", CMD_WindowShade, F_WINDOW_SHADE,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Shade/unshade a window */
-
-	CMD_ENT("windowshadeanimate", CMD_WindowShadeAnimate, F_SHADE_ANIMATE,
-		0, 0),
-	/* - (obsolete, use Style * WindowShadeSteps) */
 
 	CMD_ENT("windowstyle", CMD_WindowStyle, F_WINDOW_STYLE,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),

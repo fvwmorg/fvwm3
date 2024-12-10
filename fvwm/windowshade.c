@@ -223,24 +223,3 @@ void CMD_WindowShade(F_CMD_ARGS)
 	SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 	return;
 }
-
-/* set the number or size of shade animation steps, N => steps, Np => pixels */
-void CMD_WindowShadeAnimate(F_CMD_ARGS)
-{
-	char *buf;
-
-	if (!action)
-	{
-		action = "";
-	}
-	fvwm_debug(__func__,
-		   "The WindowShadeAnimate command is obsolete. "
-		   "Please use 'Style * WindowShadeSteps %s' instead.",
-		   action);
-	xasprintf(&buf, "* WindowShadeSteps %s", action);
-	action = buf;
-	CMD_Style(F_PASS_ARGS);
-	free(buf);
-
-	return;
-}

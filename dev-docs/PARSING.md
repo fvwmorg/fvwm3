@@ -1045,9 +1045,6 @@ PAGECOORD = INT
 PAGESUFFIX = "p"
 ```
 ```
-CMD_HILIGHTCOLORSET = "HilightColorset" [COLORSET_NUM]
-```
-```
 CMD_ICONIFY = "Iconify" BOOL_OR_TOGGLE
 ```
 ```
@@ -1790,24 +1787,12 @@ STRING_COMMA_TERMINATED = *(STRING_UNQ_NO_COMMA / STRING_Q_PAIR / 1*WSC)
 ```
 ;; !!! obsolete commands removed in mvwm
 
-CMD_GNOMEBUTTON = "GnomeButton"
-CMD_GNOMESHOWDESKS = "GnomeShowDesks"
 CMD_SAVESESSION = "SaveSession"
 CMD_SAVEQUITSESSION = "SaveQuitSession"
 CMD_QUITSESSION = "QuitSession"
 
 ;; !!! obsolete commands in fvwm2
 
-CMD_COLORLIMIT = "ColorLimit"
-CMD_WINDOWFONT = "WindowFont" ; Style * Font ...
-CMD_WINDOWSHADEANIMATE = "WindowShadeAnimate" ; Style * WindowShadeSteps
-CMD_WINDOWSDESK = "WindowsDesk" ; See 'MoveToDesk'
-CMD_DESK = "Desk" ; See 'Gotodesk'
+;; Not fully obsolete, still used for EdgeScroll resistance.
 CMD_EDGERESISTANCE = "EdgeResistance" ; Style * EdgeMoveDelay, EdgeMoveResistance
-CMD_HIDEGEOMETRYWINDOW = "HideGeometryWindow" ; GeometryWindow Hide
-CMD_ICONFONT = "IconFont" FONTNAME ; Style
-CMD_ICONPATH = "IconPath" ; ImagePath
-CMD_PIXMAPPATH = "PixmapPath" ; ImagePath
-CMD_SNAPATTRACTION = "SnapAttraction" ; Style * SnapAttraction
-CMD_SNAPGRID = "SnapGrid" ; Style * SnapGrid
 ```
