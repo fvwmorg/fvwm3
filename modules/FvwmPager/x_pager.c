@@ -825,7 +825,8 @@ void draw_desk_grid(int desk)
 		x1 = (x * desk_w) / fp->virtual_scr.VWidth;
 		if (!use_no_separators)
 		{
-			XDrawLine(dpy, Desks[desk].w, style->dashed_gc,
+			XDrawLine(dpy, Desks[desk].w, (use_dashed_separators)
+				  ? style->dashed_gc : style->label_gc,
 				  x1, y1, x1, y2);
 		}
 		x += fpmonitor_get_all_widths();
@@ -838,7 +839,8 @@ void draw_desk_grid(int desk)
 		y1 = (y * desk_h) / fp->virtual_scr.VHeight;
 		if (!use_no_separators)
 		{
-			XDrawLine(dpy, Desks[desk].w, style->dashed_gc,
+			XDrawLine(dpy, Desks[desk].w, (use_dashed_separators)
+				  ? style->dashed_gc : style->label_gc,
 				  x1, y1, x2, y1);
 		}
 		y += fpmonitor_get_all_heights();
@@ -972,11 +974,13 @@ void draw_icon_grid(int erase)
 	rec.width = icon.width / rec.x;
 	rec.height = icon.height / rec.y;
 	if (!use_no_separators) {
+		GC gc = (use_dashed_separators) ? style->dashed_gc : style->label_gc;
+
 		for(i = 1; i < rec.x; i++)
-			XDrawLine(dpy, Scr.icon_w, style->dashed_gc,
+			XDrawLine(dpy, Scr.icon_w, gc,
 				i * rec.width, 0, i * rec.width, icon.height);
 		for(i = 1; i < rec.y; i++)
-			XDrawLine(dpy, Scr.icon_w, style->dashed_gc,
+			XDrawLine(dpy, Scr.icon_w, gc,
 				0, i * rec.height, icon.width, i * rec.height);
 	}
 
