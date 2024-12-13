@@ -5051,7 +5051,7 @@ styles starting with "Application".
 	other than the default or to set the window manager default styles.
 +
 _stylename_ can be a window's name, class, visible name, or resource
-string. It may contain the wildcards '*' and '?', which are matched in
+string. It may contain the wildcards '{asterisk}' and '?', which are matched in
 the usual Unix filename manner. Multiple style options in a single
 *Style* command are read from left to right as if they were issued one
 after each other in separate commands. A given style always overrides
