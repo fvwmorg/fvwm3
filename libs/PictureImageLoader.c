@@ -36,8 +36,6 @@
 
 #include "fvwmlib.h"
 #include "defaults.h"
-#include "glib.h"
-#include "librsvg/rsvg.h"
 #include "log.h"
 #include "System.h"
 #include "Strings.h"
