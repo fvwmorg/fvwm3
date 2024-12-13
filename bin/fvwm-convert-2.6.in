@@ -42,17 +42,17 @@ sub __convert_conditionals
 {
     my( $cond ) = @_;
     my( $line ) = $cond->[-1];
-	my $condition_cmds = 
+	my $condition_cmds =
 		qr/(all|current|direction|next|none|prev|pick|thiswindow|windowid)/;
 
     # Take the last component.  We no longer care for "[*]" as conditional
     # command parameters.  But we shouldn't really put another conditional
     # in its place, so we'll just remove it.
     $line =~ s/\[\*\]//;
-    
+
     # And convert over Next [$1] syntax.
     $line =~ s/$condition_cmds\s*\[(.*?)\]/\($1\)/io;
-    
+
     $line = "$1 ". join( ', ', split( /[^,](\s+)[^,]/, $2 ) ) . " $3" if $line =~
     /$condition_cmds\s*(\(.*?\))(.*)/io;
 
@@ -72,7 +72,7 @@ sub process_files
 
         warn "Following:  Read $s...\n" if $process_read;
 
-        if( !defined $d or $d eq '' ) 
+        if( !defined $d or $d eq '' )
         {
             my $fbasename = basename( $s );
             $d = "$cwd_path/$fbasename.converted";
@@ -86,7 +86,7 @@ sub process_files
             "Unable to open source file:  $!\n";
 
         while( <$in_file> )
-        {  
+        {
             chomp;
 
             # We have to handle continuation lines here, such as:
@@ -100,7 +100,7 @@ sub process_files
             }
             dispatch_line($_);
         }
-        
+
         write_out_file($d);
         @converted_lines = ();
         %converted_funcs = ();
@@ -153,14 +153,81 @@ sub handle_modulepath
     push( @converted_lines, "# Commented out by fvwm-convert-2.6:  $line" );
 }
 
+# Convert pixmappath/Iconpath to ImagePath
+sub convert_pixmappath
+{
+    my( $line ) = @_;
+
+    $line =~ s/^\s*(?:pixmappath|iconpath)/ImagePath/i;
+
+    push @converted_lines, $line;
+}
+
+# Convert gnomebutton/gnomeshowdesk/colorlimit/etc
+sub convert_obsolete
+{
+    my( $line ) = @_;
+
+    push( @converted_lines, "# Obsolete, does nothing: $line" );
+}
+
+# Convert HilightColorset
+sub convert_hilightcolorset
+{
+    my( $line ) = @_;
+
+    $line =~ s/hilightcolorset/Style \* HilightColorset/i;
+
+    push( @converted_lines, $line );
+}
+
+# Convert HideGeometryWindow -> GeometryWindowHide
+sub convert_hidegeometrywindow
+{
+    my( $line ) = @_;
+
+    $line =~ s/hidegeometrywindow/GeometryWindow hide/i;
+
+    push( @converted_lines, $line );
+}
+
+# Convert Desk -> GotoDesk
+sub convert_desk
+{
+    my( $line ) = @_;
+
+    $line =~ s/^\s*desk/GotoDesk/i;
+
+    push( @converted_lines, $line);
+}
+
 # This should have happened in the fvwm-2.4 convert script, but handle it
 # here anyway.
 sub convert_windowshadesteps
 {
     my( $line ) = @_;
-    $line =~ /(\d+)p?/ ? 
-        $line = "Style * WindowShadeSteps $1" : 
-        $line = "Style * " . $line;
+
+    $line =~ /(\d+)p?/ and $line = "Style * WindowShadeSteps $1";
+
+    push( @converted_lines, $line );
+}
+
+# Convert WindowFont
+sub convert_windowfont
+{
+    my( $line ) = @_;
+
+    $line =~ s/windowfont/Style Font \*/i;
+
+    push( @converted_lines, $line );
+}
+
+# Convert IconFont
+sub convert_iconfont
+{
+    my( $line ) = @_;
+
+    $line =~ s/iconfont/Style IconFont \*/i;
 
     push( @converted_lines, $line );
 }
@@ -174,7 +241,7 @@ sub convert_edge_resistance
     #
     # We could only ever have had two numbers as arguments to
     # EdgeResistance.
-    my( $edge_res_arg, $move_res_arg ) = 
+    my( $edge_res_arg, $move_res_arg ) =
         ( $line =~ /edgeresistance\s*(\d+)\s*(\d+)/i );
 
     push( @converted_lines,
@@ -227,8 +294,8 @@ sub handle_read_file
 {
     my( $line ) = @_;
     my @read_parts = split( /\s+/, $line );
-    
-    push( @converted_lines, $line );    
+
+    push( @converted_lines, $line );
 
     # Crudely try and work out if the file is readable, and if it is add it
     # to the list of further files to convert.
@@ -242,7 +309,7 @@ sub handle_read_file
     if( -e $fname )
     {
         push( @additional_files, [$fname] );
-        
+
         # We're done.
         return;
     }
@@ -255,9 +322,9 @@ sub handle_read_file
     #
     # Read $./foo
     #
-    # Then we assume FVWM_USERDIR ("$HOME/.fvwm/"), and if that file can't 
+    # Then we assume FVWM_USERDIR ("$HOME/.fvwm/"), and if that file can't
     # be found there, try CWD, and if that fails we just give up.
-    
+
     # Canonicalise the starting point by removing "$." -- we can guess what
     # it ought to be replaced with.
     $fname =~ s/^\$\.\/?//;
@@ -303,7 +370,7 @@ sub check_func_definition
     # Ensure we run it all through __convert_conditionals()
     my @func_parts = split( /(\s+)/, $line, 4 );
     __convert_conditionals( \@func_parts );
-    
+
     push( @converted_lines, join '', @func_parts );
 
 }
@@ -350,7 +417,7 @@ sub convert_restartfunc
 {
     my( $line ) = @_;
     $last_func_ref = "convert_restartfunc";
-    
+
     # We treat this exactly like startfunction.
     if( $line =~ /addtofunc\s+restartfunction\s+\"??[icmhd]{1}\"??\s+.*/i )
     {
@@ -361,13 +428,13 @@ sub convert_restartfunc
     }
 
     $line =~ s/addtofunc\s+restartfunction\s*//i;
-    
+
     return if $line eq '';
 
     # Remove the continuation prefix as we can add this in when writing out
-    # the function definitions later. 
+    # the function definitions later.
     $line =~ s/^\s*\+//;
-    
+
     my @func_cmd = split( /\s+/, $line, 2 );
     $func_cmd[1] =~ s/\"//g;
 
@@ -400,13 +467,13 @@ sub convert_startfunc
         $line =~ s/addtofunc\s+startfunction\s*//i;
     }
     $line =~ s/addtofunc\s+startfunction\s*//i;
-    
+
     # Remove the continuation prefix as we can add this in when writing out
-    # the function definitions later. 
+    # the function definitions later.
     $line =~ s/^\s*\+//;
 
     return if !defined $line || $line eq '';
-    
+
     my @func_cmd = split( /\s+/, $line, 2 );
     $func_cmd[1] =~ s/\"//g;
 
@@ -425,9 +492,9 @@ sub write_out_file
 
     # If we had any continuation lines, preserve them as best we can.
     @converted_lines = map {
-        join "\\\n", split /\\/, $_ 
+        join "\\\n", split /\\/, $_
     } @converted_lines;
-    
+
     print $f join( "\n", @converted_lines );
 
     # Write out the functions.
@@ -437,7 +504,7 @@ sub write_out_file
         print $f qq|\n\nDestroyFunc StartFunction\nAddToFunc StartFunction\n|;
 
         # Put the Init stuff before anything else.
-        for( @{ $converted_funcs{initfunction} }, 
+        for( @{ $converted_funcs{initfunction} },
             @{ $converted_funcs{startfunction } } )
         {
             print $f "+ $_\n";
@@ -458,8 +525,12 @@ sub dispatch_line
         convert_fvwmtheme($line);
     } elsif( $line =~ /^\s*modulepath\s*/i ) {
         handle_modulepath( $line );
-    } elsif( $line =~ /^\s*windowshadesteps.*/i ) {
+    } elsif( $line =~ /^\s*windowshade(?:steps|animate).*/i ) {
         convert_windowshadesteps($line);
+    } elsif( $line =~ /^\s*windowfont.*/i ) {
+        convert_windowfont( $line );
+    } elsif( $line =~ /^\s*iconfont.*/i ) {
+        convert_iconfont( $line );
     } elsif( $line =~ /^\s*module(?:synchronous)?.*?fvwmtheme$/i ) {
         convert_fvwmtheme($line);
     } elsif( $line =~ /^\s*edgeresistance\s*\d+\s*\d+/i ) {
@@ -476,6 +547,16 @@ sub dispatch_line
         convert_restartfunc( $line );
     } elsif( $line =~ /^\s*addtofunc\s+\w+.*/i ) {
         check_func_definition( $line );
+    } elsif( $line =~ /^\s*pixmappath|iconpath\s+\w+.*/i ) {
+        convert_pixmappath( $line );
+    } elsif( $line =~ /^\s*colorlimit|(?:gnome(?:button|showdesks))\s+\w+.*/i ) {
+        convert_obsolete( $line );
+    } elsif( $line =~ /^\s*desk\s*\w+.*/i ) {
+        convert_desk( $line );
+    } elsif( $line =~ /^\s*hilightcolorset\s*/i ) {
+        convert_hilightcolorset( $line );
+    } elsif( $line =~ /^\s*hidegeometrywindow\s*/i ) {
+        convert_hidegeometrywindow( $line );
     } elsif( $line =~ /^\s*\+\s*\"??[ichmd]{1}\s*\"??\s+.*/i ) {
         handle_continuation( $line );
     } elsif( $line =~ /^\s*read\s*[\/\w]+/i ) {
