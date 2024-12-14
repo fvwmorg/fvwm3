@@ -4305,6 +4305,10 @@ Pick CursorBarrier coords $[w.x]p $[w.y]p \
 CursorBarrier destroy
 ....
 +
+Note that if the CURSOR_BARRIER limit is hit, _all_ defined CursorBarriers
+are undefined.  In pratice, this is unlikely to happen though.  If it does, a
+message is printed to fvwm3's debug logs.
++
 _CursorBarrier_ only works if fvwm is complied with the XFixes extension.
 
 *CursorMove* _horizontal_[p] _vertical_[p]::
