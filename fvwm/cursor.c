@@ -55,7 +55,8 @@ int num_barriers = 0;
 void create_barrier(int x1, int y1, int x2, int y2)
 {
 	if (num_barriers >= MAX_BARRIERS) {
-		fvwm_debug(__func__, "Too many barriers. Aborting.");
+		fvwm_debug(__func__, "Too many barriers. Freeing previous...");
+		destroy_all_barriers();
 		return;
 	}
 
