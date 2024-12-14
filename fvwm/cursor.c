@@ -41,6 +41,11 @@
 #ifdef HAVE_XFIXES
 #include <X11/extensions/Xfixes.h>
 #define MAX_BARRIERS 16
+void create_barrier(int, int, int, int);
+void destroy_barrier(int);
+void destroy_all_barriers(void);
+void destroy_barrier_n(int);
+
 PointerBarrier barriers_l[MAX_BARRIERS];
 PointerBarrier barriers_r[MAX_BARRIERS];
 PointerBarrier barriers_t[MAX_BARRIERS];
@@ -110,6 +115,7 @@ void destroy_barrier_n(int n)
 
 #else
 #define create_barrier(a, b, c, d)
+#define destroy_barrier(n);
 #define destroy_all_barriers()
 #define destroy_barrier_n(a)
 #endif
