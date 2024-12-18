@@ -65,7 +65,7 @@ OpenConsole(const char *filenm)
 	}
 	else if ((console = fopen(filenm, "w")) == NULL)
 	{
-		fvwm_debug(__func__, "%s: cannot open %s\n", MyName, filenm);
+		fvwm_debug(MyName, "%s: cannot open %s\n", __func__, filenm);
 		return 0;
 	}
 

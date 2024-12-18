@@ -255,9 +255,9 @@ static void DeadPipeCleanup(void)
 		if ((buttonSwallowCount(b) == 3) && swin)
 		{
 #ifdef DEBUG_HANGON
-			fvwm_debug(__func__,
+			fvwm_debug(MyName,
 				   "%s: Button 0x%06x window 0x%x (\"%s\") is ",
-				   MyName, (ushort)b, (ushort)swin, b->hangon);
+				   __func__, (ushort)b, (ushort)swin, b->hangon);
 #endif
 			if (!IsThereADestroyEvent(b))
 			{ /* Has someone destroyed it? */
@@ -267,7 +267,7 @@ static void DeadPipeCleanup(void)
 					{
 						XKillClient(Dpy, swin);
 #ifdef DEBUG_HANGON
-						fvwm_debug(__func__,
+						fvwm_debug(MyName,
 							   "now killed\n");
 #endif
 					}
@@ -278,7 +278,7 @@ static void DeadPipeCleanup(void)
 							_XA_WM_DEL_WIN,
 							CurrentTime);
 #ifdef DEBUG_HANGON
-						fvwm_debug(__func__,
+						fvwm_debug(MyName,
 							   "now deleted\n");
 #endif
 					}
@@ -286,7 +286,7 @@ static void DeadPipeCleanup(void)
 				else
 				{
 #ifdef DEBUG_HANGON
-					fvwm_debug(__func__,
+					fvwm_debug(MyName,
 						   "now unswallowed\n");
 #endif
 					if (b->swallow & b_FvwmModule)
@@ -314,7 +314,7 @@ static void DeadPipeCleanup(void)
 #ifdef DEBUG_HANGON
 			else
 			{
-				fvwm_debug(__func__, "already handled\n");
+				fvwm_debug(MyName, "already handled\n");
 			}
 #endif
 		}
@@ -358,16 +358,16 @@ void SetButtonSize(button_info *ub, int w, int h)
 
 	if (!ub || !(ub->flags.b_Container))
 	{
-		fvwm_debug(__func__,
+		fvwm_debug(MyName,
 			   "%s: BUG: Tried to set size of noncontainer\n",
-			   MyName);
+			   __func__);
 		exit(2);
 	}
 	if (ub->c->num_rows == 0 || ub->c->num_columns == 0)
 	{
-		fvwm_debug(__func__,
+		fvwm_debug(MyName,
 			   "%s: BUG: Set size when rows/cols was unset\n",
-			   MyName);
+			   __func__);
 		exit(2);
 	}
 
@@ -412,8 +412,8 @@ void AddButtonAction(button_info *b, int n, char *action)
 
 	if (!b || n < 0 || n > NUMBER_OF_EXTENDED_MOUSE_BUTTONS || !action)
 	{
-		fvwm_debug(__func__, "%s: BUG: AddButtonAction failed\n",
-			   MyName);
+		fvwm_debug(MyName, "%s: BUG: AddButtonAction failed\n",
+			   __func__);
 		exit(2);
 	}
 	if (b->flags.b_Action)
@@ -623,9 +623,9 @@ int main(int argc, char **argv)
 
 	if (argc<6 || argc>10)
 	{
-		fvwm_debug(__func__,
-			   "%s version %s should only be executed by fvwm!\n",
-			   MyName, VERSION);
+		fprintf(stderr,
+			"%s version %s should only be executed by fvwm!\n",
+			MyName, VERSION);
 		exit(1);
 	}
 
@@ -676,8 +676,8 @@ int main(int argc, char **argv)
 	fd[1] = atoi(argv[2]);
 	if (!(Dpy = XOpenDisplay(NULL)))
 	{
-		fvwm_debug(__func__,
-			   "%s: Can't open display %s", MyName,
+		fvwm_debug(MyName,
+			   "%s: Can't open display %s", __func__,
 			   XDisplayName(NULL));
 		exit (1);
 	}
@@ -690,7 +690,7 @@ int main(int argc, char **argv)
 	Root = RootWindow(Dpy, screen);
 	if (Root == None)
 	{
-		fvwm_debug(__func__, "%s: Screen %d is not valid\n", MyName,
+		fvwm_debug(MyName, "%s: Screen %d is not valid\n", __func__,
 			   screen);
 		exit(1);
 	}
@@ -707,7 +707,7 @@ int main(int argc, char **argv)
 	dph = DisplayHeight(Dpy, screen);
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "%s: Parsing...", MyName);
+	fvwm_debug(MyName, "%s: Parsing...", __func__);
 #endif
 
 	UberButton->title   = MyName;
@@ -728,10 +728,10 @@ int main(int argc, char **argv)
 		{
 			if (b->flags.b_ActiveIcon || b->flags.b_ActiveTitle)
 			{
-				fvwm_debug(__func__,
+				fvwm_debug(MyName,
 					   "%s: Must specify ActiveColorset when "
 					   "using ActiveIcon or ActiveTitle with "
-					   "\"Pixmap none\".\n", MyName);
+					   "\"Pixmap none\".\n", __func__);
 				exit(0);
 			}
 		}
@@ -748,20 +748,20 @@ int main(int argc, char **argv)
 	/* Don't quit if only a subpanel is empty */
 	if (UberButton->c->num_buttons == 0)
 	{
-		fvwm_debug(__func__, "%s: No buttons defined. Quitting\n",
-			   MyName);
+		fvwm_debug(MyName, "%s: No buttons defined. Quitting\n",
+			   __func__);
 		exit(0);
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "OK\n%s: Shuffling...", MyName);
+	fvwm_debug(MyName, "OK\n%s: Shuffling...", __func__);
 #endif
 
 	ShuffleButtons(UberButton);
 	NumberButtons(UberButton);
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "OK\n%s: Creating Main Window ...", MyName);
+	fvwm_debug(MyName, "OK\n%s: Creating Main Window ...", __func__);
 #endif
 
 	xswa.colormap = Pcmap;
@@ -772,7 +772,7 @@ int main(int argc, char **argv)
 		CWColormap | CWBackPixmap | CWBorderPixel, &xswa);
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "OK\n%s: Loading data...\n", MyName);
+	fvwm_debug(MyName, "OK\n%s: Loading data...\n", __func__);
 #endif
 
 	/* Load fonts and icons, calculate max buttonsize */
@@ -789,7 +789,7 @@ int main(int argc, char **argv)
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "%s: Configuring main window...", MyName);
+	fvwm_debug(MyName, "%s: Configuring main window...", __func__);
 #endif
 
 	CreateUberButtonWindow(UberButton, maxx, maxy);
@@ -798,8 +798,8 @@ int main(int argc, char **argv)
 		Dpy, MyWindow, &root, &x, &y, (unsigned int *)&Width,
 		(unsigned int *)&Height, (unsigned int *)&border_width, &depth))
 	{
-		fvwm_debug(__func__, "%s: Failed to get window geometry\n",
-			   MyName);
+		fvwm_debug(MyName, "%s: Failed to get window geometry\n",
+			   __func__);
 		exit(0);
 	}
 	SetButtonSize(UberButton, Width, Height);
@@ -822,7 +822,7 @@ int main(int argc, char **argv)
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "OK\n%s: Mapping windows...", MyName);
+	fvwm_debug(MyName, "OK\n%s: Mapping windows...", __func__);
 #endif
 
 	XMapSubwindows(Dpy, MyWindow);
@@ -845,7 +845,7 @@ int main(int argc, char **argv)
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "OK\n%s: Startup complete\n", MyName);
+	fvwm_debug(MyName, "OK\n%s: Startup complete\n", __func__);
 #endif
 
 	/*
@@ -1440,9 +1440,9 @@ void Loop(void)
 	  if ((buttonSwallowCount(b) == 3) && Event.xdestroywindow.window == swin)
 	  {
 #ifdef DEBUG_HANGON
-	    fvwm_debug(__func__,
+	    fvwm_debug(MyName,
 		       "%s: Button 0x%06x lost its window 0x%x (\"%s\")",
-		       MyName, (ushort)b, (ushort)swin, b->hangon);
+		       __func__, (ushort)b, (ushort)swin, b->hangon);
 #endif
 	    b->swallow &= ~b_Count;
 	    if (b->flags.b_Panel)
@@ -1454,7 +1454,7 @@ void Loop(void)
 	      char *p;
 
 #ifdef DEBUG_HANGON
-	      fvwm_debug(__func__, ", respawning\n");
+	      fvwm_debug(MyName, ", respawning\n");
 #endif
 	      if (b->newflags.is_panel && is_transient)
 	      {
@@ -1491,7 +1491,7 @@ void Loop(void)
 		    !b->newflags.is_panel)
 	    {
 #ifdef DEBUG_HANGON
-	      fvwm_debug(__func__, ", waiting for respawned window\n");
+	      fvwm_debug(MyName, ", waiting for respawned window\n");
 #endif
 	      b->swallow |= 1;
 	      b->flags.b_Swallow = 1;
@@ -1508,7 +1508,7 @@ void Loop(void)
 	      b->flags.b_Panel = 0;
 	      RedrawButton(b, DRAW_FORCE, NULL);
 #ifdef DEBUG_HANGON
-	      fvwm_debug(__func__, "\n");
+	      fvwm_debug(MyName, "\n");
 #endif
 	    }
 	    break;
@@ -1520,9 +1520,9 @@ void Loop(void)
 
 			default:
 #ifdef DEBUG_EVENTS
-				fvwm_debug(__func__,
+				fvwm_debug(MyName,
 					   "%s: Event fell through unhandled\n",
-					   MyName);
+					   __func__);
 #endif
 				break;
 			} /* switch */
@@ -1607,7 +1607,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
     return;
 
 #ifdef DEBUG_LOADDATA
-  fvwm_debug(__func__, "%s: Loading: Button 0x%06x: colors", MyName,
+  fvwm_debug(MyName, "%s: Loading: Button 0x%06x: colors", __func__,
              (ushort)b);
 #endif
 
@@ -1686,7 +1686,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
     {
        b->c->colorset = -1;
 #ifdef DEBUG_LOADDATA
-      fvwm_debug(__func__, ", colors2");
+      fvwm_debug(MyName, ", colors2");
 #endif
       if (b->c->flags.b_Fore)
 	b->c->fc = GetColor(b->c->fore);
@@ -1710,7 +1710,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   if (b->flags.b_Font)
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", font \"%s\"", b->font_string);
+    fvwm_debug(MyName, ", font \"%s\"", b->font_string);
 #endif
 
     if (strncasecmp(b->font_string, "none", 4) == 0)
@@ -1726,7 +1726,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   if (b->flags.b_Container && b->c->flags.b_Font)
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", font2 \"%s\"", b->c->font_string);
+    fvwm_debug(MyName, ", font2 \"%s\"", b->c->font_string);
 #endif
     if (strncasecmp(b->c->font_string, "none", 4) == 0)
     {
@@ -1742,7 +1742,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   if (b->flags.b_Container && b->c->num_buttons)
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", entering container\n");
+    fvwm_debug(MyName, ", entering container\n");
 #endif
     for (i = 0; i < b->c->num_buttons; i++)
       if (b->c->buttons[i])
@@ -1754,7 +1754,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
       y = b->c->miny;
     }
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, "%s: Loading: Back to container 0x%06x", MyName,
+    fvwm_debug(MyName, "%s: Loading: Back to container 0x%06x", __func__,
                (ushort)b);
 #endif
 
@@ -1781,7 +1781,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
 	  LoadIconFile(b->icon_file, &b->icon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", icon \"%s\"", b->icon_file);
+    fvwm_debug(MyName, ", icon \"%s\"", b->icon_file);
 #endif
     ix = b->icon->width;
     iy = b->icon->height;
@@ -1794,7 +1794,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
       LoadIconFile(b->active_icon_file, &b->activeicon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", active icon \"%s\"", b->active_icon_file);
+    fvwm_debug(MyName, ", active icon \"%s\"", b->active_icon_file);
 #endif
 
     hix = b->activeicon->width;
@@ -1812,7 +1812,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
       LoadIconFile(b->press_icon_file, &b->pressicon, buttonColorset(b)))
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", press icon \"%s\"", b->press_icon_file);
+    fvwm_debug(MyName, ", press icon \"%s\"", b->press_icon_file);
 #endif
 
     pix = b->pressicon->width;
@@ -1829,7 +1829,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   if (b->flags.b_Title && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", title \"%s\"", b->title);
+    fvwm_debug(MyName, ", title \"%s\"", b->title);
 #endif
     if (buttonJustify(b)&b_Horizontal)
     {
@@ -1847,7 +1847,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   if (b->flags.b_ActiveTitle && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", title \"%s\"", b->title);
+    fvwm_debug(MyName, ", title \"%s\"", b->title);
 #endif
     if (buttonJustify(b) & b_Horizontal)
     {
@@ -1871,7 +1871,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   if (b->flags.b_PressTitle && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
-    fvwm_debug(__func__, ", title \"%s\"", b->title);
+    fvwm_debug(MyName, ", title \"%s\"", b->title);
 #endif
     if (buttonJustify(b) & b_Horizontal)
     {
@@ -1909,7 +1909,7 @@ void RecursiveLoadData(button_info *b, int *maxx, int *maxy)
   *maxx = max(x, *maxx);
   *maxy = max(y, *maxy);
 #ifdef DEBUG_LOADDATA
-  fvwm_debug(__func__, ", size %ux%u, done\n", x, y);
+  fvwm_debug(MyName, ", size %ux%u, done\n", x, y);
 #endif
 }
 
@@ -2117,13 +2117,13 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "making atoms...");
+	fvwm_debug(MyName, "making atoms...");
 #endif
 
 	_XA_WM_DEL_WIN = XInternAtom(Dpy, "WM_DELETE_WINDOW", 0);
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "sizing...");
+	fvwm_debug(MyName, "sizing...");
 #endif
 
 	mysizehints.flags = PWinGravity | PBaseSize;
@@ -2135,7 +2135,7 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 	if (w>-1) /* from geometry */
 	{
 #ifdef DEBUG_INIT
-		fvwm_debug(__func__, "constraining (w=%i)...", w);
+		fvwm_debug(MyName, "constraining (w=%i)...", w);
 #endif
 		ConstrainSize(&mysizehints, &w, &h);
 		mysizehints.width = w;
@@ -2144,7 +2144,7 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "gravity...");
+	fvwm_debug(MyName, "gravity...");
 #endif
 	wx = 0;
 	wy = 0;
@@ -2183,14 +2183,14 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 #ifdef DEBUG_INIT
 	if (mysizehints.flags&USPosition)
 	{
-		fvwm_debug(__func__,
+		fvwm_debug(MyName,
 			   "create(%i,%i,%u,%u,1,%u,%u)...",
 			   wx, wy, mysizehints.width, mysizehints.height,
 			   (ushort)fore_pix, (ushort)back_pix);
 	}
 	else
 	{
-		fvwm_debug(__func__,
+		fvwm_debug(MyName,
 			   "create(-,-,%u,%u,1,%u,%u)...",
 			   mysizehints.width, mysizehints.height,
 			   (ushort)fore_pix, (ushort)back_pix);
@@ -2208,7 +2208,7 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 	}
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "colors...");
+	fvwm_debug(MyName, "colors...");
 #endif
 	if (Pdepth < 2)
 	{
@@ -2227,7 +2227,7 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "properties...");
+	fvwm_debug(MyName, "properties...");
 #endif
 	XSetWMProtocols(Dpy, MyWindow, &_XA_WM_DEL_WIN, 1);
 
@@ -2240,9 +2240,9 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 		list[0] = MyName;
 		if (!XStringListToTextProperty(list, 1, &mynametext))
 		{
-			fvwm_debug(__func__,
+			fvwm_debug(MyName,
 				   "%s: Failed to convert name to XText\n",
-				   MyName);
+				   __func__);
 			exit(1);
 		}
 		XSetWMProperties(
@@ -2254,7 +2254,7 @@ void CreateUberButtonWindow(button_info *ub, int maxx, int maxy)
 	XSelectInput(Dpy, MyWindow, MW_EVENTS);
 
 #ifdef DEBUG_INIT
-	fvwm_debug(__func__, "GC...");
+	fvwm_debug(MyName, "GC...");
 #endif
 	gcm = GCForeground|GCBackground;
 	gcv.foreground = fore_pix;
@@ -2332,8 +2332,8 @@ void DebugEvents(XEvent *event)
 		"ClientMessage",
 		"MappingNotify"
 	};
-	fvwm_debug(__func__, "%s: Received %s event from window 0x%x\n",
-		   MyName, event_names[event->type],
+	fvwm_debug(MyName, "%s: Received %s event from window 0x%x\n",
+		   __func__, event_names[event->type],
 		   (ushort)event->xany.window);
 }
 #endif
@@ -2445,10 +2445,10 @@ void SpawnSome(void)
 			if (b->spawn)
 			{
 #ifdef DEBUG_HANGON
-				fvwm_debug(__func__,
+				fvwm_debug(MyName,
 					   "%s: Button 0x%06x did not find a "
 					   "\"%s\" window, %s",
-					   MyName, (ushort)b, b->hangon,
+					   __func__, (ushort)b, b->hangon,
 					   "spawning own\n");
 #endif
 				p = module_expand_action(
@@ -2863,9 +2863,9 @@ void CheckForHangon(unsigned long *body)
 						&b->bw, &d);
 
 #ifdef DEBUG_HANGON
-				fvwm_debug(__func__,
+				fvwm_debug(MyName,
 					   "%s: Button 0x%06x %s 0x%lx \"%s\", "
-					   "parent 0x%lx\n", MyName,
+					   "parent 0x%lx\n", __func__,
 					   (ushort)b,
 					   "will swallow window", body[0],
 					   cbody,

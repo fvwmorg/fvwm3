@@ -131,7 +131,7 @@ int main(int argc, char **argv)
 	module = ParseModuleArgs(argc,argv,0); /* no alias */
 	if (module == NULL)
 	{
-		fvwm_debug(__func__,
+		fvwm_debug("FvwmIdent",
 			   "FvwmIdent Version %s should only be executed"
 			   " by fvwm!\n", VERSION);
 		exit(1);
@@ -191,8 +191,8 @@ int main(int argc, char **argv)
 	/* Open the Display */
 	if (!(dpy = XOpenDisplay(display_name)))
 	{
-		fvwm_debug(__func__, "%s: can't open display %s",
-			   module->name,
+		fvwm_debug(module->name, "%s: can't open display %s",
+			   __func__,
 			   XDisplayName(display_name));
 		exit (1);
 	}
@@ -267,6 +267,11 @@ int main(int argc, char **argv)
 		else if (strncasecmp(tline, "Colorset", 8) == 0)
 		{
 			LoadColorset(&tline[8]);
+		}
+		else if (strncasecmp(tline, "LoggingFD", 9) == 0) {
+			int fdl = -1;
+			sscanf((tline + 10), "%d", &fdl);
+			log_set_fd(fdl);
 		}
 		GetConfigLine(fd, &tline);
 	}
@@ -749,8 +754,8 @@ void list_end(void)
 
 	if ((Ffont = FlocaleLoadFont(dpy, font_string, module->name)) == NULL)
 	{
-		fvwm_debug(__func__, "%s: cannot load font, exiting\n",
-			   module->name);
+		fvwm_debug(module->name, "%s: cannot load font, exiting\n",
+			   __func__);
 		exit(1);
 	}
 
@@ -1034,8 +1039,8 @@ void change_window_name(char *str)
 
 	if (XStringListToTextProperty(&str,1,&name) == 0)
 	{
-		fvwm_debug(__func__, "%s: cannot allocate window name",
-			   module->name);
+		fvwm_debug(module->name, "%s: cannot allocate window name",
+			   __func__);
 		return;
 	}
 	XSetWMName(dpy,main_win,&name);

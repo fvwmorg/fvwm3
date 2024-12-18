@@ -54,7 +54,7 @@ RETSIGTYPE ReapChildren(int sig)
  */
 void ErrMsg(char *msg)
 {
-	fvwm_debug(__func__, "%s error in %s: %s\n", name , msg,
+	fvwm_debug(name, "%s error in %s: %s\n", __func__ , msg,
 		   strerror(errno));
 	if (sp != NULL)
 	{
