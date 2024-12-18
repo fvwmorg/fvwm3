@@ -303,7 +303,8 @@ void SetDeskPageBackground(const Command *c)
 		if (!dpy2)
 		{
 			fvwm_debug(__func__,
-				   "Fail to create a forking dpy, Exit!");
+			    "%s: Fail to create a forking dpy, Exit!",
+			    Module);
 			exit(2);
 		}
 		screen2 = DefaultScreen(dpy2);
@@ -321,19 +322,19 @@ void SetDeskPageBackground(const Command *c)
 			/* Process a colorset */
 			if (CSET_IS_TRANSPARENT(c->colorset))
 			{
-				fvwm_debug(__func__, "You cannot "
+				fvwm_debug(__func__, "%s: You cannot "
 					   "use a transparent colorset as "
-					   "background!");
+					   "background!", Module);
 				XUngrabServer(dpy2);
 				XCloseDisplay(dpy2);
 				return;
 			}
 			else if (Pdepth != DefaultDepth(dpy2, screen2))
 			{
-				fvwm_debug(__func__, "You cannot "
+				fvwm_debug(__func__, "%s: You cannot "
 					   "use a colorset background if\n"
 					   "the fvwm depth is not equal "
-					   "to the root depth!");
+					   "to the root depth!", Module);
 				XUngrabServer(dpy2);
 				XCloseDisplay(dpy2);
 				return;
@@ -531,6 +532,10 @@ int ParseConfigLine(char *line)
 		else if (strncasecmp(line, "colorset", 8) == 0)
 		{
 			return LoadColorset(line + 8);
+		} else if (strncasecmp(line, "LoggingFD", 9) == 0) {
+			int fd = -1;
+			sscanf((line + 10), "%d", &fd);
+			log_set_fd(fd);
 		}
 	}
 	return -1;
@@ -586,7 +591,8 @@ Bool ParseNewCommand(
 			if (GetNextToken(option_val, &value) == NULL)
 			{
 				fvwm_debug(__func__,
-					   "Desk option requires a value");
+					"%s: Desk option requires a value",
+					Module);
 				return 1;
 			}
 			if (!StrEquals(value, "*"))
@@ -603,7 +609,8 @@ Bool ParseNewCommand(
 				     option_val,&value)) == NULL)
 			{
 				fvwm_debug(__func__,
-					   "Page option requires 2 values");
+					"%s: Page option requires 2 values",
+					Module);
 				return 1;
 			}
 			if (!StrEquals(value, "*"))
@@ -612,7 +619,8 @@ Bool ParseNewCommand(
 			if (GetNextToken(option_val, &value) == NULL)
 			{
 				fvwm_debug(__func__,
-					   "Desk option requires 2 values");
+					"%s: Desk option requires 2 values",
+					Module);
 				return 1;
 			}
 			if (!StrEquals(value, "*"))
@@ -680,7 +688,8 @@ void AddCommand(char *line)
 			if (line == NULL)
 			{
 				fvwm_debug(__func__,
-					   "Syntax error: no closing brace");
+					"%s: Syntax error: no closing brace",
+					Module);
 				free(this);
 				return;
 			}
@@ -697,7 +706,7 @@ void AddCommand(char *line)
 	}
 	else
 	{
-		fvwm_debug(__func__, "Unknown directive: %s", line);
+		fvwm_debug(__func__, "%s: Unknown directive: %s", Module, line);
 		return;
 	}
 	this->flags.do_ignore_desk = do_ignore_desk;
