@@ -36,6 +36,24 @@ static char	*log_file_name;
 static FILE	*log_file;
 int	lib_log_level = 0;
 
+int
+log_get_fd(void)
+{
+	if (log_file == NULL)
+		return -1;
+	return fileno(log_file);
+}
+
+void
+log_set_fd(int fd)
+{
+	if (fd == -1)
+		return;
+
+	/* This is enough to allow modules to be able to log. */
+	log_file = fdopen(fd, "a");
+}
+
 void
 set_log_file(char *name)
 {

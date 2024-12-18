@@ -9,6 +9,8 @@ void	set_log_file(char *name);
 void	log_open(const char *);
 void	log_toggle(const char *);
 void	log_close(void);
+int	log_get_fd(void);
+void	log_set_fd(int);
 void printflike(2, 3) fvwm_debug(const char *, const char *, ...);
 
 #endif
