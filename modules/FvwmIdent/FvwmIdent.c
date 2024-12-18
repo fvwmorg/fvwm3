@@ -268,6 +268,11 @@ int main(int argc, char **argv)
 		{
 			LoadColorset(&tline[8]);
 		}
+		else if (strncasecmp(tline, "LoggingFD", 9) == 0) {
+			int fd = -1;
+			sscanf((tline + 10), "%d", &fd);
+			log_set_fd(fd);
+		}
 		GetConfigLine(fd, &tline);
 	}
 
