@@ -59,8 +59,8 @@ Generating documentation
 To generate `fvwm3`'s documentation:
 
 1. Install `asciidoctor`
-2. To generate manpages:  pass `-Dhtmldoc=true` to `meson`
-3. To generate HTML docs: pass `-Dmandoc=true` to `meson`
+2. To generate manpages:  pass `-Dmandoc=true` to `meson`
+3. To generate HTML docs: pass `-Dhtmldoc=true` to `meson`
 
 
 Installing From Git
