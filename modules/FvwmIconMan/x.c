@@ -157,8 +157,8 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
   {
     if (!XQueryTree (theDisplay, win, &root, &parent, &junkw, &junki))
     {
-      fvwm_debug(__func__, "%s: find_frame_window: XQueryTree failed.\n",
-                 MyName);
+      fvwm_debug(MyName, "%s: find_frame_window: XQueryTree failed.\n",
+                 __func__);
       return win;
     }
     if (junkw)
@@ -167,9 +167,9 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
       break;
     if (!XGetWindowAttributes (theDisplay, win, &attr))
     {
-      fvwm_debug(__func__,
+      fvwm_debug(MyName,
                  "%s: find_frame_window: XGetWindowAttrigutes failed.\n",
-                 MyName);
+                 __func__);
       return win;
     }
     ConsoleDebug (X11, "Adding (%d, %d) += (%d, %d)\n",

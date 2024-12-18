@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
 	module = ParseModuleArgs(argc, argv, 0); /* we don't use an alias */
 	if (module == NULL)
 	{
-		fvwm_debug(__func__,
+		fvwm_debug(Name,
 			   "FvwmConsole version "VERSION" should only be"
 			   " executed by fvwm!\n");
 		exit(1);
@@ -319,7 +319,7 @@ void server(void)
  */
 void ErrMsg(char *msg)
 {
-	fvwm_debug(__func__, "%s server error in %s, errno %d: %s\n", Name,
+	fvwm_debug(Name, "%s server error in %s, errno %d: %s\n", __func__,
 		   msg,
 		   errno, strerror(errno));
 	clean_up();

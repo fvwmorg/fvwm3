@@ -18,6 +18,7 @@
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "xmanager.h"
+#include "libs/log.h"
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -844,6 +845,11 @@ static int GetConfigLineWrapper(int *fd, char **tline)
 		else if (strncasecmp(*tline, "IgnoreModifiers", 15) == 0)
 		{
 			sscanf((*tline) + 16, "%d", &mods_unused);
+		}
+		else if (strncasecmp(*tline, "LoggingFD", 9) == 0) {
+			int fdl = -1;
+			sscanf((*tline + 10), "%d", &fdl);
+			log_set_fd(fdl);
 		}
 		temp = strchr(*tline, '\n');
 		if (temp)

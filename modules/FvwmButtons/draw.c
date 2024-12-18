@@ -102,13 +102,13 @@ void MakeButton(button_info *b)
 
   if(!b)
   {
-    fvwm_debug(__func__, "%s: BUG: MakeButton called with NULL pointer\n",
-               MyName);
+    fvwm_debug(MyName, "%s: BUG: MakeButton called with NULL pointer\n",
+               __func__);
     exit(2);
   }
   if(b->flags.b_Container)
   {
-    fvwm_debug(__func__, "%s: BUG: MakeButton called with container\n",MyName);
+    fvwm_debug(MyName, "%s: BUG: MakeButton called with container\n", __func__);
     exit(2);
   }
 
@@ -139,8 +139,8 @@ void MakeButton(button_info *b)
     long supplied;
     if(!b->IconWin)
     {
-      fvwm_debug(__func__, "%s: BUG: Swallowed window has no IconWin\n",
-                 MyName);
+      fvwm_debug(MyName, "%s: BUG: Swallowed window has no IconWin\n",
+                 __func__);
       exit(2);
     }
 

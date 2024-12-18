@@ -29,13 +29,13 @@ unsigned long BackerGetColor(char *name)
   color.pixel = 0;
   if (!XParseColor (dpy, DefaultColormap(dpy,screen), name, &color))
     {
-      fvwm_debug(__func__, "%s:  unknown color \"%s\"\n",Module,name);
+      fvwm_debug(Module, "%s:  unknown color \"%s\"\n",__func__,name);
       exit(1);
     }
   else if(!XAllocColor (dpy, DefaultColormap(dpy,screen), &color))
     {
-      fvwm_debug(__func__, "%s:  unable to allocate color for \"%s\"\n",
-                 Module, name);
+      fvwm_debug(Module, "%s:  unable to allocate color for \"%s\"\n",
+                 __func__, name);
       exit(1);
     }
 

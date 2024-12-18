@@ -340,9 +340,9 @@ static ManGeometry *query_geometry(WinManager *man)
   {
     g.x = off_x;
     g.y = off_y;
-    fvwm_debug(__func__,
+    fvwm_debug(MyName,
                "%s: query_geometry: failed to get frame attributes.\n",
-               MyName);
+               __func__);
   }
   if (XGetWindowAttributes(theDisplay, man->theWindow, &win_attr))
   {
@@ -353,9 +353,9 @@ static ManGeometry *query_geometry(WinManager *man)
   {
     g.width = 1;
     g.height = 1;
-    fvwm_debug(__func__,
+    fvwm_debug(MyName,
                "%s: query_geometry: failed to get window attributes.\n",
-               MyName);
+               __func__);
   }
 
   return &g;
