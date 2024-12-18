@@ -49,6 +49,7 @@
 #include "module_interface.h"
 #include "colorset.h"
 #include "libs/FScreen.h"
+#include "libs/log.h"
 #include "expand.h"
 
 extern int nColorsets;  /* in libs/Colorset.c */
@@ -365,6 +366,15 @@ void send_ignore_modifiers(fmodule *module)
 	return;
 }
 
+void
+send_logging_fd(fmodule *module)
+{
+	char msg[64];
+
+	snprintf(msg, sizeof(msg), "LoggingFD %d\n", log_get_fd());
+	SendName(module, M_CONFIG_INFO, 0, 0, 0, msg);
+}
+
 void send_monitor_list(fmodule *module)
 {
 	BroadcastMonitorList(module);
@@ -387,6 +397,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
 	send_click_time(mod);
 	send_move_threshold(mod);
 	send_desktop_geometry(mod);
+	send_logging_fd(mod);
 	match = PeekToken(action, &action);
 	if (match)
 	{
