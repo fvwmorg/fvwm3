@@ -134,17 +134,15 @@ func main() {
 	shell.SetHistoryPath(consoleHistory)
 
 	shell.NotFound(func(c *ishell.Context) {
-		handleInput(c, strings.Join(c.RawArgs, " "), writeToFMD)
-	})
-
-	// register a function for overriding Fvwm3's "Quit" command, to
-	// instead run a FvwmForm.
-	shell.AddCmd(&ishell.Cmd{
-		Name: "quit",
-		Help: "Quit Fvwm3",
-		Func: func(c *ishell.Context) {
+		toSend := strings.Join(c.RawArgs, " ")
+		// Quit in fvwm is a special command but it can often lead to
+		// surprising results.  Rather than blindly exit, invoke
+		// FvwmScript to at least confirm.
+		if strings.ToLower(toSend) == "quit" {
 			handleInput(c, "Module FvwmScript FvwmScript-ConfirmQuit", writeToFMD)
-		},
+		} else {
+			handleInput(c, toSend, writeToFMD)
+		}
 	})
 
 	isInteractive = len(os.Args) > 1 && os.Args[1] != "-p"
