@@ -1267,7 +1267,7 @@ send_cmd:
 void IconSwitchPage(XEvent *Event)
 {
   int vx, vy;
-  char command[34];
+  char command[64];
   struct fpmonitor *fp = fpmonitor_this(NULL);
 
   if (fp == NULL) {
