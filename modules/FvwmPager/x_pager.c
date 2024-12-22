@@ -85,7 +85,7 @@ static void do_scroll(int sx, int sy, bool do_send_message,
 	static int psx = 0;
 	static int psy = 0;
 	static int messages_sent = 0;
-	char command[256], screen[32] = "";
+	char command[512], screen[256] = "";
 	psx+=sx;
 	psy+=sy;
 	if (is_message_recieved)
@@ -432,7 +432,7 @@ void DispatchEvent(XEvent *Event)
 		case KeyPress:
 		{
 			int dx = 0, dy = 0;
-			char command[64];
+			char command[256];
 			char keychar;
 			KeySym keysym;
 
@@ -1267,7 +1267,7 @@ send_cmd:
 void IconSwitchPage(XEvent *Event)
 {
   int vx, vy;
-  char command[34];
+  char command[256];
   struct fpmonitor *fp = fpmonitor_this(NULL);
 
   if (fp == NULL) {
