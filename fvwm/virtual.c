@@ -2423,12 +2423,36 @@ update:
 }
 
 void
-calculate_page_sizes(struct monitor *m, int dx, int dy)
+calculate_page_sizes(struct monitor *m)
 {
-	m->virtual_scr.VxMax = dx *
-		monitor_get_all_widths() - monitor_get_all_widths();
-	m->virtual_scr.VyMax = dy *
-		monitor_get_all_heights() - monitor_get_all_heights();
+	int width = monitor_get_all_widths();
+	int height = monitor_get_all_heights();
+
+	/* Reduce page size to fit maximum window position. */
+	if (m->dx * width > MAX_X_WINDOW_POSITION) {
+		int new_dx = MAX_X_WINDOW_POSITION / width;
+		fvwm_debug(__func__,
+			"Horizontal pages extend beyond maximum desktop size."
+				"Reducing from %d to %d.",
+			m->dx, new_dx);
+		m->dx = new_dx;
+	}
+	if (m->dy * height > MAX_X_WINDOW_POSITION) {
+		int new_dy = MAX_X_WINDOW_POSITION / height;
+		fvwm_debug(__func__,
+			"Vertical pages extend beyond maximum desktop size."
+				"Reducing from %d to %d.",
+			m->dy, new_dy);
+		m->dy = new_dy;
+	}
+
+	m->virtual_scr.VxMax = width * (m->dx - 1);
+	m->virtual_scr.VyMax = height * (m->dy  - 1);
+
+	/* Update viewport if needed. */
+	if (m->virtual_scr.Vx > m->virtual_scr.VxMax ||
+	    m->virtual_scr.Vy > m->virtual_scr.VyMax)
+		MoveViewport(m, m->virtual_scr.Vx, m->virtual_scr.Vy, True);
 }
 
 void CMD_DesktopSize(F_CMD_ARGS)
@@ -2448,7 +2472,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 		m->dx = val[0] <= 0 ? 1 : val[0];
 		m->dy = val[1] <= 0 ? 1 : val[1];
 
-		calculate_page_sizes(m, m->dx, m->dy);
+		calculate_page_sizes(m);
 
 		BroadcastPacket(
 			M_NEW_PAGE, 8,

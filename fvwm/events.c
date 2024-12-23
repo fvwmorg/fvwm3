@@ -1779,6 +1779,7 @@ static void monitor_update_ewmh(void)
 {
 	FvwmWindow	*t;
 	struct monitor	*m, *mref;
+	bool desktop_size_change = false;
 
 	if (Scr.bo.do_debug_randr)
 	{
@@ -1804,16 +1805,20 @@ static void monitor_update_ewmh(void)
 			}
 
 			apply_desktops_monitor(m);
-			calculate_page_sizes(m, mref->dx, mref->dy);
+
+			m->dx = mref->dx;
+			m->dy = mref->dy;
+			m->virtual_scr.Vx = 0;
+			m->virtual_scr.Vy = 0;
+			calculate_page_sizes(m);
+			if (m->dx != mref->dx || m->dy != mref->dy)
+				desktop_size_change = true;
 
 			fvwm_debug(__func__,
 				   "new_monitor: %s (%p) compared to (%p)\n",
 				   m->si->name,
 				   m->Desktops->next,
 				   mref->Desktops->next);
-
-			m->virtual_scr.Vx = 0;
-			m->virtual_scr.Vy = 0;
 
 			set_ewmhc_strut_values(m, ewbs);
 
@@ -1822,6 +1827,13 @@ static void monitor_update_ewmh(void)
 		EWMH_Init(m);
 	}
 
+	if (desktop_size_change) {
+		/* New monitor causes virtual desktop to extend beyond max
+		 * position. Reduce the desktop size of all monitors to fit.
+		 */
+		RB_FOREACH(m, monitors, &monitor_q)
+			calculate_page_sizes(m);
+	}
 
 	BroadcastMonitorList(NULL);
 

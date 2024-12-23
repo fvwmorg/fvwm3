@@ -6,7 +6,7 @@
 #include <stdbool.h>
 #include "fvwm.h"
 
-void calculate_page_sizes(struct monitor *, int, int);
+void calculate_page_sizes(struct monitor *);
 int HandlePaging(
 	XEvent *pev, position warp_size, position *p, position *delta,
 	Bool Grab, Bool fLoop,	Bool do_continue_previous, int delay);

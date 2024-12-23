@@ -7359,6 +7359,10 @@ This concept is similar to how spectrwm or xmonad handles desktops.
 
 *DesktopSize* __Horizontal__x__Vertical__::
 	Defines the virtual desktop size in units of the physical screen size.
+	X11 has a maximum window position of 32,767 (INT16). If the number of
+	pages times the total height or width of all monitors exceeds this
+	maximum size, the number of pages in the respective direction will be
+	reduced to the largest number that fit within this limit.
 
 *EdgeResistance* __delay__::
 +
