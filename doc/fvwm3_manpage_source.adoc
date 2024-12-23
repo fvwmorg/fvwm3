@@ -3591,8 +3591,8 @@ _NoOnTop_ / _OnTop_ / _OnlyOnTop_, _NoOnBottom_ / _OnBottom_ /
 _OnlyOnBottom_, _Layer m [n]_, _UseSkipList_ / _OnlySkipList_,
 _NoDeskSort_, _ReverseOrder_, _CurrentAtEnd_, _IconifiedAtEnd_,
 _UseIconName_, _Alphabetic_ / _NotAlphabetic_, _SortByResource_,
-_SortByClass_, _NoHotkeys_, _SelectOnRelease_,_ShowPage_,_ShowPageX_,
-_ShowPageY_,_ShowScreen_.
+_SortByClass_, _NoHotkeys_, _SelectOnRelease_ ,_ShowPage_, _ShowPageX_,
+_ShowPageY_, _ShowScreen_.
 +
 (Note - normal means not iconic, sticky, or on top)
 +
