@@ -123,31 +123,62 @@ void do_relieve_rectangle_with_rotation(
 	seg = fxmalloc(sizeof(XSegment) * line_width * 2 + 1);
 	/* from 0 to the lesser of line_width & just over half w */
 
-	/* left */
-	for (i = 0; i < max_w; i++) {
-		seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-		seg[i].x2 = x+i; seg[i].y2 = y+h-1-i+a;
-	}
-	cur = i;
-	/* top */
-	for (i = 0; i < max_h; i++, cur++) {
-		seg[cur].x1 = x+i+l; seg[cur].y1 = y+i;
-		seg[cur].x2 = x+w-1-i+l; seg[cur].y2 = y+i;
-	}
-	XDrawSegments(dpy, d, relief_gc, seg, cur);
-	/* bottom */
-	for (i = 0; i < max_h; i++) {
-		seg[i].x1 = x+i+a;   seg[i].y1 = y+h-i;
-		seg[i].x2 = x+w-1-i+a; seg[i].y2 = y+h-i;
-	}
-	cur = i;
-	/* right */
-	for (i = 0; i < max_w; i++, cur++) {
-		seg[cur].x1 = x+w-i; seg[cur].y1 = y+i+l;
-		seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
-	}
-	XDrawSegments(dpy, d, shadow_gc, seg, cur);
+	if (rotation == ROTATION_90 || rotation == ROTATION_270) {
+		/* Vertical titlebars move the "highlight" 90 degrees */
+		/* top */
+		for (i = 0; i < max_h; i++) {
+			seg[i].x1 = x+i+l; seg[i].y1 = y+i;
+			seg[i].x2 = x+w-1-i+l; seg[i].y2 = y+i;
+		}
 
+		cur = i;
+		/* right */
+		for (i = 0; i < max_w; i++, cur++) {
+			seg[cur].x1 = x+w-i; seg[cur].y1 = y+i+l;
+			seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
+		}
+
+		XDrawSegments(dpy, d, relief_gc, seg, cur);
+
+		/* left */
+		for (i = 0; i < max_w; i++) {
+			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
+			seg[i].x2 = x+i; seg[i].y2 = y+h-1-i+a;
+		}
+		cur = i;
+		/* bottom */
+		for (i = 0; i < max_h; i++, cur++) {
+			seg[cur].x1 = x+i+a;   seg[cur].y1 = y+h-i;
+			seg[cur].x2 = x+w-1-i+a; seg[cur].y2 = y+h-i;
+		}
+
+		XDrawSegments(dpy, d, shadow_gc, seg, cur);	
+	} else {
+		/* left */
+		for (i = 0; i < max_w; i++) {
+			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
+			seg[i].x2 = x+i; seg[i].y2 = y+h-1-i+a;
+		}
+		cur = i;
+		/* top */
+		for (i = 0; i < max_h; i++, cur++) {
+			seg[cur].x1 = x+i+l; seg[cur].y1 = y+i;
+			seg[cur].x2 = x+w-1-i+l; seg[cur].y2 = y+i;
+		}
+		XDrawSegments(dpy, d, relief_gc, seg, cur);
+		/* bottom */
+		for (i = 0; i < max_h; i++) {
+			seg[i].x1 = x+i+a;   seg[i].y1 = y+h-i;
+			seg[i].x2 = x+w-1-i+a; seg[i].y2 = y+h-i;
+		}
+		cur = i;
+		/* right */
+		for (i = 0; i < max_w; i++, cur++) {
+			seg[cur].x1 = x+w-i; seg[cur].y1 = y+i+l;
+			seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
+		}
+		XDrawSegments(dpy, d, shadow_gc, seg, cur);
+	}
 	if (seg)
 		XFree(seg);
 
