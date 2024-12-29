@@ -9,7 +9,7 @@ on:
             - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     container:
       image: ${{ matrix.os == 'alpine' && 'fvwmorg/fvwm3-build-alpine:latest' || 'fvwmorg/fvwm3-build:latest' }}
     env:
@@ -17,7 +17,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-latest, alpine]
+        os: [blacksmith-4vcpu-ubuntu-2204, alpine]
         build-system: [autotools, meson]
         compiler: [gcc, clang]
 
@@ -50,7 +50,7 @@ jobs:
           fi
 
   notification:
-    runs-on: ubuntu-20.04
+    runs-on: blacksmith-4vcpu-ubuntu-2204
     name: notifications
     steps:
       - name: irc pull request
