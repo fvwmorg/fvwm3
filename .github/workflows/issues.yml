@@ -6,7 +6,7 @@ on:
 
 jobs:
     notification:
-        runs-on: ubuntu-latest
+        runs-on: blacksmith-4vcpu-ubuntu-2204
         name: notifications
         steps:
             - name: issue notifications
