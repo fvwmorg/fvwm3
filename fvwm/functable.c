@@ -113,6 +113,9 @@ const func_t func_table[] =
 		FUNC_DECOR, 0),
 	/* - Define a window button look (will be reworked) */
 
+	CMD_ENT("capabilities", CMD_Capabilities, F_CAPABILITIES, 0, 0),
+	/* - Define capabilities which can be changed at runtime */
+
 	CMD_ENT("changedecor", CMD_ChangeDecor, F_CHANGE_DECOR,
 		FUNC_NEEDS_WINDOW, CRS_SELECT),
 	/* - Attach decor to a window (will be obsolete) */

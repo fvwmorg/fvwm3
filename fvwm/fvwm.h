@@ -572,12 +572,18 @@ typedef struct style_flags
 
 typedef struct style_id_t
 {
-	char *name;
 	XID window_id;
+	char *name;
+	char *class;
+	char *resource;
+	char *icon;
 	struct
 	{
 		unsigned has_name:1;
 		unsigned has_window_id:1;
+		unsigned has_class:1;
+		unsigned has_resource:1;
+		unsigned has_icon:1;
 	} flags;
 } style_id_t;
 
