@@ -94,6 +94,21 @@ fi
 AM_CONDITIONAL([FVWM_BUILD_GOLANG], [test x"$with_golang" = xyes])
 AC_SUBST(GO)
 
+# mpack
+problem_mpack=""
+AH_TEMPLATE([HAVE_MPACK], [Define MPACK])
+AC_ARG_ENABLE(mpack,
+	      AS_HELP_STRING([--enable-mpack],[enable mpack module comms]),
+	      [ if test x"$enableval" = "xyes"; then
+		  with_mpack="yes"
+		else
+		  with_mpack="no"
+		  problem_mpack=": Explicitly disabled"
+		fi ],
+	      [ with_mpack="no" ]
+)
+
+
 #!!!
 PERL=""
 REQUIRED_PERL_VERSION=5.004
@@ -744,6 +759,13 @@ fi
 
 AC_SUBST(png_LIBS)
 AC_SUBST(png_CFLAGS)
+
+yes_to_mpack="no"
+if test "$with_mpack" = "yes"; then
+  PKG_CHECK_MODULES([mpack], [mpack], [yes_to_mpack="yes"], [])
+fi
+
+AM_CONDITIONAL([HAVE_MPACK], [test x"$yes_to_mpack" = xyes])
 
 # ********* rsvg
 rsvg_min_version=2.13.92
@@ -1508,6 +1530,7 @@ Fvwm3 Configuration:
   With XPM image support?             $with_xpm$problem_xpm
   With Xrender image support?         $with_xrender$problem_xrender
   With Golang support?                $with_golang$problem_golang
+  With mpack support?		      $with_mpack$problem_mpack
   Build man pages?                    $with_mandoc$problem_mandoc
   Build html man pages?               $with_htmldoc$problem_htmldoc
 
