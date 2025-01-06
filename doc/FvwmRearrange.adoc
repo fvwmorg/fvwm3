@@ -140,6 +140,12 @@ override this behavior and make windows fit in their cells better.
 -fill_end::
   This will use any unused space in the grid by filling the last row (or
   last column with _-swap_) left open in the grid.
+-gap_x _N_, -gap_y _N_, -gap _N_::
+  This will set the gap between the cells the windows are placed in.
+  _-gap_x_ sets the size of the horizontal gap, _-gap_y_ sets the size
+  of the vertical gap, and _-gap_ sets both the size of the horizontal
+  and vertical gap to be the same. The value _N_ is the number of pixels
+  between cells, or the width of the line between cells. Default: 0.
 
 === CASCADING OPTIONS
 

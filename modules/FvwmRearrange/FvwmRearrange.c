@@ -104,6 +104,7 @@ int c_width = 0, c_height = 0;	/* FvwmCascade window sizes. */
 int max_n	 = 0;		/* FvwmTile maximum rows or cols. */
 int current_desk = 0;
 int win_order = WIN_ORDER_DEFAULT;
+int gap_x = 0, gap_y = 0;
 
 /* Switches */
 int FvwmTile	 = 1;
@@ -484,15 +485,15 @@ size_win_to_cell(window_item *wi, int x, int y, int cell_w, int cell_h,
 
 		if (x < extra_w) {
 			w++;
-			x = box_x + x * cell_w + x;
+			x = box_x + x * (cell_w + gap_x + 1);
 		} else {
-			x = box_x + x * cell_w + extra_w;
+			x = box_x + x * (cell_w + gap_x) + extra_w;
 		}
 		if (y < extra_h) {
 			h++;
-			y = box_y + y * cell_h + y;
+			y = box_y + y * (cell_h + gap_y + 1);
 		} else {
-			y = box_y + y * cell_h + extra_h;
+			y = box_y + y * (cell_h + gap_y) + extra_h;
 		}
 
 		if (nostretchx && w > wi->width)
@@ -512,12 +513,12 @@ window_item
 
 	if (horizontal) {
 		extra_wins = wins_count % rows;
-		cell_l = box_h / extra_wins;
-		extra_l = box_h % extra_wins;
+		cell_l = (box_h - (extra_wins - 1) * gap_y) / extra_wins;
+		extra_l = (box_h - (extra_wins - 1) * gap_y) % extra_wins;
 	} else {
 		extra_wins = wins_count % cols;
-		cell_l = box_w / extra_wins;
-		extra_l = box_w % extra_wins;
+		cell_l = (box_w - (extra_wins - 1) * gap_x) / extra_wins;
+		extra_l = (box_w - (extra_wins - 1) * gap_x) % extra_wins;
 	}
 
 	for (i = 0; i < extra_wins; i++) {
@@ -569,11 +570,11 @@ tile_windows(void)
 	}
 
 	/* Compute single cell size. */
-	cell_w  = box_w / cols;
-	cell_h  = box_h / rows;
+	cell_w  = (box_w - (cols - 1) * gap_x) / cols;
+	cell_h  = (box_h - (rows - 1) * gap_y) / rows;
 	/* Extra space to spread across initial cells. */
-	extra_w = box_w % cols;
-	extra_h = box_h % rows;
+	extra_w = (box_w - (cols - 1) * gap_x) % cols;
+	extra_h = (box_h - (rows - 1) * gap_y) % rows;
 
 	/* Do nothing if cells are too small. */
 	if (cell_w < MIN_CELL_SIZE || cell_h < MIN_CELL_SIZE) {
@@ -680,6 +681,15 @@ parse_args(int argc, char *argv[], int argi)
 			fill_start = 1;
 		} else if (StrEquals(argv[argi], "-fill_end")) {
 			fill_end = 1;
+		} else if (StrEquals(argv[argi], "-gap")
+			   && ((argi + 1) < argc)) {
+			gap_x = gap_y = atoi(argv[++argi]);
+		} else if (StrEquals(argv[argi], "-gap_x")
+			   && ((argi + 1) < argc)) {
+			gap_x = atoi(argv[++argi]);
+		} else if (StrEquals(argv[argi], "-gap_y")
+			   && ((argi + 1) < argc)) {
+			gap_y = atoi(argv[++argi]);
 
 		/* Cascading options */
 		} else if (StrEquals(argv[argi], "-cascade")) {
