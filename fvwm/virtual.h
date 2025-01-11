@@ -21,6 +21,7 @@ void map_window(FvwmWindow *t);
 Bool get_page_arguments(char *action, int *page_x, int *page_y,
     struct monitor **);
 char *GetDesktopName(struct monitor *, int desk);
+int number_of_desktops(struct monitor *);
 
 struct desktop_cmd {
 	int				 desk;
