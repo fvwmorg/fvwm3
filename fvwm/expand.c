@@ -85,6 +85,7 @@ static char *function_vars[] =
 	"cw.x",
 	"cw.y",
 	"debuglog.state",
+	"desk.count",
 	"desk.height",
 	"desk.n",
 	"desk.pagesx",
@@ -177,6 +178,7 @@ enum
 	VAR_CW_X,
 	VAR_CW_Y,
 	VAR_DEBUG_LOG_STATE,
+	VAR_DESK_COUNT,
 	VAR_DESK_HEIGHT,
 	VAR_DESK_N,
 	VAR_DESK_PAGESX,
@@ -730,6 +732,10 @@ static signed int expand_vars_extended(
 	/* only exact matches for all other variables */
 	switch ((i = GetTokenIndex(var_name, function_vars, 0, &rest)))
 	{
+	case VAR_DESK_COUNT:
+		is_numeric = True;
+		val = number_of_desktops(m);
+		break;
 	case VAR_DESK_N:
 		is_numeric = True;
 		val = m->virtual_scr.CurrentDesk;

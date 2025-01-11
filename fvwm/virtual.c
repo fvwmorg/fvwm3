@@ -116,7 +116,6 @@
  * 2 is the default.
  */
 static void store_desktop_cmd(int, char *);
-static int number_of_desktops(struct monitor *);
 static void init_one_panframe(PanFrame *, int, int, int, int, int);
 static void parse_edge_leave_command(char *, int);
 static void broadcast_new_desk_monitor(struct monitor *);
@@ -2800,7 +2799,7 @@ void CMD_Scroll(F_CMD_ARGS)
 	return;
 }
 
-static int
+int
 number_of_desktops(struct monitor *m)
 {
 	DesktopsInfo	*d;

@@ -1470,6 +1470,9 @@ $[wa.x] $[wa.y] $[wa.width] $[wa.height]::
 $[dwa.x] $[dwa.y] $[dwa.width] $[dwa.height]::
 	Either coordinate or the width or height of the dynamic EWMH working area.
 
+$[desk.count]::
+	The number of desktops defined with the *DesktopName* command.
+
 $[desk.n]::
 	The current desk number.
 
