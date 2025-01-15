@@ -1120,6 +1120,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		token = PeekToken(next, &next);
 		if (token)
 		{
+			free(expect);
 			expect = fxstrdup(token);
 		}
 		action = next;

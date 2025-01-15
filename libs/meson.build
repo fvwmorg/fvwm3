@@ -63,6 +63,12 @@ string_sources = files(
     'strlcpy.c',
 )
 
+if (mpack.found())
+    libfvwm3_sources += files(
+      'mcomms.c'
+    )
+endif
+
 # We don't build the string sources on macOS
 # We probably could check for target_system, but nobody is cross-compiling _to_ macOS
 if not (host_machine.system() == 'darwin')
