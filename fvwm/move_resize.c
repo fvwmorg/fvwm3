@@ -1529,9 +1529,8 @@ static Bool resize_move_window(F_CMD_ARGS)
 	}
 	if (fWarp)
 	{
-		FWarpPointer(
-			dpy, None, None, 0, 0, 0, 0,
-			final_pos.x - p.x, final_pos.y - p.y);
+		char *cmd = "WarpToWindow 50 50";
+		execute_function_override_window(NULL, exc, cmd, NULL, 0, fw);
 	}
 	if (IS_MAXIMIZED(fw))
 	{
