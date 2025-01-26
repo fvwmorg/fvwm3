@@ -3451,8 +3451,6 @@ fvwm used. _verbose_ can be 1 or 2.
 +
 _nls_ which prints information on the locale catalogs that fvwm used
 +
-_style_ which prints information on fvwm styles. _verbose_ can be 1.
-+
 _bindings_ which prints information on all the bindings fvwm has: key
 and mouse bindings. _verbose_ has no effect with this option.
 +
@@ -4941,6 +4939,55 @@ ifdef::fvwm3all[]
 For readability, the commands in this section are not sorted
 alphabetically. The description of the *Style* command can be found at
 the end of this section.
+
+The commands: *FocusStyle*, *Style*, and *WindowStyle* can accept optional
+conditional components to match some properties of a window.
+
+For example:
+
+....
+Style (Name mc) Sticky
+....
+
+Will make a window whose name matched 'mc' _Sticky_.
+
+....
+Style (Name mc, Class XTerm) StartIconic
+....
+
+This example will start an xterm(1) window whose WM_CLASS matches 'XTerm' and
+name is 'mc'.
+
+A valid list of properties to test against are:
+
+* Resource
+* Class
+* Name
+* Icon
+* WindowID
+
+The matching of the properties specified for any *Style* line are ANDed
+together, and for styles to be applied, *all* properties must match.
+
+**NOTE**: To destroy a style line with window properties, *DestroyStyle*
+should be used.  For example:
+
+....
+DestroyStyle (Name mc, Class XTerm)
+....
+
+It is not required to specify the style arguments when destroying a style,
+only the property components are required.
+
+Existing *Style* lines in the form:
+
+....
+Style Application* Sticky, StartIconic
+....
+
+are still supported, and their behaviour remains unchanged.
+
+'''
 
 *FocusStyle* _stylename_ _options_::
 	works exactly like the *Style* command, but accepts only the focus

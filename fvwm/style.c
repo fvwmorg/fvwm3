@@ -19,14 +19,17 @@
 
 #include "config.h"
 #include <stdio.h>
+#include <stdbool.h>
 
+#include "libs/defaults.h"
 #include "libs/fvwmlib.h"
-#include "libs/log.h"
+#include "libs/FScreen.h"
 #include "libs/charmap.h"
 #include "libs/modifiers.h"
 #include "libs/ColorUtils.h"
 #include "libs/Parse.h"
 #include "libs/wild.h"
+#include "libs/log.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "misc.h"
@@ -36,6 +39,7 @@
 #include "colorset.h"
 #include "ewmh.h"
 #include "placement.h"
+#include "conditional.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -58,8 +62,7 @@ static int style_set_border_colorset(window_style *, char *, int);
 /* ---------------------------- local variables ---------------------------- */
 
 /* list of window names with attributes */
-static window_style *all_styles = NULL;
-static window_style *last_style_in_list = NULL;
+static window_style_list *all_styles = NULL;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
@@ -98,7 +101,158 @@ static Bool _validate_titleformat_string(const char *formatstr)
 	return ret_condition;
 }
 
-static int blockor(char *dest, char *blk1, char *blk2, int length)
+bool parse_style_id_one_flag(char *action, style_id_t *ret)
+{
+	char *token, *rest;
+	token = PeekToken(action, &rest);
+	if (!token)
+	{
+		return false;
+	}
+	else if (!SID_GET_HAS_RESOURCE(*ret) && StrEquals(token, "Resource")) {
+		rest = GetNextToken(rest,
+				    &SID_GET_RESOURCE(*ret));
+		if (SID_GET_RESOURCE(*ret) != NULL)
+			SID_SET_HAS_RESOURCE(*ret, 1);
+		else {
+			fvwm_debug(__func__, "No resource given after keyword");
+			return false;
+		}
+	} else if (!SID_GET_HAS_CLASS(*ret) && StrEquals(token, "Class")) {
+		rest = GetNextToken(rest, &SID_GET_CLASS(*ret));
+		if (SID_GET_CLASS(*ret) != NULL)
+			SID_SET_HAS_CLASS(*ret, 1);
+		else {
+			fvwm_debug(__func__, "No class given after keyword");
+			return false;
+		}
+	} else if (!SID_GET_HAS_NAME(*ret) && StrEquals(token, "Name")) {
+		rest = GetNextToken(rest, &SID_GET_NAME(*ret));
+		if (SID_GET_NAME(*ret) != NULL)
+			SID_SET_HAS_NAME(*ret, 1);
+		else {
+			fvwm_debug(__func__, "No name given after keyword");
+			return false;
+		}
+	} else if (!SID_GET_HAS_ICON(*ret) && StrEquals(token, "Icon")) {
+		rest = GetNextToken(rest, &SID_GET_ICON(*ret));
+		if (SID_GET_ICON(*ret) != NULL)
+			SID_SET_HAS_ICON(*ret, 1);
+		else {
+			fvwm_debug(__func__, "No Icon given after keyword");
+			return false;
+		}
+	} else if (!SID_GET_HAS_NAME(*ret) && StrEquals(token, "WindowID")) {
+		char *id;
+		rest = GetNextToken(rest, &id);
+		if (id) {
+			SID_SET_WINDOW_ID( *ret,
+		            (unsigned long)strtol(id, NULL, 0));
+			free(id);
+		}
+		if (SID_GET_WINDOW_ID(*ret) != 0)
+			SID_SET_HAS_WINDOW_ID(*ret, 1);
+		else {
+			fvwm_debug(__func__, "No ID given after keyword");
+			return false;
+		}
+	} else if (!SID_GET_HAS_RESOURCE(*ret) &&
+		 !SID_GET_HAS_CLASS(*ret) && !SID_GET_HAS_ICON(*ret) &&
+		 !SID_GET_HAS_NAME(*ret) && !SID_GET_HAS_WINDOW_ID(*ret) &&
+		 StrEquals(token,"*")) {
+		/* Outmost match layer */
+	} else {
+		fvwm_debug(__func__, "Unknown or invalid keyword: %s",token);
+		return false;
+	}
+	return true;
+}
+
+/* Parse FVWM 3.0 style id, or compatibility mode.
+ *
+ * Returns NULL if failure; else returns the pointer to where parsing ended.
+ */
+char *parse_style_id(char *action, style_id_t *ret)
+{
+	memset(ret, 0, sizeof *ret);
+	char *style_flags;
+	char *token;
+	char *option;
+
+	style_flags = CreateFlagString(action, &action);
+	if (!action) {
+		free(style_flags);
+		return NULL;
+	}
+	if (style_flags) {
+		char *to_free = style_flags;
+		while (style_flags && *style_flags)
+		{
+			style_flags = GetNextFullOption(style_flags, &option);
+			if (!option)
+				break;
+
+			if (!parse_style_id_one_flag(option, ret)) {
+				fvwm_debug(__func__,
+					 "failed to parse option: %s",
+					 option);
+			}
+			free(option);
+		}
+		free(to_free);
+		goto out;
+	}
+
+	if ((action = GetNextToken(action, &token)) == NULL)
+		return NULL;
+
+	if (StrEquals(token, "*")) {
+		/* Global style. This is to be applied first of all
+		 * this is equal to an all zero style_id, so do nothing
+		 */
+		goto out;
+	}
+
+	/* Compatability mode */
+
+	/* Possible allow a style alias/name to be prefixed
+	 * The style flags, to make UseStyle and Delete style
+	 * easier to use
+	 */
+	SID_SET_IS_COMPATIBILITY_MODE(*ret, True);
+	SID_SET_NAME(*ret, token);
+out:
+	return action;
+}
+
+static void init_window_style_list(window_style_list **list,
+				   style_id_flags flags)
+{
+	*list = fxcalloc(1, sizeof(**list));
+	memcpy(&((*list)->flags), &flags, sizeof flags);
+
+	/* The order in which the styles are initialized define the order used
+	 * when applying styles.
+	 */
+	if (!flags.is_compatibility_mode)
+		flags.is_compatibility_mode = 1;
+	else if (!flags.has_resource)
+		flags.has_resource = 1;
+	else if (!flags.has_class)
+		flags.has_class = 1;
+	else if (!flags.has_name)
+		flags.has_name = 1;
+	else if (!flags.has_icon)
+		flags.has_icon = 1;
+	else if (!flags.has_window_id)
+		flags.has_window_id = 1;
+	else
+		return;
+
+	init_window_style_list(&SLGET_NEXT_LIST(**list),flags);
+}
+
+static Bool blockor(char *dest, char *blk1, char *blk2, int length)
 {
 	int i;
 	char result = 0;
@@ -170,80 +324,98 @@ static int blocksintersect(char *blk1, char *blk2, int length)
 	return 0;
 }
 
-static int style_ids_are_equal(style_id_t *a, style_id_t *b)
+static bool style_ids_are_equal(style_id_t *a, style_id_t *b)
 {
-	if (
-		SID_GET_HAS_NAME(*a) && SID_GET_HAS_NAME(*b) &&
-		!strcmp(SID_GET_NAME(*a), SID_GET_NAME(*b)))
-	{
-		return 1;
-	}
-	if (
-		SID_GET_HAS_WINDOW_ID(*a) && SID_GET_HAS_WINDOW_ID(*b) &&
-		SID_GET_WINDOW_ID(*a) == SID_GET_WINDOW_ID(*b))
-	{
-		return 1;
-	}
+	if (SID_GET_HAS_RESOURCE(*a) != SID_GET_HAS_RESOURCE(*b) ||
+	    SID_GET_HAS_CLASS(*a) != SID_GET_HAS_CLASS(*b) ||
+	    SID_GET_HAS_NAME(*a) != SID_GET_HAS_NAME(*b) ||
+	    SID_GET_HAS_ICON(*a) != SID_GET_HAS_ICON(*b) ||
+	    SID_GET_HAS_WINDOW_ID(*a) != SID_GET_HAS_WINDOW_ID(*b) ||
+	    SID_GET_IS_COMPATIBILITY_MODE(*a) != SID_GET_IS_COMPATIBILITY_MODE(*b))
+		return false;
 
-	return 0;
+	if ((SID_GET_HAS_RESOURCE(*a) &&
+		 strcmp(SID_GET_RESOURCE(*a), SID_GET_RESOURCE(*b))))
+		return false;
+	if ((SID_GET_HAS_CLASS(*a) &&
+		 strcmp(SID_GET_CLASS(*a), SID_GET_CLASS(*b)))) {
+		return false;
+	}
+	if ((SID_GET_HAS_NAME(*a) &&
+		 strcmp(SID_GET_NAME(*a), SID_GET_NAME(*b)))) {
+		return false;
+	}
+	if ((SID_GET_HAS_ICON(*a) &&
+		 strcmp(SID_GET_ICON(*a), SID_GET_ICON(*b)))) {
+		return false;
+	}
+	if (SID_GET_HAS_WINDOW_ID(*a) &&
+		SID_GET_WINDOW_ID(*a) != SID_GET_WINDOW_ID(*b)) {
+		return false;
+	}
+	if (SID_GET_IS_COMPATIBILITY_MODE(*a) &&
+	     strcmp(SID_GET_NAME(*a), SID_GET_NAME(*b))) {
+		return false;
+	}
+	return true;
 }
 
-static int style_id_equals_id(window_style *s, style_id_t* id)
+static bool style_id_equals_id(window_style *s, style_id_t* id)
 {
 	return style_ids_are_equal(&SGET_ID(*s), id);
 }
 
-static int styles_have_same_id(window_style* s, window_style* t)
+static bool styles_have_same_id(window_style* s, window_style* t)
 {
 	return style_ids_are_equal(&SGET_ID(*s), &SGET_ID(*t));
 }
 
-static int fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
+static bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
 {
-	if (SID_GET_HAS_NAME(s_id))
+	if (SID_GET_IS_COMPATIBILITY_MODE(s_id) &&
+	    !(matchWildcards(SID_GET_NAME(s_id), fw->class.res_name) == true ||
+	     matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) == true ||
+	     matchWildcards(SID_GET_NAME(s_id), fw->name.name) == true))
 	{
-		if (matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) ==
-		    1)
-		{
-			return 1;
-		}
-		if (matchWildcards(SID_GET_NAME(s_id), fw->class.res_name) ==
-		    1)
-		{
-			return 1;
-		}
-		if (matchWildcards(SID_GET_NAME(s_id), fw->visible_name) == 1)
-		{
-			return 1;
-		}
-		if (matchWildcards(SID_GET_NAME(s_id), fw->name.name) == 1)
-		{
-			return 1;
-		}
-		if (fw->style_name != NULL &&
-		    matchWildcards(SID_GET_NAME(s_id), fw->style_name) == 1)
-		{
-			return 1;
-		}
+		return false;
 	}
-	if (SID_GET_HAS_WINDOW_ID(s_id) &&
-	    SID_GET_WINDOW_ID(s_id) == (XID)FW_W(fw))
+	if (SID_GET_HAS_RESOURCE(s_id) &&
+	    (matchWildcards(SID_GET_RESOURCE(s_id), fw->class.res_name) ==
+	     FALSE)) {
+		return false;
+	}
+	if (SID_GET_HAS_CLASS(s_id) &&
+	    (matchWildcards(SID_GET_CLASS(s_id), fw->class.res_class) == FALSE))
 	{
-		return 1;
+		return false;
+	}
+	if (SID_GET_HAS_NAME(s_id) &&
+	    (matchWildcards(SID_GET_NAME(s_id), fw->name.name) == FALSE))
+	{
+		return false;
+	}
+	if (SID_GET_HAS_ICON(s_id) &&
+	    (matchWildcards(SID_GET_ICON(s_id), fw->icon_name.name) == FALSE))
+	{
+		return false;
+	}
+	if (SID_GET_HAS_WINDOW_ID(s_id) && SID_GET_WINDOW_ID(s_id) != (XID)FW_W(fw))
+	{
+		return false;
 	}
 
-	return 0;
+	return true;
 }
 
-static int one_fw_can_match_both_ids(window_style *s, window_style *t)
+static bool one_fw_can_match_both_ids(window_style *s, window_style *t)
 {
 	if (SGET_ID_HAS_WINDOW_ID(*s) && SGET_ID_HAS_WINDOW_ID(*t) &&
 	    SGET_WINDOW_ID(*s) != SGET_WINDOW_ID(*t))
 	{
-		return 0;
+		return false;
 	}
 
-	return 1;
+	return true;
 }
 
 static void remove_icon_boxes_from_style(window_style *pstyle)
@@ -254,8 +426,6 @@ static void remove_icon_boxes_from_style(window_style *pstyle)
 		pstyle->flags.has_icon_boxes = 0;
 		SSET_ICON_BOXES(*pstyle, NULL);
 	}
-
-	return;
 }
 
 static void copy_icon_boxes(icon_boxes **pdest, icon_boxes *src)
@@ -777,10 +947,18 @@ static void merge_styles(
 	return;
 }
 
+static void free_style_id(style_id_t *id)
+{
+	SAFEFREE(SID_GET_RESOURCE(*id));
+	SAFEFREE(SID_GET_CLASS(*id));
+	SAFEFREE(SID_GET_ICON(*id));
+	SAFEFREE(SID_GET_NAME(*id));
+}
+
 static void free_style(window_style *style)
 {
 	/* Free contents of style */
-	SAFEFREE(SGET_NAME(*style));
+	free_style_id(&SGET_ID(*style));
 	SAFEFREE(SGET_DECOR_NAME(*style));
 	SAFEFREE(SGET_ICON_FONT(*style));
 	SAFEFREE(SGET_WINDOW_FONT(*style));
@@ -851,26 +1029,50 @@ static void add_style_to_list(window_style *new_style)
 	 * used to merge duplicate entries, but that is no longer
 	 * appropriate since conflicting styles are possible, and the
 	 * last match should win! */
+	window_style_list *list = NULL;
+	if (all_styles == NULL)
+	{
+		/* This is the fist entry. We need to setup the all_styles
+		 * structure. Set up the entire structure at once.
+		 * Only keeping the used parts would save some memory,
+		 * but would increase the maximum memory usage as a prev
+		 * structure would be needed.
+		 */
+		style_id_flags flags;
+		memset(&flags, 0, sizeof flags);
+		init_window_style_list(&all_styles,flags);
+	}
+	/* find the first list the entry fits in */
+	for (list = all_styles; list && !blockissubset(
+		     (char*)&SGET_ID(*new_style).flags,(char*)&(list->flags),
+		     sizeof(style_id_flags)); list = SLGET_NEXT_LIST(*list));
+	if (!list)
+	{
+		fvwm_debug(__func__,
+			 "Can't find matching list for style.");
+		return;
+	}
 
-	if (last_style_in_list != NULL)
+	if (list->last_style != NULL)
 	{
 		/* not first entry in list chain this entry to the list */
-		SSET_NEXT_STYLE(*last_style_in_list, new_style);
+		SSET_NEXT_STYLE(*(list->last_style), new_style);
 	}
 	else
 	{
 		/* first entry in list set the list root pointer. */
-		all_styles = new_style;
+		list->first_style = new_style;
 	}
-	SSET_PREV_STYLE(*new_style, last_style_in_list);
+	SSET_PREV_STYLE(*new_style, list->last_style);
 	SSET_NEXT_STYLE(*new_style, NULL);
-	last_style_in_list = new_style;
+	list->last_style = new_style;
 	Scr.flags.do_need_style_list_update = 1;
 
 	return;
 } /* end function */
 
-static void remove_style_from_list(window_style *style, Bool do_free_style)
+static void remove_style_from_list(window_style_list *list,
+				   window_style *style, Bool do_free_style)
 {
 	window_style *prev;
 	window_style *next;
@@ -880,7 +1082,7 @@ static void remove_style_from_list(window_style *style, Bool do_free_style)
 	if (!prev)
 	{
 		/* first style in list */
-		all_styles = next;
+		list->first_style = next;
 	}
 	else
 	{
@@ -890,7 +1092,7 @@ static void remove_style_from_list(window_style *style, Bool do_free_style)
 	if (!next)
 	{
 		/* last style in list */
-		last_style_in_list = prev;
+		list->last_style = prev;
 	}
 	else
 	{
@@ -905,19 +1107,30 @@ static void remove_style_from_list(window_style *style, Bool do_free_style)
 
 static int remove_all_of_style_from_list(style_id_t style_id)
 {
-	window_style *nptr = all_styles;
+	window_style *nptr;
+	window_style_list *list;
 	window_style *next;
 	int is_changed = 0;
 
+	/* find the first list the entry fits in */
+	for (list = all_styles; list && !blockissubset(
+		     (char*)&style_id.flags,(char*)&(list->flags),
+		     sizeof(style_id_flags)); list = SLGET_NEXT_LIST(*list));
+	if (!list)
+	{
+		return False;
+	}
 	/* loop though styles */
+	nptr = list->first_style;
 	while (nptr)
 	{
 		next = SGET_NEXT_STYLE(*nptr);
 		/* Check if it's to be wiped */
 		if (style_id_equals_id(nptr, &style_id))
 		{
-			remove_style_from_list(nptr, True);
-			is_changed = 1;
+			fvwm_debug(__func__, "Style matched.  REMOVING");
+			remove_style_from_list(list, nptr, True);
+			is_changed = True;
 		}
 		/* move on */
 		nptr = next;
@@ -926,7 +1139,7 @@ static int remove_all_of_style_from_list(style_id_t style_id)
 	return is_changed;
 }
 
-static int _simplify_style_list(void)
+static inline Bool _simplify_style_list(window_style_list *list)
 {
 	window_style *cur;
 	int has_modified;
@@ -938,7 +1151,7 @@ static int _simplify_style_list(void)
 	 *   Merge styles with the same name if there are no
 	 *   conflicting styles with other names set in between. */
 	for (
-		cur = last_style_in_list, has_modified = 0; cur;
+		cur = list->last_style, has_modified = False; cur;
 		cur = SGET_PREV_STYLE(*cur))
 	{
 		style_flags dummyflags;
@@ -983,7 +1196,7 @@ static int _simplify_style_list(void)
 				/* The style is a subset of later style
 				 * definitions; nuke it */
 				window_style *tmp = SGET_PREV_STYLE(*cmp);
-				remove_style_from_list(cmp, True);
+				remove_style_from_list(list, cmp, True);
 				cmp = tmp;
 				has_modified = 1;
 				continue;
@@ -1029,7 +1242,7 @@ static int _simplify_style_list(void)
 				SSET_NEXT_STYLE(*cur, next);
 				/* remove the style without freeing the
 				 * memory */
-				remove_style_from_list(cmp, False);
+				remove_style_from_list(list, cmp, False);
 				/* release the style structure */
 				free(cmp);
 				cmp = tmp;
@@ -1060,7 +1273,7 @@ static int _simplify_style_list(void)
 				/* merge cur into cmp and delete it
 				 * afterwards */
 				merge_styles(cmp, cur, True);
-				remove_style_from_list(cur, True);
+				remove_style_from_list(list, cur, True);
 				cur = cmp;
 				cmp = tmp;
 				has_modified = 1;
@@ -1428,8 +1641,8 @@ static Bool style_parse_focus_policy_style(
 			val = DEF_FP_MOUSE_BUTTONS;
 		}
 		FPS_MOUSE_BUTTONS(*f, val);
-		FPS_MOUSE_BUTTONS(*m, 0x1FF);
-		FPS_MOUSE_BUTTONS(*c, 0x1FF);
+		FPS_MOUSE_BUTTONS(*m, ~0);
+		FPS_MOUSE_BUTTONS(*c, ~0);
 		break;
 	case 2:
 		/* FocusClickModifiers */
@@ -1449,8 +1662,8 @@ static Bool style_parse_focus_policy_style(
 			val = FPOL_ANY_MODIFIER;
 		}
 		FPS_MODIFIERS(*f, val);
-		FPS_MODIFIERS(*m, 0xFF);
-		FPS_MODIFIERS(*c, 0xFF);
+		FPS_MODIFIERS(*m, ~0);
+		FPS_MODIFIERS(*c, ~0);
 		break;
 	case 3:
 		/* ClickRaisesFocused */
@@ -2073,6 +2286,8 @@ static Bool style_parse_one_style_option(
 {
 	window_style *add_style;
 	/* work area for button number */
+	int num;
+	int i;
 	int tmpno[3] = { -1, -1, -1 };
 	int val[4] = {0, 0, 0, 0};
 	int spargs = 0;
@@ -3067,8 +3282,6 @@ static Bool style_parse_one_style_option(
 		{
 			float f[6] = {-1, -1, -1, -1, -1, -1};
 			Bool bad = False;
-			int num;
-			int i;
 
 			num = 0;
 			if (on != 0 && rest != NULL)
@@ -3130,8 +3343,6 @@ static Bool style_parse_one_style_option(
 				 token, "MinOverlapPercentPlacementPenalties"))
 		{
 			Bool bad = False;
-			int num;
-			int i;
 
 			num = 0;
 			if (on != 0)
@@ -3999,13 +4210,13 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_debug(__func__,
-					   "bad State arg: %s", rest);
+					"bad State arg: %s", rest);
 			}
 		}
 		else if (StrEquals(token, "SnapAttraction"))
 		{
-			int ival;
-			char *ltoken;
+			int val;
+			char *token;
 			int snap_proximity;
 			int snap_mode;
 
@@ -4015,65 +4226,65 @@ static Bool style_parse_one_style_option(
 				snap_mode = DEFAULT_SNAP_ATTRACTION_MODE;
 				if (
 					GetIntegerArguments(
-						rest, &rest, &ival, 1) != 1)
+						rest, &rest, &val, 1) != 1)
 				{
 					break;
 				}
-				if (ival >= 0)
+				if (val >= 0)
 				{
-					snap_proximity = ival;
+					snap_proximity = val;
 				}
-				if (ival == 0)
-				{
-					break;
-				}
-				ltoken = PeekToken(rest, &rest);
-				if (ltoken == NULL)
+				if (val == 0)
 				{
 					break;
 				}
-				if (StrEquals(ltoken, "All"))
+				token = PeekToken(rest, &rest);
+				if (token == NULL)
+				{
+					break;
+				}
+				if (StrEquals(token, "All"))
 				{
 					snap_mode = SNAP_ICONS | SNAP_WINDOWS;
-					ltoken = PeekToken(rest, &rest);
+					token = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(ltoken, "None"))
+				else if (StrEquals(token, "None"))
 				{
 					snap_mode = SNAP_NONE;
-					ltoken = PeekToken(rest, &rest);
+					token = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(ltoken, "SameType"))
+				else if (StrEquals(token, "SameType"))
 				{
 					snap_mode = SNAP_SAME;
-					ltoken = PeekToken(rest, &rest);
+					token = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(ltoken, "Icons"))
+				else if (StrEquals(token, "Icons"))
 				{
 					snap_mode = SNAP_ICONS;
-					ltoken = PeekToken(rest, &rest);
+					token = PeekToken(rest, &rest);
 				}
-				else if (StrEquals(ltoken, "Windows"))
+				else if (StrEquals(token, "Windows"))
 				{
 					snap_mode = SNAP_WINDOWS;
-					ltoken = PeekToken(rest, &rest);
+					token = PeekToken(rest, &rest);
 				}
-				if (ltoken == NULL)
+				if (token == NULL)
 				{
 					break;
 				}
-				if (StrEquals(ltoken, "Screen"))
+				if (StrEquals(token, "Screen"))
 				{
 					snap_mode |= SNAP_SCREEN;
 				}
-				else if (StrEquals(ltoken, "ScreenWindows"))
+				else if (StrEquals(token, "ScreenWindows"))
 				{
 					snap_mode |= SNAP_SCREEN_WINDOWS;
 				}
-				else if (StrEquals(ltoken, "ScreenIcons"))
+				else if (StrEquals(token, "ScreenIcons"))
 				{
 					snap_mode |= SNAP_SCREEN_ICONS;
 				}
-				else if (StrEquals(ltoken, "ScreenAll"))
+				else if (StrEquals(token, "ScreenAll"))
 				{
 					snap_mode |= SNAP_SCREEN_ALL;
 				}
@@ -4248,22 +4459,30 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "UseStyle"))
 		{
 			int hit;
+			style_id_t match_id;
+			window_style_list *list;
 
-			token = PeekToken(rest, &rest);
-			if (!token)
+			rest = parse_style_id(rest, &match_id);
+
+			if (!rest)
 			{
 				fvwm_debug(__func__,
-					   "UseStyle needs an argument");
+					 "UseStyle needs an argument");
 				break;
 			}
 			hit = 0;
+			for (list = all_styles; list && !blockissubset(
+				     (char*)&(match_id.flags),
+				     (char*)&(list->flags),
+				     sizeof(style_id_flags));
+				     list = SLGET_NEXT_LIST(*list));
+
 			/* changed to accum multiple Style definitions
 			 * (veliaa@rpi.edu) */
-			for (add_style = all_styles; add_style;
+			for (add_style = list->first_style; add_style;
 			     add_style = SGET_NEXT_STYLE(*add_style))
 			{
-				if (SGET_ID_HAS_NAME(*add_style) &&
-				    StrEquals(token, SGET_NAME(*add_style)))
+				if (style_id_equals_id(add_style,&match_id))
 				{
 					/* match style */
 					hit = 1;
@@ -4273,9 +4492,9 @@ static Bool style_parse_one_style_option(
 			/* move forward one word */
 			if (!hit)
 			{
+				/*TODO: add some sort of descriptive output */
 				fvwm_debug(__func__,
-					   "UseStyle: %s style not found",
-					   token);
+					"UseStyle: style not found");
 			}
 		}
 		else if (StrEquals(token, "Unmanaged"))
@@ -4339,13 +4558,13 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "WindowShadeSteps"))
 		{
 			int n = 0;
-			int ival = 0;
+			int val = 0;
 			int unit = 0;
 
-			n = GetOnePercentArgument(rest, &ival, &unit);
+			n = GetOnePercentArgument(rest, &val, &unit);
 			if (n != 1)
 			{
-				ival = 0;
+				val = 0;
 			}
 			else
 			{
@@ -4353,11 +4572,11 @@ static Bool style_parse_one_style_option(
 			}
 			/* we have a 'pixel' suffix if unit != 0; negative
 			 * values mean pixels */
-			ival = (unit != 0) ? -ival : ival;
+			val = (unit != 0) ? -val : val;
 			ps->flags.has_window_shade_steps = 1;
 			ps->flag_mask.has_window_shade_steps = 1;
 			ps->change_mask.has_window_shade_steps = 1;
-			SSET_WINDOW_SHADE_STEPS(*ps, ival);
+			SSET_WINDOW_SHADE_STEPS(*ps, val);
 		}
 		else if (StrEquals(token, "WindowShadeScrolls"))
 		{
@@ -4444,7 +4663,6 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 	{
 		action++;
 	}
-
 	while (action && *action && *action != '\n')
 	{
 		action = GetNextFullOption(action, &option);
@@ -4460,15 +4678,14 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 		}
 
 		/* It might make more sense to capture the whole word, fix its
-		 * case, and use strcmp, but there aren't many caseless compares
-		 * because of this "switch" on the first letter. */
+		 * case, and use strcmp, but there aren't many caseless
+		 * compares because of this "switch" on the first letter. */
 		found = style_parse_one_style_option(
 			token, rest, &rest, prefix, ps, &cur_ib);
 
 		if (found == False)
 		{
-			fvwm_debug(__func__,
-				   "Bad style option: %s", option);
+			fvwm_debug(__func__, "Bad style option: %s", option);
 			/* Can't return here since all malloced memory will be
 			 * lost. Ignore rest of line instead. */
 			/* No, I think we /can/ return here. In fact, /not/
@@ -4485,8 +4702,8 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 			if (*rest)
 			{
 				fvwm_debug(__func__,
-					   "Unconsumed argument in %s: %s",
-					   option, rest);
+					 "Unconsumed argument in %s: %s",
+					 option, rest);
 			}
 		}
 		free(option);
@@ -4511,8 +4728,14 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 {
 	/* temp area to build name list */
 	window_style *ps;
+	window_style_list *list;
+	Bool merged = False;
+	style_id_t default_id;
+	memset(&default_id, 0, sizeof(style_id_t));
 
 	ps = fxcalloc(1, sizeof(window_style));
+	/* init temp window_style area */
+	memset(ps, 0, sizeof(window_style));
 	/* init default focus policy */
 	fpol_init_default_fp(&S_FOCUS_POLICY(SCF(*ps)));
 	/* mark style as changed */
@@ -4524,15 +4747,13 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 
 	if (!is_window_style)
 	{
-		/* parse style name */
-		action = GetNextToken(action, &SGET_NAME(*ps));
-		/* in case there was no argument! */
-		if (SGET_NAME(*ps) == NULL)
+		/* parse style id */
+		action = parse_style_id(action, &SGET_ID(*ps));
+		if (action == NULL)
 		{
 			free(ps);
 			return;
 		}
-		SSET_ID_HAS_NAME(*ps, True);
 	}
 	else
 	{
@@ -4551,7 +4772,7 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 	parse_and_set_window_style(action, prefix, ps);
 
 	/* capture default icons */
-	if (SGET_ID_HAS_NAME(*ps) && StrEquals(SGET_NAME(*ps), "*"))
+	if (style_id_equals_id(ps, &default_id))
 	{
 		if (ps->flags.has_icon == 1)
 		{
@@ -4566,14 +4787,19 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 			SSET_ICON_NAME(*ps, NULL);
 		}
 	}
-	if (last_style_in_list && styles_have_same_id(ps, last_style_in_list))
+	for (list = all_styles; list != NULL; list = SLGET_NEXT_LIST(*list))
 	{
-		/* merge with previous style */
-		merge_styles(last_style_in_list, ps, True);
-		free_style(ps);
-		free(ps);
+		if (list->last_style &&
+		    styles_have_same_id(ps, list->last_style))
+		{
+			/* merge with previous style */
+			merge_styles(list->last_style, ps, True);
+			free_style(ps);
+			free(ps);
+			merged = True;
+		}
 	}
-	else
+	if (!merged)
 	{
 		/* add temp name list to list */
 		add_style_to_list(ps);
@@ -4643,8 +4869,14 @@ void free_icon_boxes(icon_boxes *ib)
 void simplify_style_list(void)
 {
 	/* one pass through the style list, then process other events first */
-	Scr.flags.do_need_style_list_update = _simplify_style_list();
-
+	window_style_list *list = all_styles;
+	Scr.flags.do_need_style_list_update = 0;
+	while (list)
+	{
+		Scr.flags.do_need_style_list_update |=
+			!!_simplify_style_list(list);
+		list = SLGET_NEXT_LIST(*list);
+	}
 	return;
 }
 
@@ -4659,17 +4891,22 @@ void simplify_style_list(void)
  */
 void lookup_style(FvwmWindow *fw, window_style *styles)
 {
+	window_style_list *list;
 	window_style *nptr;
 
 	/* clear callers return area */
 	memset(styles, 0, sizeof(window_style));
-
-	/* look thru all styles in order defined. */
-	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
+	/* look thru all stile list in order of priority*/
+	for (list = all_styles; list != NULL; list =SLGET_NEXT_LIST(*list))
 	{
-		if (fw_match_style_id(fw, SGET_ID(*nptr)))
+		/* look thru all styles in order defined. */
+		for (nptr = list->first_style; nptr != NULL;
+		     nptr = SGET_NEXT_STYLE(*nptr))
 		{
-			merge_styles(styles, nptr, False);
+			if (fw_match_style_id(fw, SGET_ID(*nptr)))
+			{
+				merge_styles(styles, nptr, False);
+			}
 		}
 	}
 	EWMH_GetStyle(fw, styles);
@@ -4817,6 +5054,7 @@ void check_window_style_change(
 	 *   manual_placement_honors_starts_on_page
 	 *   capture_honors_starts_on_page
 	 *   recapture_honors_starts_on_page
+	 *   use_layer
 	 *   ewmh_placement_mode
 	 */
 
@@ -5094,13 +5332,17 @@ void check_window_style_change(
 /* Mark all styles as unchanged. */
 void reset_style_changes(void)
 {
+	window_style_list *list;
 	window_style *temp;
-
-	for (temp = all_styles; temp != NULL; temp = SGET_NEXT_STYLE(*temp))
-	{
-		temp->has_style_changed = 0;
-		memset(&SCCS(*temp), 0, sizeof(SCCS(*temp)));
-		memset(&(temp->change_mask), 0, sizeof(temp->change_mask));
+	for (list = all_styles; list != NULL; list = SLGET_NEXT_LIST(*list)) {
+		for (temp = list->first_style; temp != NULL;
+		     temp = SGET_NEXT_STYLE(*temp))
+		{
+			temp->has_style_changed = 0;
+			memset(&SCCS(*temp), 0, sizeof(SCCS(*temp)));
+			memset(&(temp->change_mask), 0,
+			       sizeof(temp->change_mask));
+		}
 	}
 
 	return;
@@ -5109,56 +5351,60 @@ void reset_style_changes(void)
 /* Mark styles as updated if their colorset changed. */
 void update_style_colorset(int colorset)
 {
+	window_style_list *list;
 	window_style *temp;
-
-	for (temp = all_styles; temp != NULL; temp = SGET_NEXT_STYLE(*temp))
+	for (list = all_styles; list != NULL; list = SLGET_NEXT_LIST(*list))
 	{
-		if (SUSE_COLORSET(&temp->flags) &&
-		    SGET_COLORSET(*temp) == colorset)
+		for (temp = list->first_style; temp != NULL;
+		     temp = SGET_NEXT_STYLE(*temp))
 		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_colorset = 1;
-			Scr.flags.do_need_window_update = 1;
-		}
-		if (SUSE_COLORSET_HI(&temp->flags) &&
-		    SGET_COLORSET_HI(*temp) == colorset)
-		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_colorset_hi = 1;
-			Scr.flags.do_need_window_update = 1;
-		}
-		if (SUSE_BORDER_COLORSET(&temp->flags))
-		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_border_colorset = 1;
-			Scr.flags.do_need_window_update = 1;
-		}
-		if (SUSE_BORDER_COLORSET_HI(&temp->flags))
-		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_border_colorset_hi = 1;
-			Scr.flags.do_need_window_update = 1;
-		}
-		if (SUSE_ICON_TITLE_COLORSET(&temp->flags) &&
-		    SGET_ICON_TITLE_COLORSET(*temp) == colorset)
-		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_icon_title_colorset = 1;
-			Scr.flags.do_need_window_update = 1;
-		}
-		if (SUSE_ICON_TITLE_COLORSET_HI(&temp->flags) &&
-		    SGET_ICON_TITLE_COLORSET_HI(*temp) == colorset)
-		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_icon_title_colorset_hi = 1;
-			Scr.flags.do_need_window_update = 1;
-		}
-		if (SUSE_ICON_BACKGROUND_COLORSET(&temp->flags) &&
-		    SGET_ICON_BACKGROUND_COLORSET(*temp) == colorset)
-		{
-			temp->has_style_changed = 1;
-			temp->change_mask.use_icon_background_colorset = 1;
-			Scr.flags.do_need_window_update = 1;
+			if (SUSE_COLORSET(&temp->flags) &&
+			    SGET_COLORSET(*temp) == colorset)
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_colorset = 1;
+				Scr.flags.do_need_window_update = 1;
+			}
+			if (SUSE_COLORSET_HI(&temp->flags) &&
+			    SGET_COLORSET_HI(*temp) == colorset)
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_colorset_hi = 1;
+				Scr.flags.do_need_window_update = 1;
+			}
+			if (SUSE_BORDER_COLORSET(&temp->flags))
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_border_colorset = 1;
+				Scr.flags.do_need_window_update = 1;
+			}
+			if (SUSE_BORDER_COLORSET_HI(&temp->flags))
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_border_colorset_hi = 1;
+				Scr.flags.do_need_window_update = 1;
+			}
+			if (SUSE_ICON_TITLE_COLORSET(&temp->flags) &&
+			    SGET_ICON_TITLE_COLORSET(*temp) == colorset)
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_icon_title_colorset = 1;
+				Scr.flags.do_need_window_update = 1;
+			}
+			if (SUSE_ICON_TITLE_COLORSET_HI(&temp->flags) &&
+			    SGET_ICON_TITLE_COLORSET_HI(*temp) == colorset)
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_icon_title_colorset_hi=1;
+				Scr.flags.do_need_window_update = 1;
+			}
+			if (SUSE_ICON_BACKGROUND_COLORSET(&temp->flags) &&
+			    SGET_ICON_BACKGROUND_COLORSET(*temp) == colorset)
+			{
+				temp->has_style_changed = 1;
+				temp->change_mask.use_icon_background_colorset=1;
+				Scr.flags.do_need_window_update = 1;
+			}
 		}
 	}
 
@@ -5308,98 +5554,6 @@ void style_destroy_style(style_id_t s_id)
 	return;
 }
 
-void print_styles(int verbose)
-{
-	window_style *nptr;
-	int count = 0;
-	int mem = 0;
-
-	fvwm_debug(__func__, "Info on fvwm Styles:\n");
-	if (verbose)
-	{
-		fvwm_debug(__func__, "  List of Styles Names:\n");
-	}
-	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
-	{
-		count++;
-		if (SGET_ID_HAS_NAME(*nptr))
-		{
-			mem += strlen(SGET_NAME(*nptr));
-			if (verbose)
-			{
-				fvwm_debug(__func__, "    * %s\n",
-					   SGET_NAME(*nptr));
-			}
-		}
-		else
-		{
-			mem++;
-			if (verbose)
-			{
-				fvwm_debug(__func__, "    * 0x%lx\n",
-					   (unsigned long)SGET_WINDOW_ID(*nptr));
-			}
-		}
-		if (SGET_DECOR_NAME(*nptr))
-		{
-			mem += strlen(SGET_DECOR_NAME(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__, "        Decor: %s\n",
-					   SGET_DECOR_NAME(*nptr));
-			}
-		}
-		if (SGET_WINDOW_FONT(*nptr))
-		{
-			mem += strlen(SGET_WINDOW_FONT(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Window Font: %s\n",
-					   SGET_WINDOW_FONT(*nptr));
-			}
-		}
-		if (SGET_ICON_FONT(*nptr))
-		{
-			mem += strlen(SGET_ICON_FONT(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Icon Font: %s\n",
-					   SGET_ICON_FONT(*nptr));
-			}
-		}
-		if (SGET_ICON_NAME(*nptr))
-		{
-			mem += strlen(SGET_ICON_NAME(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        Icon Name: %s\n",
-					   SGET_ICON_NAME(*nptr));
-			}
-		}
-		if (SGET_MINI_ICON_NAME(*nptr))
-		{
-			mem += strlen(SGET_MINI_ICON_NAME(*nptr));
-			if (verbose > 1)
-			{
-				fvwm_debug(__func__,
-					   "        MiniIcon Name: %s\n",
-					   SGET_MINI_ICON_NAME(*nptr));
-			}
-		}
-		if (SGET_ICON_BOXES(*nptr))
-		{
-			mem += sizeof(icon_boxes);
-		}
-	}
-	fvwm_debug(__func__, "  Number of styles: %d, Memory Used: %d bits\n",
-		   count, (int)(count*sizeof(window_style) + mem));
-
-	return;
-}
-
 /* ---------------------------- builtin commands --------------------------- */
 
 void CMD_Style(F_CMD_ARGS)
@@ -5425,23 +5579,17 @@ void CMD_FocusStyle(F_CMD_ARGS)
 
 void CMD_DestroyStyle(F_CMD_ARGS)
 {
-	char *name;
 	style_id_t s_id;
 
-	/* parse style name */
-	name = PeekToken(action, &action);
-
-	/* in case there was no argument! */
-	if (name == NULL)
+	action = parse_style_id(action, &s_id);
+	if (action == NULL) {
+		fvwm_debug(__func__, "ACTION IS NULL.  RETURNING");
 		return;
-
-	memset(&s_id, 0, sizeof(style_id_t));
-	SID_SET_NAME(s_id, name);
-	SID_SET_HAS_NAME(s_id, True);
+	}
 
 	/* Do it */
+	fvwm_debug(__func__, "NAME: %s, CLASS: %s", s_id.class, s_id.name);
 	style_destroy_style(s_id);
-	return;
 }
 
 void CMD_DestroyWindowStyle(F_CMD_ARGS)

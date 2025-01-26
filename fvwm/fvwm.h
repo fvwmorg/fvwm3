@@ -570,15 +570,24 @@ typedef struct style_flags
 	unsigned initial_placement_done : 1;
 } style_flags;
 
+typedef struct style_id_flags
+{
+	unsigned has_name:1;
+	unsigned has_window_id:1;
+	unsigned has_class:1;
+	unsigned has_resource:1;
+	unsigned has_icon:1;
+	unsigned is_compatibility_mode:1;
+} style_id_flags;
+
 typedef struct style_id_t
 {
-	char *name;
 	XID window_id;
-	struct
-	{
-		unsigned has_name:1;
-		unsigned has_window_id:1;
-	} flags;
+	style_id_flags flags;
+	char *name;
+	char *class;
+	char *resource;
+	char *icon;
 } style_id_t;
 
 typedef struct snap_attraction_t
@@ -678,6 +687,14 @@ typedef struct window_style
 	unsigned has_title_format_string : 1;
 	unsigned has_icon_title_format_string : 1;
 } window_style;
+
+typedef struct window_style_list
+{
+	struct window_style_list	*next;
+	style_id_t			 flags;
+	window_style			*first_style;
+	window_style			*last_style;
+} window_style_list;
 
 typedef struct window_g
 {
