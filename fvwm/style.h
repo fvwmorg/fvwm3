@@ -367,6 +367,31 @@
 #define S_SET_EWMH_MAXIMIZE_MODE(c,x) \
 	((c).s.ewmh_maximize_mode = (x))
 
+#define SID_GET_RESOURCE(id) \
+	((id).resource)
+#define SID_SET_RESOURCE(id,x) \
+	((id).resource = (x))
+#define SID_GET_CLASS(id) \
+	((id).class)
+#define SID_SET_CLASS(id,x) \
+	((id).class = (x))
+#define SID_GET_ICON(id) \
+	((id).icon)
+#define SID_SET_ICON(id,x) \
+	((id).icon = (x))
+#define SID_GET_NAME(id) \
+	((id).name)
+#define SID_SET_NAME(id,x) \
+	((id).name = (x))
+#define SID_GET_WINDOW_ID(id) \
+	((id).window_id)
+#define SID_SET_WINDOW_ID(id,x) \
+	((id).window_id = (x))
+#define SID_SET_IS_COMPATIBILITY_MODE(id,x) \
+        ((id).flags.is_compatibility_mode = !!(x))
+#define SID_GET_IS_COMPATIBILITY_MODE(id) \
+        ((id).flags.is_compatibility_mode)
+
 /* access to style_id */
 #define SID_GET_NAME(id) \
 	((id).name)
@@ -384,6 +409,18 @@
 	((id).flags.has_window_id = !!(x))
 #define SID_GET_HAS_WINDOW_ID(id) \
 	((id).flags.has_window_id)
+#define SID_GET_HAS_RESOURCE(id) \
+	((id).flags.has_resource)
+#define SID_SET_HAS_RESOURCE(id,x) \
+	((id).flags.has_resource = (x))
+#define SID_GET_HAS_CLASS(id) \
+	((id).flags.has_class)
+#define SID_SET_HAS_CLASS(id,x) \
+	((id).flags.has_class = (x))
+#define SID_GET_HAS_ICON(id) \
+	((id).flags.has_icon)
+#define SID_SET_HAS_ICON(id,x) \
+	((id).flags.has_icon = (x))
 
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(s) \
@@ -662,6 +699,12 @@
 	((s).icon_title_format_string)
 #define SSET_ICON_TITLE_FORMAT_STRING(s,x) \
 	((s).icon_title_format_string = (x))
+
+/* access to style lists */
+#define SLGET_NEXT_LIST(s) \
+	((s).next)
+#define SLSET_NEXT_LIST(s,x) \
+	((s).next = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *fw, window_style *styles);
