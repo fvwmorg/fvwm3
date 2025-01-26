@@ -3451,8 +3451,6 @@ fvwm used. _verbose_ can be 1 or 2.
 +
 _nls_ which prints information on the locale catalogs that fvwm used
 +
-_style_ which prints information on fvwm styles. _verbose_ can be 1.
-+
 _bindings_ which prints information on all the bindings fvwm has: key
 and mouse bindings. _verbose_ has no effect with this option.
 +
