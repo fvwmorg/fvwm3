@@ -4936,80 +4936,52 @@ ifdef::fvwm3all[]
 // BEGIN 'styles'
 === Controlling Window Styles
 
-For readability, the commands in this section are not sorted
-alphabetically. The description of the *Style* command can be found at
-the end of this section.
-
-*FocusStyle* _stylename_ _options_::
-	works exactly like the *Style* command, but accepts only the focus
-	policy related styles beginning with "FP". The prefix can be removed,
-	but at the cost of a little bit of time. *FocusStyle* is meant to make
-	the configuration file more readable. Example:
-+
-
-....
-FocusStyle * EnterToFocus, !LeaveToUnfocus
-....
-
-+
-is equivalent to
-+
-
-....
-Style * FPEnterToFocus, !FPLeaveToUnfocus
-....
-
-*DestroyStyle* _style_::
-	deletes the style named _style_. The changes take effect immediately.
-	Note that _style_ is not a wild-carded search string, but rather a
-	case-sensitive string that should exactly match the original *Style*
-	command.
-+
-Destroying style "*" can be done, but isn't really to be recommended.
-For example:
-+
-
-....
-DestroyStyle Application*
-....
-
-+
-This removes all settings for the style named "Application*", NOT all
-styles starting with "Application".
-
-*DestroyWindowStyle*::
-	deletes the styles set by the *WindowStyle* command on the selected
-	window. The changes take effect immediately.
-
-*UpdateStyles*::
-	All pending updates of all windows' styles and looks are applied
-	immediately. E.g. if *Style*, _WindowStyle_ or _TitleStyle_ commands
-	were issued inside a fvwm function.
-
 *Style* _stylename_ _options_ ...::
-	The *Style* command is used to set attributes of a window to values
-	other than the default or to set the window manager default styles.
+	The *Style* command is used to set attributes of a window.
 +
 _stylename_ can be a window's name, class, visible name, or resource
-string. It may contain the wildcards '{asterisk}' and '?', which are matched in
-the usual Unix filename manner. Multiple style options in a single
-*Style* command are read from left to right as if they were issued one
-after each other in separate commands. A given style always overrides
-all conflicting styles that have been issued earlier (or further left
-on the same style line).
+string. It may contain the wildcards '{asterisk}' and '?', which are matched
+according to standard globbing rules, although unlike globs, these are the
+only supported wildcard modifiers.
++
+Multiple options in a single *Style* command are read from left to right
+as if they were issued one after each other in separate commands. A given
+style always overrides all conflicting styles that have been issued earlier
+(or further left on the same style line).
 +
 Note: windows that have no name (WM_NAME) are given a name of
-"Untitled", and windows that do not have a class (WM_CLASS, res_class)
-are given class "NoClass" and those that do not have a resource
-(WM_CLASS, res_name) are given resource "NoResource".
+_Untitled_, and windows that do not have a class (WM_CLASS, res_class)
+are given class _NoClass_ and those that do not have a resource
+(WM_CLASS, res_name) are given resource _NoResource_.
 +
-If a window has the resource "fvwmstyle" set, the value of that
+If a window has the resource _fvwmstyle_ set, the value of that
 resource is used in addition to any window names when selecting the
 style.
 +
 _options_ is a comma separated list containing one or more of the
-following keywords. Each group of style names is separated by slashes
-('/'). The last style in these groups is the default. _BorderWidth_,
+following keywords.
++
+
+Options affecting a window's appearance:
+
+[%autowidth.stretch]
+|====
+|_Option_ |_Description_
+|BorderWidth|Sets the width of the rendered border, in pixels.  A value of _0_
+disables the border.
+|HandleWidth|Sets the width of the rendered handles, in pixels.  _Handles_
+refers to the corners of a window.  A value of _0_ disables the handles.
+|CornerLength|Sets the size of the handles on a window.
+|BorderColorset|Takes eight positive integers and applies the _colorsets_ to
+those regions of a window's border.  The ordering is:
++
+....
+North, North East, East, South East, South, South West, West, North West
+....
+|====
+
+
+_BorderWidth_,
 _HandleWidth_, _CornerLength_, _!Icon_ / _Icon_, _MiniIcon_,
 _IconBox_, _IconGrid_, _IconFill_, _IconSize_, _!Title_ / _Title_,
 _TitleAtBottom_ / _TitleAtLeft_ / _TitleAtRight_ /
@@ -5116,10 +5088,53 @@ _EWMHPlacementUseDynamicWorkingArea_, _MoveByProgramMethod_,
 _Unmanaged_, _State_, _SnapGrid_, _SnapAttraction_, _EdgeMoveDelay_,
 _EdgeResizeDelay_. _EdgeMoveResistance_, _InitialMapCommand_
 +
-In the above list some options are listed as
-style-option/opposite-style-option. The opposite-style-option for
-entries that have them describes the fvwm default behavior and can be
-used if you want to change the fvwm default behavior.
+*DestroyStyle* _style_::
+	deletes the style named _style_. The changes take effect immediately.
+	Note that _style_ is not a wild-carded search string, but rather a
+	case-sensitive string that should exactly match the original *Style*
+	command.
++
+Destroying style "*" can be done, but isn't really to be recommended.
+For example:
++
+
+....
+DestroyStyle Application*
+....
+
++
+This removes all settings for the style named "Application*", NOT all
+styles starting with "Application".
++
+*DestroyWindowStyle*::
+	deletes the styles set by the *WindowStyle* command on the selected
+	window. The changes take effect immediately.
+
+*UpdateStyles*::
+	All pending updates of all windows' styles and looks are applied
+	immediately. E.g. if *Style*, _WindowStyle_ or _TitleStyle_ commands
+	were issued inside a fvwm function.
+
++
+*FocusStyle* _stylename_ _options_::
+	works exactly like the *Style* command, but accepts only the focus
+	policy related styles beginning with "FP". The prefix can be removed,
+	but at the cost of a little bit of time. *FocusStyle* is meant to make
+	the configuration file more readable. Example:
++
+
+....
+FocusStyle * EnterToFocus, !LeaveToUnfocus
+....
+
++
+is equivalent to
++
+
+....
+Style * FPEnterToFocus, !FPLeaveToUnfocus
+....
+
 +
 *Focus policy*;;
 	_ClickToFocus_ instructs fvwm to give the focus to a window when it
