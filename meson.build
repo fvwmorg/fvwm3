@@ -67,6 +67,7 @@ endif
 
 if host_machine.system() == 'darwin'
     conf.set10('HOST_MACOS', true)
+    add_project_arguments(['-Wno-nonportable-include-path'], language: 'c')
 endif
 
 # Set static configuration.
