@@ -31,10 +31,10 @@ packet has different fields, depending on the type requested.
 == COMMUNICATION
 
 The default unix-domain socket for _FvwmMFL_ is
-_$TMPDIR/fvwmmfl/fvwm_mfl_$DISPLAY.sock_.
+*$TMPDIR/fvwmmfl/fvwm_mfl_$DISPLAY.sock*.
 
-The path for where _fvwm_mfl-$DISPLAY_.sock is created can be changed by
-setting the _FVWMMFL_SOCKET_PATH_ environment variable.  _FvwmMFL_ will create
+The path for where *fvwm_mfl_$DISPLAY.sock* is created can be changed by
+setting the *FVWMMFL_SOCKET_PATH* environment variable.  _FvwmMFL_ will create
 this if it does not exist, and set relevant permissions.
 
 == REGISTERING INTEREST
