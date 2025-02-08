@@ -1,5 +1,41 @@
 # Changelog
 
+## [1.1.2](https://github.com/fvwmorg/fvwm3/tree/1.1.2) (2025-02-08)
+
+## What's Changed
+### Breaking Changes
+* Remove obsoleted commands. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1112
+* Style syntax matching: Class, Name, Resource, Icon, WindowID by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1162
+* FvwmMFL: start by default by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1083
+### Enhancements
+* FvwmPrompt: honour "quit" as case-sensitive by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1148
+* expand: introduce $[desk.count] by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1158
+* FvwmRerrange: Add gap option when tiling. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1159
+* Add screen option to CursorMove. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1118
+### Other Changes
+* FvwmPager: Update current desk correctly during init. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1129
+* Use last event time when calling XSetInputFocus by @rbernon in https://github.com/fvwmorg/fvwm3/pull/1136
+* FvwmPager: Fix SolidSeparators option by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1139
+* SVG: set default width/height if absent by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1135
+* build: SVG: remove superflous includes by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1140
+* man: Fix formatting in Style definition by @utopiabound in https://github.com/fvwmorg/fvwm3/pull/1141
+* ta/xfixes cursor barrier by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1142
+* FvwmPager: increase command stack size by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1151
+* WindowList missing options in man pages by @ileGITimo in https://github.com/fvwmorg/fvwm3/pull/1153
+* doc: fix spacing of options to WindowList by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1154
+* blacksmith.sh: Migrate workflows to Blacksmith by @blacksmith-sh in https://github.com/fvwmorg/fvwm3/pull/1155
+* Correct shadows on vertical titlebars by @hak-foo in https://github.com/fvwmorg/fvwm3/pull/1156
+* Allow modules to use fvwm_debug by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1144
+* ResizeMove: Make Warp imply WarpToWindow by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1161
+* build: macos: ignore case-sensitive filename warnings by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1163
+
+## New Contributors
+* @rbernon made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1136
+* @utopiabound made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1141
+* @blacksmith-sh made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1155
+* @hak-foo made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1156
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.1.1...1.1.2
 ## [1.1.1](https://github.com/fvwmorg/fvwm3/tree/1.1.1) (2024-11-30)
 
 ## What's Changed
