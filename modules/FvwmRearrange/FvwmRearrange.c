@@ -129,6 +129,7 @@ int transients	 = 0;
 int maximized	 = 1;
 int titled	 = 1;
 int desk	 = 0;
+int on_screen	 = 0;
 int reversed	 = 0;
 int do_ewmhiwa	 = 0;
 int is_init	 = 1;
@@ -343,9 +344,19 @@ is_suitable_window(unsigned long *body)
 		int y = (int)cfgpacket->frame_y;
 		int w = (int)cfgpacket->frame_width;
 		int h = (int)cfgpacket->frame_height;
-		if (x >= box_x + box_w || x + w <= box_x
-		    || y >= box_y + box_h || y + h <= box_y)
-			return 0;
+		if (on_screen) {
+			int mon_x = mon->si->x;
+			int mon_y = mon->si->y;
+			int mon_w = mon->si->w;
+			int mon_h = mon->si->h;
+			if (x >= mon_x + mon_w || x + w <= mon_x
+			   || y >= mon_y + mon_h || y + h <= mon_y)
+			   return 0;
+		} else {
+			if (x >= box_x + box_w || x + w <= box_x
+			   || y >= box_y + box_h || y + h <= box_y)
+			   return 0;
+		}
 	}
 
 	if (!transients && IS_TRANSIENT(cfgpacket))
@@ -761,6 +772,8 @@ parse_args(int argc, char *argv[], int argi)
 			titled = 0;
 		} else if (StrEquals(argv[argi], "-desk")) {
 			desk = 1;
+		} else if (StrEquals(argv[argi], "-on_screen")) {
+			on_screen = 1;
 		} else if (StrEquals(argv[argi], "-ewmhiwa")) {
 			do_ewmhiwa = 1;
 
