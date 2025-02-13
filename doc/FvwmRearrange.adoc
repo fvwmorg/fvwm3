@@ -265,6 +265,10 @@ or cascaded.
 -desk::
   Causes all windows on the desk to be cascaded/tiled instead of only
   windows that intersect the bounding box.
+-on_screen::
+  Causes all windows on the monitor to be cascaded/tiled instead of only
+  windows that intersect the bounding box. Has no effect when used together
+  with _-desk_.
 
 === ORDERING OPTIONS
 
