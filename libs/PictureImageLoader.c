@@ -301,18 +301,20 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 	rsvg_handle_get_intrinsic_dimensions(rsvg, &has_out_w, &out_w,
 		&has_out_h, &out_h, &has_vb, &viewbox);
 
-	if (!has_vb) {
-		fvwm_debug(__func__, "Couldn't determine viewbox");
-		return False;
+	if (has_vb) {
+		dim.width = viewbox.width;
+		dim.height = viewbox.height;
 	}
-
-	dim.width = viewbox.width;
-	dim.height = viewbox.height;
 
 	if (has_out_w)
 		dim.em = out_w.length <= dim.width ? dim.width : out_w.length;
+	else
+		dim.em = dim.width;
+
 	if (has_out_h)
 		dim.ex = out_h.length <= dim.height ? dim.height : out_h.length;
+	else
+		dim.ex = dim.height;
 
 	fvwm_debug(__func__, "FINAL: DIM.EM: %f, DIM.EX: %f", dim.em, dim.ex);
 #else
