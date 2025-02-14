@@ -198,6 +198,13 @@ foreach rd : all_req_deps
     all_found_deps += this_dep
 endforeach
 
+mpack = dependency('mpack', required: get_option('mcomms'))
+if mpack.found()
+    all_found_deps += mpack
+    summary_depvals += {'mpack': mpack}
+    conf.set10('HAVE_MPACK', true)
+endif
+
 xext = dependency('xext', required: true)
 all_found_deps += xext
 summary_depvals += {'xext': xext}
