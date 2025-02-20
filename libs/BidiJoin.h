@@ -14,7 +14,11 @@
 
 #ifdef HAVE_BIDI
 
+#if !defined(HOST_MACOS)
 #include <fribidi/fribidi.h>
+#else
+#include <fribidi.h>
+#endif
 
 /*
  * Shape/Join a passed-in visual string
