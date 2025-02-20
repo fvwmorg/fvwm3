@@ -27,7 +27,12 @@
 
 #include "safemalloc.h"
 #include "BidiJoin.h"
+#if !defined(HOST_MACOS)
 #include <fribidi/fribidi.h>
+#else
+#include <fribidi.h>
+#endif
+
 #include <stdio.h>
 
 Bool FBidiIsApplicable(const char *charset)
