@@ -196,7 +196,7 @@ sub convert_desk
 {
     my( $line ) = @_;
 
-    $line =~ s/^\s*desk/GotoDesk/i;
+    $line =~ s/^\s*desk\s+/GotoDesk/i;
 
     push( @converted_lines, $line);
 }
@@ -217,7 +217,7 @@ sub convert_windowfont
 {
     my( $line ) = @_;
 
-    $line =~ s/windowfont/Style Font \*/i;
+    $line =~ s/windowfont/Style \* Font/i;
 
     push( @converted_lines, $line );
 }
@@ -227,7 +227,7 @@ sub convert_iconfont
 {
     my( $line ) = @_;
 
-    $line =~ s/iconfont/Style IconFont \*/i;
+    $line =~ s/iconfont/Style \* IconFont/i;
 
     push( @converted_lines, $line );
 }
