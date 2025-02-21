@@ -718,6 +718,12 @@ static signed int expand_vars_extended(
 					val *= x;
 				}
 				break;
+			case '>':
+				val = x > y ? x : y;
+				break;
+			case '<':
+				val = x < y ? x : y;
+				break;
 			default:
 				/* undefined operation */
 				return -1;

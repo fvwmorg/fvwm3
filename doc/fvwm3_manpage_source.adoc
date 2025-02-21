@@ -1637,7 +1637,7 @@ $[bg.cs3.lighten15.hash].
 +
 Please refer to the *Colorsets* section for details about colorsets.
 
-$[math.+.<x>,<y>] $[math.-.<x>,<y>] $[math.*.<x>,<y>] $[math./.<x>,<y>] $[math.%.<x>,<y>] $[math.^.<x>,<y>]::
+$[math.+.<x>,<y>] $[math.-.<x>,<y>] $[math.*.<x>,<y>] $[math./.<x>,<y>] $[math.%.<x>,<y>] $[math.^.<x>,<y>] $[math.<.<x>,<y>] $[math.>.<x>,<y>]::
 	The math expansion variables can be used to do some basic arithmetic
 	on the integers <x> and <y>. These expressions can be used to add
 	({plus}), subtract (-), multiply ({asterisk}), divide (/), modulus
@@ -1650,6 +1650,7 @@ $[math.+.<x>,<y>] $[math.-.<x>,<y>] $[math.*.<x>,<y>] $[math./.<x>,<y>] $[math.%
 	is replaced with 21.
 +
 The comma in "<x>,<y>" is to allow for a future possibility of using floats.
+Maximum (>) returns the greater of two values, and minimum (<) the lesser.
 All operations use C integer mathematics. The result of integer division is
 the quotient. The modulus can be used to get the remainder of the integer
 division. Note that the C modulus returns negative remainders for negative
