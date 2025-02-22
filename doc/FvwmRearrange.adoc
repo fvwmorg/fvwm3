@@ -214,6 +214,13 @@ stretched or resized.
   When rearranging windows, make the calculation ignore the working area,
   such as _EwmhBaseStruts_; by default, FvwmRearrange will honour the
   working area. This option may place windows outside of the current monitor.
+-win_cmd _COMMAND_::
+  Runs the fvwm _COMMAND_ in the context of every window that is rearranged.
+  This can be used to set the state of all affected windows with the _COMMAND_
+  "State n" so they can be matched using the "State n" conditional. The
+  _COMMAND_ is sent after the window is moved/resized, so any change in
+  window's size, adding removing title bars, etc, will not be used in
+  computing the new position/size of the window.
 
 === RESIZING OPTIONS
 

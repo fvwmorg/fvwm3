@@ -90,6 +90,7 @@ fd_set_size_t	   fd_width;
 window_list	   wins = NULL, wins_tail = NULL;
 int		   wins_count = 0;
 FILE		  *console;
+char		  *win_cmd = NULL;
 
 static void	   Loop(int *);
 static void	   process_message(unsigned long, unsigned long *);
@@ -142,6 +143,7 @@ void
 free_resources(void)
 {
 	free_window_list(wins);
+	free(win_cmd);
 
 	if (console != stderr)
 		fclose(console);
@@ -453,6 +455,8 @@ move_resize_raise_window(window_item *wi, int x, int y, int w, int h)
 		SendText(fd, msg, wi->frame);
 	}
 
+	if (win_cmd)
+		SendText(fd, win_cmd, wi->frame);
 	if (raise_window)
 		SendText(fd, "Raise", wi->frame);
 }
@@ -740,6 +744,10 @@ parse_args(int argc, char *argv[], int argi)
 			do_animate = 1;
 		} else if (StrEquals(argv[argi], "-ewmhiwa")) {
 			do_ewmhiwa = 1;
+		} else if (StrEquals(argv[argi], "-win_cmd")
+			   && ((argi + 1) < argc)) {
+			free(win_cmd);
+			win_cmd = fxstrdup(argv[++argi]);
 
 		/* Resizing options */
 		} else if (StrEquals(argv[argi], "-noresize")) {
