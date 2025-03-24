@@ -1128,7 +1128,6 @@ static int remove_all_of_style_from_list(style_id_t style_id)
 		/* Check if it's to be wiped */
 		if (style_id_equals_id(nptr, &style_id))
 		{
-			fvwm_debug(__func__, "Style matched.  REMOVING");
 			remove_style_from_list(list, nptr, True);
 			is_changed = True;
 		}
@@ -5583,12 +5582,10 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 
 	action = parse_style_id(action, &s_id);
 	if (action == NULL) {
-		fvwm_debug(__func__, "ACTION IS NULL.  RETURNING");
 		return;
 	}
 
 	/* Do it */
-	fvwm_debug(__func__, "NAME: %s, CLASS: %s", s_id.class, s_id.name);
 	style_destroy_style(s_id);
 }
 
