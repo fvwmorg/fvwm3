@@ -273,6 +273,20 @@ endif
 iconv = dependency('iconv', required: get_option('iconv'))
 if iconv.found()
     conf.set10('HAVE_ICONV', true)
+
+    # Look to see if -liconv can be used; on some platforms where iconv
+    # is installed, -liconv might beed to be supplied; but isn't always
+    # supported (Archinux, for example).
+    #
+    # Note that the point of this test program isn't to be iconv-specific
+    # but to be sufficient enough to pass -liconv to test its existence.
+    linker_iconv_code = 'void a(void) {}; void _start(void) { a(); }'
+    linker_iconv_args = ['-lc', '-Wl']
+    if cc.links(linker_iconv_code,
+                    name : 'linker supports -liconv',
+                    args : [linker_iconv_args, '-liconv'])
+            add_project_link_arguments('-liconv', language: 'c')
+    endif
     all_found_deps += iconv
 endif
 
