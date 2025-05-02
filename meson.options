@@ -57,6 +57,12 @@ option(
     value: false,
     description: 'Enable generation of man pages',
 )
+option(
+    'mcomms',
+    type: 'boolean',
+    value: false,
+    description: 'Enable new module comms',
+)
 option('nls', type: 'feature', value: 'auto', description: 'Enable NLS')
 option('png', type: 'feature', value: 'auto', description: 'Enable png support')
 option(
