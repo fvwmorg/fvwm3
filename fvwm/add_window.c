@@ -1680,10 +1680,25 @@ void setup_title_geometry(
 		fw->corner_length =
 			SGET_CORNER_LENGTH(*pstyle) + fw->boundary_width;
 	}
+
+	if (S_HAS_ROUNDED_CORNERS_TOP(sflags->common))
+	{
+		fw->rounded_corner[0] = SGET_ROUNDED_CORNER(*pstyle, 0);
+		fw->rounded_corner[1] = SGET_ROUNDED_CORNER(*pstyle, 1);
+	}
+
+	if (S_HAS_ROUNDED_CORNERS_BOTTOM(sflags->common))
+	{
+		fw->rounded_corner[2] = SGET_ROUNDED_CORNER(*pstyle, 2);
+		fw->rounded_corner[3] = SGET_ROUNDED_CORNER(*pstyle, 3);
+	}
+
 	if (!HAS_TITLE(fw))
 	{
 		fw->title_thickness = 0;
 	}
+
+	frame_make_rounded_corners(fw);
 
 	return;
 }

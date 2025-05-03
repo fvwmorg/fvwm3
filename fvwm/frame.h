@@ -4,6 +4,7 @@
 #define FVWM_FRAME_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "borders.h"
 #include "fvwm.h"
 #include "screen.h"
 
@@ -73,5 +74,7 @@ void frame_force_setup_window(
 	Bool do_send_configure_notify);
 void frame_setup_shape(
 	FvwmWindow *fw, int w, int h, int shape_mode);
+void frame_make_rounded_corners(FvwmWindow *fw);
+void draw_rounded_mask(Window win, int width, int height, rectangle *corners, window_parts draw_parts, int col);
 
 #endif /* FVWM_FRAME_H */

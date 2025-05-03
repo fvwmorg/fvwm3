@@ -60,6 +60,7 @@
 #include "menugeometry.h"
 #include "menuparameters.h"
 #include "menus.h"
+#include "frame.h"
 #include "libs/FGettext.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -2736,6 +2737,18 @@ static int do_menus_overlap(
 	return x_overlap;
 }
 
+static void menu_make_rounded_corners(MenuRoot *mr)
+{
+	rectangle corners;
+	if (MST_HAS_ROUNDED_CORNERS(mr))
+		corners.x = corners.y = corners.width = corners.height = 6;
+	else if (MST_HAS_SLIGHTLY_ROUNDED_CORNERS(mr))
+		corners.x = corners.y = corners.width = corners.height = 3;
+	else return;
+	draw_rounded_mask(MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
+			&corners, PART_CORNERS, 0);
+}
+
 /*
  *
  *  Procedure:
@@ -3308,6 +3321,8 @@ static int pop_menu_up(
 	/*
 	 * Pop up the menu
 	 */
+
+	menu_make_rounded_corners(mr);
 
 	XMoveWindow(dpy, MR_WINDOW(mr), x, y);
 	mr->d->x = x;

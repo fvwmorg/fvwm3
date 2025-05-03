@@ -318,12 +318,30 @@
 	(fw)->flags.common.s.is_bottom_title_rotated = !!(x)
 #define SETM_IS_BOTTOM_TITLE_ROTATED(fw,x) \
 	(fw)->flag_mask.common.s.is_bottom_title_rotated = !!(x)
+#define IS_TOP_TITLE_ROTATED(fw) \
+	((fw)->flags.common.s.is_top_title_rotated)
+#define SET_IS_TOP_TITLE_ROTATED(fw,x) \
+	(fw)->flags.common.s.is_top_title_rotated = !!(x)
+#define SETM_IS_TOP_TITLE_ROTATED(fw,x) \
+	(fw)->flag_mask.common.s.is_top_title_rotated = !!(x)
 #define USE_TITLE_DECOR_ROTATION(fw) \
 	((fw)->flags.common.s.use_title_decor_rotation)
 #define SET_USE_TITLE_DECOR_ROTATION(fw,x) \
 	(fw)->flags.common.s.use_title_decor_rotation = !!(x)
 #define SETM_USE_TITLE_DECOR_ROTATION(fw,x) \
 	(fw)->flag_mask.common.s.use_title_decor_rotation = !!(x)
+#define HAS_ROUNDED_CORNERS_TOP(fw) \
+	((fw)->flags.common.s.has_rounded_corners_top)
+#define SET_HAS_ROUNDED_CORNERS_TOP(fw,x) \
+	(fw)->flags.common.s.has_rounded_corners_top = !!(x)
+#define SETM_HAS_ROUNDED_CORNERS_TOP(fw,x) \
+	(fw)->flag_mask.common.s.has_rounded_corners_top = !!(x)
+#define HAS_ROUNDED_CORNERS_BOTTOM(fw) \
+	((fw)->flags.common.s.has_rounded_corners_bottom)
+#define SET_HAS_ROUNDED_CORNERS_BOTTOM(fw,x) \
+	(fw)->flags.common.s.has_rounded_corners_bottom = !!(x)
+#define SETM_HAS_ROUNDED_CORNERS_BOTTOM(fw,x) \
+	(fw)->flag_mask.common.s.has_rounded_corners_bottom = !!(x)
 
 /* access to the special flags of a window */
 #define DO_REUSE_DESTROYED(fw) \

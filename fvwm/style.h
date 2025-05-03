@@ -334,6 +334,14 @@
 	((c).s.use_title_decor_rotation)
 #define S_SET_USE_TITLE_DECOR_ROTATION(c,x) \
 	((c).s.use_title_decor_rotation = !!(x))
+#define S_HAS_ROUNDED_CORNERS_TOP(c) \
+	((c).s.has_rounded_corners_top)
+#define S_SET_HAS_ROUNDED_CORNERS_TOP(c,x) \
+	((c).s.has_rounded_corners_top = !!(x))
+#define S_HAS_ROUNDED_CORNERS_BOTTOM(c) \
+	((c).s.has_rounded_corners_bottom)
+#define S_SET_HAS_ROUNDED_CORNERS_BOTTOM(c,x) \
+	((c).s.has_rounded_corners_bottom = !!(x))
 #define S_DO_EWMH_MINI_ICON_OVERRIDE(c) \
 	((c).s.do_ewmh_mini_icon_override)
 #define S_SET_DO_EWMH_MINI_ICON_OVERRIDE(c,x) \
@@ -511,6 +519,10 @@
 	((s).corner_length)
 #define SSET_CORNER_LENGTH(s,x) \
 	((s).corner_length = (x))
+#define SGET_ROUNDED_CORNER(s,i) \
+	((s).rounded_corner[i])
+#define SSET_ROUNDED_CORNER(s,i,x) \
+	((s).rounded_corner[i] = (x))
 #define SGET_LAYER(s) \
 	((s).layer)
 #define SSET_LAYER(s,x) \

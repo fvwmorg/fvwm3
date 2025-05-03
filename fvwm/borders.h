@@ -38,7 +38,12 @@ typedef enum
 	PART_FRAME     = 0xff,
 	PART_TITLEBAR  = 0x300,
 	PART_HANDLES   = 0xc00,
-	PART_ALL       = 0xfff
+	PART_ALL       = 0xfff,
+
+	PART_TOP       = 0x31,
+	PART_BOTTOM    = 0xc2,
+	PART_LEFT      = 0x58,
+	PART_RIGHT     = 0xa4
 } window_parts;
 
 typedef enum

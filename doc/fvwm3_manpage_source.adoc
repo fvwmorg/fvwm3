@@ -2518,7 +2518,8 @@ using the *ChangeMenuStyle*. See also *DestroyMenuStyle*. When using
 monochrome color options are ignored.
 +
 _options_ is a comma separated list containing some of the keywords
-Fvwm / Mwm / Win, BorderWidth, HilightBack / !HilightBack, HilightTitleBack,
+Fvwm / Mwm / Win, BorderWidth, RoundedCorners, SlightlyRoundedCorners,
+HilightBack / !HilightBack, HilightTitleBack,
 ActiveFore / !ActiveFore, MenuColorset, ActiveColorset, GreyedColorset,
 TitleColorset, Hilight3DThick / Hilight3DThin / Hilight3DOff,
 Hilight3DThickness, Animation / !Animation, Font, TitleFont,
@@ -2576,6 +2577,12 @@ SubmenusRight, BorderWidth 2, UniqueHotkeyActivatesImmediate,
 _BorderWidth_ takes the thickness of the border around the menus in
 pixels. It may be zero to 50 pixels. The default is 2. Using an
 invalid value reverts the border width to the default.
++
+_RoundedCorners_ makes all corners of menus rounded, with the radii
+equal to 6 pixels.
++
+_SlightlyRoundedCorners_ is analogous but the radii
+are equal to 3 pixels.
 +
 _HilightBack_ and _!HilightBack_ switch hilighting the background of
 the selected menu item on and off. The _ActiveColorset_ background
@@ -5059,7 +5066,8 @@ style.
 _options_ is a comma separated list containing one or more of the
 following keywords. Each group of style names is separated by slashes
 ('/'). The last style in these groups is the default. _BorderWidth_,
-_HandleWidth_, _CornerLength_, _!Icon_ / _Icon_, _MiniIcon_,
+_HandleWidth_, _CornerLength_, _RoundedCorners_, _RoundedCornersTop_,
+_RoundedCornersBottom_, _SlightlyRoundedCorners_, _!Icon_ / _Icon_, _MiniIcon_,
 _IconBox_, _IconGrid_, _IconFill_, _IconSize_, _!Title_ / _Title_,
 _TitleAtBottom_ / _TitleAtLeft_ / _TitleAtRight_ /
 _TitleAtTop_, _LeftTitleRotatedCW_ / _LeftTitleRotatedCCW_,
@@ -5548,6 +5556,18 @@ _HandleWidth_ without an argument restores the default.
 _CornerLength_ takes a single numeric argument which is the length,
 in pixels, of the corner handles. The default is the title height.
 Using _CornerLength_ without an argument restores the default.
+If using _RoundedCorners_ and its relatives simultaneously, please
+take care that _CornerLength_ value is not less that all the radii.
++
+_RoundedCorners_ takes one to four numeric arguments which are the radii,
+in pixels, of circle quarters at the corners. If less than four arguments
+are supplied, they are reasonably repeated. _RoundedCorners_ with
+no arguments means the default which is 6 pixels. There is also
+_SlightlyRoundedCorners_ that sets the radii to 3 pixels.
++
+_RoundedCornersTop_ and _RoundedCornersBottom_ take zero to two numeric
+arguments and apply to the top corners only and to the bottom corners only,
+respectively.
 +
 _BorderWidth_ takes a numeric argument which is the width of the
 border to place the window if it does not have resize-handles. It is

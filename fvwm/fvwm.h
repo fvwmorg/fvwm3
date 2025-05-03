@@ -275,6 +275,8 @@ typedef struct
 #define WINDOWSHADE_LAZY_MASK   0x3
 		unsigned windowshade_laziness : 2;
 		unsigned use_title_decor_rotation : 1;
+		unsigned has_rounded_corners_top : 1;
+		unsigned has_rounded_corners_bottom : 1;
 		focus_policy_t focus_policy;
 	} s;
 } common_flags_t;
@@ -648,6 +650,7 @@ typedef struct window_style
 	/* resize handle width */
 	short handle_width;
 	short corner_length;
+	short rounded_corner[4];
 	int layer;
 	int start_desk;
 	int start_page_x;
@@ -784,6 +787,7 @@ typedef struct FvwmWindow
 	short boundary_width;
 	short unshaped_boundary_width;
 	short corner_length;
+	short rounded_corner[4];
 
 	/* title font */
 	FlocaleFont *title_font;

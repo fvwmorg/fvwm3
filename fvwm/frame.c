@@ -439,6 +439,8 @@ static void _frame_setup_window(
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 	}
 
+	frame_make_rounded_corners(fw);
+
 	return;
 }
 
@@ -1957,6 +1959,7 @@ void frame_free_move_resize_args(
 			FShapeSet);
 	}
 	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height, fw->wShaped);
+	frame_make_rounded_corners(fw);
 	if (mra->flags.do_restore_gravity)
 	{
 		/* TA:  2011-09-04: There might be a chance some clients with
@@ -2088,6 +2091,262 @@ void frame_force_setup_window(
 	_frame_setup_window(fw, &g, do_send_configure_notify, True, False);
 
 	return;
+}
+
+void draw_rounded_mask(Window win, int width, int height, rectangle *corners, window_parts draw_parts, int col)
+{
+	Pixmap pm;
+	GC gc;
+	rectangle rect;
+	int w,h;
+	int x,y;
+	int Delta, delta_x, delta_y;
+
+	XGetGeometry(
+	       dpy, win, &JunkRoot, &rect.x, &rect.y,
+	       (unsigned int*)&rect.width, (unsigned int*)&rect.height, (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth);
+
+	w = rect.width;
+	h = rect.height;
+	pm = XCreatePixmap(dpy, win, width, height, 1);
+	gc = Scr.MonoGC;
+	XSetForeground(dpy, gc, !col);
+	XFillRectangle(dpy, pm, gc, 0, 0, w, h);
+	XSetForeground(dpy, gc, col);
+
+	/* Draw a rounded shape on the corners of the pixmap */
+	/* corners->x = NW, corners->y = NE, corners->width = SE, corners->height = SW */
+	if ((draw_parts & PART_BORDER_NW) && corners->x)
+	{
+		x=1; while (x*x<2*corners->x) x++; x--;
+		x+=corners->x;
+		Delta=0;
+		delta_x=1;
+		delta_y=2*x-1;
+		for (y=0; x>y; x--)
+		{
+			Delta+=delta_x; delta_x+=2;
+			if (2*Delta>=delta_y)
+			{
+				Delta-=delta_y;
+				delta_y-=2;
+				y++;
+				XFillRectangle(dpy, pm, gc, y-1, y-1, x-y+1, 1);
+				if (x>y) XFillRectangle(dpy, pm, gc, y-1, y, 1, x-y);
+			}
+		}
+	}
+	if ((draw_parts & PART_BORDER_NE) && corners->y)
+	{
+		x=1; while (x*x<2*corners->y) x++; x--;
+		x+=corners->y;
+		Delta=0;
+		delta_x=1;
+		delta_y=2*x-1;
+		for (y=0; x>y; x--)
+		{
+			Delta+=delta_x; delta_x+=2;
+			if (2*Delta>=delta_y)
+			{
+				Delta-=delta_y;
+				delta_y-=2;
+				y++;
+				XFillRectangle(dpy, pm, gc, w-x, y-1, x-y+1, 1);
+				if (x>y) XFillRectangle(dpy, pm, gc, w-y, y, 1, x-y);
+			}
+		}
+	}
+	if ((draw_parts & PART_BORDER_SW) && corners->height)
+	{
+		x=1; while (x*x<2*corners->height) x++; x--;
+		x+=corners->height;
+		Delta=0;
+		delta_x=1;
+		delta_y=2*x-1;
+		for (y=0; x>y; x--)
+		{
+			Delta+=delta_x; delta_x+=2;
+			if (2*Delta>=delta_y)
+			{
+				Delta-=delta_y;
+				delta_y-=2;
+				y++;
+				XFillRectangle(dpy, pm, gc, y-1, h-y, x-y+1, 1);
+				if (x>y) XFillRectangle(dpy, pm, gc, y-1, h-x, 1, x-y);
+			}
+		}
+	}
+	if ((draw_parts & PART_BORDER_SE) && corners->width)
+	{
+		x=1; while (x*x<2*corners->width) x++; x--;
+		x+=corners->width;
+		Delta=0;
+		delta_x=1;
+		delta_y=2*x-1;
+		for (y=0; x>y; x--)
+		{
+			Delta+=delta_x; delta_x+=2;
+			if (2*Delta>=delta_y)
+			{
+				Delta-=delta_y;
+				delta_y-=2;
+				y++;
+				XFillRectangle(dpy, pm, gc, w-x, h-y, x-y+1, 1);
+				if (x>y) XFillRectangle(dpy, pm, gc, w-y, h-x+1, 1, x-y);
+			}
+		}
+	}
+
+	FShapeCombineMask(dpy, win, ShapeBounding, 0, 0, pm, col==1 ? ShapeSubtract : ShapeSet);
+
+	XFreePixmap(dpy, pm);
+}
+
+static void frame_draw_rounded_mask(FvwmWindow *fw, Window win, window_parts draw_parts, int col)
+{
+	rectangle corners;
+	if (HAS_ROUNDED_CORNERS_TOP(fw) || HAS_ROUNDED_CORNERS_BOTTOM(fw))
+	{
+		corners.x = fw->rounded_corner[0];
+		corners.y = fw->rounded_corner[1];
+		corners.width = fw->rounded_corner[3];
+		corners.height = fw->rounded_corner[2];
+		draw_rounded_mask(win, fw->g.frame.width, fw->g.frame.height,
+			&corners, IS_MAXIMIZED(fw)?0:draw_parts, col);
+	}
+}
+
+/* Returns a corner corrected for rotation of the titlebar (ie button 1 is always NW) */
+#define SWAP_CORNER(PART) corner = corner & (PART) ? corner ^ (PART) : corner
+static window_parts __get_corner(window_parts corner, FvwmWindow *fw)
+{
+	int dir;
+
+	dir = GET_TITLE_DIR(fw);
+
+	/* Flip horizontally (relative to tb) if the titlebar is rotated */
+	if ((dir == DIR_N && IS_TOP_TITLE_ROTATED(fw))
+		|| (dir == DIR_S && !IS_BOTTOM_TITLE_ROTATED(fw))
+		|| (dir == DIR_W && IS_LEFT_TITLE_ROTATED_CW(fw))
+		|| (dir == DIR_E && !IS_RIGHT_TITLE_ROTATED_CW(fw)))
+	{
+		SWAP_CORNER(PART_BORDER_NE | PART_BORDER_NW);
+	}
+
+	/* Swap SE/SW so that shift left goes in a clockwise order */
+	SWAP_CORNER(PART_BORDER_SW | PART_BORDER_SE);
+
+	/* Rotate clockwise depending on dir */
+	corner <<= dir;
+	if (corner > PART_BORDER_SE)
+	{
+		corner = corner >> 4;
+	}
+
+	/* Swap SE/SW back */
+	SWAP_CORNER(PART_BORDER_SW | PART_BORDER_SE);
+
+	return corner;
+}
+
+void frame_make_rounded_corners(FvwmWindow *fw)
+{
+	window_parts draw_parts;
+	window_parts mask;
+	int x;
+	Window left_button = None;
+	Window right_button = None;
+
+	if (!fw || !FShapesSupported)
+	{
+		return;
+	}
+
+	window_parts corner_nw = __get_corner(PART_BORDER_NW, fw);
+	window_parts corner_ne = __get_corner(PART_BORDER_NE, fw);
+	window_parts corner_se = __get_corner(PART_BORDER_SE, fw);
+	window_parts corner_sw = __get_corner(PART_BORDER_SW, fw);
+
+	for (x = 9;x>=0;x--)
+	{
+		if (FW_W_BUTTON(fw, x) != None)
+		{
+			if (x%2 == 0)
+			{
+				left_button = FW_W_BUTTON(fw, x);
+			}
+			else
+			{
+				right_button = FW_W_BUTTON(fw, x);
+			}
+		}
+	}
+
+	mask = 0;
+	if (HAS_ROUNDED_CORNERS_TOP(fw))
+	{
+		mask |= corner_ne | corner_nw;
+	}
+	if (HAS_ROUNDED_CORNERS_BOTTOM(fw))
+	{
+		mask |= corner_se | corner_sw;
+	}
+
+	/* Draw mask on each corner of the window. This involves the frame, title,
+	 * buttons and parent wins depending on the window configuration */
+	frame_draw_rounded_mask(fw, FW_W_FRAME(fw), mask, 1);
+	if (HAS_TITLE(fw))
+	{
+		draw_parts = 0;
+		if (left_button == None)
+		{
+			draw_parts |= corner_nw;
+		}
+		if (right_button == None)
+		{
+			draw_parts |= corner_ne;
+		}
+		if (IS_SHADED(fw))
+		{
+			if (left_button == None)
+			{
+				draw_parts |= corner_sw;
+			}
+			else
+			{
+				frame_draw_rounded_mask(fw, left_button, mask & (corner_nw|corner_sw), 0);
+			}
+			if (right_button == None)
+			{
+				draw_parts |= corner_se;
+			}
+			else
+			{
+				frame_draw_rounded_mask(fw, right_button, mask & (corner_ne|corner_se), 0);
+			}
+		}
+		frame_draw_rounded_mask(fw, FW_W_TITLE(fw), mask & draw_parts, 0);
+
+		if (!IS_SHADED(fw))
+		{
+			frame_draw_rounded_mask(fw, FW_W_PARENT(fw), mask & (corner_sw|corner_se), 0);
+
+			if (left_button != None)
+			{
+				frame_draw_rounded_mask(fw, left_button, mask & corner_nw, 0);
+			}
+			if (right_button != None)
+			{
+				frame_draw_rounded_mask(fw, right_button, mask & corner_ne, 0);
+			}
+		}
+	}
+	else
+	{
+		frame_draw_rounded_mask(fw, FW_W_PARENT(fw), mask & PART_CORNERS, 0);
+	}
+
+	XFlush(dpy);
 }
 
 /****************************************************************************
