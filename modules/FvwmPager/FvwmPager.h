@@ -221,6 +221,7 @@ extern bool	HilightDesks;
 extern bool	HilightLabels;
 extern bool	error_occured;
 extern bool	use_desk_label;
+extern bool	use_window_label;
 extern bool	WindowBorders3d;
 extern bool	HideSmallWindows;
 extern bool	SendCmdAfterMove;
