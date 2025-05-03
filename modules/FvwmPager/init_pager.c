@@ -246,10 +246,14 @@ void initialize_fonts(void)
 	/* Initialize fonts. */
 	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
 
-	/* load a default font. */
+	/* Load default fonts. */
 	Scr.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
+	Scr.winFfont = FlocaleLoadFont(dpy, NULL, MyName);
+	Balloon.Ffont = NULL;
+	Balloon.show_in_pager = true;
+	Balloon.show_in_icon = true;
 
-	/* init our Flocale window string */
+	/* Init our Flocale window string */
 	FlocaleAllocateWinString(&FwinString);
 
 	WindowLabelFormat = fxstrdup("%i");
@@ -953,6 +957,9 @@ void parse_options(void)
 			use_no_separators = true;
 		} else if (StrEquals(resource, "IgnoreWorkingArea")) {
 			ewmhiwa = true;
+		} else if (StrEquals(resource, "Balloons")) {
+			Balloon.show_in_pager = true;
+			Balloon.show_in_icon = true;
 		} else {
 			/* No Match, set this to continue parsing. */
 			flags = 0;
@@ -1190,6 +1197,8 @@ void parse_options(void)
 			if (strncasecmp(next, "none", 4) != 0)
 				Scr.winFfont = FlocaleLoadFont(
 					dpy, next, MyName);
+			else
+				Scr.winFfont = NULL;
 		} else if (StrEquals(resource, "Rows")) {
 			sscanf(next, "%d", &Rows);
 		} else if (StrEquals(resource, "Columns")) {
