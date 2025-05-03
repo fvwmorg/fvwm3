@@ -246,8 +246,14 @@ void initialize_fonts(void)
 	/* Initialize fonts. */
 	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
 
-	/* load a default font. */
-	Scr.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
+	/* load default fonts. */
+	Scr.Ffont = NULL;
+	Scr.winFfont = NULL;
+	Balloon.Ffont = NULL;
+
+	/* balloons are not shown by default */
+	Balloon.show_in_pager = false;
+	Balloon.show_in_icon = false;
 
 	/* init our Flocale window string */
 	FlocaleAllocateWinString(&FwinString);
@@ -372,6 +378,12 @@ void initialize_pager_size(void)
 	struct fpmonitor *fp = fpmonitor_this(NULL);
 	int VxPages = fp->virtual_scr.VxPages;
 	int VyPages = fp->virtual_scr.VyPages;
+
+	if (use_window_label && !Scr.winFfont)
+		Scr.winFfont = FlocaleLoadFont(dpy, NULL, MyName);
+
+	if ((use_desk_label || use_monitor_label) && !Scr.Ffont)
+		Scr.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
 
 	/* Grid size */
 	if (Rows < 0)
@@ -1118,12 +1130,14 @@ void parse_options(void)
 					icon_yneg = true;
 			}
 		} else if (StrEquals(resource, "Font")) {
-			if (strncasecmp(next, "none", 4) == 0) {
+			FlocaleUnloadFont(dpy, Scr.Ffont);
+			if (strncasecmp(next, "none", 4) != 0)
+				Scr.Ffont = FlocaleLoadFont(
+					dpy, next, MyName);
+			else {
+				Scr.Ffont = NULL;
 				use_desk_label = false;
 				use_monitor_label = false;
-			} else {
-				FlocaleUnloadFont(dpy, Scr.Ffont);
-				Scr.Ffont = FlocaleLoadFont(dpy, next, MyName);
 			}
 		} else if (StrEquals(resource, "Pixmap") ||
 			   StrEquals(resource, "DeskPixmap"))
@@ -1187,9 +1201,15 @@ void parse_options(void)
 			   StrEquals(resource, "SmallFont"))
 		{
 			FlocaleUnloadFont(dpy, Scr.winFfont);
-			if (strncasecmp(next, "none", 4) != 0)
+			if (strncasecmp(next, "none", 4) != 0) {
 				Scr.winFfont = FlocaleLoadFont(
 					dpy, next, MyName);
+				if (Scr.winFfont)
+					use_window_label=true;
+			} else {
+				Scr.winFfont = NULL;
+				use_window_label=false;
+			}
 		} else if (StrEquals(resource, "Rows")) {
 			sscanf(next, "%d", &Rows);
 		} else if (StrEquals(resource, "Columns")) {
@@ -1237,8 +1257,15 @@ void parse_options(void)
 				Balloon.show_in_icon = true;
 			}
 		} else if (StrEquals(resource, "BalloonFont")) {
-			FlocaleUnloadFont(dpy, Balloon.Ffont);
-			Balloon.Ffont = FlocaleLoadFont(dpy, next, MyName);
+		        FlocaleUnloadFont(dpy, Balloon.Ffont);
+			if (strncasecmp(next, "none", 4) != 0) {
+				Balloon.Ffont = FlocaleLoadFont(
+					dpy, next, MyName);
+			} else {
+				Balloon.Ffont = NULL;
+				Balloon.show_in_pager = false;
+				Balloon.show_in_icon = false;
+			}
 		} else if (StrEquals(resource, "BalloonBorderWidth")) {
 			sscanf(next, "%d", &(Balloon.border_width));
 		} else if (StrEquals(resource, "BalloonYOffset")) {

@@ -96,6 +96,7 @@ bool	HilightDesks = true;
 bool	HilightLabels = true;
 bool	error_occured = false;
 bool	use_desk_label = true;
+bool	use_window_label = true;
 bool	WindowBorders3d = false;
 bool	HideSmallWindows = false;
 bool	SendCmdAfterMove = false;
