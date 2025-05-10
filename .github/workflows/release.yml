@@ -3,21 +3,19 @@ on:
   workflow_dispatch:
     inputs:
       versionRelease:
-        description: 'Release version'
+        description: 'TEST!!! Release version'
         required: true
 jobs:
   createrelease:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
     - name: Create release branch
       run: git checkout -b release/${{ github.event.inputs.versionRelease }}
-    - name: Change files for release
-      run: |
-              ./mkrelease.sh ${{ github.event.inputs.versionRelease }}
     - name: Get date
       id: date
       run: echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
@@ -37,19 +35,10 @@ jobs:
         sed -i "2r tmp.out" CHANGELOG.md
     - name: Commit Changes
       run: |
+        git checkout release/${{ github.event.inputs.versionRelease }}
         git config user.name "Thomas Adam"
         git config user.email "thomas@fvwm.org"
         git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ github.event.inputs.versionRelease }}"
-        git push -u origin HEAD
-    - name: Create pull request into main
-      uses: thomaseizinger/create-pull-request@1.0.0
-      with:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       head: release/${{ github.event.inputs.versionRelease }}
-       base: main
-       title: release ${{ github.event.inputs.versionRelease }}
-       reviewers: ${{ github.event.issue.user.login }}
-       body: |
-           Hello,
-           This PR was created in response to a release workflow running.
-           I've updated the version name and code commit: ${{ steps.make-commit.outputs.commit }}.
+        git checkout -t origin/release-testing-protected
+        git merge --ff-only -
+        git push
