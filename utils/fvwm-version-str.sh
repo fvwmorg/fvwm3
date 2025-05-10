@@ -14,7 +14,11 @@ VERSION="released"
 
 [ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
-if grep -q -i '^ISRELEASED="yes"' ./configure.ac; then
+[ -e "./.release-status" ] && source "./.release-status"
+
+[ -z "$ISRELEASED" ] && { echo "UNKNOWN" && exit 0 ; }
+
+if [ "$ISRELEASED" = "yes" ]; then
 	echo "$VERSION"
 else
 	git describe --always --long --dirty --tags
