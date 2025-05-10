@@ -8,4 +8,4 @@ ENV GO111MODULE="on"
 COPY . /build
 WORKDIR /build
 
-RUN ./autogen.sh && ./configure --enable-mandoc --enable-golang && make -j4
+RUN meson setup --reconfigure build -Dmandoc=true && meson compile -C build

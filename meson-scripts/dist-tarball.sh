@@ -6,7 +6,6 @@
 
 # TODO: ".*" as a glob might be too much in the future; expand this out...
 FILES_TO_IGNORE=".*
-mkrelease.sh
 dev-docs"
 
 (
