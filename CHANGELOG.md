@@ -26,6 +26,19 @@
 
 
 **Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.1.2...1.1.3
+## [1.1.3](https://github.com/fvwmorg/fvwm3/tree/1.1.3) (2025-05-10)
+
+## What's Changed
+### Enhancements
+* FvwmRearrange: Use -on_screen to tile/cascade all windows on the monitor. by @pghvlaans in https://github.com/fvwmorg/fvwm3/pull/1170
+* FvwmRearrange: Add -win_cmd COMMAND option. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1179
+### Other Changes
+* build: macos: fix path to fribidi by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1174
+* fvwm-convert-2.6: fix syntax error by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1177
+* style: remove superfluous debug by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1181
+
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.1.2...1.1.3
 ## [1.1.2](https://github.com/fvwmorg/fvwm3/tree/1.1.2) (2025-02-08)
 
 ## What's Changed
