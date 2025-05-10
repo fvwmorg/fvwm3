@@ -5,6 +5,9 @@ on:
       versionRelease:
         description: 'TEST!!! Release version'
         required: true
+      nextVersion:
+        description: 'The next version to increment to'
+        required: true
 jobs:
   createrelease:
     runs-on: blacksmith-4vcpu-ubuntu-2204
@@ -71,3 +74,9 @@ jobs:
         files: build/meson-dist/fvwm3-${{ github.event.inputs.versionRelease }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Bump next version
+      run: |
+        echo "${{ github.events.inputs.nextVersion }}" > .current-version
+        echo "ISRELEASED=no" > .release-status
+        git commit -am "build: set next version"
+        git push
