@@ -59,8 +59,7 @@ To update an existing translation:
 
 To create a new translation from a template file:
 
-1) Add your language to the `ALL_LINGUAS` variable in
-   `../configure.ac` and `fvwmpo.sh` files.
+1) Add your language to the `ALL_LINGUAS` variable in `fvwmpo.sh`.
 
 2) Use the template file to create a new LL_CC (e.g., fr, zh_CN)
    translation `.po` file.

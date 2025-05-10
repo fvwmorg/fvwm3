@@ -8,7 +8,7 @@
 #
 #
 #
-# Intended to be called from configure.ac (via autogen.sh)
+# Intended to be called from meson.
 
 VERSION="released"
 
