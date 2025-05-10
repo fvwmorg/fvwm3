@@ -8,13 +8,17 @@
 #
 #
 #
-# Intended to be called from configure.ac (via autogen.sh)
+# Intended to be called from meson.
 
 VERSION="released"
 
 [ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
-if grep -q -i '^ISRELEASED="yes"' ./configure.ac; then
+[ -e "./.release-status" ] && source "./.release-status"
+
+[ -z "$ISRELEASED" ] && { echo "UNKNOWN" && exit 0 ; }
+
+if [ "$ISRELEASED" = "yes" ]; then
 	echo "$VERSION"
 else
 	git describe --always --long --dirty --tags

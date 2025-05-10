@@ -1,8 +1,7 @@
 Installation Instructions
 =========================
 
-FVWM3 prefers `meson` as its build tool chain, but provides `autotools` as a
-legacy fallback on older systems.
+FVWM3 uses `meson` as its build tooling.
 
 Dependencies
 ============
@@ -63,44 +62,13 @@ To generate `fvwm3`'s documentation:
 3. To generate HTML docs: pass `-Dhtmldoc=true` to `meson`
 
 
-Installing From Git
+Installing From Git or a Release Tarball
 ===================
 
-## Build Systems
-
-`fvwm3` has traditionally been using autotools.  However, this is now
-deprecated in favour of `meson`.  It is suggested that all systems which
-support `meson` use this instead as it is now the preferred build system to
-use.
-
-The `autotools` build system remains to provide legacy support but is not
-going to see any updates to it.
-
-### Autotools
+Compiling `fvwm3` with meson involves the following command.  Note that this
+is an example; the setup command can be passed various options, see the
+`meson.options` file.
 
 ```
-./autogen.sh && ./configure && make && sudo make install
-```
-
-### Meson
-
-```
-meson setup build && ninja -C build && ninja -C build install
-```
-
-Installing From Release Tarball
-===============================
-
-## Autotools
-
-Release tarballs will come bundled with `./configure` already, hence:
-
-```
-./configure && make && sudo make install
-```
-
-## Meson
-
-```
-meson setup build && ninja -C build && meson install -C build
+meson setup build && meson compile -C build && meson install -C build
 ```

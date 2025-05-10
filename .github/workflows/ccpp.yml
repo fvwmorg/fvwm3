@@ -18,7 +18,6 @@ jobs:
     strategy:
       matrix:
         os: [blacksmith-4vcpu-ubuntu-2204, alpine]
-        build-system: [autotools, meson]
         compiler: [gcc, clang]
 
     steps:
@@ -30,24 +29,13 @@ jobs:
 
       - name: Configure and Build
         run: |
-          if [ "${{ matrix.build-system }}" = "autotools" ]; then
-            if [ "${{ matrix.compiler }}" = "gcc" ]; then
-              export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-            else
-              export CC_LD=lld
-            fi
-            export CC=${{ matrix.compiler }}
-            ./autogen.sh && ./configure --enable-mandoc --enable-golang && make -j
+          export CC=${{ matrix.compiler }}
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
+          else
+            export CC_LD=lld
           fi
-          if [ "${{ matrix.build-system }}" = "meson" ]; then
-            if [ "${{ matrix.compiler }}" = "gcc" ]; then
-              export CFLAGS="-flto -Werror=odr -Werror=lto-type-mismatch -Werror=strict-aliasing"
-            else
-              export CC_LD=lld
-            fi
-            export CC=${{ matrix.compiler }}
-            meson setup builddir -Dhtmldoc=true -Dmandoc=true && ninja -C builddir
-          fi
+          meson setup builddir -Dhtmldoc=true -Dmandoc=true && ninja -C builddir
 
   notification:
     runs-on: blacksmith-4vcpu-ubuntu-2204

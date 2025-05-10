@@ -147,8 +147,7 @@ New Code Files
 #include "config.h"
 ```
 
-as the first non-comment line.  Otherwise the settings made by the configure
-script may not be used.  This can cause random problems.
+as the first non-comment line.
 
 File Names
 ----------
@@ -175,49 +174,7 @@ Maintaining Man Pages
 Creating a release
 ==================
 
-Make sure you have all optional libraries installed.
-
-**NOTE:  as `main` is a protected branch, changes made to files during the
-release phase must be done on a separate branch, and not on main directly,
-as pushes to this branch are not allowed until checks have been done on it.
-This means the end result of the release-phase must have these changes issued
-as a pull-request against `main`.**
-
-0. `git checkout main && git pull && git checkout -b release/x.y.z`
-   **Where: `x.y.z` will be the next release**.
-1. Change the dates in configure.ac and fill in the release dates.
-2. Set `ISRELEASED` to `"yes"`.
-3. Change `utils/fvwm-version-str.sh` and include the appropriate version
-   string.
-4. Commit the results.
-5. Run: `./autogen.sh && make clean` to get the tree into a clean
-   slate.  Because this is a release, the source needs compiling.  To do
-   that, run:
-
-   ```
-    make CFLAGS="-g -O2 -Wall -Wpointer-arith -fno-strict-aliasing -Werror"
-   ```
-
-    Fix all warnings and problems, commit the changes and repeat the previous
-    command until no more warnings occur.
-6. Tag the release: `git tag -a x.y.z` -- where `x.y.z` represents the
-   appropriate version number for the release.
-7. Build and test the release tarballs:
-
-   Run: `make dist`
-
-   If that succeeds, check for `fvwm-x.y.z.tar.gz` in the current working
-   directory.  This is the release tarball which will be uploaded to Github.
-   Unpack it to a temporary directory and build it; check the version as well,
-   via: `./fvwm --version`.
-8. Push the tag out: `git push origin x.y.z` -- where `x.y.z` is the specific
-   tag created in step 6.
-9. Set `ISRELEASED` to `"no"` in configure.ac and commit and push that out.
-10. Issue a PR (pull-request) against `main` and merge that in assuming all
-    checks pass.  If not, fix the problems, and repeat this step.
-11. Upload the `fvwm-x.y.z.tar.gz` tarball to Github against the tag just
-   pushed.
-12. Update the fvwm web site (see below)
+Use Github Actions.
 
 Updating fvwm-web
 =================
