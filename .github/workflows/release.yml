@@ -3,26 +3,32 @@ on:
   workflow_dispatch:
     inputs:
       versionRelease:
-        description: 'Release version'
+        description: 'TEST!!! Release version'
         required: true
 jobs:
   createrelease:
     runs-on: blacksmith-4vcpu-ubuntu-2204
+    container: fvwmorg/fvwm3-build:latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
-        fetch-depth: 0
-    - name: Create release branch
-      run: git checkout -b release/${{ github.event.inputs.versionRelease }}
-    - name: Change files for release
+        fetch-depth: 1
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: (re)-create release branch
       run: |
-              ./mkrelease.sh ${{ github.event.inputs.versionRelease }}
+        git config --global --add safe.directory /__w/fvwm3/fvwm3
+        git fetch -n origin
+        git push origin --delete release/${{ github.event.inputs.versionRelease }} || true
+        git checkout -t origin/release-testing-protected
+        git checkout -b release/${{ github.event.inputs.versionRelease }}
+        git push -u origin HEAD
     - name: Get date
       id: date
       run: echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
     - name: Generate changelog
       run: |
+        apt update && apt install -q -y jq curl
         printf "## [${{ github.event.inputs.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ github.event.inputs.versionRelease }}) (${{ env.date }})\n" >./tmp.out
         curl \
           --silent \
@@ -35,21 +41,33 @@ jobs:
                 jq -r '.body' >> ./tmp.out
         sed -i '2d' ./tmp.out
         sed -i "2r tmp.out" CHANGELOG.md
+    - name: Update Release Status
+      run: |
+        echo "ISRELEASED=yes" > .release-status
+        git add .release-status
     - name: Commit Changes
       run: |
         git config user.name "Thomas Adam"
         git config user.email "thomas@fvwm.org"
         git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ github.event.inputs.versionRelease }}"
-        git push -u origin HEAD
-    - name: Create pull request into main
-      uses: thomaseizinger/create-pull-request@1.0.0
+        git checkout release-testing-protected
+        git merge --ff-only release/${{ github.event.inputs.versionRelease }}
+        git tag -am "Release ${{ github.event.inputs.versionRelease }}" ${{ github.event.inputs.versionRelease }}
+        git push
+        git push origin --tags ${{ github.events.input.versionRelease }}
+    - name: Build artefacts
+      run: |
+        meson setup --reconfigure build -Dmandoc=true -Dhtmldoc=true -Dgolang=enabled && \
+        meson compile -C build && meson dist --formats gztar -C build
+    - name: Create Draft Release
+      uses: softprops/action-gh-release@v2
+      id: create_release
       with:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       head: release/${{ github.event.inputs.versionRelease }}
-       base: main
-       title: release ${{ github.event.inputs.versionRelease }}
-       reviewers: ${{ github.event.issue.user.login }}
-       body: |
-           Hello,
-           This PR was created in response to a release workflow running.
-           I've updated the version name and code commit: ${{ steps.make-commit.outputs.commit }}.
+        draft: true
+        prerelease: true
+        release_name: ${{ github.event.inputs.versionRelease }}
+        tag_name: ${{ github.event.inputs.versionRelease }}
+        body_path: CHANGELOG.md
+        files: build/meson-dist/fvwm3-${{ github.event.inputs.versionRelease }}.tar.gz
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
