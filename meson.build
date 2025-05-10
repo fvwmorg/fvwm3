@@ -1,7 +1,7 @@
 project(
     'fvwm3',
     'c',
-    version: '1.1.3',
+    version: run_command(['cat', '.current-version'], check: true).stdout().strip(),
     license: 'GPL-2.0-or-later',
     meson_version: '>=1.5.1', # Required to configure perl files without eating \@s
     default_options: [

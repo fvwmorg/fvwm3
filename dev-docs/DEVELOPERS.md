@@ -174,7 +174,50 @@ Maintaining Man Pages
 Creating a release
 ==================
 
-Use Github Actions.
+Releases are created entirely automatically from Github Actions.
+
+The `.github/workflows/release.yml` contains the code which underpins this.
+
+To create an actual release, means going to the following:
+
+https://github.com/fvwmorg/fvwm3/actions/workflows/release.yml
+
+The branch defaults to `main` which is where we want to generate the release
+from. Don't change this.
+
+The input will ask for the next version fvwm3 will be after release.  For
+instance, if the current version is `1.1.3`, then the correct input to use is
+`1.1.4`.
+
+If you want to find the current release fvwm3 is at, see the
+`.current-release` file.
+
+**Unfortunately there is no way of programatically showing the current version,
+so this needs to be looked up manually before confirming the new versioon
+befpre running this workflow.**
+
+There's a second input, defaulting to "false", asking whether the release
+should be published as a draft or not.  Generally, this shouldn't need to be
+set to `true` -- but it's left in as a means of allowing the person doing the
+release some degree of flexibility.
+
+Note that the act of publishing a release -- whether it's a draft or not, will
+still tag the release and bump `fvwm3` to the next version,.  This is also by
+design.
+
+If a release has to be re-rolled, then it is up to the person doing that
+release to delete it and recreate it, perhaps via the following commands:
+
+```
+git tag -d <TAG_OF_RELEASE> ; git push origin --delete <TAG_OF_RELEASE>
+```
+
+The specific release of `<TAG_OF_RELEASE>` would also have to be removed.
+This can be done directly on GitHub, or via the `gh` client:
+
+```
+gh release delete <TAG_OF_RELEASE>
+```
 
 Updating fvwm-web
 =================

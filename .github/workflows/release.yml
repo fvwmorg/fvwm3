@@ -1,29 +1,43 @@
-name: Create Release Branch
+name: Create Release
 on:
   workflow_dispatch:
     inputs:
-      versionRelease:
-        description: 'Release version'
+      nextVersion:
+        description: 'The next version of fvwm3 after this release: '
+        required: true
+      isDraft:
+        description: 'Make a draft release, rather than an official release'
+        type: boolean
         required: true
 jobs:
   createrelease:
     runs-on: blacksmith-4vcpu-ubuntu-2204
+    container: fvwmorg/fvwm3-build:latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: Create release branch
-      run: git checkout -b release/${{ github.event.inputs.versionRelease }}
-    - name: Change files for release
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Repo Settings
+      run:  |
+        git config --global user.name "Thomas Adam"
+        git config --global user.email "thomas@fvwm.org"
+        git config --global --add safe.directory /__w/fvwm3/fvwm3
+    - name: Get Current Version (for release...)
+      id: versionRelease
       run: |
-              ./mkrelease.sh ${{ github.event.inputs.versionRelease }}
+        git fetch -q -n origin
+        echo "versionRelease=$(git show HEAD:./.current-version)" >> $GITHUB_ENV
+    - name: Create release branch
+      run: |
+        git checkout -b release/${{ env.versionRelease }}
     - name: Get date
       id: date
       run: echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
     - name: Generate changelog
       run: |
-        printf "## [${{ github.event.inputs.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ github.event.inputs.versionRelease }}) (${{ env.date }})\n" >./tmp.out
+        printf "## [${{ env.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ env.versionRelease }}) (${{ env.date }})\n" >./tmp.out
         curl \
           --silent \
           -X POST \
@@ -31,25 +45,42 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           https://api.github.com/repos/fvwmorg/fvwm3/releases/generate-notes \
-          -d '{"tag_name":"${{ github.event.inputs.versionRelease }}","target_commitish":"main","configuration_file_path":".github/release.yml"}' | \
+          -d '{"tag_name":"${{ env.versionRelease }}","target_commitish":"main","configuration_file_path":".github/release.yml"}' | \
                 jq -r '.body' >> ./tmp.out
         sed -i '2d' ./tmp.out
         sed -i "2r tmp.out" CHANGELOG.md
-    - name: Commit Changes
+    - name: Create release commit
       run: |
-        git config user.name "Thomas Adam"
-        git config user.email "thomas@fvwm.org"
-        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ github.event.inputs.versionRelease }}"
-        git push -u origin HEAD
-    - name: Create pull request into main
-      uses: thomaseizinger/create-pull-request@1.0.0
-      with:
-       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-       head: release/${{ github.event.inputs.versionRelease }}
-       base: main
-       title: release ${{ github.event.inputs.versionRelease }}
-       reviewers: ${{ github.event.issue.user.login }}
-       body: |
-           Hello,
-           This PR was created in response to a release workflow running.
-           I've updated the version name and code commit: ${{ steps.make-commit.outputs.commit }}.
+        echo "ISRELEASED=yes" > .release-status
+        git add .release-status
+        git add CHANGELOG.md
+        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
+        git checkout main
+        git merge --ff-only release/${{ env.versionRelease }}
+        git tag -am "Release ${{ env.versionRelease }}" ${{ env.versionRelease }}
+        git push
+        git push origin --tags ${{ env.versionRelease }}
+    - name: Build artefacts
+      run: |
+        meson setup --reconfigure build -Dmandoc=true -Dhtmldoc=true -Dgolang=enabled && \
+        meson compile -C build && meson dist --formats gztar -C build
+    - name: Create a draft release
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+        gh \
+        release \
+        create ${{ env.versionRelease }} \
+        ${{ github.event.inputs.isDraft == 'true' && '--draft' || '' }} \
+        --target main \
+        --generate-notes \
+        ./build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
+    - name: Bump next version
+      run: |
+        git clean -dfx
+        git checkout main
+        git pull -q
+        echo "${{ github.event.inputs.nextVersion }}" > .current-version
+        git add .current-version
+        echo "ISRELEASED=no" > .release-status
+        git commit -am "build: set next version"
+        git push
