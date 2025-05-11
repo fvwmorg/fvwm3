@@ -2,11 +2,8 @@ name: Create Release Branch
 on:
   workflow_dispatch:
     inputs:
-      versionRelease:
-        description: 'TEST!!! Release version'
-        required: true
       nextVersion:
-        description: 'The next version to increment to'
+        description: 'The next version to increment to:'
         required: true
 jobs:
   createrelease:
@@ -14,17 +11,22 @@ jobs:
     container: fvwmorg/fvwm3-build:latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 1
         token: ${{ secrets.GITHUB_TOKEN }}
+    - name: Safe Repo Setting
+      run:  git config --global --add safe.directory /__w/fvwm3/fvwm3
+    - name: Get Current Version (for release...)
+      id: versionRelease
+      run: |
+        git fetch -q -n origin
+        echo "versionRelease=$(git show HEAD:./.current-version)" >> $GITHUB_ENV
     - name: (re)-create release branch
       run: |
-        git config --global --add safe.directory /__w/fvwm3/fvwm3
-        git fetch -n origin
-        git push origin --delete release/${{ github.event.inputs.versionRelease }} || true
+        git push origin --delete release/${{ env.versionRelease }} || true
         git checkout -t origin/release-testing-protected
-        git checkout -b release/${{ github.event.inputs.versionRelease }}
+        git checkout -b release/${{ env.versionRelease }}
         git push -u origin HEAD
     - name: Get date
       id: date
@@ -32,7 +34,7 @@ jobs:
     - name: Generate changelog
       run: |
         apt update && apt install -q -y jq curl
-        printf "## [${{ github.event.inputs.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ github.event.inputs.versionRelease }}) (${{ env.date }})\n" >./tmp.out
+        printf "## [${{ env.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ env.versionRelease }}) (${{ env.date }})\n" >./tmp.out
         curl \
           --silent \
           -X POST \
@@ -40,7 +42,7 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           https://api.github.com/repos/fvwmorg/fvwm3/releases/generate-notes \
-          -d '{"tag_name":"${{ github.event.inputs.versionRelease }}","target_commitish":"main","configuration_file_path":".github/release.yml"}' | \
+          -d '{"tag_name":"${{ env.versionRelease }}","target_commitish":"main","configuration_file_path":".github/release.yml"}' | \
                 jq -r '.body' >> ./tmp.out
         sed -i '2d' ./tmp.out
         sed -i "2r tmp.out" CHANGELOG.md
@@ -52,12 +54,12 @@ jobs:
       run: |
         git config user.name "Thomas Adam"
         git config user.email "thomas@fvwm.org"
-        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ github.event.inputs.versionRelease }}"
+        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
         git checkout release-testing-protected
-        git merge --ff-only release/${{ github.event.inputs.versionRelease }}
-        git tag -am "Release ${{ github.event.inputs.versionRelease }}" ${{ github.event.inputs.versionRelease }}
+        git merge --ff-only release/${{ env.versionRelease }}
+        git tag -am "Release ${{ env.versionRelease }}" ${{ env.versionRelease }}
         git push
-        git push origin --tags ${{ github.events.input.versionRelease }}
+        git push origin --tags ${{ env.versionRelease }}
     - name: Build artefacts
       run: |
         meson setup --reconfigure build -Dmandoc=true -Dhtmldoc=true -Dgolang=enabled && \
@@ -68,15 +70,16 @@ jobs:
       with:
         draft: true
         prerelease: true
-        release_name: ${{ github.event.inputs.versionRelease }}
-        tag_name: ${{ github.event.inputs.versionRelease }}
+        name: ${{ env.versionRelease }}
+        tag_name: ${{ env.versionRelease }}
         body_path: CHANGELOG.md
-        files: build/meson-dist/fvwm3-${{ github.event.inputs.versionRelease }}.tar.gz
+        files: build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Bump next version
       run: |
-        echo "${{ github.events.inputs.nextVersion }}" > .current-version
+        git pull -q
+        echo "${{ github.event.inputs.nextVersion }}" > .current-version
         echo "ISRELEASED=no" > .release-status
         git commit -am "build: set next version"
         git push
