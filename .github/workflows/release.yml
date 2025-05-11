@@ -13,7 +13,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       with:
-        fetch-depth: 1
+        fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
     - name: Repo Settings
       run:  |
@@ -25,23 +25,15 @@ jobs:
       run: |
         git fetch -q -n origin
         echo "versionRelease=$(git show HEAD:./.current-version)" >> $GITHUB_ENV
-    - name: (re)-create release branch
+    - name: Create release branch
       run: |
-        git push origin --delete release/${{ env.versionRelease }} || true
         git checkout -t origin/release-testing-protected
         git checkout -b release/${{ env.versionRelease }}
-        git push -u origin HEAD
     - name: Get date
       id: date
       run: echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
-    - name: Update Release Status
-      run: |
-        echo "ISRELEASED=yes" > .release-status
-        git add .release-status
-        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
     - name: Generate changelog
       run: |
-        apt update && apt install -q -y jq curl
         printf "## [${{ env.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ env.versionRelease }}) (${{ env.date }})\n" >./tmp.out
         curl \
           --silent \
@@ -54,10 +46,12 @@ jobs:
                 jq -r '.body' >> ./tmp.out
         sed -i '2d' ./tmp.out
         sed -i "2r tmp.out" CHANGELOG.md
-    - name: Amend commit for Changelog
+    - name: Create release commit
       run: |
+        echo "ISRELEASED=yes" > .release-status
+        git add .release-status
         git add CHANGELOG.md
-        git commit -a --amend --no-edit
+        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
         git checkout release-testing-protected
         git merge --ff-only release/${{ env.versionRelease }}
         git tag -am "Release ${{ env.versionRelease }}" ${{ env.versionRelease }}
@@ -67,31 +61,24 @@ jobs:
       run: |
         meson setup --reconfigure build -Dmandoc=true -Dhtmldoc=true -Dgolang=enabled && \
         meson compile -C build && meson dist --formats gztar -C build
-    - name: 'Build Changelog'
-      id: build_changelog
-      uses: mikepenz/release-changelog-builder-action@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Create Draft Release
-      uses: softprops/action-gh-release@v2
-      id: create_release
-      with:
-        draft: true
-        prerelease: true
-        name: ${{ env.versionRelease }}
-        tag_name: ${{ env.versionRelease }}
-        body: ${{steps.build_changelog.outputs.changelog}}
-        files: build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create a draft release
+      run: |
+        echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+        gh \
+        release \
+        create ${{ env.versionRelease }} \
+        --draft \
+        --prerelease \
+        --target release-testing-protected \
+        --generate-notes \
+        ./build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
     - name: Bump next version
       run: |
+        git clean -dfx
+        git checkout release-testing-protected
         git pull -q
-        git checkout release/${{ env.versionRelease }}
         echo "${{ github.event.inputs.nextVersion }}" > .current-version
         git add .current-version
         echo "ISRELEASED=no" > .release-status
         git commit -am "build: set next version"
-        git checkout release-testing-protected
-        git merge --ff-only release/${{ env.versionRelease }}
         git push
