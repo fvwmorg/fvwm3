@@ -52,6 +52,7 @@ jobs:
         git add .release-status
     - name: Commit Changes
       run: |
+        git checkout release/${{ env.versionRelease }}
         git config user.name "Thomas Adam"
         git config user.email "thomas@fvwm.org"
         git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
@@ -80,6 +81,7 @@ jobs:
       run: |
         git pull -q
         echo "${{ github.event.inputs.nextVersion }}" > .current-version
+        git add .curent-version
         echo "ISRELEASED=no" > .release-status
         git commit -am "build: set next version"
         git push
