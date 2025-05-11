@@ -15,8 +15,11 @@ jobs:
       with:
         fetch-depth: 1
         token: ${{ secrets.GITHUB_TOKEN }}
-    - name: Safe Repo Setting
-      run:  git config --global --add safe.directory /__w/fvwm3/fvwm3
+    - name: Repo Settings
+      run:  |
+        git config --global user.name "Thomas Adam"
+        git config --global user.email "thomas@fvwm.org"
+        git config --global --add safe.directory /__w/fvwm3/fvwm3
     - name: Get Current Version (for release...)
       id: versionRelease
       run: |
@@ -31,6 +34,14 @@ jobs:
     - name: Get date
       id: date
       run: echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
+    - name: Update Release Status
+      run: |
+        echo "ISRELEASED=yes" > .release-status
+        git add .release-status
+    - name: Commit Changes
+      run: |
+        git checkout release/${{ env.versionRelease }}
+        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
     - name: Generate changelog
       run: |
         apt update && apt install -q -y jq curl
@@ -42,20 +53,14 @@ jobs:
           -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
           https://api.github.com/repos/fvwmorg/fvwm3/releases/generate-notes \
-          -d '{"tag_name":"${{ env.versionRelease }}","target_commitish":"main","configuration_file_path":".github/release.yml"}' | \
+          -d '{"tag_name":"${{ env.versionRelease }}","target_commitish":"release-testing-protected","configuration_file_path":".github/release.yml"}' | \
                 jq -r '.body' >> ./tmp.out
         sed -i '2d' ./tmp.out
         sed -i "2r tmp.out" CHANGELOG.md
-    - name: Update Release Status
+    - name: Amend commit for Changelog
       run: |
-        echo "ISRELEASED=yes" > .release-status
-        git add .release-status
-    - name: Commit Changes
-      run: |
-        git checkout release/${{ env.versionRelease }}
-        git config user.name "Thomas Adam"
-        git config user.email "thomas@fvwm.org"
-        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
+        git add CHANGELOG.md
+        git commit -a --amend --no-edit
         git checkout release-testing-protected
         git merge --ff-only release/${{ env.versionRelease }}
         git tag -am "Release ${{ env.versionRelease }}" ${{ env.versionRelease }}
@@ -74,13 +79,18 @@ jobs:
         name: ${{ env.versionRelease }}
         tag_name: ${{ env.versionRelease }}
         body_path: CHANGELOG.md
+        target_commitish: release-testing-protected
         files: build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Bump next version
       run: |
         git pull -q
+        git checkout release/${{ env.versionRelease }}
         echo "${{ github.event.inputs.nextVersion }}" > .current-version
+        git add .current-version
         echo "ISRELEASED=no" > .release-status
         git commit -am "build: set next version"
+        git checkout release-testing-protected
+        git merge --ff-only release/${{ env.versionRelease }}
         git push

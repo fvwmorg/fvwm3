@@ -5,7 +5,13 @@
 # version of "make dist".
 
 # TODO: ".*" as a glob might be too much in the future; expand this out...
-FILES_TO_IGNORE=".*
+FILES_TO_IGNORE=".clang-format
+.disabled-travis.yml
+.editorconfig
+.git
+.github
+.gitignore
+.mailmap
 dev-docs"
 
 (
