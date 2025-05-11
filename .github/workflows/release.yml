@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       nextVersion:
-        description: 'The next version to increment to:'
+        description: 'The next version to increment to: '
         required: true
 jobs:
   createrelease:
@@ -38,9 +38,6 @@ jobs:
       run: |
         echo "ISRELEASED=yes" > .release-status
         git add .release-status
-    - name: Commit Changes
-      run: |
-        git checkout release/${{ env.versionRelease }}
         git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
     - name: Generate changelog
       run: |
@@ -79,7 +76,6 @@ jobs:
         name: ${{ env.versionRelease }}
         tag_name: ${{ env.versionRelease }}
         body_path: CHANGELOG.md
-        target_commitish: release-testing-protected
         files: build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
