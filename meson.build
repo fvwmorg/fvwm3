@@ -231,8 +231,7 @@ if golang.found()
     if gover.version_compare('<1.20.0')
         error(
             '''A version of Go >= 1.20.0 is required to use the FVWM3 meson build Go modules.
-               Either disable Go for this build (`-Dgolang=disabled`) or upgrade Go to a version >= 1.20.0.
-               The Autotools build can use Go 1.14.0, this is another option if upgrading is not feasible.''',
+               Either disable Go for this build (`-Dgolang=disabled`) or upgrade Go to a version >= 1.20.0.''',
         )
     endif
 else
