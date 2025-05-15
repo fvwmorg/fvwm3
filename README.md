@@ -30,7 +30,7 @@ Releases / Changelog
 Installation
 ------------
 
-See [the installation instructions](./dev-docs/INSTALL.md)
+See [the installation instructions](./INSTALL.md)
 
 Help & Support
 --------------
