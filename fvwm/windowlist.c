@@ -75,9 +75,12 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 {
 	char *desk_name;
 	char *tlabel;
+	int a = 0;
 	struct monitor	*m = monitor_get_current();
 
 	desk_name = GetDesktopName(m, desk);
+
+	a = 1;
 
 	if (desk_name != NULL)
 	{
