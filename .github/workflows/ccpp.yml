@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: blacksmith-4vcpu-ubuntu-2204
     container:
-      image: ${{ matrix.os == 'alpine' && 'fvwmorg/fvwm3-build-alpine:latest' || 'fvwmorg/fvwm3-build:latest' }}
+      image: ${{ matrix.os == 'alpine' && 'fvwmorg/fvwm3-build-alpine:latest' || 'fvwmorg/newfvwm3img:latest' }}
     env:
       GO111MODULE: "on"
 
