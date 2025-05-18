@@ -1187,6 +1187,7 @@ void parse_options(void)
 			   StrEquals(resource, "SmallFont"))
 		{
 			FlocaleUnloadFont(dpy, Scr.winFfont);
+			Scr.winFfont = NULL;
 			if (strncasecmp(next, "none", 4) != 0)
 				Scr.winFfont = FlocaleLoadFont(
 					dpy, next, MyName);

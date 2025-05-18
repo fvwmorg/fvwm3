@@ -297,13 +297,14 @@ Balloon windows provide popup labels for each window when the mouse hovers
 over it. The label, font, color, and position of these balloon windows can
 be configured below.
 
-*FvwmPager: Balloons [type]::
+*FvwmPager: Balloons type::
   Show a balloon describing the window when the pointer is moved into a
   window in the pager. The default format (the window's icon name) can
   be changed using _BalloonStringFormat_. If _type_ is "Pager" balloons
-  are just shown for an un-iconified pager; if _type_ is "Icon" balloons
-  are just shown for an iconified pager. If _type_ is anything else (or
-  null) balloons are always shown.
+  are just shown for an un-iconified pager. If _type_ is "Icon" balloons
+  are just shown for an iconified pager. If _type_ is "All" (or any unused
+  non blank value) balloons are always shown. If _type_ is "None" balloons
+  are never shown (the default behavior).
 
 *FvwmPager: BalloonFont font-name::
   Specifies a font to use for the balloon text. Defaults to _fixed_.
