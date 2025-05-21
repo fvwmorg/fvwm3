@@ -1637,11 +1637,12 @@ $[bg.cs3.lighten15.hash].
 +
 Please refer to the *Colorsets* section for details about colorsets.
 
-$[math.+.<x>,<y>] $[math.-.<x>,<y>] $[math.*.<x>,<y>] $[math./.<x>,<y>] $[math.%.<x>,<y>] $[math.^.<x>,<y>]::
+$[math.+.<x>,<y>] $[math.-.<x>,<y>] $[math.*.<x>,<y>] $[math./.<x>,<y>] $[math.%.<x>,<y>] $[math.^.<x>,<y>] $[math.<.<x>,<y>] $[math.>.<x>,<y>]::
 	The math expansion variables can be used to do some basic arithmetic
 	on the integers <x> and <y>. These expressions can be used to add
 	({plus}), subtract (-), multiply ({asterisk}), divide (/), modulus
-	(%), and exponentiation ({caret}). This can be useful when computing
+	(%), and exponentiation ({caret}). Maximum (>) returns the greater of
+	two values, and minimum (<) the lesser. This can be useful when computing
 	the size of panels or locations of windows relative to a monitor, for
 	example $[math.-.$[monitor.$[monitor.primary].height],200] will
 	subtract 200 pixels from the height of the primary monitor. These can
