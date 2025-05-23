@@ -14,7 +14,7 @@ VERSION="released"
 
 [ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
-[ -e "./.release-status" ] && source "./.release-status"
+[ -e "./.release-status" ] && . "./.release-status"
 
 [ -z "$ISRELEASED" ] && { echo "UNKNOWN" && exit 0 ; }
 
