@@ -126,53 +126,43 @@ foreach h : headers
     endif
 endforeach
 
-if cc.has_header_symbol('libcharset.h', 'locale_charset')
-    conf.set10('HAVE_LIBCHARSET', true)
-endif
-
 if conf.has('HAVE_SYS_SELECT_H')
     conf.set10('HAVE_SELECT', true)
     conf.set('SELECT_FD_SET_CAST', '')
 endif
 
 # Function checks.
-functions = {
-    'div': {},
-    'getpwuid': {},
-    'gettimeofday': {},
-    'lstat': {},
-    'memcpy': {},
-    'memmove': {},
-    'mkfifo': {},
-    'nl_langinfo': {'have': 'HAVE_CODESET'},
-    'putenv': {},
-    'setpgid': {},
-    'setpgrp': {},
-    'setvbuf': {},
-    'sigaction': {},
-    'siginterrupt': {},
-    'siglongjmp': {},
-    'sigsetjmp': {},
-    'socket': {},
-    'strchr': {},
-    'strdup': {},
-    'strstr': {},
-    'strtol': {},
-    'sysconf': {},
-    'intl': {},
-    'uname': {},
-    'wait3': {},
-    'waitpid': {},
-}
+functions = [
+    'div',
+    'getpwuid',
+    'gettimeofday',
+    'lstat',
+    'memcpy',
+    'memmove',
+    'mkfifo',
+    'putenv',
+    'setpgid',
+    'setpgrp',
+    'setvbuf',
+    'sigaction',
+    'siginterrupt',
+    'siglongjmp',
+    'sigsetjmp',
+    'socket',
+    'strchr',
+    'strdup',
+    'strstr',
+    'strtol',
+    'sysconf',
+    'intl',
+    'uname',
+    'wait3',
+    'waitpid',
+]
 
-foreach f, v : functions
+foreach f : functions
     if cc.has_function(f, dependencies: syslibs)
-        val = ''
-        if 'have' in v
-            val = v['have']
-        else
-            val = 'HAVE_' + f.to_upper().underscorify()
-        endif
+        val = 'HAVE_' + f.to_upper().underscorify()
         conf.set10(val, true)
     endif
 endforeach
@@ -269,10 +259,34 @@ if fribidi.found()
     conf.set10('HAVE_BIDI', true)
 endif
 
+iconv_warning = false
+
 iconv = dependency('iconv', required: get_option('iconv'))
 if iconv.found()
     conf.set10('HAVE_ICONV', true)
     all_found_deps += iconv
+
+    # Check if we have nl_langinfo function (typically glibc)
+    if cc.has_function('nl_langinfo')
+        conf.set10('HAVE_CODESET', true)
+    endif
+
+    libcharset_code = '''
+    #include <libcharset.h>
+
+    int main(void) {
+        const char *charset = locale_charset();
+        return 0;
+    }
+    '''
+
+    if cc.links(libcharset_code, dependencies: iconv, name: 'libcharset check')
+        conf.set10('HAVE_LIBCHARSET', true)
+    elif cc.has_header_symbol('libcharset.h', 'locale_charset')
+        # If header is present but linking fails, it might be a conflict
+        # we'll warn after the summary so that this isn't lost in configure noise
+        iconv_warning = true
+    endif
 endif
 
 libintl = dependency('intl', required: get_option('nls'))
@@ -593,3 +607,14 @@ summary(
     bool_yn: true,
     section: 'Dependencies',
 )
+
+if iconv_warning
+    warning(
+        '''Found libcharset.h header, but couldn't link against locale_charset() function.
+        This typically happens when GNU libiconv conflicts with the iconv built into libc.
+        GNU libc systems shouldn't have GNU libiconv installed as they already provide iconv.
+        This is a bug in your distribution's packaging.
+        Please report this to your distribution's developers.
+        '''
+    )
+endif
