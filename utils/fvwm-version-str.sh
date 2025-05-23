@@ -9,17 +9,17 @@
 #
 #
 # Intended to be called from meson.
+set -e
 
 VERSION="released"
+RS=".release-status"
 
 [ -d ".git" ] || { echo "$VERSION" && exit 0 ; }
 
-[ -e "./.release-status" ] && source "./.release-status"
+. "./$RS"
 
 [ -z "$ISRELEASED" ] && { echo "UNKNOWN" && exit 0 ; }
+[ "$ISRELEASED" = "yes" ] && { echo "$VERSION" && exit 0 ; }
 
-if [ "$ISRELEASED" = "yes" ]; then
-	echo "$VERSION"
-else
-	git describe --always --long --dirty --tags
-fi
+git describe --always --long --dirty --tags
+
