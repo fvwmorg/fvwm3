@@ -4131,6 +4131,12 @@ void dispatch_event(XEvent *e)
 
 	switch (e->type - randr_event) {
 	case RRScreenChangeNotify:
+		XRRUpdateConfiguration(e);
+		monitor_output_change(e->xany.display, NULL);
+		monitor_update_ewmh();
+		monitor_emit_broadcast();
+		initPanFrames(NULL);
+
 		/* Avoid processing identical RandR events twice. */
 		if (e->xany.serial == prev_serial)
 		{
@@ -4140,11 +4146,6 @@ void dispatch_event(XEvent *e)
 		}
 		prev_serial = e->xany.serial;
 
-		XRRUpdateConfiguration(e);
-		monitor_output_change(e->xany.display, NULL);
-		monitor_update_ewmh();
-		monitor_emit_broadcast();
-		initPanFrames(NULL);
 		break;
 	}
 
