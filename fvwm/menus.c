@@ -60,6 +60,7 @@
 #include "menugeometry.h"
 #include "menuparameters.h"
 #include "menus.h"
+#include "frame.h"
 #include "libs/FGettext.h"
 
 /* ---------------------------- local definitions -------------------------- */
@@ -2434,6 +2435,7 @@ static void get_menu_paint_item_parameters(
  *      paint_menu - draws the entire menu
  *
  */
+
 static void paint_menu(
 	MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 {
@@ -2441,6 +2443,11 @@ static void paint_menu(
 	MenuStyle *ms = MR_STYLE(mr);
 	int bw = MST_BORDER_WIDTH(mr);
 	int relief_thickness = ST_RELIEF_THICKNESS(MR_STYLE(mr));
+	int r;
+
+	if (MST_HAS_ROUNDED_CORNERS(mr)) r = 9;
+	else if (MST_HAS_SLIGHTLY_ROUNDED_CORNERS(mr)) r = 4;
+	else r = 0;
 
 	if (fw && !check_if_fvwm_window_exists(fw))
 	{
@@ -2454,12 +2461,13 @@ static void paint_menu(
 	{
 		/* Only the border was obscured. Redraw it centrally instead of
 		 * redrawing several menu items. */
-		RelieveRectangle(
+		RelieveRectangleRounded(
 			dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
 			MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
 			SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
 			HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
-			SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)), bw);
+			SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)),
+			bw, r, r, r, r);
 		{
 			return;
 		}
@@ -2512,12 +2520,6 @@ static void paint_menu(
 			True);
 		MR_IS_BACKGROUND_SET(mr) = True;
 	}
-	/* draw the relief */
-	RelieveRectangle(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
-			 MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
-			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
-			 HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
-			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)), bw);
 	/* paint the menu items */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
@@ -2556,8 +2558,14 @@ static void paint_menu(
 		}
 	}
 	paint_side_pic(mr, pevent);
+	/* draw the relief */
+	RelieveRectangleRounded(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
+			 MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
+			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
+			 HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
+			 SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)),
+			 bw, r, r, r, r);
 	XFlush(dpy);
-
 	return;
 }
 
@@ -2596,9 +2604,26 @@ static void select_menu_item(
 	if (MR_IS_PAINTED(mr))
 	{
 		MenuPaintItemParameters mpip;
+		int r;
 
 		get_menu_paint_item_parameters(&mpip, mr, mi, fw, NULL, False);
 		menuitem_paint(mi, &mpip);
+
+		if (MST_HAS_ROUNDED_CORNERS(mr)) r = 9;
+		else if (MST_HAS_SLIGHTLY_ROUNDED_CORNERS(mr)) r = 4;
+		else r = 0;
+
+		if (r && (mi == MR_FIRST_ITEM(mr) || MI_NEXT_ITEM(mi) == NULL))
+		{
+			RelieveRectangleRounded(
+				dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
+				MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
+				SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
+				HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
+				SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)),
+				MST_BORDER_WIDTH(mr),
+				r, r, r, r);
+		}
 	}
 
 	return;
@@ -2734,6 +2759,16 @@ static int do_menus_overlap(
 	}
 
 	return x_overlap;
+}
+
+static void menu_make_rounded_corners(MenuRoot *mr)
+{
+	int r;
+	if (MST_HAS_ROUNDED_CORNERS(mr)) r = 9;
+	else if (MST_HAS_SLIGHTLY_ROUNDED_CORNERS(mr)) r = 4;
+	else return;
+	draw_rounded_mask(MR_WINDOW(mr), None,
+			r, r, r, r, PART_CORNERS, 0);
 }
 
 /*
@@ -3308,6 +3343,8 @@ static int pop_menu_up(
 	/*
 	 * Pop up the menu
 	 */
+
+	menu_make_rounded_corners(mr);
 
 	XMoveWindow(dpy, MR_WINDOW(mr), x, y);
 	mr->d->x = x;
@@ -5950,13 +5987,17 @@ void update_transparent_menu_bg(
 		if (current_x == step_x)
 		{
 			/* Redraw the border */
-			RelieveRectangle(
+			int r;
+			if (MST_HAS_ROUNDED_CORNERS(mr)) r = 9;
+			else if (MST_HAS_SLIGHTLY_ROUNDED_CORNERS(mr)) r = 4;
+			else r = 0;
+			RelieveRectangleRounded(
 				dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
 				MR_HEIGHT(mr) - 1, (Pdepth < 2) ?
 				SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)) :
 				HILIGHT_GC(MST_MENU_INACTIVE_GCS(mr)),
 				SHADOW_GC(MST_MENU_INACTIVE_GCS(mr)),
-				MST_BORDER_WIDTH(mr));
+				MST_BORDER_WIDTH(mr), r, r, r, r);
 		}
 	}
 	else
@@ -6088,6 +6129,7 @@ void repaint_transparent_menu(
 			MR_HEIGHT(mr) - 2 * MST_BORDER_WIDTH(mr), 0);
 		paint_side_pic(mr, NULL);
 	}
+
 }
 
 Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)

@@ -2,22 +2,26 @@
 #define FVWMLIB_GRAPHICS_H
 #include "fvwm_x11.h"
 
-void do_relieve_rectangle(
-	Display *dpy, Drawable d, int x, int y, int w, int h,
-	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading);
+void do_rounded_angle_with_rotation(
+	Display *dpy, Drawable d,
+	GC LeftGC, GC RightGC, int vx, int vy,
+	int sides, int radius, int line_width, int rotation, Bool diag_right);
 
-void do_relieve_rectangle_with_rotation(
+void do_relieve_rectangle_rounded_with_rotation(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
-	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading,
-	int rotation);
+	GC ReliefGC, GC ShadowGC, int line_width,
+	int nw_radius, int ne_radius, int se_radius, int sw_radius,
+	Bool diag_right, int rotation);
 
 #define RelieveRectangle(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
-	do_relieve_rectangle( \
-		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, False)
+	do_relieve_rectangle_rounded_with_rotation( \
+		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, \
+		0, 0, 0, 0, False, 0)
 
-#define RelieveRectangle2(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
-	do_relieve_rectangle( \
-		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, True)
+#define RelieveRectangleRounded(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, nw_radius, ne_radius, se_radius, sw_radius) \
+	do_relieve_rectangle_rounded_with_rotation( \
+		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, \
+		nw_radius, ne_radius, se_radius, sw_radius, False, 0)
 
 Pixmap CreateStretchXPixmap(
 	Display *dpy, Pixmap src, int src_width, int src_height, int src_depth,

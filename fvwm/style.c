@@ -644,7 +644,27 @@ static void merge_styles(
 	if (add_style->flags.has_corner_length)
 	{
 		SSET_CORNER_LENGTH(
-			*merged_style, SGET_CORNER_LENGTH(*add_style));
+			*merged_style, 0, SGET_CORNER_LENGTH(*add_style, 0));
+		SSET_CORNER_LENGTH(
+			*merged_style, 1, SGET_CORNER_LENGTH(*add_style, 1));
+		SSET_CORNER_LENGTH(
+			*merged_style, 2, SGET_CORNER_LENGTH(*add_style, 2));
+		SSET_CORNER_LENGTH(
+			*merged_style, 3, SGET_CORNER_LENGTH(*add_style, 3));
+	}
+	if (add_style->flags.common.s.has_rounded_corners_top)
+	{
+		SSET_ROUNDED_CORNER(
+			*merged_style, 0, SGET_ROUNDED_CORNER(*add_style, 0));
+		SSET_ROUNDED_CORNER(
+			*merged_style, 1, SGET_ROUNDED_CORNER(*add_style, 1));
+	}
+	if (add_style->flags.common.s.has_rounded_corners_bottom)
+	{
+		SSET_ROUNDED_CORNER(
+			*merged_style, 2, SGET_ROUNDED_CORNER(*add_style, 2));
+		SSET_ROUNDED_CORNER(
+			*merged_style, 3, SGET_ROUNDED_CORNER(*add_style, 3));
 	}
 	if (add_style->flags.has_icon_size_limits)
 	{
@@ -2571,19 +2591,60 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "CornerLength"))
 		{
-			GetIntegerArguments(rest, &rest, val, 1);
+			Bool bad = False;
+			int num;
+			int i;
 
-			if (*val > 0)
+			if (on != 0)
 			{
-				SSET_CORNER_LENGTH(*ps, (short)*val);
-				ps->flags.has_corner_length = 1;
+				num = GetIntegerArguments(rest, &rest, val, 4);
+				for (i=0; i < num; i++)
+				{
+					if (val[i] < 0)
+						bad = True;
+				}
+				if (bad)
+				{
+					fvwm_debug(__func__,
+						"Bad argument to CornerLength: %s", rest);
+					break;
+				}
+				switch (num)
+				{
+					case 0:
+						val[0] = val[1] = val[2] = val[3] = 0;
+						break;
+					case 1:
+						val[1] = val[2] = val[3] = val[0];
+						break;
+					case 2:
+						val[2] = val[3] = val[1];
+						val[1] = val[0];
+						break;
+					case 3:
+						val[3] = val[2];
+						break;
+					case 4:
+					default:
+						break;
+				}
+				if (!(val[0] || val[1] || val[2] || val[3]))
+				{
+					on = 0;
+				}
 			}
 			else
 			{
-				ps->flags.has_corner_length = 0;
+				val[0] = val[1] = val[2] = val[3] = 0;
 			}
+
+			ps->flags.has_corner_length = on;
 			ps->flag_mask.has_corner_length = 1;
 			ps->change_mask.has_corner_length = 1;
+			SSET_CORNER_LENGTH(*ps, 0, (short)val[0]);
+			SSET_CORNER_LENGTH(*ps, 1, (short)val[1]);
+			SSET_CORNER_LENGTH(*ps, 2, (short)val[2]);
+			SSET_CORNER_LENGTH(*ps, 3, (short)val[3]);
 		}
 		else
 		{
@@ -3836,6 +3897,165 @@ static Bool style_parse_one_style_option(
 			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCM(*ps), 1);
 			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCC(*ps), 1);
 		}
+		else if (StrEquals(token, "RoundedCorners"))
+		{
+			Bool bad = False;
+			int num;
+			int i;
+
+			if (on != 0)
+			{
+				num = GetIntegerArguments(rest, &rest, val, 4);
+				for (i=0; i < num; i++)
+				{
+					if (val[i] < 0)
+						bad = True;
+				}
+				if (bad)
+				{
+					fvwm_debug(__func__,
+						"Bad argument to RoundedCorners: %s", rest);
+					break;
+				}
+				switch (num)
+				{
+					case 0:
+						val[0] = val[1] = val[2] = val[3] = 9;
+						break;
+					case 1:
+						val[1] = val[2] = val[3] = val[0];
+						break;
+					case 2:
+						val[2] = val[3] = val[1];
+						val[1] = val[0];
+						break;
+					case 3:
+						val[3] = val[2];
+						break;
+					case 4:
+					default:
+						break;
+				}
+			}
+			else
+			{
+				val[0] = val[1] = val[2] = val[3] = 0;
+			}
+
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCF(*ps), val[0] || val[1]);
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCM(*ps), 1);
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCC(*ps), 1);
+			SSET_ROUNDED_CORNER(*ps, 0, (short)val[0]);
+			SSET_ROUNDED_CORNER(*ps, 1, (short)val[1]);
+
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCF(*ps), val[2] || val[3]);
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCM(*ps), 1);
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCC(*ps), 1);
+			SSET_ROUNDED_CORNER(*ps, 2, (short)val[2]);
+			SSET_ROUNDED_CORNER(*ps, 3, (short)val[3]);
+		}
+		else if (StrEquals(token, "RoundedCornersTop"))
+		{
+			Bool bad = False;
+			int num;
+			int i;
+
+			if (on != 0)
+			{
+				num = GetIntegerArguments(rest, &rest, val, 2);
+				for (i=0; i < num; i++)
+				{
+					if (val[i] < 0)
+						bad = True;
+				}
+				if (bad)
+				{
+					fvwm_debug(__func__,
+						"Bad argument to RoundedCornersTop: %s", rest);
+					break;
+				}
+				switch (num)
+				{
+					case 0:
+						val[0] = val[1] = 9;
+						break;
+					case 1:
+						val[1] = val[0];
+						break;
+					case 2:
+					default:
+						break;
+				}
+				if (!(val[0] || val[1]))
+				{
+					on = 0;
+				}
+			}
+			else
+			{
+				val[0] = val[1] = 0;
+			}
+
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCF(*ps), on);
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCM(*ps), 1);
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCC(*ps), 1);
+			SSET_ROUNDED_CORNER(*ps, 0, (short)val[0]);
+			SSET_ROUNDED_CORNER(*ps, 1, (short)val[1]);
+		}
+		else if (StrEquals(token, "RoundedCornersBottom"))
+		{
+			Bool bad = False;
+			int num;
+			int i;
+
+			if (on != 0)
+			{
+				num = GetIntegerArguments(rest, &rest, val, 2);
+				for (i=0; i < num; i++)
+				{
+					if (val[i] < 0)
+						bad = True;
+				}
+				if (bad)
+				{
+					fvwm_debug(__func__,
+						"Bad argument to RoundedCornersBottom: %s", rest);
+					break;
+				}
+				switch (num)
+				{
+					case 0:
+						val[0] = val[1] = 9;
+						break;
+					case 1:
+						val[1] = val[0];
+						break;
+					case 2:
+					default:
+						break;
+				}
+				if (!(val[0] || val[1]))
+				{
+					on = 0;
+				}
+			}
+			else
+			{
+				val[0] = val[1] = 0;
+			}
+
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCF(*ps), on);
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCM(*ps), 1);
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCC(*ps), 1);
+			SSET_ROUNDED_CORNER(*ps, 2, (short)val[0]);
+			SSET_ROUNDED_CORNER(*ps, 3, (short)val[1]);
+		}
+		else if (StrEquals(token, "RotateShadows"))
+		{
+			S_SET_DO_ROTATE_SHADOWS(SCF(*ps), on);
+			S_SET_DO_ROTATE_SHADOWS(SCM(*ps), 1);
+			S_SET_DO_ROTATE_SHADOWS(SCC(*ps), 1);
+		}
 		else
 		{
 			found = False;
@@ -3969,6 +4189,20 @@ static Bool style_parse_one_style_option(
 			S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCF(*ps), !on);
 			S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCM(*ps), 1);
 			S_SET_HAS_NO_STICKY_STIPPLED_ICON_TITLE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "SlightlyRoundedCorners"))
+		{
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCF(*ps), on);
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCM(*ps), 1);
+			S_SET_HAS_ROUNDED_CORNERS_TOP(SCC(*ps), 1);
+			SSET_ROUNDED_CORNER(*ps, 0, (short)(on? 4 : 0));
+			SSET_ROUNDED_CORNER(*ps, 1, (short)(on? 4 : 0));
+
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCF(*ps), on);
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCM(*ps), 1);
+			S_SET_HAS_ROUNDED_CORNERS_BOTTOM(SCC(*ps), 1);
+			SSET_ROUNDED_CORNER(*ps, 2, (short)(on? 4 : 0));
+			SSET_ROUNDED_CORNER(*ps, 3, (short)(on? 4 : 0));
 		}
 		else if (StrEquals(token, "Slippery"))
 		{
@@ -5000,6 +5234,13 @@ void check_window_style_change(
 	if (S_USE_TITLE_DECOR_ROTATION(SCC(*ret_style)))
 	{
 		flags->do_update_rotated_title = 1;
+	}
+
+	/* has_rounded_corners */
+	if (S_HAS_ROUNDED_CORNERS_TOP(SCC(*ret_style)) ||
+	    S_HAS_ROUNDED_CORNERS_BOTTOM(SCC(*ret_style)))
+	{
+		flags->do_redecorate = True;
 	}
 
 	/* has_mwm_border

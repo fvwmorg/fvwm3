@@ -230,6 +230,7 @@ typedef struct
 		unsigned do_not_show_on_map : 1;
 		unsigned do_raise_transient : 1;
 		unsigned do_resize_opaque : 1;
+		unsigned do_rotate_shadows : 1;
 		unsigned do_shrink_windowshade : 1;
 		unsigned do_stack_transient_parent : 1;
 		unsigned do_window_list_skip : 1;
@@ -275,6 +276,8 @@ typedef struct
 #define WINDOWSHADE_LAZY_MASK   0x3
 		unsigned windowshade_laziness : 2;
 		unsigned use_title_decor_rotation : 1;
+		unsigned has_rounded_corners_top : 1;
+		unsigned has_rounded_corners_bottom : 1;
 		focus_policy_t focus_policy;
 	} s;
 } common_flags_t;
@@ -647,7 +650,9 @@ typedef struct window_style
 	short border_width;
 	/* resize handle width */
 	short handle_width;
-	short corner_length;
+	/* nw, ne, se, sw */
+	short corner_length[4];
+	short rounded_corner[4];
 	int layer;
 	int start_desk;
 	int start_page_x;
@@ -783,7 +788,9 @@ typedef struct FvwmWindow
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h too! */
 	short boundary_width;
 	short unshaped_boundary_width;
-	short corner_length;
+	/* nw, ne, se, sw */
+	short corner_length[4];
+	short rounded_corner[4];
 
 	/* title font */
 	FlocaleFont *title_font;

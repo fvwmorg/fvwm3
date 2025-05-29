@@ -212,6 +212,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 	border_draw_decorations(
 		fw, PART_TITLEBAR, (fw == get_focus_window()) ? True : False,
 		0, CLEAR_BUTTONS, NULL, NULL);
+	frame_make_rounded_corners(fw);
 	/* update hints and inform modules */
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 	BroadcastPacket(

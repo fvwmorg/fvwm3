@@ -136,6 +136,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"VerticalMargins",
 		"UniqueHotkeyActivatesImmediate",
 		"Translucent",
+		"RoundedCorners", "SlightlyRoundedCorners",
 		NULL
 	};
 
@@ -1082,6 +1083,13 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			} else {
 				ST_TRANSLUCENT_PERCENT(tmpms) = *val;
 			}
+			break;
+
+		case 56: /* RoundedCorners */
+			ST_HAS_ROUNDED_CORNERS(tmpms) = on;
+			break;
+		case 57: /* SlightlyRoundedCorners */
+			ST_HAS_SLIGHTLY_ROUNDED_CORNERS(tmpms) = on;
 			break;
 
 #if 0

@@ -65,134 +65,288 @@
 
 /* ---------------------------- interface functions ------------------------ */
 
-/* Draws the relief pattern around a window
- * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide,
- * h+1 high
- * Draws end points assuming CAP_NOT_LAST style in GC
- * Draws anti-clockwise in case CAP_BUTT is the style and the end points overlap
- * Top and bottom lines come out full length, the sides come out 1 pixel less
- * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
- * look like just lines
- * rotation rotate the relief and shadow part
- */
-void do_relieve_rectangle_with_rotation(
-	Display *dpy, Drawable d, int x, int y, int w, int h,
-	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading,
-	int rotation)
+void do_rounded_angle_with_rotation(
+	Display *dpy, Drawable d,
+	GC LeftGC,      /* to the left looking from the vertex of the right angle */
+	GC RightGC,     /* to the right looking from the vertex of the right angle */
+	int vx, int vy, /* the vertex of the right angle */
+	int sides,      /* of the right angle */
+	int radius,     /* of the rounded part */
+	int line_width, /* of the sides and the arc */
+	int rotation,   /* no rotation = sides to the right and down */
+	Bool diag_right)   /* diagonal belongs to the right side = alternative shading */
 {
-	XSegment* seg;
-	GC shadow_gc, relief_gc;
-	int i, cur;
-	int max_w;
-	int max_h;
+	int x=sides, x0=radius, y=0;
+	int Delta=0,  delta_x=1,  delta_y=0;
+	int Delta0=0, delta_x0=1, delta_y0=0;
 
-	/*
-	 * If a == 1, then the left segment needs to shift down by one
-	 * pixel. That leads to the top segments shift left by one pixel, right
-	 * shift up, and bottom shift right.
+	int tor = diag_right ? 1 : 0;
+	int tol = 1 - tor;
+
+	/* line_width>0 - rounded angle is inner to the arc
+	 * line_width=0 - rounded angle is between the arc and the right angle it is incribed in
 	 */
-	int a = (use_alternate_shading) ? 1 : 0;
-	int l = 1 - a;
 
-	if (w <= 0 || h <= 0)
+	if (sides<=0 || radius<0 || line_width<0 || rotation<ROTATION_0 || rotation>ROTATION_270)
 	{
 		return;
 	}
-	/* If line_width is negative, reverse the rotation, which will */
-	/* have the effect of inverting the relief. */
-	if (line_width < 0)
+
+	if (line_width == 0)
 	{
-		line_width = -line_width;
-		rotation = gravity_add_rotations(rotation, ROTATION_180);
+		x=radius-1;
+		Delta=0;
+		delta_x=1;
+		delta_y=2*radius-1;
+		for (y=0; x>=y; x--)
+		{
+			Delta+=delta_x;
+			delta_x+=2;
+			if (2*Delta>=delta_y)
+			{
+				Delta-=delta_y;
+				delta_y-=2;
+				y++;
+				if (x<y) x=y-1;
+				switch (rotation)
+				{
+					case ROTATION_0:
+						if (x+tol>=y) XFillRectangle(dpy, d, LeftGC, vx+y-tol, vy+y-1, x-y+1+tol, 1);
+						if (x+tor>=y) XFillRectangle(dpy, d, RightGC, vx+y-1, vy+y-tor, 1, x-y+1+tor);
+						break;
+
+					case ROTATION_90:
+						if (x+tol>=y) XFillRectangle(dpy, d, LeftGC, vx-y+1, vy+y-tol, 1, x-y+1+tol);
+						if (x+tor>=y) XFillRectangle(dpy, d, RightGC, vx-x, vy+y-1, x-y+1+tor, 1);
+						break;
+
+					case ROTATION_180:
+						if (x+tol>=y) XFillRectangle(dpy, d, LeftGC, vx-x, vy-y+1, x-y+1+tol, 1);
+						if (x+tor>=y) XFillRectangle(dpy, d, RightGC, vx-y+1, vy-x, 1, x-y+1+tor);
+						break;
+
+					case ROTATION_270:
+					default:
+						if (x+tol>=y) XFillRectangle(dpy, d, LeftGC, vx+y-1, vy-x, 1, x-y+1+tol);
+						if (x+tor>=y) XFillRectangle(dpy, d, RightGC, vx+y-tor, vy-y+1, x-y+1+tor, 1);
+						break;
+				}
+			}
+		}
+		return;
 	}
-	switch (rotation)
+
+	/* line_width > 0 */
+
+	if (line_width>sides)
 	{
-	case ROTATION_180:
-	case ROTATION_270:
-		rotation = gravity_add_rotations(rotation, ROTATION_180);
-		shadow_gc = ReliefGC;
-		relief_gc = ShadowGC;
-		break;
-	default:
-		shadow_gc = ShadowGC;
-		relief_gc = ReliefGC;
-		break;
+		line_width = sides;
 	}
-	max_w = min((w + 1) / 2, line_width);
-	max_h = min((h + 1) / 2, line_width);
-	seg = fxmalloc(sizeof(XSegment) * line_width * 2 + 1);
-	/* from 0 to the lesser of line_width & just over half w */
 
-	if (rotation == ROTATION_90 || rotation == ROTATION_270) {
-		/* Vertical titlebars move the "highlight" 90 degrees */
-		/* top */
-		for (i = 0; i < max_h; i++) {
-			seg[i].x1 = x+i+l; seg[i].y1 = y+i;
-			seg[i].x2 = x+w-1-i+l; seg[i].y2 = y+i;
-		}
-
-		cur = i;
-		/* right */
-		for (i = 0; i < max_w; i++, cur++) {
-			seg[cur].x1 = x+w-i; seg[cur].y1 = y+i+l;
-			seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
-		}
-
-		XDrawSegments(dpy, d, relief_gc, seg, cur);
-
-		/* left */
-		for (i = 0; i < max_w; i++) {
-			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-			seg[i].x2 = x+i; seg[i].y2 = y+h-1-i+a;
-		}
-		cur = i;
-		/* bottom */
-		for (i = 0; i < max_h; i++, cur++) {
-			seg[cur].x1 = x+i+a;   seg[cur].y1 = y+h-i;
-			seg[cur].x2 = x+w-1-i+a; seg[cur].y2 = y+h-i;
-		}
-
-		XDrawSegments(dpy, d, shadow_gc, seg, cur);	
-	} else {
-		/* left */
-		for (i = 0; i < max_w; i++) {
-			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-			seg[i].x2 = x+i; seg[i].y2 = y+h-1-i+a;
-		}
-		cur = i;
-		/* top */
-		for (i = 0; i < max_h; i++, cur++) {
-			seg[cur].x1 = x+i+l; seg[cur].y1 = y+i;
-			seg[cur].x2 = x+w-1-i+l; seg[cur].y2 = y+i;
-		}
-		XDrawSegments(dpy, d, relief_gc, seg, cur);
-		/* bottom */
-		for (i = 0; i < max_h; i++) {
-			seg[i].x1 = x+i+a;   seg[i].y1 = y+h-i;
-			seg[i].x2 = x+w-1-i+a; seg[i].y2 = y+h-i;
-		}
-		cur = i;
-		/* right */
-		for (i = 0; i < max_w; i++, cur++) {
-			seg[cur].x1 = x+w-i; seg[cur].y1 = y+i+l;
-			seg[cur].x2 = x+w-i; seg[cur].y2 = y+h-1-i+l;
-		}
-		XDrawSegments(dpy, d, shadow_gc, seg, cur);
+	if (radius > sides)
+	{
+		radius = sides;
 	}
-	if (seg)
-		XFree(seg);
+			
 
-	return;
+	for (y=1; x>=y; y++)
+	{
+		if (y<=line_width)
+			x=sides-1;
+		else
+		{
+			if (y==line_width+1)
+			{
+				x=radius;
+				Delta=0;
+				delta_x=1;
+				delta_y=2*(radius-line_width)-1;
+			}
+			while (x>=y && 2*Delta<delta_y)
+			{
+				Delta+=delta_x;
+				delta_x+=2;
+				x--;
+			}
+			Delta-=delta_y;
+			delta_y-=2;
+		}
+
+		if (y>=radius)
+			x0=y-2;
+		else
+		{
+			if (y==1)
+			{
+				x0=radius;
+				Delta0=0;
+				delta_x0=1;
+				delta_y0=2*radius-1;
+			}
+			while (x0>=y-1 && 2*Delta0<delta_y0)
+			{
+				Delta0+=delta_x0;
+				delta_x0+=2;
+				x0--;
+			}
+			Delta0-=delta_y0;
+			delta_y0-=2;
+			if (x0<y-2) x0=y-2;
+		}
+
+		switch (rotation)
+		{
+			case ROTATION_0:
+				if (tor) XFillRectangle(dpy, d, LeftGC, vx+x0+1, vy+y-1, x-x0, 1);
+				XFillRectangle(dpy, d, RightGC, vx+y-1, vy+x0+1, 1, x-x0);
+				if (tol) XFillRectangle(dpy, d, LeftGC, vx+x0+1, vy+y-1, x-x0, 1);
+				break;
+
+			case ROTATION_90:
+				if (tor) XFillRectangle(dpy, d, LeftGC, vx-y+1, vy+x0+1, 1, x-x0);
+				XFillRectangle(dpy, d, RightGC, vx-x, vy+y-1, x-x0, 1);
+				if (tol) XFillRectangle(dpy, d, LeftGC, vx-y+1, vy+x0+1, 1, x-x0);
+				break;
+
+			case ROTATION_180:
+				if (tor) XFillRectangle(dpy, d, LeftGC, vx-x, vy-y+1, x-x0, 1);
+				XFillRectangle(dpy, d, RightGC, vx-y+1, vy-x, 1, x-x0);
+				if (tol) XFillRectangle(dpy, d, LeftGC, vx-x, vy-y+1, x-x0, 1);
+				break;
+
+			case ROTATION_270:
+			default:
+				if (tor) XFillRectangle(dpy, d, LeftGC, vx+y-1, vy-x, 1, x-x0);
+				XFillRectangle(dpy, d, RightGC, vx+x0+1, vy-y+1, x-x0, 1);
+				if (tol) XFillRectangle(dpy, d, LeftGC, vx+y-1, vy-x, 1, x-x0);
+				break;
+		}
+	}
 }
 
-void do_relieve_rectangle(
+/* Draws a rectangular relief pattern insctibed into
+ *  the rectangle from (x,y) to (x+w,y+h) i.e. w+1 wide, h+1 high
+ * Line width in pixels is specified
+ * Corners are rounded with arbitrary radii
+ * Rotation rotates the relief and shadow part
+ */
+void do_relieve_rectangle_rounded_with_rotation(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
-	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading)
+	GC ReliefGC, GC ShadowGC, int line_width,
+	int nw_radius, int ne_radius, int se_radius, int sw_radius,
+	Bool diag_right, int rotation)
 {
-	do_relieve_rectangle_with_rotation(
-		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width,
-		use_alternate_shading, ROTATION_0);
-	return;
+	GC top_gc, bottom_gc, left_gc, right_gc;
+	int l;
+	int nw_corner, sw_corner, se_corner, ne_corner;
+	
+	if (w<=0 || h<=0 || line_width==0) return;
+	if (nw_radius<0) nw_radius = 0;
+	if (ne_radius<0) ne_radius = 0;
+	if (se_radius<0) se_radius = 0;
+	if (sw_radius<0) sw_radius = 0;
+
+	if (line_width < 0)
+	{
+		rotation = gravity_add_rotations(rotation, ROTATION_180);
+		line_width = -line_width;
+	}
+
+	switch (rotation)
+	{
+		case ROTATION_0:
+			left_gc = top_gc = ReliefGC;
+			right_gc = bottom_gc = ShadowGC;
+			break;
+
+		case ROTATION_90:
+			right_gc = top_gc = ReliefGC;
+			left_gc = bottom_gc = ShadowGC;
+			break;
+
+		case ROTATION_180:
+			right_gc = bottom_gc = ReliefGC;
+			left_gc = top_gc = ShadowGC;
+			break;
+
+		case ROTATION_270:
+		default:
+			left_gc = bottom_gc = ReliefGC;
+			right_gc = top_gc = ShadowGC;
+			break;
+	}
+
+	if (2*line_width > w) line_width = (w+1)/2;
+	if (2*line_width > h) line_width = (h+1)/2;
+
+	if (nw_radius+ne_radius+2 > w+1)
+	{
+		int d = (nw_radius + ne_radius - w + 1) / 2;
+		nw_radius -= d;
+		ne_radius = w - 1 - nw_radius;
+	}
+
+	if (sw_radius+se_radius+2 > w+1)
+	{
+		int d = (sw_radius + se_radius - w + 1) / 2;
+		sw_radius -= d;
+		se_radius = w - 1 - sw_radius;
+	}
+
+	if (nw_radius+sw_radius+2 > h+1)
+	{
+		int d = (nw_radius + sw_radius - h + 1) / 2;
+		nw_radius -= d;
+		sw_radius = h - 1 - nw_radius;
+	}
+
+	if (ne_radius+se_radius+2 > h+1)
+	{
+		int d = (ne_radius + se_radius - h + 1) / 2;
+		ne_radius -= d;
+		se_radius = h - 1 - ne_radius;
+	}
+
+	nw_corner = (nw_radius+1 > line_width) ? nw_radius+1 : line_width;
+	ne_corner = (ne_radius+1 > line_width) ? ne_radius+1 : line_width;
+	se_corner = (se_radius+1 > line_width) ? se_radius+1 : line_width;
+	sw_corner = (sw_radius+1 > line_width) ? sw_radius+1 : line_width;
+
+	l = w+1-nw_corner-ne_corner;
+	if (l)
+	{
+		XFillRectangle(dpy, d, top_gc, x+nw_corner, y, l, line_width);
+	}
+
+	l = h+1-nw_corner-sw_corner;
+	if (l)
+	{
+		XFillRectangle(dpy, d, left_gc, x, y+nw_corner, line_width, l);
+	}
+
+	l = w+1-sw_corner-se_corner;
+	if (l)
+	{
+		XFillRectangle(dpy, d, bottom_gc, x+sw_corner, y+h+1-line_width, l, line_width);
+	}
+
+	l = h+1-ne_corner-se_corner;
+	if (l)
+	{
+		XFillRectangle(dpy, d, right_gc, x+w+1-line_width, y+ne_corner, line_width, l);
+	}
+
+	do_rounded_angle_with_rotation(dpy, d, top_gc, left_gc, /* NW */
+		x, y, nw_corner, nw_radius, line_width, ROTATION_0, diag_right);
+
+	do_rounded_angle_with_rotation(dpy, d, right_gc, top_gc, /* NE */
+		x+w, y, ne_corner, ne_radius, line_width, ROTATION_90, diag_right);
+
+	do_rounded_angle_with_rotation(dpy, d, bottom_gc, right_gc, /* SE */
+		x+w, y+h, se_corner, se_radius, line_width, ROTATION_180, diag_right);
+
+	do_rounded_angle_with_rotation(dpy, d, left_gc, bottom_gc, /* SW */
+		x, y+h, sw_corner, sw_radius, line_width, ROTATION_270, diag_right);
 }
 
 /* Creates a pixmap that is a horizontally stretched version of the input

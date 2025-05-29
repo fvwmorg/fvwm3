@@ -1664,9 +1664,11 @@ void setup_title_geometry(
 	int width;
 	int offset;
 	style_flags *sflags = &(pstyle->flags);
+	int dir = S_TITLE_DIR(SCF(*pstyle));
+	int c0, c1, c2, c3; /* corners */
 
 	get_title_font_size_and_offset(
-		fw, S_TITLE_DIR(SCF(*pstyle)),
+		fw, dir,
 		S_IS_LEFT_TITLE_ROTATED_CW(SCF(*pstyle)),
 		S_IS_RIGHT_TITLE_ROTATED_CW(SCF(*pstyle)),
 		S_IS_TOP_TITLE_ROTATED(SCF(*pstyle)),
@@ -1674,16 +1676,78 @@ void setup_title_geometry(
 		&width, &offset);
 	fw->title_thickness = width;
 	fw->title_text_offset = offset;
-	fw->corner_length = fw->title_thickness + fw->boundary_width;
+	fw->corner_length[0] = fw->corner_length[1] =
+		fw->corner_length[2] = fw->corner_length[3] =
+		fw->title_thickness + fw->boundary_width;
+	fw->rounded_corner[0] = fw->rounded_corner[1] =
+		fw->rounded_corner[2] = fw->rounded_corner[3] = 0;
+
+	switch(dir)
+	{
+		case DIR_E:
+			c0 = 1; c1 = 2; c2 = 3; c3 = 0;
+			break;
+		case DIR_S:
+			c0 = 2; c1 = 3; c2 = 0; c3 = 1;
+			break;
+		case DIR_W:
+			c0 = 3; c1 = 0; c2 = 1; c3 = 2;
+			break;
+		case DIR_N:
+		default:
+			c0 = 0; c1 = 1; c2 = 2; c3 = 3;
+			break;
+	}
+
+	/* Flip horizontally (relative to tb) if the titlebar is rotated */
+	if ((dir == DIR_N && S_IS_TOP_TITLE_ROTATED(SCF(*pstyle)))
+		|| (dir == DIR_S && !S_IS_BOTTOM_TITLE_ROTATED(SCF(*pstyle)))
+		|| (dir == DIR_W && S_IS_LEFT_TITLE_ROTATED_CW(SCF(*pstyle)))
+		|| (dir == DIR_E && !S_IS_RIGHT_TITLE_ROTATED_CW(SCF(*pstyle))))
+	{
+		int c = c0; c0 = c1; c1 = c;
+		    c = c2; c2 = c3; c3 = c;
+	}
+
+
 	if (SHAS_CORNER_LENGTH(sflags))
 	{
-		fw->corner_length =
-			SGET_CORNER_LENGTH(*pstyle) + fw->boundary_width;
+		fw->corner_length[c0] =
+			SGET_CORNER_LENGTH(*pstyle, 0) + fw->boundary_width;
+		fw->corner_length[c1] =
+			SGET_CORNER_LENGTH(*pstyle, 1) + fw->boundary_width;
+		fw->corner_length[c2] =
+			SGET_CORNER_LENGTH(*pstyle, 2) + fw->boundary_width;
+		fw->corner_length[c3] =
+			SGET_CORNER_LENGTH(*pstyle, 3) + fw->boundary_width;
 	}
+
+	if (S_HAS_ROUNDED_CORNERS_TOP(sflags->common))
+	{
+		fw->rounded_corner[c0] = SGET_ROUNDED_CORNER(*pstyle, 0);
+		if (fw->rounded_corner[c0] >= fw->corner_length[c0])
+			fw->corner_length[c0] = fw->rounded_corner[c0] + 1;
+		fw->rounded_corner[c1] = SGET_ROUNDED_CORNER(*pstyle, 1);
+		if (fw->rounded_corner[c1] >= fw->corner_length[c1])
+			fw->corner_length[c1] = fw->rounded_corner[c1] + 1;
+	}
+
+	if (S_HAS_ROUNDED_CORNERS_BOTTOM(sflags->common))
+	{
+		fw->rounded_corner[c2] = SGET_ROUNDED_CORNER(*pstyle, 2);
+		if (fw->rounded_corner[c2] >= fw->corner_length[c2])
+			fw->corner_length[c2] = fw->rounded_corner[c2] + 1;
+		fw->rounded_corner[c3] = SGET_ROUNDED_CORNER(*pstyle, 3);
+		if (fw->rounded_corner[c3] >= fw->corner_length[c3])
+			fw->corner_length[c3] = fw->rounded_corner[c3] + 1;
+	}
+
 	if (!HAS_TITLE(fw))
 	{
 		fw->title_thickness = 0;
 	}
+
+	frame_make_rounded_corners(fw);
 
 	return;
 }
@@ -3608,3 +3672,4 @@ void CaptureAllWindows(const exec_context_t *exc)
 
 	return;
 }
+

@@ -24,6 +24,7 @@
 #include "libs/log.h"
 #include "libs/FShape.h"
 #include "libs/Grab.h"
+#include "libs/Graphics.h"
 #include "libs/charmap.h"
 #include "libs/wcontext.h"
 #include "fvwm.h"
@@ -66,7 +67,9 @@ typedef struct
 	frame_decor_gravities_type grav;
 	size_borders b_g;
 	size_borders b_no_title_g;
-	rectangle curr_sidebar_g;
+	rectangle curr_lb_sidebar_g;
+	rectangle curr_rt_sidebar_g;
+	rectangle curr_rnd_sidebar_g;
 	rectangle start_g;
 	rectangle end_g;
 	rectangle delta_g;
@@ -94,7 +97,9 @@ typedef struct
 	} flags;
 	/* used during the animation */
 	int next_titlebar_compression;
-	rectangle next_sidebar_g;
+	rectangle next_lb_sidebar_g;
+	rectangle next_rt_sidebar_g;
+	rectangle next_rnd_sidebar_g;
 	rectangle next_g;
 	rectangle dstep_g;
 	size_rect parent_s;
@@ -259,7 +264,9 @@ static void frame_setup_border(
 	XWindowChanges xwc;
 	Window w;
 	window_parts part;
-	rectangle sidebar_g;
+	rectangle lb_sidebar_g;
+	rectangle rt_sidebar_g;
+	rectangle rnd_sidebar_g;
 	rectangle part_g;
 	Bool dummy;
 
@@ -268,7 +275,7 @@ static void frame_setup_border(
 		return;
 	}
 	frame_get_sidebar_geometry(
-		fw, NULL, frame_g, &sidebar_g, &dummy, &dummy);
+		fw, NULL, frame_g, &lb_sidebar_g, &rt_sidebar_g, &rnd_sidebar_g, &dummy, &dummy);
 	for (part = PART_BORDER_N; (part & PART_FRAME);
 	     part <<= 1)
 	{
@@ -276,7 +283,7 @@ static void frame_setup_border(
 		{
 			continue;
 		}
-		border_get_part_geometry(fw, part, &sidebar_g, &part_g, &w);
+		border_get_part_geometry(fw, part, &lb_sidebar_g, &rt_sidebar_g, &part_g, &w);
 		if (part_g.width <= 0 || part_g.height <= 0)
 		{
 			xwc.x = -1;
@@ -438,6 +445,8 @@ static void _frame_setup_window(
 		/* inform the modules of the change */
 		BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 	}
+
+	frame_make_rounded_corners(fw);
 
 	return;
 }
@@ -651,7 +660,8 @@ static void frame_next_move_resize_args(
 	mr_args_internal *mra;
 
 	mra = (mr_args_internal *)mr_args;
-	mra->curr_sidebar_g = mra->next_sidebar_g;
+	mra->curr_lb_sidebar_g = mra->next_lb_sidebar_g;
+	mra->curr_rt_sidebar_g = mra->next_rt_sidebar_g;
 	mra->current_g = mra->next_g;
 	mra->step_flags.was_hidden = mra->step_flags.is_hidden;
 	mra->curr_titlebar_compression = mra->next_titlebar_compression;
@@ -779,7 +789,9 @@ static void frame_mrs_prepare_vars(
 	mra->next_g.width += (mra->delta_g.width * i) / mra->anim_steps;
 	mra->next_g.height += (mra->delta_g.height * i) / mra->anim_steps;
 	frame_get_sidebar_geometry(
-		fw, NULL, &mra->next_g, &mra->next_sidebar_g, &dummy, &dummy);
+		fw, NULL, &mra->next_g,
+		&mra->next_lb_sidebar_g, &mra->next_rt_sidebar_g, &mra->next_rnd_sidebar_g,
+		&dummy, &dummy);
 	fvwmrect_subtract_rectangles(
 		&mra->dstep_g, &mra->next_g, &mra->current_g);
 	mra->next_titlebar_compression =
@@ -1534,15 +1546,27 @@ void frame_get_titlebar_dimensions(
 
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
-	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks)
+	rectangle *lb_ret_g, rectangle *rt_ret_g, rectangle *rnd_ret_g,
+	Bool *ret_has_x_marks, Bool *ret_has_y_marks)
 {
 	int min_l;
 	size_borders b;
 
-	ret_g->x = 0;
-	ret_g->y = 0;
-	ret_g->width = 0;
-	ret_g->height = 0;
+	lb_ret_g->x = 0;      /* nw corner length */
+	lb_ret_g->y = 0;      /* sw corner length */
+	lb_ret_g->width = 0;  /* bottom sidebar length */
+	lb_ret_g->height = 0; /* left sidebar length */
+
+	rt_ret_g->x = 0;      /* se corner length */
+	rt_ret_g->y = 0;      /* ne corner length */
+	rt_ret_g->width = 0;  /* top sidebar length */
+	rt_ret_g->height = 0; /* right sidebar length */
+
+	rnd_ret_g->x = 0;      /* nw corner radius */
+	rnd_ret_g->y = 0;      /* sw corner radius */
+	rnd_ret_g->width = 0;  /* se corner radius */
+	rnd_ret_g->height = 0; /* ne corner radius */
+
 	*ret_has_x_marks = False;
 	*ret_has_y_marks = False;
 	if (HAS_NO_BORDER(fw))
@@ -1571,32 +1595,109 @@ void frame_get_sidebar_geometry(
 		*ret_has_x_marks = True;
 		*ret_has_y_marks = True;
 	}
-	ret_g->x = fw->corner_length;
-	ret_g->y = fw->corner_length;
-	min_l = 2 * fw->corner_length + 4;
+	lb_ret_g->x = fw->corner_length[0];
+	lb_ret_g->y = fw->corner_length[3];
+	rt_ret_g->x = fw->corner_length[2];
+	rt_ret_g->y = fw->corner_length[1];
+
+	rnd_ret_g->x = fw->rounded_corner[0];
+	rnd_ret_g->y = fw->rounded_corner[3];
+	rnd_ret_g->width = fw->rounded_corner[2];
+	rnd_ret_g->height = fw->rounded_corner[1];
+
 	/* limit by available space, remove handle marks if necessary */
+
+	min_l = lb_ret_g->x + rt_ret_g->y + 4;
 	if (frame_g->width < min_l)
 	{
-		ret_g->x = frame_g->width / 3;
+		min_l = (min_l - frame_g->width) / 2;
+		lb_ret_g->x -= min_l;
+		rt_ret_g->y = frame_g->width - lb_ret_g->x - 4;
 		*ret_has_y_marks = False;
 	}
+
+	min_l = lb_ret_g->y + rt_ret_g->x + 4;
+	if (frame_g->width < min_l)
+	{
+		min_l = (min_l - frame_g->width) / 2;
+		rt_ret_g->x -= min_l;
+		lb_ret_g->y = frame_g->width - lb_ret_g->x - 4;
+		*ret_has_y_marks = False;
+	}
+
+	min_l = lb_ret_g->x + lb_ret_g->y + 4;
 	if (frame_g->height < min_l)
 	{
-		ret_g->y = frame_g->height / 3;
+		min_l = (min_l - frame_g->height) / 2;
+		lb_ret_g->y -= min_l;
+		lb_ret_g->x = frame_g->height - lb_ret_g->y - 4;
 		*ret_has_x_marks = False;
 	}
+
+	min_l = rt_ret_g->y + rt_ret_g->x + 4;
+	if (frame_g->height < min_l)
+	{
+		min_l = (min_l - frame_g->height) / 2;
+		rt_ret_g->y -= min_l;
+		rt_ret_g->x = frame_g->height - rt_ret_g->y - 4;
+		*ret_has_x_marks = False;
+	}
+
 	get_window_borders_no_title(fw, &b);
-	if (ret_g->x < b.top_left.width)
+
+	if (lb_ret_g->x < b.top_left.width)
 	{
-		ret_g->x = b.top_left.width;
+		lb_ret_g->x = b.top_left.width;
 	}
-	if (ret_g->y < b.top_left.height)
+	if (lb_ret_g->x < b.top_left.height)
 	{
-		ret_g->y = b.top_left.height;
+		lb_ret_g->x = b.top_left.height;
 	}
+
+	if (lb_ret_g->y < b.top_left.width)
+	{
+		lb_ret_g->y = b.top_left.width;
+	}
+	if (lb_ret_g->y < b.bottom_right.height)
+	{
+		lb_ret_g->y = b.bottom_right.height;
+	}
+
+	if (rt_ret_g->x < b.bottom_right.width)
+	{
+		rt_ret_g->x = b.bottom_right.width;
+	}
+	if (rt_ret_g->x < b.bottom_right.height)
+	{
+		rt_ret_g->x = b.bottom_right.height;
+	}
+
+	if (rt_ret_g->y < b.top_left.height)
+	{
+		rt_ret_g->y = b.top_left.height;
+	}
+	if (rt_ret_g->y < b.bottom_right.width)
+	{
+		rt_ret_g->y = b.bottom_right.width;
+	}
+
+	if (rnd_ret_g->x >= lb_ret_g->x)
+		rnd_ret_g->x = lb_ret_g->x - 1;
+
+	if (rnd_ret_g->y >= lb_ret_g->y)
+		rnd_ret_g->y = lb_ret_g->y - 1;
+
+	if (rnd_ret_g->width >= rt_ret_g->x)
+		rnd_ret_g->width = rt_ret_g->x - 1;
+
+	if (rnd_ret_g->height >= rt_ret_g->y)
+		rnd_ret_g->height = rt_ret_g->y - 1;
+
 	/* length of the side bars */
-	ret_g->width = frame_g->width - 2 * ret_g->x;
-	ret_g->height = frame_g->height - 2 * ret_g->y;
+	lb_ret_g->width = frame_g->width - rt_ret_g->x - lb_ret_g->y;
+	lb_ret_g->height = frame_g->height - lb_ret_g->x - lb_ret_g->y;
+	rt_ret_g->width = frame_g->width - lb_ret_g->x - rt_ret_g->y;
+	rt_ret_g->height = frame_g->height - rt_ret_g->x - rt_ret_g->y;
 
 	return;
 }
@@ -1795,7 +1896,9 @@ frame_move_resize_args frame_create_move_resize_args(
 	get_window_borders_no_title(fw, &mra->b_no_title_g);
 	mra->start_g = (start_g != NULL) ? *start_g : fw->g.frame;
 	frame_get_sidebar_geometry(
-		fw, NULL, &mra->start_g, &mra->curr_sidebar_g, &dummy, &dummy);
+		fw, NULL, &mra->start_g, 
+		&mra->curr_lb_sidebar_g, &mra->curr_rt_sidebar_g, &mra->curr_rnd_sidebar_g,
+		&dummy, &dummy);
 	mra->end_g = *end_g;
 	mra->current_g = mra->start_g;
 	mra->next_g = mra->end_g;
@@ -1957,6 +2060,7 @@ void frame_free_move_resize_args(
 			FShapeSet);
 	}
 	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height, fw->wShaped);
+	frame_make_rounded_corners(fw);
 	if (mra->flags.do_restore_gravity)
 	{
 		/* TA:  2011-09-04: There might be a chance some clients with
@@ -2088,6 +2192,235 @@ void frame_force_setup_window(
 	_frame_setup_window(fw, &g, do_send_configure_notify, True, False);
 
 	return;
+}
+
+void correct_rounded_subwindow(Window win, Window outer,
+	int *width, int *height,
+	int *nw_corner, int *ne_corner, int *se_corner, int *sw_corner)
+{
+	int x, y, w, h;
+	int dx, dy, d;
+
+	XGetGeometry(
+		dpy, win, &JunkRoot, &x, &y,
+		(unsigned int*)width, (unsigned int*)height, (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth);
+
+	if (outer != None && (*nw_corner > 0 || *sw_corner > 0 || *se_corner > 0 || *ne_corner > 0))
+	{
+		XGetGeometry(
+			dpy, outer, &JunkRoot, &dx, &dy,
+			(unsigned int*)&w, (unsigned int*)&h, (unsigned int*)&JunkBW, (unsigned int*)&JunkDepth);
+
+		dx = x; dy = y;
+		d = (dx>dy ? dx : dy);
+		if (d>0) *nw_corner -= d;
+
+		dx = w - x - *width;
+		d = (dx>dy ? dx : dy);
+		if (d>0) *ne_corner -= d;
+
+		dy = h - y - *height;
+		d = (dx>dy ? dx : dy);
+		if (d>0) *se_corner -= d;
+
+		dx = x;
+		d = (dx>dy ? dx : dy);
+		if (d>0) *sw_corner -= d;
+	}
+	if (*nw_corner<0) *nw_corner = 0;
+	if (*ne_corner<0) *ne_corner = 0;
+	if (*se_corner<0) *se_corner = 0;
+	if (*sw_corner<0) *sw_corner = 0;
+}
+
+
+void draw_rounded_mask(Window win, Window outer,
+	int nw_corner, int ne_corner, int se_corner, int sw_corner,
+	window_parts draw_parts, int col)
+{
+	Pixmap pm;
+	GC gc;
+	int w, h;
+
+	correct_rounded_subwindow(win, outer, &w, &h,
+		&nw_corner, &ne_corner, &se_corner, &sw_corner);
+
+	pm = XCreatePixmap(dpy, win, w, h, 1);
+	gc = Scr.MonoGC;
+	XSetForeground(dpy, gc, !col);
+	XFillRectangle(dpy, pm, gc, 0, 0, w, h);
+	XSetForeground(dpy, gc, col);
+
+	/* Draw a rounded shape on the corners of the pixmap */
+	if ((draw_parts & PART_BORDER_NW) && nw_corner)
+		do_rounded_angle_with_rotation(dpy, pm, gc, gc, 0, 0,
+			nw_corner, nw_corner, 0, 0, False);
+
+	if ((draw_parts & PART_BORDER_NE) && ne_corner)
+		do_rounded_angle_with_rotation(dpy, pm, gc, gc, w-1, 0,
+			ne_corner, ne_corner, 0, 1, False);
+
+	if ((draw_parts & PART_BORDER_SE) && se_corner)
+		do_rounded_angle_with_rotation(dpy, pm, gc, gc, w-1, h-1,
+			se_corner, se_corner, 0, 2, False);
+
+	if ((draw_parts & PART_BORDER_SW) && sw_corner)
+		do_rounded_angle_with_rotation(dpy, pm, gc, gc, 0, h-1,
+			sw_corner, sw_corner, 0, 3, False);
+
+	FShapeCombineMask(dpy, win, ShapeBounding, 0, 0, pm, col==1 ? ShapeSubtract : ShapeSet);
+
+	XFreePixmap(dpy, pm);
+}
+
+static void frame_draw_rounded_mask(FvwmWindow *fw, Window win, window_parts draw_parts, int col)
+{
+	int nw_corner, ne_corner, se_corner, sw_corner;
+	if (HAS_ROUNDED_CORNERS_TOP(fw) || HAS_ROUNDED_CORNERS_BOTTOM(fw))
+	{
+		nw_corner = fw->rounded_corner[0];
+		ne_corner = fw->rounded_corner[1];
+		se_corner = fw->rounded_corner[2];
+		sw_corner = fw->rounded_corner[3];
+		draw_rounded_mask(win, (FW_W_FRAME(fw) != win) ? FW_W_FRAME(fw) : None,
+			nw_corner, ne_corner, se_corner, sw_corner, draw_parts, col);
+	}
+}
+
+/* Returns a corner corrected for rotation of the titlebar (ie button 1 is always NW) */
+#define SWAP_CORNER(PART) corner = corner & (PART) ? corner ^ (PART) : corner
+static window_parts __get_corner(window_parts corner, FvwmWindow *fw)
+{
+	int dir;
+
+	dir = GET_TITLE_DIR(fw);
+
+	/* Flip horizontally (relative to tb) if the titlebar is rotated */
+	if ((dir == DIR_N && IS_TOP_TITLE_ROTATED(fw))
+		|| (dir == DIR_S && !IS_BOTTOM_TITLE_ROTATED(fw))
+		|| (dir == DIR_W && IS_LEFT_TITLE_ROTATED_CW(fw))
+		|| (dir == DIR_E && !IS_RIGHT_TITLE_ROTATED_CW(fw)))
+	{
+		SWAP_CORNER(PART_BORDER_NE | PART_BORDER_NW);
+		/* Avoid swapping SW/SW for the second time below */
+	}
+	else
+	{
+		/* Swap SE/SW so that shift left goes in a clockwise order */
+		SWAP_CORNER(PART_BORDER_SW | PART_BORDER_SE);
+	}
+
+	/* Rotate clockwise depending on dir */
+	corner <<= dir;
+	if (corner > PART_BORDER_SE)
+	{
+		corner = corner >> 4;
+	}
+
+	/* Swap SE/SW back */
+	SWAP_CORNER(PART_BORDER_SW | PART_BORDER_SE);
+
+	return corner;
+}
+
+void frame_make_rounded_corners(FvwmWindow *fw)
+{
+	window_parts draw_parts;
+	window_parts mask;
+	int x;
+	Window left_button = None;
+	Window right_button = None;
+
+	if (!fw || !FShapesSupported)
+	{
+		return;
+	}
+
+	window_parts corner_nw = __get_corner(PART_BORDER_NW, fw);
+	window_parts corner_ne = __get_corner(PART_BORDER_NE, fw);
+	window_parts corner_se = __get_corner(PART_BORDER_SE, fw);
+	window_parts corner_sw = __get_corner(PART_BORDER_SW, fw);
+
+	for (x = 9;x>=0;x--)
+	{
+		if (FW_W_BUTTON(fw, x) != None)
+		{
+			if (x%2 == 0)
+			{
+				left_button = FW_W_BUTTON(fw, x);
+			}
+			else
+			{
+				right_button = FW_W_BUTTON(fw, x);
+			}
+		}
+	}
+
+	mask = 0;
+	if (HAS_ROUNDED_CORNERS_TOP(fw))
+	{
+		mask |= corner_ne | corner_nw;
+	}
+	if (HAS_ROUNDED_CORNERS_BOTTOM(fw))
+	{
+		mask |= corner_se | corner_sw;
+	}
+
+	/* Draw mask on each corner of the window. This involves the frame, title,
+	 * buttons and parent wins depending on the window configuration */
+	frame_draw_rounded_mask(fw, FW_W_FRAME(fw), mask, 1);
+	if (HAS_TITLE(fw))
+	{
+		draw_parts = 0;
+		if (left_button == None)
+		{
+			draw_parts |= corner_nw;
+		}
+		if (right_button == None)
+		{
+			draw_parts |= corner_ne;
+		}
+		if (IS_SHADED(fw))
+		{
+			if (left_button == None)
+			{
+				draw_parts |= corner_sw;
+			}
+			else
+			{
+				frame_draw_rounded_mask(fw, left_button, mask & (corner_nw|corner_sw), 0);
+			}
+			if (right_button == None)
+			{
+				draw_parts |= corner_se;
+			}
+			else
+			{
+				frame_draw_rounded_mask(fw, right_button, mask & (corner_ne|corner_se), 0);
+			}
+		}
+		frame_draw_rounded_mask(fw, FW_W_TITLE(fw), mask & draw_parts, 0);
+
+		if (!IS_SHADED(fw))
+		{
+			frame_draw_rounded_mask(fw, FW_W_PARENT(fw), mask & (corner_sw|corner_se), 0);
+
+			if (left_button != None)
+			{
+				frame_draw_rounded_mask(fw, left_button, mask & corner_nw, 0);
+			}
+			if (right_button != None)
+			{
+				frame_draw_rounded_mask(fw, right_button, mask & corner_ne, 0);
+			}
+		}
+	}
+	else
+	{
+		frame_draw_rounded_mask(fw, FW_W_PARENT(fw), mask & PART_CORNERS, 0);
+	}
+
+	XFlush(dpy);
 }
 
 /****************************************************************************

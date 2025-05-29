@@ -61,7 +61,8 @@ int border_is_using_border_style(
 int border_context_to_parts(
 	int context);
 void border_get_part_geometry(
-	FvwmWindow *fw, window_parts part, rectangle *sidebar_g,
+	FvwmWindow *fw, window_parts part,
+	rectangle *lb_sidebar_g, rectangle *rt_sidebar_g,
 	rectangle *ret_g, Window *ret_w);
 int get_button_number(int context);
 void border_draw_decorations(

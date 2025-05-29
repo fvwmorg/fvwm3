@@ -169,7 +169,15 @@ typedef struct
 
 typedef struct
 {
-	rectangle sidebar_g;
+	/* x = nw corner length, y = sw corner length
+	 * width = bottom sidebar length, height = left sidebar length */
+	rectangle lb_sidebar_g;
+	/* x = se corner length, y = ne corner length
+	 * width = top sidebar length, height = right sidebar length */
+	rectangle rt_sidebar_g;
+	/* x = nw corner radius, y = sw corner radius
+	 * width = se corner radius, height = ne corner radius */
+	rectangle rnd_sidebar_g;
 	border_relief_size_descr relief;
 	border_marks_descr marks;
 	draw_border_gcs gcs;
@@ -571,50 +579,69 @@ static void get_common_decorations(
 }
 
 static window_parts border_get_changed_border_parts(
-	FvwmWindow *fw, rectangle *old_sidebar_g, rectangle *new_sidebar_g,
+	FvwmWindow *fw,
+	rectangle *old_lb_sidebar_g, rectangle *old_rt_sidebar_g, rectangle *old_rnd_sidebar_g,
+	rectangle *new_lb_sidebar_g, rectangle *new_rt_sidebar_g, rectangle *new_rnd_sidebar_g,
 	int cs)
 {
 	window_parts changed_parts;
 
-	changed_parts = PART_NONE;
+	changed_parts = PART_FRAME;
 	if (!CSET_IS_TRANSPARENT_PR(cs) && CSET_HAS_PIXMAP(cs) &&
-	    (old_sidebar_g->x != new_sidebar_g->x ||
-	     old_sidebar_g->y != new_sidebar_g->y ||
-	     old_sidebar_g->width != new_sidebar_g->width ||
-	     old_sidebar_g->height != new_sidebar_g->height))
+	    (old_lb_sidebar_g->x != new_lb_sidebar_g->x ||
+	     old_lb_sidebar_g->y != new_lb_sidebar_g->y ||
+	     old_lb_sidebar_g->width != new_lb_sidebar_g->width ||
+	     old_lb_sidebar_g->height != new_lb_sidebar_g->height ||
+	     old_rt_sidebar_g->x != new_rt_sidebar_g->x ||
+	     old_rt_sidebar_g->y != new_rt_sidebar_g->y ||
+	     old_rt_sidebar_g->width != new_rt_sidebar_g->width ||
+	     old_rt_sidebar_g->height != new_rt_sidebar_g->height ||
+	     old_rnd_sidebar_g->x != new_rnd_sidebar_g->x ||
+	     old_rnd_sidebar_g->y != new_rnd_sidebar_g->y ||
+	     old_rnd_sidebar_g->width != new_rnd_sidebar_g->width ||
+	     old_rnd_sidebar_g->height != new_rnd_sidebar_g->height))
 	{
 		/* optimizable? */
-		changed_parts |= PART_FRAME;
 		return changed_parts;
 	}
-	if (old_sidebar_g->x != new_sidebar_g->x)
+	if (old_lb_sidebar_g->x == new_lb_sidebar_g->x &&
+		old_rnd_sidebar_g->x == new_rnd_sidebar_g->x)
 	{
-		changed_parts |= (PART_FRAME & (~PART_BORDER_W));
-	}
-	if (old_sidebar_g->y != new_sidebar_g->y)
-	{
-		changed_parts |= (PART_FRAME & (~PART_BORDER_N));
-	}
-	if (old_sidebar_g->width != new_sidebar_g->width)
-	{
-		changed_parts |=
-			PART_BORDER_N | PART_BORDER_S;
-		if (DFS_FACE_TYPE(GetDecor(fw, BorderStyle.active.style)) ==
-		    TiledPixmapButton)
+		changed_parts &= (~PART_BORDER_NW);
+		if (old_lb_sidebar_g->height == new_lb_sidebar_g->height)
 		{
-			changed_parts |=
-				PART_BORDER_NE | PART_BORDER_E | PART_BORDER_SE;
+			changed_parts &= (~PART_BORDER_W);
+			if (old_lb_sidebar_g->y == new_lb_sidebar_g->y &&
+				old_rnd_sidebar_g->y == new_rnd_sidebar_g->y &&
+				(DFS_FACE_TYPE(GetDecor(fw, BorderStyle.active.style)) !=
+				 TiledPixmapButton))
+			{
+				changed_parts &= (~PART_BORDER_SW);
+				if (old_lb_sidebar_g->width == new_lb_sidebar_g->width)
+				{
+					changed_parts &= (~PART_BORDER_S);
+				}
+			}
 		}
-	}
-	if (old_sidebar_g->height != new_sidebar_g->height)
-	{
-		changed_parts |=
-			PART_BORDER_W | PART_BORDER_E;
-		if (DFS_FACE_TYPE(GetDecor(fw, BorderStyle.active.style)) ==
-		    TiledPixmapButton)
+		if (old_rt_sidebar_g->width == new_rt_sidebar_g->width)
 		{
-			changed_parts |=
-				PART_BORDER_SW | PART_BORDER_S | PART_BORDER_SE;
+			changed_parts &= (~PART_BORDER_N);
+			if (old_rt_sidebar_g->y == new_rt_sidebar_g->y &&
+				old_rnd_sidebar_g->height == new_rnd_sidebar_g->height &&
+				(DFS_FACE_TYPE(GetDecor(fw, BorderStyle.active.style)) !=
+				 TiledPixmapButton))
+			{
+				changed_parts &= (~PART_BORDER_NE);
+				if (old_rt_sidebar_g->height == new_rt_sidebar_g->height)
+				{
+					changed_parts &= (~PART_BORDER_E);
+					if (old_rt_sidebar_g->x == new_rt_sidebar_g->x &&
+						old_rnd_sidebar_g->width == new_rnd_sidebar_g->width)
+					{
+						changed_parts &= (~PART_BORDER_SE);
+					}
+				}
+			}
 		}
 	}
 
@@ -629,7 +656,9 @@ static int border_get_parts_and_pos_to_draw(
 {
 	window_parts draw_parts;
 	window_parts parts_to_light;
-	rectangle sidebar_g_old;
+	rectangle lb_sidebar_g_old;
+	rectangle rt_sidebar_g_old;
+	rectangle rnd_sidebar_g_old;
 	DecorFaceStyle *borderstyle;
 	Bool has_x_marks;
 	Bool has_x_marks_old;
@@ -642,8 +671,9 @@ static int border_get_parts_and_pos_to_draw(
 		&GetDecor(fw, BorderStyle.active.style) :
 		&GetDecor(fw, BorderStyle.inactive.style);
 	frame_get_sidebar_geometry(
-		fw, borderstyle,  new_g, &br->sidebar_g, &has_x_marks,
-		&has_y_marks);
+		fw, borderstyle,  new_g,
+		&br->lb_sidebar_g, &br->rt_sidebar_g, &br->rnd_sidebar_g,
+		&has_x_marks, &has_y_marks);
 	if (has_x_marks == True)
 	{
 		draw_parts |= PART_X_HANDLES;
@@ -677,8 +707,9 @@ static int border_get_parts_and_pos_to_draw(
 		return draw_parts;
 	}
 	frame_get_sidebar_geometry(
-		fw, borderstyle, old_g, &sidebar_g_old, &has_x_marks_old,
-		&has_y_marks_old);
+		fw, borderstyle, old_g,
+		&lb_sidebar_g_old, &rt_sidebar_g_old, &rnd_sidebar_g_old,
+		&has_x_marks_old, &has_y_marks_old);
 	if (has_x_marks_old != has_x_marks)
 	{
 		draw_parts |= (PART_FRAME & (~(PART_BORDER_N | PART_BORDER_S)));
@@ -688,7 +719,8 @@ static int border_get_parts_and_pos_to_draw(
 		draw_parts |= (PART_FRAME & (~(PART_BORDER_W | PART_BORDER_E)));
 	}
 	draw_parts |= border_get_changed_border_parts(
-		fw, &sidebar_g_old, &br->sidebar_g, cs);
+		fw, &lb_sidebar_g_old, &rt_sidebar_g_old, &rnd_sidebar_g_old,
+		&br->lb_sidebar_g, &br->rt_sidebar_g, &br->rnd_sidebar_g, cs);
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 
 	return draw_parts;
@@ -1260,13 +1292,14 @@ static Pixmap border_create_decor_pixmap(
 
 static void border_draw_part_relief(
 	border_relief_descr *br, rectangle *frame_g, rectangle *part_g,
-	Pixmap dest_pix, Bool is_inverted)
+	Pixmap dest_pix, Bool is_inverted, int rotation)
 {
 	int i;
 	int off_x = 0;
 	int off_y = 0;
 	int width = frame_g->width - 1;
 	int height = frame_g->height - 1;
+	int r_dec = 0;
 	int w[7];
 	GC gc[4];
 
@@ -1290,15 +1323,19 @@ static void border_draw_part_relief(
 	{
 		if (ulgc[i] != 0x7f && w[i] > 0)
 		{
-			do_relieve_rectangle(
+			do_relieve_rectangle_rounded_with_rotation(
 				dpy, dest_pix, off_x, off_y,
 				width, height, gc[(int)ulgc[i]],
-				gc[(int)brgc[i]], w[i], False);
+				gc[(int)brgc[i]], w[i],
+				br->rnd_sidebar_g.x-r_dec, br->rnd_sidebar_g.height-r_dec,
+				br->rnd_sidebar_g.width-r_dec, br->rnd_sidebar_g.y-r_dec,
+				False, rotation);
 		}
 		off_x += w[i];
 		off_y += w[i];
 		width -= 2 * w[i];
 		height -= 2 * w[i];
+		r_dec += w[i];
 	}
 
 	return;
@@ -1399,14 +1436,18 @@ static void border_draw_part_marks(
 	border_relief_descr *br, rectangle *part_g, window_parts part,
 	Pixmap dest_pix)
 {
-	int l;
-	int t;
+	int lt;
+	int lb;
+	int rb;
+	int rt;
 	int w;
 	int h;
 	int o;
 
-	l = br->sidebar_g.x;
-	t = br->sidebar_g.y;
+	lt = br->lb_sidebar_g.x;
+	lb = br->lb_sidebar_g.y;
+	rb = br->rt_sidebar_g.x;
+	rt = br->rt_sidebar_g.y;
 	w = part_g->width;
 	h = part_g->height;
 	o = br->marks.offset_br;
@@ -1429,20 +1470,20 @@ static void border_draw_part_marks(
 		border_draw_x_mark(br, 0, h, dest_pix, True);
 		break;
 	case PART_BORDER_NW:
-		border_draw_x_mark(br, 0, t, dest_pix, True);
-		border_draw_y_mark(br, l, 0, dest_pix, True);
+		border_draw_x_mark(br, 0, lt, dest_pix, True);
+		border_draw_y_mark(br, lt, 0, dest_pix, True);
 		break;
 	case PART_BORDER_NE:
-		border_draw_x_mark(br, l + o, t, dest_pix, True);
+		border_draw_x_mark(br, rt + o, rt, dest_pix, True);
 		border_draw_y_mark(br, 0, 0, dest_pix, False);
 		break;
 	case PART_BORDER_SW:
 		border_draw_x_mark(br, 0, 0, dest_pix, False);
-		border_draw_y_mark(br, l, t + o, dest_pix, True);
+		border_draw_y_mark(br, lb, lb + o, dest_pix, True);
 		break;
 	case PART_BORDER_SE:
-		border_draw_x_mark(br, l + o, 0, dest_pix, False);
-		border_draw_y_mark(br, 0, t + o, dest_pix, False);
+		border_draw_x_mark(br, rb + o, 0, dest_pix, False);
+		border_draw_y_mark(br, 0, rb + o, dest_pix, False);
 		break;
 	default:
 		return;
@@ -1755,7 +1796,8 @@ static void border_get_border_background(
 }
 
 static void border_draw_one_border_part(
-	common_decorations_type *cd, FvwmWindow *fw, rectangle *sidebar_g,
+	common_decorations_type *cd, FvwmWindow *fw,
+	rectangle *lb_sidebar_g, rectangle *rt_sidebar_g,
 	rectangle *frame_g, border_relief_descr *br, window_parts part,
 	window_parts draw_handles, Bool is_inverted, Bool do_clear)
 {
@@ -1766,9 +1808,10 @@ static void border_draw_one_border_part(
 	Pixmap p;
 	Window w;
 	Bool free_bg_pixmap = False;
+	int rotation = DO_ROTATE_SHADOWS(fw) ? fw->title_text_rotation : 0;
 
 	/* make a pixmap */
-	border_get_part_geometry(fw, part, sidebar_g, &part_g, &w);
+	border_get_part_geometry(fw, part, lb_sidebar_g, rt_sidebar_g, &part_g, &w);
 	if (part_g.width <= 0 || part_g.height <= 0)
 	{
 		return;
@@ -1789,12 +1832,16 @@ static void border_draw_one_border_part(
 			bg.pixmap.g.x = frame_g->width - fw->boundary_width;
 			break;
 		case PART_BORDER_NE:
+			bg.pixmap.g.x = frame_g->width - fw->corner_length[1];
+			break;
 		case PART_BORDER_SE:
-			bg.pixmap.g.x = frame_g->width - fw->corner_length;
+			bg.pixmap.g.x = frame_g->width - fw->corner_length[2];
 			break;
 		case PART_BORDER_N:
+			bg.pixmap.g.x = fw->corner_length[0];
+			break;
 		case PART_BORDER_S:
-			bg.pixmap.g.x = fw->corner_length;
+			bg.pixmap.g.x = fw->corner_length[3];
 			break;
 		default:
 			bg.pixmap.g.x = 0;
@@ -1806,12 +1853,16 @@ static void border_draw_one_border_part(
 			bg.pixmap.g.y = frame_g->height - fw->boundary_width;
 			break;
 		case PART_BORDER_SW:
+			bg.pixmap.g.y = frame_g->height - fw->corner_length[3];
+			break;
 		case PART_BORDER_SE:
-			bg.pixmap.g.y = frame_g->height - fw->corner_length;
+			bg.pixmap.g.y = frame_g->height - fw->corner_length[2];
 			break;
 		case PART_BORDER_W:
+			bg.pixmap.g.y = fw->corner_length[0];
+			break;
 		case PART_BORDER_E:
-			bg.pixmap.g.y = fw->corner_length;
+			bg.pixmap.g.y = fw->corner_length[1];
 			break;
 		default:
 			bg.pixmap.g.y = 0;
@@ -1837,7 +1888,7 @@ static void border_draw_one_border_part(
 	/* draw the relief over the background */
 	if (!br->relief.is_flat)
 	{
-		border_draw_part_relief(br, frame_g, &part_g, p, is_inverted);
+		border_draw_part_relief(br, frame_g, &part_g, p, is_inverted, rotation);
 		/* draw the handle marks */
 		if (br->marks.has_x_marks || br->marks.has_y_marks)
 		{
@@ -1878,7 +1929,7 @@ static void border_draw_all_border_parts(
 		{
                         border_get_border_gcs(&br->gcs, cd, fw, do_hilight, part);
                         border_draw_one_border_part(
-                                        cd, fw, &br->sidebar_g, frame_g, br, part,
+                                        cd, fw, &br->lb_sidebar_g, &br->rt_sidebar_g, frame_g, br, part,
                                         draw_handles,
                                         (pressed_parts & part) ? True : False,
 					do_clear);
@@ -3469,6 +3520,21 @@ static void border_set_button_pixmap(
 	GC sgc;
 	Bool free_bg_pixmap = False;
 	rectangle pix_g;
+	int nw_radius, ne_radius, se_radius, sw_radius;
+	int junk_w, junk_h;
+	int rotation = DO_ROTATE_SHADOWS(fw) ? fw->title_text_rotation : 0;
+
+	if (HAS_ROUNDED_CORNERS_TOP(fw) || HAS_ROUNDED_CORNERS_BOTTOM(fw))
+	{
+		nw_radius = fw->rounded_corner[0];
+		ne_radius = fw->rounded_corner[1];
+		se_radius = fw->rounded_corner[2];
+		sw_radius = fw->rounded_corner[3];
+	}
+	else
+	{
+		nw_radius = ne_radius = se_radius = sw_radius = 0;
+	}
 
 	/* prepare variables */
 	mask = (1 << button);
@@ -3592,12 +3658,15 @@ static void border_set_button_pixmap(
 		do_reverse_relief ^= 1;
 		/* fall through*/
 	case DFS_BUTTON_IS_UP:
-		do_relieve_rectangle(
+		correct_rounded_subwindow(w, FW_W_FRAME(fw), &junk_w, &junk_h,
+			&nw_radius, &ne_radius, &se_radius, &sw_radius);
+		do_relieve_rectangle_rounded_with_rotation(
 			dpy, *dest_pix, 0, 0, button_g->width - 1,
 			button_g->height - 1,
 			(do_reverse_relief) ? sgc : rgc,
 			(do_reverse_relief) ? rgc : sgc,
-			td->cd->relief_width, True);
+			td->cd->relief_width, nw_radius, ne_radius, se_radius, sw_radius,
+			True, rotation);
 		break;
 	default:
 		/* flat */
@@ -3649,7 +3718,9 @@ static void border_draw_title_stick_lines(
 	int under_text_offset = 0;
 	int right_length = 0;
 	int left_length = 0;
-	rotation_t rotation;
+
+	int rotation = DO_ROTATE_SHADOWS(fw) ? 0 :
+		(td->td_is_rotated ? td->restore_rotation : 0);
 
 	if (!( (HAS_STICKY_STIPPLED_TITLE(fw) &&
 		(IS_STICKY_ACROSS_PAGES(fw) || IS_STICKY_ACROSS_DESKS(fw)))
@@ -3657,14 +3728,7 @@ static void border_draw_title_stick_lines(
 	{
 		return;
 	}
-	if (td->td_is_rotated)
-	{
-		rotation = td->restore_rotation;
-	}
-	else
-	{
-		rotation = ROTATION_0;
-	}
+
 	if (td->has_vt && td->under_text_g.height > 0)
 	{
 		under_text_length = td->under_text_g.height;
@@ -3731,19 +3795,21 @@ static void border_draw_title_stick_lines(
 	{
 		if (left_w > 0)
 		{
-			do_relieve_rectangle_with_rotation(
+			do_relieve_rectangle_rounded_with_rotation(
 				dpy, dest_pix,
 				SWAP_ARGS(td->has_vt, left_x, i),
 				SWAP_ARGS(td->has_vt, left_w, 1),
-				tdd->sgc, tdd->rgc, 1, False, rotation);
+				tdd->sgc, tdd->rgc,
+				1, 0, 0, 0, 0, False, rotation);
 		}
 		if (right_w > 0)
 		{
-			do_relieve_rectangle_with_rotation(
+			do_relieve_rectangle_rounded_with_rotation(
 				dpy, dest_pix,
 				SWAP_ARGS(td->has_vt, right_x, i),
 				SWAP_ARGS(td->has_vt, right_w, 1),
-				tdd->sgc, tdd->rgc, 1, False, rotation);
+				tdd->sgc, tdd->rgc,
+				1, 0, 0, 0, 0, False, rotation);
 		}
 	}
 
@@ -3754,9 +3820,10 @@ static void border_draw_title_mono(
 	FvwmWindow *fw, titlebar_descr *td, title_draw_descr *tdd,
 	FlocaleWinString *fstr, Pixmap dest_pix)
 {
-	int has_vt;
+	int has_vt = HAS_VERTICAL_TITLE(fw);
+	int rotation = DO_ROTATE_SHADOWS(fw) ? 0 :
+		(td->td_is_rotated ? td->restore_rotation : 0);
 
-	has_vt = HAS_VERTICAL_TITLE(fw);
 	XFillRectangle(
 		dpy, dest_pix, td->cd->relief_gc[0],
 		td->offset - 2, 0, td->length+4, fw->title_thickness);
@@ -3766,17 +3833,19 @@ static void border_draw_title_mono(
 	}
 	/* for mono, we clear an area in the title bar where the window
 	 * title goes, so that its more legible. For color, no need */
-	do_relieve_rectangle(
+	do_relieve_rectangle_rounded_with_rotation(
 		dpy, dest_pix, 0, 0,
 		SWAP_ARGS(has_vt, td->offset - 3,
 			  fw->title_thickness - 1),
-		tdd->rgc, tdd->sgc, td->cd->relief_width, False);
-	do_relieve_rectangle(
+		tdd->rgc, tdd->sgc,
+		td->cd->relief_width, 0, 0, 0, 0, False, rotation);
+	do_relieve_rectangle_rounded_with_rotation(
 		dpy, dest_pix,
 		SWAP_ARGS(has_vt, td->offset + td->length + 2, 0),
 		SWAP_ARGS(has_vt, fw->title_length - td->length -
 			  td->offset - 3, fw->title_thickness - 1),
-		tdd->rgc, tdd->sgc, td->cd->relief_width, False);
+		tdd->rgc, tdd->sgc,
+		td->cd->relief_width, 0, 0, 0, 0, False, rotation);
 	XDrawLine(
 		dpy, dest_pix, tdd->sgc,
 		SWAP_ARGS(has_vt, 0, td->offset + td->length + 1),
@@ -3791,29 +3860,23 @@ static void border_draw_title_relief(
 	Pixmap dest_pix)
 {
 	int reverse = 0;
-	rotation_t rotation;
+	int rotation = DO_ROTATE_SHADOWS(fw) ? 0 :
+		(td->td_is_rotated ? td->restore_rotation : 0);
 
-	if (td->td_is_rotated)
-	{
-		rotation = td->restore_rotation;
-	}
-	else
-	{
-		rotation = ROTATION_0;
-	}
 	/* draw title relief */
 	switch (DFS_BUTTON_RELIEF(*tdd->tstyle))
 	{
 	case DFS_BUTTON_IS_SUNK:
 		reverse = 1;
 	case DFS_BUTTON_IS_UP:
-		do_relieve_rectangle_with_rotation(
+		do_relieve_rectangle_rounded_with_rotation(
 			dpy, dest_pix, 0, 0,
 			SWAP_ARGS(
 				td->has_vt, fw->title_length - 1,
 				fw->title_thickness - 1),
 			(reverse) ? tdd->sgc : tdd->rgc,
-			(reverse) ? tdd->rgc : tdd->sgc, td->cd->relief_width,
+			(reverse) ? tdd->rgc : tdd->sgc,
+			td->cd->relief_width, 0, 0, 0, 0,
 			True, rotation);
 		break;
 	default:
@@ -4819,7 +4882,8 @@ int border_context_to_parts(
 }
 
 void border_get_part_geometry(
-	FvwmWindow *fw, window_parts part, rectangle *sidebar_g,
+	FvwmWindow *fw, window_parts part,
+	rectangle *lb_sidebar_g, rectangle *rt_sidebar_g,
 	rectangle *ret_g, Window *ret_w)
 {
 	int bw;
@@ -4830,23 +4894,23 @@ void border_get_part_geometry(
 	switch (part)
 	{
 	case PART_BORDER_N:
-		ret_g->x = sidebar_g->x;
+		ret_g->x = lb_sidebar_g->x;
 		ret_g->y = 0;
 		*ret_w = FW_W_SIDE(fw, 0);
 		break;
 	case PART_BORDER_E:
-		ret_g->x = 2 * sidebar_g->x + sidebar_g->width - bw;
-		ret_g->y = sidebar_g->y;
+		ret_g->x = lb_sidebar_g->x + rt_sidebar_g->y + rt_sidebar_g->width - bw;
+		ret_g->y = rt_sidebar_g->y;
 		*ret_w = FW_W_SIDE(fw, 1);
 		break;
 	case PART_BORDER_S:
-		ret_g->x = sidebar_g->x;
-		ret_g->y = 2 * sidebar_g->y + sidebar_g->height - bw;
+		ret_g->x = lb_sidebar_g->y;
+		ret_g->y = lb_sidebar_g->x + lb_sidebar_g->y + lb_sidebar_g->height - bw;
 		*ret_w = FW_W_SIDE(fw, 2);
 		break;
 	case PART_BORDER_W:
 		ret_g->x = 0;
-		ret_g->y = sidebar_g->y;
+		ret_g->y = lb_sidebar_g->x;
 		*ret_w = FW_W_SIDE(fw, 3);
 		break;
 	case PART_BORDER_NW:
@@ -4855,18 +4919,18 @@ void border_get_part_geometry(
 		*ret_w = FW_W_CORNER(fw, 0);
 		break;
 	case PART_BORDER_NE:
-		ret_g->x = sidebar_g->x + sidebar_g->width;
+		ret_g->x = lb_sidebar_g->x + rt_sidebar_g->width;
 		ret_g->y = 0;
 		*ret_w = FW_W_CORNER(fw, 1);
 		break;
 	case PART_BORDER_SW:
 		ret_g->x = 0;
-		ret_g->y = sidebar_g->y + sidebar_g->height;
+		ret_g->y = lb_sidebar_g->x + lb_sidebar_g->height;
 		*ret_w = FW_W_CORNER(fw, 2);
 		break;
 	case PART_BORDER_SE:
-		ret_g->x = sidebar_g->x + sidebar_g->width;
-		ret_g->y = sidebar_g->y + sidebar_g->height;
+		ret_g->x = lb_sidebar_g->y + lb_sidebar_g->width;
+		ret_g->y = rt_sidebar_g->y + rt_sidebar_g->height;
 		*ret_w = FW_W_CORNER(fw, 3);
 		break;
 	default:
@@ -4876,21 +4940,32 @@ void border_get_part_geometry(
 	switch (part)
 	{
 	case PART_BORDER_N:
-	case PART_BORDER_S:
-		ret_g->width = sidebar_g->width;
+		ret_g->width = rt_sidebar_g->width;
 		ret_g->height = bw;
 		break;
-	case PART_BORDER_E:
+	case PART_BORDER_S:
+		ret_g->width = lb_sidebar_g->width;
+		ret_g->height = bw;
+		break;
 	case PART_BORDER_W:
 		ret_g->width = bw;
-		ret_g->height = sidebar_g->height;
+		ret_g->height = lb_sidebar_g->height;
+		break;
+	case PART_BORDER_E:
+		ret_g->width = bw;
+		ret_g->height = rt_sidebar_g->height;
 		break;
 	case PART_BORDER_NW:
-	case PART_BORDER_NE:
+		ret_g->width = ret_g->height = lb_sidebar_g->x;
+		break;
 	case PART_BORDER_SW:
+		ret_g->width = ret_g->height = lb_sidebar_g->y;
+		break;
 	case PART_BORDER_SE:
-		ret_g->width = sidebar_g->x;
-		ret_g->height = sidebar_g->y;
+		ret_g->width = ret_g->height = rt_sidebar_g->x;
+		break;
+	case PART_BORDER_NE:
+		ret_g->width = ret_g->height = rt_sidebar_g->y;
 		break;
 	default:
 		return;

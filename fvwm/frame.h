@@ -4,6 +4,7 @@
 #define FVWM_FRAME_H
 
 /* ---------------------------- included header files ---------------------- */
+#include "borders.h"
 #include "fvwm.h"
 #include "screen.h"
 
@@ -57,7 +58,8 @@ void frame_get_titlebar_dimensions(
 	frame_title_layout_t *title_layout);
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
-	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);
+	rectangle *lb_ret_g, rectangle *rt_ret_g, rectangle *rnd_ret_g,
+	Bool *ret_has_x_marks, Bool *ret_has_y_marks);
 int frame_window_id_to_context(
 	FvwmWindow *fw, Window w, int *ret_num);
 void frame_move_resize(
@@ -73,5 +75,12 @@ void frame_force_setup_window(
 	Bool do_send_configure_notify);
 void frame_setup_shape(
 	FvwmWindow *fw, int w, int h, int shape_mode);
+void frame_make_rounded_corners(FvwmWindow *fw);
+void correct_rounded_subwindow(Window win, Window outer,
+	int *width, int *height,
+	int *nw_corner, int *sw_corner, int *se_corner, int *ne_corner);
+void draw_rounded_mask(Window win, Window outer,
+	int nw_corner, int sw_corner, int se_corner, int ne_corner,
+	window_parts draw_parts, int col);
 
 #endif /* FVWM_FRAME_H */
