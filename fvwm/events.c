@@ -1788,9 +1788,11 @@ static void monitor_update_ewmh(void)
 	mref = RB_MIN(monitors, &monitor_q);
 
 	RB_FOREACH(m, monitors, &monitor_q) {
-		if (m->flags & MONITOR_CHANGED) {
+		if (m->flags == MONITOR_CHANGED) {
+			apply_desktops_monitor(m);
+			calculate_page_sizes(m, mref->dx, mref->dy);
+			initPanFrames(m);
 			m->flags &= ~MONITOR_CHANGED;
-			continue;
 		}
 		if (m->flags & MONITOR_NEW) {
 			fvwm_debug(__func__, "Applying EWMH changes to new %s",
