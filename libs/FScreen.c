@@ -575,20 +575,23 @@ scan_screens(Display *dpy)
 	 */
         fvwm_debug(__func__, "Case 2: processing %d monitors", n);
 	for (i = 0; i < n; i++) {
-		if ((name = XGetAtomName(dpy, rrm[i].name)) == NULL)
+		if ((name = XGetAtomName(dpy, rrm[i].name)) == NULL) {
+			fvwm_debug(__func__, "NAME WAS NULL!");
 			continue;
+		}
 		if ((m = monitor_by_name(name)) == NULL) {
 			/* Case 2.1 -- new monitor. */
-			fvwm_debug(__func__, "Case 2.1: new monitor");
+			fvwm_debug(__func__, "Case 2.1: new monitor (%s)",
+			    name);
 			monitor_add(&rrm[i]);
-		}
-
-		if (monitor_mark_changed(m, &rrm[i])) {
-			fvwm_debug(__func__, "Case 2.2: %s changed", m->si->name);
 		}
 
 		/* Flag monitor as MONITOR_FOUND. */
 		monitor_mark_inlist(name);
+
+		if (monitor_mark_changed(m, &rrm[i])) {
+			fvwm_debug(__func__, "Case 2.2: %s changed", m->si->name);
+		}
 
 		XFree(name);
 	}
