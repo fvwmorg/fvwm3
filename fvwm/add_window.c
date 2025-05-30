@@ -1562,6 +1562,10 @@ int setup_visible_names(FvwmWindow *fw, int what_changed)
 
 	changed_names = (what_changed & 3);
 	changed_styles = ((what_changed >> 2) & 3);
+
+	if (changed_styles == 0 && changed_names > 0)
+		changed_styles = 3;
+
 	force_update = changed_styles;
 	if (fw->visible_name == NULL)
 	{
