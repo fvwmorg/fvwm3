@@ -1835,6 +1835,9 @@ void read_in_resources(void)
 	else if (!strcasecmp(p, "none")) {
 	  i = SortNone;
 	}
+	else if (!strcasecmp(p, "screen")) {
+	  i = SortScreen;
+	}
 	else if (!strcasecmp(p, "weighted")) {
 	  i = SortWeighted;
 	}
