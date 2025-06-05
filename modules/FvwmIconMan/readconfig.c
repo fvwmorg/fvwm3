@@ -1017,6 +1017,10 @@ static NameType parse_format_dependencies(char *format)
 			{
 				flags |= RESOURCE_NAME;
 			}
+			else if (*format == 's')
+			{
+				flags |= SCREEN_NAME;
+			}
 			else if (*format != '%')
 			{
 				ConsoleMessage(

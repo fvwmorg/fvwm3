@@ -111,7 +111,8 @@ typedef enum {
 	ICON_NAME     = 2,
 	RESOURCE_NAME = 4,
 	CLASS_NAME    = 8,
-	ALL_NAME      = 15
+	SCREEN_NAME   = 16,
+	ALL_NAME      = 31
 } NameType;
 
 typedef struct win_list {
