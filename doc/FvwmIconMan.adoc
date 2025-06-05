@@ -339,7 +339,7 @@ well, the resolution is changed dynamically when sent to fvwm.
 *FvwmIconMan: [id] SortWeight weight pattern-list::
   Assigns the specified _weight_ to windows that match _pattern-list_.
   The list is made up of patterns of the form _type=pattern_, where type
-  is one of _class_, _resource_, _title_, or _icon_, and pattern is an
+  is one of _class_, _resource_, _title_, _icon_, or, _screen_ and pattern is an
   expression of the same format used in the fvwm style command
   (minimalistic shell pattern matching). Multiple sort weights can be
   given. Each window is matched against the list of sort weights, in
