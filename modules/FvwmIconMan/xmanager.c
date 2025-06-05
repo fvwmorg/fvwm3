@@ -2204,6 +2204,11 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 		return strcmp((a->display_string)? a->display_string:"",
 			       (b->display_string)? b->display_string:"");
 	}
+	else if (type == SortScreen)
+	{
+		return (strcmp(a->monitor ? a->monitor : "",
+			b->monitor ? b->monitor : ""));
+	}
 	else if (type == SortWeighted)
 	{
 		wa = compute_weight(a);
