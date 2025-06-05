@@ -260,6 +260,7 @@ typedef enum {
 	SortId,            /* sort by window id */
 	SortName,          /* case insensitive name sorting */
 	SortNameCase,      /* case sensitive name sorting */
+	SortScreen,	   /* Sort by screen */
 	SortWeighted,      /* custom sort order */
 } SortType;
 
@@ -268,6 +269,7 @@ typedef struct {
 	char *classname;
 	char *titlename;
 	char *iconname;
+	char *screenname;
 	int weight;
 } WeightedSort;
 

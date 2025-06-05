@@ -2180,6 +2180,9 @@ static int compute_weight(WinData *win)
     if (sort->iconname && !matchWildcards(sort->iconname, win->iconname)) {
       continue;
     }
+    if (sort->screenname && !matchWildcards(sort->screenname, win->monitor)) {
+      continue;
+    }
     return sort->weight;
   }
   return 0;
@@ -2203,6 +2206,11 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 	{
 		return strcmp((a->display_string)? a->display_string:"",
 			       (b->display_string)? b->display_string:"");
+	}
+	else if (type == SortScreen)
+	{
+		return (strcmp(a->monitor ? a->monitor : "",
+			b->monitor ? b->monitor : ""));
 	}
 	else if (type == SortWeighted)
 	{

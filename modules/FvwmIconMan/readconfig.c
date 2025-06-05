@@ -1243,6 +1243,8 @@ static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort)
 	p->classname = NULL;
 	p->titlename = NULL;
 	p->iconname = NULL;
+	p->screenname = NULL;
+
 	if (weighted_sort->resname)
 	{
 		copy_string(&p->resname, weighted_sort->resname);
@@ -1258,6 +1260,10 @@ static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort)
 	if (weighted_sort->iconname)
 	{
 		copy_string(&p->iconname, weighted_sort->iconname);
+	}
+	if (weighted_sort->screenname)
+	{
+		copy_string(&p->screenname, weighted_sort->screenname);
 	}
 	p->weight = weighted_sort->weight;
 	++man->weighted_sorts_len;
@@ -1834,6 +1840,9 @@ void read_in_resources(void)
 	else if (!strcasecmp(p, "none")) {
 	  i = SortNone;
 	}
+	else if (!strcasecmp(p, "screen")) {
+	  i = SortScreen;
+	}
 	else if (!strcasecmp(p, "weighted")) {
 	  i = SortWeighted;
 	}
@@ -1868,6 +1877,7 @@ void read_in_resources(void)
 	weighted_sort.classname = NULL;
 	weighted_sort.titlename = NULL;
 	weighted_sort.iconname = NULL;
+	weighted_sort.screenname = NULL;
 	weighted_sort.weight = n;
 	p = read_next_cmd(READ_ARG);
 	while (p) {
@@ -1879,6 +1889,8 @@ void read_in_resources(void)
 	    copy_string(&weighted_sort.titlename, p + 6);
 	  } else if (!strncasecmp(p, "icon=", 5)) {
 	    copy_string(&weighted_sort.iconname, p + 5);
+	  } else if (!strncasecmp(p, "screen=", 7)) {
+	    copy_string(&weighted_sort.screenname, p + 7);
 	  } else {
 	    ConsoleMessage("Unknown sortweight field: %s\n", p);
 	    ConsoleMessage("Bad line: %s\n", current_line);
