@@ -49,7 +49,7 @@
 
 #include "FvwmForm.h"
 
-static void process_regular_char_input(unsigned char *buf);
+static void process_regular_char_input(unsigned char *buf, int num, size_t size);
 static int process_tabtypes(unsigned char * buf);
 static void process_history(int direction);
 static void process_paste_request (XEvent *event, Item *item);
@@ -60,7 +60,7 @@ static void ResizeFrame (void);
 void ReadXServer (void)
 {
   static XEvent event;
-  int keypress;
+  int keypress, cn, ln;
   Item *item, *old_item;
   KeySym ks;
   char *sp, *dp;
@@ -164,8 +164,13 @@ void ReadXServer (void)
 	break;
       case KeyPress:  /* we do text input here */
 	n = XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
-	keypress = buf[0];
+	if (n >= sizeof(buf)/sizeof(char)) {
+	    myfprintf((stderr, "Got too many chars:\n"));
+	    n = sizeof(buf)/sizeof(char)-1;
+	}
+	buf[n] = '\0';
 	myfprintf((stderr, "Keypress [%s]\n", buf));
+	keypress = buf[0];
 	if (n == 0) {  /* not a regular key, translate it into one */
 	  switch (ks) {
 	  case XK_Home:
@@ -252,7 +257,7 @@ void ReadXServer (void)
 	case '\005':  /* ^E */
 	  CF.rel_cursor = CF.cur_input->input.n;
 	  if ((CF.cur_input->input.left =
-	       CF.rel_cursor - CF.cur_input->input.size) < 0)
+	       CF.rel_cursor - CF.cur_input->input.width) < 0)
 	    CF.cur_input->input.left = 0;
 	  CF.abs_cursor = CF.rel_cursor - CF.cur_input->input.left;
 	  goto redraw_newcursor;
@@ -272,7 +277,7 @@ void ReadXServer (void)
 	  if (CF.rel_cursor < CF.cur_input->input.n) {
 	    CF.rel_cursor++;
 	    CF.abs_cursor++;
-	    if (CF.abs_cursor >= CF.cur_input->input.size &&
+	    if (CF.abs_cursor >= CF.cur_input->input.width &&
 		CF.rel_cursor < CF.cur_input->input.n) {
 	      CF.abs_cursor--;
 	      CF.cur_input->input.left++;
@@ -282,8 +287,11 @@ void ReadXServer (void)
 	  break;
 	case '\010':  /* ^H */
 	  if (CF.rel_cursor > 0) {
-	    sp = CF.cur_input->input.value + CF.rel_cursor;
-	    dp = sp - 1;
+	    cn = CF.rel_cursor - 1;
+	    dp = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+	    cn = 1;
+	    sp = find_nth_UTF8_char(dp, NULL, &cn, NULL);
+	    CF.cur_input->input.size -= (int)(sp - dp);
 	    for (; *dp = *sp, *sp != '\0'; dp++, sp++);
 	    CF.cur_input->input.n--;
 	    CF.rel_cursor--;
@@ -301,16 +309,21 @@ void ReadXServer (void)
 	case '\177':  /* DEL */
 	case '\004':  /* ^D */
 	  if (CF.rel_cursor < CF.cur_input->input.n) {
-	    sp = CF.cur_input->input.value + CF.rel_cursor + 1;
-	    dp = sp - 1;
+	    cn = CF.rel_cursor;
+	    dp = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+	    cn = 1;
+	    sp = find_nth_UTF8_char(dp, NULL, &cn, NULL);
+	    CF.cur_input->input.size -= (int)(sp - dp);
 	    for (; *dp = *sp, *sp != '\0'; dp++, sp++);
 	    CF.cur_input->input.n--;
 	    goto redraw_newcursor;
 	  }
 	  break;
 	case '\013':  /* ^K */
-	  CF.cur_input->input.value[CF.rel_cursor] = '\0';
-	  CF.cur_input->input.n = CF.rel_cursor;
+	  cn = CF.rel_cursor;
+	  dp = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+	  *dp = '\0';
+	  CF.cur_input->input.n = cn;
 	  goto redraw_newcursor;
 	case '\025':  /* ^U */
 	  CF.cur_input->input.value[0] = '\0';
@@ -334,10 +347,10 @@ void ReadXServer (void)
 	  }
 	  break;
 	default:
-	  if((buf[0] >= ' ' &&
-	      buf[0] < '\177') ||
-	     (buf[0] >= 160)) {         /* regular or intl char */
-	    process_regular_char_input(&buf[0]); /* insert into input field */
+	  cn = -1;
+	  dp = find_nth_UTF8_char((char*)&buf[0], NULL, &cn, &ln);
+	  if (ln > 0 && cn >=0) {  /* valid UTF-8 chars */
+	    process_regular_char_input(&buf[0], cn+1, dp - (char*)buf + ln); /* insert into input field */
 	    goto redraw_newcursor;
 	  }
 	  /* unrecognized key press, check for buttons */
@@ -371,12 +384,18 @@ void ReadXServer (void)
 	}
       redraw:
 	{
-	  int len, x, dy;
-	  len = CF.cur_input->input.n - CF.cur_input->input.left;
+	  int len, cn, x, dy;
+	  char *bstr, *estr;
+	  if (CF.cur_input->input.n - CF.cur_input->input.left >
+	    CF.cur_input->input.width) {
+	      CF.cur_input->input.left =
+	        CF.cur_input->input.n - CF.cur_input->input.width;
+	  }
+	  cn = CF.cur_input->input.left;
+	  bstr = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+	  len = strlen(bstr);
 	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
 			 CF.cur_input->header.dt_ptr->dt_colors[c_item_fg]);
-	  if (len > CF.cur_input->input.size)
-	    len = CF.cur_input->input.size;
 	  CF.cur_input->header.dt_ptr->dt_Fstr->win = CF.cur_input->header.win;
 	  CF.cur_input->header.dt_ptr->dt_Fstr->gc  =
 	    CF.cur_input->header.dt_ptr->dt_item_GC;
@@ -387,7 +406,7 @@ void ReadXServer (void)
 		    &Colorset[itemcolorset];
 	    CF.cur_input->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
 	  }
-	  CF.cur_input->header.dt_ptr->dt_Fstr->str = CF.cur_input->input.value;
+	  CF.cur_input->header.dt_ptr->dt_Fstr->str = bstr;
 	  CF.cur_input->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
 	  CF.cur_input->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
 	    + CF.cur_input->header.dt_ptr->dt_Ffont->ascent;
@@ -396,9 +415,12 @@ void ReadXServer (void)
 			    CF.cur_input->header.dt_ptr->dt_Ffont,
 			    CF.cur_input->header.dt_ptr->dt_Fstr,
 			    FWS_HAVE_LENGTH);
+	  cn = CF.abs_cursor;
+	  estr = find_nth_UTF8_char(bstr, NULL, &cn, NULL);
+	  len = (int)(estr - bstr);
 	  x = BOX_SPC + TEXT_SPC +
 		  FlocaleTextWidth(CF.cur_input->header.dt_ptr->dt_Ffont,
-				   CF.cur_input->input.value,CF.abs_cursor)
+				   bstr, len)
 		  - 1;
 	  dy = CF.cur_input->header.size_y - 1;
 	  XDrawLine(dpy, CF.cur_input->header.win,
@@ -443,39 +465,36 @@ void ReadXServer (void)
 	    CF.cur_input = item;
 	    RedrawItem(old_item, 1, NULL);
 	    {
-	      Bool done = False;
+	      char *bstr, *estr;
 
-	      CF.abs_cursor = 0;
-	      while(CF.abs_cursor <= item->input.size && !done)
+	      cn = item->input.left;
+	      bstr = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+
+	      for (CF.abs_cursor = 0; CF.abs_cursor < item->input.width - 1; CF.abs_cursor++)
 	      {
+		cn = CF.abs_cursor;
+		estr = find_nth_UTF8_char(bstr, NULL, &cn, NULL);
 		if (FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
-				     item->input.value,
-				     CF.abs_cursor) >=
-		    event.xbutton.x - BOX_SPC - TEXT_SPC)
+				     bstr, (int)(estr - bstr)) >=
+				event.xbutton.x - BOX_SPC - TEXT_SPC)
 		{
-		  done = True;
-		  CF.abs_cursor--;
+		  if (CF.abs_cursor > 0) {
+		    CF.abs_cursor--;
+		  }
+		  break;
 		}
-		else
-		{
-		  CF.abs_cursor++;
-		}
+		if (cn < CF.abs_cursor)
+		    break;
 	      }
 	    }
-	    if (CF.abs_cursor < 0)
-	      CF.abs_cursor = 0;
-	    if (CF.abs_cursor > item->input.size)
-	      CF.abs_cursor = item->input.size;
 	    CF.rel_cursor = CF.abs_cursor + item->input.left;
-	    if (CF.rel_cursor < 0)
-	      CF.rel_cursor = 0;
 	    if (CF.rel_cursor > item->input.n)
 	      CF.rel_cursor = item->input.n;
-	    if (CF.rel_cursor > 0 && CF.rel_cursor == item->input.left)
+	    /* if (CF.rel_cursor > 0 && CF.rel_cursor == item->input.left)
 	      item->input.left--;
 	    if (CF.rel_cursor < item->input.n &&
-		CF.rel_cursor == item->input.left + item->input.size)
-	      item->input.left++;
+		CF.rel_cursor == item->input.left + item->input.width)
+	      item->input.left++; */
 	    CF.abs_cursor = CF.rel_cursor - item->input.left;
 	    if (event.xbutton.button == Button2) { /* if paste request */
 	      process_paste_request (&event, item);
@@ -544,7 +563,7 @@ void ReadXServer (void)
    yank count before extracting.
    Forward yanks increment before extracting. */
 static void process_history(int direction) {
-  int count;
+  int count, cn;
   if (!CF.cur_input                     /* no input fields */
       || !CF.cur_input->input.value_history_ptr) { /* or no history */
     return;                             /* bail out */
@@ -563,9 +582,10 @@ static void process_history(int direction) {
   }
   CF.cur_input->input.value =
     fxstrdup(CF.cur_input->input.value_history_ptr[count]);
-  CF.cur_input->input.n = strlen(CF.cur_input->input.value);
+  find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+  CF.cur_input->input.size = strlen(CF.cur_input->input.value);
+  CF.cur_input->input.n = CF.cur_input->input.buf = cn;
   CF.cur_input->input.value_history_yankat = count; /* new yank point */
-  CF.cur_input->input.buf = CF.cur_input->input.n;
   CF.rel_cursor = 0;
   CF.abs_cursor = 0;
   CF.cur_input->input.left = 0;
@@ -622,30 +642,36 @@ static int process_tabtypes(unsigned char * buf) {
   return (-1);
 }
 
-static void process_regular_char_input(unsigned char *buf) {
+static void process_regular_char_input(unsigned char *buf, int num, size_t len) {
   char *sp, *dp, *ep;
-  /* n is the space actually used.
-     buf is the size of the buffer
-     size is the size of the field on the screen
-     size is used as the increment, arbitrarily. */
-  if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
-    CF.cur_input->input.buf += CF.cur_input->input.size;
+  int n;
+  /* size is the space actually used
+     buf is the size of the buffer in bytes
+     width is the size of the field on the screen
+     width is used as the increment, arbitrarily */
+  CF.cur_input->input.n += num;
+  if ((CF.cur_input->input.size += len) >= CF.cur_input->input.buf) {
+    CF.cur_input->input.buf += CF.cur_input->input.width;
+    if (CF.cur_input->input.size >= CF.cur_input->input.buf) {
+      CF.cur_input->input.buf = CF.cur_input->input.size + 1;
+    }
     CF.cur_input->input.value =
       fxrealloc(CF.cur_input->input.value, CF.cur_input->input.buf,
-		      sizeof(CF.cur_input->input.value));
+		      sizeof(char));
   }
-  dp = CF.cur_input->input.value + CF.cur_input->input.n;
-  sp = dp - 1;
-  ep = CF.cur_input->input.value + CF.rel_cursor;
+  dp = CF.cur_input->input.value + CF.cur_input->input.size;
+  sp = dp - len; n = CF.rel_cursor;
+  ep = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &n, NULL);
   for (; *dp = *sp, sp != ep; sp--, dp--);
-  *ep = buf[0];
-  CF.rel_cursor++;
-  CF.abs_cursor++;
-  if (CF.abs_cursor >= CF.cur_input->input.size) {
+  sp = (char*) buf + len - 1; dp--;
+  for (; *dp = *sp, dp != ep; sp--, dp--);
+  CF.rel_cursor += num;
+  CF.abs_cursor += num;
+  if (CF.abs_cursor >= CF.cur_input->input.width) {
     if (CF.rel_cursor < CF.cur_input->input.n)
-      CF.abs_cursor = CF.cur_input->input.size - 1;
+      CF.abs_cursor = CF.cur_input->input.width - 1;
     else
-      CF.abs_cursor = CF.cur_input->input.size;
+      CF.abs_cursor = CF.cur_input->input.width;
     CF.cur_input->input.left = CF.rel_cursor - CF.abs_cursor;
   }
 }
@@ -658,7 +684,8 @@ static void process_paste_request (XEvent *event, Item *item) {
   int actual_format;
   unsigned long nitems, bytes_after, nread;
   unsigned char *data;
-  unsigned char *c;
+  char *c;
+  int num, len;
 
   nread = 0;                            /* init read offset */
   do {
@@ -676,26 +703,29 @@ static void process_paste_request (XEvent *event, Item *item) {
     if (actual_type != XA_STRING) {     /* if something other than text */
       return;                           /* give up */
     }
-    for (c = data; c != data + nitems; c++) { /* each char */
-      switch (*c) {
+    len = 1; c = (char*)data;
+    while (num = 0, c = find_nth_UTF8_char(c, (char*)data + nitems, &num, &len), len > 0) {
+      /* each multibyte character */
+      switch (c[0]) {
       case '\t':                        /* TAB */
 	if (CF.cur_input == CF.cur_input->input.next_input) { /* 1 ip field */
-	  process_regular_char_input((unsigned char *)" "); /* paste space */
+	  process_regular_char_input((unsigned char *)" ", 1, 1); /* paste space */
 	} else {
-	  process_tabtypes(c);          /* jump to the next field */
+	  process_tabtypes((unsigned char *)c);          /* jump to the next field */
 	}
       case '\015':                      /* LINEFEED */
       case '\016':                      /* ^N */
-	process_tabtypes(c);            /* jump to the next field */
+	process_tabtypes((unsigned char *)c);            /* jump to the next field */
 	break;
       case '\n':
 	/* change \n to \r for pasting */
 	process_tabtypes((unsigned char *)"\r");
 	break;
       default:
-	process_regular_char_input(c);
+	process_regular_char_input((unsigned char *)c, 1, len);
 	break;
-      } /* end swtich on char type */
+      } /* end switch on char type */
+      c += len;
     } /* end each char */
     myfprintf((stderr,"See paste data, %s, nread %d, nitems %d\n",
 	    data, (int)nread, (int)nitems));
@@ -703,6 +733,7 @@ static void process_paste_request (XEvent *event, Item *item) {
     XFree (data);
   } while (bytes_after > 0);
 }
+
 static void ToggleChoice (Item *item)
 {
   int i;
@@ -724,6 +755,7 @@ static void ToggleChoice (Item *item)
     RedrawItem(item, 0, NULL);
   }
 }
+
 static void ResizeFrame (void) {
 #if 0
   /* unfinished dje. */
