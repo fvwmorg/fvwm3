@@ -931,7 +931,7 @@ static void ct_Input(char *cp)
   item->header.name = CopySolidString(cp);
   cp += strlen(item->header.name);
   while (isspace((unsigned char)*cp)) cp++;
-  item->input.size = atoi(cp);
+  item->input.width = atoi(cp);
   while (!isspace((unsigned char)*cp)) cp++;
   while (isspace((unsigned char)*cp)) cp++;
   item->input.init_value = fxstrdup("");	    /* init */
@@ -939,14 +939,15 @@ static void ct_Input(char *cp)
     free(item->input.init_value);
     item->input.init_value = CopyQuotedString(++cp);
   }
-  item->input.blanks = fxmalloc(item->input.size);
-  for (j = 0; j < item->input.size; j++)
+  item->input.blanks = fxmalloc(item->input.width);
+  for (j = 0; j < item->input.width; j++)
     item->input.blanks[j] = ' ';
   item->input.buf = strlen(item->input.init_value) + 1;
   item->input.value = fxmalloc(item->input.buf);
   item->input.value[0] = 0;		/* avoid reading unitialized data */
+  item->input.size = 0;			/* value is empty */
 
-  item->header.size_x = item->header.dt_ptr->dt_Ffont->height * item->input.size / 2
+  item->header.size_x = item->header.dt_ptr->dt_Ffont->height * item->input.width / 2
 			+ 2 * TEXT_SPC + 2 * BOX_SPC;
   item->header.size_y = item->header.dt_ptr->dt_Ffont->height
     + 3 * TEXT_SPC + 2 * BOX_SPC;
@@ -964,7 +965,7 @@ static void ct_Input(char *cp)
   }
   CF.cur_input = item;			   /* new current input item */
   myfprintf((stderr, "Input, %s, [%d], \"%s\"\n", item->header.name,
-	  item->input.size, item->input.init_value));
+	  item->input.width, item->input.init_value));
   AddToLine(item);
 }
 static void ct_Read(char *cp)
@@ -1671,6 +1672,7 @@ void RedrawTimeout(Item *item)
 void RedrawItem (Item *item, int click, XEvent *pev)
 {
   int dx, dy, len, x;
+  char *bstr, *estr;
   static XSegment xsegs[4];
   XRectangle r,inter;
   Region region = None;
@@ -1774,10 +1776,14 @@ void RedrawItem (Item *item, int click, XEvent *pev)
     XDrawSegments(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		  xsegs, 4);
 
+    len = item->input.left;
+    bstr = find_nth_UTF8_char(item->input.value, NULL, &len, NULL);
+    len = CF.abs_cursor;
+    estr = find_nth_UTF8_char(bstr, NULL, &len, NULL);
+    len = (int)(estr - bstr);
     if (click) {
       x = BOX_SPC + TEXT_SPC +
-	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
-			       item->input.value, CF.abs_cursor) - 1;
+	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont, bstr, len) - 1;
       XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
 		     item->header.dt_ptr->dt_colors[c_item_bg]);
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
@@ -1785,7 +1791,6 @@ void RedrawItem (Item *item, int click, XEvent *pev)
       myfprintf((stderr,"Line %d/%d - %d/%d (first)\n",
 		     x, BOX_SPC, x, dy - BOX_SPC));
     }
-    len = item->input.n - item->input.left;
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
 		   item->header.dt_ptr->dt_colors[c_item_fg]);
     item->header.dt_ptr->dt_Fstr->win = item->header.win;
@@ -1796,34 +1801,29 @@ void RedrawItem (Item *item, int click, XEvent *pev)
       item->header.dt_ptr->dt_Fstr->colorset = &Colorset[itemcolorset];
       item->header.dt_ptr->dt_Fstr->flags.has_colorset = True;
     }
-    if (len > item->input.size)
-      len = item->input.size;
-    else
-    {
-      item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
-      item->header.dt_ptr->dt_Fstr->x  = BOX_SPC + TEXT_SPC +
-	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
-			       item->input.blanks, len);
-      item->header.dt_ptr->dt_Fstr->y	= BOX_SPC + TEXT_SPC
-		  + item->header.dt_ptr->dt_Ffont->ascent;
-      item->header.dt_ptr->dt_Fstr->len = item->input.size - len;
-      FlocaleDrawString(dpy,
-			item->header.dt_ptr->dt_Ffont,
-			item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
-    }
-    item->header.dt_ptr->dt_Fstr->str = item->input.value;
+
+    item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
+    item->header.dt_ptr->dt_Fstr->x = BOX_SPC + TEXT_SPC;
+    item->header.dt_ptr->dt_Fstr->y = BOX_SPC + TEXT_SPC
+		+ item->header.dt_ptr->dt_Ffont->ascent;
+    item->header.dt_ptr->dt_Fstr->len = item->input.width;
+    FlocaleDrawString(dpy,
+		item->header.dt_ptr->dt_Ffont,
+		item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
+
+    item->header.dt_ptr->dt_Fstr->str = bstr;
     item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
     item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
       + item->header.dt_ptr->dt_Ffont->ascent;
-    item->header.dt_ptr->dt_Fstr->len = len;
+    item->header.dt_ptr->dt_Fstr->len = strlen(bstr);
     FlocaleDrawString(dpy,
-		      item->header.dt_ptr->dt_Ffont,
-		      item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
+		item->header.dt_ptr->dt_Ffont,
+		item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
+
     if (item == CF.cur_input && !click) {
+      len = (int)(estr - bstr);
       x = BOX_SPC + TEXT_SPC +
-	FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
-			 item->input.value,CF.abs_cursor)
-	- 1;
+	FlocaleTextWidth(item->header.dt_ptr->dt_Ffont, bstr, len) - 1;
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
       myfprintf((stderr,"Line %d/%d - %d/%d\n",
@@ -2101,6 +2101,109 @@ void DoCommand (Item *cmd)
 	RedrawItem(item, 0, NULL);
     }
   }
+}
+
+/*
+ * Return the pointer to the last UTF-8 char or that starts
+ * _before_ before (if before is non-NULL), put its index into *num
+ * and length into *len.
+ * If the initial value of *num is non-negative, stop when *num is
+ * reached.
+ * *len == 0 or *num == -1 means that no valid UTF-8 char returned.
+ */
+
+char* find_nth_UTF8_char(char *str, char *before,
+	int *num, int *len)
+{
+    char *pstr = str; /* previous valid char */
+    int i = 0; /* counter of chars got */
+    int l = 1; /* length of last chunk got */
+    if (str == NULL || (before && (before <= str))) {
+	if (num) *num = -1;
+	if (len) *len = 0;
+	return NULL;
+    }
+
+    while (1) {
+	if (*str == '\0' || (before && str >= before)
+	    || (num && *num >= 0 && i > *num)) {
+		if (num && *num >= 0 && i <= *num) {
+		    pstr = str;
+		}
+		if (num) *num = i - 1;
+		if (len) *len = l;
+		return pstr;
+	}
+
+#if 0   /* no UTF-8, single-byte locale */
+	pstr = str;
+	str++;
+	i++;
+#else   /* parse UTF-8 string */
+	if ((str[0] & 0xe0) == 0xc0)        /* two-byte */
+	{
+	    if ((str[1] & 0xc0) != 0x80) {
+		l = 0;
+	    }
+	    else {
+		l = 2;
+		pstr = str;
+		str += 2;
+		i++;
+	    }
+	}
+	else if ((str[0] & 0xf0) == 0xe0) /* three-byte */
+	{
+	    if ((str[1] & 0xc0) != 0x80) {
+		l = 0;
+	    }
+	    else if ((str[2] & 0xc0) != 0x80) {
+		l = 0;
+	    }
+	    else {
+		l = 3;
+		pstr = str;
+		str += 3;
+		i++;
+	    }
+	}
+	else if ((str[0] & 0xf8) == 0xf0) /* four-byte */
+	{
+	    if ((str[1] & 0xc0) != 0x80) {
+		l = 0;
+	    }
+	    else if ((str[2] & 0xc0) != 0x80) {
+		l = 0;
+	    }
+	    else if ((str[3] & 0xc0) != 0x80) {
+		l = 0;
+	    }
+	    else {
+		l = 4;
+		pstr = str;
+		str += 4;
+		i++;
+	    }
+	}
+	else {                  /* should be one-byte */
+	    if ((*str & 0x80) ||
+		(((unsigned char)(*str) < 0x20) &&
+		    (*str != '\t') &&
+		    (*str != '\r') &&
+		    (*str != '\n') &&
+		    (*str != '\f'))) {
+		l = 0;
+	    }
+	    else {
+		l = 1;
+		pstr = str;
+		str += 1;
+		i++;
+	    }
+	}
+#endif
+    }
+    return NULL; /* Sentinel */
 }
 
 /* open the windows */
