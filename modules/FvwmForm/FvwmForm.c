@@ -1042,14 +1042,20 @@ static void PutDataInForm(char *cp)
     item = CF.cur_input;
     do {
       if (strcasecmp(var_name,item->header.name) == 0) {
-	var_len = strlen(cp);
+	int num = -1, len;
+	char *c;
+	c = find_nth_UTF8_char(cp, NULL, &num, &len);
+	c += len;
+	var_len = (int)(c - cp);
 	free(item->input.init_value);
 	item->input.init_value = fxmalloc(var_len + 1);
-	strcpy(item->input.init_value,cp); /* new initial value in field */
+	strncpy(item->input.init_value, cp, var_len); /* new initial value */
+	item->input.init_value[var_len] = '\0';
 	free(item->input.value);
 	item->input.buf = var_len+1;
+	item->input.size = var_len;
 	item->input.value = fxmalloc(item->input.buf);
-	strcpy(item->input.value,cp);	  /* new value in field */
+	strcpy(item->input.value, item->input.init_value); /* new value */
 	free(var_name);			/* goto's have their uses */
 	return;
       }
@@ -1391,6 +1397,7 @@ static void MassageConfig(void)
 static void Restart(void)
 {
   Item *item;
+  int num;
 
   CF.cur_input = NULL;
   CF.abs_cursor = CF.rel_cursor = 0;
@@ -1449,8 +1456,11 @@ static void Restart(void)
 		   item->input.value_history_yankat));
       } /* end something to save */
       item->input.value_history_yankat = item->input.value_history_count;
-      item->input.n = strlen(item->input.init_value);
+      item->input.size = strlen(item->input.init_value);
       strcpy(item->input.value, item->input.init_value);
+      num = -1; /* count all UTF-8 chars */
+      find_nth_UTF8_char(item->input.value, NULL, &num, NULL);
+      item->input.n = num + 1;
       item->input.left = 0;
       break;
     case I_CHOICE:

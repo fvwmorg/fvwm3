@@ -270,4 +270,3 @@ char* find_nth_UTF8_char(char *str, char *before,
 RETSIGTYPE DeadPipe(int nonsense);            /* FvwmForm.c */
 
 #endif
-char* find_nth_UTF8_char(char *str, char *before, int *num, int *len);
