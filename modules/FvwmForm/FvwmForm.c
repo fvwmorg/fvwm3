@@ -936,6 +936,11 @@ static void ct_Input(char *cp)
   while (isspace((unsigned char)*cp)) cp++;
   item->input.init_value = fxstrdup("");	    /* init */
   if (*cp == '\"') {
+    int num = -1, len;
+    char *c;
+    c = find_nth_UTF8_char(cp, NULL, &num, &len);
+    c += len;  /* the end or the first invalid UTF-8 character */
+    *c = '\0'; /* stop here */
     free(item->input.init_value);
     item->input.init_value = CopyQuotedString(++cp);
   }
@@ -2114,12 +2119,15 @@ void DoCommand (Item *cmd)
 }
 
 /*
- * Return the pointer to the last UTF-8 char or that starts
- * _before_ before (if before is non-NULL), put its index into *num
+ * Return the pointer to the *num-th UTF-8 char (starting from 0,
+ * or the last one if *num<0) that starts * _before_ before
+ * (if before is non-NULL), put its index into *num,
  * and length into *len.
- * If the initial value of *num is non-negative, stop when *num is
- * reached.
- * *len == 0 or *num == -1 means that no valid UTF-8 char returned.
+ * If vaind UTF-8 chars in the string end before the *num-th char,
+ * return the pointer to '\0' or to the first offensive char,
+ * and length *len=0, then a new value of *num becomes less than
+ * the initial one.
+ * *len == 0 or *num == -1 mean that no valid UTF-8 char returned.
  */
 
 char* find_nth_UTF8_char(char *str, char *before,
@@ -2135,10 +2143,17 @@ char* find_nth_UTF8_char(char *str, char *before,
     }
 
     while (1) {
-	if (*str == '\0' || (before && str >= before)
+	if (*str == '\0' || l == 0
+	    || (before && str >= before)
 	    || (num && *num >= 0 && i > *num)) {
 		if (num && *num >= 0 && i <= *num) {
+		/* ended prematurely => return '\0' of length zero */
 		    pstr = str;
+		    l = 0;
+		}
+		else if (l == 0 || i == 0) {
+		/* invalid UTF-8 char or '\0' */
+		    l = (int)(str-pstr);
 		}
 		if (num) *num = i - 1;
 		if (len) *len = l;
