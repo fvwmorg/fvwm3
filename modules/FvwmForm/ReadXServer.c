@@ -703,7 +703,7 @@ static void process_paste_request (XEvent *event, Item *item) {
     if (actual_type != XA_STRING) {     /* if something other than text */
       return;                           /* give up */
     }
-    len = 1; c = (char*)data;
+    c = (char*)data;
     while (num = 0, c = find_nth_UTF8_char(c, (char*)data + nitems, &num, &len), len > 0) {
       /* each multibyte character */
       switch (c[0]) {
