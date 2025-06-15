@@ -947,10 +947,11 @@ static void ct_Input(char *cp)
   item->input.blanks = fxmalloc(item->input.width);
   for (j = 0; j < item->input.width; j++)
     item->input.blanks[j] = ' ';
-  item->input.buf = strlen(item->input.init_value) + 1;
+  item->input.buf = strlen(item->input.init_value) + 1; /* room for init value */
   item->input.value = fxmalloc(item->input.buf);
   item->input.value[0] = 0;		/* avoid reading unitialized data */
   item->input.size = 0;			/* value is empty */
+  item->input.n = 0;			/* and contains 0 chars */
 
   item->header.size_x = item->header.dt_ptr->dt_Ffont->height * item->input.width / 2
 			+ 2 * TEXT_SPC + 2 * BOX_SPC;
@@ -1057,6 +1058,7 @@ static void PutDataInForm(char *cp)
 	strncpy(item->input.init_value, cp, var_len); /* new initial value */
 	item->input.init_value[var_len] = '\0';
 	free(item->input.value);
+	item->input.n = num+1;
 	item->input.buf = var_len+1;
 	item->input.size = var_len;
 	item->input.value = fxmalloc(item->input.buf);
