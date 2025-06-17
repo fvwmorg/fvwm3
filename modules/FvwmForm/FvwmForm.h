@@ -11,6 +11,7 @@
  */
 
 #include "libs/Flocale.h"               /* for font definition stuff */
+#include "libs/FGettext.h"              /* for localization of messages */
 /*
  * This next stuff should be more specific and customizable.
  * For example padVText (above) was one of the things TXT_SPC
