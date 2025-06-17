@@ -122,11 +122,13 @@ static void SetupTimer(void)
 static char *CopyQuotedString (char *cp)
 {
   char *dp, *bp, c;
-  bp = dp = fxmalloc(strlen(cp) + 1);
+  const char *tp;
+  tp = _(cp);
+  bp = dp = fxmalloc(strlen(tp) + 1);
   while (1) {
-    switch (c = *(cp++)) {
+    switch (c = *(tp++)) {
     case '\\':
-      *(dp++) = *(cp++);
+      *(dp++) = *(tp++);
       break;
     case '\"':
     case '\n':
@@ -947,7 +949,7 @@ static void ct_Input(char *cp)
   item->input.blanks = fxmalloc(item->input.width);
   for (j = 0; j < item->input.width; j++)
     item->input.blanks[j] = ' ';
-  item->input.buf = strlen(item->input.init_value) + 1; /* room for init value */
+  item->input.buf = strlen(item->input.init_value) + 1;
   item->input.value = fxmalloc(item->input.buf);
   item->input.value[0] = 0;		/* avoid reading unitialized data */
   item->input.size = 0;			/* value is empty */
@@ -1054,15 +1056,12 @@ static void PutDataInForm(char *cp)
 	c += len;
 	var_len = (int)(c - cp);
 	free(item->input.init_value);
-	item->input.init_value = fxmalloc(var_len + 1);
-	strncpy(item->input.init_value, cp, var_len); /* new initial value */
-	item->input.init_value[var_len] = '\0';
+	item->input.init_value = strndup(cp, var_len + 1); /* new initial value */
 	free(item->input.value);
 	item->input.n = num+1;
 	item->input.buf = var_len+1;
 	item->input.size = var_len;
-	item->input.value = fxmalloc(item->input.buf);
-	strcpy(item->input.value, item->input.init_value); /* new value */
+	item->input.value = fxstrdup(item->input.init_value); /* new value */
 	free(var_name);			/* goto's have their uses */
 	return;
       }
@@ -2769,6 +2768,8 @@ int main (int argc, char **argv)
 #endif
 
   FlocaleInit(LC_CTYPE, "", "", "FvwmForm");
+
+  FGettextInit("fvwm3", LOCALEDIR, "FvwmForm");
 
   module = ParseModuleArgs(argc,argv,1); /* allow an alias */
   if (module == NULL)

@@ -468,23 +468,24 @@ void ReadXServer (void)
 	      char *bstr, *estr;
 
 	      cn = item->input.left;
-	      bstr = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
+	      bstr = estr = find_nth_UTF8_char(CF.cur_input->input.value, NULL, &cn, NULL);
 
 	      for (CF.abs_cursor = 0; CF.abs_cursor < item->input.width - 1; CF.abs_cursor++)
 	      {
-		cn = CF.abs_cursor;
-		estr = find_nth_UTF8_char(bstr, NULL, &cn, NULL);
+		cn = 0; /* take one char */
+		estr = find_nth_UTF8_char(estr, NULL, &cn, &ln);
 		if (FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
 				     bstr, (int)(estr - bstr)) >=
 				event.xbutton.x - BOX_SPC - TEXT_SPC)
 		{
 		  if (CF.abs_cursor > 0) {
-		    CF.abs_cursor--;
+		    CF.abs_cursor--; /* mouse click left behind, so move one step back */
 		  }
 		  break;
 		}
-		if (cn < CF.abs_cursor)
+		if (cn < 0) /* end of the line */
 		    break;
+		estr += ln;
 	      }
 	    }
 	    CF.rel_cursor = CF.abs_cursor + item->input.left;
