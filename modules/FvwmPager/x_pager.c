@@ -875,7 +875,7 @@ void draw_desk_grid(int desk)
 				continue;
 
 			s = FindDeskStyle(tm->m->virtual_scr.CurrentDesk);
-			snprintf(str, sizeof(str), "D%d", s->desk);
+			snprintf(str, sizeof(str), _("D%d"), s->desk);
 			draw_desk_label(s->label, str, desk,
 					 loop * label_width, y1,
 					 label_width, height,
@@ -883,7 +883,7 @@ void draw_desk_grid(int desk)
 			loop++;
 		}
 	} else if (use_desk_label) {
-		snprintf(str, sizeof(str), "D%d", d);
+		snprintf(str, sizeof(str), _("D%d"), d);
 		draw_desk_label(style->label, str,
 				desk, 0, y1, desk_w, height,
 				(!use_monitor_label &&
