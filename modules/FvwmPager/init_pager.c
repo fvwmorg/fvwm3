@@ -248,7 +248,7 @@ void initialize_fonts(void)
 	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
 
 	/* Initialize translations. */
-	FGettextInit("fvwm3", LOCALEDIR, "FvwmPager");
+	FGettextInit("fvwm3", LOCALEDIR, "fvwm3");
 
 	/* load a default font. */
 	Scr.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
