@@ -29,6 +29,11 @@ option(
     description: 'Build Golang modules',
 )
 option(
+    'userdir',
+    type: 'string',
+    description: 'Subdirectory of HOME to keep user local config',
+)
+option(
     'docdir',
     type: 'string',
     description: 'Directory to install documentation',

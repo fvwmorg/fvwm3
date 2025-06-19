@@ -1729,7 +1729,7 @@ int main(int argc, char **argv)
 	{
 		char *s;
 
-		xasprintf(&fvwm_userdir, "%s/.fvwm", home_dir);
+		xasprintf(&fvwm_userdir, "%s/" FVWM_USERDIR, home_dir);
 		/* Put the user directory into the environment so it can be used
 		 * later everywhere. */
 		xasprintf(&s, "FVWM_USERDIR=%s", fvwm_userdir);

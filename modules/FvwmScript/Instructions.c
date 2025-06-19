@@ -88,7 +88,7 @@ void setFvwmUserDir(void)
   FvwmUserDir = getenv("FVWM_USERDIR");
   if (FvwmUserDir == NULL)
   {
-    xasprintf(&FvwmUserDir, "%s/.fvwm", home_dir);
+    xasprintf(&FvwmUserDir, "%s/" FVWM_USERDIR, home_dir);
   }
 }
 

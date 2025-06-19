@@ -75,6 +75,7 @@ conf.set_quoted('VERSION', meson.project_version())
 conf.set_quoted('VERSIONINFO', fvwm_vcs_versioninfo)
 conf.set_quoted('PACKAGE', meson.project_name())
 conf.set_quoted('FVWM2RC', '.fvwm2rc')
+conf.set_quoted('FVWM_USERDIR', '.fvwm' / get_option('userdir'))
 conf.set_quoted('FVWM_CONFIG', 'config')
 conf.set_quoted(
     'FVWM_IMAGEPATH',
