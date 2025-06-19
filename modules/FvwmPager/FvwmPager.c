@@ -35,6 +35,7 @@
 #include "libs/Colorset.h"
 #include "libs/FEvent.h"
 #include "libs/Flocale.h"
+#include "libs/FGettext.h"
 #include "libs/FRenderInit.h"
 #include "libs/FShape.h"
 #include "libs/fvwmlib.h"
@@ -416,7 +417,7 @@ DeskStyle *FindDeskStyle(int desk)
 	memcpy(style, default_style, sizeof *style);
 
 	style->desk = desk;
-	xasprintf(&style->label, "Desk %d", desk);
+	xasprintf(&style->label, _("Desk %d"), desk);
 	initialize_desk_style_gcs(style);
 
 	TAILQ_INSERT_TAIL(&desk_style_q, style, entry);

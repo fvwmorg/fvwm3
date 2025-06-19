@@ -12,7 +12,8 @@ FVWM_FILES="../fvwm/fvwm3.c \
 	../fvwm/expand.c \
 	../fvwm/windowlist.c \
 	../fvwm/virtual.c \
-	../fvwm/menus.c"
+	../fvwm/menus.c \
+	../modules/FvwmPager/FvwmPager.c"
 FVWM_RCFILES="default-config/config \
 	bin/fvwm-menu-desktop-config.fpl \
 	modules/FvwmForm/FvwmForm-XDGMenuHelp \

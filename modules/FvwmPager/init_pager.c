@@ -21,6 +21,7 @@
 #include "libs/ColorUtils.h"
 #include "libs/FShape.h"
 #include "libs/FEvent.h"
+#include "libs/FGettext.h"
 #include "fvwm/fvwm.h"
 #include "FvwmPager.h"
 
@@ -60,8 +61,8 @@ void init_fvwm_pager(void)
 
 	/* Run initializations */
 	initialize_mouse_bindings();
-	initialize_desks_and_monitors();
 	initialize_fonts();
+	initialize_desks_and_monitors();
 	parse_options();
 	initialize_colorsets();
 	initialise_common_pager_fragments();
@@ -245,6 +246,9 @@ void initialize_fonts(void)
 {
 	/* Initialize fonts. */
 	FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
+
+	/* Initialize translations. */
+	FGettextInit("fvwm3", LOCALEDIR, "FvwmPager");
 
 	/* load a default font. */
 	Scr.Ffont = FlocaleLoadFont(dpy, NULL, MyName);
