@@ -5,6 +5,7 @@
   '../fvwm/menus.c'
   '../default-config/config'
   '../bin/fvwm-menu-desktop-config.fpl'
+  '../modules/FvwmPager/FvwmPager.c'
   '../modules/FvwmForm/FvwmForm-XDGMenuHelp'
   '../modules/FvwmForm/FvwmForm-XDGOptionsHelp'
   '../default-config/FvwmScript-ConfirmQuit'
