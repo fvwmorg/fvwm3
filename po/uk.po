@@ -1,0 +1,1096 @@
+# Ukrainian translation for fvwm package.
+# Copyright (C) 2025 Oleh Nykyforchyn
+# This file is distributed under the same license as the fvwm package.
+# Oleh Nykyforchyn (a.k.a. ONykyf) oleh.nyk@gmail.com>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-20 14:30+0300\n"
+"PO-Revision-Date: 2025-06-20 14:30+0300\n"
+"Last-Translator: Oleh Nykyforchyn <oleh.nyk@gmail.com>\n"
+"Language-Team: Ukrainian\n"
+"Language: Ukrainian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: fvwm/fvwm3.c:1298
+msgid "Builtin Menu"
+msgstr "Вбудоване меню"
+
+#: fvwm/fvwm3.c:1305
+msgid "Load Default Config"
+msgstr "Налаштування за замовчуванням"
+
+#: fvwm/fvwm3.c:1310
+msgid "Restart"
+msgstr "Перезапустити"
+
+#: fvwm/fvwm3.c:1315 default-config/FvwmScript-ConfirmQuit:25
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:85
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:89
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:94
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:235
+msgid "Quit"
+msgstr "Вийти"
+
+#: fvwm/expand.c:498 default-config/config:427 default-config/config:431
+#: default-config/config:432 default-config/config:433
+#: default-config/config:434
+msgid "Desk"
+msgstr "Стільниця"
+
+#: fvwm/windowlist.c:88 fvwm/windowlist.c:94 fvwm/windowlist.c:101
+msgid "\tGeometry"
+msgstr "\tГеометрія"
+
+#: fvwm/windowlist.c:99
+#, c-format
+msgid "Desk: %d%s"
+msgstr "Стільниця: %d%s"
+
+#: fvwm/menus.c:1813
+msgid "More&..."
+msgstr "Ще..."
+
+#: modules/FvwmPager/FvwmPager.c:421
+#, c-format
+msgid "Desk %d"
+msgstr "Стільниця %d"
+
+#: modules/FvwmPager/x_pager.c:879 ../modules/FvwmPager/x_pager.c:887
+#, c-format
+msgid "D%d"
+msgstr "С%d"
+
+#: default-config/config:117
+msgid "Documentation can be found at https://www.fvwm.org"
+msgstr "Документація - на https://www.fvwm.org"
+
+#: default-config/config:323
+msgid "&Programs"
+msgstr "&Програми"
+
+#: default-config/config:324
+msgid "XDG &Menu"
+msgstr "XDG &Меню"
+
+#: default-config/config:330
+msgid "&Wallpapers"
+msgstr "&Шпалери"
+
+#: default-config/config:331
+msgid "M&an Pages"
+msgstr "Довідкові сторінки"
+
+#: default-config/config:332
+msgid "Cop&y Config"
+msgstr "Копіювати &налаштування"
+
+#: default-config/config:334
+msgid "Re&fresh"
+msgstr "&Освіжити"
+
+#: default-config/config:335
+msgid "&Restart"
+msgstr "&Перезапуск"
+
+#: default-config/config:336
+msgid "&Quit"
+msgstr "&Вийти"
+
+#: default-config/config:347
+msgid "Programs"
+msgstr "Програми"
+
+#: default-config/config:361
+msgid "Wallpapers"
+msgstr "Шпалери"
+
+#: default-config/config:362
+msgid "Floral"
+msgstr "Квіткове"
+
+#: default-config/config:363
+msgid "Circles"
+msgstr "Кола"
+
+#: default-config/config:364
+msgid "Space"
+msgstr "Космос"
+
+#: default-config/config:369 default-config/config:381
+msgid "Move"
+msgstr "Рухати"
+
+#: default-config/config:370 default-config/config:382
+msgid "Resize"
+msgstr "Розмір"
+
+#: default-config/config:371 default-config/config:383
+#: default-config/config:404
+msgid "(De)Iconify"
+msgstr "(Ро)згорнути"
+
+#: default-config/config:372 default-config/config:384
+#: default-config/config:405
+msgid "(Un)Maximize"
+msgstr "(Де)максимізувати"
+
+#: default-config/config:373 default-config/config:385
+#: default-config/config:406
+msgid "(Un)Shade"
+msgstr "За(роз)тінити"
+
+#: default-config/config:374
+msgid "(Un)Stick"
+msgstr "При(від)клеїти"
+
+#: default-config/config:376 default-config/config:390
+#: default-config/config:411 bin/fvwm-menu-desktop-config.fpl:293
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:64
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:132
+msgid "Close"
+msgstr "Закрити"
+
+#: default-config/config:377
+msgid "More"
+msgstr "Ще"
+
+#: default-config/config:380
+msgid "Window Ops"
+msgstr "Операції на вікні"
+
+#: default-config/config:386 default-config/config:407
+msgid "(Un)Sticky"
+msgstr "(Не)клейкий"
+
+#: default-config/config:387
+msgid "(No)Title Bar"
+msgstr "(Бе)з панелі заголовку"
+
+#: default-config/config:388 default-config/config:409
+msgid "Send To"
+msgstr "Послати до"
+
+#: default-config/config:391 default-config/config:412
+msgid "Destroy"
+msgstr "Знищити"
+
+#: default-config/config:393 default-config/config:414
+msgid "Raise"
+msgstr "Нагору"
+
+#: default-config/config:394 default-config/config:415
+msgid "Lower"
+msgstr "Вглиб"
+
+#: default-config/config:396 default-config/config:417
+msgid "Stays On Top"
+msgstr "Над усіма"
+
+#: default-config/config:397 default-config/config:418
+msgid "Stays Put"
+msgstr "Де покладено"
+
+#: default-config/config:398 default-config/config:419
+msgid "Stays On Bottom"
+msgstr "Під усіма"
+
+#: default-config/config:400 default-config/config:421
+msgid "Identify"
+msgstr "Ідентифікувати"
+
+#: default-config/config:408
+msgid "(No)TitleBar"
+msgstr "(Бе)з панелі заголовку"
+
+#: default-config/config:425
+msgid "Current"
+msgstr "Поточна"
+
+#: default-config/config:426 default-config/config:438
+#: default-config/config:439 default-config/config:440
+#: default-config/config:441
+msgid "Page"
+msgstr "Сторінка"
+
+#: bin/fvwm-menu-desktop-config.fpl:55 bin/fvwm-menu-desktop-config.fpl:58
+msgid "Fvwm XDGMenu Config"
+msgstr "Налаштування Fvwm XDGMenu"
+
+#: bin/fvwm-menu-desktop-config.fpl:62
+msgid "Available Menus"
+msgstr "Доступні меню"
+
+#: bin/fvwm-menu-desktop-config.fpl:70
+msgid "Menus in"
+msgstr "Меню у"
+
+#: bin/fvwm-menu-desktop-config.fpl:98
+msgid "No menus found! Check why from within a terminal with"
+msgstr "Не знайдено меню! Перевірте, чому, в терміналі з"
+
+#: bin/fvwm-menu-desktop-config.fpl:109
+msgid "Options"
+msgstr "Опції"
+
+#: bin/fvwm-menu-desktop-config.fpl:110 bin/fvwm-menu-desktop-config.fpl:291
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:69
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:137
+msgid "Help"
+msgstr "Допомога"
+
+#: bin/fvwm-menu-desktop-config.fpl:115
+msgid "Include in Menu?    "
+msgstr "Включити в меню?    "
+
+#: bin/fvwm-menu-desktop-config.fpl:117
+msgid "Config   "
+msgstr "Налаштування "
+
+#: bin/fvwm-menu-desktop-config.fpl:118
+msgid "Regenerate  "
+msgstr "Створити наново "
+
+#: bin/fvwm-menu-desktop-config.fpl:119
+msgid "Both   "
+msgstr "Обидва"
+
+#: bin/fvwm-menu-desktop-config.fpl:120
+msgid "None  "
+msgstr "Жодного "
+
+#: bin/fvwm-menu-desktop-config.fpl:123
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:27
+msgid "Use Icons?          "
+msgstr "Вживати іконки?     "
+
+#: bin/fvwm-menu-desktop-config.fpl:125 bin/fvwm-menu-desktop-config.fpl:136
+msgid "Yes      "
+msgstr "Так      "
+
+#: bin/fvwm-menu-desktop-config.fpl:126 bin/fvwm-menu-desktop-config.fpl:137
+msgid "No   "
+msgstr "Ні   "
+
+#: bin/fvwm-menu-desktop-config.fpl:128 bin/fvwm-menu-desktop-config.fpl:139
+#: bin/fvwm-menu-desktop-config.fpl:147 bin/fvwm-menu-desktop-config.fpl:155
+msgid "  "
+msgstr "  "
+
+#: bin/fvwm-menu-desktop-config.fpl:129
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:38
+msgid "Icon size:          "
+msgstr "Розмір іконки:      "
+
+#: bin/fvwm-menu-desktop-config.fpl:131
+msgid " (Default is 24)"
+msgstr " (Стандартно 24)"
+
+#: bin/fvwm-menu-desktop-config.fpl:134
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:99
+msgid "Use Titles?         "
+msgstr "Вживати заголовки?  "
+
+#: bin/fvwm-menu-desktop-config.fpl:140
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:57
+msgid "Used Icon theme:    "
+msgstr "Вжита тема іконок:  "
+
+#: bin/fvwm-menu-desktop-config.fpl:144
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:71
+msgid "Directory Icon:     "
+msgstr "Іконка папки:       "
+
+#: bin/fvwm-menu-desktop-config.fpl:148
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:85
+msgid "Application Icon:   "
+msgstr "Іконка програми:    "
+
+#: bin/fvwm-menu-desktop-config.fpl:152
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:104
+msgid "Top Menu Name:      "
+msgstr "Назва головного меню: "
+
+#: bin/fvwm-menu-desktop-config.fpl:156
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:109
+msgid "Insert Menu Into:   "
+msgstr "Вставити меню у:    "
+
+#: bin/fvwm-menu-desktop-config.fpl:160
+msgid "Terminal command:   "
+msgstr "Команда в терміналі: "
+
+#: bin/fvwm-menu-desktop-config.fpl:162
+msgid " (Used to run Terminal entries)"
+msgstr "(Щоб запускати в консолі)  "
+
+#: bin/fvwm-menu-desktop-config.fpl:165
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:46
+msgid "Icon directory:     "
+msgstr "Папка з іконками:   "
+
+#: bin/fvwm-menu-desktop-config.fpl:167
+msgid " (Directory for converted icons)"
+msgstr "(Для конвертованих іконок)  "
+
+#: bin/fvwm-menu-desktop-config.fpl:170
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:122
+msgid "Output path:        "
+msgstr "Шлях для виводу:    "
+
+#: bin/fvwm-menu-desktop-config.fpl:172
+msgid " (Full path to store output)"
+msgstr "(Повний шлях для збереження виводу)"
+
+#: bin/fvwm-menu-desktop-config.fpl:180
+msgid "Export Menu"
+msgstr "Експортувати меню"
+
+#: bin/fvwm-menu-desktop-config.fpl:211
+msgid "Save and Regenerate"
+msgstr "Зберегти і створити наново"
+
+#: bin/fvwm-menu-desktop-config.fpl:251
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:67
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:62
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:66
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:170
+msgid "Save"
+msgstr "Зберегти"
+
+#: bin/fvwm-menu-desktop-config.fpl:289
+msgid "Reset"
+msgstr "Наново"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:134
+msgid "XDGMenu Help"
+msgstr "Допомога XDGMenu"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:10
+msgid "XDGMenu.Help"
+msgstr "XDGMenu.Help"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:17
+msgid ""
+"All the XDG menus found on the system are listed under Available Menus.  Use"
+msgstr ""
+"Всі знайдені в системі меню XDG перелічено у Доступних меню. Використовуйте"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:19
+msgid ""
+"this FvwmForm to configure some of the defaults options for fvwm-menu-desktop"
+msgstr ""
+"цю FvwmForm, щоб налаштувати деякі опції fvwm-menu-desktop за замовчуванням"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:21
+msgid ""
+"and select which menus are generated.  Select the options you want and then"
+msgstr ""
+"і обрати, які меню генерувати. Оберіть бажані опції і тоді генеруйте меню,"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:23
+msgid "generate then generate the menu by selecting the following:"
+msgstr "обираючи наступне:"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:27
+msgid "Export Menu:"
+msgstr "Експортувати меню:"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:29
+msgid ""
+"     Generates a menu by calling fvwm-menu-desktop with the selected options"
+msgstr "     Генерує меню, викликаючи fvwm-menu-desktop з вказаними опціями і"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:31
+msgid ""
+"     and saves the output to Output Path. After the menu file is created it"
+msgstr ""
+"     зберігає результат у Шляху виводу. Після створення меню його читає"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:33
+msgid ""
+"     is read by fvwm. This option does not save any changes made to settings."
+msgstr ""
+"     fvwm. Ця опція не зберігає жодних змін, зроблених у налаштуваннях."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:37
+msgid "Save and Regenerate:"
+msgstr "Зберегти і створити наново:"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:39
+msgid ""
+"     This saves the settings then runs fvwm-menu-desktop with no options "
+"using"
+msgstr ""
+"     Це збереже налаштування і тоді запустить fvwm-menu-desktop без опцій, "
+"вживаючи"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:41
+msgid ""
+"     the defaults saved in the config file. This does not export the menu."
+msgstr ""
+"     замовчування, збережені у файлі налаштувань. Меню не експортуватиметься."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:45
+msgid ""
+"Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX."
+msgstr ""
+"Меню знайдено у /etc/xdg/menus, $HOME/.config/menus і $XDG_MENU_PREFIX."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:47
+msgid ""
+"Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/"
+"menus/"
+msgstr ""
+"Зауважте, що знайдено однакові меню одночасно у /etc/xdg/menus і "
+"$HOME/.config/menus/"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:49
+msgid ""
+"following the XDG menu specification are only shown in $HOME/.config/menus/."
+msgstr "згідно специфікації меню XDG показані тільки у $HOME/.config/menus/."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:53
+msgid "If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'."
+msgstr "Якщо меню не видно, перевірте 'fvwm-menu-desktop --get-menus all -v'."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:55
+msgid "Also it is a good idea to check $HOME/.xsession-errors for errors."
+msgstr "Також не зашкодить перевірити $HOME/.xsession-errors на помилки."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:66
+msgid "Options Help"
+msgstr "Допомога щодо опцій"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:68
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:136
+msgid "manpage"
+msgstr "Довідкова сторінка"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:10
+msgid "XDGMenu Options Help"
+msgstr "Допомога щодо опцій XDGMenu"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:15
+msgid "General Options"
+msgstr "Загальні опції"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:19
+msgid "Include in Menu:    "
+msgstr "Включити в меню:    "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:20
+msgid ""
+"Set if XDGMenu will include menu items to Configure and/or Regenerate the "
+"menu"
+msgstr ""
+"Встановіть, чи XDGMenu включатиме пункти меню до Налаштувати і/чи Створити "
+"меню наново"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:22
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:30
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:33
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:41
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:49
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:52
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:60
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:63
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:66
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:74
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:77
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:80
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:88
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:91
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:94
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:117
+msgid "                    "
+msgstr "                    "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:23
+msgid "at the bottom of the top level menu."
+msgstr "знизу меню найвищого рівня"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:28
+msgid ""
+"Option enables mini-icons in the menu(s). Warning! If ImageMagick is "
+"installed"
+msgstr ""
+"Використовувати міні-іконки в меню. Увага: ImageMagick повинен бути "
+"встановлений"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:31
+msgid ""
+"the script may generate all the icons and pause your system until the job is"
+msgstr "скрипт перегенерує всі іконки, але до завершення інтерфейс може бути"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:34
+msgid ""
+"done. After the icons are generated, it will not take as long to regenerate."
+msgstr ""
+"призупинений. Коли іконки вже створені, перегенерування не триватиме довго."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:39
+msgid ""
+"If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
+"is"
+msgstr ""
+"Якщо встановлено 'Вживати іконки', за замовчуванням розмір буде 24x24. Якщо "
+"потрібний"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:42
+msgid "desired enter the wanted size in this field."
+msgstr "інший розмір, впишіть його у це поле."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:47
+msgid ""
+"If the specified icon isn't that size it is converted if ImageMagick is "
+"installed."
+msgstr ""
+"Якщо вказана іконка невідповідного розміру і встановлено ImageMagick, її "
+"буде конвертовано."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:50
+msgid ""
+"Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
+"here."
+msgstr ""
+"Генеровані іконки зберігаються у $HOME/.fvwm/icons чи папці, вказаній тут."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:53
+msgid "Otherwise no icon appears in the menu for that entry."
+msgstr "Інакше цей пункт меню буде без іконки."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:58
+msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
+msgstr "Вживана тема іконок. За замовчуванням 'gnome', але можна обрати "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:61
+msgid ""
+"/usr/share/icons can used except the hicolor theme because it's the default"
+msgstr ""
+"будь-яку з /usr/share/icons, крім 'hicolor', яка є резервною темою, якщо"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:64
+msgid ""
+"fallback theme if no icon is found. Note that the theme name must be written"
+msgstr ""
+"іконку не знайдено. Зверніть увагу, що треба вписати назву теми точно як"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:67
+msgid "exactly as the icon directory e.g."
+msgstr "виглядає назва папки, наприклад,"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:72
+msgid ""
+"If 'Use Icons' is enabled and for a directory in a menu no icon is found"
+msgstr "Якщо встановлено 'Вживати іконки' і іконку для підменю не знайдено,"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:75
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:89
+msgid "as default icon is used. But if the gnome icon theme isn't"
+msgstr "вживається іконка за замовчуванням. Однак, якщо тема 'gnome'"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:78
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:92
+msgid "installed no default icon appears. Another icon can defined here."
+msgstr "не встановлена, запасна іконка не з'явиться. Тут можна обрати іншу."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:81
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:95
+msgid "Only the name of an icon is needed not the path!"
+msgstr "Потрібна тільки назва іконки, а не шлях!"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:86
+msgid "If 'Use Icons' is enabled and for an application no icon is found"
+msgstr "Якщо встановлено 'Вживати іконки' і іконку програми не знайдено,"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:100
+msgid ""
+"If this option is set menus are generated with titles. Default is use titles."
+msgstr ""
+"Якщо цю опцію встановлено, меню створюються з заголовками (за замовчуванням)."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:105
+msgid "Sets the name of the name of the top level menu. Default is XDGMenu."
+msgstr "Встановлює назву меню найвищого рівня, за замовчуванням XDGMenu."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:110
+msgid "Inserts the menu items into the given Menu."
+msgstr "Вставляє пункти у дане меню."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:114
+msgid "Terminal Command:   "
+msgstr "Команда термінала: "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:115
+msgid ""
+"Enter terminal emulator command used to launch terminal applications. The "
+"command"
+msgstr ""
+"Введіть команду емулятора термінала, щоб запускати проограми у текстовому "
+"режимі. Команда"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:118
+msgid "must end with an execute option (-e). Default xterm -e."
+msgstr "повинна закінчуватись опцією -e (виконати), стандартно xterm -e."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:123
+msgid "Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu."
+msgstr ""
+"Введіть ПОВНИЙ шлях до експортованого меню, зазвичай $FVWM_USERDIR/.XDGMmenu."
+
+#: default-config/FvwmScript-ConfirmQuit:11
+msgid "Do you really want to quit Fvwm?"
+msgstr "Дійсно вийти з FVWM?"
+
+#: default-config/FvwmScript-ConfirmQuit:41
+#: default-config/FvwmScript-ConfirmCopyConfig:127
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:58
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:2
+msgid "ConfirmCopyConfig"
+msgstr "Підтвердити CopyConfig"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:21
+msgid "Fvwm Default Configuration"
+msgstr "Налаштування FVWM за замовчуванням"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:36
+msgid "This script copies the default configuration into your home directory:"
+msgstr "Цей скрипт копіює стандартні налаштування у вашу домашню папку:"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:64
+msgid "A backup of your current configuration will be located at:"
+msgstr "Резервна копія поточних налаштувань буде тут:"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:92
+msgid "Click Confirm to continue and restart Fvwm."
+msgstr "Натисніть Підтвердити для продовження і перезапуску."
+
+#: default-config/FvwmScript-ConfirmCopyConfig:107
+msgid "Confirm"
+msgstr "Підтвердити"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:2
+msgid "Bell Setup"
+msgstr "Налаштування дзвінка"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:49
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:43
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:47
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:132
+msgid "Apply"
+msgstr "Застосувати"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:100
+msgid "Beep"
+msgstr "Писк"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:135
+msgid "Volume:"
+msgstr "Гучність:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:161
+msgid "Pitch(Hz):"
+msgstr "Висота (Гц)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:187
+msgid "Duration(ms):"
+msgstr "Тривалість (мс):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:212
+msgid "Bell"
+msgstr "Дзвінок"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:2
+msgid "Keyboard Setup"
+msgstr "Налаштування клавіатури"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:120
+msgid "Click Volume (%)"
+msgstr "Гучність клацання (%)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:133
+msgid "AutoRepeat On"
+msgstr "Ввімкнути автоповторення"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:159
+msgid "Start Delay:  "
+msgstr "Затримка початку: "
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:185
+msgid "Repeat Delay:"
+msgstr "Затримка повторення:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:210
+msgid "Keyboard"
+msgstr "Клавіатура"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:2
+msgid "Pointer Setup"
+msgstr "Налаштування вказівника"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:108
+msgid "Right-handed user|Left-handed user"
+msgstr "Користувач правша | шульга"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:122
+msgid "Mouse configuration:"
+msgstr "Налаштування миші:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:150
+msgid "Acceleration:"
+msgstr "Прискорення:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:177
+msgid "Threshold (pixels):"
+msgstr "Поріг (в пікселях)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:202
+msgid "Pointer"
+msgstr "Вказівник"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:2
+msgid "Screen Setup"
+msgstr "Налаштування екрану"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:264
+msgid "Background"
+msgstr "Тло"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:279
+msgid "Uniform color:"
+msgstr "Однорідний колір:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:394
+msgid "Pixmap:"
+msgstr "Pixmap:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:425
+msgid "Browser..."
+msgstr "Браузер..."
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:468
+msgid "Disable xinit background"
+msgstr "Вимкнути фон xinit"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:500
+msgid "Screen-saver"
+msgstr "Заставка"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:514
+msgid "Blank"
+msgstr "Порожній"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:528
+msgid "Timeout(s):"
+msgstr "Таймаут (с)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:554
+msgid "Pattern"
+msgstr "Шаблон"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:569
+msgid "Cycle(s):"
+msgstr "Цикл (c)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:614
+msgid "DPMS"
+msgstr "DPMS"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:628
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:768
+msgid "Enable"
+msgstr "Ввімкнути"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:643
+msgid "Disable"
+msgstr "Вимкнути"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:657
+msgid "Standby(s):"
+msgstr "Standby (с):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:684
+msgid "Suspend(s):"
+msgstr "Suspend (с):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:711
+msgid "Off(s):"
+msgstr "Вимкнути (с):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:754
+msgid "xscreensaver"
+msgstr "заставка X"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:794
+msgid "Config and Demo"
+msgstr "Налаштування і демо"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:2
+msgid "File Browser"
+msgstr "Огляд файлів"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:42
+msgid "OK"
+msgstr "OK"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:86
+msgid "Path:"
+msgstr "Шлях:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:181
+msgid " Show hidden files"
+msgstr "Показати приховані файли"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:246
+msgid "Selected file:"
+msgstr "Обраний файл,"
+
+#~ msgid "Accesories"
+#~ msgstr "Службові"
+
+#~ msgid "Additional parameters:"
+#~ msgstr "Додаткові параметри:"
+
+#~ msgid "All files"
+#~ msgstr "Всі файли"
+
+#~ msgid "Amusements"
+#~ msgstr "Розваги"
+
+#~ msgid "Attach"
+#~ msgstr "Приєднати"
+
+#~ msgid "Available"
+#~ msgstr "Можливі"
+
+#~ msgid "Calculator"
+#~ msgstr "Калькулятор"
+
+#~ msgid "Change configuration:"
+#~ msgstr "Змінити налаштування:"
+
+#~ msgid "Change own"
+#~ msgstr "Змінити власний"
+
+#~ msgid "Chess for two"
+#~ msgstr "Шахи для двох"
+
+#~ msgid "Chess"
+#~ msgstr "Шахи"
+
+#~ msgid "Choose..."
+#~ msgstr "Обрати..."
+
+#~ msgid "Clock"
+#~ msgstr "Годинник"
+
+#~ msgid "Common Wine"
+#~ msgstr "Спільний Wine"
+
+#~ msgid "Editors"
+#~ msgstr "Редактори"
+
+#~ msgid "FVWM interface"
+#~ msgstr "Інтерфейс FVWM"
+
+#~ msgid "Filemanagers"
+#~ msgstr "Менеджери"
+
+#~ msgid "Font selection"
+#~ msgstr "Вибір шрифтів"
+
+#~ msgid "Games"
+#~ msgstr "Ігри"
+
+#~ msgid "Geometry (optional):"
+#~ msgstr "Геометрія (необов'язково)"
+
+#~ msgid "Go out"
+#~ msgstr "Вихід в люди"
+
+#~ msgid "Go to ..."
+#~ msgstr "Перейти до ..."
+
+#~ msgid "Graphics"
+#~ msgstr "Графіка"
+
+#~ msgid "Horizontally"
+#~ msgstr "Горизонтально"
+
+#~ msgid "Image"
+#~ msgstr "Картинка"
+
+#~ msgid "Import configuration:"
+#~ msgstr "Імпортувати налаштування:"
+
+#~ msgid "Initialize Wine"
+#~ msgstr "Ініціалізувати Wine"
+
+#~ msgid "Kill"
+#~ msgstr "Вбити"
+
+#~ msgid "Large font"
+#~ msgstr "Великий шрифт"
+
+#~ msgid "Leave"
+#~ msgstr "Від'єднати"
+
+#~ msgid "Local password"
+#~ msgstr "Локальний пароль"
+
+#~ msgid "Magnifying glass"
+#~ msgstr "Лупа"
+
+#~ msgid "Man pages"
+#~ msgstr "Довідкові сторінки"
+
+#~ msgid "Mathematics"
+#~ msgstr "Математика"
+
+#~ msgid "Middle ages"
+#~ msgstr "Середньовіччя"
+
+#~ msgid "Modules"
+#~ msgstr "Модулі"
+
+#~ msgid "Mount at"
+#~ msgstr "Приєднати у точці монтування"
+
+#~ msgid "Mount diskette"
+#~ msgstr "Mount дискету"
+
+#~ msgid "Multimedia"
+#~ msgstr "Мультимедіа"
+
+#~ msgid "Normal font"
+#~ msgstr "Нормальний шрифт"
+
+#~ msgid "Other WM"
+#~ msgstr "Інші WM"
+
+#~ msgid "Palette"
+#~ msgstr "Палітра"
+
+#~ msgid "Quit fvwm"
+#~ msgstr "Вийти з FVWM"
+
+#~ msgid "Refresh screen"
+#~ msgstr "Освіжити екран"
+
+#~ msgid "Remote password"
+#~ msgstr "Віддалений пароль"
+
+#~ msgid "Removable"
+#~ msgstr "Знімні носії"
+
+#~ msgid "Remove configuration:"
+#~ msgstr "Видалити налаштування:"
+
+#~ msgid "Run "
+#~ msgstr "Запустити "
+
+#~ msgid "Run the program:"
+#~ msgstr "Виконати програму:"
+
+#~ msgid "Run"
+#~ msgstr "Виконати"
+
+#~ msgid "Running processes"
+#~ msgstr "Запущені процеси"
+
+#~ msgid "Screen color"
+#~ msgstr "Колір екрану"
+
+#~ msgid "Screen refresh"
+#~ msgstr "Освіжити екран"
+
+#~ msgid "Set background color :"
+#~ msgstr "Встановити колір фону :"
+
+#~ msgid "Set background image :"
+#~ msgstr "Встановити картинку шпалер :"
+
+#~ msgid "Shared resource:"
+#~ msgstr "Спільний ресурс"
+
+#~ msgid "Small font"
+#~ msgstr "Дрібний шрифт"
+
+#~ msgid "Stop Xroach"
+#~ msgstr "Зупинити Xroach"
+
+#~ msgid "Stop Xsnow"
+#~ msgstr "Зупинити Xsnow"
+
+#~ msgid "Terminals"
+#~ msgstr "Термінали"
+
+#~ msgid "Textware"
+#~ msgstr "Перегляд"
+
+#~ msgid "Unmount diskette"
+#~ msgstr "Unmount дискету"
+
+#~ msgid "Unmount the share mounted at"
+#~ msgstr "Від'єднати спільний ресурс, змонтований у"
+
+#~ msgid "Use common"
+#~ msgstr "Вживати спільний"
+
+#~ msgid "Use own"
+#~ msgstr "Вживати власний"
+
+#~ msgid "Username (optional)"
+#~ msgstr "Ім'я користувача (необов'язково)"
+
+#~ msgid "Vertically"
+#~ msgstr "Вертикально"
+
+#~ msgid "Virtual machines"
+#~ msgstr "Віртуальні машини"
+
+#~ msgid "X applications :"
+#~ msgstr "Програми для X :"
+
+#~ msgid "X clipboard"
+#~ msgstr "Буфер X"
+
+#~ msgid "at the host"
+#~ msgstr "на комп'ютері"
+
+#~ msgid "close window after completion"
+#~ msgstr "закрити вікно після завершення"
+
+#~ msgid "for X Window"
+#~ msgstr "для X Window"
+
+#~ msgid "for text mode"
+#~ msgstr "для текстового режиму"
+
+#~ msgid "forced 'lazy' unmount (risky!)"
+#~ msgstr "примусове 'ліниве' розмонтування (ризиковано!)"
+
+#~ msgid "inside home folder"
+#~ msgstr "всередині домашньої папки"
+
+#~ msgid "other :"
+#~ msgstr "Інший :"
+
+#~ msgid "the share"
+#~ msgstr "спільний ресурс"
+
+#~ msgid "with POSIX extensions"
+#~ msgstr "з розширеннями POSIX"
+
+#~ msgid "with UID/GID of the user"
+#~ msgstr "з UID/GID користувача"

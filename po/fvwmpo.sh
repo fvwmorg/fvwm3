@@ -6,7 +6,7 @@ MSGUNIQ=msguniq
 MSGMERGE=msgmerge
 XGETTEXT=xgettext
 
-ALL_LINGUAS="ar da de es fr ru sv_SE zh_CN zh_TW"
+ALL_LINGUAS="ar da de es fr ru sv_SE uk zh_CN zh_TW"
 
 FVWM_FILES="../fvwm/fvwm3.c \
 	../fvwm/expand.c \
