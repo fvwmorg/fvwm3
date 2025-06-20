@@ -31,6 +31,7 @@
 #include <stdbool.h>
 
 #include "libs/FShape.h"
+#include "libs/FGettext.h"
 #include "libs/Module.h"
 #include "libs/FEvent.h"
 #include "fvwm/fvwm.h"
