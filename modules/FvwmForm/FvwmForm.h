@@ -11,6 +11,7 @@
  */
 
 #include "libs/Flocale.h"               /* for font definition stuff */
+#include "libs/FGettext.h"              /* for localization of messages */
 /*
  * This next stuff should be more specific and customizable.
  * For example padVText (above) was one of the things TXT_SPC
@@ -92,7 +93,8 @@ typedef union _item {
     char *value;           /* input string */
     char *init_value;      /* default string */
     char *blanks;          /* blank string */
-    int size;              /* input field size */
+    int size;              /* value size in bytes */
+    int width;             /* input field width */
     int left;              /* position of the left-most displayed char */
     union _item *next_input;            /* a ring of input fields */
     union _item *prev_input;            /* for tabbing */
@@ -263,6 +265,8 @@ void DoCommand (Item *cmd);              /* FvwmForm.c */
 int FontWidth (XFontStruct *xfs);        /* FvwmForm.c */
 void RedrawFrame (XEvent *pev);          /* FvwmForm.c */
 char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
+char* find_nth_UTF8_char(char *str, char *before,
+	int *num, int *len);             /* FvwmForm.c */
 
 RETSIGTYPE DeadPipe(int nonsense);            /* FvwmForm.c */
 
