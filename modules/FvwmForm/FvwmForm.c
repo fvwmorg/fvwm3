@@ -1056,7 +1056,8 @@ static void PutDataInForm(char *cp)
 	c += len;
 	var_len = (int)(c - cp);
 	free(item->input.init_value);
-	item->input.init_value = strndup(cp, var_len + 1); /* new initial value */
+	item->input.init_value = fxmalloc(var_len + 1);
+	strlcpy(item->input.init_value, cp, var_len + 1); /* new initial value */
 	free(item->input.value);
 	item->input.n = num+1;
 	item->input.buf = var_len+1;
