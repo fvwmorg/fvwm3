@@ -111,7 +111,8 @@ typedef enum {
 	ICON_NAME     = 2,
 	RESOURCE_NAME = 4,
 	CLASS_NAME    = 8,
-	ALL_NAME      = 15
+	SCREEN_NAME   = 16,
+	ALL_NAME      = 31
 } NameType;
 
 typedef struct win_list {
@@ -259,6 +260,7 @@ typedef enum {
 	SortId,            /* sort by window id */
 	SortName,          /* case insensitive name sorting */
 	SortNameCase,      /* case sensitive name sorting */
+	SortScreen,	   /* Sort by screen */
 	SortWeighted,      /* custom sort order */
 } SortType;
 
@@ -267,6 +269,7 @@ typedef struct {
 	char *classname;
 	char *titlename;
 	char *iconname;
+	char *screenname;
 	int weight;
 } WeightedSort;
 

@@ -491,6 +491,10 @@ static char *make_display_string(WinData *win, char *format)
 	COPY(classname);
 	break;
 
+      case 's':
+	COPY(monitor);
+	break;
+
       default:
 	*out_p++ = *in_p++;
 	break;
@@ -1014,7 +1018,8 @@ void set_win_displaystring(WinData *win)
   if (!man || ((man->format_depend & CLASS_NAME) && !win->classname)
       || ((man->format_depend & ICON_NAME) && !win->visible_icon_name)
       || ((man->format_depend & TITLE_NAME) && !win->visible_name)
-      || ((man->format_depend & RESOURCE_NAME) && !win->resname)) {
+      || ((man->format_depend & RESOURCE_NAME) && !win->resname)
+      || ((man->format_depend & SCREEN_NAME) && !win->monitor)) {
     return;
   }
 
@@ -2198,6 +2203,11 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 	{
 		return strcmp((a->display_string)? a->display_string:"",
 			       (b->display_string)? b->display_string:"");
+	}
+	else if (type == SortScreen)
+	{
+		return (strcmp(a->monitor ? a->monitor : "",
+			b->monitor ? b->monitor : ""));
 	}
 	else if (type == SortWeighted)
 	{
