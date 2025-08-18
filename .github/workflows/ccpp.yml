@@ -9,7 +9,7 @@ on:
             - main
 jobs:
   build:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     container:
       image: ${{ matrix.os == 'alpine' && 'fvwmorg/fvwm3-build-alpine:latest' || 'fvwmorg/fvwm3-build:latest' }}
     env:
@@ -17,15 +17,15 @@ jobs:
 
     strategy:
       matrix:
-        os: [blacksmith-4vcpu-ubuntu-2204, alpine]
+        os: [blacksmith-4vcpu-ubuntu-2404, alpine]
         compiler: [gcc, clang]
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
-      - name: Set git safe directory
-        run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
+      - name: Set Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
       - name: Configure and Build
         run: |
