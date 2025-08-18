@@ -11,11 +11,12 @@ on:
         required: true
 jobs:
   createrelease:
-    runs-on: blacksmith-4vcpu-ubuntu-2204
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     container: fvwmorg/fvwm3-build:latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    - run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
       with:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -23,7 +24,6 @@ jobs:
       run:  |
         git config --global user.name "Thomas Adam"
         git config --global user.email "thomas@fvwm.org"
-        git config --global --add safe.directory /__w/fvwm3/fvwm3
     - name: Get Current Version (for release...)
       id: versionRelease
       run: |
