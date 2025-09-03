@@ -1,19 +1,150 @@
-name: FVWM3 CI ISSUES
+name: FVWM3 IRC Notifications
 
 on:
-    issues:
-        types: [ opened, edited, milestoned, closed ]
+  issues:
+    types: [opened, edited, milestoned, closed, reopened]
+  pull_request:
+    types: [opened, edited, closed, reopened, converted_to_draft, ready_for_review, review_requested, review_request_removed]
+  workflow_dispatch: {}
 
 jobs:
-    notification:
-        runs-on: blacksmith-4vcpu-ubuntu-2204
-        name: notifications
-        steps:
-            - name: issue notifications
-              uses: Gottox/irc-message-action@v2.1.3
-              with:
-                  server: "irc.libera.chat"
-                  notice: false
-                  channel: "#fvwm"
-                  nickname: fvwm3-gh-issues
-                  message: "Issue [${{ github.event.issue.state }}]: [${{ github.event.issue.number }}]: ${{ github.event.issue.title }} -- [${{ github.event.issue.user.login }}]"
+  issue_notification:
+    name: issue notifications
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    if: ${{ github.event_name == 'issues' && !github.event.issue.pull_request }}
+    concurrency:
+      group: ${{ github.workflow }}-issue-${{ github.event.issue.number }}
+      cancel-in-progress: true
+    timeout-minutes: 3
+    env:
+      IRC_SERVER: "irc.libera.chat"
+      IRC_CHANNEL: "#fvwm"
+      IRC_NICK: "fvwm3-gh-issues"
+    steps:
+      - name: Compose coloured IRC message (Issue)
+        id: compose
+        shell: bash
+        env:
+          STATE: ${{ github.event.issue.state }}
+          NUM: ${{ github.event.issue.number }}
+          USER: ${{ github.event.issue.user.login }}
+          TITLE: ${{ github.event.issue.title }}
+          URL: ${{ github.event.issue.html_url }}
+          ACTION: ${{ github.event.action }}
+        run: |
+          # mIRC control codes
+          BOLD=$'\x02'; RESET=$'\x0F'
+          GREEN=$'\x0303'; RED=$'\x0304'; BLUE=$'\x0312'; GREY=$'\x0314'; YELLOW=$'\x0308' PURPLE=$'\x0306'
+
+          # Map state to colour
+          case "$STATE" in
+            open)   STATE_FMT="${GREEN}open${RESET}" ;;
+            closed) STATE_FMT="${RED}closed${RESET}" ;;
+            *)      STATE_FMT="${BLUE}${STATE}${RESET}" ;;
+          esac
+
+          # Optional: show action in subtle grey if it adds context (e.g. edited/reopened)
+          case "$ACTION" in
+            edited|reopened|milestoned) ACTION_FMT=" ${GREY}(${ACTION})${RESET}" ;;
+            *) ACTION_FMT="" ;;
+          esac
+
+          # Trim long titles
+          max=200
+          title="$TITLE"
+          [ ${#title} -gt $max ] && title="${title:0:$max}..."
+          TITLE_FMT="${BOLD}${YELLOW}${title}${RESET}"
+
+          USER_FMT="${PURPLE}${USER}${RESET}"
+          URL_FMT="${BOLD}${URL}${RESET}"
+
+          printf 'message=ISSUE: [%s]%s #%s by @%s: "%s" -- %s\n' \
+            "$STATE_FMT" "$ACTION_FMT" "$NUM" "$USER_FMT" "$TITLE_FMT" "$URL_FMT" >> "$GITHUB_OUTPUT"
+
+      - name: Send IRC notification (Issue)
+        uses: Gottox/irc-message-action@v2.1.3
+        with:
+          server: ${{ env.IRC_SERVER }}
+          channel: ${{ env.IRC_CHANNEL }}
+          nickname: ${{ env.IRC_NICK }}
+          notice: false
+          message: ${{ steps.compose.outputs.message }}
+        continue-on-error: true
+
+  pr_notification:
+    name: pull request notifications
+    runs-on: blacksmith-4vcpu-ubuntu-2204
+    if: ${{ github.event_name == 'pull_request' }}
+    concurrency:
+      group: ${{ github.workflow }}-pr-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
+    timeout-minutes: 3
+    env:
+      IRC_SERVER: "irc.libera.chat"
+      IRC_CHANNEL: "#fvwm"
+      IRC_NICK: "fvwm3-gh-prs"
+    steps:
+      - name: Compose coloured IRC message (PR)
+        id: compose
+        shell: bash
+        env:
+          STATE:   ${{ github.event.pull_request.state }}
+          MERGED:  ${{ github.event.pull_request.merged }}
+          NUM:     ${{ github.event.pull_request.number }}
+          USER:    ${{ github.event.pull_request.user.login }}
+          TITLE:   ${{ github.event.pull_request.title }}
+          URL:     ${{ github.event.pull_request.html_url }}
+          ACTION:  ${{ github.event.action }}
+          DRAFT:   ${{ github.event.pull_request.draft }}
+          HEAD:    ${{ github.event.pull_request.head.ref }}
+          BASE:    ${{ github.event.pull_request.base.ref }}
+        run: |
+          # mIRC control codes
+          BOLD=$'\x02'; RESET=$'\x0F'
+          GREEN=$'\x0303'; RED=$'\x0304'; BLUE=$'\x0312'; GREY=$'\x0314'; MAGENTA=$'\x0306'; YELLOW=$'\x0308' PURPLE=$'\x0306'
+
+          # Determine PR status label + colour
+          if [ "$ACTION" = "closed" ] && [ "$MERGED" = "true" ]; then
+            STATE_WORD="merged"; STATE_FMT="${MAGENTA}merged${RESET}"
+          else
+            case "$STATE" in
+              open)   STATE_WORD="open";   STATE_FMT="${GREEN}open${RESET}" ;;
+              closed) STATE_WORD="closed"; STATE_FMT="${RED}closed${RESET}" ;;
+              *)      STATE_WORD="$STATE"; STATE_FMT="${BLUE}${STATE}${RESET}" ;;
+            esac
+          fi
+
+          # Draft indicator
+          [ "$DRAFT" = "true" ] && DRAFT_FMT=" ${GREY}[draft]${RESET}" || DRAFT_FMT=""
+
+          # Optional action hint
+          case "$ACTION" in
+            edited|reopened|ready_for_review|converted_to_draft|review_requested|review_request_removed)
+              ACTION_FMT=" ${GREY}(${ACTION})${RESET}" ;;
+            *) ACTION_FMT="" ;;
+          esac
+
+          # Title trimming
+          max=200
+          title="$TITLE"
+          [ ${#title} -gt $max ] && title="${title:0:$max}..."
+          TITLE_FMT="${BOLD}${YELLOW}${title}${RESET}"
+
+          # Branch summary
+          BRANCHES="${HEAD} -> ${BASE}"
+
+          USER_FMT="${PURPLE}${USER}${RESET}"
+          URL_FMT="${BOLD}${URL}${RESET}"
+
+          printf 'message=PR: [%s]%s%s #%s by @%s: "%s" [%s] — %s\n' \
+            "$STATE_FMT" "$ACTION_FMT" "$DRAFT_FMT" "$NUM" "$USER_FMT" "$TITLE_FMT" "$BRANCHES" "$URL_FMT" >> "$GITHUB_OUTPUT"
+
+      - name: Send IRC notification (PR)
+        uses: Gottox/irc-message-action@v2.1.3
+        with:
+          server:  ${{ env.IRC_SERVER }}
+          channel: ${{ env.IRC_CHANNEL }}
+          nickname: ${{ env.IRC_NICK }}
+          notice: false
+          message: ${{ steps.compose.outputs.message }}
+        continue-on-error: true
