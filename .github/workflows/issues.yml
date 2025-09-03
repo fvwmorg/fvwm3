@@ -4,7 +4,7 @@ on:
   issues:
     types: [opened, edited, milestoned, closed, reopened]
   pull_request:
-    types: [opened, edited, closed, reopened, converted_to_draft, ready_for_review, review_requested, review_request_removed]
+    types: [synchronize, opened, edited, closed, reopened, converted_to_draft, ready_for_review, review_requested, review_request_removed]
   workflow_dispatch: {}
 
 jobs:
