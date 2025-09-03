@@ -52,6 +52,10 @@ void print_stringlist (StringList *list)
       s = "class";
       break;
 
+    case SCREEN_NAME:
+      s = "screen";
+      break;
+
     default:
       s = "unknown type";
     }
@@ -78,6 +82,8 @@ void add_to_stringlist (StringList *list, char *s)
       type = RESOURCE_NAME;
     else if (!strcasecmp (s, "class"))
       type = CLASS_NAME;
+    else if (!strcasecmp (s, "screen"))
+      type = SCREEN_NAME;
     else {
       ConsoleMessage ("Bad element in show/dontshow list: %s\n", s);
       return;
@@ -107,17 +113,18 @@ void add_to_stringlist (StringList *list, char *s)
 }
 
 static int matches_string (NameType type, char *pattern, char *tname,
-			   char *iname, char *rname, char *cname)
+			   char *iname, char *rname, char *cname, char *sname)
 {
   int ans = 0;
 
   ConsoleDebug (WINLIST, "matches_string: type: 0x%x pattern: %s\n",
 		type, pattern);
-  ConsoleDebug (WINLIST, "\tstrings: %s:%s %s:%s\n",
+  ConsoleDebug (WINLIST, "\tstrings: %s:%s %s:%s %s\n",
                 tname ? tname : "(null)",
                 iname ? iname : "(null)",
                 rname ? rname : "(null)",
-                cname ? cname : "(null)");
+                cname ? cname : "(null)",
+		sname ? sname : "(null");
 
   if (tname && (type == ALL_NAME || type == TITLE_NAME)) {
     ans |= matchWildcards (pattern, tname);
@@ -130,6 +137,9 @@ static int matches_string (NameType type, char *pattern, char *tname,
   }
   if (cname && (type == ALL_NAME || type == CLASS_NAME)) {
     ans |= matchWildcards (pattern, cname);
+  }
+  if (cname && (type == ALL_NAME || type == SCREEN_NAME)) {
+    ans |= matchWildcards (pattern, sname);
   }
 
   ConsoleDebug (WINLIST, "\tmatches_string: %d\n", ans);
@@ -209,7 +219,7 @@ int check_resolution(WinManager *manager, WinData *win)
 }
 
 static int iconmanager_show (WinManager *man, char *tname, char *iname,
-			     char *rname, char *cname)
+			     char *rname, char *cname, char *sname)
 {
   StringEl *string;
   int in_showlist = 0, in_dontshowlist = 0;
@@ -228,7 +238,7 @@ static int iconmanager_show (WinManager *man, char *tname, char *iname,
   for (string = man->dontshow.list; string; string = string->next) {
     ConsoleDebug (WINLIST, "Matching: %s\n", string->string);
     if (matches_string (string->type, string->string, tname, iname,
-			rname, cname)) {
+			rname, cname, sname)) {
       ConsoleDebug (WINLIST, "Don't show\n");
       in_dontshowlist = 1;
       break;
@@ -243,7 +253,7 @@ static int iconmanager_show (WinManager *man, char *tname, char *iname,
       for (string = man->show.list; string; string = string->next) {
 	ConsoleDebug (WINLIST, "Matching: %s\n", string->string);
 	if (matches_string (string->type, string->string, tname, iname,
-			    rname, cname)) {
+			    rname, cname, sname)) {
 	  ConsoleDebug (WINLIST, "Show\n");
 	  in_showlist = 1;
 	  break;
@@ -295,14 +305,15 @@ WinManager *figure_win_manager (WinData *win, Uchar name_mask)
   char *iname = win->iconname;
   char *rname = win->resname;
   char *cname = win->classname;
+  char *sname = win->monitor;
   WinManager *man;
 
-  assert (tname || iname || rname || cname);
-  ConsoleDebug (WINLIST, "set_win_manager: %s %s %s %s\n", tname, iname, rname, cname);
+  assert (tname || iname || rname || cname || sname);
+  ConsoleDebug (WINLIST, "set_win_manager: %s %s %s %s %s\n", tname, iname, rname, cname, sname);
 
   for (i = 0, man = &globals.managers[0]; i < globals.num_managers;
        i++, man++) {
-    if (iconmanager_show (man, tname, iname, rname, cname) &&
+    if (iconmanager_show (man, tname, iname, rname, cname, sname) &&
 	check_resolution(man, win)) {
       if (man != win->manager) {
 	assert (man->magic == 0x12344321);
@@ -329,6 +340,8 @@ int check_win_complete (WinData *p)
 		(p->resname ? p->resname : "No p->resname"));
   ConsoleDebug (WINLIST, "\tclass: %s\n",
 		(p->classname ? p->classname : "No p->classname"));
+  ConsoleDebug (WINLIST, "\tscreen: %s\n",
+		(p->monitor ? p->monitor : "No p->monitor"));
   ConsoleDebug (WINLIST, "\tdisplaystring: %s\n",
 		(p->display_string ? p->display_string :
 		 "No p->display_string"));

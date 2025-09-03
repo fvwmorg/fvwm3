@@ -1017,6 +1017,10 @@ static NameType parse_format_dependencies(char *format)
 			{
 				flags |= RESOURCE_NAME;
 			}
+			else if (*format == 's')
+			{
+				flags |= SCREEN_NAME;
+			}
 			else if (*format != '%')
 			{
 				ConsoleMessage(
@@ -1829,6 +1833,9 @@ void read_in_resources(void)
 	}
 	else if (!strcasecmp(p, "none")) {
 	  i = SortNone;
+	}
+	else if (!strcasecmp(p, "screen")) {
+	  i = SortScreen;
 	}
 	else if (!strcasecmp(p, "weighted")) {
 	  i = SortWeighted;
