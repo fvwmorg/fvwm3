@@ -119,8 +119,8 @@ jobs:
 
           # Optional action hint
           case "$ACTION" in
-            edited|reopened|ready_for_review|converted_to_draft|review_requested|review_request_removed)
-              ACTION_FMT=" ${GREY}(${ACTION})${RESET}" ;;
+            synchronize|edited|reopened|ready_for_review|converted_to_draft|review_requested|review_request_removed)
+              ACTION_FMT=" ${BOLD}${GREY}(${ACTION})${RESET}" ;;
             *) ACTION_FMT="" ;;
           esac
 
