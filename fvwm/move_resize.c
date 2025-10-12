@@ -25,6 +25,7 @@
 #include <math.h>
 #include <stdbool.h>
 
+#include "libs/FScreen.h"
 #include "libs/log.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
@@ -296,6 +297,8 @@ static void move_to_next_monitor(
 	RB_FOREACH(m, monitors, &monitor_q)
 	{
 		if (fw->m == m)
+			continue;
+		if (m->flags & MONITOR_DISABLED)
 			continue;
 
 		if (ewmh)

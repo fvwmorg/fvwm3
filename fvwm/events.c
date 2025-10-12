@@ -1821,7 +1821,9 @@ static void monitor_update_ewmh(void)
 
 			m->flags &= ~MONITOR_NEW;
 		}
-		EWMH_Init(m);
+
+		if (m->flags & MONITOR_DISABLED)
+			EWMH_Init(m);
 	}
 
 
