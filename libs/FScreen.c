@@ -440,6 +440,14 @@ monitor_assign_number(void)
 int
 monitor_compare(struct monitor *a, struct monitor *b)
 {
+	int adisable = a->flags & MONITOR_DISABLED;
+	int bdisable = b->flags & MONITOR_DISABLED;
+	if (adisable && bdisable)
+		return strcmp(a->si->name, b->si->name);
+	if (adisable && !bdisable)
+		return 1;
+	if (!adisable && bdisable)
+		return -1;
 	return (a->si->y == b->si->y) ?
 		(a->si->x - b->si->x) : (a->si->y - b->si->y);
 }
@@ -597,20 +605,13 @@ scan_screens(Display *dpy)
 	}
 
 out:
-	/* Update monitor order after changes.  Do not mix that up with the
-	 * following loop or some monitors might get their flags processed
-	 * twice.
+	/* Update monitor order after changes.  If a monitor is disabled, its
+	 * key in the rbtree also changes.
 	 */
 	RB_FOREACH_SAFE(m, monitors, &monitor_q, m1) {
-		if (m->flags & MONITOR_CHANGED) {
-			RB_REMOVE(monitors, &monitor_q, m);
-			RB_INSERT(monitors, &monitor_q, m);
-		}
-	}
-
-	RB_FOREACH(m, monitors, &monitor_q) {
 		int  flags = m->flags;
 		bool found = m->flags & MONITOR_FOUND;
+		bool should_update = false;
 
 		/* Check for monitor connection status -- whether a monitor is
 		 * active or not.  Clearing the MONITOR_FOUND flag is
@@ -622,6 +623,7 @@ out:
 		} else if (found && (flags & MONITOR_CHANGED)) {
 			m->flags &= ~MONITOR_DISABLED;
 			m->emit   = MONITOR_CHANGED;
+			should_update = true;
 		} else if (found && (flags & MONITOR_DISABLED)) {
 			m->flags &= ~MONITOR_DISABLED;
 			m->emit   = MONITOR_ENABLED;
@@ -635,8 +637,14 @@ out:
 		} else /* (!found && (! (flags & MONITOR_DISABLED))) */ {
 			m->flags |= MONITOR_DISABLED;
 			m->emit   = MONITOR_DISABLED;
+			should_update = true;
 		}
 		m->flags &= ~MONITOR_FOUND;
+
+		if (should_update) {
+			RB_REMOVE(monitors, &monitor_q, m);
+			RB_INSERT(monitors, &monitor_q, m);
+		}
 	}
 	/* Now that all monitors have been inserted, assign them a number from
 	 * 0 -> n so that they can be referenced in order.
@@ -826,13 +834,17 @@ FindScreenOfXY(int x, int y)
 	if (y < 0)
 		y += all_heights;
 
+	int nr_monitors = monitor_get_count();
+
 	RB_FOREACH(m, monitors, &monitor_q) {
 		/* If we have more than one screen configured, then don't match
 		 * on the global screen, as that's separate to XY positioning
 		 * which is only concerned with the *specific* screen.
 		 */
-		if (monitor_get_count() > 0 &&
+		if (nr_monitors > 0 &&
 		    strcmp(m->si->name, GLOBAL_SCREEN_NAME) == 0)
+			continue;
+		if (m->flags & MONITOR_DISABLED)
 			continue;
 		if (x >= m->si->x && x < m->si->x + m->si->w &&
 		    y >= m->si->y && y < m->si->y + m->si->h)
@@ -846,7 +858,10 @@ FindScreenOfXY(int x, int y)
 		int d = 0;
 
 		/* Skip global screen */
-		if (m == monitor_global)
+		if (nr_monitors > 0 && strcmp(m->si->name, GLOBAL_SCREEN_NAME) == 0)
+			continue;
+
+		if (m->flags & MONITOR_DISABLED)
 			continue;
 
 		if (x < m->si->x)
