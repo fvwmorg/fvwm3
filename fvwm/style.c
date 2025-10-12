@@ -4796,6 +4796,7 @@ static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 			free_style(ps);
 			free(ps);
 			merged = True;
+			break;
 		}
 	}
 	if (!merged)
