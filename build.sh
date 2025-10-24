@@ -105,3 +105,5 @@ run_cmd ninja -j $(nproc) -C "$buildDir" || die "Command failed..."
 	echo "Installing..."
 	run_cmd meson install -C "$buildDir"
 }
+
+exit 0
