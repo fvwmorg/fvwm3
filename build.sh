@@ -46,25 +46,31 @@ run_cmd() {
 
 usage() {
 	die "$(cat <<EOF
-$(basename $0) [-b builddir] [-f] [-v] [-D opts]
+$(basename $0) [-b builddir] [-f] [-v] [-i] [-m] [-w] [-D opts]
 
 Where:
 
--b: directory to use to build fvwm3, defaults to: 'compile'
+-b: Directory to use to build fvwm3, defaults to: 'compile'
+-d: Compile all docs (manpages and HTML), implies options '-m' and '-w'
 -f: Forces 'meson setup' to rerun, with --reconfigure --wipe
 -h: Shows this output
 -i: Installs compiled files
+-m: Build manual pages
 -v: Verbose mode - does not hide output from meson
+-w: Build HTML documentation
 -D: Can be specified multiple times to pass options to 'meson setup'
 EOF
 )"
 }
 
 # Getopts
-while getopts ":fb:D:hiv" o; do
+while getopts ":dfb:D:himvw" o; do
 	case "$o" in
 		b)
 			buildDir="$OPTARG"
+			;;
+		d)
+			Dargs="$Dargs -Dmandoc=true -Dhtmldoc=true"
 			;;
 		f)
 			fflag=1
@@ -72,8 +78,14 @@ while getopts ":fb:D:hiv" o; do
 		i)
 			iflag=1
 			;;
+		m)
+			Dargs="$Dargs -Dmandoc=true"
+			;;
 		v)
 			vflag=1
+			;;
+		w)
+			Dargs="$Dargs -Dhtmldoc=true"
 			;;
 		D)
 			Dargs="$Dargs -D$OPTARG"
@@ -93,7 +105,7 @@ echo "Using build directory: $buildDir"
 
 { [ ! -d "$buildDir" ] || [ "$fflag" = 1 ] ; } && {
 	echo "Running meson setup..."
-	run_cmd meson setup --reconfigure --wipe "$buildDir" "$Dargs" || {
+	run_cmd meson setup --reconfigure --wipe "$buildDir" $Dargs || {
 		die "Command failed..."
 	}
 }
