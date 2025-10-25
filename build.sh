@@ -8,6 +8,7 @@ vflag=0
 Dargs=""
 buildDir="compile"
 tempFile="$(mktemp)"
+prefix=""
 
 # Portably determine number of CPU cores on different systems (MacOS, BSD,
 # Linux).
@@ -46,7 +47,7 @@ run_cmd() {
 
 usage() {
 	die "$(cat <<EOF
-$(basename $0) [-b builddir] [-f] [-v] [-i] [-m] [-w] [-D opts]
+$(basename $0) [-b builddir] [-f] [-v] [-i] [-m] [-p] [-w] [-D opts]
 
 Where:
 
@@ -56,6 +57,7 @@ Where:
 -h: Shows this output
 -i: Installs compiled files
 -m: Build manual pages
+-p: Set the prefix for where the installation path will be
 -v: Verbose mode - does not hide output from meson
 -w: Build HTML documentation
 -D: Can be specified multiple times to pass options to 'meson setup'
@@ -64,7 +66,7 @@ EOF
 }
 
 # Getopts
-while getopts ":dfb:D:himvw" o; do
+while getopts ":dfb:D:himp:vw" o; do
 	case "$o" in
 		b)
 			buildDir="$OPTARG"
@@ -80,6 +82,10 @@ while getopts ":dfb:D:himvw" o; do
 			;;
 		m)
 			Dargs="$Dargs -Dmandoc=true"
+			;;
+		p)
+			Dargs="$Dargs -Dprefix=$OPTARG"
+			prefix="$OPTARG"
 			;;
 		v)
 			vflag=1
@@ -102,6 +108,9 @@ command -v meson >/dev/null 2>&1 || die "meson not found..."
 
 echo "Tempfile is: $tempFile"
 echo "Using build directory: $buildDir"
+[ -n "$prefix" ] && {
+	echo "Prefix is: $prefix"
+}
 
 { [ ! -d "$buildDir" ] || [ "$fflag" = 1 ] ; } && {
 	echo "Running meson setup..."
