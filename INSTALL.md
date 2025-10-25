@@ -73,5 +73,5 @@ is an example; the setup command can be passed various options, see the
 meson setup build && meson compile -C build && meson install -C build
 ```
 
-However, a wrapper script, `build.sh` can be used as a convenience to running
-manual meson commands.  See `./build.sh -h` for how to use it.
+However, a wrapper script, `build` can be used as a convenience to running
+manual meson commands.  See `./build -h` for how to use it.
