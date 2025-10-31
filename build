@@ -124,7 +124,9 @@ run_cmd ninja -j $(nproc) -C "$buildDir" || die "Command failed..."
 
 [ "$iflag" = 1 ] && {
 	echo "Installing..."
-	run_cmd meson install -C "$buildDir"
+	# Don't run via run_cmd() -- stdin won't be available, and we want
+	# meson to detect whether sudo(1) or doas(1) should be used.
+	meson install -C "$buildDir" || die "Command failed..."
 }
 
 exit 0
