@@ -1838,7 +1838,6 @@ static void
 monitor_emit_broadcast(void)
 {
 	struct monitor	*m;
-	char		*randrfunc = "RandRFunc";
 
 	RB_FOREACH (m, monitors, &monitor_q) {
 		if (m->emit > 0)
@@ -1847,33 +1846,22 @@ monitor_emit_broadcast(void)
 			fvwm_debug(__func__, "%s: emit monitor changed", m->si->name);
 			BroadcastName(
 				MX_MONITOR_CHANGED, -1, -1, -1, m->si->name);
-
-			execute_function_override_window(
-				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 		if (m->emit & MONITOR_ENABLED) {
 			fvwm_debug(__func__, "%s: emit monitor enabled", m->si->name);
 			BroadcastName(
 				MX_MONITOR_ENABLED, -1, -1, -1, m->si->name);
-
-			execute_function_override_window(
-				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 		if (m->emit & MONITOR_DISABLED) {
 			fvwm_debug(__func__, "%s: emit monitor disabled", m->si->name);
 			BroadcastName(
 				MX_MONITOR_DISABLED, -1, -1, -1, m->si->name);
-
-			execute_function_override_window(
-				NULL, NULL, randrfunc, NULL, 0, NULL);
 		}
 
 		if ((m->flags & MONITOR_PRIMARY) &&
 		    (m != monitor_by_last_primary())) {
 			fvwm_debug(__func__, "%s: emit monitor primary change", m->si->name);
-
-			execute_function_override_window(
-				NULL, NULL, randrfunc, NULL, 0, NULL);
+			/* TODO: consider FvwmEvent event here? */
 		}
 	}
 }

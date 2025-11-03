@@ -153,9 +153,38 @@ Previously PassId was used for this purpose, but now using PassId is not
 needed.
 +
 The monitor_* events do not operate in a window context (as there isn't
-one), but react to when a monitor is plugged in (enabled), unplugged
-(disabled), focused (focus) or changed (resized/rotated, etc., which
-will only be true if the monitor is already active).
+one).
++
+The given event command is also passed the following values:
++
+....
+$0: monitor_event_name (for example: monitor_changed)
+$1: monitor_name (the RandR name of the monitor)
+....
++
+For example, consider the following:
++
+....
+    DestroyFunc RandRFunc
+    AddToFunc   RandRFunc
+    + I Exec exec xmessage "Monitor $1 had this event: $0"
+
+    DestroyModuleConfig FE-Monitor: *
+    *FE-Monitor: monitor_changed RandRFunc
+    *FE-Monitor: monitor_enabled RandRFunc
+
+    KillModule FvwmEvent FE-Monitor
+    Module FvwmEvent FE-Monitor
+....
++
+When, say, the monitor_changed event is triggered, RandRFunc is run, with the
+monitor name passed in as the first argument, and the monitor event as the
+second argument.  In this way it is possible to do further matching if
+required.
++
+**NOTE**: Using `PassID` with a configuration which includes monitor_ lines
+won't work since there is no ID to pass back.  If `PassID` is still required,
+separate out monitor events into their own FvwmEvent configuration.
 +
 The echo event is generated whenever Fvwm receives an Echo command.
 +
