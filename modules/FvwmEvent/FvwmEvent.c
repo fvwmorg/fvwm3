@@ -426,7 +426,13 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 				 action, body[action_arg]);
 		}
 	} else {
-		snprintf(buf, len,"%s %s", cmd_line, action);
+		char *mon_event = "";
+		char *extra_arg = "";
+		if (StrHasPrefix(event_table[event].name, "monitor_"))
+			mon_event = event_table[event].name;
+		extra_arg = (char *)&body[3];
+
+		snprintf(buf, len,"%s %s %s %s", cmd_line, action, mon_event, extra_arg);
 	}
 
 	/* let fvwm execute the function */
