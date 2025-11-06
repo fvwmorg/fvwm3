@@ -404,14 +404,11 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 		return;
 
 	char *buf = NULL;
-	int len = 0;
 	char *action;
 	int action_arg = event_table[event].action_arg;
 	int fw = 0;
 
 	action = event_table[event].action.action;
-	len = strlen(cmd_line) + strlen(action) + 32;
-	buf = fxmalloc(len);
 
 	if (action_arg != -1 && !(action_arg & ARG_NO_WINID))
 		fw = body[action_arg];
@@ -419,20 +416,22 @@ void execute_event(event_entry *event_table, short event, unsigned long *body)
 	if (PassID && action_arg != -1) {
 		if (action_arg & ARG_NO_WINID) {
 			action_arg &= ~ARG_NO_WINID;
-			snprintf(buf, len, "%s %s %ld", cmd_line,
-				 action, body[action_arg]);
+			xasprintf(&buf, "%s %s %ld", cmd_line, action,
+					body[action_arg]);
 		} else {
-			snprintf(buf, len, "%s %s 0x%lx", cmd_line,
-				 action, body[action_arg]);
+			xasprintf(&buf, "%s %s 0x%lx", cmd_line, action,
+					body[action_arg]);
 		}
 	} else {
 		char *mon_event = "";
 		char *extra_arg = "";
+
 		if (StrHasPrefix(event_table[event].name, "monitor_"))
 			mon_event = event_table[event].name;
 		extra_arg = (char *)&body[3];
 
-		snprintf(buf, len,"%s %s %s %s", cmd_line, action, mon_event, extra_arg);
+		xasprintf(&buf, "%s %s %s %s", cmd_line, action, mon_event,
+				extra_arg);
 	}
 
 	/* let fvwm execute the function */
