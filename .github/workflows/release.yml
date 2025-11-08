@@ -16,10 +16,12 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
       with:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
+        path: fvwm3
+    - name: Make workspace safe for git
+      run: git config --global --add safe.directory ${GITHUB_WORKSPACE}
     - name: Repo Settings
       run:  |
         git config --global user.name "Thomas Adam"
@@ -27,16 +29,19 @@ jobs:
     - name: Get Current Version (for release...)
       id: versionRelease
       run: |
+        cd fvwm3
         git fetch -q -n origin
         echo "versionRelease=$(git show HEAD:./.current-version)" >> $GITHUB_ENV
     - name: Create release branch
       run: |
+        cd fvwm3
         git checkout -b release/${{ env.versionRelease }}
     - name: Get date
       id: date
-      run: echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
+      run: cd fvwm3 && echo "date=$(date -d 'now' +'%Y-%m-%d')" >> $GITHUB_ENV
     - name: Generate changelog
       run: |
+        cd fvwm3
         printf "## [${{ env.versionRelease }}](https://github.com/fvwmorg/fvwm3/tree/${{ env.versionRelease }}) (${{ env.date }})\n" >./tmp.out
         curl \
           --silent \
@@ -51,6 +56,7 @@ jobs:
         sed -i "2r tmp.out" CHANGELOG.md
     - name: Create release commit
       run: |
+        cd fvwm3
         echo "ISRELEASED=yes" > .release-status
         git add .release-status
         git add CHANGELOG.md
@@ -62,10 +68,12 @@ jobs:
         git push origin --tags ${{ env.versionRelease }}
     - name: Build artefacts
       run: |
-        meson setup --reconfigure build -Dmandoc=true -Dhtmldoc=true -Dgolang=enabled && \
-        meson compile -C build && meson dist --formats gztar -C build
+        cd fvwm3
+        meson setup --reconfigure compile -Dmandoc=true -Dhtmldoc=true -Dgolang=enabled && \
+        meson compile -C compile && meson dist --formats gztar -C compile
     - name: Create a draft release
       run: |
+        cd fvwm3
         echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
         gh \
         release \
@@ -73,9 +81,10 @@ jobs:
         ${{ github.event.inputs.isDraft == 'true' && '--draft' || '' }} \
         --target main \
         --generate-notes \
-        ./build/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
+        ./compile/meson-dist/fvwm3-${{ env.versionRelease }}.tar.gz
     - name: Bump next version
       run: |
+        cd fvwm3
         git clean -dfx
         git checkout main
         git pull -q
@@ -84,3 +93,27 @@ jobs:
         echo "ISRELEASED=no" > .release-status
         git commit -am "build: set next version"
         git push
+    - name: Clone docs repository
+      uses: actions/checkout@v4
+      with:
+        repository: fvwmorg/fvwmorg.github.io
+        token: ${{ secrets.FVWM_PUBLISH_DOCS }}
+        path: fvwmorg.github.io
+        fetch-depth: 0
+
+    - name: Generate & Commit manpages on website
+      working-directory: ./fvwmorg.github.io
+      run: |
+        set -euo pipefail
+        ${GITHUB_WORKSPACE}/fvwm3/meson-scripts/generate-manpages-website.sh \
+            ${GITHUB_WORKSPACE}/fvwm3
+
+        # Only commit/push if there are changes
+        git add -A
+        if git diff-index --quiet HEAD --; then
+          echo "No changes to commit"
+        else
+          git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: Update manpages for release ${{ env.versionRelease }}"
+          git show
+          git push origin ${{ github.event.inputs.isDraft == 'true' && '--dry-run' || '' }} \
+        fi
