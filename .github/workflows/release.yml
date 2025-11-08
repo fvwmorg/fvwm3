@@ -113,6 +113,9 @@ jobs:
         if git diff-index --quiet HEAD --; then
           echo "No changes to commit"
         else
+          # Update the website version...
+          sed -i 's/^\(fvwm3-version: \).*/\1${{ env.versionRelease }}/' _config.yml
+
           git commit -a --author="Thomas Adam <thomas@fvwm.org>" -m "[AUTO]: Update manpages for release ${{ env.versionRelease }}"
           git show
           git push origin ${{ github.event.inputs.isDraft == 'true' && '--dry-run' || '' }} \
