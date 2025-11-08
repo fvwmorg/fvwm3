@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.1.4](https://github.com/fvwmorg/fvwm3/tree/1.1.4) (2025-11-08)
+
+## What's Changed
+### Breaking Changes
+* RandR: remove RandRFunc support by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1246
+### Enhancements
+* load svg even if no viewport detected by @mikeandmore in https://github.com/fvwmorg/fvwm3/pull/1220
+* FvwmForm: process UTF-8 input and paste request in input fields by @ONykyf in https://github.com/fvwmorg/fvwm3/pull/1212
+### Other Changes
+* asciidoc: add reproducible attribute by @Kangie in https://github.com/fvwmorg/fvwm3/pull/1209
+* Fvwm: Add Ukrainian translation by @ONykyf in https://github.com/fvwmorg/fvwm3/pull/1217
+* FvwmPager: Allow translation of "Desk %d" label via Gettext by @ONykyf in https://github.com/fvwmorg/fvwm3/pull/1216
+* CI: few updates for runners by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1222
+* build(deps): bump gopkg.in/yaml.v3 from 3.0.0 to 3.0.1 in /bin/FvwmPrompt by @dependabot[bot] in https://github.com/fvwmorg/fvwm3/pull/1223
+* style: fix a null-pointer dereference on successful merge by @sdomi in https://github.com/fvwmorg/fvwm3/pull/1236
+* fix monitor position conflicts when a monitor is disabled by @mikeandmore in https://github.com/fvwmorg/fvwm3/pull/1235
+* build: add wrapper script by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1240
+* build: build.sh: add options for building docs by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1242
+* build: build.sh rename to build by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1243
+* FvwmIconMan: 'screen' handling improvements by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1210
+* CI: auto-update manpages on website by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1248
+* CI: fix author email attribution by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1249
+* CI: website: update fvwm3-version by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1250
+
+## New Contributors
+* @ONykyf made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1217
+* @dependabot[bot] made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1223
+* @sdomi made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1236
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.1.3...1.1.4
 ## [1.1.3](https://github.com/fvwmorg/fvwm3/tree/1.1.3) (2025-06-01)
 
 ## What's Changed
