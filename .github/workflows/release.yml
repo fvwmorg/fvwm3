@@ -60,7 +60,7 @@ jobs:
         echo "ISRELEASED=yes" > .release-status
         git add .release-status
         git add CHANGELOG.md
-        git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
+        git commit -a --author="Thomas Adam <thomas@fvwm.org>" -m "[AUTO]: release ${{ env.versionRelease }}"
         git checkout main
         git merge --ff-only release/${{ env.versionRelease }}
         git tag -am "Release ${{ env.versionRelease }}" ${{ env.versionRelease }}
@@ -113,7 +113,7 @@ jobs:
         if git diff-index --quiet HEAD --; then
           echo "No changes to commit"
         else
-          git commit -a --author="Thomas Adam <thomas.adam@fvwm.org>" -m "[AUTO]: Update manpages for release ${{ env.versionRelease }}"
+          git commit -a --author="Thomas Adam <thomas@fvwm.org>" -m "[AUTO]: Update manpages for release ${{ env.versionRelease }}"
           git show
           git push origin ${{ github.event.inputs.isDraft == 'true' && '--dry-run' || '' }} \
         fi
