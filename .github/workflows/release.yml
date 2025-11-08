@@ -118,5 +118,5 @@ jobs:
 
           git commit -a --author="Thomas Adam <thomas@fvwm.org>" -m "[AUTO]: Update manpages for release ${{ env.versionRelease }}"
           git show
-          git push origin ${{ github.event.inputs.isDraft == 'true' && '--dry-run' || '' }} \
+          git push origin ${{ github.event.inputs.isDraft == 'true' && '--dry-run' || '' }}
         fi
