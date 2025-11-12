@@ -500,8 +500,8 @@ by commas.
 _Window_ and _Button_ types look exactly the same in the .fvwm2rc file,
 but are interpreted as either specifying a managed window, or a
 FvwmIconMan button representing a window. They can either be an integer
-(which is interpreted module N where N is the number of buttons - so 0
-is the first and -1 is the last), or one of the strings: _Select_,
+(which is interpreted modulo N where N is the number of buttons - so 0
+is the first and N-1 is the last), or one of the strings: _Select_,
 _Focus_, _Up_, _Down_, _Right_, _Left_, _Next_, _Prev_. _Select_ and
 _Focus_ refer to the currently selected or focused button or window.
 _Up_, _Down_, _Right_, and _Left_ refer to the button or window above,
