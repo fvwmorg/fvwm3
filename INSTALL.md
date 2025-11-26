@@ -1,7 +1,9 @@
 Installation Instructions
 =========================
 
-FVWM3 uses `meson` as its build tooling.
+FVWM3 uses `meson` as its build tooling.  However, there is a wrapper script
+`build` which should be used instead.  This document will use this throughout,
+although if using `meson` directly, refer to its documentation.
 
 Dependencies
 ============
@@ -58,20 +60,35 @@ Generating documentation
 To generate `fvwm3`'s documentation:
 
 1. Install `asciidoctor`
-2. To generate manpages:  pass `-Dmandoc=true` to `meson`
-3. To generate HTML docs: pass `-Dhtmldoc=true` to `meson`
+2. To generate manpages:  pass `-m` to `build`
+3. To generate HTML docs: pass `-w` to `build`
 
+To compile both at once, pass `-d` to `build` (which implies `-m` and `-d`)
 
 Installing From Git or a Release Tarball
 ===================
 
-Compiling `fvwm3` with meson involves the following command.  Note that this
-is an example; the setup command can be passed various options, see the
-`meson.options` file.
+Compiling `fvwm3` is best used with the `./build` wrapper script.
 
 ```
-meson setup build && meson compile -C build && meson install -C build
+./build -fdi
 ```
 
-However, a wrapper script, `build` can be used as a convenience to running
-manual meson commands.  See `./build -h` for how to use it.
+This will (re-)build, compile both man and HTML documentation, and install.
+
+It is best to see the output from `./build -h` to understand its options,
+but some common usages are:
+
+```
+# Build fvwm3 will both man and html pages
+$ ./build -d
+
+# Build and install
+$ ./build -i
+
+# Force (re-)build, including docs and install
+$ ./build -fdi
+
+# Enable specific options (see `meson.options`), compile docs and install
+$ ./build -Dgolang=disabled -Dbidi=disabled -di
+```
