@@ -2274,6 +2274,20 @@ void CMD_Test(F_CMD_ARGS)
 			}
 			flags_ptr = next;
 		}
+		else if (StrEquals(cond, "StrMatch"))
+		{
+			char *string, *pattern;
+
+			flags_ptr = GetNextSimpleOption(flags_ptr, &string);
+			flags_ptr = GetNextSimpleOption(flags_ptr, &pattern);
+			if (string == NULL || pattern == NULL)
+				error = 1;
+			else
+				match = matchWildcards(pattern, string);
+
+			free(string);
+			free(pattern);
+		}
 		else
 		{
 			/* unrecognized condition */
