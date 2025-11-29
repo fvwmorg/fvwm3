@@ -2274,6 +2274,30 @@ void CMD_Test(F_CMD_ARGS)
 			}
 			flags_ptr = next;
 		}
+		else if (StrEquals(cond, "StrMatch"))
+		{
+			char *str1, *str2;
+
+			flags_ptr = GetNextSimpleOption(flags_ptr, &str1);
+			if (str1)
+			{
+				flags_ptr = GetNextSimpleOption(flags_ptr, &str2);
+				if (str2)
+				{
+					match = StrEquals(str1, str2) ? 1 : 0;
+					free(str2);
+				}
+				else
+				{
+					error = 1;
+				}
+				free(str1);
+			}
+			else
+			{
+				error = 1;
+			}
+		}
 		else
 		{
 			/* unrecognized condition */
