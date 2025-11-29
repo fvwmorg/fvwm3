@@ -8298,10 +8298,10 @@ by specifying _!CirculateHit_ etc. explicitly.
 	_test-conditions_ are keywords with possible arguments from the list
 	below and are separated by commas or whitespace. They include:
 	_Version operator x.y.z_, _EnvIsSet varname_, _EnvMatch varname
-	pattern_, _EdgeHasPointer direction_, _EdgeIsActive direction_,
-	_Start_, _Init_, _Restart_, _Exit_, _Quit_, _ToRestart_, _True_,
-	_False_, _F_, _R_, _W_, _X_ and _I_. A test-condition prefixed with
-	"!" is negated.
+	pattern_, _StrMatch string1 string2_, _EdgeHasPointer direction_,
+	_EdgeIsActive direction_, _Start_, _Init_, _Restart_, _Exit_, _Quit_,
+	_ToRestart_, _True_, _False_, _F_, _R_, _W_, _X_ and _I_. A test-condition
+	prefixed with "!" is negated.
 +
 The _Version_ _operator x.y.z_ test-condition is fulfilled if the
 logical condition of the expression is true. Valid _operator_ values
@@ -8321,6 +8321,17 @@ test-condition is true if _pattern_ matches the given environment or
 infostore variable value. (See *InfoStoreAdd*). The pattern may
 contain special "*" and "?" chars. The "varname" is coded without
 the leading dollar sign ($).
++
+The _StrMatch_ _string1_ _string2_ test-condition is true if the
+two strings are equal ignoring case. This is useful to test if
+a variable expansion is equal to a certain value, for example to
+test if the current monitor's name is "DP-2" use:
++
+
+....
+Test (StrMatch $[monitor.current] DP-2) Echo True
+....
+
 +
 The _EdgeHasPointer_ [_direction_] test-condition is true if the
 edge in the given direction currently contains the pointer. The
