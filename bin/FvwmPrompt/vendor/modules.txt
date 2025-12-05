@@ -21,13 +21,12 @@ github.com/mattn/go-colorable
 github.com/mattn/go-isatty
 # github.com/rogpeppe/go-internal v1.8.1
 ## explicit
-# github.com/sirupsen/logrus v1.8.1
+# github.com/sirupsen/logrus v1.8.3
 ## explicit
 github.com/sirupsen/logrus
 # github.com/stretchr/testify v1.7.1
 ## explicit
-# golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a
-## explicit
+# golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
