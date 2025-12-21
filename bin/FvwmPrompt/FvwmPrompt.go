@@ -24,6 +24,11 @@ type getOpts struct {
 	promptText *string
 }
 
+type readResult struct {
+	Msg   string
+	Error error
+}
+
 // FvwmPrompt only cares about a connection profile from Fvwm3 and nothing
 // else.  Eventually, there should probably be a lightweight API around the
 // different JSON objects so that other programs can be written.
@@ -68,7 +73,7 @@ func writeToSocket(c net.Conn, wchan chan string) {
 	}
 }
 
-func readFromSocket(c net.Conn, rchan chan string) {
+func readFromSocket(c net.Conn, rchan chan readResult) {
 	if c == nil {
 		return
 	}
@@ -77,9 +82,10 @@ func readFromSocket(c net.Conn, rchan chan string) {
 	for {
 		buf := make([]byte, 8912)
 		nr, err := c.Read(buf[:])
+		res := readResult{}
 		if err != nil || nr == 0 || err == io.EOF {
-			log.Printf("Error reading from UDS: %s\n", err)
-			os.Exit(0)
+			res.Error = fmt.Errorf("Couldn't read from socket: %s", err)
+			rchan <- res
 		}
 
 		data := string(buf[0:nr])
@@ -87,11 +93,12 @@ func readFromSocket(c net.Conn, rchan chan string) {
 			return
 		}
 
-		rchan <- data
+		res.Msg = data
+		rchan <- res
 	}
 }
 
-func connectToFMD(shell *ishell.Shell, rchan chan string, wchan chan string) {
+func connectToFMD(shell *ishell.Shell, isInteractive bool, rchan chan readResult, wchan chan string) int {
 	c, err := net.Dial("unix", fmdSocket)
 	if err != nil {
 		log.Println("Unable to connect to FvwmMFL: has \"Module FvwmMFL\" been started?")
@@ -101,27 +108,46 @@ func connectToFMD(shell *ishell.Shell, rchan chan string, wchan chan string) {
 	go writeToSocket(c, wchan)
 	go readFromSocket(c, rchan)
 
-	for {
-		select {
-		case fromFMD := <-rchan:
-			var cp connectionProfileData
-			err := json.Unmarshal([]byte(fromFMD), &cp)
+	if isInteractive {
+		handleInput(nil, strings.Join(os.Args[1:], " "), wchan)
+		return 0
+	}
 
-			if err == nil || isInteractive {
-				vstr := fmt.Sprintf("*FvwmPrompt %s (%s)\n", cp.ConnectionProfile.Version, cp.ConnectionProfile.VersionInfo)
-				shell.Println(vstr)
+	for fromFMD := range rchan {
+		if fromFMD.Error != nil {
+			red := color.New(color.BgRed).SprintFunc()
+			shell.Println(red(fromFMD.Error))
+			// Stop the shell here -- we're done, but we must
+			// finalise closing the shell outside of this
+			// goroutine.
+			shell.Stop()
+			return 1
+		}
+		var msg = fromFMD.Msg
+		var cp connectionProfileData
+		err := json.Unmarshal([]byte(msg), &cp)
 
-				cyan := color.New(color.FgCyan).SprintFunc()
-				shell.Println(cyan("Press ^D or type 'exit' to end this session\n"))
-			}
+		if err == nil || isInteractive {
+			vstr := fmt.Sprintf("*FvwmPrompt %s (%s)\n", cp.ConnectionProfile.Version, cp.ConnectionProfile.VersionInfo)
+			shell.Println(vstr)
+
+			cyan := color.New(color.FgCyan).SprintFunc()
+			shell.Println(cyan("Press ^D or type 'exit' to end this session\n"))
+
+			red := color.New(color.FgRed).SprintFunc()
+			shell.Actions.SetPrompt(red(*cmdLineArgs.promptText))
+			time.Sleep(100 * time.Millisecond)
+			shell.ShowPrompt(true)
+			go shell.Run()
 		}
 	}
+	return 0
 }
 
 func main() {
 	initCmdlineFlags(&cmdLineArgs)
 	writeToFMD := make(chan string)
-	readFromFMD := make(chan string)
+	readFromFMD := make(chan readResult)
 
 	shell := ishell.New()
 	shell.ShowPrompt(false)
@@ -144,18 +170,15 @@ func main() {
 			handleInput(c, toSend, writeToFMD)
 		}
 	})
+	shell.EOF(func(c *ishell.Context) {
+		shell.Println("EOF")
+		shell.Close()
+		os.Exit(0)
+	})
 
 	isInteractive = len(os.Args) > 1 && os.Args[1] != "-p"
 
-	go connectToFMD(shell, readFromFMD, writeToFMD)
-
-	if isInteractive {
-		handleInput(nil, strings.Join(os.Args[1:], " "), writeToFMD)
-	} else {
-		red := color.New(color.FgRed).SprintFunc()
-		shell.Actions.SetPrompt(red(*cmdLineArgs.promptText))
-		time.Sleep(100 * time.Millisecond)
-		shell.ShowPrompt(true)
-		shell.Run()
-	}
+	exit_code := connectToFMD(shell, isInteractive, readFromFMD, writeToFMD)
+	shell.Close()
+	os.Exit(exit_code)
 }
