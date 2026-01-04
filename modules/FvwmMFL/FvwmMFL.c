@@ -472,7 +472,7 @@ static int
 client_set_interest(struct client *c, const char *event)
 {
 	size_t		 i;
-	int		 flag_type = 0;
+	int		 flag_type = -1;
 	bool		 changed = false;
 #define PRESET "set"
 #define PREUNSET "unset"

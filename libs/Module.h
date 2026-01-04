@@ -114,16 +114,16 @@ typedef struct
  * separate call has to be made that ors the MX_... macros.  The normal
  * M_... and MX_... macros must *never* be or'ed in one of these operations'
  */
-#define MX_VISIBLE_ICON_NAME      ((1<<0) | M_EXTENDED_MSG)
-#define MX_ENTER_WINDOW           ((1<<1) | M_EXTENDED_MSG)
-#define MX_LEAVE_WINDOW           ((1<<2) | M_EXTENDED_MSG)
-#define MX_PROPERTY_CHANGE        ((1<<3) | M_EXTENDED_MSG)
-#define MX_MONITOR_ENABLED        ((1<<4) | M_EXTENDED_MSG)
-#define MX_MONITOR_DISABLED       ((1<<5) | M_EXTENDED_MSG)
-#define MX_MONITOR_CHANGED        ((1<<6) | M_EXTENDED_MSG)
-#define MX_MONITOR_FOCUS	  ((1<<7) | M_EXTENDED_MSG)
-#define MX_ECHO			  ((1<<8) | M_EXTENDED_MSG)
-#define MX_REPLY		  ((1<<9) | M_EXTENDED_MSG)
+#define MX_VISIBLE_ICON_NAME      ((1<<1) | M_EXTENDED_MSG)
+#define MX_ENTER_WINDOW           ((1<<2) | M_EXTENDED_MSG)
+#define MX_LEAVE_WINDOW           ((1<<3) | M_EXTENDED_MSG)
+#define MX_PROPERTY_CHANGE        ((1<<4) | M_EXTENDED_MSG)
+#define MX_MONITOR_ENABLED        ((1<<5) | M_EXTENDED_MSG)
+#define MX_MONITOR_DISABLED       ((1<<6) | M_EXTENDED_MSG)
+#define MX_MONITOR_CHANGED        ((1<<7) | M_EXTENDED_MSG)
+#define MX_MONITOR_FOCUS	  ((1<<8) | M_EXTENDED_MSG)
+#define MX_ECHO			  ((1<<9) | M_EXTENDED_MSG)
+#define MX_REPLY		  ((1<<10) | M_EXTENDED_MSG)
 #define MAX_EXTENDED_MESSAGES     10
 #define DEFAULT_XMSG_MASK         0x00000000
 #define MAX_XMSG_MASK             0x0000001f
