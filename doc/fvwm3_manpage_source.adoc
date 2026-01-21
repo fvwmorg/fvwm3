@@ -3576,7 +3576,7 @@ The _options_ passed to WindowList are separated by commas and can be
 _Geometry_ / _NoGeometry_ / _NoGeometryWithInfo_, _NoDeskNum,_
 _NoLayer,_ _NoNumInDeskTitle_, _NoCurrentDeskTitle_, _MaxLabelWidth
 width_, _TitleForAllDesks_, _Function funcname_, _Desk desknum_,
-_CurrentDesk_, _NoIcons_ / _Icons_ / _OnlyIcons_, _NoNormal_ /
+_CurrentDesk_, _CurrentPage_, _NoIcons_ / _Icons_ / _OnlyIcons_, _NoNormal_ /
 _Normal_ / _OnlyNormal_, _NoSticky_ / _Sticky_ / _OnlySticky_,
 _NoStickyAcrossPages_ / _StickyAcrossPages_ / _OnlyStickyAcrossPages_,
 _NoStickyAcrossDesks_ / _StickyAcrossDesks_ / _OnlyStickyAcrossDesks_,

@@ -68,6 +68,7 @@
 #define SHOW_PAGE_Y		(1<<18)
 #define NO_LAYER		(1<<19)
 #define SHOW_SCREEN		(1<<20)
+#define CURRENT_PAGE	(1<<21)
 #define SHOW_DEFAULT (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | \
 	SHOW_ICONIC | SHOW_STICKY_ACROSS_PAGES | SHOW_STICKY_ACROSS_DESKS)
 
@@ -297,6 +298,10 @@ void CMD_WindowList(F_CMD_ARGS)
 			{
 				desk = mon->virtual_scr.CurrentDesk;
 				flags &= ~SHOW_ALLDESKS;
+			}
+			else if (StrEquals(tok,"CurrentPage"))
+			{
+				flags |= CURRENT_PAGE;
 			}
 			else if (StrEquals(tok,"NotAlphabetic"))
 			{
@@ -739,6 +744,26 @@ void CMD_WindowList(F_CMD_ARGS)
 		for (ii = 0; ii < numWindows; ii++)
 		{
 			t = windowList[ii];
+
+			if ((flags & CURRENT_PAGE) &&
+				(mon->virtual_scr.CurrentDesk != t->Desk ||
+				(mon->virtual_scr.Vx / monitor_get_all_widths()) !=
+				(mon->virtual_scr.Vx + t->g.frame.x + t->g.frame.width / 2) /
+				monitor_get_all_widths() ||
+				(mon->virtual_scr.Vy / monitor_get_all_heights()) !=
+				(mon->virtual_scr.Vy + t->g.frame.y + t->g.frame.height / 2) /
+				monitor_get_all_heights()))
+			{
+				/* skip if:
+				 *  - the desk is not the current desk,
+				 * 	- the pages are not vertically aligned,
+				 * 	- the pages are not horizontally aligned
+				 * 
+				 * (in total: if it is not the current page)
+				*/
+				continue;
+			}
+
 			if (t->Desk != next_desk && !(flags & NO_DESK_SORT))
 			{
 				continue;
