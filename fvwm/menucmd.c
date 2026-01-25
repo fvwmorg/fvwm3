@@ -56,7 +56,8 @@
 
 /* ---------------------------- local functions ---------------------------- */
 
-static void menu_func(F_CMD_ARGS, Bool fStaysUp)
+static void menu_func(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, Bool fStaysUp)
 {
 	struct MenuRoot *menu;
 	char *ret_action = NULL;
@@ -126,22 +127,25 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 /* ---------------------------- builtin commands --------------------------- */
 
 /* the function for the "Popup" command */
-void CMD_Popup(F_CMD_ARGS)
+void CMD_Popup(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	menu_func(F_PASS_ARGS, False);
+	menu_func(cond_rc, exc, action, False);
 
 	return;
 }
 
 /* the function for the "Menu" command */
-void CMD_Menu(F_CMD_ARGS)
+void CMD_Menu(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	menu_func(F_PASS_ARGS, True);
+	menu_func(cond_rc, exc, action, True);
 
 	return;
 }
 
-void CMD_AddToMenu(F_CMD_ARGS)
+void CMD_AddToMenu(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	MenuRoot *mr;
 	MenuRoot *mrPrior;
@@ -177,7 +181,8 @@ void CMD_AddToMenu(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DestroyMenu(F_CMD_ARGS)
+void CMD_DestroyMenu(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	MenuRoot *mr;
 	MenuRoot *mrContinuation;
@@ -215,7 +220,8 @@ void CMD_DestroyMenu(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DestroyMenuStyle(F_CMD_ARGS)
+void CMD_DestroyMenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	MenuStyle *ms = NULL;
 	char *name = NULL;
@@ -255,7 +261,8 @@ void CMD_DestroyMenuStyle(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ChangeMenuStyle(F_CMD_ARGS)
+void CMD_ChangeMenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *name = NULL;
 	char *menuname = NULL;

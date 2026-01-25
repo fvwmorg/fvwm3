@@ -184,7 +184,8 @@ static int compareReverse(const  FvwmWindow **a, const  FvwmWindow **b)
  * specifier to each item in the list.  This means allocating the
  * memory for each item (& freeing it) rather than just using the window
  * title directly. */
-void CMD_WindowList(F_CMD_ARGS)
+void CMD_WindowList(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	struct MenuRoot *mr;
 	struct MenuParameters mp;

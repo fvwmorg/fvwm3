@@ -416,7 +416,7 @@ void menustyle_update(MenuStyle *ms)
 	return;
 }
 
-MenuStyle *menustyle_parse_style(F_CMD_ARGS)
+MenuStyle *menustyle_parse_style(char *action)
 {
 	char *name;
 	char *option = NULL;
@@ -1300,7 +1300,8 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_CopyMenuStyle(F_CMD_ARGS)
+void CMD_CopyMenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *origname = NULL;
 	char *destname = NULL;
@@ -1342,7 +1343,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		/* create destms menu style */
 		xasprintf(&buffer, "\"%s\"", destname);
 		action = buffer;
-		destms = menustyle_parse_style(F_PASS_ARGS);
+		destms = menustyle_parse_style(action);
 		free(buffer);
 		if (!destms)
 		{
@@ -1380,8 +1381,9 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	return;
 }
 
-void CMD_MenuStyle(F_CMD_ARGS)
+void CMD_MenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	(void)menustyle_parse_style(F_PASS_ARGS);
+	(void)menustyle_parse_style(action);
 	return;
 }
