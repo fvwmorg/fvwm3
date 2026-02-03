@@ -68,6 +68,7 @@
 #define SHOW_PAGE_Y		(1<<18)
 #define NO_LAYER		(1<<19)
 #define SHOW_SCREEN		(1<<20)
+#define SHOW_ONLY_STICKY     (1<<21)
 #define SHOW_DEFAULT (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | \
 	SHOW_ICONIC | SHOW_STICKY_ACROSS_PAGES | SHOW_STICKY_ACROSS_DESKS)
 
@@ -417,8 +418,7 @@ void CMD_WindowList(F_CMD_ARGS)
 			}
 			else if (StrEquals(tok,"OnlySticky"))
 			{
-				flags = SHOW_STICKY_ACROSS_PAGES;
-				flags = SHOW_STICKY_ACROSS_DESKS;
+				flags |= SHOW_ONLY_STICKY;
 			}
 			else if (StrEquals(tok,"OnlyStickyPage"))
 			{
@@ -773,6 +773,11 @@ void CMD_WindowList(F_CMD_ARGS)
 			    (IS_STICKY_ACROSS_DESKS(t)))
 			{
 				/* don't want sticky ones - skip */
+				continue;
+			}
+			if ((flags & SHOW_ONLY_STICKY)  &&
+				(!IS_STICKY_ACROSS_PAGES(t) || !IS_STICKY_ACROSS_DESKS(t)))
+			{
 				continue;
 			}
 			if (!(flags & SHOW_NORMAL) &&
