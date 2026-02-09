@@ -8,9 +8,10 @@ import (
 	"net"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
-	"github.com/abiosoft/ishell"
+	"github.com/ergochat/readline"
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
 )
@@ -53,7 +54,7 @@ func initCmdlineFlags(cmdline *getOpts) {
 	flag.Parse()
 }
 
-func handleInput(c *ishell.Context, command string, wchan chan string) {
+func handleInput(command string, wchan chan string) {
 	if command != "" {
 		wchan <- command
 	}
@@ -68,7 +69,7 @@ func writeToSocket(c net.Conn, wchan chan string) {
 	}
 }
 
-func readFromSocket(c net.Conn, rchan chan string) {
+func readFromSocket(c net.Conn, rchan chan string, rl *readline.Instance) {
 	if c == nil {
 		return
 	}
@@ -78,8 +79,7 @@ func readFromSocket(c net.Conn, rchan chan string) {
 		buf := make([]byte, 8912)
 		nr, err := c.Read(buf[:])
 		if err != nil || nr == 0 || err == io.EOF {
-			log.Printf("Error reading from UDS: %s\n", err)
-			os.Exit(0)
+			rl.Close()
 		}
 
 		data := string(buf[0:nr])
@@ -91,7 +91,7 @@ func readFromSocket(c net.Conn, rchan chan string) {
 	}
 }
 
-func connectToFMD(shell *ishell.Shell, rchan chan string, wchan chan string) {
+func connectToFMD(rl *readline.Instance, done chan struct{}, once *sync.Once, rchan chan string, wchan chan string) {
 	c, err := net.Dial("unix", fmdSocket)
 	if err != nil {
 		log.Println("Unable to connect to FvwmMFL: has \"Module FvwmMFL\" been started?")
@@ -99,23 +99,24 @@ func connectToFMD(shell *ishell.Shell, rchan chan string, wchan chan string) {
 	}
 
 	go writeToSocket(c, wchan)
-	go readFromSocket(c, rchan)
+	go readFromSocket(c, rchan, rl)
 
-	for {
-		select {
-		case fromFMD := <-rchan:
-			var cp connectionProfileData
-			err := json.Unmarshal([]byte(fromFMD), &cp)
+	for msg := range rchan {
+		var cp connectionProfileData
+		err := json.Unmarshal([]byte(msg), &cp)
 
-			if err == nil || isInteractive {
-				vstr := fmt.Sprintf("*FvwmPrompt %s (%s)\n", cp.ConnectionProfile.Version, cp.ConnectionProfile.VersionInfo)
-				shell.Println(vstr)
+		if err == nil || isInteractive {
+			vstr := fmt.Sprintf("*FvwmPrompt %s (%s)\n", cp.ConnectionProfile.Version, cp.ConnectionProfile.VersionInfo)
+			fmt.Fprintln(rl.Stderr(), vstr)
 
-				cyan := color.New(color.FgCyan).SprintFunc()
-				shell.Println(cyan("Press ^D or type 'exit' to end this session\n"))
-			}
+			cyan := color.New(color.FgCyan).SprintFunc()
+			fmt.Fprintln(rl.Stderr(), cyan("Press ^D or type 'exit' to end this session\n"))
 		}
 	}
+
+	// readFromSocket closed the channel; signal the REPL loop to stop.
+	once.Do(func() { close(done) })
+	rl.Close()
 }
 
 func main() {
@@ -123,39 +124,74 @@ func main() {
 	writeToFMD := make(chan string)
 	readFromFMD := make(chan string)
 
-	shell := ishell.New()
-	shell.ShowPrompt(false)
-	shell.IgnoreCase(false)
-
-	shell.DeleteCmd("help")
-	shell.DeleteCmd("clear")
-
-	consoleHistory := os.Getenv("FVWM_USERDIR") + "/" + ".FvwmConsole-History"
-	shell.SetHistoryPath(consoleHistory)
-
-	shell.NotFound(func(c *ishell.Context) {
-		toSend := strings.Join(c.RawArgs, " ")
-		// Quit in fvwm is a special command but it can often lead to
-		// surprising results.  Rather than blindly exit, invoke
-		// FvwmScript to at least confirm.
-		if strings.ToLower(toSend) == "quit" {
-			handleInput(c, "Module FvwmScript FvwmScript-ConfirmQuit", writeToFMD)
-		} else {
-			handleInput(c, toSend, writeToFMD)
-		}
-	})
-
 	isInteractive = len(os.Args) > 1 && os.Args[1] != "-p"
 
-	go connectToFMD(shell, readFromFMD, writeToFMD)
+	consoleHistory := os.Getenv("FVWM_USERDIR") + "/" + ".FvwmConsole-History"
+
+	red := color.New(color.FgRed).SprintFunc()
+	rl, err := readline.NewFromConfig(&readline.Config{
+		Prompt:      red(*cmdLineArgs.promptText),
+		HistoryFile: consoleHistory,
+	})
+	if err != nil {
+		log.Fatal("Failed to initialise readline: ", err)
+	}
+	defer rl.Close()
+
+	// Signal channel for when FvwmMFL connection dies.
+	done := make(chan struct{})
+	var once sync.Once
+
+	go connectToFMD(rl, done, &once, readFromFMD, writeToFMD)
 
 	if isInteractive {
-		handleInput(nil, strings.Join(os.Args[1:], " "), writeToFMD)
+		handleInput(strings.Join(os.Args[1:], " "), writeToFMD)
 	} else {
-		red := color.New(color.FgRed).SprintFunc()
-		shell.Actions.SetPrompt(red(*cmdLineArgs.promptText))
+		// Give the connection goroutine a moment to print version info.
 		time.Sleep(100 * time.Millisecond)
-		shell.ShowPrompt(true)
-		shell.Run()
+
+		interruptCount := 0
+		for {
+			line, err := rl.ReadLine()
+			if err == readline.ErrInterrupt {
+				interruptCount++
+				if interruptCount == 1 {
+					fmt.Fprintln(rl.Stderr(), "Input Ctrl-c once more to exit")
+				}
+				if interruptCount >= 2 {
+					break
+				}
+				continue
+			}
+			if err != nil { // io.EOF (Ctrl-D) or other error
+				fmt.Fprintln(rl.Stderr(), red("EOF"))
+				break
+			}
+			interruptCount = 0
+
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			if line == "exit" {
+				break
+			}
+
+			// Quit in fvwm is a special command but it can often lead to
+			// surprising results.  Rather than blindly exit, invoke
+			// FvwmScript to at least confirm.
+			if strings.ToLower(line) == "quit" {
+				handleInput("Module FvwmScript FvwmScript-ConfirmQuit", writeToFMD)
+			} else {
+				handleInput(line, writeToFMD)
+			}
+
+			// Check if the connection died while we were processing.
+			select {
+			case <-done:
+				return
+			default:
+			}
+		}
 	}
 }
