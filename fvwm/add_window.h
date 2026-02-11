@@ -46,8 +46,6 @@ void setup_frame_attributes(
 	FvwmWindow *fw, window_style *pstyle);
 void change_auxiliary_windows(
 	FvwmWindow *fw, short buttons);
-void setup_frame_geometry(
-	FvwmWindow *fw);
 void setup_frame_size_limits(
 	FvwmWindow *fw, window_style *pstyle);
 void increase_icon_hint_count(

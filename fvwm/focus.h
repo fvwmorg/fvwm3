@@ -17,7 +17,6 @@
 #define SetFocusWindowClientEntered(a, b, c) _SetFocusWindow(a, b, c, True);
 #define ReturnFocusWindow(a) _ReturnFocusWindow(a);
 #define DeleteFocus(a) _DeleteFocus(a);
-#define ForceDeleteFocus() _ForceDeleteFocus();
 
 
 /* ---------------------------- type definitions --------------------------- */
@@ -46,7 +45,6 @@ void _SetFocusWindow(
 	fpol_set_focus_by_t set_by, Bool client_entered);
 void _ReturnFocusWindow(FvwmWindow *fw);
 void _DeleteFocus(Bool do_allow_force_broadcast);
-void _ForceDeleteFocus(void);
 void restore_focus_after_unmap(
 	const FvwmWindow *fw, Bool do_skip_marked_transients);
 
@@ -58,7 +56,6 @@ void focus_grab_buttons(FvwmWindow *fw);
 void focus_grab_buttons_client_entered(FvwmWindow *fw);
 void focus_grab_buttons_on_layer(int layer);
 void focus_grab_buttons_all(void);
-void focus_grab_buttons_on_pointer_window(void);
 Bool focus_does_accept_input_focus(const FvwmWindow *fw);
 Bool focus_is_focused(const FvwmWindow *fw);
 Bool focus_query_click_to_raise(
@@ -67,7 +64,6 @@ Bool focus_query_click_to_focus(
 	FvwmWindow *fw, int context);
 Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win);
 Bool focus_query_close_release_focus(const FvwmWindow *fw);
-FvwmWindow *focus_get_transientfor_fwin(const FvwmWindow *fw);
 
 FvwmWindow *get_focus_window(void);
 void set_focus_window(FvwmWindow *fw);

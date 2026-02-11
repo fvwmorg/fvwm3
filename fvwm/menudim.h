@@ -48,8 +48,6 @@ struct MenuDimensions
 	int hilight_x_offset;
 	/* width of the area to be hilighted */
 	int hilight_width;
-	/* y coordinate for item */
-	int y_offset;
 	/* width and height of the last screen
 	 * the menu was mapped on */
 	int screen_width;

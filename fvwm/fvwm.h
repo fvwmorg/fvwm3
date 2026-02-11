@@ -361,7 +361,6 @@ typedef struct
 	unsigned is_tear_off_menu : 1;
 	/* is it a transient window? */
 	unsigned is_transient : 1;
-	unsigned is_window_drawn_once : 1;
 	/* To prevent double move in MoveViewport.*/
 	unsigned is_viewport_moved : 1;
 	unsigned is_window_being_moved_opaque : 1;
@@ -503,10 +502,6 @@ typedef struct style_flags
  	unsigned do_start_shaded : 1;
  	unsigned start_shaded_dir : 3;
 	unsigned has_border_width : 1;
-	unsigned has_color_back : 1;
-	unsigned has_color_fore : 1;
-	unsigned has_color_back_hi : 1;
-	unsigned has_color_fore_hi : 1;
 	unsigned has_decor : 1;
 	unsigned has_edge_delay_ms_move : 1;
 	unsigned has_edge_delay_ms_resize : 1;
@@ -558,7 +553,6 @@ typedef struct style_flags
 	unsigned use_start_on_page_for_transient : 1;
 	unsigned use_start_on_screen : 1;
 	unsigned manual_placement_honors_starts_on_page : 1;
-	unsigned um_placement_honors_starts_on_page : 1;
 	unsigned capture_honors_starts_on_page : 1;
 	unsigned recapture_honors_starts_on_page : 1;
 	unsigned has_placement_penalty : 1;
@@ -672,7 +666,6 @@ typedef struct window_style
 	int edge_resistance_move;
 	int edge_resistance_screen_move;
 	icon_boxes *icon_boxes;
-	float norm_placement_penalty;
 	pl_penalty_struct pl_penalty;
 	pl_percent_penalty_struct pl_percent_penalty;
 	char *pl_position_string;
@@ -684,8 +677,6 @@ typedef struct window_style
 	style_flags flag_mask;
 	style_flags change_mask;
 	unsigned has_style_changed : 1;
-	unsigned has_title_format_string : 1;
-	unsigned has_icon_title_format_string : 1;
 } window_style;
 
 typedef struct window_style_list
@@ -777,7 +768,6 @@ typedef struct FvwmWindow
 	struct FvwmDecor *decor;
 	/* is this a shaped window */
 	int wShaped;
-	Pixmap title_background_pixmap;
 
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h too! */

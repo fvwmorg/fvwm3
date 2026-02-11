@@ -77,11 +77,4 @@ extern int sm_fd;
 */
 void ProcessICEMsgs(void);
 
-/*
- * Fvwm Function implementation
- */
-Bool quitSession(void);
-Bool saveSession(void);
-Bool saveQuitSession(void);
-
 #endif

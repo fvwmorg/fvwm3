@@ -62,7 +62,6 @@ typedef fmodule_store* fmodule_list_itr;
  * integer overflow with (1 << MAX_MESSAGES) and even with
  * (1<<(MAX_MESSAGES-1)) - 1 */
 #define DEFAULT_MASK   (MAX_MSG_MASK & ~(M_SENDCONFIG))
-#define DEFAULT_XMASK  (DEFAULT_XMSG_MASK)
 
 /*
  * Returns zero if the msg is not selected by the mask. Takes care of normal

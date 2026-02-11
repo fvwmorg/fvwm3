@@ -18,7 +18,6 @@ typedef struct FunctionItem
 	char condition;                  /* the character string displayed on
 					  * left*/
 	char *action;                    /* action to be performed */
-	short type;                      /* type of built in function */
 	func_flags_t flags;
 } FunctionItem;
 

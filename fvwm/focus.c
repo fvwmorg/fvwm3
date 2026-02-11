@@ -987,21 +987,6 @@ void _DeleteFocus(Bool do_allow_force_broadcast)
 	return;
 }
 
-void _ForceDeleteFocus(void)
-{
-	sftfwin_args_t sf_args;
-
-	memset(&sf_args, 0, sizeof(sf_args));
-	sf_args.do_allow_force_broadcast = 1;
-	sf_args.is_focus_by_flip_focus_cmd = 0;
-	sf_args.do_forbid_warp = 0;
-        sf_args.client_entered = 0;
-	sf_args.do_force = 1;
-	sf_args.set_by = FOCUS_SET_FORCE;
-	set_focus_to_fwin(Scr.NoFocusWin, NULL, &sf_args);
-
-	return;
-}
 
 /* When a window is unmapped (or destroyed) this function takes care of
  * adjusting the focus window appropriately. */
@@ -1031,27 +1016,6 @@ void restore_focus_after_unmap(
 Bool IsLastFocusSetByMouse(void)
 {
 	return lastFocusType;
-}
-
-
-/* same as above, but forces to regrab buttons on the window under the pointer
- * if necessary */
-void focus_grab_buttons_on_pointer_window(void)
-{
-	Window w;
-	FvwmWindow *fw;
-
-	FQueryPointer(
-		    dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY, &JunkX,
-		    &JunkY, &JunkMask);
-	if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
-	{
-		/* pointer is not over a window */
-		return;
-	}
-	focus_grab_buttons(fw);
-
-	return;
 }
 
 /* functions to access ScreenFocus and PreviousFocus */

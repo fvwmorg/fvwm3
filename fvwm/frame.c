@@ -125,23 +125,6 @@ static struct
 
 /* ---------------------------- local functions ---------------------------- */
 
-#if 0
-static void print_g(char *text, rectangle *g)
-{
-	if (g == NULL)
-	{
-		fprintf(stderr, "%s: (null)", (text == NULL) ? "" : text);
-	}
-	else
-	{
-		fprintf(stderr, "%s: %4d %4d %4dx%4d (%4d - %4d %4d - %4d)\n",
-			(text == NULL) ? "" : text,
-			g->x, g->y, g->width, g->height,
-			g->x, g->x + g->width - 1, g->y, g->y + g->height - 1);
-	}
-}
-#endif
-
 static void combine_gravities(
 	frame_decor_gravities_type *ret_grav,
 	frame_decor_gravities_type *grav_x,

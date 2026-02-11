@@ -38,12 +38,8 @@
 	((fp).do_raise_unfocused_click.decor)
 #define FPS_RAISE_UNFOCUSED_DECOR_CLICK(fp,x) \
 	((fp).do_raise_unfocused_click.decor = !!(x))
-#define FP_DO_RAISE_FOCUSED_ICON_CLICK(fp) \
-	((fp).do_raise_focused_click.icon)
 #define FPS_RAISE_FOCUSED_ICON_CLICK(fp,x) \
 	((fp).do_raise_focused_click.icon = !!(x))
-#define FP_DO_RAISE_UNFOCUSED_ICON_CLICK(fp) \
-	((fp).do_raise_unfocused_click.icon)
 #define FPS_RAISE_UNFOCUSED_ICON_CLICK(fp,x) \
 	((fp).do_raise_unfocused_click.icon = !!(x))
 #define FP_DO_FOCUS_ENTER(fp) \

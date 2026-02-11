@@ -37,8 +37,6 @@ void HandleMapRequestKeepRaised(
 	initial_window_options_t *win_opts);
 void HandleMapNotify(const evh_args_t *ea);
 void HandleUnmapNotify(const evh_args_t *ea);
-void HandleMotionNotify(const evh_args_t *ea);
-void HandleButtonRelease(const evh_args_t *ea);
 void HandleButtonPress(const evh_args_t *ea);
 void HandleEnterNotify(const evh_args_t *ea);
 void HandleLeaveNotify(const evh_args_t *ea);

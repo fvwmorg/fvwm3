@@ -32,7 +32,6 @@ int GetContext(FvwmWindow **ret_fw, FvwmWindow *t, const XEvent *e, Window *w);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void flush_accumulate_expose(Window w, XEvent *e);
 void handle_all_expose(void);
-Bool StashEventTime(const XEvent *ev);
 void CoerceEnterNotifyOnCurrentWindow(void);
 void InitEventHandlerJumpTable(void);
 void SendConfigureNotify(
@@ -47,6 +46,5 @@ void sync_server(int toggle);
 Bool is_resizing_event_pending(FvwmWindow *fw);
 void events_handle_configure_request(
 	XEvent *e, FvwmWindow *fw, Bool force_use_grav, int force_gravity);
-Bool test_typed_window_event(Display *display, XEvent *event, char *arg);
 
 #endif /* FVWM_EVENTS_H */

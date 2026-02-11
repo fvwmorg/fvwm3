@@ -82,7 +82,6 @@ typedef struct MenuRootStatic
 #define MR_USED_MINI_ICONS(m)    ((m)->s->used_mini_icons)
 #define MR_STYLE(m)              ((m)->s->ms)
 /* flags */
-#define MR_FLAGS(m)              ((m)->s->flags)
 #define MR_POPUP_ACTION(m)       ((m)->s->dynamic.popup_action)
 #define MR_POPDOWN_ACTION(m)     ((m)->s->dynamic.popdown_action)
 #define MR_MISSING_SUBMENU_FUNC(m) ((m)->s->dynamic.missing_submenu_func)

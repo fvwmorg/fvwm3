@@ -10,8 +10,6 @@
 /* call these with a pointer to a style_flags struct */
 #define SDO_DECORATE_TRANSIENT(sf) \
 	((sf)->do_decorate_transient)
-#define SDO_SAVE_UNDER(sf) \
-	((sf)->do_save_under)
 #define SDO_START_LOWERED(sf) \
 	((sf)->do_start_lowered)
 #define SDO_START_SHADED(sf) \
@@ -38,8 +36,6 @@
 	((sf)->has_min_window_size)
 #define SHAS_MAX_WINDOW_SIZE(sf) \
 	((sf)->has_max_window_size)
-#define SHAS_WINDOW_SHADE_STEPS(sf) \
-	((sf)->has_window_shade_steps)
 #define SHAS_MINI_ICON(sf) \
 	((sf)->has_mini_icon)
 #define SHAS_MWM_DECOR(sf) \
@@ -60,10 +56,6 @@
 	((sf)->placement_mode)
 #define SEWMH_PLACEMENT_MODE(sf) \
 	((sf)->ewmh_placement_mode)
-#define SUSE_BACKING_STORE(sf) \
-	((sf)->use_backing_store)
-#define SUSE_PARENT_RELATIVE(sf) \
-	((sf)->use_parent_relative)
 #define SUSE_COLORSET(sf) \
 	((sf)->use_colorset)
 #define SUSE_COLORSET_HI(sf) \
@@ -104,8 +96,6 @@
 	((sf)->has_placement_penalty)
 #define SHAS_PLACEMENT_PERCENTAGE_PENALTY(sf) \
 	((sf)->has_placement_percentage_penalty)
-#define SHAS_PLACEMENT_POSITION_STRING(sf) \
-	((sf)->has_placement_position_string
 #define SCR_MOTION_METHOD(sf) \
 	((sf)->ws_cr_motion_method)
 
@@ -116,12 +106,8 @@
 	((st).flags.common.s)
 #define SCM(st) \
 	((st).flag_mask.common)
-#define SCMS(st) \
-	((st).flag_mask.common.s)
 #define SCD(st) \
 	((st).flag_default.common)
-#define SCDS(st) \
-	((st).flag_default.common.s)
 #define SCC(st) \
 	((st).change_mask.common)
 #define SCCS(st) \
@@ -150,56 +136,30 @@
 	((c).is_sticky_across_desks)
 #define S_SET_IS_STICKY_ACROSS_DESKS(c,x) \
 	((c).is_sticky_across_desks = !!(x))
-#define S_DO_CIRCULATE_SKIP(c) \
-	((c).s.do_circulate_skip)
 #define S_SET_DO_CIRCULATE_SKIP(c,x) \
 	((c).s.do_circulate_skip = !!(x))
-#define S_DO_CIRCULATE_SKIP_ICON(c) \
-	((c).s.do_circulate_skip_icon)
 #define S_SET_DO_CIRCULATE_SKIP_ICON(c,x) \
 	((c).s.do_circulate_skip_icon = !!(x))
-#define S_DO_CIRCULATE_SKIP_SHADED(c) \
-	((c).s.do_circulate_skip_shaded)
 #define S_SET_DO_CIRCULATE_SKIP_SHADED(c,x) \
 	((c).s.do_circulate_skip_shaded = !!(x))
-#define S_DO_ICONIFY_WINDOW_GROUPS(c) \
-	((c).s.do_iconify_window_groups)
 #define S_SET_DO_ICONIFY_WINDOW_GROUPS(c,x) \
 	((c).s.do_iconify_window_groups = !!(x))
-#define S_DO_IGNORE_ICON_BOXES(c) \
-	((c).s.do_ignore_icon_boxes)
 #define S_SET_DO_IGNORE_ICON_BOXES(c,x) \
 	((c).s.do_ignore_icon_boxes = !!(x))
-#define S_DO_IGNORE_RESTACK(c) \
-	((c).s.do_ignore_restack)
 #define S_SET_DO_IGNORE_RESTACK(c,x) \
 	((c).s.do_ignore_restack = !!(x))
-#define S_DO_USE_WINDOW_GROUP_HINT(c) \
-	((c).s.do_use_window_group_hint)
 #define S_SET_DO_USE_WINDOW_GROUP_HINT(c,x) \
 	((c).s.do_use_window_group_hint = !!(x))
-#define S_DO_LOWER_TRANSIENT(c) \
-	((c).s.do_lower_transient)
 #define S_SET_DO_LOWER_TRANSIENT(c,x) \
 	((c).s.do_lower_transient = !!(x))
-#define S_DO_NOT_SHOW_ON_MAP(c) \
-	((c).s.do_not_show_on_map)
 #define S_SET_DO_NOT_SHOW_ON_MAP(c,x) \
 	((c).s.do_not_show_on_map = !!(x))
-#define S_DO_RAISE_TRANSIENT(c) \
-	((c).s.do_raise_transient)
 #define S_SET_DO_RAISE_TRANSIENT(c,x) \
 	((c).s.do_raise_transient = !!(x))
-#define S_DO_RESIZE_OPAQUE(c) \
-	((c).s.do_resize_opaque)
 #define S_SET_DO_RESIZE_OPAQUE(c,x) \
 	((c).s.do_resize_opaque = !!(x))
-#define S_DO_SHRINK_WINDOWSHADE(c) \
-	((c).s.do_shrink_windowshade)
 #define S_SET_DO_SHRINK_WINDOWSHADE(c,x) \
 	((c).s.do_shrink_windowshade = !!(x))
-#define S_DO_STACK_TRANSIENT_PARENT(c) \
-	((c).s.do_stack_transient_parent)
 #define S_SET_DO_STACK_TRANSIENT_PARENT(c,x) \
 	((c).s.do_stack_transient_parent = !!(x))
 #define S_DO_WINDOW_LIST_SKIP(c) \
@@ -210,8 +170,6 @@
 	((c).has_no_border)
 #define S_SET_HAS_NO_BORDER(c,x) \
 	((c).has_no_border = !!(x))
-#define S_HAS_DEPRESSABLE_BORDER(c) \
-	((c).s.has_depressable_border)
 #define S_SET_HAS_DEPRESSABLE_BORDER(c,x) \
 	((c).s.has_depressable_border = !!(x))
 #define S_HAS_ICON_FONT(c) \
@@ -226,8 +184,6 @@
 	((c).s.has_mwm_buttons)
 #define S_SET_HAS_MWM_BUTTONS(c,x) \
 	((c).s.has_mwm_buttons = !!(x))
-#define S_HAS_MWM_OVERRIDE(c) \
-	((c).s.has_mwm_override)
 #define S_SET_HAS_MWM_OVERRIDE(c,x) \
 	((c).s.has_mwm_override = !!(x))
 #define S_HAS_NO_STICKY_STIPPLED_ICON_TITLE(c) \
@@ -314,20 +270,8 @@
 	((c).s.is_top_title_rotated)
 #define S_SET_IS_TOP_TITLE_ROTATED(c,x) \
 	((c).s.is_top_title_rotated = !!(x))
-#define S_USE_ICON_POSITION_HINT(c) \
-	((c).s.use_icon_position_hint)
 #define S_SET_USE_ICON_POSITION_HINT(c,x) \
 	((c).s.use_icon_position_hint = !!(x))
-#define S_USE_INDEXED_WINDOW_NAME(c) \
-	((c).s.use_indexed_window_name)
-#define S_SET_USE_INDEXED_WINDOW_NAME(c,x) \
-	((c).s.use_indexed_window_name = !!(x))
-#define S_USE_INDEXED_ICON_NAME(c) \
-	((c).s.use_indexed_icon_name)
-#define S_SET_USE_INDEXED_ICON_NAME(c,x) \
-	((c).s.use_indexed_icon_name = !!(x))
-#define S_WINDOWSHADE_LAZINESS(c) \
-	((c).s.windowshade_laziness)
 #define S_SET_WINDOWSHADE_LAZINESS(c,x) \
 	((c).s.windowshade_laziness = (x))
 #define S_USE_TITLE_DECOR_ROTATION(c) \
@@ -358,27 +302,17 @@
 	((c).s.do_ewmh_ignore_state_hints)
 #define S_SET_DO_EWMH_IGNORE_STATE_HINTS(c,x) \
 	((c).s.do_ewmh_ignore_state_hints = !!(x))
-#define S_DO_EWMH_IGNORE_WINDOW_TYPE(c) \
-	((c).s.do_ewmh_ignore_window_type)
 #define S_SET_DO_EWMH_IGNORE_WINDOW_TYPE(c,x) \
 	((c).s.do_ewmh_ignore_window_type = !!(x))
-#define S_EWMH_MAXIMIZE_MODE(c) \
-	((c).s.ewmh_maximize_mode)
 #define S_SET_EWMH_MAXIMIZE_MODE(c,x) \
 	((c).s.ewmh_maximize_mode = (x))
 
 #define SID_GET_RESOURCE(id) \
 	((id).resource)
-#define SID_SET_RESOURCE(id,x) \
-	((id).resource = (x))
 #define SID_GET_CLASS(id) \
 	((id).class)
-#define SID_SET_CLASS(id,x) \
-	((id).class = (x))
 #define SID_GET_ICON(id) \
 	((id).icon)
-#define SID_SET_ICON(id,x) \
-	((id).icon = (x))
 #define SID_GET_NAME(id) \
 	((id).name)
 #define SID_SET_NAME(id,x) \
@@ -435,16 +369,10 @@
 	((s).id)
 #define SGET_NAME(s) \
 	SID_GET_NAME(SGET_ID(s))
-#define SSET_NAME(s,x) \
-	SID_SET_NAME(SGET_ID(s),x)
 #define SGET_WINDOW_ID(s) \
 	SID_GET_WINDOW_ID(SGET_ID(s))
 #define SSET_WINDOW_ID(s,x) \
 	SID_SET_WINDOW_ID(SGET_ID(s),x)
-#define SSET_ID_HAS_NAME(s,x) \
-        SID_SET_HAS_NAME(SGET_ID(s), x)
-#define SGET_ID_HAS_NAME(s) \
-	SID_GET_HAS_NAME(SGET_ID(s))
 #define SSET_ID_HAS_WINDOW_ID(s,x) \
 	SID_SET_HAS_WINDOW_ID(SGET_ID(s),x)
 #define SGET_ID_HAS_WINDOW_ID(s) \
@@ -703,8 +631,6 @@
 /* access to style lists */
 #define SLGET_NEXT_LIST(s) \
 	((s).next)
-#define SLSET_NEXT_LIST(s,x) \
-	((s).next = (x))
 
 /* function prototypes */
 void lookup_style(FvwmWindow *fw, window_style *styles);
@@ -720,6 +646,5 @@ void update_icon_title_cs_hi_style(FvwmWindow *fw, window_style *pstyle);
 void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle);
 void free_icon_boxes(icon_boxes *ib);
 void style_destroy_style(style_id_t s_id);
-void print_styles(int verbose);
 
 #endif /* FVWM_STYLE_H */

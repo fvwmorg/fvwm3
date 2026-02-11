@@ -107,7 +107,6 @@ typedef struct
 typedef struct MenuInfo
 {
 	MenuRoot *all;
-	int n_destroyed_menus;
 } MenuInfo;
 
 typedef struct MenuSizingParameters

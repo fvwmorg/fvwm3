@@ -61,7 +61,6 @@
 #endif
 
 #define PROP_MOTIF_WM_HINTS_ELEMENTS  4
-#define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
 
 /* bit definitions for OL hints; I just
  *  made these up, OL stores hints as atoms */

@@ -47,9 +47,7 @@ typedef struct
 
 #define EWMH_MAXIMIZE_HORIZ      0x1
 #define EWMH_MAXIMIZE_VERT       0x2
-#define EWMH_MAXIMIZE_FULL       0x3
 #define EWMH_MAXIMIZE_REMOVE     0x4
-#define EWMH_MAXIMIZE_FULLSCREEN 0x8
 typedef enum
 {
 	_NET_WM_MOVERESIZE_SIZE_TOPLEFT,
@@ -64,18 +62,6 @@ typedef enum
 	_NET_WM_MOVERESIZE_SIZE_KEYBOARD,
 	_NET_WM_MOVERESIZE_MOVE_KEYBOARD
 } ewmh_move_resize;
-
-typedef struct ewmh_info
-{
-	unsigned NumberOfDesktops;
-	unsigned MaxDesktops;
-	unsigned CurrentNumberOfDesktops;
-	Bool NeedsToCheckDesk;
-	ewmh_strut BaseStrut;
-} ewmhInfo;
-
-extern ewmhInfo ewmhc;
-
 
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name);
 void ewmh_ChangeProperty(

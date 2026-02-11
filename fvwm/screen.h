@@ -42,9 +42,6 @@
 #include "libs/Bindings.h"
 #include "libs/PictureBase.h"
 
-#define SIZE_HINDENT 5
-#define SIZE_VINDENT 3
-
 /* colormap focus styes */
 #define COLORMAP_FOLLOWS_MOUSE 1 /* default */
 #define COLORMAP_FOLLOWS_FOCUS 2
@@ -264,18 +261,12 @@ typedef struct
 #define TB_JUSTIFICATION(tb)      ((tb).just)
 #define TB_LAYER(tb)              ((tb).layer)
 #define TB_MWM_DECOR_FLAGS(tb)    ((tb).flags.mwm_decor_flags)
-#define TB_HAS_CHANGED(tb)     \
-  (!!((tb).flags.has_changed))
 #define TB_HAS_MWM_DECOR_MENU(tb)     \
   (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MENU))
 #define TB_HAS_MWM_DECOR_MINIMIZE(tb) \
   (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MINIMIZE))
 #define TB_HAS_MWM_DECOR_MAXIMIZE(tb) \
   (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MAXIMIZE))
-#define TB_HAS_MWM_DECOR_SHADE(tb)    \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_SHADE))
-#define TB_HAS_MWM_DECOR_STICK(tb)    \
-  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_STICK))
 
 typedef struct FvwmDecor
 {

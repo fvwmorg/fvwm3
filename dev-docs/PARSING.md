@@ -153,8 +153,6 @@ Fvwm's central parsing function: execute_function()
 
       - `FUNC_NEEDS_WINDOW` commands that need a context window are
         not executed if it's missing.
-      - `FUNC_DONT_REPEAT` the command line is not repeatable (see
-        `CMD_Repeat`).
       - `FUNC_ADD_TO` signals that the command is the addtofunc or
         `+` command.
       - `FUNC_DECOR` signals that the command is a decor related

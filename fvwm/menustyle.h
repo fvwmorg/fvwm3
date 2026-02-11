@@ -11,9 +11,7 @@
 /* ---------------------------- global macros ------------------------------ */
 
 #define ST_NAME(s)                    ((s)->name)
-#define MST_NAME(m)                   ((m)->s->ms->name)
 #define ST_NEXT_STYLE(s)              ((s)->next_style)
-#define MST_NEXT_STYLE(m)             ((m)->s->ms->next_style)
 #define ST_USAGE_COUNT(s)             ((s)->usage_count)
 #define MST_USAGE_COUNT(m)            ((m)->s->ms->usage_count)
 /* flags */
@@ -23,36 +21,17 @@
 #define ST_DO_HILIGHT_BACK(s)         ((s)->look.flags.do_hilight_back)
 #define MST_DO_HILIGHT_BACK(m)        ((m)->s->ms->look.flags.do_hilight_back)
 #define ST_DO_HILIGHT_FORE(s)         ((s)->look.flags.do_hilight_fore)
-#define MST_DO_HILIGHT_FORE(m)        ((m)->s->ms->look.flags.do_hilight_fore)
 #define ST_DO_HILIGHT_TITLE_BACK(s)   ((s)->look.flags.do_hilight_title_back)
-#define MST_DO_HILIGHT_TITLE_BACK(m)			\
-	((m)->s->ms->look.flags.do_hilight_title_back)
 #define ST_HAS_ACTIVE_FORE(s)         ((s)->look.flags.has_active_fore)
-#define MST_HAS_ACTIVE_FORE(m)        ((m)->s->ms->look.flags.has_active_fore)
 #define ST_HAS_ACTIVE_BACK(s)         ((s)->look.flags.has_active_back)
-#define MST_HAS_ACTIVE_BACK(m)        ((m)->s->ms->look.flags.has_active_back)
-#define ST_HAS_STIPPLE_FORE(s)        ((s)->look.flags.has_stipple_fore)
-#define MST_HAS_STIPPLE_FORE(m)       ((m)->s->ms->look.flags.has_stipple_fore)
 #define ST_HAS_LONG_SEPARATORS(s)     ((s)->look.flags.has_long_separators)
-#define MST_HAS_LONG_SEPARATORS(m)			\
-	((m)->s->ms->look.flags.has_long_separators)
 #define ST_HAS_TRIANGLE_RELIEF(s)     ((s)->look.flags.has_triangle_relief)
-#define MST_HAS_TRIANGLE_RELIEF(m)			\
-	((m)->s->ms->look.flags.has_triangle_relief)
 #define ST_HAS_SIDE_COLOR(s)          ((s)->look.flags.has_side_color)
 #define MST_HAS_SIDE_COLOR(m)         ((m)->s->ms->look.flags.has_side_color)
 #define ST_IS_ITEM_RELIEF_REVERSED(s) ((s)->look.flags.is_item_relief_reversed)
-#define MST_IS_ITEM_RELIEF_REVERSED(m)				\
-	((m)->s->ms->look.flags.is_item_relief_reversed)
 #define ST_USING_DEFAULT_FONT(s)      ((s)->look.flags.using_default_font)
-#define MST_USING_DEFAULT_FONT(m)			\
-	((m)->s->ms->look.flags.using_default_font)
 #define ST_USING_DEFAULT_TITLEFONT(s) ((s)->look.flags.using_default_titlefont)
-#define MST_USING_DEFAULT_TITLEFONT(m)				\
-	((m)->s->ms->look.flags.using_default_titlefont)
 #define ST_TRIANGLES_USE_FORE(s)      ((s)->look.flags.triangles_use_fore)
-#define MST_TRIANGLES_USE_FORE(m)			\
-	((m)->s->ms->look.flags.triangles_use_fore)
 #define ST_RELIEF_THICKNESS(s)        ((s)->look.ReliefThickness)
 #define MST_RELIEF_THICKNESS(m)       ((m)->s->ms->look.ReliefThickness)
 #define ST_TITLE_UNDERLINES(s)        ((s)->look.TitleUnderlines)
@@ -71,49 +50,29 @@
 #define ST_TITLE_GAP_BELOW(s)         ((s)->look.vertical_spacing.title_below)
 #define MST_TITLE_GAP_BELOW(m)				\
 	((m)->s->ms->look.vertical_spacing.title_below)
-#define ST_SEPARATOR_GAP_ABOVE(s)			\
-	((s)->look.vertical_spacing.separator_above)
-#define MST_SEPARATOR_GAP_ABOVE(m)				\
-	((m)->s->ms->look.vertical_spacing.separator_above)
-#define ST_SEPARATOR_GAP_BELOW(s)			\
-	((s)->look.vertical_spacing.separator_below)
-#define MST_SEPARATOR_GAP_BELOW(m)				\
-	((m)->s->ms->look.vertical_spacing.separator_below)
 #define ST_CSET_MENU(s)               ((s)->look.cset.menu)
 #define MST_CSET_MENU(m)              ((m)->s->ms->look.cset.menu)
 #define ST_CSET_ACTIVE(s)             ((s)->look.cset.active)
-#define MST_CSET_ACTIVE(m)            ((m)->s->ms->look.cset.active)
 #define ST_CSET_TITLE(s)              ((s)->look.cset.title)
-#define MST_CSET_TITLE(m)             ((m)->s->ms->look.cset.title)
 #define ST_CSET_GREYED(s)             ((s)->look.cset.greyed)
-#define MST_CSET_GREYED(m)            ((m)->s->ms->look.cset.greyed)
 #define ST_SIDEPIC(s)                 ((s)->look.side_picture)
 #define MST_SIDEPIC(m)                ((m)->s->ms->look.side_picture)
 #define ST_SIDE_COLOR(s)              ((s)->look.side_color)
 #define MST_SIDE_COLOR(m)             ((m)->s->ms->look.side_color)
 #define ST_MENU_ACTIVE_GCS(s)         ((s)->look.active_gcs)
-#define MST_MENU_ACTIVE_GCS(m)        ((m)->s->ms->look.active_gcs)
 #define ST_MENU_INACTIVE_GCS(s)       ((s)->look.inactive_gcs)
 #define MST_MENU_INACTIVE_GCS(m)      ((m)->s->ms->look.inactive_gcs)
 #define ST_MENU_STIPPLE_GCS(s)        ((s)->look.stipple_gcs)
-#define MST_MENU_STIPPLE_GCS(m)       ((m)->s->ms->look.stipple_gcs)
 #define ST_MENU_TITLE_GCS(s)          ((s)->look.title_gcs)
-#define MST_MENU_TITLE_GCS(m)         ((m)->s->ms->look.title_gcs)
 #define FORE_GC(g)                    ((g).fore_gc)
 #define BACK_GC(g)                    ((g).back_gc)
 #define HILIGHT_GC(g)                 ((g).hilight_gc)
 #define SHADOW_GC(g)                  ((g).shadow_gc)
-#define ST_MENU_STIPPLE_GC(s)         ((s)->look.MenuStippleGC)
-#define MST_MENU_STIPPLE_GC(m)        ((m)->s->ms->look.MenuStippleGC)
 #define ST_PSTDFONT(s)                ((s)->look.pStdFont)
 #define MST_PSTDFONT(m)               ((m)->s->ms->look.pStdFont)
 #define ST_PTITLEFONT(s)              ((s)->look.pTitleFont)
 #define MST_PTITLEFONT(m)             ((m)->s->ms->look.pTitleFont)
-#define ST_FONT_HEIGHT(s)             ((s)->look.FontHeight)
-#define MST_FONT_HEIGHT(m)            ((m)->s->ms->look.FontHeight)
 #define ST_TRANSLUCENT_PERCENT(s)     ((s)->look.TranslucentPercent)
-#define MST_TRANSLUCENT_PERCENT(m)    ((m)->s->ms->look.TranslucentPercent)
-#define ST_IS_TRANSLUCENT(s)          ((s)->look.TranslucentPercent != 100)
 #define MST_IS_TRANSLUCENT(m)         ((m)->s->ms->look.TranslucentPercent != 100)
 
 
@@ -144,8 +103,6 @@
 #define MST_MOUSE_WHEEL(m)            ((m)->s->ms->feel.flags.mouse_wheel)
 #define ST_SCROLL_OFF_PAGE(s)         ((s)->feel.flags.scroll_off_page)
 #define MST_SCROLL_OFF_PAGE(m)        ((m)->s->ms->feel.flags.scroll_off_page)
-#define ST_FLAGS(s)                   ((s)->feel.flags)
-#define MST_FLAGS(m)                  ((m)->s->ms->feel.flags)
 #define ST_POPUP_OFFSET_PERCENT(s)    ((s)->feel.PopupOffsetPercent)
 #define MST_POPUP_OFFSET_PERCENT(m)   ((m)->s->ms->feel.PopupOffsetPercent)
 #define ST_POPUP_OFFSET_ADD(s)        ((s)->feel.PopupOffsetAdd)
@@ -273,7 +230,6 @@ typedef struct MenuLook
 	gc_quad_t title_gcs;
 	FlocaleFont *pStdFont;
 	FlocaleFont *pTitleFont;
-	int FontHeight;
 	int TranslucentPercent;
 } MenuLook;
 
