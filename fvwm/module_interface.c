@@ -54,6 +54,7 @@ static fqueue cqueue = FQUEUE_INIT;
 static const unsigned long dummy = 0;
 
 static void send_monitor_info(fmodule *);
+static void send_one_windowlist_batch(fmodule *, struct monitor *, int);
 
 static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
@@ -910,15 +911,131 @@ void CMD_Send_Reply(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Send_WindowList(F_CMD_ARGS)
+static void
+send_one_windowlist_batch(fmodule *mod, struct monitor *m, int force)
 {
 	FvwmWindow *t;
+
+	SendPacket(mod, M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
+			(long)m->si->rr_output);
+	SendPacket(mod, M_NEW_PAGE, 8, (long)m->virtual_scr.Vx,
+			(long)m->virtual_scr.Vy,
+			(long)m->virtual_scr.CurrentDesk,
+			(long) monitor_get_all_widths(),
+			(long) monitor_get_all_heights(),
+			(long)((m->virtual_scr.VxMax / monitor_get_all_widths()) + 1),
+			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
+			(long)m->si->rr_output);
+
+	if (Scr.Hilite != NULL)
+	{
+		SendPacket(mod, M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+				(long)FW_W_FRAME(Scr.Hilite), (unsigned long)True,
+				(long)Scr.Hilite->hicolors.fore,
+				(long)Scr.Hilite->hicolors.back);
+	}
+	else
+	{
+		SendPacket(mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
+				(long)Colorset[0].fg, (long)Colorset[0].bg);
+	}
+	if (Scr.DefaultIcon != NULL)
+	{
+		SendName(mod, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
+	}
+
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if ((monitor_mode == MONITOR_TRACKING_M || force) && t->m != m)
+			continue;
+
+		SendConfig(mod,M_CONFIGURE_WINDOW,t);
+		SendName(
+				mod, M_WINDOW_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->name.name);
+		SendName(
+				mod, M_ICON_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->icon_name.name);
+		SendName(
+				mod, M_VISIBLE_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->visible_name);
+		SendName(
+				mod, MX_VISIBLE_ICON_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t,t->visible_icon_name);
+		if (t->icon_bitmap_file != NULL
+				&& t->icon_bitmap_file != Scr.DefaultIcon)
+		{
+			SendName(
+					mod, M_ICON_FILE, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, t->icon_bitmap_file);
+		}
+
+		SendName(
+				mod, M_RES_CLASS, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->class.res_class);
+		SendName(
+				mod, M_RES_NAME, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->class.res_name);
+
+		if (IS_ICONIFIED(t) && !IS_ICON_UNMAPPED(t))
+		{
+			rectangle r;
+			Bool rc;
+
+			rc = get_visible_icon_geometry(t, &r);
+			if (rc == True)
+			{
+				SendPacket(mod, M_ICONIFY, 7, (long)FW_W(t),
+					(long)FW_W_FRAME(t), (unsigned long)t,
+					(long)r.x, (long)r.y,
+					(long)r.width, (long)r.height);
+			}
+		}
+		if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
+		{
+			SendPacket(mod, M_ICONIFY, 7, (long)FW_W(t),
+					(long)FW_W_FRAME(t), (unsigned long)t,
+					(long)0, (long)0, (long)0, (long)0);
+		}
+		if (FMiniIconsSupported && t->mini_icon != NULL)
+		{
+			SendFvwmPicture(mod, M_MINI_ICON, FW_W(t), FW_W_FRAME(t),
+					(unsigned long)t, t->mini_icon,
+					t->mini_pixmap_file);
+		}
+	}
+
+	if (Scr.Hilite == NULL)
+	{
+		BroadcastPacket(M_FOCUS_CHANGE, 5, (long)0, (long)0,
+				(unsigned long)True, (long)Colorset[0].fg,
+				(long)Colorset[0].bg);
+	}
+	else
+	{
+		BroadcastPacket(M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
+				(long)FW_W(Scr.Hilite), (unsigned long)True,
+				(long)Scr.Hilite->hicolors.fore,
+				(long)Scr.Hilite->hicolors.back);
+	}
+}
+
+void CMD_Send_WindowList(F_CMD_ARGS)
+{
 	fmodule *mod = exc->m.module;
 	struct monitor	*m;
+	char *option = NULL;
 
 	if (mod == NULL)
 	{
 		return;
+	}
+
+	action = GetNextFullOption(action, &option);
+	if (strlen(option) > 0) {
+		m = monitor_resolve_name(option);
+		send_one_windowlist_batch(mod, m, 1);
+		goto done;
 	}
 
 	/* TA: 2020-01-09:  We send this for *ALL* configured monitors.
@@ -927,115 +1044,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	 * in.
 	 */
 	RB_FOREACH(m, monitors, &monitor_q) {
-		SendPacket(mod, M_NEW_DESK, 2, (long)m->virtual_scr.CurrentDesk,
-			(long)m->si->rr_output);
-		SendPacket(
-			mod, M_NEW_PAGE, 8, (long)m->virtual_scr.Vx, (long)m->virtual_scr.Vy,
-			(long)m->virtual_scr.CurrentDesk,
-			(long) monitor_get_all_widths(),
-			(long) monitor_get_all_heights(),
-			(long)((m->virtual_scr.VxMax / monitor_get_all_widths()) + 1),
-			(long)((m->virtual_scr.VyMax / monitor_get_all_heights()) + 1),
-			(long)m->si->rr_output);
-
-		if (Scr.Hilite != NULL)
-		{
-			SendPacket(
-				mod, M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
-				(long)FW_W_FRAME(Scr.Hilite), (unsigned long)True,
-				(long)Scr.Hilite->hicolors.fore,
-				(long)Scr.Hilite->hicolors.back);
-		}
-		else
-		{
-			SendPacket(
-				mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
-				(long)Colorset[0].fg, (long)Colorset[0].bg);
-		}
-		if (Scr.DefaultIcon != NULL)
-		{
-			SendName(mod, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
-		}
-
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-		{
-			if ((monitor_mode == MONITOR_TRACKING_M) && t->m != m)
-				continue;
-
-			SendConfig(mod,M_CONFIGURE_WINDOW,t);
-			SendName(
-				mod, M_WINDOW_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->name.name);
-			SendName(
-				mod, M_ICON_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->icon_name.name);
-			SendName(
-				mod, M_VISIBLE_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->visible_name);
-			SendName(
-				mod, MX_VISIBLE_ICON_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t,t->visible_icon_name);
-			if (t->icon_bitmap_file != NULL
-			    && t->icon_bitmap_file != Scr.DefaultIcon)
-			{
-				SendName(
-					mod, M_ICON_FILE, FW_W(t), FW_W_FRAME(t),
-					(unsigned long)t, t->icon_bitmap_file);
-			}
-
-			SendName(
-				mod, M_RES_CLASS, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->class.res_class);
-			SendName(
-				mod, M_RES_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->class.res_name);
-
-			if (IS_ICONIFIED(t) && !IS_ICON_UNMAPPED(t))
-			{
-				rectangle r;
-				Bool rc;
-
-				rc = get_visible_icon_geometry(t, &r);
-				if (rc == True)
-				{
-					SendPacket(
-						mod, M_ICONIFY, 7, (long)FW_W(t),
-						(long)FW_W_FRAME(t), (unsigned long)t,
-						(long)r.x, (long)r.y,
-						(long)r.width, (long)r.height);
-				}
-			}
-			if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
-			{
-				SendPacket(
-					mod, M_ICONIFY, 7, (long)FW_W(t),
-					(long)FW_W_FRAME(t), (unsigned long)t,
-					(long)0, (long)0, (long)0, (long)0);
-			}
-			if (FMiniIconsSupported && t->mini_icon != NULL)
-			{
-				SendFvwmPicture(
-					mod, M_MINI_ICON, FW_W(t), FW_W_FRAME(t),
-					(unsigned long)t, t->mini_icon,
-					t->mini_pixmap_file);
-			}
-		}
-
-		if (Scr.Hilite == NULL)
-		{
-			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, (long)0, (long)0,
-				(unsigned long)True, (long)Colorset[0].fg,
-				(long)Colorset[0].bg);
-		}
-		else
-		{
-			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, (long)FW_W(Scr.Hilite),
-				(long)FW_W(Scr.Hilite), (unsigned long)True,
-				(long)Scr.Hilite->hicolors.fore,
-				(long)Scr.Hilite->hicolors.back);
-		}
+		send_one_windowlist_batch(mod, m, 0);
 
 		/* If we're tracking just the global monitor, then stop here
 		 * -- essentially, we only need to send this information once.
@@ -1043,6 +1052,6 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		if (monitor_mode == MONITOR_TRACKING_G)
 			break;
 	}
-
+done:
 	SendPacket(mod, M_END_WINDOWLIST, 0);
 }
