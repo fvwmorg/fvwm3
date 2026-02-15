@@ -132,7 +132,8 @@ void print_infostore(void)
 /* ---------------------------- interface functions ------------------------ */
 
 /* ---------------------------- builtin commands --------------------------- */
-void CMD_InfoStoreAdd(F_CMD_ARGS)
+void CMD_InfoStoreAdd(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *key = NULL, *value = NULL;
 	char *token;
@@ -155,7 +156,8 @@ error:
 	free(value);
 }
 
-void CMD_InfoStoreRemove(F_CMD_ARGS)
+void CMD_InfoStoreRemove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *token;
 
@@ -172,7 +174,8 @@ void CMD_InfoStoreRemove(F_CMD_ARGS)
 	return;
 }
 
-void CMD_InfoStoreClear(F_CMD_ARGS)
+void CMD_InfoStoreClear(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	MetaInfo	*mi, *mi2;
 

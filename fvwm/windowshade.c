@@ -66,7 +66,8 @@
  *  Args: 1 -- shade, 2 -- unshade  No Arg: toggle
  *
  */
-void CMD_WindowShade(F_CMD_ARGS)
+void CMD_WindowShade(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	direction_t shade_dir;
 	int toggle;
