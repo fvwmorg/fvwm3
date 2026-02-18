@@ -73,30 +73,27 @@ if get_option('htmldoc')
         htmldir = get_option('datadir') / 'doc' / meson.project_name() / 'html'
     endif
 
-    # We need to configure index.html here to strip out whichever modules are unused.
-    # This is done by using sed to remove the lines that contain the module names.
     index_src = 'index.adoc.in'
     index_dst = 'index.adoc'
-    if golang.found()
+    if not golang.found()
         index = configure_file(
             input: index_src,
             output: index_dst,
             command: [
                 sed,
-                '-e', '/FvwmConsole.adoc/d',
-                '@INPUT@',
+                '-e', '/FvwmPrompt.adoc/d', '@INPUT@'
             ],
             capture: true,
         )
-        adoc_sources += ['FvwmPrompt.adoc']
     else
         index = configure_file(
             input: index_src,
             output: index_dst,
-            command: [sed, '-e', '/FvwmPrompt.adoc/d', '@INPUT@'],
-            capture: true,
+            copy: true,
         )
-        adoc_sources += ['FvwmConsole.adoc']
+
+        adoc_sources += 'FvwmPrompt.adoc'
+
     endif
 
     html_sources = adoc_sources

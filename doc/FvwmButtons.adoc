@@ -1094,8 +1094,6 @@ DestroyModuleConfig FvwmButtons: *
 *FvwmButtons: (3x2+3+1, Icon my_recapture.xpm, Action Recapture)
 *FvwmButtons: (3x2+6+1, Icon my_resize.xpm, Action Resize)
 *FvwmButtons: (3x2+9+1, Icon my_move.xpm, Action Move)
-*FvwmButtons: (3x2+12+1, Icon my_fvwmconsole.xpm,     \
-  Action 'Module FvwmConsole')
 
 # second row of buttons from left to right:
 *FvwmButtons: (3x2+0+3, Icon my_exit.xpm, Action QuitSave)

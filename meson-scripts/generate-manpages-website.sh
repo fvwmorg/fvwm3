@@ -3,7 +3,7 @@
 # This script uses asciidoctor to build the html documents for the fvwm3
 # manual pages from the fvwm3 source. The script takes a single input,
 # the full path to the fvwm3 source.
-# 
+#
 #     ./_build_fvwm3_man.sh /path/to/fvwm3_source
 
 # Check for asciidoctor and input is root of fvwm3 source.
@@ -35,7 +35,7 @@ FVWM_VER="$(cd $1 && ./utils/fvwm-version-str.sh)"
 CMD="asciidoctor -e -b html5 -a toc -a webfonts!"
 FVWM_DOCS_AD="commands menus styles"
 FVWM_DOCS="fvwm3 fvwm3all fvwm3commands fvwm3menus fvwm3styles FvwmAnimate \
-	FvwmAuto FvwmBacker FvwmButtons FvwmCommand FvwmConsole FvwmEvent \
+	FvwmAuto FvwmBacker FvwmButtons FvwmCommand FvwmEvent \
 	FvwmForm FvwmIconMan FvwmIdent FvwmMFL FvwmPager FvwmPerl FvwmPrompt \
 	FvwmRearrange FvwmScript fvwm-menu-desktop fvwm-menu-directory \
 	fvwm-menu-xlock fvwm-perllib fvwm-root fvwm-convert-2.6"

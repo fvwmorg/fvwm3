@@ -1,11 +1,3 @@
-configure_file(
-    input: 'FvwmCommandS.in',
-    output: 'FvwmCommandS',
-    configuration: conf,
-    install_dir: fvwm_moduledir,
-    install_mode: install_mask_755,
-)
-
 executable(
     'FvwmMFL',
     sources: 'FvwmMFL.c',

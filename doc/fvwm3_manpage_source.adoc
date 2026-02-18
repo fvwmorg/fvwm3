@@ -8792,8 +8792,7 @@ At the current time the available modules (included with fvwm) are
 or de-iconified), *FvwmAuto* (an auto raise module), *FvwmBacker* (to
 change the background when you change desktops), *FvwmBanner* (to
 display a spiffy XBM, XPM, PNG or SVG), *FvwmButtons* (brings up a
-customizable tool bar), *FvwmCommandS* (a command server to use with
-shell's FvwmCommand client), *FvwmConsole* (to execute fvwm commands
+customizable tool bar), *FvwmPrompt* (to execute fvwm commands
 directly), *FvwmEvent* (trigger various actions by events), *FvwmForm*
 (to bring up dialogs), *FvwmIconMan* (a flexible icon manager),
 *FvwmIdent* (to get window info), *FvwmPager* (a mini version of the

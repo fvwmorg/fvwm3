@@ -27,8 +27,8 @@
 # You can also use environment variables but for data internal to fvwm
 # use InfoStore variables instead.
 #
-# The following is used in various menus and also sets the terminal
-# that FvwmConsole uses. Change this to your terminal of choice
+# The following is used in various menus.  Change this to your terminal of
+# choice.
 InfoStoreAdd terminal xterm
 
 # This is used for "Run Command" and the Meta+Space key-binding.
@@ -325,7 +325,6 @@ AddToMenu   MenuFvwmRoot "Fvwm" Title
 + "&XTerm%icons/terminal.png%"          Exec exec $[infostore.terminal]
 Test (x $[infostore.runcmd]) + "R&un Command%icons/run_arrow.png%" Exec exec $[infostore.runcmd] $[infostore.runcmdopt]
 + "" Nop
-Test (x $[FVWM_MODULEDIR]/FvwmConsole) + "Fvwm&Console%icons/terminal.png%" Module FvwmConsole -terminal $[infostore.terminal]
 Test (x FvwmPrompt) + "&FvwmPrompt%icons/terminal.png%" Exec exec $[infostore.terminal] -e FvwmPrompt
 + "$[gt.&Wallpapers]%icons/wallpaper.png%" Popup BGMenu
 + "$[gt.M&an Pages]%icons/help.png%"       Popup MenuFvwmManPages
@@ -455,7 +454,6 @@ AddToMenu   MenuFvwmManPages "Help" Title
 + "FvwmBacker"    ViewManPage FvwmBacker
 + "FvwmButtons"   ViewManPage FvwmButtons
 + "FvwmCommand"   ViewManPage FvwmCommand
-Test (x $[FVWM_MODULEDIR]/FvwmConsole) + "FvwmConsole" ViewManPage FvwmConsole
 + "FvwmEvent"     ViewManPage FvwmEvent
 + "FvwmIconMan"   ViewManPage FvwmIconMan
 + "FvwmIdent"     ViewManPage FvwmIdent

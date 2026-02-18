@@ -224,17 +224,6 @@ if golang.found()
                Either disable Go for this build (`-Dgolang=disabled`) or upgrade Go to a version >= 1.20.0.''',
         )
     endif
-else
-    # the readline dependency is only required for FvwmConsole so let's only check for it if we're not building FvwmPrompt
-    readline = dependency('readline', required: get_option('readline'))
-    if readline.found()
-        all_found_deps += readline
-        conf.set10('HAVE_READLINE', true)
-        # Check for append_history to determine if we have GNU readline
-        if cc.has_function('append_history', dependencies: readline)
-            conf.set10('HAVE_GNU_READLINE', true)
-        endif
-    endif
 endif
 
 # Sed is used for substitution in several configure_file calls
@@ -495,10 +484,6 @@ modules = {
     'FvwmScript': {'subdir': 'modules/FvwmScript'},
 }
 
-if not golang.found()
-    modules += {'FvwmConsole': {'subdir': 'modules/FvwmConsole'}}
-endif
-
 foreach m, _ : modules
     subdir(modules[m]['subdir'])
 endforeach
@@ -591,10 +576,6 @@ featurevals = {
     'XPM support': xpm.found() ? xpm : false,
     'XRender': xrender.found() ? xrender : false,
 }
-
-if not golang.found()
-    featurevals += {'Readline': readline.found()}
-endif
 
 summary(
     featurevals,
