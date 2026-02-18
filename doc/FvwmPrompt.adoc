@@ -38,12 +38,6 @@ start.  For example:
 AddToFunc StartFunction I Module FvwmMFL
 ....
 
-== Comparisons to FvwmConsole
-
-Unlike _FvwmConsole_, _FvwmPrompt_ doesn't need to be spawned via a terminal
-(such as _xterm_) but acts as a standalone program, and can be run from any
-terminal the user choses.
-
 == Author
 
 Thomas Adam <thomas@fvwm.org>

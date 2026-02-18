@@ -227,7 +227,7 @@ and a *FvwmForm* GUI to customize the menu(s) that get generated.
 *FvwmForm-XDGMenu-Config* is a *FvwmForm* interface that can be used to
 configure the defaults for *fvwm-menu-desktop*. You can access this from
 the "Configure" item in the top level menu that is generated or run the
-following from within *FvwmConsole*
+following from within *FvwmCommand* or *FvwmPrompt*:
 
 ....
 Module FvwmPerl -l fvwm-menu-desktop-config.fpl

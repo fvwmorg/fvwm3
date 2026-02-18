@@ -1299,7 +1299,6 @@ static void SetRCDefaults(void)
 			"\" Title"
 		},
 		{ "+ \"&1. XTerm\" Exec xterm", "", "" },
-		{ "+ \"&2. FvwmConsole\" Module FvwmConsole", "", "" },
 		{
 			"+ \"&3. ",
 			_("Load Default Config"),

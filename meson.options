@@ -65,12 +65,6 @@ option(
     description: 'Select python implementation',
 )
 option(
-    'readline',
-    type: 'feature',
-    value: 'auto',
-    description: 'Enable readline support for FvwmConsole (disabled if using Go)',
-)
-option(
     'sm',
     type: 'feature',
     value: 'auto',
