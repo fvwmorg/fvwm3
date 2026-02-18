@@ -29,15 +29,6 @@ Press ^D or type 'exit' to end this session
 >>>
 ....
 
-== Prerequisites
-
-_FvwmMFL_(1) must be spawned by **fvwm3** otherwise _FvwmPrompt_ will not
-start.  For example:
-
-....
-AddToFunc StartFunction I Module FvwmMFL
-....
-
 == Author
 
 Thomas Adam <thomas@fvwm.org>
