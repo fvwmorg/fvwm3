@@ -169,7 +169,7 @@ void update_window_background(PagerWindow *t)
 	if (t == FocusWin) {
 		if (style->focus_cs >= 0) {
 			cs = style->focus_cs;
-		} else if (style->focus_bg) {
+		} else if (style->focus_bg < ULONG_MAX) {
 			pix = style->focus_bg;
 		} else {
 			pix = Scr.focus_win_bg;
@@ -177,7 +177,7 @@ void update_window_background(PagerWindow *t)
 	} else {
 		if (style->win_cs >= 0) {
 			cs = style->win_cs;
-		} else if (style->win_bg) {
+		} else if (style->win_bg < ULONG_MAX) {
 			pix = style->win_bg;
 		} else {
 			pix = t->back;
