@@ -1368,7 +1368,7 @@ void AddNewWindow(PagerWindow *t)
 	}
 
 	valuemask = CWBackPixel | CWEventMask;
-	attributes.background_pixel = (style->win_bg) ?
+	attributes.background_pixel = (style->win_bg < ULONG_MAX) ?
 				      style->win_bg : t->back;
 	/* ric@giccs.georgetown.edu -- added Enter and Leave events for
 	   popping up balloon window */
@@ -2059,15 +2059,19 @@ void setup_balloon_window(PagerWindow *t)
 	/* Store Balloon.cs for future events. */
 	Balloon.cs = style->balloon_cs;
 
-	fg = (style->balloon_fg) ? style->balloon_fg :
+	fg = (style->balloon_fg < ULONG_MAX) ? style->balloon_fg :
 	     (style->win_fg < ULONG_MAX) ? style->win_fg : t->text;
 	XSetForeground(dpy, Balloon.gc, fg);
 
 	XUnmapWindow(dpy, Scr.balloon_w);
-	xswa.border_pixel = (style->balloon_border) ? style->balloon_border :
-			    (style->balloon_fg) ? style->balloon_fg : t->text;
-	xswa.background_pixel = (style->balloon_bg) ? style->balloon_bg :
-				(style->win_bg) ? style->win_bg : t->back;
+	xswa.border_pixel = (style->balloon_border < ULONG_MAX)
+			    ? style->balloon_border
+			    : (style->balloon_fg < ULONG_MAX)
+			      ? style->balloon_fg : t->text;
+	xswa.background_pixel = (style->balloon_bg < ULONG_MAX)
+				? style->balloon_bg
+				: (style->win_bg < ULONG_MAX)
+				  ? style->win_bg : t->back;
 	if (style->balloon_cs >= 0 && Colorset[style->balloon_cs].pixmap) {
 		/* set later */
 		xswa.background_pixmap = None;
