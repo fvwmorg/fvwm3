@@ -1,0 +1,884 @@
+# Georgian translation for fvwm3.
+# Copyright (C) 2026 fvwm3's authors.
+# This file is distributed under the same license as the fvwm3 package.
+# Ekaterine Papava <papava.e@gtu.ge>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-19 19:32+0300\n"
+"PO-Revision-Date: 2026-02-23 12:45+0100\n"
+"Last-Translator: Ekaterine Papava <papava.e@gtu.ge>\n"
+"Language-Team: Georgian <(nothing)>\n"
+"Language: ka\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+
+#: fvwm/fvwm3.c:1298
+msgid "Builtin Menu"
+msgstr "ჩაშენებული მენიუ"
+
+#: fvwm/fvwm3.c:1305
+msgid "Load Default Config"
+msgstr "ნაგულისხმევი კონფიგურაციის ჩატვირთვა"
+
+#: fvwm/fvwm3.c:1310
+msgid "Restart"
+msgstr "გადატვირთვა"
+
+#: fvwm/fvwm3.c:1315 default-config/FvwmScript-ConfirmQuit:25
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:85
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:89
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:94
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:235
+msgid "Quit"
+msgstr "გასვლა"
+
+#: fvwm/expand.c:498 default-config/config:427 default-config/config:431
+#: default-config/config:432 default-config/config:433
+#: default-config/config:434
+msgid "Desk"
+msgstr "მაგიდა"
+
+#: fvwm/windowlist.c:88 fvwm/windowlist.c:94 fvwm/windowlist.c:101
+msgid "\tGeometry"
+msgstr "\tგეომეტრია"
+
+#: fvwm/windowlist.c:99
+#, c-format
+msgid "Desk: %d%s"
+msgstr "დისკი: %d%s"
+
+#: fvwm/menus.c:1813
+msgid "More&..."
+msgstr "მეტი&..."
+
+#: modules/FvwmPager/FvwmPager.c:421
+#, c-format
+msgid "Desk %d"
+msgstr "მაგიდა %d"
+
+#: modules/FvwmPager/x_pager.c:878 ../modules/FvwmPager/x_pager.c:886
+#, c-format
+msgid "D%d"
+msgstr "D%d"
+
+#: default-config/config:117
+msgid "Documentation can be found at https://www.fvwm.org"
+msgstr "დოკუმენტაცია იხილეთ ბმულზე https://www.fvwm.org"
+
+#: default-config/config:323
+msgid "&Programs"
+msgstr "&პროგრამები"
+
+#: default-config/config:324
+msgid "XDG &Menu"
+msgstr "XDG-ის &მენიუ"
+
+#: default-config/config:330
+msgid "&Wallpapers"
+msgstr "&ფონის სურათები"
+
+#: default-config/config:331
+msgid "M&an Pages"
+msgstr "სახელმძღვ&ანელოს გვერდები"
+
+#: default-config/config:332
+msgid "Cop&y Config"
+msgstr "კონფიგურაციის კოპ&ირება"
+
+#: default-config/config:334
+msgid "Re&fresh"
+msgstr "&განახლება"
+
+#: default-config/config:335
+msgid "&Restart"
+msgstr "&გადატვირთვა"
+
+#: default-config/config:336
+msgid "&Quit"
+msgstr "&გასვლა"
+
+#: default-config/config:347
+msgid "Programs"
+msgstr "პროგრამები"
+
+#: default-config/config:361
+msgid "Wallpapers"
+msgstr "ფონის სურათები"
+
+#: default-config/config:362
+msgid "Floral"
+msgstr "ყვავილებიანი"
+
+#: default-config/config:363
+msgid "Circles"
+msgstr "წრეები"
+
+#: default-config/config:364
+msgid "Space"
+msgstr "ჰარე"
+
+#: default-config/config:369 default-config/config:381
+msgid "Move"
+msgstr "გადატანა"
+
+#: default-config/config:370 default-config/config:382
+msgid "Resize"
+msgstr "ზომის შეცვლა"
+
+#: default-config/config:371 default-config/config:383
+#: default-config/config:404
+msgid "(De)Iconify"
+msgstr "ხატულაში ჩაკეცვა (გაუქმება)"
+
+#: default-config/config:372 default-config/config:384
+#: default-config/config:405
+msgid "(Un)Maximize"
+msgstr "გაშლა (გაუქმება)"
+
+#: default-config/config:373 default-config/config:385
+#: default-config/config:406
+msgid "(Un)Shade"
+msgstr "დაჩრდილვა (გაქუმება)"
+
+#: default-config/config:374
+msgid "(Un)Stick"
+msgstr "მიწებება (გაუქმება)"
+
+#: default-config/config:376 default-config/config:390
+#: default-config/config:411 bin/fvwm-menu-desktop-config.fpl:293
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:64
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:132
+msgid "Close"
+msgstr "დახურვა"
+
+#: default-config/config:377
+msgid "More"
+msgstr "მეტი"
+
+#: default-config/config:380
+msgid "Window Ops"
+msgstr "ფანჯრის პარამეტრები"
+
+#: default-config/config:386 default-config/config:407
+msgid "(Un)Sticky"
+msgstr "წებოვანი (გაუქმება)"
+
+#: default-config/config:387
+msgid "(No)Title Bar"
+msgstr "სათაურის ზოლი (გაუქმება)"
+
+#: default-config/config:388 default-config/config:409
+msgid "Send To"
+msgstr "გაგზავნა"
+
+#: default-config/config:391 default-config/config:412
+msgid "Destroy"
+msgstr "განადგურება"
+
+#: default-config/config:393 default-config/config:414
+msgid "Raise"
+msgstr "აწევა"
+
+#: default-config/config:394 default-config/config:415
+msgid "Lower"
+msgstr "დაწევა"
+
+#: default-config/config:396 default-config/config:417
+msgid "Stays On Top"
+msgstr "ყველაზე ზემოთ დარჩენა"
+
+#: default-config/config:397 default-config/config:418
+msgid "Stays Put"
+msgstr "რჩება ადგილზე"
+
+#: default-config/config:398 default-config/config:419
+msgid "Stays On Bottom"
+msgstr "რჩება ბოლოში"
+
+#: default-config/config:400 default-config/config:421
+msgid "Identify"
+msgstr "იდენტიფიკაცია"
+
+#: default-config/config:408
+msgid "(No)TitleBar"
+msgstr "სათაურის ზოლი (გარეშე)"
+
+#: default-config/config:425
+msgid "Current"
+msgstr "მიმდინარე"
+
+#: default-config/config:426 default-config/config:438
+#: default-config/config:439 default-config/config:440
+#: default-config/config:441
+msgid "Page"
+msgstr "გვერდი"
+
+#: bin/fvwm-menu-desktop-config.fpl:55 bin/fvwm-menu-desktop-config.fpl:58
+msgid "Fvwm XDGMenu Config"
+msgstr "Fvwm XDGMenu მორგება"
+
+#: bin/fvwm-menu-desktop-config.fpl:62
+msgid "Available Menus"
+msgstr "ხელმისაწვდომი მენიუები"
+
+#: bin/fvwm-menu-desktop-config.fpl:70
+msgid "Menus in"
+msgstr "მენიუები სად"
+
+#: bin/fvwm-menu-desktop-config.fpl:98
+msgid "No menus found! Check why from within a terminal with"
+msgstr "მენიუები აღმოჩენილი არაა! შეამოწმეთ რატომ ტერმინალიდან ბრძანებით"
+
+#: bin/fvwm-menu-desktop-config.fpl:109
+msgid "Options"
+msgstr "მორგება"
+
+#: bin/fvwm-menu-desktop-config.fpl:110 bin/fvwm-menu-desktop-config.fpl:291
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:69
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:137
+msgid "Help"
+msgstr "დახმარება"
+
+#: bin/fvwm-menu-desktop-config.fpl:115
+msgid "Include in Menu?    "
+msgstr "მენიუში ჩასმა?    "
+
+#: bin/fvwm-menu-desktop-config.fpl:117
+msgid "Config   "
+msgstr "კონფიგურაცია   "
+
+#: bin/fvwm-menu-desktop-config.fpl:118
+msgid "Regenerate  "
+msgstr "თავიდან გენერაცია  "
+
+#: bin/fvwm-menu-desktop-config.fpl:119
+msgid "Both   "
+msgstr "ორივე   "
+
+#: bin/fvwm-menu-desktop-config.fpl:120
+msgid "None  "
+msgstr "არცერთი  "
+
+#: bin/fvwm-menu-desktop-config.fpl:123
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:27
+msgid "Use Icons?          "
+msgstr "ხატულების გამოყენება?          "
+
+#: bin/fvwm-menu-desktop-config.fpl:125 bin/fvwm-menu-desktop-config.fpl:136
+msgid "Yes      "
+msgstr "დიახ      "
+
+#: bin/fvwm-menu-desktop-config.fpl:126 bin/fvwm-menu-desktop-config.fpl:137
+msgid "No   "
+msgstr "არა   "
+
+#: bin/fvwm-menu-desktop-config.fpl:128 bin/fvwm-menu-desktop-config.fpl:139
+#: bin/fvwm-menu-desktop-config.fpl:147 bin/fvwm-menu-desktop-config.fpl:155
+msgid "  "
+msgstr "  "
+
+#: bin/fvwm-menu-desktop-config.fpl:129
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:38
+msgid "Icon size:          "
+msgstr "ხატულას ზომა:          "
+
+#: bin/fvwm-menu-desktop-config.fpl:131
+msgid " (Default is 24)"
+msgstr " (ნაგულისხმევია 24)"
+
+#: bin/fvwm-menu-desktop-config.fpl:134
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:99
+msgid "Use Titles?         "
+msgstr "სათაურების გამოყენება?         "
+
+#: bin/fvwm-menu-desktop-config.fpl:140
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:57
+msgid "Used Icon theme:    "
+msgstr "გამოყენებული ხატულების თემა:    "
+
+#: bin/fvwm-menu-desktop-config.fpl:144
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:71
+msgid "Directory Icon:     "
+msgstr "საქაღალდის ხატულა:     "
+
+#: bin/fvwm-menu-desktop-config.fpl:148
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:85
+msgid "Application Icon:   "
+msgstr "აპლიკაციის ხატულა:   "
+
+#: bin/fvwm-menu-desktop-config.fpl:152
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:104
+msgid "Top Menu Name:      "
+msgstr "ყველაზე ზედა მენიუს სახელი:      "
+
+#: bin/fvwm-menu-desktop-config.fpl:156
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:109
+msgid "Insert Menu Into:   "
+msgstr "მენიუს ჩასმა სად:   "
+
+#: bin/fvwm-menu-desktop-config.fpl:160
+msgid "Terminal command:   "
+msgstr "ტერმინალის ბრძანება:   "
+
+#: bin/fvwm-menu-desktop-config.fpl:162
+msgid " (Used to run Terminal entries)"
+msgstr " (გამოიყენება ტერმინალის ჩანაწერების გასაშვებად)"
+
+#: bin/fvwm-menu-desktop-config.fpl:165
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:46
+msgid "Icon directory:     "
+msgstr "ხატულას საქაღალდე:     "
+
+#: bin/fvwm-menu-desktop-config.fpl:167
+msgid " (Directory for converted icons)"
+msgstr " (საქაღალდე გადაყვანილი ხატულებისთვის)"
+
+#: bin/fvwm-menu-desktop-config.fpl:170
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:122
+msgid "Output path:        "
+msgstr "გამოტანის ბილიკი:        "
+
+#: bin/fvwm-menu-desktop-config.fpl:172
+msgid " (Full path to store output)"
+msgstr " (სრული ბილიკი გამოტანილი ინფორმაციის შესანახად"
+
+#: bin/fvwm-menu-desktop-config.fpl:180
+msgid "Export Menu"
+msgstr "გატანის მენიუ"
+
+#: bin/fvwm-menu-desktop-config.fpl:211
+msgid "Save and Regenerate"
+msgstr "შენახვა და თავიდან გენერაცია"
+
+#: bin/fvwm-menu-desktop-config.fpl:251
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:67
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:62
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:66
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:170
+msgid "Save"
+msgstr "შენახვა"
+
+#: bin/fvwm-menu-desktop-config.fpl:289
+msgid "Reset"
+msgstr "ჩამოყრა"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:134
+msgid "XDGMenu Help"
+msgstr "XDGMenu -ის დახმარება"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:10
+msgid "XDGMenu.Help"
+msgstr "XDGMenu.Help"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:17
+msgid ""
+"All the XDG menus found on the system are listed under Available Menus.  Use"
+msgstr ""
+"სისტემაში აღმოჩენილი ყველა XDG-ის მენიუები ხელმისაწვდომი მენიუების სიაშია.  "
+"გამოიყენეთ"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:19
+msgid ""
+"this FvwmForm to configure some of the defaults options for fvwm-menu-desktop"
+msgstr ""
+"ეს FvwmForm, რომ მოირგოთ fvwm-menu-desktop-ის ზოგიერთი ნაგულისხმევი პარამეტრი"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:21
+msgid ""
+"and select which menus are generated.  Select the options you want and then"
+msgstr ""
+"და აირჩიეთ, რომელი მენიუების გენერაცია ხდება.  აირჩიეთ პარამეტრები, რომლებიც "
+"გნებავთ და"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:23
+msgid "generate then generate the menu by selecting the following:"
+msgstr "დააგენერირეთ მენიუ შემდეგის არჩევით:"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:27
+msgid "Export Menu:"
+msgstr "გატანის მენიუ:"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:29
+msgid ""
+"     Generates a menu by calling fvwm-menu-desktop with the selected options"
+msgstr ""
+"    აგენერირებს მენიუს fvwm-menu-desktop-ის გამოძახებით არჩეული პარამეტრებით"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:31
+msgid ""
+"     and saves the output to Output Path. After the menu file is created it"
+msgstr ""
+"     და ინახავს გამოტანილ ინფორმაციას გამოტანის ბილიკში. მენიუს ფილის "
+"შექმნის შემდეგ მას"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:33
+msgid ""
+"     is read by fvwm. This option does not save any changes made to settings."
+msgstr ""
+"    fvwm კითხულობს. ეს პარამეტრი კონფიგურაციაში შეტანილ ცვლილებებს არ "
+"ინახავს."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:37
+msgid "Save and Regenerate:"
+msgstr "შენახვა და თავიდან გენერაცია:"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:39
+msgid ""
+"     This saves the settings then runs fvwm-menu-desktop with no options "
+"using"
+msgstr ""
+"    ეს ინახავს პარამეტრებს, შემდეგ კი უშვებს fvwm-menu-desktop-ს "
+"პარამეტრების გარეშე"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:41
+msgid ""
+"     the defaults saved in the config file. This does not export the menu."
+msgstr ""
+"   კონფიგურაციის ფაილში შენახული ნაგულისხმევი პარამეტრებით. ეს მენიუს "
+"გატანას არ ახდენს."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:45
+msgid ""
+"Menus are found /etc/xdg/menus, $HOME/.config/menus, and $XDG_MENU_PREFIX."
+msgstr ""
+"მენიუების აღმოჩენა ხდება საქაღალდეებში /etc/xdg/menus, $HOME/.config/menus "
+"და $XDG_MENU_PREFIX."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:47
+msgid ""
+"Note that equal menus found under both /etc/xdg/menus AND $HOME/.config/"
+"menus/"
+msgstr ""
+"გაითვალისწინეთ, რომ ტოლი მენიუები აღმოჩენილია საქაღალდეებში /etc/xdg/menus "
+"და $HOME/.config/menus/"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:49
+msgid ""
+"following the XDG menu specification are only shown in $HOME/.config/menus/."
+msgstr ""
+"XDG-ის მენიუს სპეციფიკაციის მიხედვით ისინი, მხოლოდ, ნაჩვენებია $HOME/.config/"
+"menus/-ში."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:53
+msgid "If no menus appear check with 'fvwm-menu-desktop --get-menus all -v'."
+msgstr ""
+"თუ მენიუები არ გამოჩნდება, შეამოწმეთ ბრძანებით 'fvwm-menu-desktop --get-"
+"menus all -v'."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:55
+msgid "Also it is a good idea to check $HOME/.xsession-errors for errors."
+msgstr "ასევე, კარგი იდეაა შეამოწმოთ შეცდომებზე ფაილი $HOME/.xsession-errors."
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:66
+msgid "Options Help"
+msgstr "პარამეტრების დახმარება"
+
+#: modules/FvwmForm/FvwmForm-XDGMenuHelp:68
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:136
+msgid "manpage"
+msgstr "manpage"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:6
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:10
+msgid "XDGMenu Options Help"
+msgstr "XDGMenu-ის პარამეტრების დახმარება"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:15
+msgid "General Options"
+msgstr "ზოგადი პარამეტრები"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:19
+msgid "Include in Menu:    "
+msgstr "ჩასმა მენიუში:    "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:20
+msgid ""
+"Set if XDGMenu will include menu items to Configure and/or Regenerate the "
+"menu"
+msgstr ""
+"ჩართეთ, თუ XDGMenu ჩასვამს მენიუს პუნქტებს მენიუს მორგებისთვის, ან თავიდან "
+"გენერაციისთვის"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:22
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:30
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:33
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:41
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:49
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:52
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:60
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:63
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:66
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:74
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:77
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:80
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:88
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:91
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:94
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:117
+msgid "                    "
+msgstr "                    "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:23
+msgid "at the bottom of the top level menu."
+msgstr "უმაღლესი დონის მენიუს ბოლოში."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:28
+msgid ""
+"Option enables mini-icons in the menu(s). Warning! If ImageMagick is "
+"installed"
+msgstr ""
+"პარამეტრი ჩართავს მინიხატულებს მენიუებში. ფრთხილად! თუ ImageMagick "
+"დაყენებულია"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:31
+msgid ""
+"the script may generate all the icons and pause your system until the job is"
+msgstr ""
+"სკრიპტმა შეიძლება, დააგენერიროს ყველა ხატულა და შეაჩეროს თქვენი სისტემა, "
+"სანამ ამოცანა"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:34
+msgid ""
+"done. After the icons are generated, it will not take as long to regenerate."
+msgstr ""
+"არ დასრულდება. ხატულების გენერაციის შემდეგ თავიდან გენერაციას დიდი დრო არ "
+"დაჭირდება."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:39
+msgid ""
+"If 'Use Icons' is set, by default 24x24 mini-icons are used. If another size "
+"is"
+msgstr ""
+"თუ 'ხატულების გამოყენება' ჩართულია, გამოიყენება ნაგულისხმევი 24x24 "
+"მინიხატულები. თუ გსურთ სხვა"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:42
+msgid "desired enter the wanted size in this field."
+msgstr "ზომა, შეიყვანეთ ის ამ ველში."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:47
+msgid ""
+"If the specified icon isn't that size it is converted if ImageMagick is "
+"installed."
+msgstr ""
+"თუ მითითებული ხატულა ამ ზომის არაა, მოხდება მისი გადაყვანა, თუ ImageMagick "
+"დაყენებულია."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:50
+msgid ""
+"Generated icons are saved in $HOME/.fvwm/icons or the directory specified "
+"here."
+msgstr ""
+"გენერირებული ხატულების შენახვა ხდება საქაღალდეში $HOME/.fvwm/icons, ან აქ "
+"მითითებულ საქაღალდეში."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:53
+msgid "Otherwise no icon appears in the menu for that entry."
+msgstr "სხვაგვარად იმ პუნქტისთვის მენიუში ხატულა არ გამოჩნდება."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:58
+msgid "Sets the used icon theme. Default is 'gnome' but all others found in"
+msgstr ""
+"დააყენებს ხატულების თემას. ნაგულისხმევია 'gnome', მაგრამ ყველა, რომელიც "
+"აღმოჩენილია"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:61
+msgid ""
+"/usr/share/icons can used except the hicolor theme because it's the default"
+msgstr ""
+"/usr/share/icons-ში, შეიძლება, გამოყენებული იქნას, hicolor-ის გარდა, რადგან "
+"ის ნაგულისხმევი"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:64
+msgid ""
+"fallback theme if no icon is found. Note that the theme name must be written"
+msgstr ""
+"სარეზერვო თემაა, თუ ხატულები აღმოჩენილი არაა. დაიმახსოვრეთ, რომ თემის სახელი"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:67
+msgid "exactly as the icon directory e.g."
+msgstr "ზუსტად ისე უნდა ეეროს, როგორც ხატულების საქაღალდე."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:72
+msgid ""
+"If 'Use Icons' is enabled and for a directory in a menu no icon is found"
+msgstr ""
+"თუ 'ხატულების გამოყენება' ჩართულია და მენიუს საქაღალდეში ხატულა აღმოჩენილი "
+"არაა"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:75
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:89
+msgid "as default icon is used. But if the gnome icon theme isn't"
+msgstr ""
+"გამოყენებული იქნება ნაგულისხმევი ხატულა. მაგრამ თუ gnome-ის ხატულების თემა"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:78
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:92
+msgid "installed no default icon appears. Another icon can defined here."
+msgstr ""
+"დაყენებული არა, ნაგულისხმევი ხატულა არ გამოჩნდება. კიდევ ერთი ხატულა "
+"შეგიძლიათ, აქ აღწეროთ."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:81
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:95
+msgid "Only the name of an icon is needed not the path!"
+msgstr "საჭიროა, მხოლოდ, ხატულას სახელი, ბილიკი კი - არა!"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:86
+msgid "If 'Use Icons' is enabled and for an application no icon is found"
+msgstr ""
+"თუ 'ხატულების გამოყენება' ჩართულია აპლიკაციისთვის და ხატულა აღმოჩენილი არაა"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:100
+msgid ""
+"If this option is set menus are generated with titles. Default is use titles."
+msgstr ""
+"თუ ეს პარამეტრი ჩართულია, მენიუების გენერაცია სათაურებით ხდება. "
+"ნაგულისხმევია სათაურების გამოყენება."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:105
+msgid "Sets the name of the name of the top level menu. Default is XDGMenu."
+msgstr "დააყენებს უმაღლესი დონის მენიუს სახელს. ნაგულისხმევია XDGMenu."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:110
+msgid "Inserts the menu items into the given Menu."
+msgstr "ჩასვამს მენიუს პუნქტებს მითითებულ მენიუში."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:114
+msgid "Terminal Command:   "
+msgstr "ტერმინალის ბრძანება:   "
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:115
+msgid ""
+"Enter terminal emulator command used to launch terminal applications. The "
+"command"
+msgstr ""
+"შეიყვანეთ ტერმინალის ემულატორის ბრძანება ტერმინალის აპლიკაციების გასაშვებად. "
+"ბრძანება"
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:118
+msgid "must end with an execute option (-e). Default xterm -e."
+msgstr "უნდა სრულდებოდეს გაშვების პარამეტრით (-e). ნაგულისხმევია xterm -e."
+
+#: modules/FvwmForm/FvwmForm-XDGOptionsHelp:123
+msgid "Enter the FULL path to export menu. Default $FVWM_USERDIR/.XDGMmenu."
+msgstr ""
+"მენიუს გასატანად შეიყვანეთ სრული ბილიკი. ნაგულისხმევია "
+"$FVWM_USERDIR/.XDGMenu."
+
+#: default-config/FvwmScript-ConfirmQuit:11
+msgid "Do you really want to quit Fvwm?"
+msgstr "მართლა გნებავთ Fvwm-დან გასვლა?"
+
+#: default-config/FvwmScript-ConfirmQuit:41
+#: default-config/FvwmScript-ConfirmCopyConfig:127
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:58
+msgid "Cancel"
+msgstr "გაუქმება"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:2
+msgid "ConfirmCopyConfig"
+msgstr "ConfirmCopyConfig"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:21
+msgid "Fvwm Default Configuration"
+msgstr "Fvwm-ის ნაგულისხმევი კონფიგურაცია"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:36
+msgid "This script copies the default configuration into your home directory:"
+msgstr ""
+"ეს სკრიპტი ნაგულისხმევ კონფიგურაციას თქვენს საწყის საქაღალდეში აკოპირებს:"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:64
+msgid "A backup of your current configuration will be located at:"
+msgstr "თქვენი მიმდინარე კონფიგურაციის მარქაფი მოთავსებული იქნება მისამართზე:"
+
+#: default-config/FvwmScript-ConfirmCopyConfig:92
+msgid "Click Confirm to continue and restart Fvwm."
+msgstr "დააწკაპუნეთ დადასტურებაზე გასაგრძელებლად და Fvwm-ის გადასატვირთად."
+
+#: default-config/FvwmScript-ConfirmCopyConfig:107
+msgid "Confirm"
+msgstr "დადასტურება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:2
+msgid "Bell Setup"
+msgstr "ზარის მორგება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:49
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:43
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:47
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:132
+msgid "Apply"
+msgstr "გადატარება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:100
+msgid "Beep"
+msgstr "პიპინი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:135
+msgid "Volume:"
+msgstr "ხმა:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:161
+msgid "Pitch(Hz):"
+msgstr "ტონი(ჰც)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:187
+msgid "Duration(ms):"
+msgstr "ხანგრძლივობა (მწმ):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-BellSetup:212
+msgid "Bell"
+msgstr "ზარი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:2
+msgid "Keyboard Setup"
+msgstr "კლავიატურის მორგება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:120
+msgid "Click Volume (%)"
+msgstr "წკაპი ხმისთვის (%)"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:133
+msgid "AutoRepeat On"
+msgstr "ავტოგამეორება ჩართულია"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:159
+msgid "Start Delay:  "
+msgstr "დაწყების დაყოვნება:  "
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:185
+msgid "Repeat Delay:"
+msgstr "გამეორების დაყოვნება:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup:210
+msgid "Keyboard"
+msgstr "კლავიატურა"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:2
+msgid "Pointer Setup"
+msgstr "კურსორის მორგება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:108
+msgid "Right-handed user|Left-handed user"
+msgstr "მარჯვენა/ცაცია"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:122
+msgid "Mouse configuration:"
+msgstr "თაგუნას მორგება:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:150
+msgid "Acceleration:"
+msgstr "აჩქარება:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:177
+msgid "Threshold (pixels):"
+msgstr "ზღვარი (პიქსელებში):"
+
+#: modules/FvwmScript/Scripts/FvwmScript-PointerSetup:202
+msgid "Pointer"
+msgstr "კურსორი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:2
+msgid "Screen Setup"
+msgstr "ეკრანის მორგება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:264
+msgid "Background"
+msgstr "ფონი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:279
+msgid "Uniform color:"
+msgstr "ერთგვაროვანი ფერი:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:394
+msgid "Pixmap:"
+msgstr "პიქსელების რუკა:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:425
+msgid "Browser..."
+msgstr "ბრაუზერი..."
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:468
+msgid "Disable xinit background"
+msgstr "xinit-ის ფონის გამორთვა"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:500
+msgid "Screen-saver"
+msgstr "ეკრანის შემნახველი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:514
+msgid "Blank"
+msgstr "სუფთა"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:528
+msgid "Timeout(s):"
+msgstr "მოლოდინის ვადა:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:554
+msgid "Pattern"
+msgstr "შაბლონი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:569
+msgid "Cycle(s):"
+msgstr "ციკლ(ებ)-ი:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:614
+msgid "DPMS"
+msgstr "DPMS"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:628
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:768
+msgid "Enable"
+msgstr "ჩართვა"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:643
+msgid "Disable"
+msgstr "გამორთვა"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:657
+msgid "Standby(s):"
+msgstr "ლოდინ(ებ)-ი:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:684
+msgid "Suspend(s):"
+msgstr "შეჩერება:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:711
+msgid "Off(s):"
+msgstr "გამორთვა:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:754
+msgid "xscreensaver"
+msgstr "xscreensaver"
+
+#: modules/FvwmScript/Scripts/FvwmScript-ScreenSetup:794
+msgid "Config and Demo"
+msgstr "კონფიგურაცია და დემო"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:2
+msgid "File Browser"
+msgstr "ფაილის ბრაუზერი"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:42
+msgid "OK"
+msgstr "დიახ"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:86
+msgid "Path:"
+msgstr "ბილიკი:"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:181
+msgid " Show hidden files"
+msgstr " დამალული ფაილების ჩვენება"
+
+#: modules/FvwmScript/Scripts/FvwmScript-FileBrowser:246
+msgid "Selected file:"
+msgstr "არჩეული ფაილი:"
