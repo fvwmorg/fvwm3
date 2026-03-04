@@ -714,7 +714,7 @@ static void _execute_command_line(
 		}
 		goto fn_exit;
 	case CP_EXECTYPE_UNKNOWN:
-		if (executeModuleDesperate(func_rc, exc, pc.cline, &pc) ==
+		if (executeModuleDesperate(exc, pc.cline) ==
 		    NULL && *err_func != 0 && !set_silent)
 		{
 			fvwm_debug(__func__, "No such command '%s'", err_func);
@@ -1236,29 +1236,33 @@ void functions_init(void)
 	return;
 }
 
-void execute_function(F_CMD_ARGS, func_flags_t exec_flags)
+void execute_function(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc, func_flags_t exec_flags)
 {
-	_execute_command_line(F_PASS_ARGS, exec_flags, NULL, NULL, False);
+	_execute_command_line(cond_rc, exc, action, pc, exec_flags, NULL, NULL,
+		False);
 
 	return;
 }
 
-void execute_function_override_wcontext(
-	F_CMD_ARGS, func_flags_t exec_flags, int wcontext)
+void execute_function_override_wcontext(cond_rc_t *cond_rc,
+	const exec_context_t *exc, char *action, cmdparser_context_t *pc,
+	func_flags_t exec_flags, int wcontext)
 {
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
 
 	ecc.w.wcontext = wcontext;
 	exc2 = exc_clone_context(exc, &ecc, ECC_WCONTEXT);
-	execute_function(F_PASS_ARGS_WITH_EXC(exc2), exec_flags);
+	execute_function(cond_rc, exc2, action, pc, exec_flags);
 	exc_destroy_context(exc2);
 
 	return;
 }
 
-void execute_function_override_window(
-	F_CMD_ARGS, func_flags_t exec_flags, FvwmWindow *fw)
+void execute_function_override_window(cond_rc_t *cond_rc,
+	const exec_context_t *exc, char *action, cmdparser_context_t *pc,
+	func_flags_t exec_flags, FvwmWindow *fw)
 {
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
@@ -1286,7 +1290,7 @@ void execute_function_override_window(
 		exc2 = exc_create_context(
 			&ecc, ECC_TYPE | ECC_FW | ECC_W | ECC_WCONTEXT);
 	}
-	execute_function(F_PASS_ARGS_WITH_EXC(exc2), exec_flags);
+	execute_function(cond_rc, exc2, action, pc, exec_flags);
 	exc_destroy_context(exc2);
 
 	return;
@@ -1427,7 +1431,8 @@ void AddToFunction(FvwmFunction *func, char *action)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_DestroyFunc(F_CMD_ARGS)
+void CMD_DestroyFunc(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmFunction *func;
 	char *token;
@@ -1451,7 +1456,8 @@ void CMD_DestroyFunc(F_CMD_ARGS)
 	return;
 }
 
-void CMD_AddToFunc(F_CMD_ARGS)
+void CMD_AddToFunc(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmFunction *func;
 	char *token;
@@ -1476,7 +1482,8 @@ void CMD_AddToFunc(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Plus(F_CMD_ARGS)
+void CMD_Plus(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	if (Scr.last_added_item.type == ADDED_MENU)
 	{
@@ -1497,13 +1504,14 @@ void CMD_Plus(F_CMD_ARGS)
 		{
 			return;
 		}
-		AddToDecor(F_PASS_ARGS, tmp);
+		AddToDecor(cond_rc, exc, action, pc, tmp);
 	}
 
 	return;
 }
 
-void CMD_EchoFuncDefinition(F_CMD_ARGS)
+void CMD_EchoFuncDefinition(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmFunction *func;
 	const func_t *bif;
@@ -1547,8 +1555,13 @@ void CMD_EchoFuncDefinition(F_CMD_ARGS)
 }
 
 /* dummy commands */
-void CMD_Title(F_CMD_ARGS) { }
-void CMD_TearMenuOff(F_CMD_ARGS) { }
-void CMD_KeepRc(F_CMD_ARGS) { }
-void CMD_Silent(F_CMD_ARGS) { }
-void CMD_Function(F_CMD_ARGS) { }
+void CMD_Title(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc) { }
+void CMD_TearMenuOff(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc) { }
+void CMD_KeepRc(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc) { }
+void CMD_Silent(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc) { }
+void CMD_Function(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc) { }
