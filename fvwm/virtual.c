@@ -2028,18 +2028,21 @@ void parse_edge_leave_command(char *action, int type)
 }
 
 /* EdgeCommand - binds a function to a pan frame enter event */
-void CMD_EdgeCommand(F_CMD_ARGS)
+void CMD_EdgeCommand(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	parse_edge_leave_command(action, EDGE_CMD);
 }
 
 /* EdgeLeaveCommand - binds a function to a pan frame Leave event */
-void CMD_EdgeLeaveCommand(F_CMD_ARGS)
+void CMD_EdgeLeaveCommand(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	parse_edge_leave_command(action, EDGE_LEAVE_CMD);
 }
 
-void CMD_EdgeThickness(F_CMD_ARGS)
+void CMD_EdgeThickness(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val, n;
 	char *option;
@@ -2094,7 +2097,8 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 	}
 }
 
-void CMD_EdgeScroll(F_CMD_ARGS)
+void CMD_EdgeScroll(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val1, val2, val1_unit, val2_unit, n;
 	char *token, *option;
@@ -2180,7 +2184,8 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 	}
 }
 
-void CMD_EdgeResistance(F_CMD_ARGS)
+void CMD_EdgeResistance(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val[3];
 	int n;
@@ -2239,7 +2244,8 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DesktopConfiguration(F_CMD_ARGS)
+void CMD_DesktopConfiguration(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmWindow	*t;
 	struct monitor	*m = monitor_get_current();
@@ -2430,7 +2436,8 @@ calculate_page_sizes(struct monitor *m, int dx, int dy)
 		monitor_get_all_heights() - monitor_get_all_heights();
 }
 
-void CMD_DesktopSize(F_CMD_ARGS)
+void CMD_DesktopSize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val[2];
 	struct monitor	*m;
@@ -2470,7 +2477,8 @@ void CMD_DesktopSize(F_CMD_ARGS)
  * Move to a new desktop
  *
  */
-void CMD_GotoDesk(F_CMD_ARGS)
+void CMD_GotoDesk(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	struct monitor  *m = NULL, *m_loop;
 	char		*token;
@@ -2536,7 +2544,8 @@ void CMD_GotoDesk(F_CMD_ARGS)
  *     viewport is moved, then switch the viewport, then the desk.
  *
  */
-void CMD_GotoDeskAndPage(F_CMD_ARGS)
+void CMD_GotoDeskAndPage(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val[3];
 	int current_desk;
@@ -2623,7 +2632,8 @@ done:
 	return;
 }
 
-void CMD_GotoPage(F_CMD_ARGS)
+void CMD_GotoPage(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow * const fw = exc->w.fw;
 	struct monitor	*m = (fw && fw->m) ? fw->m : monitor_get_current();
@@ -2664,7 +2674,8 @@ void CMD_GotoPage(F_CMD_ARGS)
 }
 
 /* function with parsing of command line */
-void CMD_MoveToDesk(F_CMD_ARGS)
+void CMD_MoveToDesk(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int desk;
 	FvwmWindow * const fw = exc->w.fw;
@@ -2696,7 +2707,8 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 	do_move_window_to_desk(fw, desk);
 }
 
-void CMD_Scroll(F_CMD_ARGS)
+void CMD_Scroll(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int x,y;
 	int val1, val2, val1_unit, val2_unit;
@@ -3050,7 +3062,8 @@ apply_desktops_monitor(struct monitor *m)
  * Defines the name of a desktop
  *
  */
-void CMD_DesktopName(F_CMD_ARGS)
+void CMD_DesktopName(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	struct monitor	*m;
 	int		 desk;

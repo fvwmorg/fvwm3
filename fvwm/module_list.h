@@ -6,9 +6,6 @@
 #include "libs/Module.h"
 #include "libs/fqueue.h"
 
-/* for F_CMD_ARGS */
-#include "fvwm/fvwm.h"
-
 /* please don't use msg_masks_t and PipeMask outside of module_interface.c.
  * They are only global to allow to access the IS_MESSAGE_SELECTED macro without
  * having to call a function. */
@@ -104,7 +101,7 @@ void module_kill_all(void);
 void module_kill(fmodule *module);
 
 /* execute module wrapper, desperate mode */
-fmodule *executeModuleDesperate(F_CMD_ARGS);
+fmodule *executeModuleDesperate(const exec_context_t *exc, char *action);
 
 
 /*

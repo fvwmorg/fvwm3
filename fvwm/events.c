@@ -4766,7 +4766,8 @@ Bool is_resizing_event_pending(FvwmWindow *fw)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_XSynchronize(F_CMD_ARGS)
+void CMD_XSynchronize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int toggle;
 
@@ -4776,7 +4777,8 @@ void CMD_XSynchronize(F_CMD_ARGS)
 	return;
 }
 
-void CMD_XSync(F_CMD_ARGS)
+void CMD_XSync(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	XSync(dpy, 0);
 

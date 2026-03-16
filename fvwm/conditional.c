@@ -171,9 +171,9 @@ static FvwmWindow *Circulate(
 	return found;
 }
 
-static void circulate_cmd(
-	F_CMD_ARGS, int new_context, int circ_dir, Bool do_use_found,
-	Bool do_exec_on_match)
+static void circulate_cmd(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc, int new_context, int circ_dir,
+	Bool do_use_found, Bool do_exec_on_match)
 {
 	FvwmWindow *found;
 	char *restofline;
@@ -210,7 +210,8 @@ static void circulate_cmd(
 	return;
 }
 
-static void select_cmd(F_CMD_ARGS)
+static void select_cmd(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *restofline;
 	char *flags;
@@ -1156,7 +1157,8 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	return True;
 }
 
-static void direction_cmd(F_CMD_ARGS, Bool is_scan)
+static void direction_cmd(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc, Bool is_scan)
 {
 	rectangle my_g;
 	rectangle his_g;
@@ -1485,23 +1487,26 @@ static int _rc_matches_rcstring_consume(
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_Prev(F_CMD_ARGS)
+void CMD_Prev(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	circulate_cmd(F_PASS_ARGS, C_WINDOW, -1, True, True);
+	circulate_cmd(cond_rc, exc, action, pc, C_WINDOW, -1, True, True);
 
 	return;
 }
 
-void CMD_Next(F_CMD_ARGS)
+void CMD_Next(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	circulate_cmd(F_PASS_ARGS, C_WINDOW, 1, True, True);
+	circulate_cmd(cond_rc, exc, action, pc, C_WINDOW, 1, True, True);
 
 	return;
 }
 
-void CMD_None(F_CMD_ARGS)
+void CMD_None(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	circulate_cmd(F_PASS_ARGS, C_ROOT, 1, False, False);
+	circulate_cmd(cond_rc, exc, action, pc, C_ROOT, 1, False, False);
 	/* invert return code */
 	switch (cond_rc->rc)
 	{
@@ -1518,47 +1523,53 @@ void CMD_None(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Any(F_CMD_ARGS)
+void CMD_Any(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	circulate_cmd(F_PASS_ARGS, exc->w.wcontext, 1, False, True);
+	circulate_cmd(cond_rc, exc, action, pc, exc->w.wcontext, 1, False, True);
 
 	return;
 }
 
-void CMD_Current(F_CMD_ARGS)
+void CMD_Current(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	circulate_cmd(F_PASS_ARGS, C_WINDOW, 0, True, True);
+	circulate_cmd(cond_rc, exc, action, pc, C_WINDOW, 0, True, True);
 
 	return;
 }
 
-void CMD_PointerWindow(F_CMD_ARGS)
+void CMD_PointerWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	exec_context_changes_t ecc;
 
 	ecc.w.fw = get_pointer_fvwm_window();
 	exc = exc_clone_context(exc, &ecc, ECC_FW);
-	select_cmd(F_PASS_ARGS);
+	select_cmd(cond_rc, exc, action, pc);
 	exc_destroy_context(exc);
 
 	return;
 }
 
-void CMD_ThisWindow(F_CMD_ARGS)
+void CMD_ThisWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	select_cmd(F_PASS_ARGS);
+	select_cmd(cond_rc, exc, action, pc);
 
 	return;
 }
 
-void CMD_Pick(F_CMD_ARGS)
+void CMD_Pick(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	select_cmd(F_PASS_ARGS);
+	select_cmd(cond_rc, exc, action, pc);
 
 	return;
 }
 
-void CMD_All(F_CMD_ARGS)
+void CMD_All(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow *t, **g;
 	char *restofline;
@@ -1685,17 +1696,20 @@ void CMD_All(F_CMD_ARGS)
  * Execute a function to the closest window in the given
  * direction.
  */
-void CMD_Direction(F_CMD_ARGS)
+void CMD_Direction(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	direction_cmd(F_PASS_ARGS,False);
+	direction_cmd(cond_rc, exc, action, pc, False);
 }
 
-void CMD_ScanForWindow(F_CMD_ARGS)
+void CMD_ScanForWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	direction_cmd(F_PASS_ARGS,True);
+	direction_cmd(cond_rc, exc, action, pc, True);
 }
 
-void CMD_WindowId(F_CMD_ARGS)
+void CMD_WindowId(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow *t;
 	char *token;
@@ -1838,7 +1852,8 @@ pc, 					FUNC_IS_UNMANAGED);
 	return;
 }
 
-void CMD_TestRc(F_CMD_ARGS)
+void CMD_TestRc(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *rest;
 
@@ -1858,7 +1873,8 @@ void CMD_TestRc(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Break(F_CMD_ARGS)
+void CMD_Break(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int rc;
 
@@ -1876,7 +1892,8 @@ void CMD_Break(F_CMD_ARGS)
 	return;
 }
 
-void CMD_NoWindow(F_CMD_ARGS)
+void CMD_NoWindow(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	execute_function_override_window(cond_rc, exc, action, pc, 0, NULL);
 
@@ -1965,7 +1982,8 @@ static Bool match_version(char *version, char *operator)
 	return False;
 }
 
-void CMD_Test(F_CMD_ARGS)
+void CMD_Test(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *restofline;
 	char *flags;

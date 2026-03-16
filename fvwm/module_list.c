@@ -23,11 +23,6 @@
 /* for time(); difftime() */
 #include <time.h>
 
-/* for F_CMD_ARGS */
-#include "fvwm/fvwm.h"
-#include "execcontext.h"
-/* end of for CMD_ARGS */
-
 /*for debug message*/
 #include "fvwm.h"
 #include "misc.h"
@@ -226,8 +221,8 @@ static inline void module_list_destroy(fmodule_list *list)
 	return;
 }
 
-static fmodule *do_execute_module(
-	F_CMD_ARGS, Bool desperate, Bool do_listen_only)
+static fmodule *do_execute_module(const exec_context_t *exc, char *action,
+	Bool desperate, Bool do_listen_only)
 {
 	int fvwm_to_app[2], app_to_fvwm[2];
 	int i, val, nargs = 0;
@@ -501,11 +496,11 @@ static fmodule *do_execute_module(
 	return NULL;
 }
 
-fmodule *executeModuleDesperate(F_CMD_ARGS)
+fmodule *executeModuleDesperate(const exec_context_t *exc, char *action)
 {
 	fmodule *m;
 
-	m = do_execute_module(F_PASS_ARGS, True, False);
+	m = do_execute_module(exc, action, True, False);
 
 	return m;
 }
@@ -1059,21 +1054,24 @@ RETSIGTYPE DeadPipe(int sig)
 	SIGNAL_RETURN;
 }
 
-void CMD_Module(F_CMD_ARGS)
+void CMD_Module(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	do_execute_module(F_PASS_ARGS, False, False);
+	do_execute_module(exc, action, False, False);
 
 	return;
 }
 
-void CMD_ModuleListenOnly(F_CMD_ARGS)
+void CMD_ModuleListenOnly(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	do_execute_module(F_PASS_ARGS, False, True);
+	do_execute_module(exc, action, False, True);
 
 	return;
 }
 
-void CMD_KillModule(F_CMD_ARGS)
+void CMD_KillModule(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *name;
 	char *alias = NULL;
@@ -1094,7 +1092,8 @@ void CMD_KillModule(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ModuleSynchronous(F_CMD_ARGS)
+void CMD_ModuleSynchronous(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int sec = 0;
 	char *next;
@@ -1145,7 +1144,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		goto done;
 	}
 
-	module = do_execute_module(F_PASS_ARGS, False, False);
+	module = do_execute_module(exc, action, False, False);
 	if (module == NULL)
 	{
 		/* executing the module failed, just return */
@@ -1277,7 +1276,8 @@ done:
 
 /* mask handling - does this belong here? */
 
-void CMD_set_mask(F_CMD_ARGS)
+void CMD_set_mask(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	unsigned long val;
 
@@ -1294,7 +1294,8 @@ void CMD_set_mask(F_CMD_ARGS)
 	return;
 }
 
-void CMD_set_sync_mask(F_CMD_ARGS)
+void CMD_set_sync_mask(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	unsigned long val;
 
@@ -1311,7 +1312,8 @@ void CMD_set_sync_mask(F_CMD_ARGS)
 	return;
 }
 
-void CMD_set_nograb_mask(F_CMD_ARGS)
+void CMD_set_nograb_mask(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	unsigned long val;
 

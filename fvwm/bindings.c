@@ -516,7 +516,7 @@ static int ParseBinding(
 	return rc;
 }
 
-static void binding_cmd(F_CMD_ARGS, binding_t type)
+static void binding_cmd(char *action, binding_t type)
 {
 	Binding *b;
 	int count;
@@ -610,30 +610,34 @@ unsigned int GetUnusedModifiers(void)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_Key(F_CMD_ARGS)
+void CMD_Key(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	binding_cmd(F_PASS_ARGS, BIND_KEYPRESS);
+	binding_cmd(action, BIND_KEYPRESS);
 
 	return;
 }
 
-void CMD_PointerKey(F_CMD_ARGS)
+void CMD_PointerKey(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	binding_cmd(F_PASS_ARGS, BIND_PKEYPRESS);
+	binding_cmd(action, BIND_PKEYPRESS);
 
 	return;
 }
 
-void CMD_Mouse(F_CMD_ARGS)
+void CMD_Mouse(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	binding_cmd(F_PASS_ARGS, BIND_BUTTONPRESS);
+	binding_cmd(action, BIND_BUTTONPRESS);
 
 	return;
 }
 
 /* Declares which X modifiers are actually locks and should be ignored when
  * testing mouse/key binding modifiers. */
-void CMD_IgnoreModifiers(F_CMD_ARGS)
+void CMD_IgnoreModifiers(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *token;
 	int mods_unused_old = mods_unused;
