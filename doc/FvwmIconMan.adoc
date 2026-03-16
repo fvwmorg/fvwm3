@@ -179,11 +179,16 @@ The following options may be specified:
 *FvwmIconMan: [id] Colorset colorset::
   The default colorset used. Overrides background and foreground.
 *FvwmIconMan: [id] DrawIcons value::
-  If your version of fvwm is capable of using mini icons, then this
-  option determines if FvwmIconMan displays the mini icons. Otherwise,
-  it generates an error message. "true" means that mini icons are shown
-  for iconified windows, "false" that mini icons are never shown, and
-  "always" that mini icons are shown for all windows.
+  This sets the behavior of the space placed before each button label.
+  The default is "false" which means there is an empty space before each
+  label in which a relief button will be drawn next to all iconified
+  windows, provided 'ReliefThickness' is not zero. If this is set to
+  "true" a mini icon will be drawn in place of the relief button next
+  to all iconified windows. If this is set to "always", a mini icon
+  will be drawn for all windows. Note, iconified windows without mini
+  icons will still show a relief button unless 'ReliefThickness' is zero.
+  Last, if this is "none", the space before the label is completely
+  removed and no mini icons or relief buttons are shown.
 *FvwmIconMan: [id] FocusAndSelectButton style [forecolor backcolor]::
   Same as the plainbutton option, but specifies the look of buttons
   which are both selected, and have the keyboard focus.
