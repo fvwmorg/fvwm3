@@ -1392,7 +1392,12 @@ static void get_button_geometry(WinManager *man, Button *button,
   g->button_h = button->h;
 
 /* [BV 16-Apr-97] Mini Icons work on black-and-white too */
-  if (FMiniIconsSupported && man->draw_icons && win && win->pic.picture) {
+  if (man->draw_icons == 3) {
+    /* Icons are disabled, don't reserve any space for them. */
+    g->icon_x = g->icon_y = g->icon_h = g->icon_w = 0;
+  }
+  else if (FMiniIconsSupported && man->draw_icons && win && win->pic.picture)
+  {
     /* If no window, then icon_* aren't used, so doesn't matter what
        they are */
     g->icon_w = min(win->pic.width, g->button_h);
@@ -1457,7 +1462,8 @@ static void draw_button_background(
 static void draw_3d_icon(WinManager *man, int box, ButtonGeometry *g,
 			  int iconified, Contexts contextId)
 {
-  if ((iconified == 0) || (man->relief_thickness == 0))
+  /* If man->draw_icons == 3, iconify box is disabled, nothing to do. */
+  if (iconified == 0 || man->relief_thickness == 0 || man->draw_icons == 3)
     return;
   else
     RelieveRectangle(theDisplay, man->theWindow, g->icon_x, g->icon_y,
@@ -1476,7 +1482,8 @@ static void iconify_box(WinManager *man, WinData *win, int box,
 	int cset = man->colorsets[contextId];
 	Bool erase = False;
 
-	if (!man->window_up)
+	/* If draw_icons == 3, the iconify box has been removed. */
+	if (!man->window_up || man->draw_icons == 3)
 	{
 		return;
 	}
@@ -1802,6 +1809,12 @@ static void draw_button(WinManager *man, int button, int force)
 			draw_background = 1;
 			draw_string = 1;
 		}
+	}
+
+	/* Check if iconfiy box is disabled. */
+	if (man->draw_icons == 3) {
+		draw_icon = 0;
+		clear_old_pic = 0;
 	}
 
 	if (draw_background || draw_icon || draw_string)

@@ -1539,6 +1539,9 @@ void read_in_resources(void)
 	  else if (!strcasecmp(p, "always")) {
 	    i = 2;
 	  }
+	  else if (!strcasecmp(p, "none")) {
+	    i = 3;
+	  }
 	  else if (!strcasecmp(p, "false")) {
 	    i = 0;
 	  }
