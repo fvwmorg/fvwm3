@@ -2278,6 +2278,7 @@ int main(int argc, char **argv)
 
 	is_tracking_shared = false;
 	RB_FOREACH(m, monitors, &monitor_q) {
+		m->ewmhc.NumberOfDesktops = 1;
 		EWMH_Init(m);
 
 		/* Having initialised the monitor at startup here, we can
