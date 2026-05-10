@@ -2246,7 +2246,11 @@ static void _move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		final.x = r.x;
 		final.y = r.y;
 
-		fw->Desk = m->virtual_scr.CurrentDesk;
+		if (fw->Desk != m->virtual_scr.CurrentDesk)
+		{
+			fw->UpdateDesk = m->virtual_scr.CurrentDesk;
+		}
+
 		fw->m = m;
 	}
 	else
