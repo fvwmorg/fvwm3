@@ -442,14 +442,27 @@ monitor_compare(struct monitor *a, struct monitor *b)
 {
 	int adisable = a->flags & MONITOR_DISABLED;
 	int bdisable = b->flags & MONITOR_DISABLED;
-	if (adisable && bdisable)
-		return strcmp(a->si->name, b->si->name);
+
 	if (adisable && !bdisable)
 		return 1;
+
 	if (!adisable && bdisable)
 		return -1;
-	return (a->si->y == b->si->y) ?
+
+	int coord_comp = (a->si->y == b->si->y) ?
 		(a->si->x - b->si->x) : (a->si->y - b->si->y);
+
+	if (coord_comp != 0)
+		return coord_comp;
+
+	int size_comp = (a->si->w == b->si->w) ?
+		(a->si->h - b->si->h) : (a->si->w - b->si->w);
+
+	if (size_comp != 0)
+		return size_comp;
+
+	return strcmp(a->si->name, b->si->name);
+
 }
 
 static void
