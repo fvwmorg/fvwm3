@@ -22,8 +22,8 @@ Bool move_loop(
 int is_window_sticky_across_pages(FvwmWindow *fw);
 int is_window_sticky_across_desks(FvwmWindow *fw);
 void handle_stick(
-	F_CMD_ARGS, int toggle_page, int toggle_desk, int do_not_draw,
-	int do_silently);
+	const exec_context_t *exc, char *action,
+	int toggle_page, int toggle_desk, int do_not_draw, int do_silently);
 void resize_geometry_window(void);
 void move_icon(
 	FvwmWindow *fw, position new, position old,

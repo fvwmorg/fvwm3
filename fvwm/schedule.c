@@ -261,7 +261,8 @@ int squeue_get_last_id(void)
 	return last_schedule_id;
 }
 
-void CMD_Schedule(F_CMD_ARGS)
+void CMD_Schedule(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	Window xw;
 	Time time;
@@ -329,7 +330,8 @@ void CMD_Schedule(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Deschedule(F_CMD_ARGS)
+void CMD_Deschedule(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int id;
 	int *pid;

@@ -147,18 +147,16 @@ static void apply_window_updates(
 		{
 			/* stick and unstick the window to force the icon on
 			 * the current page */
-			handle_stick(
-				NULL, exc, "", NULL,
+			handle_stick(exc, "",
 				S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
 				S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 1, 1);
-			handle_stick(NULL, exc, "", NULL, 0, 0, 1, 0);
+			handle_stick(exc, "", 0, 0, 1, 0);
 		}
 		flags->do_update_icon_title = True;
 	}
 	else if (flags->do_update_stick)
 	{
-		handle_stick(
-			NULL, exc, "", NULL,
+		handle_stick(exc, "",
 			S_IS_STICKY_ACROSS_PAGES(SCF(*pstyle)),
 			S_IS_STICKY_ACROSS_DESKS(SCF(*pstyle)), 0, 0);
 	}
@@ -809,7 +807,8 @@ void flush_window_updates(void)
 	return;
 }
 
-void CMD_UpdateStyles(F_CMD_ARGS)
+void CMD_UpdateStyles(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	if (Scr.flags.do_need_window_update)
 	{

@@ -818,7 +818,8 @@ void ExecuteCommandQueue(void)
 /*
 ** send an arbitrary string to all instances of a module
 */
-void CMD_SendToModule(F_CMD_ARGS)
+void CMD_SendToModule(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *name,*str;
 	unsigned long data0, data1, data2;
@@ -875,7 +876,8 @@ void CMD_SendToModule(F_CMD_ARGS)
 /*
 ** send an arbitrary string back to the calling module
 */
-void CMD_Send_Reply(F_CMD_ARGS)
+void CMD_Send_Reply(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	unsigned long data0, data1, data2;
 	fmodule *module = exc->m.module;
@@ -910,7 +912,8 @@ void CMD_Send_Reply(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Send_WindowList(F_CMD_ARGS)
+void CMD_Send_WindowList(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmWindow *t;
 	fmodule *mod = exc->m.module;

@@ -1450,7 +1450,7 @@ static void DisplaySize(
 	return;
 }
 
-static Bool resize_move_window(F_CMD_ARGS)
+static Bool resize_move_window(const exec_context_t *exc, char *action)
 {
 	position final_pos = { 0, 0 };
 	size_rect final_size = { 0, 0 };
@@ -1552,17 +1552,18 @@ static Bool resize_move_window(F_CMD_ARGS)
 	return True;
 }
 
-void CMD_ResizeMove(F_CMD_ARGS)
+void CMD_ResizeMove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmWindow *fw = exc->w.fw;
 
 	if (IS_EWMH_FULLSCREEN(fw))
 	{
 		/* do not unmaximize ! */
-		CMD_ResizeMoveMaximize(F_PASS_ARGS);
+		CMD_ResizeMoveMaximize(cond_rc, exc, action, pc);
 		return;
 	}
-	resize_move_window(F_PASS_ARGS);
+	resize_move_window(exc, action);
 
 	return;
 }
@@ -2110,7 +2111,8 @@ void move_icon(
 	return;
 }
 
-static void _move_window(F_CMD_ARGS, Bool do_animate, int mode)
+static void _move_window(const exec_context_t *exc, char *action,
+	Bool do_animate, int mode)
 {
 	position final = { 0, 0 };
 	int n;
@@ -2310,27 +2312,31 @@ static void _move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	return;
 }
 
-void CMD_Move(F_CMD_ARGS)
+void CMD_Move(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	_move_window(F_PASS_ARGS, False, MOVE_NORMAL);
+	_move_window(exc, action, False, MOVE_NORMAL);
 	update_fvwm_monitor(exc->w.fw);
 }
 
-void CMD_AnimatedMove(F_CMD_ARGS)
+void CMD_AnimatedMove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	_move_window(F_PASS_ARGS, True, MOVE_NORMAL);
+	_move_window(exc, action, True, MOVE_NORMAL);
 	update_fvwm_monitor(exc->w.fw);
 }
 
-void CMD_MoveToPage(F_CMD_ARGS)
+void CMD_MoveToPage(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	_move_window(F_PASS_ARGS, False, MOVE_PAGE);
+	_move_window(exc, action, False, MOVE_PAGE);
 	update_fvwm_monitor(exc->w.fw);
 }
 
-void CMD_MoveToScreen(F_CMD_ARGS)
+void CMD_MoveToScreen(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	_move_window(F_PASS_ARGS, False, MOVE_SCREEN);
+	_move_window(exc, action, False, MOVE_SCREEN);
 	update_fvwm_monitor(exc->w.fw);
 }
 
@@ -3296,7 +3302,8 @@ Bool move_loop(
 	return do_resize_too;
 }
 
-void CMD_MoveThreshold(F_CMD_ARGS)
+void CMD_MoveThreshold(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val = 0;
 
@@ -3312,7 +3319,8 @@ void CMD_MoveThreshold(F_CMD_ARGS)
 	return;
 }
 
-void CMD_OpaqueMoveSize(F_CMD_ARGS)
+void CMD_OpaqueMoveSize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val;
 
@@ -3387,7 +3395,8 @@ static bool set_geom_win_position_val(char *s, int *coord, bool *neg, bool *rel)
 	return true;
 }
 
-void CMD_GeometryWindow(F_CMD_ARGS)
+void CMD_GeometryWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val;
 	char *token = NULL, *s = NULL;
@@ -3439,7 +3448,8 @@ void CMD_GeometryWindow(F_CMD_ARGS)
 
 static Pixmap XorPixmap = None;
 
-void CMD_XorValue(F_CMD_ARGS)
+void CMD_XorValue(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int val;
 	XGCValues gcv;
@@ -3488,7 +3498,8 @@ void CMD_XorValue(F_CMD_ARGS)
 }
 
 
-void CMD_XorPixmap(F_CMD_ARGS)
+void CMD_XorPixmap(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *PixmapName;
 	FvwmPicture *xp;
@@ -3501,7 +3512,7 @@ void CMD_XorPixmap(F_CMD_ARGS)
 	{
 		/* return to default value. */
 		action = "0";
-		CMD_XorValue(F_PASS_ARGS);
+		CMD_XorValue(cond_rc, exc, action, pc);
 		return;
 	}
 	/* get the picture in the root visual, colorlimit is ignored because the
@@ -3967,7 +3978,7 @@ static void _resize_step(
 }
 
 /* Starts a window resize operation */
-static Bool _resize_window(F_CMD_ARGS)
+static Bool _resize_window(const exec_context_t *exc, char *action)
 {
 	FvwmWindow *fw = exc->w.fw;
 	Bool is_finished = False, is_done = False, is_aborted = False;
@@ -4775,18 +4786,19 @@ static Bool _resize_window(F_CMD_ARGS)
 	return True;
 }
 
-void CMD_Resize(F_CMD_ARGS)
+void CMD_Resize(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow *fw = exc->w.fw;
 
 	if (IS_EWMH_FULLSCREEN(fw))
 	{
 		/* do not unmaximize ! */
-		CMD_ResizeMaximize(F_PASS_ARGS);
+		CMD_ResizeMaximize(cond_rc, exc, action, pc);
 		return;
 	}
 
-	_resize_window(F_PASS_ARGS);
+	_resize_window(exc, action);
 	update_fvwm_monitor(fw);
 
 	return;
@@ -5141,7 +5153,8 @@ fprintf(stderr,"%d %d %d %d, g.max_offset.x = %d, g.max_offset.y = %d, %d %d %d 
  *      (Un)Maximize a window.
  *
  */
-void CMD_Maximize(F_CMD_ARGS)
+void CMD_Maximize(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	position page;
 	int val1, val2, val1_unit, val2_unit;
@@ -5502,7 +5515,8 @@ void CMD_Maximize(F_CMD_ARGS)
  * without touching the normal geometry.
  *
  */
-void CMD_ResizeMaximize(F_CMD_ARGS)
+void CMD_ResizeMaximize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	rectangle normal_g;
 	rectangle max_g;
@@ -5513,7 +5527,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	/* keep a copy of the old geometry */
 	normal_g = fw->g.normal;
 	/* resize the window normally */
-	was_resized = _resize_window(F_PASS_ARGS);
+	was_resized = _resize_window(exc, action);
 	if (was_resized == True)
 	{
 		/* set the new geometry as the maximized geometry and restore
@@ -5531,7 +5545,8 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ResizeMoveMaximize(F_CMD_ARGS)
+void CMD_ResizeMoveMaximize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	rectangle normal_g;
 	rectangle max_g;
@@ -5542,7 +5557,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 	/* keep a copy of the old geometry */
 	normal_g = fw->g.normal;
 	/* resize the window normally */
-	was_resized = resize_move_window(F_PASS_ARGS);
+	was_resized = resize_move_window(exc, action);
 	if (was_resized == True)
 	{
 		/* set the new geometry as the maximized geometry and restore
@@ -5562,7 +5577,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 
 /* ----------------------------- stick code -------------------------------- */
 
-int stick_across_pages(F_CMD_ARGS, int toggle)
+int stick_across_pages(const exec_context_t *exc, char *action, int toggle)
 {
 	FvwmWindow *fw = exc->w.fw;
 
@@ -5581,7 +5596,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 		    fw->m->virtual_scr.CurrentDesk))
 		{
 			action = "";
-			_move_window(F_PASS_ARGS, False, MOVE_PAGE);
+			_move_window(exc, action, False, MOVE_PAGE);
 			update_fvwm_monitor(fw);
 		}
 		SET_STICKY_ACROSS_PAGES(fw, 1);
@@ -5590,7 +5605,7 @@ int stick_across_pages(F_CMD_ARGS, int toggle)
 	return 1;
 }
 
-int stick_across_desks(F_CMD_ARGS, int toggle)
+int stick_across_desks(const exec_context_t *exc, int toggle)
 {
 	FvwmWindow *fw = exc->w.fw;
 
@@ -5638,13 +5653,13 @@ static void _handle_stick_exit(
 	return;
 }
 
-void handle_stick_across_pages(
-	F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
+void handle_stick_across_pages(const exec_context_t *exc, char *action,
+	int toggle, int do_not_draw, int do_silently)
 {
 	FvwmWindow *fw = exc->w.fw;
 	int did_change;
 
-	did_change = stick_across_pages(F_PASS_ARGS, toggle);
+	did_change = stick_across_pages(exc, action, toggle);
 	if (did_change)
 	{
 		_handle_stick_exit(fw, do_not_draw, do_silently);
@@ -5653,13 +5668,13 @@ void handle_stick_across_pages(
 	return;
 }
 
-void handle_stick_across_desks(
-	F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
+void handle_stick_across_desks(const exec_context_t *exc, int toggle,
+	int do_not_draw, int do_silently)
 {
 	FvwmWindow *fw = exc->w.fw;
 	int did_change;
 
-	did_change = stick_across_desks(F_PASS_ARGS, toggle);
+	did_change = stick_across_desks(exc, toggle);
 	if (did_change)
 	{
 		_handle_stick_exit(fw, do_not_draw, do_silently);
@@ -5668,16 +5683,15 @@ void handle_stick_across_desks(
 	return;
 }
 
-void handle_stick(
-	F_CMD_ARGS, int toggle_page, int toggle_desk, int do_not_draw,
-	int do_silently)
+void handle_stick(const exec_context_t *exc, char *action,
+	int toggle_page, int toggle_desk, int do_not_draw, int do_silently)
 {
 	FvwmWindow *fw = exc->w.fw;
 	int did_change;
 
 	did_change = 0;
-	did_change |= stick_across_desks(F_PASS_ARGS, toggle_desk);
-	did_change |= stick_across_pages(F_PASS_ARGS, toggle_page);
+	did_change |= stick_across_desks(exc, toggle_desk);
+	did_change |= stick_across_pages(exc, action, toggle_page);
 	if (did_change)
 	{
 		_handle_stick_exit(fw, do_not_draw, do_silently);
@@ -5686,7 +5700,8 @@ void handle_stick(
 	return;
 }
 
-void CMD_Stick(F_CMD_ARGS)
+void CMD_Stick(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int toggle;
 
@@ -5698,27 +5713,29 @@ void CMD_Stick(F_CMD_ARGS)
 		 * rather switch it off completely */
 		toggle = 0;
 	}
-	handle_stick(F_PASS_ARGS, toggle, toggle, 0, 0);
+	handle_stick(exc, action, toggle, toggle, 0, 0);
 
 	return;
 }
 
-void CMD_StickAcrossPages(F_CMD_ARGS)
+void CMD_StickAcrossPages(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int toggle;
 
 	toggle = ParseToggleArgument(action, &action, -1, 0);
-	handle_stick_across_pages(F_PASS_ARGS, toggle, 0, 0);
+	handle_stick_across_pages(exc, action, toggle, 0, 0);
 
 	return;
 }
 
-void CMD_StickAcrossDesks(F_CMD_ARGS)
+void CMD_StickAcrossDesks(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int toggle;
 
 	toggle = ParseToggleArgument(action, &action, -1, 0);
-	handle_stick_across_desks(F_PASS_ARGS, toggle, 0, 0);
+	handle_stick_across_desks(exc, toggle, 0, 0);
 
 	return;
 }
