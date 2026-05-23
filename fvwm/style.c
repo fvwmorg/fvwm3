@@ -1964,7 +1964,7 @@ static char *style_parse_icon_box_style(
 
 	/* otherwise try to parse the icon box */
 	IconBoxes = fxcalloc(1, sizeof(icon_boxes));
-	IconBoxes->IconScreen = "global";
+	IconBoxes->IconScreen = "g";
 	/* init grid x */
 	IconBoxes->IconGrid[0] = 3;
 	/* init grid y */
@@ -1976,7 +1976,9 @@ static char *style_parse_icon_box_style(
 		is_screen_given = True;
 		option = PeekToken(rest, &rest); /* skip screen */
 		option = PeekToken(rest, &rest); /* get the screen spec */
-		IconBoxes->IconScreen = option;
+		/* GetIntegerArguments() below removes screen */
+		IconBoxes->IconScreen = fxstrdup(option);
+		IconBoxes->do_free_screen = 1;
 	}
 
 	/* try for 4 numbers x y x y */
