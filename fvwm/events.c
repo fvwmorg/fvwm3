@@ -268,26 +268,6 @@ static int _pred_weed_accumulate_expose(
 	return 1;
 }
 
-static int _pred_weed_is_expose(
-	Display *display, XEvent *event, XPointer arg)
-{
-	return (event->type == Expose);
-}
-
-static int _pred_weed_handle_expose(
-	Display *display, XEvent *event, XPointer arg)
-{
-	if (event->type == Expose)
-	{
-		dispatch_event(event);
-		return 1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-
 static int _pred_weed_event_type(
 	Display *display, XEvent *event, XPointer arg)
 {
@@ -4547,11 +4527,18 @@ void flush_accumulate_expose(Window w, XEvent *e)
 void handle_all_expose(void)
 {
 	void *saved_event;
+  XEvent e;
 
 	saved_event = fev_save_event();
 	FPending(dpy);
-	FWeedAndHandleIfEvents(dpy, _pred_weed_is_expose,
-			       _pred_weed_handle_expose, NULL);
+  while (FCheckTypedEvent(dpy, Expose, &e))
+  {
+    /* Merge any additional queued Expose events for this same
+     * window into one bounding box and dispatch a single redraw.
+     */
+    flush_accumulate_expose(e.xexpose.window, &e);
+    dispatch_event(&e);
+  }
 	fev_restore_event(saved_event);
 
 	return;
