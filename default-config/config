@@ -574,9 +574,9 @@ ButtonStyle All ActiveDown Vector 5 20x20@4 20x80@3 80x80@3 80x20@3 \
                 20x20@3 -- Flat
 ButtonStyle All ToggledActiveDown Vector 5 20x20@4 20x80@3 80x80@3 \
                 80x20@3 20x20@3 -- Flat
-ButtonStyle All ToggledInactive Vector 5 47x47@3 57x53@3 53x53@3 \
+ButtonStyle All ToggledInactive Vector 5 47x47@3 47x53@3 53x53@3 \
                 53x47@3 47x47@3 -- Flat
-ButtonStyle All Inactive Vector 5 47x47@3 57x53@3 53x53@3 53x47@3 \
+ButtonStyle All Inactive Vector 5 47x47@3 47x53@3 53x53@3 53x47@3 \
                 47x47@3 -- Flat
 AddButtonStyle 1 Active Vector 5 45x45@3 55x45@3 55x55@3 45x55@3 45x45@3
 AddButtonStyle 2 Active Vector 4 35x35@3 65x65@3 35x65@4 65x35@3
