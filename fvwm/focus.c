@@ -616,7 +616,7 @@ static FvwmWindow *_restore_focus_after_unmap(
  *
  */
 static void _activate_window_by_command(
-	F_CMD_ARGS, int is_focus_by_flip_focus_cmd)
+	const exec_context_t *exc, char *action, int is_focus_by_flip_focus_cmd)
 {
 	int cx;
 	int cy;
@@ -1151,22 +1151,25 @@ void refresh_focus(const FvwmWindow *fw)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_FlipFocus(F_CMD_ARGS)
+void CMD_FlipFocus(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	/* Reorder the window list */
-	_activate_window_by_command(F_PASS_ARGS, 1);
+	_activate_window_by_command(exc, action, 1);
 
 	return;
 }
 
-void CMD_Focus(F_CMD_ARGS)
+void CMD_Focus(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	_activate_window_by_command(F_PASS_ARGS, 0);
+	_activate_window_by_command(exc, action, 0);
 
 	return;
 }
 
-void CMD_WarpToWindow(F_CMD_ARGS)
+void CMD_WarpToWindow(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int val1_unit, val2_unit, n;
 	int val1, val2;

@@ -513,7 +513,8 @@ static char *ReadTitleButton(
 }
 
 /* Remove the given decor from all windows */
-static void _remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
+static void _remove_window_decors(cond_rc_t *cond_rc,
+	const exec_context_t *exc, cmdparser_context_t *pc, FvwmDecor *d)
 {
 	const exec_context_t *exc2;
 	exec_context_changes_t ecc;
@@ -540,7 +541,7 @@ static void _remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
 	return;
 }
 
-static void do_title_style(F_CMD_ARGS, Bool do_add)
+static void do_title_style(char *action, Bool do_add)
 {
 	char *parm;
 	char *prev;
@@ -975,7 +976,7 @@ static void SetMWMButtonFlag(
 	return;
 }
 
-static void do_button_style(F_CMD_ARGS, Bool do_add)
+static void do_button_style(char *action, Bool do_add)
 {
 	int i;
 	int multi = 0;
@@ -2114,7 +2115,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  *
  */
-void AddToDecor(F_CMD_ARGS, FvwmDecor *decor)
+void AddToDecor(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc, FvwmDecor *decor)
 {
 	if (!action)
 	{
@@ -2129,7 +2131,7 @@ void AddToDecor(F_CMD_ARGS, FvwmDecor *decor)
 		return;
 	}
 	Scr.cur_decor = decor;
-	execute_function(F_PASS_ARGS, 0);
+	execute_function(cond_rc, exc, action, pc, 0);
 	Scr.cur_decor = NULL;
 
 	return;
@@ -2201,7 +2203,8 @@ void update_fvwm_colorset(int cset)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_Status(F_CMD_ARGS)
+void CMD_Status(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	if ((strcasecmp(action, "on") == 0) && status_fp == NULL) {
 		status_init_pipe();
@@ -2220,24 +2223,28 @@ void CMD_Status(F_CMD_ARGS)
 	status_send();
 }
 
-void CMD_Beep(F_CMD_ARGS)
+void CMD_Beep(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	XBell(dpy, 0);
 
 	return;
 }
 
-void CMD_Nop(F_CMD_ARGS)
+void CMD_Nop(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	return;
 }
 
-void CMD_EscapeFunc(F_CMD_ARGS)
+void CMD_EscapeFunc(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	return;
 }
 
-void CMD_Delete(F_CMD_ARGS)
+void CMD_Delete(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow * const fw = exc->w.fw;
 
@@ -2275,13 +2282,14 @@ void CMD_Delete(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Destroy(F_CMD_ARGS)
+void CMD_Destroy(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow * const fw = exc->w.fw;
 
 	if (IS_TEAR_OFF_MENU(fw))
 	{
-		CMD_Delete(F_PASS_ARGS);
+		CMD_Delete(cond_rc, exc, action, pc);
 		return;
 	}
 	if (!is_function_allowed(F_DESTROY, NULL, fw, True, True))
@@ -2304,13 +2312,14 @@ void CMD_Destroy(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Close(F_CMD_ARGS)
+void CMD_Close(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	FvwmWindow * const fw = exc->w.fw;
 
 	if (IS_TEAR_OFF_MENU(fw))
 	{
-		CMD_Delete(F_PASS_ARGS);
+		CMD_Delete(cond_rc, exc, action, pc);
 		return;
 	}
 	if (!is_function_allowed(F_CLOSE, NULL, fw, True, True))
@@ -2340,14 +2349,16 @@ void CMD_Close(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Restart(F_CMD_ARGS)
+void CMD_Restart(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	Done(1, action);
 
 	return;
 }
 
-void CMD_ExecUseShell(F_CMD_ARGS)
+void CMD_ExecUseShell(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *arg=NULL;
 	static char shell_set = 0;
@@ -2376,7 +2387,8 @@ void CMD_ExecUseShell(F_CMD_ARGS)
 	}
 }
 
-void CMD_Exec(F_CMD_ARGS)
+void CMD_Exec(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *cmd=NULL;
 
@@ -2441,14 +2453,16 @@ void CMD_Exec(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Refresh(F_CMD_ARGS)
+void CMD_Refresh(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	refresh_window(Scr.Root, True);
 
 	return;
 }
 
-void CMD_RefreshWindow(F_CMD_ARGS)
+void CMD_RefreshWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmWindow * const fw = exc->w.fw;
 
@@ -2459,7 +2473,8 @@ void CMD_RefreshWindow(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Wait(F_CMD_ARGS)
+void CMD_Wait(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	Bool done = False;
 	Bool redefine_cursor = False;
@@ -2600,14 +2615,16 @@ void CMD_Wait(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Quit(F_CMD_ARGS)
+void CMD_Quit(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	Done(0,NULL);
 
 	return;
 }
 
-void CMD_Echo(F_CMD_ARGS)
+void CMD_Echo(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int len;
 
@@ -2629,7 +2646,8 @@ void CMD_Echo(F_CMD_ARGS)
 	return;
 }
 
-void CMD_PrintInfo(F_CMD_ARGS)
+void CMD_PrintInfo(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int verbose;
 	char *rest, *subject = NULL;
@@ -2675,7 +2693,8 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ColormapFocus(F_CMD_ARGS)
+void CMD_ColormapFocus(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	if (MatchToken(action,"FollowsFocus"))
 	{
@@ -2696,7 +2715,8 @@ void CMD_ColormapFocus(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ClickTime(F_CMD_ARGS)
+void CMD_ClickTime(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int val;
 
@@ -2720,21 +2740,24 @@ void CMD_ClickTime(F_CMD_ARGS)
 }
 
 
-void CMD_ImagePath(F_CMD_ARGS)
+void CMD_ImagePath(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	PictureSetImagePath( action );
 
 	return;
 }
 
-void CMD_LocalePath(F_CMD_ARGS)
+void CMD_LocalePath(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FGettextSetLocalePath( action );
 
 	return;
 }
 
-void CMD_ModulePath(F_CMD_ARGS)
+void CMD_ModulePath(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	static int need_to_free = 0;
 
@@ -2744,7 +2767,8 @@ void CMD_ModulePath(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ModuleTimeout(F_CMD_ARGS)
+void CMD_ModuleTimeout(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int timeout;
 
@@ -2757,9 +2781,10 @@ void CMD_ModuleTimeout(F_CMD_ARGS)
 	return;
 }
 
-void CMD_TitleStyle(F_CMD_ARGS)
+void CMD_TitleStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	do_title_style(F_PASS_ARGS, False);
+	do_title_style(action, False);
 
 	return;
 } /* SetTitleStyle */
@@ -2769,14 +2794,16 @@ void CMD_TitleStyle(F_CMD_ARGS)
  * Appends a titlestyle (veliaa@rpi.edu)
  *
  */
-void CMD_AddTitleStyle(F_CMD_ARGS)
+void CMD_AddTitleStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	do_title_style(F_PASS_ARGS, True);
+	do_title_style(action, True);
 
 	return;
 }
 
-void CMD_PropertyChange(F_CMD_ARGS)
+void CMD_PropertyChange(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char string[256];
 	char *token;
@@ -2830,7 +2857,8 @@ void CMD_PropertyChange(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DefaultIcon(F_CMD_ARGS)
+void CMD_DefaultIcon(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	if (Scr.DefaultIcon)
 	{
@@ -2841,7 +2869,8 @@ void CMD_DefaultIcon(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DefaultFont(F_CMD_ARGS)
+void CMD_DefaultFont(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *font;
 	FlocaleFont *new_font;
@@ -2890,7 +2919,8 @@ void CMD_DefaultFont(F_CMD_ARGS)
  * Changes the window's FvwmDecor pointer (veliaa@rpi.edu)
  *
  */
-void CMD_ChangeDecor(F_CMD_ARGS)
+void CMD_ChangeDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *item;
 	FvwmDecor *decor = &Scr.DefaultDecor;
@@ -2928,7 +2958,8 @@ void CMD_ChangeDecor(F_CMD_ARGS)
  * Destroys an FvwmDecor (veliaa@rpi.edu)
  *
  */
-void CMD_DestroyDecor(F_CMD_ARGS)
+void CMD_DestroyDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *item;
 	FvwmDecor *decor = Scr.DefaultDecor.next;
@@ -2965,7 +2996,7 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 	{
 		if (!do_recreate)
 		{
-			_remove_window_decors(F_PASS_ARGS, found);
+			_remove_window_decors(cond_rc, exc, pc, found);
 		}
 		DestroyFvwmDecor(found);
 		if (do_recreate)
@@ -2998,7 +3029,8 @@ void CMD_DestroyDecor(F_CMD_ARGS)
  * Initiates an AddToDecor (veliaa@rpi.edu)
  *
  */
-void CMD_AddToDecor(F_CMD_ARGS)
+void CMD_AddToDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmDecor *decor;
 	FvwmDecor *found = NULL;
@@ -3044,7 +3076,7 @@ void CMD_AddToDecor(F_CMD_ARGS)
 
 	if (found)
 	{
-		AddToDecor(F_PASS_ARGS, found);
+		AddToDecor(cond_rc, exc, action, pc, found);
 		/* Set + state to last decor */
 		set_last_added_item(ADDED_DECOR, found);
 	}
@@ -3058,7 +3090,8 @@ void CMD_AddToDecor(F_CMD_ARGS)
  * Updates window decoration styles (veliaa@rpi.edu)
  *
  */
-void CMD_UpdateDecor(F_CMD_ARGS)
+void CMD_UpdateDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	FvwmWindow *fw2;
 
@@ -3110,9 +3143,10 @@ void CMD_UpdateDecor(F_CMD_ARGS)
 		hilight, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
 }
 
-void CMD_ButtonStyle(F_CMD_ARGS)
+void CMD_ButtonStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	do_button_style(F_PASS_ARGS, False);
+	do_button_style(action, False);
 
 	return;
 }
@@ -3122,14 +3156,16 @@ void CMD_ButtonStyle(F_CMD_ARGS)
  * Appends a button decoration style (veliaa@rpi.edu)
  *
  */
-void CMD_AddButtonStyle(F_CMD_ARGS)
+void CMD_AddButtonStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	do_button_style(F_PASS_ARGS, True);
+	do_button_style(action, True);
 
 	return;
 }
 
-void CMD_SetEnv(F_CMD_ARGS)
+void CMD_SetEnv(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *szVar = NULL;
 	char *szValue = NULL;
@@ -3161,7 +3197,8 @@ out:
 	return;
 }
 
-void CMD_UnsetEnv(F_CMD_ARGS)
+void CMD_UnsetEnv(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *szVar = NULL;
 
@@ -3175,7 +3212,8 @@ void CMD_UnsetEnv(F_CMD_ARGS)
 	return;
 }
 
-void CMD_BugOpts(F_CMD_ARGS)
+void CMD_BugOpts(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *opt;
 	int toggle;
@@ -3403,7 +3441,8 @@ void CMD_BugOpts(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Emulate(F_CMD_ARGS)
+void CMD_Emulate(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char *style;
 
@@ -3441,7 +3480,8 @@ void CMD_Emulate(F_CMD_ARGS)
 }
 
 /* set animation parameters */
-void CMD_SetAnimation(F_CMD_ARGS)
+void CMD_SetAnimation(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *opt;
 	int delay;
@@ -3515,7 +3555,8 @@ static Bool FKeysymToKeycode (Display *disp, KeySym keysym,
 	return False;
 }
 
-static void _fake_event(F_CMD_ARGS, FakeEventType type)
+static void _fake_event(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, FakeEventType type)
 {
 	char *token;
 	char *optlist[] = {
@@ -3776,21 +3817,24 @@ static void _fake_event(F_CMD_ARGS, FakeEventType type)
 	return;
 }
 
-void CMD_FakeClick(F_CMD_ARGS)
+void CMD_FakeClick(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	_fake_event(F_PASS_ARGS, FakeMouseEvent);
+	_fake_event(cond_rc, exc, action, FakeMouseEvent);
 
 	return;
 }
 
-void CMD_FakeKeypress(F_CMD_ARGS)
+void CMD_FakeKeypress(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	_fake_event(F_PASS_ARGS, FakeKeyEvent);
+	_fake_event(cond_rc, exc, action, FakeKeyEvent);
 
 	return;
 }
 
-void CMD_State(F_CMD_ARGS)
+void CMD_State(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	unsigned int state;
 	int toggle;

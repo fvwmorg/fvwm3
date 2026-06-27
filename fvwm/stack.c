@@ -2061,28 +2061,32 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 
 /* ----------------------------- built in functions ----------------------- */
 
-void CMD_Raise(F_CMD_ARGS)
+void CMD_Raise(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	RaiseWindow(exc->w.fw, False);
 
 	return;
 }
 
-void CMD_Lower(F_CMD_ARGS)
+void CMD_Lower(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	LowerWindow(exc->w.fw, False);
 
 	return;
 }
 
-void CMD_RestackTransients(F_CMD_ARGS)
+void CMD_RestackTransients(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	RestackWindow(exc->w.fw, False);
 
 	return;
 }
 
-void CMD_RaiseLower(F_CMD_ARGS)
+void CMD_RaiseLower(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	Bool ontop;
 	FvwmWindow * const fw = exc->w.fw;
@@ -2100,7 +2104,8 @@ void CMD_RaiseLower(F_CMD_ARGS)
 	return;
 }
 
-void CMD_Layer(F_CMD_ARGS)
+void CMD_Layer(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int n, layer, val[2];
 	char *token;
@@ -2147,7 +2152,8 @@ void CMD_Layer(F_CMD_ARGS)
 	return;
 }
 
-void CMD_DefaultLayers(F_CMD_ARGS)
+void CMD_DefaultLayers(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *bot = NULL;
 	char *def = NULL;

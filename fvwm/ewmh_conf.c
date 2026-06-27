@@ -96,7 +96,8 @@ Bool EWMH_BugOpts(char *opt, Bool toggle)
 	return False;
 }
 
-void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
+void CMD_EwmhNumberOfDesktops(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	struct monitor	*m = NULL;
 	char *option;
@@ -137,7 +138,8 @@ void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 	}
 }
 
-void CMD_EwmhBaseStruts(F_CMD_ARGS)
+void CMD_EwmhBaseStruts(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	struct monitor *m = NULL;
 	char *option;

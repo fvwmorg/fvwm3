@@ -302,7 +302,8 @@ Cursor *CreateCursors(Display *disp)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_CursorMove(F_CMD_ARGS)
+void CMD_CursorMove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int x, y;
 	int val1, val2;
@@ -349,7 +350,8 @@ void CMD_CursorMove(F_CMD_ARGS)
 	return;
 }
 
-void CMD_CursorStyle(F_CMD_ARGS)
+void CMD_CursorStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *cname=NULL;
 	char *newcursor=NULL;
@@ -676,7 +678,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 
 /* Defines in which cases fvwm "grab" the cursor during execution of certain
  * functions. */
-void CMD_BusyCursor(F_CMD_ARGS)
+void CMD_BusyCursor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *option = NULL;
 	char *optstring = NULL;
@@ -780,7 +783,8 @@ void CMD_BusyCursor(F_CMD_ARGS)
 	return;
 }
 
-void CMD_CursorBarrier(F_CMD_ARGS)
+void CMD_CursorBarrier(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int val[4] = {0, 0, 0, 0};
 	int x1, y1, x2, y2;

@@ -61,10 +61,13 @@ typedef enum
 /* needs to be called before any command line can be executed */
 void functions_init(void);
 void find_func_t(char *action, short *func_t, func_flags_t *flags);
-void execute_function(F_CMD_ARGS, func_flags_t exec_flags);
-void execute_function_override_wcontext(
-	F_CMD_ARGS, func_flags_t exec_flags, int wcontext);
-void execute_function_override_window(
-	F_CMD_ARGS, func_flags_t exec_flags, FvwmWindow *fw);
+void execute_function(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc, func_flags_t exec_flags);
+void execute_function_override_wcontext(cond_rc_t *cond_rc,
+	const exec_context_t *exc, char *action, cmdparser_context_t *pc,
+	func_flags_t exec_flags, int wcontext);
+void execute_function_override_window(cond_rc_t *cond_rc,
+	const exec_context_t *exc, char *action, cmdparser_context_t *pc,
+	func_flags_t exec_flags, FvwmWindow *fw);
 
 #endif /* FVWM_FUNCTIONS_H */

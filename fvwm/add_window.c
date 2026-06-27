@@ -2503,9 +2503,7 @@ FvwmWindow *AddWindow(
 				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 			SET_STICKY_ACROSS_PAGES(fw, 0);
 			SET_STICKY_ACROSS_DESKS(fw, 0);
-			handle_stick(
-				NULL, exc2, "", NULL, stick_page, stick_desk,
-				1, 0);
+			handle_stick(exc2, "", stick_page, stick_desk, 1, 0);
 			exc_destroy_context(exc2);
 		}
 	}

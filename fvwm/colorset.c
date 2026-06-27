@@ -1778,14 +1778,16 @@ void update_root_transparent_colorset(Atom prop)
 
 /* ---------------------------- builtin commands ---------------------------- */
 
-void CMD_ReadWriteColors(F_CMD_ARGS)
+void CMD_ReadWriteColors(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	fvwm_debug(__func__, "ReadWriteColors is obsolete");
 
 	return;
 }
 
-void CMD_Colorset(F_CMD_ARGS)
+void CMD_Colorset(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int n;
 	char *token;
@@ -1808,7 +1810,8 @@ void CMD_Colorset(F_CMD_ARGS)
 	return;
 }
 
-void CMD_CleanupColorsets(F_CMD_ARGS)
+void CMD_CleanupColorsets(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	cleanup_colorsets();
 }

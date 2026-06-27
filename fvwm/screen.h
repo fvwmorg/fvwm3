@@ -501,7 +501,8 @@ void simplify_style_list(void);
 /*
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  */
-void AddToDecor(F_CMD_ARGS, FvwmDecor *decor);
+void AddToDecor(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc, FvwmDecor *decor);
 
 extern ScreenInfo Scr;
 
