@@ -1,5 +1,35 @@
 # Changelog
 
+## [1.1.5](https://github.com/fvwmorg/fvwm3/tree/1.1.5) (2026-06-27)
+
+## What's Changed
+### Breaking Changes
+* FvwmConsole: remove in favour of FvwmPrompt by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1296
+### Enhancements
+* Add StrMatch test conditional. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1269
+* FvwmIconMan: Add DrawIcons none option. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1303
+### Other Changes
+* doc: FvwmIconMan: fix typo by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1253
+* build: add shell.nix by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1255
+* INSTALL: refer to build wrapper script by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1267
+* build(deps): bump github.com/sirupsen/logrus from 1.8.1 to 1.8.3 in /bin/FvwmPrompt by @dependabot[bot] in https://github.com/fvwmorg/fvwm3/pull/1271
+* FvwmMFL: handle MX_EXTENDED_MSGS from 1, and not 0 by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1277
+* Windowlist: Fix OnlySticky handling by @peripherium in https://github.com/fvwmorg/fvwm3/pull/1292
+* FvwmPrompt: use readline directly by @ThomasAdam in https://github.com/fvwmorg/fvwm3/pull/1294
+* FvwmPager: Always use ULONG_MAX for undefined color. by @somiaj in https://github.com/fvwmorg/fvwm3/pull/1298
+* po: Add Georgian language by @EkaterinePapava in https://github.com/fvwmorg/fvwm3/pull/1302
+* Fix switching monitors which are located at the same position. by @tzimisces in https://github.com/fvwmorg/fvwm3/pull/1316
+* Fix moving windows from one desktop to another. by @tzimisces in https://github.com/fvwmorg/fvwm3/pull/1317
+* Fix situation in which edge commands are not triggered. by @tzimisces in https://github.com/fvwmorg/fvwm3/pull/1318
+* fix vector coords in config by @tigersharke in https://github.com/fvwmorg/fvwm3/pull/1323
+
+## New Contributors
+* @peripherium made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1292
+* @EkaterinePapava made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1302
+* @tzimisces made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1316
+* @tigersharke made their first contribution in https://github.com/fvwmorg/fvwm3/pull/1323
+
+**Full Changelog**: https://github.com/fvwmorg/fvwm3/compare/1.1.4...1.1.5
 ## [1.1.4](https://github.com/fvwmorg/fvwm3/tree/1.1.4) (2025-11-08)
 
 ## What's Changed
