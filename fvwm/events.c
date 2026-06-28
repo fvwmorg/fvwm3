@@ -271,7 +271,14 @@ static int _pred_weed_accumulate_expose(
 static int _pred_weed_is_expose(
 	Display *display, XEvent *event, XPointer arg)
 {
-	return (event->type == Expose);
+  if (event->type == Expose)
+  {
+    /* Include Expose in weeding (rc & 1) and stop scanning early (rc & 2)
+     * to avoid coalescing Expose events across different windows.
+     */
+    return (1 /* match */ | 2 /* stop */);
+  }
+  return 0;
 }
 
 static int _pred_weed_handle_expose(
