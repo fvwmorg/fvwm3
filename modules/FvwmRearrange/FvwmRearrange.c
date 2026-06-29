@@ -942,7 +942,13 @@ main(int argc, char *argv[])
 		| M_RES_NAME
 	);
 
-	SendText(fd, "Send_WindowList", 0);
+	char *scr_name = mon->si->name;
+	char msg[4096];
+
+	if (is_global)
+		scr_name = "";
+	snprintf(msg, sizeof(msg), "Send_WindowList %s", scr_name);
+	SendText(fd, msg, 0);
 
 	/* Tell fvwm we're running */
 	SendFinishedStartupNotification(fd);
