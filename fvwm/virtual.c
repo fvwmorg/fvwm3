@@ -3043,6 +3043,7 @@ apply_desktops_monitor(struct monitor *m)
 		}
 	}
 	EWMH_SetDesktopNames(m);
+	EWMH_SetNumberOfDesktops(m);
 }
 
 /*
