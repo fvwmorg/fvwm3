@@ -366,6 +366,10 @@ int main(int argc, char **argv)
 			event++;
 			msg_bit >>= 1;
 		}
+		if (is_extended_msg && event != -1)
+		{
+			event--;
+		}
 		if (
 			event == -1 ||
 			(event >= MAX_MESSAGES && !is_extended_msg) ||
@@ -561,7 +565,7 @@ void handle_config_line(char *buf)
 						*event_table ==
 						extended_message_event_table)
 					{
-						mx_selected |= (1 << i);
+						mx_selected |= (1 << (i + 1));
 					}
 				}
 			}
