@@ -913,14 +913,14 @@ int GetMoveArguments(FvwmWindow *fw,
 			EWMH_USE_WORKING_AREA);
 		if (x < scr_pos.x) {
 			dx = scr_pos.x - x;
-		} else if (x + s.width > scr_pos.x + scr_w) {
+		} if (x + dx + s.width > scr_pos.x + scr_w) {
 			dx = scr_pos.x + scr_w - x - s.width;
 			if (x + dx < scr_pos.x)
 				dx = scr_pos.x - x;
 		}
 		if (y < scr_pos.y) {
 			dy = scr_pos.y - y;
-		} else if (y + s.height > scr_pos.y + scr_h) {
+		} if (y + dy + s.height > scr_pos.y + scr_h) {
 			dy = scr_pos.y + scr_h - y - s.height;
 			if (y + dy < scr_pos.y)
 				dy = scr_pos.y - y;
@@ -966,6 +966,7 @@ static int ParseOneResizeArgument(
 	{
 		/* ewmh working area */
 		factor = (float)wa_size / 100.0;
+		add_size = 0;
 		arg[cch-1] = '\0';
 	}
 	else if (cch > 1 && arg[cch-2] == 'd' && arg[cch-1] == 'a')
