@@ -354,7 +354,8 @@ monitor_check_primary(void)
 		struct monitor	*m;
 
 		m = RB_MIN(monitors, &monitor_q);
-		m->flags |= MONITOR_PRIMARY;
+		if (m != NULL)
+			m->flags |= MONITOR_PRIMARY;
 	}
 }
 
@@ -562,9 +563,21 @@ scan_screens(Display *dpy)
 	}
 
 	rrm = XRRGetMonitors(dpy, root, true, &n);
-	if (n <= 0 && (!randr_initialised && monitor_get_count() == 0)) {
-		fvwm_debug(__func__, "get monitors failed\n");
-		exit(101);
+	if (n <= 0) {
+		if (!randr_initialised && monitor_get_count() == 0) {
+			fvwm_debug(__func__, "get monitors failed\n");
+			exit(101);
+		}
+		/* Transient empty topology (e.g. a monitor has been
+		 * disabled but not yet re-enabled, as happens when a
+		 * laptop lid is reopened).  Retain the existing monitor
+		 * set and wait for the next RandR event.
+		 */
+		fvwm_debug(__func__,
+			"no monitors reported; retaining current set\n");
+		if (rrm != NULL)
+			XRRFreeMonitors(rrm);
+		return;
 	}
 
 	/*
@@ -891,10 +904,13 @@ FindScreenOfXY(int x, int y)
 		}
 	}
 
-	/* Shouldn't happen. */
+	/* Shouldn't happen.  If it does (e.g. all monitors transiently
+	 * disabled), degrade gracefully rather than killing the WM.
+	 */
 	if (m_min == NULL) {
-		fvwm_debug(__func__, "Couldn't find any monitor");
-		exit(106);
+		fvwm_debug(__func__,
+			"Couldn't find any monitor; using global");
+		return (monitor_get_global());
 	}
 	return (m_min);
 }
