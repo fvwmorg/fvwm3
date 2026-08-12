@@ -804,7 +804,7 @@ def parsemenu(menu, name="", title="", desktop_entries=[]):
             if insert_in_menu and name == top and menu_list_length == 1:
                 printtext('AddToMenu "%s"' % name)
             else:
-                printtext('AddToMenu "%s" "%s" Title' % (name, title))
+                printtext('AddToMenu "%s" "%s" Title' % (name, escapemenutext(title)))
         else:
             printtext('AddToMenu "%s"' % name)
     for entry in menu.getEntries():
