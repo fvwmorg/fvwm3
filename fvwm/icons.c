@@ -1786,18 +1786,22 @@ void AutoPlaceIcon(
     icon_boxes_ptr = NULL;              /* init */
     while(do_all_iconboxes(t, &icon_boxes_ptr))
     {
+      struct monitor *m;
       if (loc_ok == True)
       {
 	/* leave for loop */
 	break;
       }
       /* get the screen dimensions for the icon box */
-      FScreenGetScrRect(fscr, FSCREEN_CURRENT,
-		        &ref.x, &ref.y, &ref.width, &ref.height);
-      dim[1].screen_offset = ref.y;
-      dim[1].screen_dimension = ref.height;
-      dim[2].screen_offset = ref.x;
-      dim[2].screen_dimension = ref.width;
+      m = monitor_resolve_name(icon_boxes_ptr->IconScreen);
+      if (m == NULL)
+      {
+        m = monitor_get_current();
+      }
+      dim[1].screen_offset = ref.y = m->si->y;
+      dim[1].screen_dimension = ref.height = m->si->h;
+      dim[2].screen_offset = ref.x = m->si->x;
+      dim[2].screen_dimension = ref.width = m->si->w;
       /* y amount */
       dim[1].step = icon_boxes_ptr->IconGrid[1];
       /* init start from */
@@ -1940,7 +1944,7 @@ void AutoPlaceIcon(
 	  }
 
 	  /* this may be a good location */
-	  if (FScreenIsRectangleOnScreen(fscr, FSCREEN_XYPOS, &ref))
+	  if (IsRectangleOnThisPage(m, &ref, t->Desk))
 	  {
 	    loc_ok = True;
 	  }
@@ -2035,6 +2039,8 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 		global_icon_box_ptr->IconGrid[0] = 80;
 		global_icon_box_ptr->IconGrid[1] = 80;
 		global_icon_box_ptr->IconFlags = ICONFILLHRZ;
+		global_icon_box_ptr->IconScreen = "p";
+		global_icon_box_ptr->do_free_screen = 0;
 	}
 	if (*icon_boxes_ptr == NULL)
 	{
