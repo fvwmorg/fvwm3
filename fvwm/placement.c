@@ -2443,7 +2443,8 @@ Bool setup_window_placement(
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_PlaceAgain(F_CMD_ARGS)
+void CMD_PlaceAgain(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	int old_desk;
 	char *token;

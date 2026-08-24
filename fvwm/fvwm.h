@@ -52,17 +52,19 @@
 
 /* ---------------------------- global macros ------------------------------ */
 
-/*
- * Fvwm trivia: There were 97 commands in the fvwm command table
- * when the F_CMD_ARGS macro was written.
- * dje 12/19/98.
+ /*
+ * Fvwm trivia: On 12/19/1998, there were 97 commands in the FVWM command
+ * table when the F_CMD_ARGS macro was created. Back then, command functions
+ * were written like this to improve maintainability:
+ *     void CMD_foo(F_CMD_ARGS);
+ * However, this came at the cost of readability, which is why the macro was
+ * eventually removed.
+ * 
+ * As of 01/25/2026, there are 160 commands (163 elements in func_table[]).
+ * Functions are now declared with explicit parameter lists, making the code
+ * easier to read and maintain. Fun fact: the original macro no longer exists,
+ * but it's a charming piece of FVWM history. (me)
  */
-
-/* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS \
-	cond_rc_t *cond_rc, const exec_context_t *exc, char *action, cmdparser_context_t *pc
-#define F_PASS_ARGS cond_rc, exc, action, pc
-#define F_PASS_ARGS_WITH_EXC(new_exc) cond_rc, (new_exc), action, pc
 
 /* access macros */
 #define FW_W_FRAME(fw)        ((fw)->wins.frame)

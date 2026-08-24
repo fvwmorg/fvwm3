@@ -5163,7 +5163,8 @@ unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
  *  Sets the allowed button states
  *
  */
-void CMD_ButtonState(F_CMD_ARGS)
+void CMD_ButtonState(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *token;
 
@@ -5221,7 +5222,8 @@ void CMD_ButtonState(F_CMD_ARGS)
  *  Sets the border style (veliaa@rpi.edu)
  *
  */
-void CMD_BorderStyle(F_CMD_ARGS)
+void CMD_BorderStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	char *parm;
 	char *prev;

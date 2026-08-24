@@ -5204,9 +5204,6 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	exec_context_changes_t ecc;
 	char *buffer;
 	char *action;
-	cond_rc_t *cond_rc = NULL;
-	const exec_context_t *exc = NULL;
-	cmdparser_context_t *pc = NULL;
 
 	/* keep the menu open */
 	if (MR_WINDOW(mr_to_copy) != None)
@@ -5220,7 +5217,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	/* also dump the menu style */
 	xasprintf(&buffer, "%lu", (unsigned long)mr);
 	action = buffer;
-	ms = menustyle_parse_style(F_PASS_ARGS);
+	ms = menustyle_parse_style(action);
 	if (!ms)
 	{
 		/* this must never happen */

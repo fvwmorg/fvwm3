@@ -306,7 +306,8 @@ static void cursor_control(Bool grab)
 	return;
 }
 
-void CMD_Read(F_CMD_ARGS)
+void CMD_Read(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char* filename;
 	int read_quietly;
@@ -354,7 +355,8 @@ void CMD_Read(F_CMD_ARGS)
 	return;
 }
 
-void CMD_PipeRead(F_CMD_ARGS)
+void CMD_PipeRead(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	char* command;
 	int read_quietly;
