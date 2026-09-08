@@ -133,7 +133,7 @@ status_send(void)
 {
 	cJSON		*msg = NULL, *screens = NULL;
 	cJSON		*desk_doc[1024], *individual_d[1024];
-	int 		 m_count, d_count;
+	int 		 d_count;
 	FvwmWindow	*fw_cur;
 	DesktopsInfo 	*di;
 	struct monitor	*m, *m_cur;
@@ -160,7 +160,7 @@ status_send(void)
 
 	screens = cJSON_AddObjectToObject(msg, "screens");
 
-	d_count = 0, m_count = 0;
+	d_count = 0;
 	RB_FOREACH(m, monitors, &monitor_q) {
 		cJSON	*this_desktop;
 		if ((desk_doc[d_count] = cJSON_CreateObject()) == NULL)
@@ -200,7 +200,6 @@ status_send(void)
 		    m->number);
 
 		d_count++;
-		m_count++;
 	}
 	if ((as_json = cJSON_PrintUnformatted(msg)) == NULL)
 		goto out;
