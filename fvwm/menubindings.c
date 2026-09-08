@@ -48,6 +48,8 @@
 
 /* ---------------------------- local macros ------------------------------- */
 
+#define MENU_BINDING_DISABLED "-"
+
 /* ---------------------------- imports ------------------------------------ */
 
 /* ---------------------------- included code files ------------------------ */
@@ -373,7 +375,11 @@ Binding *menu_binding_is_mouse(XEvent* event, int context)
 	Binding *b;
 
 	b = _menu_binding_is_mouse(menu_bindings_regular, event, context);
-	if (b == NULL)
+	if (b != NULL)
+	{
+		return (strcmp(b->Action, MENU_BINDING_DISABLED) == 0) ? NULL : b;
+	}
+	else
 	{
 		b = _menu_binding_is_mouse(
 			menu_bindings_fallback, event, context);
@@ -387,7 +393,11 @@ Binding *menu_binding_is_key(XEvent* event, int context)
 	Binding *b;
 
 	b = _menu_binding_is_key(menu_bindings_regular, event, context);
-	if (b == NULL)
+	if (b != NULL)
+	{
+		return (strcmp(b->Action, MENU_BINDING_DISABLED) == 0) ? NULL : b;
+	}
+	else
 	{
 		b = _menu_binding_is_key(
 			menu_bindings_fallback, event, context);
@@ -445,8 +455,19 @@ int menu_binding(
 			   "The syntax for disabling the tear off button has "
 			   "changed.");
 	}
-	if (strcmp(action,"-") == 0)
+	if (strcmp(action, MENU_BINDING_DISABLED) == 0)
 	{
+		/*
+		 * Fallback bindings cannot be removed.  Keep a disabled binding in
+		 * the regular list so that lookup does not fall through to a
+		 * matching fallback binding.
+		 */
+		if (menu_bindings == &menu_bindings_regular)
+		{
+			return AddBinding(
+				disp, menu_bindings, type, button, keysym, NULL,
+				modifier, context, (void *)action, NULL, menu_style);
+		}
 		return 0;
 	}
 	/* END remove */
