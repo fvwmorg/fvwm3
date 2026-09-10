@@ -565,7 +565,7 @@ Key Left    WTSF    CSM Maximize True growleft 0
 #   4 - Maximize
 #   6 - Minimize
 ###########
-TitleStyle Centered Height 18 -- Flat
+TitleStyle Centered Height 18 -- Flat ToolTip "%n"
 ButtonStyle All ActiveUp Vector 5 15x15@4 15x85@3 85x85@3 85x15@3 \
                 15x15@3 -- Flat
 ButtonStyle All ToggledActiveUp Vector 5 15x15@4 15x85@3 85x85@3 \
@@ -587,8 +587,16 @@ AddButtonStyle 4 ToggledActiveUp Vector 8 30x70@3 30x30@3 70x30@3 70x70@3 \
 AddButtonStyle 6 Active Vector 5 35x60@3 65x60@3 65x50@3 35x50@3 35x60@3
 ButtonStyle All - Clear
 ButtonStyle 1 - MwmDecorMenu
+ButtonStyle 2 Active -- ToolTip "$[gt.Close]"
+ButtonStyle 2 Inactive -- ToolTip "$[gt.Close]"
 ButtonStyle 4 - MwmDecorMax
+ButtonStyle 4 Active -- ToolTip "$[gt.Maximize]"
+ButtonStyle 4 Inactive -- ToolTip "$[gt.Maximize]"
+ButtonStyle 4 ToggledActive -- ToolTip "$[gt.Restore]"
+ButtonStyle 4 ToggledInactive -- ToolTip "$[gt.Restore]"
 ButtonStyle 6 - MwmDecorMin
+ButtonStyle 6 Active -- ToolTip "$[gt.Iconify]"
+ButtonStyle 6 Inactive -- ToolTip "$[gt.Iconify]"
 
 ############
 # 7: Modules

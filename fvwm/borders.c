@@ -4731,6 +4731,43 @@ DecorFace *border_get_border_style(
 	return df;
 }
 
+char *get_decor_tooltip(
+	FvwmWindow *fw, int context, int button, bool has_focus)
+{
+	ButtonState bs;
+	DecorFace *df = NULL;
+
+	if (context == C_TITLE)
+	{
+		bs = border_flags_to_button_state(
+			FW_W_TITLE(fw) == PressedW ? 1 : 0,
+			has_focus,
+			0
+		);
+		df = &TB_STATE(GetDecor(fw, titlebar))[bs];
+	}
+	else if (context & (C_LALL | C_RALL))
+	{
+		if (button < 0 || button >= NUMBER_OF_TITLE_BUTTONS)
+		{
+			return NULL;
+		}
+
+		bs = border_flags_to_button_state(
+			FW_W_BUTTON(fw, button) == PressedW ? 1 : 0,
+			has_focus,
+			is_button_toggled(fw, button)
+		);
+		df = &TB_STATE(GetDecor(fw, buttons[button]))[bs];
+	}
+	else if (context & (C_SIDEBAR | C_FRAME))
+	{
+		df = border_get_border_style(fw, has_focus);
+	}
+
+	return (df == NULL) ? NULL : df->tooltip;
+}
+
 int border_is_using_border_style(
 	FvwmWindow *fw, Bool has_focus)
 {
@@ -5239,6 +5276,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
+			tmpdf.tooltip = NULL;
 			if (FMiniIconsSupported)
 			{
 				tmpdf.u.p = NULL;
@@ -5308,6 +5346,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
+			tmpdf.tooltip = NULL;
 			if (FMiniIconsSupported)
 			{
 				tmpdf.u.p = NULL;

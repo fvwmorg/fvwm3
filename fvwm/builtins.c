@@ -45,6 +45,7 @@
 #include "libs/Flocale.h"
 #include "libs/FEvent.h"
 #include "libs/Ficonv.h"
+#include "libs/FTips.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"
@@ -1567,6 +1568,11 @@ void FreeDecorFace(Display *disp, DecorFace *df)
 		free(df->next);
 	}
 	df->next = NULL;
+	if (df->tooltip)
+	{
+		free(df->tooltip);
+		df->tooltip = NULL;
+	}
 	memset(&df->style, 0, sizeof(df->style));
 	memset(&df->u, 0, sizeof(df->u));
 	DFS_FACE_TYPE(df->style) = SimpleButton;
@@ -2083,6 +2089,25 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 					DFS_USE_BORDER_STYLE(df->style) = 0;
 				}
 			}
+			else if (StrEquals(tok,"ToolTip"))
+			{
+				if (df->tooltip)
+				{
+					free(df->tooltip);
+					df->tooltip = NULL;
+				}
+				if (set)
+				{
+					s = GetNextToken(s, &df->tooltip);
+					if (!df->tooltip && verbose)
+					{
+						fvwm_debug(
+							__func__,
+							"ToolTip requires a text argument: %s",
+							action);
+					}
+				}
+			}
 			else if (verbose)
 			{
 				fvwm_debug(__func__,
@@ -2194,6 +2219,7 @@ void update_fvwm_colorset(int cset)
 	UpdateMenuColorset(cset);
 	update_style_colorset(cset);
 	update_decors_colorset(cset);
+	FTipsColorsetChanged(dpy, cset);
 
 	return;
 }

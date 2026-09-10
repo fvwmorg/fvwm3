@@ -184,6 +184,7 @@ typedef struct DecorFace
 	} u;
 
 	struct DecorFace *next;
+	char *tooltip;
 
 	struct
 	{

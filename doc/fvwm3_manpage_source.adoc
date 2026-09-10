@@ -6806,6 +6806,16 @@ _Raised_ causes a raised relief pattern to be drawn (default). _Sunk_
 causes a sunken relief pattern to be drawn. _Flat_ inhibits the relief
 pattern from being drawn.
 +
+The _ToolTip_ flag, followed by a text argument, sets the text of a hover
+tool tip shown over the window border while it is in the given
+_state_. _!ToolTip_ clears any tip text previously set for that state.
++
+
+....
+BorderStyle Active -- Tip "Drag to resize"
+....
+
++
 To decorate the active and inactive window borders with a textured
 pixmap, one might specify:
 +
@@ -6976,6 +6986,20 @@ redundant in this context.
 +
 _UseBorderStyle_ causes the button to inherit the decorated
 *BorderStyle* options.
++
+The _ToolTip_ flag, followed by a text argument, sets the text of a hover
+tool tip shown while the pointer rests over this button or title bar in the
+given _state_. _!ToolTip_ clears any tip text previously set for that _state_.
++
+
+....
+ButtonStyle 2 Active -- Tip "Close"
+TitleStyle Active -- Tip "%n"
+....
+
++
+As with any other text argument containing spaces, quote the _Tip_
+text (e.g. with double quotes) to keep it as one argument.
 +
 _Raised_, _Sunk_ and _Flat_ are mutually exclusive, and can be
 specified for the initial *ButtonStyle* only. _UseTitleStyle_ and

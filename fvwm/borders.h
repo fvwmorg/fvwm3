@@ -73,4 +73,6 @@ void border_redraw_decorations(
 	FvwmWindow *fw);
 unsigned int border_get_transparent_decorations_part(
 	FvwmWindow *fw);
+char *get_decor_tooltip(
+	FvwmWindow *fw, int context, int button, bool has_focus);
 #endif /* FVWM_BORDERS_H */

@@ -446,6 +446,9 @@ void _map_window(Display *dpy)
 	}
 	XMapRaised(dpy, win);
 	state = FVWM_TIPS_MAPPED;
+	/* Fvwm may not pass an Expose event to trigger the first paint, so
+	 * draw right away. Any Expose event will just redraw the window. */
+	_draw(dpy);
 
 	return;
 }
