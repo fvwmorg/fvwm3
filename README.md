@@ -56,3 +56,29 @@ worked on.
 
 Please open a github issue or contact me directly if you wish to discuss a
 particular feature of issue you need help with.
+
+AI Policy
+---------
+
+FVWM is an old project -- well over 30 years of development.  It came at a
+time when the people working on it *really* knew their stuff.  They had to
+think about how fvwm interacted with xlib/xserver implementations, and work a
+lot things out for themselves.
+
+All of it was done without AI, obviously.
+
+It's absolutely important that FVWM continues to be maintained with this
+history in mind, to introduce AI would destroy that approach in a way which
+also destroys the people who have worked on it over the many years it has been
+alive.
+
+It's important we protect this at all costs.
+
+Therefore, the use of AI in this project means that it cannot be used for:
+
+* Code generation
+* Opening issues
+* Writing/creating PRs (Pull Requests)
+* Creating documentation updates
+
+Such examples where this is submitted will be ignored/closed outright.
