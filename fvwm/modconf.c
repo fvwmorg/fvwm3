@@ -190,7 +190,8 @@ fprintf(stderr, "%s: mldata '%s', mlaliaslen %d\n", __func__, this->data, this->
 /*
  * delete from module configuration
  */
-void CMD_DestroyModuleConfig(F_CMD_ARGS)
+void CMD_DestroyModuleConfig(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	struct moduleInfoList *current, *next, *prev;
 	char *info;   /* info to be deleted - may contain wildcards */
@@ -380,7 +381,8 @@ void send_monitor_list(fmodule *module)
 	BroadcastMonitorList(module);
 }
 
-void CMD_Send_ConfigInfo(F_CMD_ARGS)
+void CMD_Send_ConfigInfo(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	struct moduleInfoList *t;
 	/* matching criteria for module cmds */
