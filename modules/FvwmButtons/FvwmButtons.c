@@ -3254,8 +3254,11 @@ void swallow(unsigned long *body)
 				{
 					if (b->action != NULL && b->action[i] != NULL)
 					{
+						/* Match actions on the button border,
+						 * regardless of keyboard modifiers.
+						 */
 						XGrabButton(
-							Dpy, i, 0, b->IconWin,
+							Dpy, i, AnyModifier, b->IconWin,
 							False, ButtonPressMask
 							| ButtonReleaseMask,
 							GrabModeAsync,
