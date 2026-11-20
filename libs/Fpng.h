@@ -437,6 +437,7 @@ typedef Fpng_struct  **Fpng_structpp;
 #define Fpng_create_read_struct(a,b,c,d) png_create_read_struct(a,b,c,d)
 #define Fpng_create_info_struct(a) png_create_info_struct(a)
 #define Fpng_destroy_read_struct(a,b,c) png_destroy_read_struct(a,b,c)
+#define Fpng_jmpbuf(a) png_jmpbuf(a)
 #define Fpng_init_io(a,b) png_init_io(a,b)
 #define Fpng_read_info(a,b) png_read_info(a,b)
 #define Fpng_get_color_type(a, b) png_get_color_type(a, b)
