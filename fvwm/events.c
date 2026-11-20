@@ -1270,6 +1270,7 @@ static inline int _handle_cr_on_client(
 		/* make sure the window structure has the new position */
 		update_absolute_geometry(fw);
 		maximize_adjust_offset(fw);
+		update_fvwm_monitor(fw);
 	}
 	else if (DO_FORCE_NEXT_CR(fw))
 	{
