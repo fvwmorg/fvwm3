@@ -445,7 +445,8 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	Fpng_uint_32 w32, h32;
 	Fpng_structp Fpng_ptr = NULL;
 	Fpng_infop Finfo_ptr = NULL;
-	CARD32 *data;
+	/* Keep these pointers valid after libpng calls longjmp(). */
+	CARD32 * volatile data = NULL;
 	int w, h;
 	char hasa = 0, hasg = 0;
 	FILE *f;
@@ -453,7 +454,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	int color_type;
 	int interlace_type;
 	unsigned char buf[FPNG_BYTES_TO_CHECK];
-	unsigned char **lines;
+	unsigned char ** volatile lines = NULL;
 	int i;
 
 	if (!PngSupport)
@@ -471,13 +472,8 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	{
 		return False;
 	}
-	{
-		int n;
-
-		n = fread(buf, 1, FPNG_BYTES_TO_CHECK, f);
-		(void)n;
-	}
-	if (!Fpng_check_sig(buf, FPNG_BYTES_TO_CHECK))
+	if (fread(buf, 1, FPNG_BYTES_TO_CHECK, f) != FPNG_BYTES_TO_CHECK ||
+	    !Fpng_check_sig(buf, FPNG_BYTES_TO_CHECK))
 	{
 		fclose(f);
 		return False;
@@ -497,9 +493,11 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 		fclose(f);
 		return False;
 	}
-#if 0
-	if (setjmp(Fpng_ptr->jmpbuf))
+#if PngSupport
+	if (setjmp(Fpng_jmpbuf(Fpng_ptr)))
 	{
+		free(lines);
+		free(data);
 		Fpng_destroy_read_struct(&Fpng_ptr, &Finfo_ptr, NULL);
 		fclose(f);
 		return False;
