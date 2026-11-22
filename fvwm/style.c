@@ -4723,7 +4723,8 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
  * must be freed in ProcessDestroyStyle().
  */
 
-static void _style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
+static void _style_command(const exec_context_t *exc, char *action,
+	char *prefix, Bool is_window_style)
 {
 	/* temp area to build name list */
 	window_style *ps;
@@ -5556,28 +5557,32 @@ void style_destroy_style(style_id_t s_id)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_Style(F_CMD_ARGS)
+void CMD_Style(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
-	_style_command(F_PASS_ARGS, NULL, False);
+	_style_command(exc, action, NULL, False);
 
 	return;
 }
 
-void CMD_WindowStyle(F_CMD_ARGS)
+void CMD_WindowStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	_style_command(F_PASS_ARGS, NULL, True);
+	_style_command(exc, action, NULL, True);
 
 	return;
 }
 
-void CMD_FocusStyle(F_CMD_ARGS)
+void CMD_FocusStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
-	_style_command(F_PASS_ARGS, "FP", False);
+	_style_command(exc, action, "FP", False);
 
 	return;
 }
 
-void CMD_DestroyStyle(F_CMD_ARGS)
+void CMD_DestroyStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	style_id_t s_id;
 
@@ -5590,7 +5595,8 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 	style_destroy_style(s_id);
 }
 
-void CMD_DestroyWindowStyle(F_CMD_ARGS)
+void CMD_DestroyWindowStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	style_id_t s_id;
 

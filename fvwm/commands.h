@@ -189,170 +189,335 @@ enum
 /* ---------------------------- interface functions ------------------------ */
 
 /* This file contains all command prototypes. */
-void CMD_Plus(F_CMD_ARGS);
-void CMD_AddButtonStyle(F_CMD_ARGS);
-void CMD_AddTitleStyle(F_CMD_ARGS);
-void CMD_AddToDecor(F_CMD_ARGS);
-void CMD_AddToFunc(F_CMD_ARGS);
-void CMD_AddToMenu(F_CMD_ARGS);
-void CMD_Alias(F_CMD_ARGS);
-void CMD_All(F_CMD_ARGS);
-void CMD_AnimatedMove(F_CMD_ARGS);
-void CMD_Any(F_CMD_ARGS);
-void CMD_Beep(F_CMD_ARGS);
-void CMD_Break(F_CMD_ARGS);
-void CMD_BorderStyle(F_CMD_ARGS);
-void CMD_BugOpts(F_CMD_ARGS);
-void CMD_BusyCursor(F_CMD_ARGS);
-void CMD_ButtonState(F_CMD_ARGS);
-void CMD_ButtonStyle(F_CMD_ARGS);
-void CMD_ChangeDecor(F_CMD_ARGS);
-void CMD_ChangeMenuStyle(F_CMD_ARGS);
-void CMD_CleanupColorsets(F_CMD_ARGS);
-void CMD_ClickTime(F_CMD_ARGS);
-void CMD_Close(F_CMD_ARGS);
-void CMD_ColormapFocus(F_CMD_ARGS);
-void CMD_Colorset(F_CMD_ARGS);
-void CMD_CopyMenuStyle(F_CMD_ARGS);
-void CMD_Current(F_CMD_ARGS);
-void CMD_CursorBarrier(F_CMD_ARGS);
-void CMD_CursorMove(F_CMD_ARGS);
-void CMD_CursorStyle(F_CMD_ARGS);
-void CMD_DefaultFont(F_CMD_ARGS);
-void CMD_DefaultIcon(F_CMD_ARGS);
-void CMD_DefaultLayers(F_CMD_ARGS);
-void CMD_Delete(F_CMD_ARGS);
-void CMD_Deschedule(F_CMD_ARGS);
-void CMD_DesktopConfiguration(F_CMD_ARGS);
-void CMD_DesktopName(F_CMD_ARGS);
-void CMD_DesktopSize(F_CMD_ARGS);
-void CMD_Destroy(F_CMD_ARGS);
-void CMD_DestroyDecor(F_CMD_ARGS);
-void CMD_DestroyFunc(F_CMD_ARGS);
-void CMD_DestroyMenu(F_CMD_ARGS);
-void CMD_DestroyMenuStyle(F_CMD_ARGS);
-void CMD_DestroyModuleConfig(F_CMD_ARGS);
-void CMD_DestroyStyle(F_CMD_ARGS);
-void CMD_DestroyWindowStyle(F_CMD_ARGS);
-void CMD_Direction(F_CMD_ARGS);
-void CMD_Echo(F_CMD_ARGS);
-void CMD_EchoFuncDefinition(F_CMD_ARGS);
-void CMD_EdgeCommand(F_CMD_ARGS);
-void CMD_EdgeLeaveCommand(F_CMD_ARGS);
-void CMD_EdgeResistance(F_CMD_ARGS);
-void CMD_EdgeScroll(F_CMD_ARGS);
-void CMD_EdgeThickness(F_CMD_ARGS);
-void CMD_Emulate(F_CMD_ARGS);
-void CMD_EscapeFunc(F_CMD_ARGS);
-void CMD_EwmhBaseStruts(F_CMD_ARGS);
-void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
-void CMD_Exec(F_CMD_ARGS);
-void CMD_ExecUseShell(F_CMD_ARGS);
-void CMD_FakeClick(F_CMD_ARGS);
-void CMD_FakeKeypress(F_CMD_ARGS);
-void CMD_FlipFocus(F_CMD_ARGS);
-void CMD_Focus(F_CMD_ARGS);
-void CMD_FocusStyle(F_CMD_ARGS);
-void CMD_Function(F_CMD_ARGS);
-void CMD_GeometryWindow(F_CMD_ARGS);
-void CMD_GotoDesk(F_CMD_ARGS);
-void CMD_GotoDeskAndPage(F_CMD_ARGS);
-void CMD_GotoPage(F_CMD_ARGS);
-void CMD_Iconify(F_CMD_ARGS);
-void CMD_IgnoreModifiers(F_CMD_ARGS);
-void CMD_ImagePath(F_CMD_ARGS);
-void CMD_InfoStoreAdd(F_CMD_ARGS);
-void CMD_InfoStoreClear(F_CMD_ARGS);
-void CMD_InfoStoreRemove(F_CMD_ARGS);
-void CMD_KeepRc(F_CMD_ARGS);
-void CMD_Key(F_CMD_ARGS);
-void CMD_KillModule(F_CMD_ARGS);
-void CMD_Layer(F_CMD_ARGS);
-void CMD_LocalePath(F_CMD_ARGS);
-void CMD_Lower(F_CMD_ARGS);
-void CMD_Maximize(F_CMD_ARGS);
-void CMD_Menu(F_CMD_ARGS);
-void CMD_MenuStyle(F_CMD_ARGS);
-void CMD_Module(F_CMD_ARGS);
-void CMD_ModuleListenOnly(F_CMD_ARGS);
-void CMD_ModulePath(F_CMD_ARGS);
-void CMD_ModuleSynchronous(F_CMD_ARGS);
-void CMD_ModuleTimeout(F_CMD_ARGS);
-void CMD_Mouse(F_CMD_ARGS);
-void CMD_Move(F_CMD_ARGS);
-void CMD_MoveThreshold(F_CMD_ARGS);
-void CMD_MoveToDesk(F_CMD_ARGS);
-void CMD_MoveToPage(F_CMD_ARGS);
-void CMD_MoveToScreen(F_CMD_ARGS);
-void CMD_Next(F_CMD_ARGS);
-void CMD_None(F_CMD_ARGS);
-void CMD_Nop(F_CMD_ARGS);
-void CMD_NoWindow(F_CMD_ARGS);
-void CMD_OpaqueMoveSize(F_CMD_ARGS);
-void CMD_Pick(F_CMD_ARGS);
-void CMD_PipeRead(F_CMD_ARGS);
-void CMD_PlaceAgain(F_CMD_ARGS);
-void CMD_PointerKey(F_CMD_ARGS);
-void CMD_PointerWindow(F_CMD_ARGS);
-void CMD_Popup(F_CMD_ARGS);
-void CMD_Prev(F_CMD_ARGS);
-void CMD_PrintInfo(F_CMD_ARGS);
-void CMD_PropertyChange(F_CMD_ARGS);
-void CMD_Quit(F_CMD_ARGS);
-void CMD_QuitSession(F_CMD_ARGS);
-void CMD_Raise(F_CMD_ARGS);
-void CMD_RaiseLower(F_CMD_ARGS);
-void CMD_Read(F_CMD_ARGS);
-void CMD_ReadWriteColors(F_CMD_ARGS);
-void CMD_Refresh(F_CMD_ARGS);
-void CMD_RefreshWindow(F_CMD_ARGS);
-void CMD_Repeat(F_CMD_ARGS);
-void CMD_Resize(F_CMD_ARGS);
-void CMD_ResizeMaximize(F_CMD_ARGS);
-void CMD_ResizeMove(F_CMD_ARGS);
-void CMD_ResizeMoveMaximize(F_CMD_ARGS);
-void CMD_RestackTransients(F_CMD_ARGS);
-void CMD_Restart(F_CMD_ARGS);
-void CMD_SaveQuitSession(F_CMD_ARGS);
-void CMD_SaveSession(F_CMD_ARGS);
-void CMD_ScanForWindow(F_CMD_ARGS);
-void CMD_Schedule(F_CMD_ARGS);
-void CMD_Scroll(F_CMD_ARGS);
-void CMD_Send_ConfigInfo(F_CMD_ARGS);
-void CMD_Send_Reply(F_CMD_ARGS);
-void CMD_Send_WindowList(F_CMD_ARGS);
-void CMD_SendToModule(F_CMD_ARGS);
-void CMD_Status(F_CMD_ARGS);
-void CMD_set_mask(F_CMD_ARGS);
-void CMD_set_nograb_mask(F_CMD_ARGS);
-void CMD_set_sync_mask(F_CMD_ARGS);
-void CMD_SetAnimation(F_CMD_ARGS);
-void CMD_SetEnv(F_CMD_ARGS);
-void CMD_Silent(F_CMD_ARGS);
-void CMD_State(F_CMD_ARGS);
-void CMD_Stick(F_CMD_ARGS);
-void CMD_StickAcrossDesks(F_CMD_ARGS);
-void CMD_StickAcrossPages(F_CMD_ARGS);
-void CMD_Style(F_CMD_ARGS);
-void CMD_TearMenuOff(F_CMD_ARGS);
-void CMD_Test(F_CMD_ARGS);
-void CMD_TestRc(F_CMD_ARGS);
-void CMD_ThisWindow(F_CMD_ARGS);
-void CMD_Title(F_CMD_ARGS);
-void CMD_TitleStyle(F_CMD_ARGS);
-void CMD_Unalias(F_CMD_ARGS);
-void CMD_UnsetEnv(F_CMD_ARGS);
-void CMD_UpdateDecor(F_CMD_ARGS);
-void CMD_UpdateStyles(F_CMD_ARGS);
-void CMD_Wait(F_CMD_ARGS);
-void CMD_WarpToWindow(F_CMD_ARGS);
-void CMD_WindowId(F_CMD_ARGS);
-void CMD_WindowList(F_CMD_ARGS);
-void CMD_WindowShade(F_CMD_ARGS);
-void CMD_WindowStyle(F_CMD_ARGS);
-void CMD_XorPixmap(F_CMD_ARGS);
-void CMD_XorValue(F_CMD_ARGS);
-void CMD_XSync(F_CMD_ARGS);
-void CMD_XSynchronize(F_CMD_ARGS);
+void CMD_Plus(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_AddButtonStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_AddTitleStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_AddToDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_AddToFunc(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_AddToMenu(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Alias(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_All(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_AnimatedMove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Any(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Beep(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Break(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_BorderStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_BugOpts(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_BusyCursor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ButtonState(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ButtonStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ChangeDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ChangeMenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_CleanupColorsets(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ClickTime(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Close(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_ColormapFocus(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Colorset(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_CopyMenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Current(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_CursorBarrier(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_CursorMove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_CursorStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DefaultFont(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DefaultIcon(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DefaultLayers(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Delete(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Deschedule(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DesktopConfiguration(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DesktopName(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DesktopSize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Destroy(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_DestroyDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DestroyFunc(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DestroyMenu(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DestroyMenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DestroyModuleConfig(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DestroyStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_DestroyWindowStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Direction(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Echo(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_EchoFuncDefinition(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EdgeCommand(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EdgeLeaveCommand(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EdgeResistance(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EdgeScroll(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EdgeThickness(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Emulate(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_EscapeFunc(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EwmhBaseStruts(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_EwmhNumberOfDesktops(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Exec(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_ExecUseShell(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_FakeClick(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_FakeKeypress(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_FlipFocus(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Focus(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_FocusStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Function(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_GeometryWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_GotoDesk(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_GotoDeskAndPage(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_GotoPage(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Iconify(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_IgnoreModifiers(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ImagePath(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_InfoStoreAdd(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_InfoStoreClear(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_InfoStoreRemove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_KeepRc(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Key(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_KillModule(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Layer(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_LocalePath(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Lower(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Maximize(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Menu(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_MenuStyle(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Module(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_ModuleListenOnly(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ModulePath(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ModuleSynchronous(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ModuleTimeout(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Mouse(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Move(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_MoveThreshold(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_MoveToDesk(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_MoveToPage(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_MoveToScreen(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Next(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_None(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Nop(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_NoWindow(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_OpaqueMoveSize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Pick(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_PipeRead(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_PlaceAgain(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_PointerKey(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_PointerWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Popup(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Prev(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_PrintInfo(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_PropertyChange(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Quit(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_QuitSession(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Raise(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_RaiseLower(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Read(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_ReadWriteColors(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Refresh(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_RefreshWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Repeat(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Resize(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_ResizeMaximize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ResizeMove(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ResizeMoveMaximize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_RestackTransients(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Restart(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_SaveQuitSession(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_SaveSession(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_ScanForWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Schedule(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Scroll(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Send_ConfigInfo(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Send_Reply(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Send_WindowList(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_SendToModule(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Status(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_set_mask(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_set_nograb_mask(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_set_sync_mask(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_SetAnimation(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_SetEnv(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Silent(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_State(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_Stick(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_StickAcrossDesks(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_StickAcrossPages(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Style(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_TearMenuOff(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Test(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_TestRc(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_ThisWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Title(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_TitleStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Unalias(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_UnsetEnv(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_UpdateDecor(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_UpdateStyles(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_Wait(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_WarpToWindow(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_WindowId(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_WindowList(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_WindowShade(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_WindowStyle(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
+void CMD_XorPixmap(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_XorValue(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_XSync(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc);
+void CMD_XSynchronize(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc);
 
 #endif /* FVWM_COMMANDS_H */

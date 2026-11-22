@@ -21,7 +21,8 @@ typedef struct
 {
 	char *keyword;
 #ifdef __STDC__
-	void (*action)(F_CMD_ARGS);
+	void (*action)(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+		cmdparser_context_t *pc);
 #else
 	void (*action)();
 #endif

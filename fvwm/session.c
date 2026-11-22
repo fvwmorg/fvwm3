@@ -1929,21 +1929,24 @@ Bool save_quit_session(void)
 
 /* ---------------------------- builtin commands --------------------------- */
 
-void CMD_QuitSession(F_CMD_ARGS)
+void CMD_QuitSession(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	quit_session();
 
 	return;
 }
 
-void CMD_SaveSession(F_CMD_ARGS)
+void CMD_SaveSession(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	save_session();
 
 	return;
 }
 
-void CMD_SaveQuitSession(F_CMD_ARGS)
+void CMD_SaveQuitSession(cond_rc_t *cond_rc, const exec_context_t *exc,
+	char *action, cmdparser_context_t *pc)
 {
 	save_quit_session();
 

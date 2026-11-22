@@ -2636,7 +2636,8 @@ void SetMapStateProp(const FvwmWindow *fw, int state)
 	return;
 }
 
-void CMD_Iconify(F_CMD_ARGS)
+void CMD_Iconify(cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
+	cmdparser_context_t *pc)
 {
 	int toggle;
 	FvwmWindow * const fw = exc->w.fw;
