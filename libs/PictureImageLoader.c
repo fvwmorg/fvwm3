@@ -430,7 +430,8 @@ Bool PImageLoadSvg(FIMAGE_CMD_ARGS)
 static Bool
 PImageLoadSvg(FIMAGE_CMD_ARGS)
 {
-	return (True);
+	/* Let format detection continue when SVG support is unavailable. */
+	return False;
 }
 #endif
 
