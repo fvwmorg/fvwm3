@@ -38,10 +38,11 @@ Help & Support
 We have a strong community on IRC (libera.chat), in the `#fvwm` channel if you
 fancy a chat.
 
-There is also the [Fvwm Forums](https://fvwmforums.org) where you can ask
-questions.
-
 Issues (for bugs) can be opened, and any/all bug reports are appreciated!
+
+For more of a discussion on certain topics, please use:
+
+https://github.com/fvwmorg/fvwm3/discussions
 
 Development
 -----------
