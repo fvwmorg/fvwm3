@@ -1760,6 +1760,65 @@ static void _handle_bpress_on_managed(const exec_context_t *exc)
 	return;
 }
 
+/* An unmanaged transient may legitimately hold focus while the pointer is
+ * over its owner.  Consult the server: UnknownWinFocused may still describe
+ * an earlier FocusIn event.  Follow parents for focus on a popup's child and
+ * WM_TRANSIENT_FOR for nested popups, but never cross another managed window.
+ * A plain client subwindow is deliberately excluded so the old focus refresh
+ * workarounds still apply to it.
+ */
+static Bool is_unmanaged_transient_focused(const FvwmWindow *fw)
+{
+	Window w;
+	int revert_to;
+	int depth;
+	Bool transient = False;
+
+	if (fw == NULL || IS_ICONIFIED(fw))
+	{
+		return False;
+	}
+	XGetInputFocus(dpy, &w, &revert_to);
+	/* Bound the walk in case a client supplies cyclic transient hints. */
+	for (depth = 0; depth < 64 && w != None &&
+	     w != PointerRoot && w != Scr.Root; depth++)
+	{
+		FvwmWindow *managed;
+		Window owner, root, parent, *children = NULL;
+		unsigned int nchildren;
+		Status status;
+
+		if (w == FW_W(fw))
+		{
+			return transient;
+		}
+		if (XFindContext(
+			dpy, w, FvwmContext, (caddr_t *) &managed) != XCNOENT)
+		{
+			return False;
+		}
+		if (XGetTransientForHint(dpy, w, &owner))
+		{
+			transient = True;
+			w = owner;
+			continue;
+		}
+		status = XQueryTree(
+			dpy, w, &root, &parent, &children, &nchildren);
+		if (children != NULL)
+		{
+			XFree(children);
+		}
+		if (!status)
+		{
+			return False;
+		}
+		w = parent;
+	}
+
+	return False;
+}
+
 /* restore focus stolen by unmanaged */
 static void _refocus_stolen_focus_win(const evh_args_t *ea)
 {
@@ -2031,6 +2090,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 	FvwmWindow *sf;
 	static Bool is_initial_ungrab_pending = True;
 	Bool is_tear_off_menu;
+	Bool preserve_popup_focus;
 	const XEvent *te = ea->exc->x.etrigger;
 	FvwmWindow * const fw = ea->exc->w.fw;
 
@@ -2109,6 +2169,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 		focus_grab_buttons(fw);
 		return;
 	}
+	preserve_popup_focus = is_unmanaged_transient_focused(fw);
 	if (ewp->mode == NotifyGrab)
 	{
 		ENTER_DBG((stderr, "en: exit: NotifyGrab\n"));
@@ -2126,7 +2187,10 @@ void HandleEnterNotify(const evh_args_t *ea)
 			 * netscape). I'm not convinced that this does not
 			 * break something else. */
 			ENTER_DBG((stderr, "en: NN: refreshing focus\n"));
-			refresh_focus(fw);
+			if (!preserve_popup_focus)
+			{
+				refresh_focus(fw);
+			}
 		}
 	}
 	else if (ewp->mode == NotifyUngrab)
@@ -2156,7 +2220,10 @@ void HandleEnterNotify(const evh_args_t *ea)
 					(
 						stderr,
 						"en: NU: refreshing focus\n"));
-				refresh_focus(fw);
+				if (!preserve_popup_focus)
+				{
+					refresh_focus(fw);
+				}
 			}
 			if (fw && fw == xcrossing_last_grab_window)
 			{
@@ -2352,13 +2419,17 @@ void HandleEnterNotify(const evh_args_t *ea)
 		}
 	}
 	sf = get_focus_window();
-	if (sf && fw != sf && FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
+	if (!preserve_popup_focus && sf && fw != sf &&
+	    FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 	{
 		ENTER_DBG((stderr, "en: delete focus\n"));
 		DeleteFocus(True);
 	}
 	focus_grab_buttons(fw);
-	if (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))
+	/* Keep crossing notifications and button grabs even when the popup
+	 * retains focus.
+	 */
+	if (!preserve_popup_focus && FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(fw)))
 	{
 		ENTER_DBG((stderr, "en: set mousey focus\n"));
                 if (ewp->window == FW_W(fw))
@@ -2372,7 +2443,8 @@ void HandleEnterNotify(const evh_args_t *ea)
 			SetFocusWindow(fw, True, FOCUS_SET_BY_ENTER);
                 }
 	}
-	else if (focus_is_focused(fw) && focus_does_accept_input_focus(fw))
+	else if (!preserve_popup_focus && focus_is_focused(fw) &&
+		 focus_does_accept_input_focus(fw))
 	{
 		/* We have to refresh the focus window here in case we left the
 		 * focused fvwm window.  Motif apps may lose the input focus
@@ -2387,6 +2459,7 @@ void HandleEnterNotify(const evh_args_t *ea)
 		focus_grab_buttons(sf);
 	}
 	if (
+		!preserve_popup_focus &&
 		Scr.UnknownWinFocused != None && sf != NULL &&
 		sf == Scr.StolenFocusFvwmWin)
 	{
